@@ -1,0 +1,16 @@
+# Dockerfile for local development
+
+FROM node:alpine
+
+# create directory on container
+WORKDIR /frontend/app 
+
+ENV PATH /app/node_modules/.bin:$PATH
+
+COPY package.json /frontend/app
+
+RUN npm install
+
+COPY . /frontend/app
+
+CMD ["npm", "start"]
