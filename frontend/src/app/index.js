@@ -1,8 +1,12 @@
 import React from "react";
+import Header from "./commonComponents/Header";
+import Banner from "./commonComponents/Banner";
 
 function App() {
   return (
     <div className="App">
+      <Banner />
+      <Header />
       <form className="usa-form">
         <fieldset className="usa-fieldset">
           <legend className="usa-legend usa-legend">

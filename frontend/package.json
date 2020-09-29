@@ -3,13 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^1.2.31",
+    "@fortawesome/react-fontawesome": "^0.1.11",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
+    "axios": "^0.20.0",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-html-id": "^0.1.5",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.3",
     "uswds": "^2.9.0"
   },
@@ -20,7 +24,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
-    "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/ -o src/styles/ --watch --recursive src/scss/App.scss"
+    "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss"
   },
   "eslintConfig": {
     "extends": "react-app"
