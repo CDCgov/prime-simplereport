@@ -75,4 +75,6 @@
 
 @import "uswds-theme-custom-styles";
 
-// use @import to add more custom files here. You would need to update package.json compile-scss to detect it
+@import "./Header.scss";
+@import "./AppLayout.scss";
+@import "./PrimeStyles.scss";

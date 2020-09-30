@@ -1,45 +1,41 @@
 import React from "react";
 import Header from "./commonComponents/Header";
 import Banner from "./commonComponents/Banner";
+import OrganizationView from "./OrganizationView";
+import LoginView from "./LoginView";
+import NotFoundComponent from "./NotFoundView";
+import Footer from "./commonComponents/Footer";
+
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
+
+const isLoggedIn = false;
 
 function App() {
   return (
     <div className="App">
-      <Banner />
-      <Header />
-      <form className="usa-form">
-        <fieldset className="usa-fieldset">
-          <legend className="usa-legend usa-legend">
-            Select one historical figure
-          </legend>
-          <div className="usa-radio">
-            <input
-              className="usa-radio__input"
-              id="historical-truth"
-              type="radio"
-              name="historical-figures"
-              value="sojourner-truth"
+      <div id="main-wrapper">
+        <Banner />
+        <Header />
+        <Router>
+          <Switch>
+            <Route exact path="/">
+              {!isLoggedIn ? <Redirect to="/login" /> : <OrganizationView />}
+            </Route>
+            <Route path="/login" component={LoginView} />
+            <Route
+              path="/organization/:organizationId"
+              render={(props) => <OrganizationView {...props} />}
             />
-            <label className="usa-radio__label" htmlFor="historical-truth">
-              Sojourner Truth
-            </label>
-          </div>
-
-          <div className="usa-radio">
-            <input
-              className="usa-radio__input"
-              id="historical-carver"
-              type="radio"
-              name="historical-figures"
-              value="george-washington-carver"
-              disabled
-            />
-            <label className="usa-radio__label" htmlFor="historical-carver">
-              George Washington Carver
-            </label>
-          </div>
-        </fieldset>
-      </form>
+            <Route component={NotFoundComponent} />
+          </Switch>
+        </Router>
+        <Footer />
+      </div>
     </div>
   );
 }

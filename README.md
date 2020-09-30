@@ -2,31 +2,37 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 # RUNNING THE APP LOCALLY
 
-## TODOS
-
-- establish a workflow where you can add depedencies (via `npm install <dependency>`) without having to manually stop the container, rebuild, and restart.
-
 ## Initial Setup
 
-Clone the repo and [install docker](https://www.docker.com/get-started)
+1. [Install Docker](https://www.docker.com/get-started)
+2. Clone the repo
+3. In the root directory, run `npm install`
 
-## Run the app
+## Option 0: Run app immediately
 
-> cd app
+For the time being, this is the best option for local development because changes would be watched for immediately.
+
+In the root directory, run:
+
+> npm run start
+
+## Option 1: Docker Componse
+
+1. Go to the root directory (whatever directory has the `docker-compose.yml` file)
 
 > docker-compose up -d --build
 
-Go to `localhost:3000`. The app is running in watch mode.
+2. Go to `localhost:3000`. The app is running in watch mode.
 
-`docker-compose` may be overkill right now since there is only one service, but we might add a lightweight node backend later.
-
-## Stop the app
+3. To stop the app:
 
 > docker-compose stop
 
-## Alternative
+Note: `docker-compose` may be overkill right now since there is only one service, but we might add a lightweight node backend later.
 
-You can create an image from the dockerfile directly if you don't want to use `docker-compose`
+## Option 2: Docker Build
+
+You can create an image from the dockerfile directly
 
 1. build the image
 
@@ -46,6 +52,11 @@ docker run \
 ```
 
 3. go to localhost:3000
+
+## TODOS
+
+- establish a workflow where you can add depedencies (via `npm install <dependency>`) without having to manually stop the container, rebuild, and restart.
+- distinguish between
 
 # EVERYTHING BELOW THIS IS BOILER-PLACE CREATE-REACT APP
 
