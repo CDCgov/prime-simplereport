@@ -32,8 +32,8 @@ export default class RadioGroup extends React.Component {
         // list Affirmations before negations: IE. Yes before No.
         className={
           this.props.horizontal
-            ? "smeqa-radio__container smeqa-radio--horizontal__container"
-            : "smeqa-radio__container"
+            ? "prime-radio__container prime-radio--horizontal__container"
+            : "prime-radio__container"
         }
         key={button.value}
       >
@@ -60,7 +60,7 @@ export default class RadioGroup extends React.Component {
         <ul
           className={
             this.props.horizontal
-              ? "smeqa-radio--horizontal"
+              ? "prime-radio--horizontal"
               : "usa-list--unstyled"
           }
         >
