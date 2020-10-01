@@ -27,7 +27,8 @@
     "start": "npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "lint": "eslint --quiet --ext .js --ext .jsx ./src",
+    "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
     "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss"
