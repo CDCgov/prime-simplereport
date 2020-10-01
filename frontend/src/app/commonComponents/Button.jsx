@@ -16,6 +16,9 @@ export default class Button extends React.Component {
     inverse: PropTypes.bool,
     secondaryInverse: PropTypes.bool,
     secondaryDisabled: PropTypes.bool,
+    label: PropTypes.string,
+    outline: PropTypes.bool,
+    addClass: PropTypes.string,
   };
 
   render() {

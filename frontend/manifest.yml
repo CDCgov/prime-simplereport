@@ -1,0 +1,7 @@
+applications:
+  - name: prime-input
+    memory: 64M
+    pushstate: enabled
+    path: build/ # specify where the app is located. The front end gets built and deployed alongside the backend
+    buildpacks:
+      - https://github.com/cloudfoundry/staticfile-buildpack

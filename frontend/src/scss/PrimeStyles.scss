@@ -1,3 +1,16 @@
 .prime-home {
   background-color: color($theme-color-prime-gray-light);
 }
+
+.prime-patient-nav {
+  background-color: white;
+}
+
+// this is the white box that most content sits in
+.prime-container {
+  flex: 0 0 auto;
+  width: 100%;
+  background-color: #ffffff;
+  margin: 1rem 0;
+  padding: 1rem;
+}

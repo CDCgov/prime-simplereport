@@ -2,13 +2,19 @@
   "name": "my-react-docker-app",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "12.16.1",
+    "npm": "6.13.4"
+  },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.31",
+    "@fortawesome/free-solid-svg-icons": "^5.15.0",
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
     "axios": "^0.20.0",
+    "classnames": "^2.2.6",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
