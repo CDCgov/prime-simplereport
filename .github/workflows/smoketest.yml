@@ -40,7 +40,7 @@ jobs:
       - name: Node setup
         run: npm install
       - name: Test
-        run: npm run-script test --passWithNoTests
+        run: npm run-script test
   linter:
     runs-on: ubuntu-latest
     steps:
