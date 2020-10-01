@@ -1,0 +1,43 @@
+# Smoketest/code lint checks for frontend package
+
+name: Smoketests
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: '*'
+    paths:
+      - 'frontend/**'
+      - .github/workflows/smoketest.yml
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'frontend/**'
+      - .github/workflows/smoketest.yml
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+defaults:
+  run:
+    working-directory: frontend
+jobs:
+  smoketest:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./node_modules
+          key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+      - name: Node setup
+        run: npm install
+      - name: Test
+        run: npm run-script test
