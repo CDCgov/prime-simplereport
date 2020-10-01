@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 2. Clone the repo
 3. In the root directory, run `npm install`
 
-## Option 0: Run app immediately
+## Option 0: Run app via npm scripts
 
 For the time being, this is the best option for local development because changes would be watched for immediately.
 
