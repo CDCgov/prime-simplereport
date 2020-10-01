@@ -40,4 +40,4 @@ jobs:
       - name: Node setup
         run: npm install
       - name: Test
-        run: npm run-script test
+        run: npm run-script test --passWithNoTests
