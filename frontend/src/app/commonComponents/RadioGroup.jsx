@@ -20,7 +20,7 @@ export default class RadioGroup extends React.Component {
     value: PropTypes.string,
     disabled: PropTypes.bool,
     horizontal: PropTypes.bool,
-    label: PropTypes.string,
+    selectedRadio: PropTypes.string,
   };
 
   render() {

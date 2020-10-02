@@ -58,6 +58,13 @@ docker run \
 - establish a workflow where you can add depedencies (via `npm install <dependency>`) without having to manually stop the container, rebuild, and restart.
 - distinguish between
 
+## DEPLOY
+
+> cd frontend
+> npm run build (not actually sure if this is necessary)
+> cf login -a api.fr.cloud.gov --sso
+> cf push prime-intput-frontend
+
 # EVERYTHING BELOW THIS IS BOILER-PLACE CREATE-REACT APP
 
 ## Available Scripts

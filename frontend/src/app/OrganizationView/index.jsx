@@ -1,1 +1,1 @@
-export { default } from "./PatientsListContainer";
+export { default } from "./OrganizationHomeContainer";

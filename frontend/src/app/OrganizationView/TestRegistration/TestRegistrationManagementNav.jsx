@@ -1,8 +1,8 @@
 import React from "react";
-import Button from "../commonComponents/Button";
-import TextInput from "../commonComponents/TextInput";
+import Button from "../../commonComponents/Button";
+import TextInput from "../../commonComponents/TextInput";
 
-class PatientManagementNav extends React.Component {
+class TestRegistrationManagementNav extends React.Component {
   render() {
     return (
       <header className="usa-banner__header prime-patient-nav">
@@ -44,4 +44,4 @@ class PatientManagementNav extends React.Component {
   }
 }
 
-export default PatientManagementNav;
+export default TestRegistrationManagementNav;
