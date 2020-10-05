@@ -3,3 +3,9 @@ export const COVID_RESULTS = {
   NOT_DETECTED: "not_detected",
   INCONCLUSIVE: "inconclusive",
 };
+
+export const TEST_RESULT_VALUES = {
+  0: COVID_RESULTS.NOT_DETECTED,
+  1: COVID_RESULTS.DETECTED,
+  2: COVID_RESULTS.INCONCLUSIVE,
+};

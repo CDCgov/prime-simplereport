@@ -1,12 +1,12 @@
 import React from "react";
-import { getTestResult } from "../../query/tests";
+import { getTestResult } from "../../query/testRegistrations";
 import TestResultView from "./TestResultView";
 
 class TestResultViewContainer extends React.Component {
   constructor() {
     super();
     this.state = {
-      testResults: [],
+      testResult: null,
     };
   }
 
@@ -24,11 +24,8 @@ class TestResultViewContainer extends React.Component {
   };
 
   render() {
-    return (
-      <TestResultView
-        testResults={this.state.testResult} // TODO: separate out testRegistration from testResult
-      />
-    );
+    console.log("TRVS state", this.state);
+    return <TestResultView testResults={this.state.testResult} />;
   }
 }
 

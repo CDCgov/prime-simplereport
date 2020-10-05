@@ -3,8 +3,10 @@ import { COVID_RESULTS } from "../constants";
 
 export const testRegistrationPropType = PropTypes.shape({
   testResgistrationId: PropTypes.string,
-  name: PropTypes.string,
-  dateOfBirth: PropTypes.string,
+  firstName: PropTypes.string,
+  middleName: PropTypes.string,
+  lastName: PropTypes.string,
+  birthDate: PropTypes.string,
   address: PropTypes.string,
   phone: PropTypes.string,
 });
@@ -13,8 +15,10 @@ export const testRegistrationPropType = PropTypes.shape({
 export const testResultPropType = PropTypes.shape({
   testId: PropTypes.string,
   testResgistrationId: PropTypes.string,
-  name: PropTypes.string,
-  dateOfBirth: PropTypes.string,
+  firstName: PropTypes.string,
+  middleName: PropTypes.string,
+  lastName: PropTypes.string,
+  birthDate: PropTypes.string,
   address: PropTypes.string,
   phone: PropTypes.string,
   testResult: PropTypes.oneOf([

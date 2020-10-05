@@ -20,7 +20,7 @@ class TestResultView extends React.Component {
         <h4> Name </h4>
         <p> {this.props.testResults.name} </p>
         <h4> Date of Birth</h4>
-        <p> {this.props.testResults.dateOfBirth} </p>
+        <p> {this.props.testResults.birthDate} </p>
         <h4> Phone Number</h4>
         <p> {this.props.testResults.phone} </p>
         <h4> Address</h4>

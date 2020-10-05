@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
 import OrganizationHome from "./OrganizationHome";
 import TestResultView from "../TestResultView";
-import { getTestRegistrations } from "../../query/tests";
+import { getTestRegistrations } from "../../query/testRegistrations";
 
 class OrganizationHomeContainer extends React.Component {
   constructor(props) {

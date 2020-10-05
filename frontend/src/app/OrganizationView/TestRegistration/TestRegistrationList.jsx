@@ -2,6 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link, withRouter } from "react-router-dom";
 import uniqueId from "react-html-id";
+import { displayFullName } from "../../helpers";
 
 import { testRegistrationPropType } from "../../propTypes";
 
@@ -19,8 +20,14 @@ class TestRegistrationList extends React.Component {
     const { url } = this.props.match;
     let rows = testRegistrations.map((testRegistration) => (
       <tr key={`testRegistration-${this.nextUniqueId()}`}>
-        <th scope="row">{testRegistration.name}</th>
-        <td>{testRegistration.dateOfBirth}</td>
+        <th scope="row">
+          {displayFullName(
+            testRegistration.firstName,
+            testRegistration.middleName,
+            testRegistration.lastName
+          )}
+        </th>
+        <td>{testRegistration.birthDate}</td>
         <td>{testRegistration.address}</td>
         <td>{testRegistration.phone}</td>
         <td>
