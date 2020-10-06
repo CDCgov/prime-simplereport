@@ -1,6 +1,6 @@
 import React from "react";
-import Button from "../../commonComponents/Button";
-import TextInput from "../../commonComponents/TextInput";
+import Button from "../../common/components/Button";
+import TextInput from "../../common/components/TextInput";
 
 class TestRegistrationManagementNav extends React.Component {
   render() {

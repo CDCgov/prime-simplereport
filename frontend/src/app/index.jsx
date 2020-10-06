@@ -1,10 +1,12 @@
 import React from "react";
-import Header from "./commonComponents/Header";
-import Banner from "./commonComponents/Banner";
+import Header from "./common/components/Header";
+import USAGovBanner from "./common/components/USAGovBanner";
 import OrganizationView from "./OrganizationView";
 import LoginView from "./LoginView";
 import NotFoundComponent from "./NotFoundView";
-import Footer from "./commonComponents/Footer";
+import Footer from "./common/components/Footer";
+import { connect } from "react-redux";
+import { addTestRegistrationAction } from "./actions/addTestRegistration";
 
 import {
   BrowserRouter as Router,
@@ -25,10 +27,14 @@ class App extends React.Component {
   }
 
   render() {
+    console.log("index.props", this.props);
     return (
       <div className="App">
         <div id="main-wrapper">
-          <Banner />
+          {/* <h1 onClick={() => this.props.addTestRegistration()}> */}
+          {/* Add Test Registration */}
+          {/* </h1> */}
+          <USAGovBanner />
           <Header />
           <Router>
             <Switch>
@@ -53,5 +59,13 @@ class App extends React.Component {
     );
   }
 }
+const mapStateToProps = (state) => ({
+  // ...state,
+});
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  // addTestRegistration: () =>
+  // dispatch(addTestRegistrationAction("dummy test registration")),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

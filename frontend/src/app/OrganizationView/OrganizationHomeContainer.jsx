@@ -1,26 +1,20 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { connect } from "react-redux";
 
 import OrganizationHome from "./OrganizationHome";
 import TestResultView from "../TestResultView";
-import { getTestRegistrations } from "../../query/testRegistrations";
+import { loadTestRegistrations } from "../actions/addTestRegistration";
 
 class OrganizationHomeContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      testRegistrations: [],
-    };
   }
 
   componentDidMount = async () => {
     try {
       let organizationId = this.props.match.params.organizationId;
-      const testRegistrations = await getTestRegistrations(organizationId);
-      this.setState({
-        ...this.state,
-        testRegistrations,
-      });
+      this.props.loadTestRegistrations(organizationId);
     } catch (err) {
       console.log("Error: ", err);
     }
@@ -36,7 +30,7 @@ class OrganizationHomeContainer extends React.Component {
               path="/organization/:organizationId/"
               render={(props) => (
                 <OrganizationHome
-                  testRegistrations={this.state.testRegistrations}
+                  testRegistrations={this.props.testRegistrations}
                 />
               )}
             />
@@ -51,4 +45,18 @@ class OrganizationHomeContainer extends React.Component {
   }
 }
 
-export default OrganizationHomeContainer;
+const mapStateToProps = (state) => {
+  return {
+    testRegistrations: state.testRegistrations,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => ({
+  loadTestRegistrations: (organizationId) =>
+    dispatch(loadTestRegistrations(organizationId)),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(OrganizationHomeContainer);

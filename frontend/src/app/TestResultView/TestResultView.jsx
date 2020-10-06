@@ -2,8 +2,8 @@ import React from "react";
 import { Link, withRouter } from "react-router-dom";
 import { testResultPropType } from "../propTypes";
 import { COVID_RESULTS } from "../constants";
-import RadioGroup from "../commonComponents/RadioGroup";
-import Button from "../commonComponents/Button";
+import RadioGroup from "../common/components/RadioGroup";
+import Button from "../common/components/Button";
 
 class TestResultView extends React.Component {
   static propTypes = {

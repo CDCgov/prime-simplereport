@@ -3,7 +3,7 @@ import classnames from "classnames";
 import PropTypes from "prop-types";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import "../../styles/fontAwesome";
+import "../../../styles/fontAwesome";
 
 export default class Button extends React.Component {
   static propTypes = {

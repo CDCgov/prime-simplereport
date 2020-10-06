@@ -24,7 +24,6 @@ class TestResultViewContainer extends React.Component {
   };
 
   render() {
-    console.log("TRVS state", this.state);
     return <TestResultView testResults={this.state.testResult} />;
   }
 }
