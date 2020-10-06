@@ -2,12 +2,9 @@ import axios from "axios";
 import { BASE_URL } from "../config/constants";
 import { sampleTestRegistrations } from "../app/test/data/testRegistration";
 import { COVID_RESULTS } from "../app/constants";
-import {
-  mapApiKeysToFrontendKeys,
-  testRegistrationMapping,
-  testResultMapping,
-  isLocalHost,
-} from "../helpers";
+import { isLocalHost } from "../utils";
+import { mapApiDataToClient } from "../utils/mappers";
+import { testRegistrationMapping, testResultMapping } from "./mappings";
 
 export const getTestRegistrations = async (organizationId) => {
   if (isLocalHost) {
@@ -15,7 +12,7 @@ export const getTestRegistrations = async (organizationId) => {
     const response = await axios.get(url);
     const rawTestRegistrations = response.data.items;
     const testRegistrations = rawTestRegistrations.map((rawTestRegistration) =>
-      mapApiKeysToFrontendKeys(rawTestRegistration, testRegistrationMapping)
+      mapApiDataToClient(rawTestRegistration, testRegistrationMapping)
     );
     return testRegistrations;
   }
@@ -28,7 +25,7 @@ export const getTestResult = async (testRegistrationId) => {
     const response = await axios.get(url);
     const rawTestResults = response.data.items;
     const testResults = rawTestResults.map((rawtestResult) =>
-      mapApiKeysToFrontendKeys(rawtestResult, testResultMapping)
+      mapApiDataToClient(rawtestResult, testResultMapping)
     );
     const testResult = testResults.find(
       (testResult) => testResult.testRegistrationId == testRegistrationId

@@ -6,7 +6,6 @@ import LoginView from "./LoginView";
 import NotFoundComponent from "./NotFoundView";
 import Footer from "./common/components/Footer";
 import { connect } from "react-redux";
-import { addTestRegistrationAction } from "./actions/addTestRegistration";
 
 import {
   BrowserRouter as Router,
@@ -27,13 +26,9 @@ class App extends React.Component {
   }
 
   render() {
-    console.log("index.props", this.props);
     return (
       <div className="App">
         <div id="main-wrapper">
-          {/* <h1 onClick={() => this.props.addTestRegistration()}> */}
-          {/* Add Test Registration */}
-          {/* </h1> */}
           <USAGovBanner />
           <Header />
           <Router>
@@ -59,13 +54,8 @@ class App extends React.Component {
     );
   }
 }
-const mapStateToProps = (state) => ({
-  // ...state,
-});
+const mapStateToProps = (state) => ({});
 
-const mapDispatchToProps = (dispatch) => ({
-  // addTestRegistration: () =>
-  // dispatch(addTestRegistrationAction("dummy test registration")),
-});
+const mapDispatchToProps = (dispatch) => ({});
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

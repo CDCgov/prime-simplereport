@@ -13,7 +13,6 @@ export default (state = initialState, action) => {
         testRegistrations: [...state.testRegistrations, action.payload],
       };
     case TEST_REGISTRATIONS__RECEIVE:
-      console.log("action.payload", action.payload);
       return {
         ...state,
         testRegistrations: action.payload,
