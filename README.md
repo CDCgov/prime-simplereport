@@ -1,5 +1,32 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# About
+
+## Client
+
+To quickly level set about how this app works:
+
+### Frontend
+
+The frontend
+
+- is a React app built and uses functional components
+- it is designed for tablets and uses [USWDS](https://designsystem.digital.gov/)
+- it uses vanilla javascript
+- component state and lifecycles are managed by React hooks
+- global state is managed by Redux and uses selectors. Most things are in global state
+- directory strucuture follows the "duck" pattern (most everything for a feature/domain is under one directory)
+  - domains include: User, Patient, Organization, TestResult, Device
+- conventions mostly follow [https://redux.js.org/style-guide/style-guide](redux conventions)
+- container component paradigm is used often (one component handles data, another deals solely with presentation logic)
+- custom mapping functions exist to transform data from the backend to the frontend, and vice versa
+
+Things to be aware of:
+
+- there are no tests for the frontend
+- browser support is limited
+-
+
 # RUNNING THE APP LOCALLY
 
 ## Initial Setup

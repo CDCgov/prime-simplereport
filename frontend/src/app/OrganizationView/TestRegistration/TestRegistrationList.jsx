@@ -1,37 +1,32 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Link, withRouter } from "react-router-dom";
-import uniqueId from "react-html-id";
+import { Link } from "react-router-dom";
 import { displayFullName } from "../../helpers";
-
+import { useLocation } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import { testRegistrationPropType } from "../../propTypes";
 
-class TestRegistrationList extends React.Component {
-  constructor() {
-    super();
-    uniqueId.enableUniqueIds(this);
-  }
+const TestRegistrationList = ({ testRegistrations }) => {
+  const location = useLocation();
+  let patients = testRegistrations; // TODO delete this after renaming props to `patients`
 
-  static propTypes = {
-    testRegistrations: PropTypes.arrayOf(testRegistrationPropType),
-  };
-
-  testRegistrationRows = (testRegistrations) => {
-    const { url } = this.props.match;
-    let rows = testRegistrations.map((testRegistration) => (
-      <tr key={`testRegistration-${this.nextUniqueId()}`}>
+  const patientRows = (patients) => {
+    let rows = patients.map((patient) => (
+      <tr key={`testRegistration-${uuidv4()}`}>
         <th scope="row">
           {displayFullName(
-            testRegistration.firstName,
-            testRegistration.middleName,
-            testRegistration.lastName
+            patient.firstName,
+            patient.middleName,
+            patient.lastName
           )}
         </th>
-        <td>{testRegistration.birthDate}</td>
-        <td>{testRegistration.address}</td>
-        <td>{testRegistration.phone}</td>
+        <td>{patient.birthDate}</td>
+        <td>{patient.address}</td>
+        <td>{patient.phone}</td>
         <td>
-          <Link to={`${url}/testResult/${testRegistration.testRegistrationId}`}>
+          <Link
+            to={`${location.pathname}/testResult/${patient.testRegistrationId}`}
+          >
             View Results
           </Link>
         </td>
@@ -40,28 +35,30 @@ class TestRegistrationList extends React.Component {
     return rows;
   };
 
-  render() {
-    let rows = this.testRegistrationRows(this.props.testRegistrations);
+  let rows = patientRows(patients);
 
-    return (
-      <div className="prime-container">
-        <h2> Scheduled Today </h2>
+  return (
+    <div className="prime-container">
+      <h2> Scheduled Today </h2>
 
-        <table className="usa-table usa-table--borderless">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Date of Birth</th>
-              <th scope="col">Address</th>
-              <th scope="col">Phone Number</th>
-              <th scope="col">Test Results</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
-      </div>
-    );
-  }
-}
+      <table className="usa-table usa-table--borderless">
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Date of Birth</th>
+            <th scope="col">Address</th>
+            <th scope="col">Phone Number</th>
+            <th scope="col">Test Results</th>
+          </tr>
+        </thead>
+        <tbody>{rows}</tbody>
+      </table>
+    </div>
+  );
+};
 
-export default withRouter(TestRegistrationList);
+TestRegistrationList.propTypes = {
+  testRegistrations: PropTypes.arrayOf(testRegistrationPropType),
+};
+
+export default TestRegistrationList;

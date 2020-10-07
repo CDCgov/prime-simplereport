@@ -1,31 +1,28 @@
 import React from "react";
-import { Link, withRouter } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { testResultPropType } from "../propTypes";
 import { COVID_RESULTS } from "../constants";
 import RadioGroup from "../common/components/RadioGroup";
 import Button from "../common/components/Button";
+import { useLocation } from "react-router-dom";
 
-class TestResultView extends React.Component {
-  static propTypes = {
-    testResults: testResultPropType,
-  };
-
-  patientSummary = (testResults) => {
+const TestResultView = ({ testResults }) => {
+  const location = useLocation();
+  const patientSummary = (testResults) => {
     if (!testResults) {
       return null;
     }
-    const { url } = this.props.match;
     return (
       <React.Fragment>
         <h4> Name </h4>
-        <p> {this.props.testResults.name} </p>
+        <p> {testResults.name} </p>
         <h4> Date of Birth</h4>
-        <p> {this.props.testResults.birthDate} </p>
+        <p> {testResults.birthDate} </p>
         <h4> Phone Number</h4>
-        <p> {this.props.testResults.phone} </p>
+        <p> {testResults.phone} </p>
         <h4> Address</h4>
-        <p> {this.props.testResults.address} </p>
-        <Link to={`${url}/update`}>
+        <p> {testResults.address} </p>
+        <Link to={`${location.pathname}/update`}>
           <Button
             onClick={() => {}}
             type="button"
@@ -37,7 +34,7 @@ class TestResultView extends React.Component {
     );
   };
 
-  testResult = (testResults) => {
+  const testResult = (testResults) => {
     return testResults ? (
       <React.Fragment>
         <RadioGroup
@@ -61,30 +58,31 @@ class TestResultView extends React.Component {
     ) : null;
   };
 
-  render() {
-    return (
-      <main className="prime-home">
-        <div className="grid-container">
-          <div className="grid-row grid-gap">
-            <div className="tablet:grid-col">
-              <div className="prime-container">
-                <h2> Patient Summary </h2>
-                {this.patientSummary(this.props.testResults)}
-              </div>
+  return (
+    <main className="prime-home">
+      <div className="grid-container">
+        <div className="grid-row grid-gap">
+          <div className="tablet:grid-col">
+            <div className="prime-container">
+              <h2> Patient Summary </h2>
+              {patientSummary(testResults)}
             </div>
-            <div className="tablet:grid-col">
-              <div className="prime-container">
-                <form className="usa-form">
-                  <h2> SARS-CoV-2 Results </h2>
-                  {this.testResult(this.props.testResults)}
-                </form>
-              </div>
+          </div>
+          <div className="tablet:grid-col">
+            <div className="prime-container">
+              <form className="usa-form">
+                <h2> SARS-CoV-2 Results </h2>
+                {testResult(testResults)}
+              </form>
             </div>
           </div>
         </div>
-      </main>
-    );
-  }
-}
+      </div>
+    </main>
+  );
+};
 
-export default withRouter(TestResultView);
+TestResultView.propTypes = {
+  testResults: testResultPropType,
+};
+export default TestResultView;
