@@ -1,9 +1,10 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import TestResultView from "./TestResultView";
 import { useSelector, useDispatch } from "react-redux";
-import { loadTestResult } from "../testResults/state/testResultActions";
 import { useEffect } from "react";
+
+import TestResultView from "./TestResultView";
+import { loadTestResult } from "./state/testResultActions";
 
 const TestResultViewContainer = () => {
   const { patientId } = useParams();

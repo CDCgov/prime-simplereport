@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import PatientManagementNav from "./Patients/PatientManagementNav";
-import PatientList from "./Patients/PatientList";
+import PatientManagementNav from "../patients/PatientManagementNav";
+import PatientList from "../patients/PatientList";
 import { patientPropType } from "../propTypes";
 
 const OrganizationHome = ({ patients }) => (

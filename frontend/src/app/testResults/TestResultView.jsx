@@ -1,10 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { testResultPropType } from "../propTypes";
-import { COVID_RESULTS } from "../constants";
+import { useLocation } from "react-router-dom";
+
 import RadioGroup from "../common/components/RadioGroup";
 import Button from "../common/components/Button";
-import { useLocation } from "react-router-dom";
+import { testResultPropType } from "../propTypes";
+import { COVID_RESULTS } from "../constants";
 
 const TestResultView = ({ testResult, patient }) => {
   console.log("TRV testResult", testResult);

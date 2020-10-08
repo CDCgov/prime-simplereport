@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import OrganizationHome from "./OrganizationHome";
-import TestResultView from "../TestResultView";
+import TestResultViewContainer from "../testResults/TestResultViewContainer";
 import { loadPatients } from "../patients/state/patientActions";
 
 const OrganizationHomeContainer = () => {
@@ -33,7 +33,7 @@ const OrganizationHomeContainer = () => {
           />
           <Route
             path="/organization/:organizationId/testResult/:patientId"
-            render={(props) => <TestResultView {...props} />}
+            render={(props) => <TestResultViewContainer {...props} />}
           />
         </Switch>
       </Router>
