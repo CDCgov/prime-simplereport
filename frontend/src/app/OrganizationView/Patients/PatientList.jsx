@@ -1,18 +1,22 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
-import { displayFullName } from "../../helpers";
 import { useLocation } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
-import { testRegistrationPropType } from "../../propTypes";
 
-const TestRegistrationList = ({ testRegistrations }) => {
+import { displayFullName } from "../../helpers";
+import { patientPropType } from "../../propTypes";
+
+const PatientList = ({ patients }) => {
   const location = useLocation();
-  let patients = testRegistrations; // TODO delete this after renaming props to `patients`
 
   const patientRows = (patients) => {
-    let rows = patients.map((patient) => (
-      <tr key={`testRegistration-${uuidv4()}`}>
+    if (Object.keys(patients).length === 0) {
+      return;
+    }
+
+    let rows = Object.entries(patients).map(([patientId, patient]) => (
+      <tr key={`patient-${uuidv4()}`}>
         <th scope="row">
           {displayFullName(
             patient.firstName,
@@ -24,9 +28,7 @@ const TestRegistrationList = ({ testRegistrations }) => {
         <td>{patient.address}</td>
         <td>{patient.phone}</td>
         <td>
-          <Link
-            to={`${location.pathname}/testResult/${patient.testRegistrationId}`}
-          >
+          <Link to={`${location.pathname}/testResult/${patientId}`}>
             View Results
           </Link>
         </td>
@@ -57,8 +59,8 @@ const TestRegistrationList = ({ testRegistrations }) => {
   );
 };
 
-TestRegistrationList.propTypes = {
-  testRegistrations: PropTypes.arrayOf(testRegistrationPropType),
+PatientList.propTypes = {
+  patients: PropTypes.objectOf(patientPropType),
 };
 
-export default TestRegistrationList;
+export default PatientList;

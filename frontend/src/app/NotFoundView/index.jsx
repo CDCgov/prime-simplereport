@@ -1,6 +1,6 @@
 import React from "react";
 
-const NotFoundViewComponent = ({}) => {
+const NotFoundViewComponent = () => {
   return (
     <main>
       <div className="grid-container">

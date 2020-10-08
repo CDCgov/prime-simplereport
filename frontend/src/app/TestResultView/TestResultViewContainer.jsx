@@ -1,31 +1,25 @@
 import React from "react";
-import { getTestResult } from "../../query/testRegistrations";
+import { useParams } from "react-router-dom";
 import TestResultView from "./TestResultView";
+import { useSelector, useDispatch } from "react-redux";
+import { loadTestResult } from "../actions/testResult";
+import { useEffect } from "react";
+import { state } from "../../utils/mappers";
 
-class TestResultViewContainer extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      testResult: null,
-    };
-  }
-
-  componentDidMount = async () => {
-    try {
-      let testRegistrationId = this.props.match.params.testRegistrationId;
-      const testResult = await getTestResult(testRegistrationId);
-      this.setState({
-        ...this.state,
-        testResult,
-      });
-    } catch (err) {
-      console.log("Error: ", err);
-    }
-  };
-
-  render() {
-    return <TestResultView testResults={this.state.testResult} />;
-  }
-}
+const TestResultViewContainer = ({}) => {
+  console.log("process.env", process.env);
+  const { patientId } = useParams();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(loadTestResult(patientId));
+  }, []);
+  // const patient = useSelector(
+  //   (state) => state.patient[patientId]
+  // );
+  // const testResult = useSelector(
+  //   (state) => state.testResults[patient.testResu]
+  // );
+  return <TestResultView testResult />;
+};
 
 export default TestResultViewContainer;

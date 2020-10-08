@@ -6,22 +6,22 @@ import RadioGroup from "../common/components/RadioGroup";
 import Button from "../common/components/Button";
 import { useLocation } from "react-router-dom";
 
-const TestResultView = ({ testResults }) => {
+const TestResultView = ({ testResult }) => {
   const location = useLocation();
-  const patientSummary = (testResults) => {
-    if (!testResults) {
+  const patientSummary = (testResult) => {
+    if (!testResult) {
       return null;
     }
     return (
       <React.Fragment>
         <h4> Name </h4>
-        <p> {testResults.name} </p>
+        <p> {testResult.name} </p>
         <h4> Date of Birth</h4>
-        <p> {testResults.birthDate} </p>
+        <p> {testResult.birthDate} </p>
         <h4> Phone Number</h4>
-        <p> {testResults.phone} </p>
+        <p> {testResult.phone} </p>
         <h4> Address</h4>
-        <p> {testResults.address} </p>
+        <p> {testResult.address} </p>
         <Link to={`${location.pathname}/update`}>
           <Button
             onClick={() => {}}
@@ -34,8 +34,8 @@ const TestResultView = ({ testResults }) => {
     );
   };
 
-  const testResult = (testResults) => {
-    return testResults ? (
+  const testResultDetails = (testResult) => {
+    return testResult ? (
       <React.Fragment>
         <RadioGroup
           onChange={() => {}}
@@ -51,7 +51,7 @@ const TestResultView = ({ testResults }) => {
             },
           ]}
           name="covid-test-result" // TODO: make unique if there are multiple test results on this page
-          selectedRadio={testResults.testResult}
+          selectedRadio={testResult.testResult}
         />
         <Button onClick={() => {}} type="submit" label="Submit Results" />
       </React.Fragment>
@@ -65,14 +65,14 @@ const TestResultView = ({ testResults }) => {
           <div className="tablet:grid-col">
             <div className="prime-container">
               <h2> Patient Summary </h2>
-              {patientSummary(testResults)}
+              {patientSummary(testResult)}
             </div>
           </div>
           <div className="tablet:grid-col">
             <div className="prime-container">
               <form className="usa-form">
                 <h2> SARS-CoV-2 Results </h2>
-                {testResult(testResults)}
+                {testResultDetails(testResult)}
               </form>
             </div>
           </div>

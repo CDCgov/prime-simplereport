@@ -1,8 +1,9 @@
 import React from "react";
+
 import Button from "../../common/components/Button";
 import TextInput from "../../common/components/TextInput";
 
-const TestRegistrationManagementNav = ({}) => {
+const PatientManagementNav = () => {
   return (
     <header className="usa-banner__header prime-patient-nav">
       <div className="usa-banner__inner">
@@ -42,4 +43,4 @@ const TestRegistrationManagementNav = ({}) => {
   );
 };
 
-export default TestRegistrationManagementNav;
+export default PatientManagementNav;

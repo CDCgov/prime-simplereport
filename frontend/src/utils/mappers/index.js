@@ -111,9 +111,9 @@ export const zip = {
   },
 };
 
-export const testRegistrationId = {
+export const patientId = {
   id: {
-    renamedKey: "testRegistrationId",
+    renamedKey: "patientId",
     setValue: (object) => object["id"],
   },
 };
@@ -128,13 +128,13 @@ export const testResultId = {
 export const receivedAt = {
   received_at: {
     renamedKey: "receivedAt",
-    setValue: (object) => object("receied_at"), // TODO: convert date format
+    setValue: (object) => object["received_at"], // TODO: convert date format
   },
 };
 
 export const testResult = {
   value: {
     renamedKey: "testResult",
-    setValue: (object) => object("value"), // TODO: convert this to a value the front-end recognizes
+    setValue: (object) => object["value"], // TODO: convert this to a value the front-end recognizes
   },
 };

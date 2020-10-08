@@ -10,12 +10,12 @@ import {
   zip,
   receivedAt,
   testResult,
-  testRegistrationId,
+  patientId,
   testResultId,
   createMappingInterface,
 } from "../utils/mappers";
 
-export const testRegistrationMapping = createMappingInterface([
+export const patientMapping = createMappingInterface([
   birthDate,
   firstName,
   middleName,
@@ -25,7 +25,7 @@ export const testRegistrationMapping = createMappingInterface([
   city,
   state,
   zip,
-  testRegistrationId,
+  patientId,
 ]);
 
 export const testResultMapping = createMappingInterface([
@@ -38,9 +38,9 @@ export const testResultMapping = createMappingInterface([
   city,
   state,
   zip,
-  testRegistrationId,
+  patientId,
   receivedAt,
   testResult,
-  testRegistrationId,
+  patientId,
   testResultId,
 ]);

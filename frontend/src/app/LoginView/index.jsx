@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoginPage = ({}) => {
+const LoginPage = () => {
   return (
     <main>
       <div class="grid-container">

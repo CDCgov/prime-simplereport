@@ -1,20 +1,22 @@
 import PropTypes from "prop-types";
 import { COVID_RESULTS } from "../constants";
 
-export const testRegistrationPropType = PropTypes.shape({
-  testResgistrationId: PropTypes.string,
+export const patientPropType = PropTypes.shape({
+  patientId: PropTypes.number,
   firstName: PropTypes.string,
   middleName: PropTypes.string,
   lastName: PropTypes.string,
   birthDate: PropTypes.string,
   address: PropTypes.string,
   phone: PropTypes.string,
+  city: PropTypes.string,
+  state: PropTypes.string,
 });
 
-// TODO: we should probably strip out the testRegistration props from this
+// TODO: we should probably strip out the patient props from this
 export const testResultPropType = PropTypes.shape({
   testId: PropTypes.string,
-  testResgistrationId: PropTypes.string,
+  patientId: PropTypes.string,
   firstName: PropTypes.string,
   middleName: PropTypes.string,
   lastName: PropTypes.string,

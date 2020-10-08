@@ -1,12 +1,16 @@
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
-import testRegistration from "./reducers/testRegistration";
+import patientReducer from "./patients/state/patientReducers";
+import testResultReducer from "./reducers/testResults";
 import thunk from "redux-thunk";
 
-// const rootReducer = combineReducers(testRegistration);
+const rootReducer = combineReducers({
+  patients: patientReducer,
+  testResults: testResultReducer,
+});
 
 function configureStore() {
   return createStore(
-    testRegistration,
+    rootReducer,
     compose(
       applyMiddleware(thunk),
       window.__REDUX_DEVTOOLS_EXTENSION__ &&

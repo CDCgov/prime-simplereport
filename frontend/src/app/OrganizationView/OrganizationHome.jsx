@@ -1,18 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import TestRegistrationManagementNav from "./TestRegistration/TestRegistrationManagementNav";
-import TestRegistrationList from "./TestRegistration/TestRegistrationList";
-import { testRegistrationPropType } from "../propTypes";
+import PatientManagementNav from "./Patients/PatientManagementNav";
+import PatientList from "./Patients/PatientList";
+import { patientPropType } from "../propTypes";
 
-const OrganizationHome = ({ testRegistrations }) => (
+const OrganizationHome = ({ patients }) => (
   <React.Fragment>
-    <TestRegistrationManagementNav />
+    <PatientManagementNav />
 
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <TestRegistrationList testRegistrations={testRegistrations} />
+          <PatientList patients={patients} />
         </div>
       </div>
     </main>
@@ -20,7 +20,7 @@ const OrganizationHome = ({ testRegistrations }) => (
 );
 
 OrganizationHome.propTypes = {
-  testRegistrations: PropTypes.arrayOf(testRegistrationPropType),
+  patients: PropTypes.objectOf(patientPropType),
 };
 
 export default OrganizationHome;
