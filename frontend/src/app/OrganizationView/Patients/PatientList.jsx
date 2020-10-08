@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
-import { displayFullName } from "../../helpers";
+import { displayFullName } from "../../utils";
 import { patientPropType } from "../../propTypes";
 
 const PatientList = ({ patients }) => {

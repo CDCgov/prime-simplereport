@@ -13,6 +13,7 @@ import TestResultView from "../TestResultView";
 import { loadPatients } from "../patients/state/patientActions";
 
 const OrganizationHomeContainer = () => {
+  console.log("process.env", process.env);
   const { organizationId } = useParams();
   const dispatch = useDispatch();
 

@@ -13,7 +13,7 @@ import {
   patientId,
   testResultId,
   createMappingInterface,
-} from "../../utils/mappers";
+} from "../utils/mappers";
 
 export const testResultMapping = createMappingInterface([
   birthDate,

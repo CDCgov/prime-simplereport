@@ -1,14 +1,14 @@
 import axios from "axios";
-import { BASE_URL } from "../../config/constants";
+import { ROOT_URL } from "../../config/constants";
 import { samplePatients } from "../test/data/patients";
 import { COVID_RESULTS } from "../constants";
-import { isLocalHost } from "../../utils/helpers";
-import { mapApiDataToClient } from "../../utils/mappers";
+import { isLocalHost } from "../utils/";
+import { mapApiDataToClient } from "../utils/mappers";
 import { testResultMapping } from "./mappings";
 
 export const getTestResult = async (patientId) => {
   if (isLocalHost) {
-    const url = `http://localhost:8000${BASE_URL}/test_results/${patientId}`;
+    const url = `${ROOT_URL}/test_results/${patientId}`;
     const response = await axios.get(url);
     const rawTestResult = response.data;
     const testResult = mapApiDataToClient(rawTestResult, testResultMapping);

@@ -10,7 +10,7 @@ import {
   zip,
   patientId,
   createMappingInterface,
-} from "../../utils/mappers";
+} from "../utils/mappers";
 
 export const patientMapping = createMappingInterface([
   birthDate,

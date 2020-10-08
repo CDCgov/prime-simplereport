@@ -1,7 +1,7 @@
 applications:
   - name: prime-input
     memory: 64M
-    env:
+    env: # TODO broken: this doesn't actually set the env variables
       REACT_APP_HOST_ENV: "stage" # used to point to different API/DBs/etc.
     pushstate: enabled
     path: build/ # specify where the app is located. The frontend gets built and deployed alongside the backend
