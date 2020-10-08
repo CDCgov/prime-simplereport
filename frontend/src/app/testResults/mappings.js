@@ -1,0 +1,33 @@
+import {
+  birthDate,
+  firstName,
+  middleName,
+  lastName,
+  address,
+  phone,
+  city,
+  state,
+  zip,
+  receivedAt,
+  testResult,
+  patientId,
+  testResultId,
+  createMappingInterface,
+} from "../../utils/mappers";
+
+export const testResultMapping = createMappingInterface([
+  birthDate,
+  firstName,
+  middleName,
+  lastName,
+  address,
+  phone,
+  city,
+  state,
+  zip,
+  patientId,
+  receivedAt,
+  testResult,
+  patientId,
+  testResultId,
+]);

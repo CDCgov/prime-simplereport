@@ -15,10 +15,11 @@ The frontend
 - it uses vanilla javascript
 - component state and lifecycles are managed by React hooks
 - global state is managed by Redux and uses selectors. Most things are in global state
-- directory strucuture follows the "duck" pattern (most everything for a feature/domain is under one directory)
+  - global state is flatten as much as possible. This helps with minimizing diffs and is recommended in the docs, tho sometimes this requires passing more keys around to get what you want.
+- directory strucuture follows the "duck" pattern (most everything for a feature/domain is under one directory). See [this](https://www.pluralsight.com/guides/how-to-organize-your-react-+-redux-codebase)
   - domains include: User, Patient, Organization, TestResult, Device
 - conventions mostly follow [https://redux.js.org/style-guide/style-guide](redux conventions)
-- container component paradigm is used often (one component handles data, another deals solely with presentation logic)
+- container component paradigm is used often (one component handles data, another deals solely with presentation logic). TODO: might get rid of this
 - custom mapping functions exist to transform data from the backend to the frontend, and vice versa
 
 Things to be aware of:

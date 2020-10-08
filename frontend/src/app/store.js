@@ -1,6 +1,6 @@
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
 import patientReducer from "./patients/state/patientReducers";
-import testResultReducer from "./reducers/testResults";
+import testResultReducer from "./testResults/state/testResultReducer";
 import thunk from "redux-thunk";
 
 const rootReducer = combineReducers({

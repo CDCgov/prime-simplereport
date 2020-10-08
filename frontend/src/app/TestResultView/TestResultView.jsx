@@ -6,7 +6,9 @@ import RadioGroup from "../common/components/RadioGroup";
 import Button from "../common/components/Button";
 import { useLocation } from "react-router-dom";
 
-const TestResultView = ({ testResult }) => {
+const TestResultView = ({ testResult, patient }) => {
+  console.log("TRV testResult", testResult);
+  console.log("TRV patient", patient);
   const location = useLocation();
   const patientSummary = (testResult) => {
     if (!testResult) {

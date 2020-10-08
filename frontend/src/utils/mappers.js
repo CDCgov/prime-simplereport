@@ -1,3 +1,15 @@
+export const COVID_RESULTS = {
+  DETECTED: "detected",
+  NOT_DETECTED: "not_detected",
+  INCONCLUSIVE: "inconclusive",
+};
+
+export const TEST_RESULT_VALUES = {
+  0: COVID_RESULTS.NOT_DETECTED,
+  1: COVID_RESULTS.DETECTED,
+  2: COVID_RESULTS.INCONCLUSIVE,
+};
+
 /*
 Creates a mapping interface between API -> Client
 
@@ -135,6 +147,9 @@ export const receivedAt = {
 export const testResult = {
   value: {
     renamedKey: "testResult",
-    setValue: (object) => object["value"], // TODO: convert this to a value the front-end recognizes
+    setValue: (object) => {
+      const rawTestResult = object["value"];
+      return TEST_RESULT_VALUES[rawTestResult];
+    },
   },
 };

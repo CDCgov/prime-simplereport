@@ -8,7 +8,6 @@ const initialState = {};
 export default (state = initialState, action) => {
   switch (action.type) {
     case PATIENTS__REQUEST_PATIENTS:
-      // just used for logging
       return state;
     case PATIENTS__RECEIVED_PATIENTS:
       let newPatients = {};

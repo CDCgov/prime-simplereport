@@ -2,9 +2,9 @@ import axios from "axios";
 
 import { BASE_URL } from "../../config/constants";
 import { samplePatients } from "../test/data/patients";
-import { isLocalHost } from "../../utils";
+import { isLocalHost } from "../../utils/helpers";
 import { mapApiDataToClient } from "../../utils/mappers";
-import { patientMapping } from "../../query/mappings";
+import { patientMapping } from "./mappings";
 
 export const getPatients = async (organizationId) => {
   if (isLocalHost) {

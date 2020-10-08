@@ -20,12 +20,10 @@ const requestPatients = (organizationId) => {
 };
 
 export const loadPatients = (organizationId) => {
-  console.log("loadPatients()");
   return (dispatch) => {
     // first, inform that the API call is starting
     dispatch(requestPatients(organizationId));
 
-    console.log("loading patients");
     // return a promise
     return getPatients(organizationId).then((patients) =>
       dispatch(receivedPatient(patients))

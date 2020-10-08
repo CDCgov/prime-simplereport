@@ -15,6 +15,7 @@ import { loadPatients } from "../patients/state/patientActions";
 const OrganizationHomeContainer = () => {
   const { organizationId } = useParams();
   const dispatch = useDispatch();
+
   useEffect(() => {
     dispatch(loadPatients(organizationId));
   }, [organizationId, dispatch]);

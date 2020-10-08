@@ -1,9 +1,9 @@
 import axios from "axios";
-import { BASE_URL } from "../config/constants";
-import { samplePatients } from "../app/test/data/patients";
-import { COVID_RESULTS } from "../app/constants";
-import { isLocalHost } from "../utils";
-import { mapApiDataToClient } from "../utils/mappers";
+import { BASE_URL } from "../../config/constants";
+import { samplePatients } from "../test/data/patients";
+import { COVID_RESULTS } from "../constants";
+import { isLocalHost } from "../../utils/helpers";
+import { mapApiDataToClient } from "../../utils/mappers";
 import { testResultMapping } from "./mappings";
 
 export const getTestResult = async (patientId) => {
