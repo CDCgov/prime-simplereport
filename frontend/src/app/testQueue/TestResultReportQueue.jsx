@@ -1,8 +1,8 @@
 import React from "react";
-// import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 // import RadioGroup from "../common/components/RadioGroup";
-// import Button from "../common/components/Button";
+import Button from "../common/components/Button";
 import { testResultPropType } from "../propTypes";
 // import { COVID_RESULTS } from "../constants";
 import { useSelector } from "react-redux";
@@ -11,6 +11,7 @@ import LabeledText from "../common/components/LabeledText";
 
 const TestResultReportQueue = () => {
   const patients = useSelector(getPatients); // TODO: only get patients in the queue
+  const location = useLocation();
 
   const createReportUnit = (patient) => {
     return (
@@ -28,11 +29,28 @@ const TestResultReportQueue = () => {
       : null;
   };
 
+  const noPatientsContainer = (
+    <React.Fragment>
+      <div className="prime-container prime-center">
+        <p>You have no patients in the testing queue </p>
+      </div>
+    </React.Fragment>
+  );
+
   return (
     <main className="prime-home">
       <div className="grid-container">
+        <div className="grid-row">
+          <div className="grid-col">
+            <div className="prime-right-align">
+              <Link to={`${location.pathname}/add`}>
+                <Button type="button" onClick={() => {}} label="Add To Queue" />
+              </Link>
+            </div>
+          </div>
+        </div>
         {/* {createReportUnits(patients)} */}
-        <h1> Test Queue </h1>
+        {noPatientsContainer}
         {/* <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <div className="prime-container">

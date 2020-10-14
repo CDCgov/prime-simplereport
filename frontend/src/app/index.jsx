@@ -15,8 +15,7 @@ import {
 const isAuthenticated = true;
 
 const App = () => {
-  const [user, updateUser] = useState(null);
-  const [organization, updateOrganization] = useState({ id: "123" });
+  const [organization] = useState({ id: "123" });
 
   return (
     <div className="App">
@@ -32,7 +31,6 @@ const App = () => {
               isAuthenticated={isAuthenticated}
             />
             <Route path="/">
-              {console.log("root path")}
               <Redirect to={`/organization/${organization.id}`} />
             </Route>
             {/* <Route component={NotFoundComponent} /> */}

@@ -13,7 +13,8 @@ import { useEffect } from "react";
 import OrganizationHome from "./OrganizationHome";
 import TestResultViewContainer from "../testResults/TestResultViewContainer";
 import { loadPatients } from "../patients/state/patientActions";
-import TestResultReportQueue from "../testQueue";
+import TestResultReportQueue from "../testQueue/TestResultReportQueue";
+import AddToQueue from "../testQueue/AddToQueue";
 import { getPatients } from "../patients/selectors";
 
 const OrganizationHomeContainer = () => {
@@ -32,9 +33,16 @@ const OrganizationHomeContainer = () => {
     <React.Fragment>
       <Switch>
         <Route
+          exact
           path={`${match.path}/queue`}
           render={() => {
             return <TestResultReportQueue />;
+          }}
+        />
+        <Route
+          path={`${match.path}/queue/add`}
+          render={() => {
+            return <AddToQueue />;
           }}
         />
         <Route
