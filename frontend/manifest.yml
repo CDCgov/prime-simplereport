@@ -1,5 +1,5 @@
 applications:
-  - name: prime-input
+  - name: prime-data-input-client
     memory: 64M
     env: # TODO broken: this doesn't actually set the env variables
       REACT_APP_HOST_ENV: "stage" # used to point to different API/DBs/etc.

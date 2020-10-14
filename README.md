@@ -16,8 +16,13 @@ The frontend
 - component state and lifecycles are managed by React hooks
 - global state is managed by Redux and uses selectors. Most things are in global state
   - global state is flatten as much as possible. This helps with minimizing diffs and is recommended in the docs, tho sometimes this requires passing more keys around to get what you want.
-- directory strucuture follows the "duck" pattern (most everything for a feature/domain is under one directory). See [this](https://www.pluralsight.com/guides/how-to-organize-your-react-+-redux-codebase)
-  - domains include: User, Patient, Organization, TestResult, Device
+- directory strucuture follows the feature/domain model with some "duck"s. Basically this means the app is broken down into domains/features directories, each of which include most of the components, state, reducers, etc for that feature
+
+  - domains include: User, Patient, Organization, TestResult, Device. This may change
+  - Resources:
+    - [this](https://www.pluralsight.com/guides/how-to-organize-your-react-+-redux-codebase).
+    - [redux ducks](https://redux.js.org/style-guide/style-guide#structure-files-as-feature-folders-or-ducks)
+
 - conventions mostly follow [https://redux.js.org/style-guide/style-guide](redux conventions)
 - container component paradigm is used often (one component handles data, another deals solely with presentation logic). TODO: might get rid of this
 - custom mapping functions exist to transform data from the backend to the frontend, and vice versa
@@ -84,14 +89,21 @@ docker run \
 ## TODOS
 
 - establish a workflow where you can add depedencies (via `npm install <dependency>`) without having to manually stop the container, rebuild, and restart.
-- distinguish between
 
-## DEPLOY
+## DEPLOY (staging env)
 
-> cd frontend
-> npm run build (not actually sure if this is necessary)
-> cf login -a api.fr.cloud.gov --sso
-> cf push prime-intput-frontend
+1. Build the appp
+
+   > cd frontend
+   > npm run build
+
+2. Sign into cloud.gov
+   > cf login -a api.fr.cloud.gov --sso
+
+Connect to the `dhs-prototype` org and the `usds-prime` space
+
+3. Deploy
+   > cf push
 
 # EVERYTHING BELOW THIS IS BOILER-PLACE CREATE-REACT APP
 

@@ -8,8 +8,6 @@ import { testResultPropType } from "../propTypes";
 import { COVID_RESULTS } from "../constants";
 
 const TestResultView = ({ testResult, patient }) => {
-  console.log("TRV testResult", testResult);
-  console.log("TRV patient", patient);
   const location = useLocation();
   const patientSummary = (testResult) => {
     if (!testResult) {
