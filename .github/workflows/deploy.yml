@@ -1,0 +1,33 @@
+name: Deploy Client Application
+
+on:
+  workflow_dispatch: # run when somebody pushes the button
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js 12
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12
+    - name: Cache npm local files
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.npm
+          ./frontend/node_modules
+        key: npm-build-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
+    - name: Node setup
+      working-directory: ./frontend
+      run: npm install
+    - name: Application build
+      working-directory: ./frontend
+      run: npm build
+    - name: Deploy
+      uses: usds/cloud-gov-cli@master
+      with:
+        org: sandbox-dhs
+        user: ${{secrets.SERVICE_USER}}
+        password: ${{secrets.SERVICE_AUTH}}
+        manifest: frontend/manifest.yml
