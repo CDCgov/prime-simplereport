@@ -27,7 +27,7 @@ jobs:
     - name: Deploy
       uses: usds/cloud-gov-cli@master
       with:
-        org: sandbox-dhs
+        org: ${{secrets.CLOUD_GOV_ORG}}
         user: ${{secrets.SERVICE_USER}}
         password: ${{secrets.SERVICE_AUTH}}
         manifest: frontend/manifest.yml
