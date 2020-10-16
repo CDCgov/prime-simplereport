@@ -25,7 +25,7 @@ const QueueItem = ({ patient }) => {
         <div class="grid-row">
           <div class="tablet:grid-col-9">
             <div class="grid-row prime-test-name">
-              <h1> John Doe</h1>
+              <h1>{patient.firstName} {patient.middleName} {patient.lastName}</h1>
             </div>
             <div class="grid-row">
               <ul className="prime-ul">
