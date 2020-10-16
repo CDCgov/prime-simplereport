@@ -9,7 +9,7 @@ const ManagePatients = () => {
         <div className="prime-container">
           <h1> Add New Patients</h1>
           <Button type="button" onClick={() => {}} label="New Patient" />
-          <Button type="button" onClick={() => {}} label="CSV Upload" />
+          <Button type="button" onClick={() => {}} label="Bulk Upload" />
         </div>
       </div>
     </main>

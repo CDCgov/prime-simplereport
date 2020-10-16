@@ -1,6 +1,6 @@
 import { COVID_RESULTS } from "../constants";
 
-export const testResults = [
+export const demoTestResults = [
   {
     testResultId: "testResult1",
     result: COVID_RESULTS.positive,

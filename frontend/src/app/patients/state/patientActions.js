@@ -11,7 +11,7 @@ const receivedPatient = (patients) => {
   };
 };
 
-// used to signal that a request is being made
+// signals that a request is being made
 const requestPatients = (organizationId) => {
   return {
     type: PATIENTS__REQUEST_PATIENTS,

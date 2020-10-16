@@ -1,4 +1,4 @@
-export const samplePatients = [
+export const demoPatients = [
   {
     patientId: "abc123",
     firstName: "Edward",

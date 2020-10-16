@@ -1,6 +1,6 @@
 // import axios from "axios";
 // import { ROOT_URL } from "../../config/constants";
-import { samplePatients } from "../fakeData/patients";
+import { demoPatients } from "../fakeData/patients";
 import { COVID_RESULTS } from "../constants";
 // import { isLocalHost } from "../utils";
 // import { mapApiDataToClient } from "../utils/mappers";
@@ -16,7 +16,7 @@ export const getTestResult = async (patientId) => {
   // }
   const testResult = {
     testResult: COVID_RESULTS.DETECTED,
-    ...samplePatients.find(
+    ...demoPatients.find(
       (samplePatient) => samplePatient.patientId === patientId
     ),
   };

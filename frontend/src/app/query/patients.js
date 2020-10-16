@@ -1,7 +1,7 @@
 // import axios from "axios";
 
 // import { ROOT_URL } from "../../config/constants";
-import { samplePatients } from "../fakeData/patients";
+import { demoPatients } from "../fakeData/patients";
 // import { isLocalHost } from "../utils";
 // import { mapApiDataToClient } from "../utils/mappers";
 // import { patientMapping } from "../patients/mappings";
@@ -16,7 +16,7 @@ export const searchPatients = (searchQuery) => {
   //   );
   //   return patients;
   // }
-  return samplePatients;
+  return demoPatients;
 };
 
 export const getPatients = async (organizationId) => {
@@ -29,5 +29,5 @@ export const getPatients = async (organizationId) => {
   //   );
   //   return patients;
   // }
-  return samplePatients;
+  return demoPatients;
 };
