@@ -39,13 +39,15 @@ Things to be aware of:
 
 1. [Install Docker](https://www.docker.com/get-started)
 2. Clone the repo
-3. In the root directory, run `npm install`
+3. In the frontend root directory, run `npm install`
+4. Bonus: probably want to install react and redux developer tools extensions
+5. Bonus2: probably want the api service up or this won't work
 
 ## Option 0: Run app via npm scripts
 
 For the time being, this is the best option for local development because changes would be watched for immediately.
 
-In the root directory, run:
+In the frontend root directory, run:
 
 > npm run start
 
