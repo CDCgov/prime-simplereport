@@ -1,22 +1,15 @@
 import React, { useState } from "react";
-import { Link, useLocation, useHistory } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
-// import RadioGroup from "../common/components/RadioGroup";
 import Button from "../common/components/Button";
-import { testResultPropType } from "../propTypes";
-// import { COVID_RESULTS } from "../constants";
+import SearchBar from "../common/components/SearchBar";
 import { useSelector } from "react-redux";
 import { getPatients } from "../patients/selectors";
-import LabeledText from "../common/components/LabeledText";
-import SearchBar from "../common/components/SearchBar";
 import { searchPatients } from "../query/patients";
 import { displayFullName } from "../utils";
 
 const AddToQueue = () => {
-  const patients = useSelector(getPatients); // TODO: only get patients in the queue
-  const location = useLocation();
   let history = useHistory();
 
   const [patientSearchResults, updatePatientSearchResults] = useState([]);
@@ -42,11 +35,7 @@ const AddToQueue = () => {
         </th>
         <td>{patient.patientId}</td>
         <td>{patient.birthDate}</td>
-        <td>
-          <Link to={`${location.pathname}/testResult/${patient.patientId}`}>
-            Add to Queue
-          </Link>
-        </td>
+        <td>Add to Queue</td>
       </tr>
     ));
     return (

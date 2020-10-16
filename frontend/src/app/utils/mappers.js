@@ -1,12 +1,12 @@
 export const COVID_RESULTS = {
-  DETECTED: "detected",
-  NOT_DETECTED: "not_detected",
+  POSITIVE: "positive",
+  NEGATIVE: "negative",
   INCONCLUSIVE: "inconclusive",
 };
 
 export const TEST_RESULT_VALUES = {
-  0: COVID_RESULTS.NOT_DETECTED,
-  1: COVID_RESULTS.DETECTED,
+  0: COVID_RESULTS.POSITIVE,
+  1: COVID_RESULTS.NEGATIVE,
   2: COVID_RESULTS.INCONCLUSIVE,
 };
 

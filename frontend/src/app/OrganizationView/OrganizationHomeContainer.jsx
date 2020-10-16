@@ -16,6 +16,7 @@ import { loadPatients } from "../patients/state/patientActions";
 import TestResultReportQueue from "../testQueue/TestResultReportQueue";
 import AddToQueue from "../testQueue/AddToQueue";
 import { getPatients } from "../patients/selectors";
+import ManagePatients from "../patients/ManagePatients";
 
 const OrganizationHomeContainer = () => {
   const { organizationId } = useParams();
@@ -49,6 +50,12 @@ const OrganizationHomeContainer = () => {
           path={`${match.path}/results`}
           render={() => {
             return <OrganizationHome patients={patients} />;
+          }}
+        />
+        <Route
+          path={`${match.path}/patients`}
+          render={() => {
+            return <ManagePatients />;
           }}
         />
         <Route path={`${match.path}/`}>

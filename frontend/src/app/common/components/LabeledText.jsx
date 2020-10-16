@@ -12,7 +12,7 @@ const LabeledText = ({ label, text }) => {
 
 LabeledText.propTypes = {
   label: PropTypes.string,
-  text: PropTypes.func,
+  text: PropTypes.string,
 };
 
 export default LabeledText;

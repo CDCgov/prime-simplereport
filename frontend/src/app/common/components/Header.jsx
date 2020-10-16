@@ -31,7 +31,10 @@ const Header = ({ organizationId }) => {
                 </NavLink>
               </li>
               <li className="usa-nav__primary-item">
-                <NavLink to="/patients" activeClassName="prime-nav">
+                <NavLink
+                  to={`/organization/${organizationId}/patients`}
+                  activeClassName="prime-nav"
+                >
                   Mange Patients
                 </NavLink>
               </li>

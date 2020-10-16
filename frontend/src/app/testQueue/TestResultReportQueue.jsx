@@ -8,24 +8,19 @@ import { testResultPropType } from "../propTypes";
 import { useSelector } from "react-redux";
 import { getPatients } from "../patients/selectors";
 import LabeledText from "../common/components/LabeledText";
+import QueueItem from "./QueueItem";
+import { v4 as uuidv4 } from "uuid";
 
 const TestResultReportQueue = () => {
   const patients = useSelector(getPatients); // TODO: only get patients in the queue
   const location = useLocation();
 
-  const createReportUnit = (patient) => {
-    return (
-      <React.Fragment>
-        <div className="prime-container">
-          <LabeledText text={patient.patientId} label="Unique Id" />
-        </div>
-      </React.Fragment>
-    );
-  };
-
-  const createReportUnits = (patients) => {
+  const createQueueItems = (patients) => {
     return Object.keys(patients).length > 0
-      ? [createReportUnit(patients[123]), createReportUnit(patients[234])]
+      ? [
+          <QueueItem key={`patient-${uuidv4()}`} patient={patients[123]} />,
+          <QueueItem key={`patient-${uuidv4()}`} patient={patients[234]} />,
+        ]
       : null;
   };
 
@@ -49,25 +44,8 @@ const TestResultReportQueue = () => {
             </div>
           </div>
         </div>
-        {/* {createReportUnits(patients)} */}
-        {noPatientsContainer}
-        {/* <div className="grid-row grid-gap">
-          <div className="tablet:grid-col">
-            <div className="prime-container">
-              <h2> Patient Summary </h2>
-              {patientSummary(testResult)}
-            </div>
-          </div>
-          <div className="tablet:grid-col">
-            <div className="prime-container">
-              <form className="usa-form">
-                <h2> SARS-CoV-2 Results </h2>
-                {testResultDetails(testResult)}
-              </form>
-            </div>
-          </div>
-        </div>
-      </div> */}
+        {createQueueItems(patients)}
+        {/* {noPatientsContainer} */}
       </div>
     </main>
   );
