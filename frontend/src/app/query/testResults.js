@@ -1,10 +1,10 @@
 import axios from "axios";
 import { ROOT_URL } from "../../config/constants";
-import { samplePatients } from "../test/data/patients";
+import { samplePatients } from "../fakeData/patients";
 import { COVID_RESULTS } from "../constants";
-import { isLocalHost } from "../utils/";
+import { isLocalHost } from "../utils";
 import { mapApiDataToClient } from "../utils/mappers";
-import { testResultMapping } from "./mappings";
+import { testResultMapping } from "../testResults/mappings";
 
 export const getTestResult = async (patientId) => {
   if (isLocalHost) {

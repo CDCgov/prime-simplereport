@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import PatientList from "../patients/PatientList";
+import ResultsList from "../patients/ResultsList";
 import { patientPropType } from "../propTypes";
 
 const OrganizationHome = ({ patients }) => (
@@ -9,7 +9,7 @@ const OrganizationHome = ({ patients }) => (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <PatientList patients={patients} />
+          <ResultsList patients={patients} />
         </div>
       </div>
     </main>

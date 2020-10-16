@@ -1,7 +1,6 @@
 import React from "react";
 
-import Button from "../common/components/Button";
-import TextInput from "../common/components/TextInput";
+import Button from "../commonComponents/Button";
 
 const ManagePatients = () => {
   return (

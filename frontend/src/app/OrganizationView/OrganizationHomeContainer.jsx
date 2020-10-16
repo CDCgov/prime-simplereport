@@ -11,9 +11,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import OrganizationHome from "./OrganizationHome";
-import TestResultViewContainer from "../testResults/TestResultViewContainer";
 import { loadPatients } from "../patients/state/patientActions";
-import TestResultReportQueue from "../testQueue/TestResultReportQueue";
+import TestQueue from "../testQueue/TestQueue";
 import AddToQueue from "../testQueue/AddToQueue";
 import { getPatients } from "../patients/selectors";
 import ManagePatients from "../patients/ManagePatients";
@@ -30,6 +29,7 @@ const OrganizationHomeContainer = () => {
 
   let match = useRouteMatch();
   const location = useLocation();
+
   return (
     <React.Fragment>
       <Switch>
@@ -37,7 +37,7 @@ const OrganizationHomeContainer = () => {
           exact
           path={`${match.path}/queue`}
           render={() => {
-            return <TestResultReportQueue />;
+            return <TestQueue />;
           }}
         />
         <Route

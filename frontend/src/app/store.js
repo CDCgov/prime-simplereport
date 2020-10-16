@@ -13,7 +13,9 @@ function configureStore() {
     rootReducer,
     compose(
       applyMiddleware(thunk),
-      window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__() || compose
+      (window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
+        window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__()) ||
+        compose
     )
   );
 }

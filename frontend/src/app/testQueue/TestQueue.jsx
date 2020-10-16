@@ -1,17 +1,14 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-// import RadioGroup from "../common/components/RadioGroup";
-import Button from "../common/components/Button";
+import Button from "../commonComponents/Button";
 import { testResultPropType } from "../propTypes";
-// import { COVID_RESULTS } from "../constants";
 import { useSelector } from "react-redux";
 import { getPatients } from "../patients/selectors";
-import LabeledText from "../common/components/LabeledText";
 import QueueItem from "./QueueItem";
 import { v4 as uuidv4 } from "uuid";
 
-const TestResultReportQueue = () => {
+const TestQueue = () => {
   const patients = useSelector(getPatients); // TODO: only get patients in the queue
   const location = useLocation();
 
@@ -24,13 +21,13 @@ const TestResultReportQueue = () => {
       : null;
   };
 
-  const noPatientsContainer = (
-    <React.Fragment>
-      <div className="prime-container prime-center">
-        <p>You have no patients in the testing queue </p>
-      </div>
-    </React.Fragment>
-  );
+  // const noPatientsContainer = (
+  //   <React.Fragment>
+  //     <div className="prime-container prime-center">
+  //       <p>You have no patients in the testing queue </p>
+  //     </div>
+  //   </React.Fragment>
+  // );
 
   return (
     <main className="prime-home">
@@ -51,7 +48,7 @@ const TestResultReportQueue = () => {
   );
 };
 
-TestResultReportQueue.propTypes = {
+TestQueue.propTypes = {
   testResults: testResultPropType,
 };
-export default TestResultReportQueue;
+export default TestQueue;

@@ -1,4 +1,4 @@
-import { getPatients } from "../query";
+import { getPatients } from "../../query/patients";
 import {
   PATIENTS__REQUEST_PATIENTS,
   PATIENTS__RECEIVED_PATIENTS,

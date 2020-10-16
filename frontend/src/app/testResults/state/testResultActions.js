@@ -1,4 +1,4 @@
-import { getTestResult } from "../query";
+import { getTestResult } from "../../query/testResults";
 import {
   TEST_RESULT__REQUEST,
   TEST_RESULT__RECEIVED,

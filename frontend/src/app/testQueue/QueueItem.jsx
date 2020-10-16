@@ -1,15 +1,9 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
 
-// import RadioGroup from "../common/components/RadioGroup";
-import Button from "../common/components/Button";
-import { testResultPropType, patientPropType } from "../propTypes";
-// import { COVID_RESULTS } from "../constants";
-import { useSelector } from "react-redux";
-import { getPatients } from "../patients/selectors";
-import LabeledText from "../common/components/LabeledText";
+import { patientPropType } from "../propTypes";
+import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import Dropdown from "../common/components/Dropdown";
+import Dropdown from "../commonComponents//Dropdown";
 
 const QueueItem = ({ patient }) => {
   const onSubmit = (e) => {

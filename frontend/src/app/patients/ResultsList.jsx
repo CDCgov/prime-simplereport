@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { displayFullName } from "../utils";
 import { patientPropType } from "../propTypes";
 
-const PatientList = ({ patients }) => {
+const ResultsList = ({ patients }) => {
   const location = useLocation();
 
   const patientRows = (patients) => {
@@ -59,8 +59,8 @@ const PatientList = ({ patients }) => {
   );
 };
 
-PatientList.propTypes = {
+ResultsList.propTypes = {
   patients: PropTypes.objectOf(patientPropType),
 };
 
-export default PatientList;
+export default ResultsList;
