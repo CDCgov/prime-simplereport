@@ -15,8 +15,14 @@ const TestQueue = () => {
   const createQueueItems = (patients) => {
     return Object.keys(patients).length > 0
       ? [
-          <QueueItem key={`patient-${uuidv4()}`} patient={patients[123]} />,
-          <QueueItem key={`patient-${uuidv4()}`} patient={patients[234]} />,
+          <QueueItem
+            key={`patient-${uuidv4()}`}
+            patient={patients["abc123"]}
+          />,
+          <QueueItem
+            key={`patient-${uuidv4()}`}
+            patient={patients["def456"]}
+          />,
         ]
       : null;
   };

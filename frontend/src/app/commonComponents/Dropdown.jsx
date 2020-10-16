@@ -4,13 +4,15 @@ import { v4 as uuidv4 } from "uuid";
 
 const Dropdown = ({ options, label, name, onChange }) => {
   const optionsElements = options.map(({ value, text }) => (
-    <option value={value}>{text}</option>
+    <option key={`dropdown-${uuidv4()}`} value={value}>
+      {text}
+    </option>
   ));
 
   const id = uuidv4();
   return (
     <React.Fragment>
-      <label className="usa-label" htmlfor={id}>
+      <label className="usa-label" htmlFor={id}>
         <strong>{label}</strong>
       </label>
       <select className="usa-select" name={name} id={id} onChange={onChange}>
@@ -29,7 +31,7 @@ Dropdown.propTypes = {
   ),
   label: PropTypes.string,
   name: PropTypes.string,
-  onChange: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default Dropdown;

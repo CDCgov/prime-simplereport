@@ -13,15 +13,16 @@ const QueueItem = ({ patient }) => {
   const onDropdownChange = (e) => {
     console.log(e.target.value);
   };
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item">
-        <div class="grid-row">
-          <div class="tablet:grid-col-9">
-            <div class="grid-row prime-test-name">
+        <div className="grid-row">
+          <div className="tablet:grid-col-9">
+            <div className="grid-row prime-test-name">
               <h1> John Doe</h1>
             </div>
-            <div class="grid-row">
+            <div className="grid-row">
               <ul className="prime-ul">
                 <li className="prime-li">
                   <LabeledText text={patient.patientId} label="Unique ID" />
@@ -34,7 +35,7 @@ const QueueItem = ({ patient }) => {
                 </li>
               </ul>
             </div>
-            <div class="grid-row">
+            <div className="grid-row">
               <Dropdown
                 options={[
                   { text: "Abbott ID Now", value: "abbottIdNow" },
