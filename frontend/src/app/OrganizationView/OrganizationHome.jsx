@@ -1,14 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-import PatientManagementNav from "../patients/PatientManagementNav";
 import PatientList from "../patients/PatientList";
 import { patientPropType } from "../propTypes";
 
 const OrganizationHome = ({ patients }) => (
   <React.Fragment>
-    <PatientManagementNav />
-
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">

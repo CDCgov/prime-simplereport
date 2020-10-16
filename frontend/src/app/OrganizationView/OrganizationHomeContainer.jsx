@@ -1,9 +1,11 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Route,
   Switch,
+  Redirect,
   useParams,
+  useLocation,
+  useRouteMatch,
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
@@ -11,9 +13,12 @@ import { useEffect } from "react";
 import OrganizationHome from "./OrganizationHome";
 import TestResultViewContainer from "../testResults/TestResultViewContainer";
 import { loadPatients } from "../patients/state/patientActions";
+import TestResultReportQueue from "../testQueue/TestResultReportQueue";
+import AddToQueue from "../testQueue/AddToQueue";
+import { getPatients } from "../patients/selectors";
+import ManagePatients from "../patients/ManagePatients";
 
 const OrganizationHomeContainer = () => {
-  console.log("process.env", process.env);
   const { organizationId } = useParams();
   const dispatch = useDispatch();
 
@@ -21,22 +26,43 @@ const OrganizationHomeContainer = () => {
     dispatch(loadPatients(organizationId));
   }, [organizationId, dispatch]);
 
-  const patients = useSelector((state) => state.patients);
+  const patients = useSelector(getPatients);
+
+  let match = useRouteMatch();
+  const location = useLocation();
   return (
     <React.Fragment>
-      <Router>
-        <Switch>
-          <Route
-            exact
-            path="/organization/:organizationId/"
-            render={() => <OrganizationHome patients={patients} />}
-          />
-          <Route
-            path="/organization/:organizationId/testResult/:patientId"
-            render={(props) => <TestResultViewContainer {...props} />}
-          />
-        </Switch>
-      </Router>
+      <Switch>
+        <Route
+          exact
+          path={`${match.path}/queue`}
+          render={() => {
+            return <TestResultReportQueue />;
+          }}
+        />
+        <Route
+          path={`${match.path}/queue/add`}
+          render={() => {
+            return <AddToQueue />;
+          }}
+        />
+        <Route
+          path={`${match.path}/results`}
+          render={() => {
+            return <OrganizationHome patients={patients} />;
+          }}
+        />
+        <Route
+          path={`${match.path}/patients`}
+          render={() => {
+            return <ManagePatients />;
+          }}
+        />
+        <Route path={`${match.path}/`}>
+          {/* default to the queue */}
+          <Redirect to={`${location.pathname}/queue`} />
+        </Route>
+      </Switch>
     </React.Fragment>
   );
 };

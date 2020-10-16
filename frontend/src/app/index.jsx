@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "./common/components/Header";
 import USAGovBanner from "./common/components/USAGovBanner";
-import OrganizationView from "./OrganizationView";
+import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
 import LoginView from "./LoginView";
-import NotFoundComponent from "./NotFoundView";
 import Footer from "./common/components/Footer";
-import { connect } from "react-redux";
+import ProtectedRoute from "./common/components/ProtectedRoute";
 
 import {
   BrowserRouter as Router,
@@ -13,49 +12,34 @@ import {
   Route,
   Switch,
 } from "react-router-dom";
+const isAuthenticated = true;
 
-const isLoggedIn = true;
+const App = () => {
+  const [organization] = useState({ id: "123" });
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      user: null,
-      organizationId: 123, // TODO: don't hardcode this
-    };
-  }
-
-  render() {
-    return (
-      <div className="App">
-        <div id="main-wrapper">
-          <USAGovBanner />
-          <Header />
-          <Router>
-            <Switch>
-              <Route exact path="/">
-                {!isLoggedIn ? (
-                  <Redirect to="/login" />
-                ) : (
-                  <Redirect to={`/organization/${this.state.organizationId}`} /> // TODO get the orgId from the initial request
-                )}
-              </Route>
-              <Route path="/login" component={LoginView} />
-              <Route
-                path="/organization/:organizationId"
-                render={(props) => <OrganizationView {...props} />}
-              />
-              <Route component={NotFoundComponent} />
-            </Switch>
-          </Router>
-          <Footer />
-        </div>
+  return (
+    <div className="App">
+      <div id="main-wrapper">
+        <USAGovBanner />
+        <Router>
+          <Header organizationId={organization.id} />
+          <Switch>
+            <Route path="/login" component={LoginView} />
+            <ProtectedRoute
+              path="/organization/:organizationId"
+              component={OrganizationHomeContainer}
+              isAuthenticated={isAuthenticated}
+            />
+            <Route path="/">
+              <Redirect to={`/organization/${organization.id}`} />
+            </Route>
+            {/* <Route component={NotFoundComponent} /> */}
+          </Switch>
+        </Router>
+        <Footer />
       </div>
-    );
-  }
-}
-const mapStateToProps = (state) => ({});
+    </div>
+  );
+};
 
-const mapDispatchToProps = (dispatch) => ({});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;

@@ -17,4 +17,34 @@
 
 .prime-ul {
   list-style-type: none;
+  padding: 0;
+}
+
+.prime-li {
+  float: left;
+  margin: 1rem;
+}
+
+.prime-right-align {
+  float: right;
+}
+
+.prime-center {
+  text-align: center;
+}
+
+.prime-test-result {
+  border-left: 1px solid color($theme-color-prime-gray-light);
+}
+
+.prime-queue-item {
+  padding: 0;
+}
+
+.prime-container-padding {
+  padding: 1rem;
+}
+
+.prime-test-name {
+  border-bottom: 1px solid color($theme-color-prime-gray-light);
 }

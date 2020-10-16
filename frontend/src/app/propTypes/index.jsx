@@ -14,18 +14,28 @@ export const patientPropType = PropTypes.shape({
 });
 
 // TODO: we should probably strip out the patient props from this
+// export const testResultPropType = PropTypes.shape({
+//   testId: PropTypes.string,
+//   patientId: PropTypes.string,
+//   firstName: PropTypes.string,
+//   middleName: PropTypes.string,
+//   lastName: PropTypes.string,
+//   birthDate: PropTypes.string,
+//   address: PropTypes.string,
+//   phone: PropTypes.string,
+//   testResult: PropTypes.oneOf([
+//     COVID_RESULTS.POSITIVE,
+//     COVID_RESULTS.NEGATIVE,
+//     COVID_RESULTS.INCONCLUSIVE,
+//   ]),
+// });
+
 export const testResultPropType = PropTypes.shape({
-  testId: PropTypes.string,
+  id: PropTypes.string,
   patientId: PropTypes.string,
-  firstName: PropTypes.string,
-  middleName: PropTypes.string,
-  lastName: PropTypes.string,
-  birthDate: PropTypes.string,
-  address: PropTypes.string,
-  phone: PropTypes.string,
   testResult: PropTypes.oneOf([
-    COVID_RESULTS.DETECTED,
-    COVID_RESULTS.NOT_DETECTED,
+    COVID_RESULTS.POSITIVE,
+    COVID_RESULTS.NEGATIVE,
     COVID_RESULTS.INCONCLUSIVE,
   ]),
 });

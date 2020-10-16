@@ -3,7 +3,7 @@ import React from "react";
 const LoginPage = () => {
   return (
     <main>
-      <div class="grid-container">
+      <div className="grid-container">
         <h1>Login Page</h1>
       </div>
     </main>
