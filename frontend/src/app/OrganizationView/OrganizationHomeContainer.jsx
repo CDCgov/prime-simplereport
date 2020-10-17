@@ -21,9 +21,9 @@ const OrganizationHomeContainer = () => {
   const { organizationId } = useParams();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(loadPatients(organizationId));
-  }, [organizationId, dispatch]);
+  // useEffect(() => {
+  //   dispatch(loadPatients(organizationId));
+  // }, [organizationId, dispatch]);
 
   const patients = useSelector(getPatients);
 

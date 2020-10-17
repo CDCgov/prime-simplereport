@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 
 import { patientPropType } from "../propTypes";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import Dropdown from "../commonComponents//Dropdown";
+import { updatePatient } from "../patients/state/patientActions";
 
 const QueueItem = ({ patient }) => {
+  console.log("patient:", patient);
   const onSubmit = (e) => {
     e.preventDefault();
   };
@@ -14,13 +17,20 @@ const QueueItem = ({ patient }) => {
     console.log(e.target.value);
   };
 
+  const dispatch = useDispatch();
+  const dummyUpdatePatient = (e) => {
+    dispatch(updatePatient(patient.patientId));
+  };
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item">
         <div className="grid-row">
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name">
-              <h1> John Doe</h1>
+              <h1 onClick={dummyUpdatePatient}>
+                {patient.firstName} {patient.lastName}
+              </h1>
             </div>
             <div className="grid-row">
               <ul className="prime-ul">

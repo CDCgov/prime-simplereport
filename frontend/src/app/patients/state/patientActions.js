@@ -2,6 +2,7 @@ import { getPatients } from "../../query/patients";
 import {
   PATIENTS__REQUEST_PATIENTS,
   PATIENTS__RECEIVED_PATIENTS,
+  PATIENTS__UPDATE_PATIENT,
 } from "./patientActionTypes";
 
 const receivedPatient = (patients) => {
@@ -16,6 +17,16 @@ const requestPatients = (organizationId) => {
   return {
     type: PATIENTS__REQUEST_PATIENTS,
     payload: organizationId,
+  };
+};
+
+export const updatePatient = (patientId) => {
+  return {
+    type: PATIENTS__UPDATE_PATIENT,
+    payload: {
+      name: "New Name",
+      patientId,
+    },
   };
 };
 
