@@ -15,20 +15,19 @@ const TestQueue = () => {
   const patientIdsInTestQueue = useSelector(getPatientsInTestQueue);
   const patients = useSelector(getPatientsByIds(patientIdsInTestQueue));
 
+  const noPatientsContainer = (
+    <React.Fragment>
+      <div className="prime-container prime-center">
+        <p>You have no patients in the testing queue </p>
+      </div>
+    </React.Fragment>
+  );
   const createQueueItems = (patients) =>
     Object.keys(patients).length > 0
       ? Object.values(patients).map((patient) => (
           <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
         ))
-      : null;
-
-  // const noPatientsContainer = (
-  //   <React.Fragment>
-  //     <div className="prime-container prime-center">
-  //       <p>You have no patients in the testing queue </p>
-  //     </div>
-  //   </React.Fragment>
-  // );
+      : noPatientsContainer;
 
   return (
     <main className="prime-home">
@@ -43,7 +42,6 @@ const TestQueue = () => {
           </div>
         </div>
         {createQueueItems(patients)}
-        {/* {noPatientsContainer} */}
       </div>
     </main>
   );
