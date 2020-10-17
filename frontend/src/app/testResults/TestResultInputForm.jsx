@@ -8,7 +8,7 @@ import { COVID_RESULTS } from "../constants";
 
 const TestResultInputForm = ({ testResult, onSubmit }) => {
   const [testResultValue, updateTestResultValue] = useState(
-    testResult.testResult || null
+    testResult.result || null
   );
 
   const onClearClick = () => {

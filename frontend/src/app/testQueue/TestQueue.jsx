@@ -1,23 +1,26 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 import Button from "../commonComponents/Button";
 import { testResultPropType } from "../propTypes";
 import { useSelector } from "react-redux";
-import { getPatients } from "../patients/selectors";
+import { getPatientsByIds } from "../patients/patientSelectors";
+import { getPatientsInTestQueue } from "../testQueue/testQueueSelectors";
 import QueueItem from "./QueueItem";
-import { v4 as uuidv4 } from "uuid";
 
 const TestQueue = () => {
-  const patients = useSelector(getPatients); // TODO: only get patients in the queue
   const location = useLocation();
 
-  const createQueueItems = (patients) => {
-    console.log("patients:", patients);
-    return Object.keys(patients).length > 0
-      ? [<QueueItem key={`patient-${uuidv4()}`} patient={patients["abc123"]} />]
+  const patientIdsInTestQueue = useSelector(getPatientsInTestQueue);
+  const patients = useSelector(getPatientsByIds(patientIdsInTestQueue));
+
+  const createQueueItems = (patients) =>
+    Object.keys(patients).length > 0
+      ? Object.values(patients).map((patient) => (
+          <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
+        ))
       : null;
-  };
 
   // const noPatientsContainer = (
   //   <React.Fragment>

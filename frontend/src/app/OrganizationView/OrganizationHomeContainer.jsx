@@ -3,23 +3,23 @@ import {
   Route,
   Switch,
   Redirect,
-  useParams,
+  // useParams,
   useLocation,
   useRouteMatch,
 } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { useEffect } from "react";
+import { useSelector } from "react-redux";
+// import { useEffect } from "react";
 
 import OrganizationHome from "./OrganizationHome";
-import { loadPatients } from "../patients/state/patientActions";
+// import { loadPatients } from "../patients/state/patientActions";
 import TestQueue from "../testQueue/TestQueue";
 import AddToQueue from "../testQueue/AddToQueue";
-import { getPatients } from "../patients/selectors";
+import { getPatients } from "../patients/patientSelectors";
 import ManagePatients from "../patients/ManagePatients";
 
 const OrganizationHomeContainer = () => {
-  const { organizationId } = useParams();
-  const dispatch = useDispatch();
+  // const { organizationId } = useParams();
+  // const dispatch = useDispatch();
 
   // useEffect(() => {
   //   dispatch(loadPatients(organizationId));

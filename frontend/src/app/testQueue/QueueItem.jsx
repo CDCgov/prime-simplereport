@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 
 import { patientPropType } from "../propTypes";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import Dropdown from "../commonComponents//Dropdown";
 import { updatePatient } from "../patients/state/patientActions";
+import { getTestResultById } from "../testResults/testResultsSelector";
 
 const QueueItem = ({ patient }) => {
-  console.log("patient:", patient);
   const onSubmit = (e) => {
     e.preventDefault();
   };
@@ -21,6 +21,12 @@ const QueueItem = ({ patient }) => {
   const dummyUpdatePatient = (e) => {
     dispatch(updatePatient(patient.patientId));
   };
+
+  // useEffect(() => {
+  //   dispatch(loadPatients(organizationId));
+  // }, [organizationId, dispatch]);
+
+  const testResult = useSelector(getTestResultById(patient.testResultId));
 
   return (
     <React.Fragment>
@@ -58,7 +64,7 @@ const QueueItem = ({ patient }) => {
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
-            <TestResultInputForm testResult={{}} onSubmit={onSubmit} />
+            <TestResultInputForm testResult={testResult} onSubmit={onSubmit} />
           </div>
         </div>
       </div>

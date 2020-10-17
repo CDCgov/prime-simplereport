@@ -1,14 +1,18 @@
+import thunk from "redux-thunk";
+import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+// import hardSet from "redux-persist/lib/stateReconciler/hardSet";
 import { createStore, combineReducers, applyMiddleware, compose } from "redux";
+import { persistStore, persistReducer } from "redux-persist";
+
 import patientReducer from "./patients/state/patientReducers";
 import testResultReducer from "./testResults/state/testResultReducer";
-import thunk from "redux-thunk";
-import { persistStore, persistReducer } from "redux-persist";
-import hardSet from "redux-persist/lib/stateReconciler/hardSet";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import testQueueReducer from "./testQueue/state/testQueueReducer";
+import { initialState } from "./fakeData/initialState";
 
 const rootReducer = combineReducers({
   patients: patientReducer,
   testResults: testResultReducer,
+  testQueue: testQueueReducer,
 });
 
 const persistConfig = {
@@ -19,20 +23,6 @@ const persistConfig = {
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-let initialState = {
-  patients: {
-    abc123: {
-      patientId: "abc123",
-      firstName: "Edward",
-      middleName: "",
-      lastName: "Teach",
-      birthDate: "01/01/1717",
-      address: "123 Plank St, Nassau",
-      phone: "(123) 456-7890",
-    },
-  },
-};
 
 const configureStore = () => {
   return createStore(
