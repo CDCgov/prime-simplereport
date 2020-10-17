@@ -35,7 +35,7 @@ const Header = ({ organizationId }) => {
                   to={`/organization/${organizationId}/patients`}
                   activeClassName="prime-nav"
                 >
-                  Mange Patients
+                  Manage Patients
                 </NavLink>
               </li>
             </ul>
