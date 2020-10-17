@@ -2,8 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
-import RadioGroup from "../common/components/RadioGroup";
-import Button from "../common/components/Button";
+import RadioGroup from "../commonComponents/RadioGroup";
+import Button from "../commonComponents/Button";
 import { testResultPropType } from "../propTypes";
 import { COVID_RESULTS } from "../constants";
 

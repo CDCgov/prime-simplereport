@@ -1,28 +1,19 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-
-// import RadioGroup from "../common/components/RadioGroup";
-import Button from "../common/components/Button";
-import { testResultPropType } from "../propTypes";
-// import { COVID_RESULTS } from "../constants";
-import { useSelector } from "react-redux";
-import { getPatients } from "../patients/selectors";
-import LabeledText from "../common/components/LabeledText";
-import QueueItem from "./QueueItem";
 import { v4 as uuidv4 } from "uuid";
 
-const TestResultReportQueue = () => {
-  const patients = useSelector(getPatients); // TODO: only get patients in the queue
+import Button from "../commonComponents/Button";
+import { testResultPropType } from "../propTypes";
+import { useSelector } from "react-redux";
+import { getPatientsByIds } from "../patients/patientSelectors";
+import { getPatientsInTestQueue } from "../testQueue/testQueueSelectors";
+import QueueItem from "./QueueItem";
+
+const TestQueue = () => {
   const location = useLocation();
 
-  const createQueueItems = (patients) => {
-    return Object.keys(patients).length > 0
-      ? [
-          <QueueItem key={`patient-${uuidv4()}`} patient={patients[123]} />,
-          <QueueItem key={`patient-${uuidv4()}`} patient={patients[234]} />,
-        ]
-      : null;
-  };
+  const patientIdsInTestQueue = useSelector(getPatientsInTestQueue);
+  const patients = useSelector(getPatientsByIds(patientIdsInTestQueue));
 
   const noPatientsContainer = (
     <React.Fragment>
@@ -31,6 +22,12 @@ const TestResultReportQueue = () => {
       </div>
     </React.Fragment>
   );
+  const createQueueItems = (patients) =>
+    Object.keys(patients).length > 0
+      ? Object.values(patients).map((patient) => (
+          <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
+        ))
+      : noPatientsContainer;
 
   return (
     <main className="prime-home">
@@ -45,13 +42,12 @@ const TestResultReportQueue = () => {
           </div>
         </div>
         {createQueueItems(patients)}
-        {/* {noPatientsContainer} */}
       </div>
     </main>
   );
 };
 
-TestResultReportQueue.propTypes = {
+TestQueue.propTypes = {
   testResults: testResultPropType,
 };
-export default TestResultReportQueue;
+export default TestQueue;

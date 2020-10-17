@@ -1,7 +1,7 @@
 import React from "react";
-import iconDotGov from "../../../img/icons/icon-dot-gov.svg";
-import usFlagSmall from "../../../img/icons/us_flag_small.png";
-import iconHttps from "../../../img/icons/icon-https.svg";
+import iconDotGov from "../../img/icons/icon-dot-gov.svg";
+import usFlagSmall from "../../img/icons/us_flag_small.png";
+import iconHttps from "../../img/icons/icon-https.svg";
 
 export default class USAGovBanner extends React.Component {
   constructor() {

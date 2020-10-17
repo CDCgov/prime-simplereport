@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 
-import Button from "../common/components/Button";
-import SearchBar from "../common/components/SearchBar";
-import { useSelector } from "react-redux";
-import { getPatients } from "../patients/selectors";
+import Button from "../commonComponents/Button";
+import SearchBar from "../commonComponents/SearchBar";
 import { searchPatients } from "../query/patients";
 import { displayFullName } from "../utils";
 

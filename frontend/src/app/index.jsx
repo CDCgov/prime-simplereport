@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Header from "./common/components/Header";
-import USAGovBanner from "./common/components/USAGovBanner";
+import Header from "./commonComponents/Header";
+import USAGovBanner from "./commonComponents/USAGovBanner";
 import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
 import LoginView from "./LoginView";
-import Footer from "./common/components/Footer";
-import ProtectedRoute from "./common/components/ProtectedRoute";
+import Footer from "./commonComponents/Footer";
+import ProtectedRoute from "./commonComponents/ProtectedRoute";
 
 import {
   BrowserRouter as Router,

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { COVID_RESULTS } from "../constants";
 
 export const patientPropType = PropTypes.shape({
-  patientId: PropTypes.number,
+  patientId: PropTypes.string,
   firstName: PropTypes.string,
   middleName: PropTypes.string,
   lastName: PropTypes.string,

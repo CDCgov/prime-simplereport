@@ -1,14 +1,22 @@
 import {
   PATIENTS__RECEIVED_PATIENTS,
   PATIENTS__REQUEST_PATIENTS,
+  PATIENTS__UPDATE_PATIENT,
 } from "././patientActionTypes";
 
-const initialState = {};
-
-export default (state = initialState, action) => {
+export default (state = {}, action) => {
   switch (action.type) {
     case PATIENTS__REQUEST_PATIENTS:
       return state;
+    case PATIENTS__UPDATE_PATIENT:
+      let patientId = action.payload.patientId;
+      return {
+        ...state,
+        [patientId]: {
+          ...state[patientId],
+          firstName: action.payload.name,
+        },
+      };
     case PATIENTS__RECEIVED_PATIENTS:
       let newPatients = {};
       action.payload.forEach((patient) => {

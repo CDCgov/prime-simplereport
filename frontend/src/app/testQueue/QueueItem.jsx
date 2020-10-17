@@ -1,15 +1,12 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
-// import RadioGroup from "../common/components/RadioGroup";
-import Button from "../common/components/Button";
-import { testResultPropType, patientPropType } from "../propTypes";
-// import { COVID_RESULTS } from "../constants";
-import { useSelector } from "react-redux";
-import { getPatients } from "../patients/selectors";
-import LabeledText from "../common/components/LabeledText";
+import { patientPropType } from "../propTypes";
+import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import Dropdown from "../common/components/Dropdown";
+import Dropdown from "../commonComponents//Dropdown";
+import { updatePatient } from "../patients/state/patientActions";
+import { getTestResultById } from "../testResults/testResultsSelector";
 
 const QueueItem = ({ patient }) => {
   const onSubmit = (e) => {
@@ -19,15 +16,29 @@ const QueueItem = ({ patient }) => {
   const onDropdownChange = (e) => {
     console.log(e.target.value);
   };
+
+  const dispatch = useDispatch();
+  const dummyUpdatePatient = (e) => {
+    dispatch(updatePatient(patient.patientId));
+  };
+
+  // useEffect(() => {
+  //   dispatch(loadPatients(organizationId));
+  // }, [organizationId, dispatch]);
+
+  const testResult = useSelector(getTestResultById(patient.testResultId));
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item">
-        <div class="grid-row">
-          <div class="tablet:grid-col-9">
-            <div class="grid-row prime-test-name">
-              <h1>{patient.firstName} {patient.middleName} {patient.lastName}</h1>
+        <div className="grid-row">
+          <div className="tablet:grid-col-9">
+            <div className="grid-row prime-test-name">
+              <h1 onClick={dummyUpdatePatient}>
+                {patient.firstName} {patient.lastName}
+              </h1>
             </div>
-            <div class="grid-row">
+            <div className="grid-row">
               <ul className="prime-ul">
                 <li className="prime-li">
                   <LabeledText text={patient.patientId} label="Unique ID" />
@@ -40,7 +51,7 @@ const QueueItem = ({ patient }) => {
                 </li>
               </ul>
             </div>
-            <div class="grid-row">
+            <div className="grid-row">
               <Dropdown
                 options={[
                   { text: "Abbott ID Now", value: "abbottIdNow" },
@@ -53,7 +64,7 @@ const QueueItem = ({ patient }) => {
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
-            <TestResultInputForm testResult={{}} onSubmit={onSubmit} />
+            <TestResultInputForm testResult={testResult} onSubmit={onSubmit} />
           </div>
         </div>
       </div>

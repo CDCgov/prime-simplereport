@@ -1,14 +1,4 @@
-export const COVID_RESULTS = {
-  POSITIVE: "positive",
-  NEGATIVE: "negative",
-  INCONCLUSIVE: "inconclusive",
-};
-
-export const TEST_RESULT_VALUES = {
-  0: COVID_RESULTS.POSITIVE,
-  1: COVID_RESULTS.NEGATIVE,
-  2: COVID_RESULTS.INCONCLUSIVE,
-};
+import { TEST_RESULT_VALUES } from "../constants";
 
 /*
 Creates a mapping interface between API -> Client
