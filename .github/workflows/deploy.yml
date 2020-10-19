@@ -2,11 +2,18 @@ name: Deploy Client Application
 
 on:
   workflow_dispatch: # run when somebody pushes the button
+  push:
+    branches: # run when we merge to the "staging" branch
+      - staging
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      # VERY IMPORTANT: if you run this on any branch other than master, it will
+      # deploy to staging
+    - name: Choose deployment environment
+      run: echo >> $GITHUB_ENV deploy_env=$( [[ "$GITHUB_REF" == "/refs/heads/main" ]] && echo "client" || echo "staging")
     - name: Use Node.js 12
       uses: actions/setup-node@v1
       with:
@@ -30,4 +37,5 @@ jobs:
         org: ${{secrets.CLOUD_GOV_ORG}}
         user: ${{secrets.SERVICE_USER}}
         password: ${{secrets.SERVICE_PASSWORD}}
+        application: prime-data-input-${{env.DEPLOY_ENV}}
         manifest: frontend/manifest.yml
