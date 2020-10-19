@@ -1,6 +1,6 @@
 # Smoketest/code lint checks for frontend package
 
-name: Smoketests
+name: Smoke Test Client
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -35,7 +35,7 @@ jobs:
         with:
           path: |
             ~/.npm
-            ./node_modules
+            ./frontend/node_modules
           key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
       - name: Node setup
         run: npm install
@@ -55,7 +55,7 @@ jobs:
         with:
           path: |
             ~/.npm
-            ./node_modules
+            ./frontend/node_modules
           key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
       - name: Node setup
         run: npm install
