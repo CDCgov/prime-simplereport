@@ -3,7 +3,7 @@ name: Deploy Client Application
 on:
   workflow_dispatch: # run when somebody pushes the button
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -29,5 +29,5 @@ jobs:
       with:
         org: ${{secrets.CLOUD_GOV_ORG}}
         user: ${{secrets.SERVICE_USER}}
-        password: ${{secrets.SERVICE_AUTH}}
+        password: ${{secrets.SERVICE_PASSWORD}}
         manifest: frontend/manifest.yml
