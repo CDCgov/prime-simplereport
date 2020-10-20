@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { getPatientsByIds } from "../patients/patientSelectors";
 import { getPatientsInTestQueue } from "../testQueue/testQueueSelectors";
 import QueueItem from "./QueueItem";
+import AddToQueue from "./addToQueue/AddToQueue";
 
 const TestQueue = () => {
   const location = useLocation();
@@ -41,6 +42,7 @@ const TestQueue = () => {
             </div>
           </div>
         </div>
+        <AddToQueue />
         {createQueueItems(patients)}
       </div>
     </main>
