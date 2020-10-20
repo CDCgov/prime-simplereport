@@ -15,7 +15,6 @@ const TestQueue = () => {
 
   const patientIdsInTestQueue = useSelector(getPatientsInTestQueue);
   const patients = useSelector(getPatientsByIds(patientIdsInTestQueue));
-  console.log(patientIdsInTestQueue);
 
   const noPatientsContainer = (
     <React.Fragment>
