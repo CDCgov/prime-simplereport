@@ -109,5 +109,12 @@
         "type": "string",
         "format": "date-time"
     }
-  }
+  },
+  "required": [
+    "orderingProviderID",
+    "patientInfo.firstTest",
+    "facilityInfo.testingLabName",
+    "facilityInfo.orderingProvider.lastName",
+    "facilityInfo.orderingProvider.zipCode"
+  ]  
 }
