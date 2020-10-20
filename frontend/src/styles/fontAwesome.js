@@ -18,6 +18,7 @@ import {
   faUser,
   faSearch,
   faArrowLeft,
+  faTimesCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -37,5 +38,6 @@ library.add(
   faTrash,
   faUser,
   faSearch,
-  faArrowLeft
+  faArrowLeft,
+  faTimesCircle
 );
