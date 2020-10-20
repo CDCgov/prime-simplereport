@@ -1,1 +1,1 @@
-export const getPatientsInTestQueue = (state) => state.testQueue;
+export const getPatientsInTestQueue = (state) => Object.keys(state.testQueue);

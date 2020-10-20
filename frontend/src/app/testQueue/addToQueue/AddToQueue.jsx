@@ -1,16 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import Autocomplete from "react-autocomplete";
 
 import Button from "../../commonComponents/Button";
 import SearchBar from "../../commonComponents/SearchBar";
 import { searchPatients } from "../../query/patients";
 import { displayFullName } from "../../utils";
-import Autocomplete from "react-autocomplete";
 import AddToQueueSearchResultItem from "./AddToQueueSearchResultItem";
+import { addPatientToQueue } from "../state/testQueueActions";
 
 const AddToQueue = () => {
   let history = useHistory();
+  const dispatch = useDispatch();
 
   const [patientSearchResults, updatePatientSearchResults] = useState([]);
 
@@ -18,6 +21,10 @@ const AddToQueue = () => {
     event.preventDefault();
     let searchResults = searchPatients(searchQuery);
     updatePatientSearchResults(searchResults);
+  };
+
+  const addToQueue = (patientId) => {
+    dispatch(addPatientToQueue(patientId));
   };
 
   const [value, updateValue] = useState("");
@@ -79,9 +86,9 @@ const AddToQueue = () => {
               item.id.indexOf(value) > -1
             }
             items={[
-              { label: "apple", id: "ABC123" },
-              { label: "banana", id: "DEF123" },
-              { label: "pear", id: "GHI789" },
+              { label: "apple", id: "abc123" },
+              { label: "banana", id: "def456" },
+              { label: "pear", id: "ghi789" },
             ]}
             renderMenu={(items, value) => {
               return (
@@ -106,7 +113,9 @@ const AddToQueue = () => {
                 <td>{item.label}</td>
                 <td>{item.id}</td>
                 <td>
-                  <a href="">Add to Queue</a>
+                  <a href="#" onClick={() => addToQueue(item.id)}>
+                    Add to Queue
+                  </a>
                 </td>
               </tr>
             )}

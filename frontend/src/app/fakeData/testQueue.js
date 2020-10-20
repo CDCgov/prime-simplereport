@@ -1,1 +1,1 @@
-export const initialTestQueueState = ["abc123", "def456"];
+export const initialTestQueueState = { abc123: true };
