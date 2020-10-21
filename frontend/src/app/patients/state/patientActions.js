@@ -23,10 +23,7 @@ const requestPatients = (organizationId) => {
 export const updatePatient = (patientId) => {
   return {
     type: PATIENTS__UPDATE_PATIENT,
-    payload: {
-      name: "New Name",
-      patientId,
-    },
+    payload: {},
   };
 };
 

@@ -16,18 +16,14 @@ const AddToQueueSearchBox = () => {
 
   const getSuggestionsFromQueryString = (queryString) => {
     let formattedQueryString = queryString.toLowerCase();
-    let suggestions = allPatients.filter((patient) => {
-      console.log(
-        patient.displayName.toLowerCase().indexOf(formattedQueryString)
-      );
-      return (
+    let suggestions = allPatients.filter(
+      (patient) =>
         patient.firstName.toLowerCase().indexOf(formattedQueryString) > -1 ||
         patient.middleName.toLowerCase().indexOf(formattedQueryString) > -1 ||
         patient.lastName.toLowerCase().indexOf(formattedQueryString) > -1 ||
         patient.displayName.toLowerCase().indexOf(formattedQueryString) > -1 ||
         patient.patientId.toLowerCase().indexOf(formattedQueryString) > -1
-      );
-    });
+    );
     return suggestions;
   };
 

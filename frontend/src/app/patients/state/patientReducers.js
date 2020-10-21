@@ -9,14 +9,6 @@ export default (state = {}, action) => {
     case PATIENTS__REQUEST_PATIENTS:
       return state;
     case PATIENTS__UPDATE_PATIENT:
-      let patientId = action.payload.patientId;
-      return {
-        ...state,
-        [patientId]: {
-          ...state[patientId],
-          firstName: action.payload.name,
-        },
-      };
     case PATIENTS__RECEIVED_PATIENTS:
       let newPatients = {};
       action.payload.forEach((patient) => {
