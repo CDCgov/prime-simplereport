@@ -1,14 +1,55 @@
 import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
+  TEST_QUEUE__SHOW_NOTIFICATION,
+  TEST_QUEUE__CLEAR_NOTIFICATION,
 } from "./testQueueActionTypes";
 
-export const addPatientToQueue = (patientId) => {
+export const QUEUE_NOTIFICATION_TYPES = {
+  ADDED_TO_QUEUE__SUCCESS: 1,
+  SUBMITTED_RESULT__SUCCESS: 2,
+};
+
+const _addPatientToQueue = (patientId) => {
   return {
     type: TEST_QUEUE__ADD_PATIENT,
     payload: {
       patientId,
     },
+  };
+};
+
+const addToQueueNotification = (notificationType, patientId) => {
+  return {
+    type: TEST_QUEUE__SHOW_NOTIFICATION,
+    payload: {
+      notificationType,
+      patientId,
+    },
+  };
+};
+
+export const clearNotification = () => {
+  return {
+    type: TEST_QUEUE__CLEAR_NOTIFICATION,
+  };
+};
+
+export const addPatientToQueue = (patientId) => {
+  return (dispatch) => {
+    // Step 1: inform that a patient is being added the queue
+    // TODO
+
+    // Step 2: do the addition
+    dispatch(_addPatientToQueue(patientId));
+
+    // step 3: do the notification (TODO: this may need to be async if adding to the queue is backed up in the db)
+    dispatch(
+      addToQueueNotification(
+        QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS,
+        patientId
+      )
+    );
   };
 };
 

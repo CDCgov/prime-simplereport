@@ -24,7 +24,7 @@ const QueueItem = ({ patient }) => {
     dispatch(removePatientFromQueue(patientId));
   };
 
-  // useEffect(() => {
+  // useEffect{
   //   dispatch(loadPatients(organizationId));
   // }, [organizationId, dispatch]);
 

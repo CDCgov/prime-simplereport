@@ -53,3 +53,5 @@ export const getPatientsInTestQueue = createSelector(
     return patientsInQueue;
   }
 );
+
+export const getQueueNotification = (state) => state.testQueue.notification;
