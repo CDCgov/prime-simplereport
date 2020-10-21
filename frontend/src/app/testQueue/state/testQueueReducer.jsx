@@ -14,19 +14,15 @@ export default (state = {}, action) => {
         [patientId]: {
           isInQueue: true,
           added: moment(),
-          removed: null,
         },
       };
     case TEST_QUEUE__REMOVE_PATIENT:
       patientId = action.payload.patientId;
-      return {
+      let newQueue = {
         ...state,
-        [patientId]: {
-          ...state[patientId],
-          isInQueue: false,
-          removed: moment(),
-        },
       };
+      delete newQueue[patientId];
+      return newQueue;
     default:
       return state;
   }
