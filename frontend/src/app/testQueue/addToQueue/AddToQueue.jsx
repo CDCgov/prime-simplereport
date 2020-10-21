@@ -1,6 +1,7 @@
 import React from "react";
 
 import AddToQueueSearchBox from "./AddToQueueSearch";
+
 const AddToQueue = () => {
   return (
     <main className="prime-home">
