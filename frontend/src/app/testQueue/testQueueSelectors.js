@@ -3,16 +3,25 @@ import { createSelector } from "reselect";
 import { displayFullName } from "../utils";
 import { getPatients } from "../patients/patientSelectors";
 
-const getTestQueue = (state) => state.testQueue;
+export const getTestQueue = (state) => state.testQueue;
 
-export const getPatientsInTestQueue = (state) => {
-  return Object.keys(state.testQueue).filter(
-    (patientId) => state.testQueue[patientId]
-  );
-};
+// returns an array of patientIds that are in the test queue
+// also sorts patients from oldest to newst
+// ie: [patientID1, patientId3, patientId4]
+export const getPatientIdsInTestQueue = createSelector(
+  getTestQueue,
+  (testQueue) => {
+    return Object.keys(testQueue)
+      .filter(
+        (patientId) => testQueue[patientId] && testQueue[patientId].isInQueue
+      )
+      .sort((a, b) => testQueue[a].added - testQueue[b].added);
+  }
+);
 
-// note: this just fetches all patients in the state, which can be bulky if there are lots of patients (probably several thousand?)
-export const patientSearch = createSelector(
+// returns a subset of patient fields, including the queue status, for *ALL* patients
+// used for searching patients to add to the queue
+export const getAllPatientsWithQueueStatus = createSelector(
   getPatients,
   getTestQueue,
   (patients, testQueue) => {
@@ -20,16 +29,27 @@ export const patientSearch = createSelector(
       let { firstName, middleName, lastName, birthDate, patientId } = {
         ...patient,
       };
+      let isInQueue = testQueue[patientId] && testQueue[patientId].isInQueue;
       return {
-        firstName,
-        middleName,
-        lastName,
         displayName: displayFullName(firstName, middleName, lastName),
         birthDate,
         patientId,
-        isInQueue: testQueue[patientId],
+        isInQueue,
       };
     });
     return patientQueueSearchItems;
+  }
+);
+
+// fetches patients in the queue
+export const getPatientsInTestQueue = createSelector(
+  getPatientIdsInTestQueue,
+  getPatients,
+  (testQueuePatientIds, allPatients) => {
+    let patientsInQueue = [];
+    testQueuePatientIds.forEach((patientId) =>
+      patientsInQueue.push(allPatients[patientId])
+    );
+    return patientsInQueue;
   }
 );

@@ -3,14 +3,12 @@ import { v4 as uuidv4 } from "uuid";
 
 import { testResultPropType } from "../propTypes";
 import { useSelector } from "react-redux";
-import { getPatientsByIds } from "../patients/patientSelectors";
 import { getPatientsInTestQueue } from "../testQueue/testQueueSelectors";
 import QueueItem from "./QueueItem";
 import AddToQueue from "./addToQueue/AddToQueue";
 
 const TestQueue = () => {
-  const patientIdsInTestQueue = useSelector(getPatientsInTestQueue);
-  const patients = useSelector(getPatientsByIds(patientIdsInTestQueue));
+  const patients = useSelector(getPatientsInTestQueue);
 
   const noPatientsContainer = (
     <React.Fragment>

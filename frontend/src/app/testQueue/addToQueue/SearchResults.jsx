@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 
 import Anchor from "../../commonComponents/Anchor";
 import { addPatientToQueue } from "../state/testQueueActions";
-import { displayFullName } from "../../utils";
 
 const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
   const dispatch = useDispatch();
@@ -33,13 +32,7 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
 
   const renderedSuggestion = suggestions.map((suggestion) => (
     <tr key={uuidv4()}>
-      <td>
-        {displayFullName(
-          suggestion.firstName,
-          suggestion.middleName,
-          suggestion.lastName
-        )}
-      </td>
+      <td>{suggestion.displayName}</td>
       <td>{suggestion.birthDate}</td>
       <td>{suggestion.patientId}</td>
       <td>{addToQueueButton(suggestion)}</td>

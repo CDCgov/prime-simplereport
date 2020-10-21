@@ -2,19 +2,27 @@ import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
 } from "./testQueueActionTypes";
+import moment from "moment";
 
 export default (state = {}, action) => {
+  let patientId;
   switch (action.type) {
     case TEST_QUEUE__ADD_PATIENT:
+      patientId = action.payload.patientId;
       return {
         ...state,
-        [action.payload.patientId]: true, // any value works here
+        [patientId]: {
+          isInQueue: true,
+          added: moment(),
+        },
       };
     case TEST_QUEUE__REMOVE_PATIENT:
-      return {
+      patientId = action.payload.patientId;
+      let newQueue = {
         ...state,
-        [action.payload.patientId]: false,
       };
+      delete newQueue[patientId];
+      return newQueue;
     default:
       return state;
   }
