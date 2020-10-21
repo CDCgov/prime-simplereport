@@ -19,7 +19,7 @@
     "lodash": "^4.17.20",
     "prop-types": "^15.7.2",
     "react": "^16.13.1",
-    "react-autocomplete": "^1.8.1",
+    "react-autosuggest": "^10.0.3",
     "react-dom": "^16.13.1",
     "react-html-id": "^0.1.5",
     "react-redux": "^7.2.1",
