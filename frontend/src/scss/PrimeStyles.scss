@@ -48,3 +48,12 @@
 .prime-test-name {
   border-bottom: 1px solid color($theme-color-prime-gray-light);
 }
+
+.prime-link {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}

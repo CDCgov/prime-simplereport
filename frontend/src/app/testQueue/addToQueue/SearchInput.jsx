@@ -1,20 +1,27 @@
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 
 import Button from "../../commonComponents/Button";
+import TextInput from "../../commonComponents/TextInput";
 
-const SearchInput = ({ inputProps, onClick, queryString, disabled }) => {
+const SearchInput = ({
+  onSearchClick,
+  onInputChange,
+  queryString,
+  disabled,
+}) => {
   return (
     <React.Fragment>
-      <input
-        {...inputProps}
-        className="usa-input"
-        id={`search-${uuidv4()}`}
-        type="text"
+      <TextInput
+        placeholder="Search by Unique Patient ID or Name"
+        value={queryString}
+        onChange={(e) => onInputChange(e)}
+        name="add-to-queue-search"
+        addClass="usa-input"
+        autocomplete={false}
       />
       <Button
         type="submit"
-        onClick={(e) => onClick(e, queryString)}
+        onClick={(e) => onSearchClick(e)}
         icon="search"
         disabled={disabled}
       />

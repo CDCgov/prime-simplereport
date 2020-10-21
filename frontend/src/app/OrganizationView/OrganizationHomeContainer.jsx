@@ -13,7 +13,6 @@ import { useSelector } from "react-redux";
 import OrganizationHome from "./OrganizationHome";
 // import { loadPatients } from "../patients/state/patientActions";
 import TestQueue from "../testQueue/TestQueue";
-import AddToQueue from "../testQueue/addToQueue/AddToQueue";
 import { getPatients } from "../patients/patientSelectors";
 import ManagePatients from "../patients/ManagePatients";
 

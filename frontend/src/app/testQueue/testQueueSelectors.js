@@ -21,7 +21,10 @@ export const patientSearch = createSelector(
         ...patient,
       };
       return {
-        name: displayFullName(firstName, middleName, lastName),
+        firstName,
+        middleName,
+        lastName,
+        displayName: displayFullName(firstName, middleName, lastName),
         birthDate,
         patientId,
         isInQueue: testQueue[patientId],

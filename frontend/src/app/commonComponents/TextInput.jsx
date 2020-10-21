@@ -4,11 +4,16 @@ import { v4 as uuidv4 } from "uuid";
 
 const TextInput = ({ value, label, name, placeholder, onChange }) => {
   let newId = uuidv4();
+
+  const labelElem = label ? (
+    <label className="usa-label" htmlFor={newId}>
+      {label}
+    </label>
+  ) : null;
+
   return (
     <React.Fragment>
-      <label className="usa-label" htmlFor={newId}>
-        {label}
-      </label>
+      {labelElem}
       <input
         className="usa-input"
         id={newId}
@@ -16,7 +21,8 @@ const TextInput = ({ value, label, name, placeholder, onChange }) => {
         type="text"
         onChange={onChange}
         placeholder={placeholder}
-      ></input>
+        value={value}
+      />
     </React.Fragment>
   );
 };

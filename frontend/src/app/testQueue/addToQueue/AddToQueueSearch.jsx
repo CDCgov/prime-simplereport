@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Autosuggest from "react-autosuggest";
 import { useSelector } from "react-redux";
 
 import { patientSearch } from "../testQueueSelectors";
@@ -9,85 +8,55 @@ import SearchResults from "./SearchResults";
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const AddToQueueSearchBox = () => {
-  const [queryString, updateQueryString] = useState("");
+  const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
-
-  const allItems = useSelector(patientSearch);
-
-  // determines which suggestions Autosuggest should show for a given input
-  const getSuggestionsFromInput = (inputString) => {
-    let formattedSearchQuery = inputString.trim().toLowerCase();
-    let suggestions = allItems.filter(
-      (patient) =>
-        patient.name.toLowerCase().indexOf(formattedSearchQuery) > -1 ||
-        patient.patientId.toLowerCase().indexOf(formattedSearchQuery) > -1
-    );
-    return suggestions;
-  };
-
-  // change event handler for new inputs
-  const onChange = (e, { newValue }) => {
-    updateQueryString(newValue);
-  };
-
-  // this is called whenever you need to update suggestions
-  // ie: any onkeychange event on the input
-  const onSuggestionsFetchRequested = ({ value }) => {
-    updateSuggestions(getSuggestionsFromInput(value));
-  };
-
-  // populate the input based on the clicked suggestion
-  // todo: this never gets called, presumably because suggestions are rendered  does nothing for some reason
-  const getSuggestionValue = (suggestion) => {
-    return suggestion.name;
-  };
-
-  const onSearchClick = (event, searchQuery) => {
-    event.preventDefault();
-    updateSuggestions(getSuggestionsFromInput(searchQuery));
-  };
+  const allPatients = useSelector(patientSearch);
 
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
 
+  const getSuggestionsFromQueryString = (queryString) => {
+    let formattedQueryString = queryString.toLowerCase();
+    let suggestions = allPatients.filter((patient) => {
+      console.log(
+        patient.displayName.toLowerCase().indexOf(formattedQueryString)
+      );
+      return (
+        patient.firstName.toLowerCase().indexOf(formattedQueryString) > -1 ||
+        patient.middleName.toLowerCase().indexOf(formattedQueryString) > -1 ||
+        patient.lastName.toLowerCase().indexOf(formattedQueryString) > -1 ||
+        patient.displayName.toLowerCase().indexOf(formattedQueryString) > -1 ||
+        patient.patientId.toLowerCase().indexOf(formattedQueryString) > -1
+      );
+    });
+    return suggestions;
+  };
+
+  const onInputChange = (event) => {
+    let newValue = event.target.value;
+    setQueryString(newValue);
+    if (newValue.length > 2) {
+      updateSuggestions(getSuggestionsFromQueryString(newValue));
+    }
+  };
+
+  const onSearchClick = (event) => {
+    event.preventDefault();
+    updateSuggestions(getSuggestionsFromQueryString(queryString));
+  };
+
   return (
     <React.Fragment>
-      <Autosuggest
+      <SearchInput
+        onSearchClick={onSearchClick}
+        onInputChange={onInputChange}
+        queryString={queryString}
+        disabled={!shouldShowSuggestions}
+      />
+      <SearchResults
         suggestions={suggestions}
-        onSuggestionsFetchRequested={onSuggestionsFetchRequested}
-        getSuggestionValue={getSuggestionValue}
-        alwaysRenderSuggestions={true}
-        renderInputComponent={(inputProps) => (
-          <SearchInput
-            inputProps={inputProps}
-            onClick={onSearchClick}
-            queryString={queryString}
-            disabled={!shouldShowSuggestions}
-          />
-        )}
-        renderSuggestion={() => {}} // not used but is required. See renderSuggestionsContainer
-        renderSuggestionsContainer={({ containerProps, children }) => {
-          if (!shouldShowSuggestions) {
-            return null;
-          }
-          if (!children) {
-            return <h1>Sorry no results</h1>; // TODO: style me
-          }
-
-          // note: this is a hack
-          // By default, this react-autosuggest renders suggestions as <li>{suggestion}</li>
-          // to render results as a table, we need to override it using this method. This breaks things
-          return (
-            <SearchResults
-              suggestions={children.props.items}
-              containerProps={containerProps}
-              clearQuery={() => updateQueryString("")}
-            />
-          );
-        }}
-        inputProps={{
-          onChange: onChange,
-          value: queryString,
-          placeholder: "Search by Unique Patient ID, Name",
+        shouldDisplay={shouldShowSuggestions}
+        onAddToQueue={() => {
+          setQueryString("");
         }}
       />
     </React.Fragment>
