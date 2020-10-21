@@ -33,7 +33,7 @@ const Button = ({
     addClass
   );
 
-  const buttonIcon = !icon ? null : <FontAwesomeIcon icon />;
+  const buttonIcon = !icon ? null : <FontAwesomeIcon icon={icon} />;
 
   if (icon) {
     classNames += " prime-button--icon";
