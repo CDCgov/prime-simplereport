@@ -5,11 +5,16 @@ import { getPatients } from "../patients/patientSelectors";
 
 const getTestQueue = (state) => state.testQueue;
 
-export const getPatientsInTestQueue = (state) => {
-  return Object.keys(state.testQueue).filter(
-    (patientId) => state.testQueue[patientId]
-  );
-};
+// export const getPatientsInTestQueue = (state) => {
+//   return Object.keys(state.testQueue).filter(
+//     (patientId) => state.testQueue[patientId]
+//   );
+// };
+
+export const getPatientsInTestQueue = createSelector(
+  getTestQueue,
+  (testQueue) => testQueue
+);
 
 // note: this just fetches all patients in the state, which can be bulky if there are lots of patients (probably several thousand?)
 export const patientSearch = createSelector(
