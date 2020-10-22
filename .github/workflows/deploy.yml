@@ -40,5 +40,5 @@ jobs:
         org: ${{secrets.CLOUD_GOV_ORG}}
         user: ${{secrets.SERVICE_USER}}
         password: ${{secrets.SERVICE_PASSWORD}}
-        application: $CF_APPLICATION
+        application: ${{env.CF_APPLICATION}}
         manifest: frontend/manifest.yml
