@@ -16,7 +16,7 @@ jobs:
       # VERY IMPORTANT: if you run this on any branch other than master, it will
       # deploy to STAGING_CF_APP
     - name: Choose deployment environment
-      run: echo >> $GITHUB_ENV CF_APPLICATION=$( [[ "$GITHUB_REF" == "/refs/heads/main" ]] && echo "$DEMO_CF_APP" || echo "$STAGING_CF_APP")
+      run: echo >> $GITHUB_ENV CF_APPLICATION=$( [[ "$GITHUB_REF" == "refs/heads/main" ]] && echo "$DEMO_CF_APP" || echo "$STAGING_CF_APP")
     - name: Use Node.js 12
       uses: actions/setup-node@v1
       with:
