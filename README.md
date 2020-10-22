@@ -92,20 +92,34 @@ docker run \
 
 - establish a workflow where you can add depedencies (via `npm install <dependency>`) without having to manually stop the container, rebuild, and restart.
 
-## DEPLOY (staging env)
+## DEPLOY
 
-1. Build the appp
+## To deploy to the stable (ish) demo environment:
 
-   > cd frontend
-   > npm run build
+1. Point your browser to the [Deploy Client Application](actions?query=workflow%3A"Deploy+Client+Application") action
+2. Click the "Run workflow" button, and select `main` as the branch
+3. Get up and stretch
 
-2. Sign into cloud.gov
-   > cf login -a api.fr.cloud.gov --sso
+## To deploy to the dev/test environment:
 
-Connect to the `dhs-prototype` org and the `usds-prime` space
+Either
 
-3. Deploy
-   > cf push
+1. merge your feature branch into the `staging` branch
+2. push that branch
+
+Or
+
+1. Point your browser to the [Deploy Client Application](actions?query=workflow%3A"Deploy+Client+Application") action
+2. Click the "Run workflow" button, and select your feature branch
+
+In either case, get up and stretch and have a glass of water.
+
+## To restage a deployment in cloud.gov
+
+1. Point your browser to the [Restage Application](actions?query=workflow%3A"Restage+Application") action
+2. Click the "Run workflow" button, and enter either "client" (for the demo deployment) or
+   "staging" (for the dev-test deployment). Yes, that's silly and we will probably change it in the future--if
+   we have, update this text!
 
 # EVERYTHING BELOW THIS IS BOILER-PLACE CREATE-REACT APP
 
