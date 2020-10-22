@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-
 import { useSelector } from "react-redux";
-import { getPatientById } from "../patients/patientSelectors";
+
 import Alert from "../commonComponents/Alert";
-import { QUEUE_NOTIFICATION_TYPES } from "./state/testQueueActions";
+import { getPatientById } from "../patients/patientSelectors";
+import { QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { displayFullName } from "../utils";
 
 const ALERT_CONTENT = {

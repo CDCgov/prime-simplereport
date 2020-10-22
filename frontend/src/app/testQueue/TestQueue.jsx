@@ -1,17 +1,17 @@
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-
 import { testResultPropType } from "../propTypes";
 import { useSelector, useDispatch } from "react-redux";
+
 import {
   getDetailedPatientsInTestQueue,
   getQueueNotification,
 } from "../testQueue/testQueueSelectors";
-import QueueItem from "./QueueItem";
-import AddToQueue from "./addToQueue/AddToQueue";
-import QueueNotification from "./QueueNotification";
-import Expire from "../commonComponents/Expire";
 import { clearNotification } from "./state/testQueueActions";
+import AddToQueue from "./addToQueue/AddToQueue";
+import Expire from "../commonComponents/Expire";
+import QueueItem from "./QueueItem";
+import QueueNotification from "./QueueNotification";
 
 const TestQueue = () => {
   const patients = useSelector(getDetailedPatientsInTestQueue);

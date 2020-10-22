@@ -5,10 +5,7 @@ import {
   TEST_QUEUE__CLEAR_NOTIFICATION,
 } from "./testQueueActionTypes";
 
-export const QUEUE_NOTIFICATION_TYPES = {
-  ADDED_TO_QUEUE__SUCCESS: 1,
-  SUBMITTED_RESULT__SUCCESS: 2,
-};
+import { QUEUE_NOTIFICATION_TYPES } from "../constants";
 
 const _addPatientToQueue = (patientId) => {
   return {

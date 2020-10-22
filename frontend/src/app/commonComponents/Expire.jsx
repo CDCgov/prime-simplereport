@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 
 const Expire = (props) => {
   const [isVisible, setIsVisible] = useState(true);
