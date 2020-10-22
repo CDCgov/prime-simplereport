@@ -37,6 +37,7 @@
     "start-js": "react-scripts start",
     "prebuild": "npm run-script compile-scss",
     "build": "react-scripts build",
+    "postbuild": "echo 'pushstate: enabled' > build/Staticfile",
     "lint": "eslint --quiet --ext .js --ext .jsx ./src",
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
