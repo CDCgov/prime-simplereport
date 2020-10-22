@@ -1,9 +1,12 @@
 name: Deploy Client Application
 
+env:
+  DEMO_CF_APP: "prime-data-input-client" # the app name if we are deploying 'main'
+  STAGING_CF_APP: "prime-data-input-staging" # the app name if we are deploying any other branch
 on:
-  workflow_dispatch: # run when somebody pushes the button
+  workflow_dispatch: # run when somebody pushes the button (on whatever branch they choose)
   push:
-    branches: # run when we merge to the "staging" branch
+    branches: # automatically deploy the "staging" branch on every push
       - staging
 jobs:
   build-and-deploy:
@@ -11,9 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       # VERY IMPORTANT: if you run this on any branch other than master, it will
-      # deploy to staging
+      # deploy to STAGING_CF_APP
     - name: Choose deployment environment
-      run: echo >> $GITHUB_ENV deploy_env=$( [[ "$GITHUB_REF" == "/refs/heads/main" ]] && echo "client" || echo "staging")
+      run: echo >> $GITHUB_ENV CF_APPLICATION=$( [[ "$GITHUB_REF" == "/refs/heads/main" ]] && echo "$DEMO_CF_APP" || echo "$STAGING_CF_APP")
     - name: Use Node.js 12
       uses: actions/setup-node@v1
       with:
@@ -37,5 +40,5 @@ jobs:
         org: ${{secrets.CLOUD_GOV_ORG}}
         user: ${{secrets.SERVICE_USER}}
         password: ${{secrets.SERVICE_PASSWORD}}
-        application: prime-data-input-${{env.DEPLOY_ENV}}
+        application: $CF_APPLICATION
         manifest: frontend/manifest.yml
