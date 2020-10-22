@@ -3,19 +3,20 @@ import { createSelector } from "reselect";
 import { displayFullName } from "../utils";
 import { getPatients } from "../patients/patientSelectors";
 
-export const getTestQueue = (state) => state.testQueue;
+const _getPatientsInTestQueue = (state) => state.testQueue.patients;
+export const getQueueNotification = (state) => state.testQueue.notifications;
 
 // returns an array of patientIds that are in the test queue
 // also sorts patients from oldest to newst
 // ie: [patientID1, patientId3, patientId4]
-export const getPatientIdsInTestQueue = createSelector(
-  getTestQueue,
-  (testQueue) => {
-    return Object.keys(testQueue)
+const _getPatientIdsInTestQueue = createSelector(
+  _getPatientsInTestQueue,
+  (patients) => {
+    return Object.keys(patients)
       .filter(
-        (patientId) => testQueue[patientId] && testQueue[patientId].isInQueue
+        (patientId) => patients[patientId] && patients[patientId].isInQueue
       )
-      .sort((a, b) => testQueue[a].added - testQueue[b].added);
+      .sort((a, b) => patients[a].added - patients[b].added);
   }
 );
 
@@ -23,13 +24,14 @@ export const getPatientIdsInTestQueue = createSelector(
 // used for searching patients to add to the queue
 export const getAllPatientsWithQueueStatus = createSelector(
   getPatients,
-  getTestQueue,
-  (patients, testQueue) => {
+  _getPatientsInTestQueue,
+  (patients, testQueuePatients) => {
     const patientQueueSearchItems = Object.values(patients).map((patient) => {
       let { firstName, middleName, lastName, birthDate, patientId } = {
         ...patient,
       };
-      let isInQueue = testQueue[patientId] && testQueue[patientId].isInQueue;
+      let isInQueue =
+        testQueuePatients[patientId] && testQueuePatients[patientId].isInQueue;
       return {
         displayName: displayFullName(firstName, middleName, lastName),
         birthDate,
@@ -41,9 +43,10 @@ export const getAllPatientsWithQueueStatus = createSelector(
   }
 );
 
-// fetches patients in the queue
-export const getPatientsInTestQueue = createSelector(
-  getPatientIdsInTestQueue,
+// fetches the entire patient model for each patient in the queue
+// used to render each item in the queue
+export const getDetailedPatientsInTestQueue = createSelector(
+  _getPatientIdsInTestQueue,
   getPatients,
   (testQueuePatientIds, allPatients) => {
     let patientsInQueue = [];

@@ -1,28 +1,51 @@
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
-
 import { testResultPropType } from "../propTypes";
-import { useSelector } from "react-redux";
-import { getPatientsInTestQueue } from "../testQueue/testQueueSelectors";
-import QueueItem from "./QueueItem";
+import { useSelector, useDispatch } from "react-redux";
+
+import {
+  getDetailedPatientsInTestQueue,
+  getQueueNotification,
+} from "../testQueue/testQueueSelectors";
+import { clearNotification } from "./state/testQueueActions";
 import AddToQueue from "./addToQueue/AddToQueue";
+import Expire from "../commonComponents/Expire";
+import QueueItem from "./QueueItem";
+import QueueNotification from "./QueueNotification";
 
 const TestQueue = () => {
-  const patients = useSelector(getPatientsInTestQueue);
+  const patients = useSelector(getDetailedPatientsInTestQueue);
+  const notification = useSelector(getQueueNotification);
+  const dispatch = useDispatch();
 
-  const noPatientsContainer = (
-    <React.Fragment>
-      <div className="prime-container prime-center">
-        <p>You have no patients in the testing queue </p>
-      </div>
-    </React.Fragment>
-  );
+  let shouldRenderQueue = Object.keys(patients).length > 0;
   const createQueueItems = (patients) =>
-    Object.keys(patients).length > 0
-      ? Object.values(patients).map((patient) => (
-          <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
-        ))
-      : noPatientsContainer;
+    shouldRenderQueue ? (
+      Object.values(patients).map((patient) => (
+        <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
+      ))
+    ) : (
+      <React.Fragment>
+        <div className="prime-container prime-center">
+          <p>
+            There are no people in the queue. Search for people above to add
+            them to the queue.
+          </p>
+        </div>
+      </React.Fragment>
+    );
+
+  const onNotificationExpire = () => {
+    dispatch(clearNotification());
+  };
+
+  const shouldShowAlert = notification && Object.keys(notification).length > 0;
+
+  const alert = shouldShowAlert ? (
+    <Expire delay={3000} onExpire={onNotificationExpire}>
+      <QueueNotification notification={notification} />
+    </Expire>
+  ) : null;
 
   return (
     <main className="prime-home">
@@ -31,6 +54,7 @@ const TestQueue = () => {
           <AddToQueue />
           {createQueueItems(patients)}
         </div>
+        <div className="grid-row">{alert}</div>
       </div>
     </main>
   );
