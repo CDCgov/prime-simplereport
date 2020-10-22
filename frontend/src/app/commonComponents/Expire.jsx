@@ -2,19 +2,18 @@ import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 
 const Expire = (props) => {
-  const [children, setChildren] = useState(props.children);
   const [isVisible, setIsVisible] = useState(true);
+  const { onExpire, children, delay } = { ...props };
 
   useEffect(() => {
-    setChildren(props.children); // update children if a new child is provided
-    setIsVisible(true); // reset visibility to true
+    setIsVisible(true);
     setTimeout(() => {
       setIsVisible(false);
-      if (props.onExpire) {
-        props.onExpire();
+      if (onExpire) {
+        onExpire();
       }
-    }, props.delay);
-  }, [props.children]); // rerun if children changes
+    }, delay);
+  }, [children, delay, onExpire]);
 
   return isVisible ? children : null;
 };
