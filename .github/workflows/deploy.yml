@@ -47,6 +47,7 @@ jobs:
       run: npm run-script build
       env:
         REACT_APP_TITLE: $${{env.APP_TITLE}}
+        REACT_APP_ICON: optimus_prime.svg
     - name: Deploy
       uses: usds/cloud-gov-cli@master
       with:
