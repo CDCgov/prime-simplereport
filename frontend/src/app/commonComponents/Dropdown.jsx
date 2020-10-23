@@ -2,9 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 
-const Dropdown = ({ options, label, name, onChange }) => {
+const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
   const optionsElements = options.map(({ value, text }) => (
-    <option key={`dropdown-${uuidv4()}`} value={value}>
+    <option
+      key={`dropdown-${uuidv4()}`}
+      value={value}
+      selected={value === selectedValue}
+    >
       {text}
     </option>
   ));

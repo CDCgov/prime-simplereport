@@ -1,27 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { patientPropType } from "../propTypes";
 import LabeledText from "../commonComponents//LabeledText";
-import TestResultInputForm from "../testResults/TestResultInputForm";
 import Dropdown from "../commonComponents//Dropdown";
-import { getTestResultById } from "../testResults/testResultsSelector";
 import Button from "../commonComponents/Button";
+import TestResultInputForm from "../testResults/TestResultInputForm";
+import { patientPropType } from "../propTypes";
+import { getTestResultById } from "../testResults/testResultsSelector";
 import { removePatientFromQueue } from "./state/testQueueActions";
 
 const QueueItem = ({ patient }) => {
+  const dispatch = useDispatch();
+
+  // 1. grab device from store
+  // 2. grab testReuslt from store
+
+  const [device, updatedDevice] = useState(null);
+  const [testResultValue, updateTestResultValue] = useState(null);
+
+  //   useEffect(() => {
+  // dispatch(loadTestResult(patientId));
+  //   }, [patientId, dispatch]);
+
   const onSubmit = (e) => {
     e.preventDefault();
+    // grab selectedTestResult
+    // grab selected device
+    // dispatch(submitTestResult());
   };
 
-  const onDropdownChange = (e) => {
-    console.log(e.target.value);
+  const onDeviceChange = (selectedDevice) => {
+    updatedDevice(selectedDevice);
   };
-
-  const dispatch = useDispatch();
 
   const removeFromQueue = (patientId) => {
     dispatch(removePatientFromQueue(patientId));
+  };
+
+  const onTestResultChange = (newTestResultValue) => {
+    updateTestResultValue(newTestResultValue);
   };
 
   // useEffect{
@@ -65,12 +82,17 @@ const QueueItem = ({ patient }) => {
                 ]}
                 label="Device"
                 name="testDevice"
-                onChange={onDropdownChange}
+                selectedValue={device}
+                onChange={(e) => onDeviceChange(e.target.value)}
               />
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
-            <TestResultInputForm testResult={testResult} onSubmit={onSubmit} />
+            <TestResultInputForm
+              testResultValue={testResultValue}
+              onSubmit={onSubmit}
+              onChange={onTestResultChange}
+            />
           </div>
         </div>
       </div>
