@@ -13,24 +13,23 @@ import { submitTestResult } from "../testResults/state/testResultActions";
 const QueueItem = ({ patient }) => {
   const dispatch = useDispatch();
 
-  // 1. grab device from store
-  // 2. grab testReuslt from store
-
-  const [device, updatedDevice] = useState("abbottIdNow"); // TODO fetch this from store.devices, which doesn't exist atm
+  const [deviceId, updateDeviceId] = useState(null);
   const [testResultValue, updateTestResultValue] = useState(null);
 
-  //   useEffect(() => {
-  // dispatch(loadTestResult(patientId));
-  //   }, [patientId, dispatch]);
+  const testResult = useSelector(getTestResultById(patient.patientId));
+  useEffect(() => {
+    updateDeviceId(testResult.deviceId);
+    updateTestResultValue(testResult.result);
+  }, [testResult]);
 
   const onTestResultSubmit = (e) => {
     e.preventDefault();
-    let testResultInfo = { device, testResultValue };
-    dispatch(submitTestResult(patient.patientId, testResultInfo));
+    let testResultToSubmit = { deviceId, testResultValue };
+    dispatch(submitTestResult(patient.patientId, testResultToSubmit));
   };
 
-  const onDeviceChange = (selectedDevice) => {
-    updatedDevice(selectedDevice);
+  const onDeviceChange = (selectedDeviceId) => {
+    updateDeviceId(selectedDeviceId);
   };
 
   const removeFromQueue = (patientId) => {
@@ -40,12 +39,6 @@ const QueueItem = ({ patient }) => {
   const onTestResultChange = (newTestResultValue) => {
     updateTestResultValue(newTestResultValue);
   };
-
-  // useEffect{
-  //   dispatch(loadPatients(organizationId));
-  // }, [organizationId, dispatch]);
-
-  const testResult = useSelector(getTestResultById(patient.testResultId));
 
   return (
     <React.Fragment>
@@ -82,7 +75,7 @@ const QueueItem = ({ patient }) => {
                 ]}
                 label="Device"
                 name="testDevice"
-                selectedValue={device}
+                selectedValue={deviceId}
                 onChange={(e) => onDeviceChange(e.target.value)}
               />
             </div>
@@ -92,6 +85,7 @@ const QueueItem = ({ patient }) => {
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
+              //   onClear={onTestResultClear}
             />
           </div>
         </div>

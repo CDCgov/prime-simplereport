@@ -6,7 +6,8 @@ import Button from "../commonComponents//Button";
 import { COVID_RESULTS } from "../constants";
 
 const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
-  const onClearClick = () => {
+  const onClearClick = (e) => {
+    e.preventDefault();
     onChange(null);
   };
 

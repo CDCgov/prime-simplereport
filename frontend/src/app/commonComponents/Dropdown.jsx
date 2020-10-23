@@ -4,11 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
   const optionsElements = options.map(({ value, text }) => (
-    <option
-      key={`dropdown-${uuidv4()}`}
-      value={value}
-      selected={value === selectedValue}
-    >
+    <option key={`dropdown-${uuidv4()}`} value={value}>
       {text}
     </option>
   ));
@@ -19,7 +15,13 @@ const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
       <label className="usa-label" htmlFor={id}>
         <strong>{label}</strong>
       </label>
-      <select className="usa-select" name={name} id={id} onChange={onChange}>
+      <select
+        className="usa-select"
+        name={name}
+        id={id}
+        onChange={onChange}
+        defaultValue={selectedValue}
+      >
         {optionsElements}
       </select>
     </React.Fragment>
