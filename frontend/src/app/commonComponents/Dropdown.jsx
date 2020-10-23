@@ -19,7 +19,6 @@ const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
         className="usa-select"
         name={id}
         id={id}
-        name={name}
         onChange={onChange}
         value={selectedValue || ""}
       >
