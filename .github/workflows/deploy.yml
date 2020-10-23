@@ -25,9 +25,10 @@ jobs:
           echo We are deploying to the STAGING environment
           app=$STAGING_CF_APP
           title="** STAGING ** PRIME Data Input Prototype ** STAGING **"
+          echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
         fi
         echo >> $GITHUB_ENV "CF_APPLICATION=$app"
-        echo >> $GITHUB_ENV "APP_TITLE=$title"
+        echo >> $GITHUB_ENV "REACT_APP_TITLE=$title"
     - name: Use Node.js 12
       uses: actions/setup-node@v1
       with:
@@ -45,9 +46,6 @@ jobs:
     - name: Application build
       working-directory: ./frontend
       run: npm run-script build
-      env:
-        REACT_APP_TITLE: $${{env.APP_TITLE}}
-        REACT_APP_ICON: optimus_prime.svg
     - name: Deploy
       uses: usds/cloud-gov-cli@master
       with:
