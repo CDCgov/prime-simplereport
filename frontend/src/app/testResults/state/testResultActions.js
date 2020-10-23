@@ -28,7 +28,7 @@ export const submitTestResult = (patientId, testResultInfo) => {
     type: TEST_RESULT__SUBMIT,
     payload: {
       patientId,
-      deviceId: testResultInfo.device,
+      deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
     },
   };

@@ -10,6 +10,6 @@ export const initialState = {
   testResults: initialTestResultsState,
   testQueue: initialTestQueueState,
   // organizations: initialOrganizationState,
-  // devices: initialDevicesState,
+  devices: initialDevicesState,
   // user: initialUserState,
 };

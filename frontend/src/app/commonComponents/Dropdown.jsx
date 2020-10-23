@@ -2,10 +2,10 @@ import React from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 
-const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
-  const optionsElements = options.map(({ value, text }) => (
+const Dropdown = ({ options, label, onChange, selectedValue }) => {
+  const optionsElements = options.map(({ value, label }) => (
     <option key={`dropdown-${uuidv4()}`} value={value}>
-      {text}
+      {label}
     </option>
   ));
 
@@ -17,10 +17,10 @@ const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
       </label>
       <select
         className="usa-select"
-        name={name}
+        name={id}
         id={id}
         onChange={onChange}
-        defaultValue={selectedValue}
+        value={selectedValue || ""}
       >
         {optionsElements}
       </select>
@@ -31,13 +31,14 @@ const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
 Dropdown.propTypes = {
   options: PropTypes.arrayOf(
     PropTypes.shape({
-      text: PropTypes.string,
+      label: PropTypes.string,
       value: PropTypes.string,
     })
   ),
   label: PropTypes.string,
   name: PropTypes.string,
   onChange: PropTypes.func,
+  selectedValue: PropTypes.string,
 };
 
 export default Dropdown;

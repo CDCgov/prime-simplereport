@@ -3,8 +3,8 @@ export const initialDevicesState = {
     name: "Abbott ID Now",
     organizationId: "orgId1",
   },
-  deviceID2: {
-    name: "Some Other Device",
+  deviceId2: {
+    name: "Abbott ID Later",
     organizationid: "orgId1",
   },
 };
