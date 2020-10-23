@@ -1,6 +1,7 @@
 import {
   TEST_RESULT__REQUEST,
   TEST_RESULT__RECEIVED,
+  TEST_RESULT__SUBMIT,
 } from "./testResultActionTypes";
 
 const initialState = {};
@@ -16,6 +17,15 @@ export default (state = initialState, action) => {
         [testResultId]: {
           ...state[testResultId],
           ...action.payload.testResult,
+        },
+      };
+    case TEST_RESULT__SUBMIT:
+      const { patientId, deviceId, testResult } = { ...action.payload };
+      return {
+        ...state,
+        [patientId]: {
+          testResult,
+          deviceId,
         },
       };
     default:

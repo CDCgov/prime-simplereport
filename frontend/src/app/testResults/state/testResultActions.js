@@ -2,6 +2,7 @@ import { getTestResult } from "../../query/testResults";
 import {
   TEST_RESULT__REQUEST,
   TEST_RESULT__RECEIVED,
+  TEST_RESULT__SUBMIT,
 } from "./testResultActionTypes";
 
 // used to signal that a request is being made
@@ -18,6 +19,17 @@ export const receivedTestResult = (testResult, patientId) => {
     payload: {
       testResult,
       patientId,
+    },
+  };
+};
+
+export const submitTestResult = (patientId, testResultInfo) => {
+  return {
+    type: TEST_RESULT__SUBMIT,
+    payload: {
+      patientId,
+      device: testResultInfo.device,
+      testResult: testResultInfo.testResultValue,
     },
   };
 };

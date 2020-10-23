@@ -8,6 +8,7 @@ import TestResultInputForm from "../testResults/TestResultInputForm";
 import { patientPropType } from "../propTypes";
 import { getTestResultById } from "../testResults/testResultsSelector";
 import { removePatientFromQueue } from "./state/testQueueActions";
+import { submitTestResult } from "../testResults/state/testResultActions";
 
 const QueueItem = ({ patient }) => {
   const dispatch = useDispatch();
@@ -15,18 +16,17 @@ const QueueItem = ({ patient }) => {
   // 1. grab device from store
   // 2. grab testReuslt from store
 
-  const [device, updatedDevice] = useState(null);
+  const [device, updatedDevice] = useState("abbottIdNow"); // TODO fetch this from store.devices, which doesn't exist atm
   const [testResultValue, updateTestResultValue] = useState(null);
 
   //   useEffect(() => {
   // dispatch(loadTestResult(patientId));
   //   }, [patientId, dispatch]);
 
-  const onSubmit = (e) => {
+  const onTestResultSubmit = (e) => {
     e.preventDefault();
-    // grab selectedTestResult
-    // grab selected device
-    // dispatch(submitTestResult());
+    let testResultInfo = { device, testResultValue };
+    dispatch(submitTestResult(patient.patientId, testResultInfo));
   };
 
   const onDeviceChange = (selectedDevice) => {
@@ -90,7 +90,7 @@ const QueueItem = ({ patient }) => {
           <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
             <TestResultInputForm
               testResultValue={testResultValue}
-              onSubmit={onSubmit}
+              onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
             />
           </div>
