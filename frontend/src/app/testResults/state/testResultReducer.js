@@ -10,7 +10,6 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case TEST_RESULT__SUBMIT:
       const { patientId, deviceId, result } = { ...action.payload };
-      console.log(action.payload);
       return {
         ...state,
         [patientId]: {

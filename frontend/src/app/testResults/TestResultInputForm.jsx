@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import RadioGroup from "../commonComponents//RadioGroup";
 import Button from "../commonComponents//Button";
 import { COVID_RESULTS } from "../constants";
+import { v4 as uuidv4 } from "uuid";
 
 const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
   const onClearClick = (e) => {
@@ -26,7 +27,7 @@ const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
             label: "Inconclusive",
           },
         ]}
-        name="covid-test-result" // TODO: make unique if there are multiple test results on this page
+        name={`covid-test-result-${uuidv4()}`}
         selectedRadio={testResultValue}
       />
       <Button onClick={onSubmit} type="submit" outline label="Submit" />
