@@ -7,12 +7,14 @@ import { persistStore, persistReducer } from "redux-persist";
 import patientReducer from "./patients/state/patientReducers";
 import testResultReducer from "./testResults/state/testResultReducer";
 import testQueueReducer from "./testQueue/state/testQueueReducer";
+import devicesReducer from "./devices/state/devicesReducer";
 import { initialState } from "./fakeData/initialState";
 
 const rootReducer = combineReducers({
   patients: patientReducer,
   testResults: testResultReducer,
   testQueue: testQueueReducer,
+  devices: devicesReducer,
 });
 
 const persistConfig = {

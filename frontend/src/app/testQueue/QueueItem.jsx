@@ -1,34 +1,56 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { patientPropType } from "../propTypes";
 import LabeledText from "../commonComponents//LabeledText";
-import TestResultInputForm from "../testResults/TestResultInputForm";
 import Dropdown from "../commonComponents//Dropdown";
-import { getTestResultById } from "../testResults/testResultsSelector";
 import Button from "../commonComponents/Button";
+import TestResultInputForm from "../testResults/TestResultInputForm";
+import { patientPropType } from "../propTypes";
+import { getTestResultById } from "../testResults/testResultsSelector";
 import { removePatientFromQueue } from "./state/testQueueActions";
+import { submitTestResult } from "../testResults/state/testResultActions";
+import { DEVICES } from "../devices/constants";
 
 const QueueItem = ({ patient }) => {
-  const onSubmit = (e) => {
-    e.preventDefault();
-  };
-
-  const onDropdownChange = (e) => {
-    console.log(e.target.value);
-  };
-
   const dispatch = useDispatch();
+
+  const [deviceId, updateDeviceId] = useState(null);
+  const [testResultValue, updateTestResultValue] = useState(null);
+
+  const testResult = useSelector(getTestResultById(patient.patientId));
+  useEffect(() => {
+    updateDeviceId(testResult.deviceId);
+    updateTestResultValue(testResult.result);
+  }, [testResult]);
+
+  const onTestResultSubmit = (e) => {
+    e.preventDefault();
+    let testResultToSubmit = { deviceId: deviceId, testResultValue };
+    dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+  };
+
+  const onDeviceChange = (e) => {
+    updateDeviceId(e.target.value);
+  };
 
   const removeFromQueue = (patientId) => {
     dispatch(removePatientFromQueue(patientId));
   };
 
-  // useEffect{
-  //   dispatch(loadPatients(organizationId));
-  // }, [organizationId, dispatch]);
+  const onTestResultChange = (newTestResultValue) => {
+    updateTestResultValue(newTestResultValue);
+  };
 
-  const testResult = useSelector(getTestResultById(patient.testResultId));
+  let options = Object.entries(DEVICES).map(([deviceId, { displayName }]) => {
+    return {
+      label: displayName,
+      value: deviceId,
+    };
+  });
+  options.unshift({
+    label: "Select Device",
+    value: null,
+  });
 
   return (
     <React.Fragment>
@@ -59,18 +81,20 @@ const QueueItem = ({ patient }) => {
             </div>
             <div className="grid-row">
               <Dropdown
-                options={[
-                  { text: "Abbott ID Now", value: "abbottIdNow" },
-                  { text: "Some other device", value: "someOtherDeviceValue" },
-                ]}
+                options={options}
                 label="Device"
                 name="testDevice"
-                onChange={onDropdownChange}
+                selectedValue={deviceId}
+                onChange={onDeviceChange}
               />
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
-            <TestResultInputForm testResult={testResult} onSubmit={onSubmit} />
+            <TestResultInputForm
+              testResultValue={testResultValue}
+              onSubmit={onTestResultSubmit}
+              onChange={onTestResultChange}
+            />
           </div>
         </div>
       </div>

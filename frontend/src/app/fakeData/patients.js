@@ -39,7 +39,6 @@ export const initialPatientState = {
     birthDate: "01/01/1717",
     address: "123 Plank St, Nassau",
     phone: "(123) 456-7890",
-    testResultId: "testResult1",
   },
   def456: {
     patientId: "def456",
@@ -49,7 +48,6 @@ export const initialPatientState = {
     birthDate: "01/01/1719",
     address: "456 Plank St, Nassau",
     phone: "(321) 546-7890",
-    testResultId: "testResult2",
   },
   ghi789: {
     patientId: "ghi789",
@@ -59,6 +57,5 @@ export const initialPatientState = {
     birthDate: "01/01/1722",
     address: "789 Plank St, Nassau",
     phone: "(213) 645-7890",
-    testResultId: "testResult3",
   },
 };
