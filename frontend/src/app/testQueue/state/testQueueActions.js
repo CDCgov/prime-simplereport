@@ -16,7 +16,7 @@ const _addPatientToQueue = (patientId) => {
   };
 };
 
-const addToQueueNotification = (notificationType, patientId) => {
+export const addToQueueNotification = (notificationType, patientId) => {
   return {
     type: TEST_QUEUE__SHOW_NOTIFICATION,
     payload: {

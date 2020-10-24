@@ -1,37 +1,15 @@
-import { COVID_RESULTS } from "../constants";
-
-export const demoTestResults = [
-  {
-    testResultId: "testResult1",
-    result: COVID_RESULTS.POSITIVE,
-    patientId: "abc123",
-  },
-  {
-    testResultId: "testResult2",
-    result: null,
-    patientId: "def456",
-  },
-  {
-    testResultId: "testResult3",
-    result: null,
-    patientId: "ghi789",
-  },
-];
-
+// maps patientID to testResult info
 export const initialTestResultsState = {
-  testResult1: {
-    testResultId: "testResult1",
-    result: COVID_RESULTS.POSITIVE,
-    patientId: "abc123",
-  },
-  testResult2: {
-    testResultId: "testResult2",
+  abc123: {
     result: null,
-    patientId: "def456",
+    deviceId: null,
   },
-  testResult3: {
-    testResultId: "testResult3",
+  def456: {
     result: null,
-    patientId: "ghi789",
+    deviceId: null,
+  },
+  ghi789: {
+    result: null,
+    deviceId: null,
   },
 };
