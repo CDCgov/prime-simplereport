@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import LabeledText from "../commonComponents//LabeledText";
 import Dropdown from "../commonComponents//Dropdown";
 import Button from "../commonComponents/Button";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { patientPropType } from "../propTypes";
-import { getTestResultById } from "../testResults/testResultsSelector";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 import { DEVICES } from "../devices/constants";
@@ -16,12 +15,6 @@ const QueueItem = ({ patient }) => {
 
   const [deviceId, updateDeviceId] = useState(null);
   const [testResultValue, updateTestResultValue] = useState(null);
-
-  const testResult = useSelector(getTestResultById(patient.patientId));
-  useEffect(() => {
-    updateDeviceId(testResult.deviceId);
-    updateTestResultValue(testResult.result);
-  }, [testResult]);
 
   const onTestResultSubmit = (e) => {
     e.preventDefault();
