@@ -19,6 +19,17 @@ const ALERT_CONTENT = {
       body: "Newly added patients go to the bottom of the queue",
     };
   },
+  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient) => {
+    return {
+      type: "success",
+      title: `Result was saved and reported for ${displayFullName(
+        patient.firstName,
+        patient.middleName,
+        patient.lastName
+      )}.`,
+      body: "See results to review past test results",
+    };
+  },
 };
 
 const QueueNotification = ({ notification }) => {

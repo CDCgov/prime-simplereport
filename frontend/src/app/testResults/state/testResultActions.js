@@ -5,6 +5,13 @@ import {
   TEST_RESULT__SUBMIT,
 } from "./testResultActionTypes";
 
+import {
+  removePatientFromQueue,
+  addToQueueNotification,
+} from "../../testQueue/state/testQueueActions";
+
+import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
+
 // used to signal that a request is being made
 // const requestTestResult = (patientId) => {
 //   return {
@@ -23,7 +30,7 @@ import {
 //   };
 // };
 
-export const submitTestResult = (patientId, testResultInfo) => {
+const _submitTestResult = (patientId, testResultInfo) => {
   return {
     type: TEST_RESULT__SUBMIT,
     payload: {
@@ -31,6 +38,21 @@ export const submitTestResult = (patientId, testResultInfo) => {
       deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
     },
+  };
+};
+
+// TODO: should the component call each of these actions, or should they be grouped in this one action
+// Note: _submitTestResult will likely be an async action, as would removePatientFromQueue
+export const submitTestResult = (patientId, testResultInfo) => {
+  return (dispatch) => {
+    dispatch(_submitTestResult(patientId, testResultInfo));
+    dispatch(removePatientFromQueue(patientId));
+    dispatch(
+      addToQueueNotification(
+        QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS,
+        patientId
+      )
+    );
   };
 };
 
