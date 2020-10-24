@@ -57,3 +57,11 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+.prime-radio--success {
+  background-color: color($theme-color-prime-green-lighest);
+}
+
+.prime-radio--failure {
+  background-color: color($theme-color-prime-red-lightest);
+}
