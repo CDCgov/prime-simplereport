@@ -43,7 +43,7 @@ const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
 
   return (
     <form className="usa-form">
-      <h4> SARS-CoV-2 Results </h4>
+      <h4 className="prime-radio__title"> SARS-CoV-2 Results </h4>
       {testResultForm}
     </form>
   );

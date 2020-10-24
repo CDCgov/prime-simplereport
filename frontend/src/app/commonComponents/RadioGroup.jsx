@@ -40,7 +40,7 @@ const RadioGroup = ({
           value={button.value}
           disabled={button.disabled || disabled || false}
         />
-        <label className="usa-radio__label" htmlFor={uuid}>
+        <label className="usa-radio__label prime-radio__label" htmlFor={uuid}>
           {button.label}
         </label>
       </li>
