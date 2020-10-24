@@ -16,7 +16,19 @@ jobs:
       # VERY IMPORTANT: if you run this on any branch other than master, it will
       # deploy to STAGING_CF_APP
     - name: Choose deployment environment
-      run: echo >> $GITHUB_ENV CF_APPLICATION=$( [[ "$GITHUB_REF" == "refs/heads/main" ]] && echo "$DEMO_CF_APP" || echo "$STAGING_CF_APP")
+      run: |
+        if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
+          echo We are deploying to the DEMO environment
+          app=$DEMO_CF_APP
+          title="PRIME Data Input Prototype"
+        else
+          echo We are deploying to the STAGING environment
+          app=$STAGING_CF_APP
+          title="** STAGING ** PRIME Data Input Prototype ** STAGING **"
+          echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
+        fi
+        echo >> $GITHUB_ENV "CF_APPLICATION=$app"
+        echo >> $GITHUB_ENV "REACT_APP_TITLE=$title"
     - name: Use Node.js 12
       uses: actions/setup-node@v1
       with:
