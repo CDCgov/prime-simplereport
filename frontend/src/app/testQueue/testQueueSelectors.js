@@ -7,16 +7,12 @@ const _getPatientsInTestQueue = (state) => state.testQueue.patients;
 export const getQueueNotification = (state) => state.testQueue.notifications;
 
 // returns an array of patientIds that are in the test queue
-// also sorts patients from oldest to newst
-// ie: [patientID1, patientId3, patientId4]
+// also sorts patients from oldest to newest
 const _getPatientIdsInTestQueue = createSelector(
   _getPatientsInTestQueue,
   (patients) => {
     return Object.keys(patients)
-      .filter(
-        (patientId) => patients[patientId] && patients[patientId].isInQueue
-      )
-      .sort((a, b) => patients[a].added - patients[b].added);
+      .sort((a, b) => patients[a].dateAdded - patients[b].dateAdded);
   }
 );
 
@@ -25,18 +21,16 @@ const _getPatientIdsInTestQueue = createSelector(
 export const getAllPatientsWithQueueStatus = createSelector(
   getPatients,
   _getPatientsInTestQueue,
-  (patients, testQueuePatients) => {
-    const patientQueueSearchItems = Object.values(patients).map((patient) => {
+  (allPatients, testQueuePatients) => {
+    const patientQueueSearchItems = Object.values(allPatients).map((patient) => {
       let { firstName, middleName, lastName, birthDate, patientId } = {
         ...patient,
       };
-      let isInQueue =
-        testQueuePatients[patientId] && testQueuePatients[patientId].isInQueue;
       return {
         displayName: displayFullName(firstName, middleName, lastName),
         birthDate,
         patientId,
-        isInQueue,
+        isInQueue: patientId in testQueuePatients,
       };
     });
     return patientQueueSearchItems;

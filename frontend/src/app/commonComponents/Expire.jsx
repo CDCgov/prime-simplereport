@@ -1,9 +1,8 @@
 import PropTypes from "prop-types";
 import { useEffect, useState } from "react";
 
-const Expire = (props) => {
+const Expire = ({ onExpire, children, delay }) => {
   const [isVisible, setIsVisible] = useState(true);
-  const { onExpire, children, delay } = { ...props };
 
   useEffect(() => {
     setIsVisible(true);

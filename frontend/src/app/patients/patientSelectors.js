@@ -5,7 +5,7 @@ export const getPatients = (state) => state.patients;
 
 // gets a single patient by its id
 export const getPatientById = (patientId) =>
-  createSelector(getPatients, (patients) => patients[patientId]);
+  createSelector(getPatients, (patients) => patients[patientId] || null);
 
 // gets multiple patients given an array of patientIds
 export const getPatientsByIds = (patientIds) =>

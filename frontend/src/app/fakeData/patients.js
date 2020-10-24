@@ -1,7 +1,7 @@
 // dummy responses for async queries
 export const demoPatients = [
   {
-    patientId: "abc123",
+    patientId: "patientId1",
     firstName: "Edward",
     middleName: "",
     lastName: "Teach",
@@ -10,7 +10,7 @@ export const demoPatients = [
     phone: "(123) 456-7890",
   },
   {
-    patientId: "def456",
+    patientId: "patientId2",
     firstName: "James",
     middleName: "D.",
     lastName: "Flint",
@@ -19,7 +19,7 @@ export const demoPatients = [
     phone: "(321) 546-7890",
   },
   {
-    patientId: "ghi789",
+    patientId: "patientId3",
     firstName: "John",
     middleName: "'Long'",
     lastName: "Silver",
@@ -31,8 +31,8 @@ export const demoPatients = [
 
 // dummy initial data to populate redux
 export const initialPatientState = {
-  abc123: {
-    patientId: "abc123",
+  patientId1: {
+    patientId: "patientId1",
     firstName: "Edward",
     middleName: "",
     lastName: "Teach",
@@ -40,8 +40,8 @@ export const initialPatientState = {
     address: "123 Plank St, Nassau",
     phone: "(123) 456-7890",
   },
-  def456: {
-    patientId: "def456",
+  patientId2: {
+    patientId: "patientId2",
     firstName: "James",
     middleName: "D.",
     lastName: "Flint",
@@ -49,8 +49,8 @@ export const initialPatientState = {
     address: "456 Plank St, Nassau",
     phone: "(321) 546-7890",
   },
-  ghi789: {
-    patientId: "ghi789",
+  patientId3: {
+    patientId: "patientId3",
     firstName: "John",
     middleName: "'Long'",
     lastName: "Silver",

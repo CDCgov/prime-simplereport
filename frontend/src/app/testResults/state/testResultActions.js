@@ -1,9 +1,5 @@
-// import { getTestResult } from "../../query/testResults";
-import {
-  // TEST_RESULT__REQUEST,
-  // TEST_RESULT__RECEIVED,
-  TEST_RESULT__SUBMIT,
-} from "./testResultActionTypes";
+import moment from "moment";
+import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
 
 import {
   removePatientFromQueue,
@@ -12,24 +8,6 @@ import {
 
 import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 
-// used to signal that a request is being made
-// const requestTestResult = (patientId) => {
-//   return {
-//     type: TEST_RESULT__REQUEST,
-//     payload: patientId,
-//   };
-// };
-
-// const receivedTestResult = (patientId, testResult) => {
-//   return {
-//     type: TEST_RESULT__RECEIVED,
-//     payload: {
-//       testResult,
-//       patientId,
-//     },
-//   };
-// };
-
 const _submitTestResult = (patientId, testResultInfo) => {
   return {
     type: TEST_RESULT__SUBMIT,
@@ -37,6 +15,7 @@ const _submitTestResult = (patientId, testResultInfo) => {
       patientId,
       deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
+      dateTested: moment().toISOString(),
     },
   };
 };

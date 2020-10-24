@@ -1,44 +1,34 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { clearNotification } from "./state/testQueueActions";
 
 import Alert from "../commonComponents/Alert";
 import { getPatientById } from "../patients/patientSelectors";
-import { QUEUE_NOTIFICATION_TYPES } from "./constants";
-import { displayFullName } from "../utils";
+import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "./constants";
+import Expire from "../commonComponents/Expire";
+import { getQueueNotification } from "../testQueue/testQueueSelectors";
 
-const ALERT_CONTENT = {
-  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (patient) => {
-    return {
-      type: "success",
-      title: `${displayFullName(
-        patient.firstName,
-        patient.middleName,
-        patient.lastName
-      )} was added to the queue`,
-      body: "Newly added patients go to the bottom of the queue",
-    };
-  },
-  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient) => {
-    return {
-      type: "success",
-      title: `Result was saved and reported for ${displayFullName(
-        patient.firstName,
-        patient.middleName,
-        patient.lastName
-      )}.`,
-      body: "See results to review past test results",
-    };
-  },
-};
-
-const QueueNotification = ({ notification }) => {
+const QueueNotification = () => {
+  const notification = useSelector(getQueueNotification);
   const { notificationType, patientId } = { ...notification };
   const patient = useSelector(getPatientById(patientId));
 
-  let { type, title, body } = { ...ALERT_CONTENT[notificationType](patient) };
+  const dispatch = useDispatch();
+  const onNotificationExpire = () => {
+    dispatch(clearNotification());
+  };
+  const shouldDisplay = notification && Object.keys(notification).length > 0;
+  if (!shouldDisplay) {
+    return null;
+  }
 
-  return <Alert type={type} body={body} title={title} />;
+  let { type, title, body } = { ...ALERT_CONTENT[notificationType](patient) };
+  return (
+    <Expire delay={3000} onExpire={onNotificationExpire}>
+      <Alert type={type} body={body} title={title} />
+    </Expire>
+  );
 };
 
 QueueNotification.propTypes = {

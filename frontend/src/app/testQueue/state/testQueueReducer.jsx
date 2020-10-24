@@ -1,4 +1,3 @@
-import moment from "moment";
 import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
@@ -9,14 +8,13 @@ import {
 export default (state = {}, action) => {
   switch (action.type) {
     case TEST_QUEUE__ADD_PATIENT: {
-      const patientId = action.payload.patientId;
+      const { patientId, dateAdded } = { ...action.payload };
       return {
         ...state,
         patients: {
           ...state.patients,
           [patientId]: {
-            isInQueue: true,
-            added: moment(),
+            dateAdded,
           },
         },
       };
@@ -45,7 +43,7 @@ export default (state = {}, action) => {
     case TEST_QUEUE__CLEAR_NOTIFICATION: {
       return {
         ...state,
-        notifications: {},
+        notifications: null,
       };
     }
     default:
