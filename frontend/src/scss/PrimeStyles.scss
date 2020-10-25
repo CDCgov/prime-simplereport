@@ -39,6 +39,7 @@
 
 .prime-queue-item {
   padding: 0;
+  position: relative;
 }
 
 .prime-container-padding {
@@ -56,4 +57,35 @@
   color: #069;
   text-decoration: underline;
   cursor: pointer;
+}
+
+.prime-close-button {
+  float: right;
+  top: -1em;
+  right: -1em;
+  display: block;
+  position: absolute;
+  background-color: white;
+  border-radius: 1em;
+  cursor: pointer;
+}
+
+.prime-radio__container {
+  padding: 1em;
+}
+
+.prime-radio__title {
+  margin-left: 1em;
+}
+
+.prime-radio__label {
+  margin-top: auto;
+}
+
+.prime-radio--success {
+  background-color: color($theme-color-prime-green-lighest);
+}
+
+.prime-radio--failure {
+  background-color: color($theme-color-prime-red-lightest);
 }
