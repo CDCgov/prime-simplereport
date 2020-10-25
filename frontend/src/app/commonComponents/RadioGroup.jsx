@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
-import classnames from "classnames"
+import classnames from "classnames";
 
 const RadioGroup = ({
   onChange,
@@ -12,23 +12,17 @@ const RadioGroup = ({
   selectedRadio,
   legend,
 }) => {
-
   // Note: list Affirmations before negations: Yes before No.
   const radioGroupItems = buttons.map((button) => {
     const uuid = uuidv4();
-    let classNames = classnames(
-      {
-        "prime-radio__container": true,
-        "prime-radio--horizontal__container": horizontal,
-        "prime-radio--success": button.value === selectedRadio && button.success,
-        "prime-radio--failure": button.value === selectedRadio && button.failure
-      },
-    );
+    let classNames = classnames({
+      "prime-radio__container": true,
+      "prime-radio--horizontal__container": horizontal,
+      "prime-radio--success": button.value === selectedRadio && button.success,
+      "prime-radio--failure": button.value === selectedRadio && button.failure,
+    });
     return (
-      <li
-        className={classNames}        
-        key={button.value}
-      >
+      <li className={classNames} key={button.value}>
         <input
           className="usa-radio__input"
           checked={button.value === selectedRadio}

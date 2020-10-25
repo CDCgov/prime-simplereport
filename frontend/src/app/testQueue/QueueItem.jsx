@@ -9,9 +9,14 @@ import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 import { DEVICES } from "../devices/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Anchor from "../commonComponents/Anchor";
+import AoeModalForm from "./AoEModalForm";
+import { displayFullName } from "../utils";
 
 const QueueItem = ({ patient }) => {
   const dispatch = useDispatch();
+
+  const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
 
   const [deviceId, updateDeviceId] = useState(null);
   const [testResultValue, updateTestResultValue] = useState(null);
@@ -34,6 +39,14 @@ const QueueItem = ({ patient }) => {
     updateTestResultValue(newTestResultValue);
   };
 
+  const openAoeModal = () => {
+    updateIsAoeModalOpen(true);
+  };
+
+  const closeAoeModal = () => {
+    updateIsAoeModalOpen(false);
+  };
+
   let options = Object.entries(DEVICES).map(([deviceId, { displayName }]) => {
     return {
       label: displayName,
@@ -46,10 +59,13 @@ const QueueItem = ({ patient }) => {
   });
 
   const closeButton = (
-    <div onClick={() => removeFromQueue(patient.patientId)} className="prime-close-button">
+    <div
+      onClick={() => removeFromQueue(patient.patientId)}
+      className="prime-close-button"
+    >
       <FontAwesomeIcon icon={"times-circle"} size="2x" />
     </div>
-  )
+  );
 
   return (
     <React.Fragment>
@@ -59,7 +75,11 @@ const QueueItem = ({ patient }) => {
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name">
               <h1>
-                {patient.firstName} {patient.lastName}
+                {displayFullName(
+                  patient.firstName,
+                  patient.middleName,
+                  patient.lastName
+                )}
               </h1>
             </div>
             <div className="grid-row">
@@ -72,6 +92,20 @@ const QueueItem = ({ patient }) => {
                 </li>
                 <li className="prime-li">
                   <LabeledText text={patient.birthDate} label="Date of Birth" />
+                </li>
+                <li className="prime-li">
+                  <Anchor
+                    text="Time of Test Questions"
+                    onClick={openAoeModal}
+                  />
+                  <AoeModalForm
+                    isOpen={isAoeModalOpen}
+                    onClose={closeAoeModal}
+                    patient={patient}
+                  />
+                  <p>
+                    <span className="usa-tag">PENDING</span>
+                  </p>
                 </li>
               </ul>
             </div>
