@@ -17,14 +17,15 @@ const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
       <RadioGroup
         onChange={(e) => onChange(e.target.value)}
         buttons={[
-          { value: COVID_RESULTS.POSITIVE,
+          {
+            value: COVID_RESULTS.POSITIVE,
             label: "Positive (+)",
-            failure: true 
+            failure: true,
           },
           {
             value: COVID_RESULTS.NEGATIVE,
             label: "Negative (-)",
-            success: true
+            success: true,
           },
           {
             value: COVID_RESULTS.INCONCLUSIVE,
