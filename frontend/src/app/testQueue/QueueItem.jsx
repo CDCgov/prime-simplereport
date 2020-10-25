@@ -101,7 +101,11 @@ const QueueItem = ({ patient }) => {
                   <AoeModalForm
                     isOpen={isAoeModalOpen}
                     onClose={closeAoeModal}
+                    patient={patient}
                   />
+                  <p>
+                    <span className="usa-tag">PENDING</span>
+                  </p>
                 </li>
               </ul>
             </div>
