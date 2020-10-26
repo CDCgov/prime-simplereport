@@ -10,7 +10,7 @@ export default (state = initialState, action) => {
       const newTestResult = {
         result,
         deviceId,
-        dateTested
+        dateTested,
       };
       allTestResults.push(newTestResult);
       return {
