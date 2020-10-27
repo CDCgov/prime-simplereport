@@ -1,22 +1,15 @@
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
-import {
-  getDetailedPatientsInTestQueue,
-  getQueueNotification,
-} from "../testQueue/testQueueSelectors";
-import { clearNotification } from "./state/testQueueActions";
+import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors";
 import AddToQueue from "./addToQueue/AddToQueue";
-import Expire from "../commonComponents/Expire";
 import QueueItem from "./QueueItem";
 import QueueNotification from "./QueueNotification";
 
 const TestQueue = () => {
   const patients = useSelector(getDetailedPatientsInTestQueue);
-  const notification = useSelector(getQueueNotification);
-  const dispatch = useDispatch();
 
   let shouldRenderQueue = Object.keys(patients).length > 0;
   const createQueueItems = (patients) =>
@@ -35,18 +28,6 @@ const TestQueue = () => {
       </React.Fragment>
     );
 
-  const onNotificationExpire = () => {
-    dispatch(clearNotification());
-  };
-
-  const shouldShowAlert = notification && Object.keys(notification).length > 0;
-
-  const alert = shouldShowAlert ? (
-    <Expire delay={3000} onExpire={onNotificationExpire}>
-      <QueueNotification notification={notification} />
-    </Expire>
-  ) : null;
-
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -54,7 +35,9 @@ const TestQueue = () => {
           <AddToQueue />
           {createQueueItems(patients)}
         </div>
-        <div className="grid-row">{alert}</div>
+        <div className="grid-row">
+          <QueueNotification />
+        </div>
       </div>
     </main>
   );

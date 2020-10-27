@@ -1,3 +1,4 @@
+import moment from "moment";
 import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
@@ -12,11 +13,12 @@ const _addPatientToQueue = (patientId) => {
     type: TEST_QUEUE__ADD_PATIENT,
     payload: {
       patientId,
+      dateAdded: moment().toISOString(),
     },
   };
 };
 
-const addToQueueNotification = (notificationType, patientId) => {
+export const addToQueueNotification = (notificationType, patientId) => {
   return {
     type: TEST_QUEUE__SHOW_NOTIFICATION,
     payload: {

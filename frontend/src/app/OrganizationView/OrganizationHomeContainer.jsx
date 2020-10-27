@@ -42,7 +42,7 @@ const OrganizationHomeContainer = () => {
         />
         <Route path={`${match.path}/`}>
           {/* default to the queue */}
-          <Redirect to={`${location.pathname}/queue`} />
+          <Redirect to={`${location.pathname}/patients`} />
         </Route>
       </Switch>
     </React.Fragment>

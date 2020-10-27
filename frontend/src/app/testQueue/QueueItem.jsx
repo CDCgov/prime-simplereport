@@ -1,27 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import LabeledText from "../commonComponents//LabeledText";
 import Dropdown from "../commonComponents//Dropdown";
-import Button from "../commonComponents/Button";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { patientPropType } from "../propTypes";
-import { getTestResultById } from "../testResults/testResultsSelector";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 import { DEVICES } from "../devices/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Anchor from "../commonComponents/Anchor";
+import AoeModalForm from "./AoEModalForm";
+import { displayFullName } from "../utils";
 
 const QueueItem = ({ patient }) => {
   const dispatch = useDispatch();
 
+  const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
+
   const [deviceId, updateDeviceId] = useState(null);
   const [testResultValue, updateTestResultValue] = useState(null);
-
-  const testResult = useSelector(getTestResultById(patient.patientId));
-  useEffect(() => {
-    updateDeviceId(testResult.deviceId);
-    updateTestResultValue(testResult.result);
-  }, [testResult]);
 
   const onTestResultSubmit = (e) => {
     e.preventDefault();
@@ -41,6 +39,14 @@ const QueueItem = ({ patient }) => {
     updateTestResultValue(newTestResultValue);
   };
 
+  const openAoeModal = () => {
+    updateIsAoeModalOpen(true);
+  };
+
+  const closeAoeModal = () => {
+    updateIsAoeModalOpen(false);
+  };
+
   let options = Object.entries(DEVICES).map(([deviceId, { displayName }]) => {
     return {
       label: displayName,
@@ -52,18 +58,28 @@ const QueueItem = ({ patient }) => {
     value: null,
   });
 
+  const closeButton = (
+    <div
+      onClick={() => removeFromQueue(patient.patientId)}
+      className="prime-close-button"
+    >
+      <FontAwesomeIcon icon={"times-circle"} size="2x" />
+    </div>
+  );
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item">
-        <Button
-          icon="times-circle"
-          onClick={() => removeFromQueue(patient.patientId)}
-        />
+        {closeButton}
         <div className="grid-row">
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name">
               <h1>
-                {patient.firstName} {patient.lastName}
+                {displayFullName(
+                  patient.firstName,
+                  patient.middleName,
+                  patient.lastName
+                )}
               </h1>
             </div>
             <div className="grid-row">
@@ -77,6 +93,20 @@ const QueueItem = ({ patient }) => {
                 <li className="prime-li">
                   <LabeledText text={patient.birthDate} label="Date of Birth" />
                 </li>
+                <li className="prime-li">
+                  <Anchor
+                    text="Time of Test Questions"
+                    onClick={openAoeModal}
+                  />
+                  <AoeModalForm
+                    isOpen={isAoeModalOpen}
+                    onClose={closeAoeModal}
+                    patient={patient}
+                  />
+                  <p>
+                    <span className="usa-tag">PENDING</span>
+                  </p>
+                </li>
               </ul>
             </div>
             <div className="grid-row">
@@ -89,7 +119,7 @@ const QueueItem = ({ patient }) => {
               />
             </div>
           </div>
-          <div className="tablet:grid-col-3 prime-test-result prime-container-padding">
+          <div className="tablet:grid-col-3 prime-test-result">
             <TestResultInputForm
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}

@@ -2,11 +2,6 @@
   background-color: color($theme-color-prime-gray-light);
 }
 
-.prime-patient-nav {
-  background-color: white;
-}
-
-// this is the white box that most content sits in
 .prime-container {
   flex: 0 0 auto;
   width: 100%;
@@ -33,12 +28,21 @@
   text-align: center;
 }
 
+// header
+
+.prime-patient-nav {
+  background-color: white;
+}
+
+// patient in the queue
+
 .prime-test-result {
   border-left: 1px solid color($theme-color-prime-gray-light);
 }
 
 .prime-queue-item {
   padding: 0;
+  position: relative;
 }
 
 .prime-container-padding {
@@ -49,6 +53,8 @@
   border-bottom: 1px solid color($theme-color-prime-gray-light);
 }
 
+// things that look like links but aren't links
+
 .prime-link {
   background: none !important;
   border: none;
@@ -57,3 +63,54 @@
   text-decoration: underline;
   cursor: pointer;
 }
+
+// close button
+
+.prime-close-button {
+  float: right;
+  top: -1em;
+  right: -1em;
+  display: block;
+  position: absolute;
+  background-color: white;
+  border-radius: 1em;
+  cursor: pointer;
+}
+
+// radio buttons
+
+.prime-radio__container {
+  padding: 1em;
+}
+
+.prime-radio__title {
+  margin-left: 1em;
+}
+
+.prime-radio__label {
+  margin-top: auto;
+}
+
+.prime-radio--success {
+  background-color: color($theme-color-prime-green-lighest);
+}
+
+.prime-radio--failure {
+  background-color: color($theme-color-prime-red-lightest);
+}
+
+// MODAL
+
+// the background behind the modal
+.prime-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+}
+
+// .prime-modal {
+// }

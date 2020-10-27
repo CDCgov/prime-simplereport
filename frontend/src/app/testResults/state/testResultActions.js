@@ -1,36 +1,37 @@
-// import { getTestResult } from "../../query/testResults";
+import moment from "moment";
+import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
+
 import {
-  // TEST_RESULT__REQUEST,
-  // TEST_RESULT__RECEIVED,
-  TEST_RESULT__SUBMIT,
-} from "./testResultActionTypes";
+  removePatientFromQueue,
+  addToQueueNotification,
+} from "../../testQueue/state/testQueueActions";
 
-// used to signal that a request is being made
-// const requestTestResult = (patientId) => {
-//   return {
-//     type: TEST_RESULT__REQUEST,
-//     payload: patientId,
-//   };
-// };
+import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 
-// const receivedTestResult = (patientId, testResult) => {
-//   return {
-//     type: TEST_RESULT__RECEIVED,
-//     payload: {
-//       testResult,
-//       patientId,
-//     },
-//   };
-// };
-
-export const submitTestResult = (patientId, testResultInfo) => {
+const _submitTestResult = (patientId, testResultInfo) => {
   return {
     type: TEST_RESULT__SUBMIT,
     payload: {
       patientId,
       deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
+      dateTested: moment().toISOString(),
     },
+  };
+};
+
+// TODO: should the component call each of these actions, or should they be grouped in this one action
+// Note: _submitTestResult will likely be an async action, as would removePatientFromQueue
+export const submitTestResult = (patientId, testResultInfo) => {
+  return (dispatch) => {
+    dispatch(_submitTestResult(patientId, testResultInfo));
+    dispatch(removePatientFromQueue(patientId));
+    dispatch(
+      addToQueueNotification(
+        QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS,
+        patientId
+      )
+    );
   };
 };
 
