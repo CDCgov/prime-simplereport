@@ -6,7 +6,6 @@ var _ = require("lodash");
 
 export const getPatients = (state) => state.patients;
 
-// basically u8st a-
 export const getPatientsWithLastTestResult = (state) =>
   createSelector(getPatients, getTestResults, (patients, testResults) => {
     return Object.entries(patients).map(([patientId, patient]) => {
