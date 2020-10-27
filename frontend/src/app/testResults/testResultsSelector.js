@@ -1,7 +1,6 @@
 import { createSelector } from "reselect";
 import { getPatients } from "../patients/patientSelectors";
 import { displayFullName } from "../utils";
-
 export const getTestResults = (state) => state.testResults;
 
 export const getTestResultById = (patientId) =>

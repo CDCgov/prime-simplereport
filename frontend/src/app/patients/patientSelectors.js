@@ -10,19 +10,21 @@ export const getPatients = (state) => state.patients;
 export const getPatientsWithLastTestResult = (state) =>
   createSelector(getPatients, getTestResults, (patients, testResults) => {
     return Object.entries(patients).map(([patientId, patient]) => {
-      console.log("testReslts", testResults);
-      let testResultDates = testResults[patientId].map((testResult) =>
-        moment(testResult.dateTested)
-      );
-      let daysSinceMostRecentTestResult = moment
-        .max(testResultDates)
-        .diff(moment(), "days");
-      let { firstName, middleName, lastName, birthDate } = { ...patient };
-      return {
+      let { firstName, middleName, lastName } = { ...patient };
+      let patientWithData = {
+        ...patient,
         displayName: displayFullName(firstName, middleName, lastName),
-        birthDate,
-        lastTestDate: daysSinceMostRecentTestResult,
       };
+      if (testResults[patientId]) {
+        let testResultDates = testResults[patientId].map((testResult) =>
+          moment(testResult.dateTested)
+        );
+        let daysSinceMostRecentTestResult = moment
+          .max(testResultDates)
+          .diff(moment(), "days");
+        patientWithData.lastTestDate = daysSinceMostRecentTestResult;
+      }
+      return patientWithData;
     });
   });
 

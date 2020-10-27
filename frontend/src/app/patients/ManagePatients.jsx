@@ -1,10 +1,7 @@
 import React from "react";
 
 import { useSelector } from "react-redux";
-import {
-  getPatients,
-  getPatientsWithLastTestResult,
-} from "../patients/patientSelectors";
+import { getPatientsWithLastTestResult } from "../patients/patientSelectors";
 
 import Button from "../commonComponents/Button";
 import { v4 as uuidv4 } from "uuid";
@@ -18,9 +15,7 @@ const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
 
 const ManagePatients = () => {
-  const patients = useSelector(getPatients);
-  const patients2 = useSelector(getPatientsWithLastTestResult());
-  console.log(patients2);
+  const patients = useSelector(getPatientsWithLastTestResult());
 
   var loadFile = (file) => {
     var thisReader = new FileReader();
@@ -115,21 +110,19 @@ const ManagePatients = () => {
   };
 
   const patientRows = (patients) => {
-    if (patients.length === 0) {
-      return;
-    }
-
     return patients.map((patient) => (
       <tr key={`patient-${uuidv4()}`}>
         <th scope="row">{patient.displayName}</th>
         <td>{patient.patientId}</td>
-        <td>{patient.lastTestDate}</td>
-        <td>{patient.result}</td>
+        <td> {patient.birthDate}</td>
+        <td>
+          {patient.lastTestDate === undefined ? "N/A" : patient.lastTestDate}
+        </td>
       </tr>
     ));
   };
 
-  let rows = patientRows(patients2);
+  let rows = patientRows(patients);
 
   return (
     <main className="prime-home">
@@ -149,19 +142,23 @@ const ManagePatients = () => {
           />
         </div>
       </div>
-      <div className="prime-container">
-        <h1> Add People</h1>
-        <table className="usa-table usa-table--borderless">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Unique ID</th>
-              <th scope="col">Date of Test</th>
-              <th scope="col">Days since last test</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
+      <div className="grid-container">
+        <div className="prime-container">
+          <div className="grid-row">
+            <h2> Add People</h2>
+            <table className="usa-table usa-table--borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Name</th>
+                  <th scope="col">Unique ID</th>
+                  <th scope="col">Date of Birth</th>
+                  <th scope="col">Days since last test</th>
+                </tr>
+              </thead>
+              <tbody>{rows}</tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </main>
   );

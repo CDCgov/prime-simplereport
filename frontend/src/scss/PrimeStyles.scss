@@ -3,11 +3,7 @@
 }
 
 .prime-container {
-  flex: 0 0 auto;
   width: 100%;
-  background-color: #ffffff;
-  margin: 1rem 0;
-  padding: 1rem;
 }
 
 .prime-ul {
@@ -17,7 +13,7 @@
 
 .prime-li {
   float: left;
-  margin: 1rem;
+  margin-right: 2rem;
 }
 
 .prime-right-align {
@@ -42,6 +38,7 @@
 
 .prime-queue-item {
   padding: 0;
+  margin-bottom: 1rem;
   position: relative;
 }
 
@@ -80,7 +77,7 @@
 // radio buttons
 
 .prime-radio__container {
-  padding: 1em;
+  padding: 0.6em;
 }
 
 .prime-radio__title {

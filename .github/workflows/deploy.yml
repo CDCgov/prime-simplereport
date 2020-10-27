@@ -2,19 +2,19 @@ name: Deploy Client Application
 
 env:
   DEMO_CF_APP: "prime-data-input-client" # the app name if we are deploying 'main'
-  STAGING_CF_APP: "prime-data-input-staging" # the app name if we are deploying any other branch
+  SANDBOX_CF_APP: "prime-data-input-sandbox" # the app name if we are deploying any other branch
 on:
   workflow_dispatch: # run when somebody pushes the button (on whatever branch they choose)
   push:
-    branches: # automatically deploy the "staging" branch on every push
-      - staging
+    branches: # automatically deploy the "sandbox" branch on every push
+      - sandbox
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
       # VERY IMPORTANT: if you run this on any branch other than master, it will
-      # deploy to STAGING_CF_APP
+      # deploy to SANDBOX_CF_APP
     - name: Choose deployment environment
       run: |
         if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
@@ -22,9 +22,9 @@ jobs:
           app=$DEMO_CF_APP
           title="PRIME Data Input Prototype"
         else
-          echo We are deploying to the STAGING environment
-          app=$STAGING_CF_APP
-          title="** STAGING ** PRIME Data Input Prototype ** STAGING **"
+          echo We are deploying to the SANDBOX environment
+          app=$SANDBOX_CF_APP
+          title="** DEV/TEST ** PRIME Data Input Prototype ** DEV/TEST **"
           echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
         fi
         echo >> $GITHUB_ENV "CF_APPLICATION=$app"
