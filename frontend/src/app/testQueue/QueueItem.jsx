@@ -69,20 +69,20 @@ const QueueItem = ({ patient }) => {
 
   return (
     <React.Fragment>
-      <div className="grid-container prime-container prime-queue-item">
+      <div className="grid-container prime-container prime-queue-item usa-card__container">
         {closeButton}
         <div className="grid-row">
           <div className="tablet:grid-col-9">
-            <div className="grid-row prime-test-name">
-              <h1>
+            <div className="grid-row prime-test-name usa-card__header">
+              <h2>
                 {displayFullName(
                   patient.firstName,
                   patient.middleName,
                   patient.lastName
                 )}
-              </h1>
+              </h2>
             </div>
-            <div className="grid-row">
+            <div className="grid-row usa-card__body">
               <ul className="prime-ul">
                 <li className="prime-li">
                   <LabeledText text={patient.patientId} label="Unique ID" />
@@ -109,7 +109,7 @@ const QueueItem = ({ patient }) => {
                 </li>
               </ul>
             </div>
-            <div className="grid-row">
+            <div className="grid-row usa-card__footer">
               <Dropdown
                 options={options}
                 label="Device"

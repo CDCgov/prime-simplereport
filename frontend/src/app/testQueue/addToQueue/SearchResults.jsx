@@ -40,17 +40,21 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
   ));
 
   return (
-    <table className="usa-table usa-table--borderless">
-      <thead>
-        <tr>
-          <th scope="col">Full name</th>
-          <th scope="col">Date of Birth</th>
-          <th scope="col">Unique ID</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>{renderedSuggestion}</tbody>
-    </table>
+    <div className="usa-card__container">
+      <div className="usa-card__body">
+        <table className="usa-table usa-table--borderless">
+          <thead>
+            <tr>
+              <th scope="col">Full name</th>
+              <th scope="col">Date of Birth</th>
+              <th scope="col">Unique ID</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>{renderedSuggestion}</tbody>
+        </table>
+      </div>
+    </div>
   );
 };
 
