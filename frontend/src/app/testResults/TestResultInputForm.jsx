@@ -36,7 +36,7 @@ const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
         name={`covid-test-result-${uuidv4()}`}
         selectedRadio={testResultValue}
       />
-      <div class="prime-test-result-submit">
+      <div className="prime-test-result-submit">
         <Button onClick={onSubmit} type="submit" outline label="Submit" />
         <Anchor onClick={onClearClick} text="Clear" />
       </div>
