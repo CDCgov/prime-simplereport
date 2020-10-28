@@ -18,7 +18,6 @@ export const getPatientsWithLastTestResult = (state) =>
         let testResultDates = testResults[patientId].map((testResult) =>
           moment(testResult.dateTested)
         );
-
         let daysSinceMostRecentTestResult = moment().diff(
           moment.max(testResultDates),
           "days"
