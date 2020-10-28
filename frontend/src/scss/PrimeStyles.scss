@@ -26,8 +26,13 @@
 
 // header
 
-.prime-patient-nav {
-  background-color: white;
+.active-nav-item {
+  background-color: color($theme-color-primary-darker);
+}
+
+.prime-nav {
+  justify-content: left;
+  padding: 0;
 }
 
 // patient in the queue
