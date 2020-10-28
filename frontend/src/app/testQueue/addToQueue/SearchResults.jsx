@@ -14,7 +14,13 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
   }
 
   if (suggestions.length === 0) {
-    return <h1> No results </h1>;
+    return (
+      <div className="usa-card__container">
+        <div className="usa-card__body">
+          <h3> No results </h3>
+        </div>
+      </div>
+    );
   }
 
   const addToQueueButton = (patient) =>

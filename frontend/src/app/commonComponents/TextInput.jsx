@@ -15,6 +15,7 @@ const TextInput = ({ value, label, name, placeholder, onChange }) => {
     <React.Fragment>
       {labelElem}
       <input
+        autoComplete="off"
         className="usa-input"
         id={newId}
         name={name}
