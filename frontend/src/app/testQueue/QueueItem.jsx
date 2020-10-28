@@ -63,7 +63,10 @@ const QueueItem = ({ patient }) => {
       onClick={() => removeFromQueue(patient.patientId)}
       className="prime-close-button"
     >
-      <FontAwesomeIcon icon={"times-circle"} size="2x" />
+      <span className="fa-layers">
+        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
+        <FontAwesomeIcon icon={"times-circle"} size="2x" />
+      </span>
     </div>
   );
 

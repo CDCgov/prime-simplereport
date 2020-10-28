@@ -127,36 +127,46 @@ const ManagePatients = () => {
   return (
     <main className="prime-home">
       <div className="grid-container">
-        <div className="prime-container">
-          <h1> Add New Patients</h1>
-          <Button type="button" onClick={() => {}} label="New Patient" />
-          <hr />
+        <div className="grid-row">
+          <div className="prime-container usa-card__container">
+            <div className="usa-card__header">
+              <h1> Add New Patients</h1>
+            </div>
+            <div className="usa-card__body">
+              <Button type="button" onClick={() => {}} label="New Patient" />
+              <hr />
 
-          <p>or like do a csv or something:</p>
-          <input
-            type="file"
-            id="uploadCSV"
-            className="input-file"
-            accept=".csv"
-            onChange={(csv) => loadFile(csv.target.files[0])}
-          />
+              <p>or like do a csv or something:</p>
+              <input
+                type="file"
+                id="uploadCSV"
+                className="input-file"
+                accept=".csv"
+                onChange={(csv) => loadFile(csv.target.files[0])}
+              />
+            </div>
+          </div>
         </div>
       </div>
       <div className="grid-container">
-        <div className="prime-container">
-          <div className="grid-row">
-            <h2> Add People</h2>
-            <table className="usa-table usa-table--borderless">
-              <thead>
-                <tr>
-                  <th scope="col">Name</th>
-                  <th scope="col">Unique ID</th>
-                  <th scope="col">Date of Birth</th>
-                  <th scope="col">Days since last test</th>
-                </tr>
-              </thead>
-              <tbody>{rows}</tbody>
-            </table>
+        <div className="grid-row">
+          <div className="prime-container usa-card__container">
+            <div className="usa-card__header">
+              <h2> Add People</h2>
+            </div>
+            <div className="usa-card__body">
+              <table className="usa-table usa-table--borderless width-full">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Unique ID</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Days since last test</th>
+                  </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

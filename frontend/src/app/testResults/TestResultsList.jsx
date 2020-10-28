@@ -29,19 +29,23 @@ const TestResultsList = () => {
       <main className="prime-home">
         <div className="grid-container">
           <div className="grid-row">
-            <h2> All Tests </h2>
-            <div className="prime-container">
-              <table className="usa-table usa-table--borderless">
-                <thead>
-                  <tr>
-                    <th scope="col">Patient Name</th>
-                    <th scope="col">Unique ID</th>
-                    <th scope="col">Date of Test</th>
-                    <th scope="col">Result</th>
-                  </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-              </table>
+            <div className="prime-container usa-card__container">
+              <div className="usa-card__header">
+                <h2> Test Results </h2>
+              </div>
+              <div className="usa-card__body">
+                <table className="usa-table usa-table--borderless width-full">
+                  <thead>
+                    <tr>
+                      <th scope="col">Patient Name</th>
+                      <th scope="col">Unique ID</th>
+                      <th scope="col">Date of Test</th>
+                      <th scope="col">Result</th>
+                    </tr>
+                  </thead>
+                  <tbody>{rows}</tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

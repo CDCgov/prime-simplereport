@@ -19,22 +19,32 @@ const TestQueue = () => {
       ))
     ) : (
       <React.Fragment>
-        <div className="prime-container prime-center">
-          <p>
-            There are no people in the queue. Search for people above to add
-            them to the queue.
-          </p>
+        <div className="grid-container prime-center usa-card__container">
+          <div className="grid-row">
+            <div className="usa-card__body">
+              <p>
+                There are no people in the queue. Search for people above to add
+                them to the queue.
+              </p>
+            </div>
+          </div>
         </div>
       </React.Fragment>
     );
+
+  // <div className="grid-container prime-container prime-queue-item usa-card__container">
+  //     {closeButton}
+  //     <div className="grid-row">
+  //       <div className="tablet:grid-col-9">
+  //         <div className="grid-row prime-test-name usa-card__header">
 
   return (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
           <AddToQueue />
-          {createQueueItems(patients)}
         </div>
+        {createQueueItems(patients)}
         <div className="grid-row">
           <QueueNotification />
         </div>

@@ -26,8 +26,13 @@
 
 // header
 
-.prime-patient-nav {
-  background-color: white;
+.active-nav-item {
+  background-color: color($theme-color-primary-darker);
+}
+
+.prime-nav {
+  justify-content: left;
+  padding: 0;
 }
 
 // patient in the queue
@@ -64,14 +69,17 @@
 // close button
 
 .prime-close-button {
-  float: right;
   top: -1em;
-  right: -1em;
+  right: 0em;
   display: block;
   position: absolute;
-  background-color: white;
-  border-radius: 1em;
   cursor: pointer;
+}
+
+// TestResultInputForm
+.prime-test-result-submit {
+  margin-left: 1em;
+  margin-bottom: 1em;
 }
 
 // radio buttons

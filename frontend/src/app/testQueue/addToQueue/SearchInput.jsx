@@ -17,7 +17,6 @@ const SearchInput = ({
         onChange={(e) => onInputChange(e)}
         name="add-to-queue-search"
         addClass="usa-input"
-        autocomplete={false}
       />
       <Button
         type="submit"
