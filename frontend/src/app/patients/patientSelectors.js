@@ -18,9 +18,11 @@ export const getPatientsWithLastTestResult = (state) =>
         let testResultDates = testResults[patientId].map((testResult) =>
           moment(testResult.dateTested)
         );
-        let daysSinceMostRecentTestResult = moment
-          .max(testResultDates)
-          .diff(moment(), "days");
+
+        let daysSinceMostRecentTestResult = moment().diff(
+          moment.max(testResultDates),
+          "days"
+        );
         patientWithData.lastTestDate = daysSinceMostRecentTestResult;
       }
       return patientWithData;
