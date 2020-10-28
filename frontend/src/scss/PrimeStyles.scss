@@ -69,13 +69,10 @@
 // close button
 
 .prime-close-button {
-  float: right;
   top: -1em;
-  right: -1em;
+  right: 0em;
   display: block;
   position: absolute;
-  background-color: white;
-  border-radius: 1em;
   cursor: pointer;
 }
 
