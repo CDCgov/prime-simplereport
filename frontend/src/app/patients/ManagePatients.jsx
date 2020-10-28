@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useSelector } from "react-redux";
 import { getPatientsWithLastTestResult } from "../patients/patientSelectors";
@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import { readString } from "react-papaparse";
 import Ajv from "ajv";
 
+import CSVModalForm from "./CSVModalForm";
 // this can't be the best way to handle this?
 import * as schemaPatient from "../patient.schema.json";
 
@@ -16,6 +17,19 @@ const validate = ajv.compile(schemaPatient.default);
 
 const ManagePatients = () => {
   const patients = useSelector(getPatientsWithLastTestResult());
+  
+  const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);  
+  
+  const openCSVModal = () => {     
+    updateIsCSVModalOpen(true);
+  };
+
+  const closeCSVModal = () => {
+    updateIsCSVModalOpen(false);
+  };
+
+
+  const [CSVdata, setCSVData] = useState({});
 
   var loadFile = (file) => {
     var thisReader = new FileReader();
@@ -41,6 +55,9 @@ const ManagePatients = () => {
           jsonImport.badRows.push(err);
         });
 
+
+      // NOTE: WE NEED TO REMOVE DUPLICATES WITHIN THIS FILE ITSELF BY KEY!!
+
       // Now we need to check this data against our JSON Schema, row by row, pull out the rows that
       // don't validate and add them to our badRows, using a similar format for error
       // also check for existing dupes
@@ -64,7 +81,7 @@ const ManagePatients = () => {
         } else if (row.patientID in patients) {
           // Check for duplicates by ID
           // We don't splice these out because they are going to stay in but we want to summarize
-          // them? I dunno about this.
+          // them? I dunno about this.          
           err = {
             type: "WARNING",
             code: "duplicateID",
@@ -90,6 +107,8 @@ const ManagePatients = () => {
         console.log("Error", index, ":", row.code, row.message);
       });
 
+
+
       // Adding filtered content to patient store, this all needs to get updated when we finalize
       // this.
       jsonImport.data.forEach((row, index) => {
@@ -104,7 +123,11 @@ const ManagePatients = () => {
           birthDate: row.patientDOB,
         };
       });
-      console.log(patients);
+      //console.log(patients);
+
+      // react state confuses me, not sure if this is doubling memory or just creating a pointer?
+      setCSVData(jsonImport);
+      openCSVModal();
     };
     thisReader.readAsText(file);
   };
@@ -144,6 +167,7 @@ const ManagePatients = () => {
                 accept=".csv"
                 onChange={(csv) => loadFile(csv.target.files[0])}
               />
+              <CSVModalForm isOpen={isCSVModalOpen} onClose={closeCSVModal} data={CSVdata}/>
             </div>
           </div>
         </div>
