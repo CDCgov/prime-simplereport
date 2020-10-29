@@ -57,17 +57,26 @@ const NoDefaultDropdown = ({
   label,
   name,
   options,
+  value,
+  onChange = () => undefined,
   placeholder = " - Select - ",
 }) => {
-  console.log("Options are", options);
-  //TODO: deprecation warning on "selected"
   return (
-    <Dropdown label={label} name={name} options={[]}>
-      <option disabled selected>
+    <Dropdown
+      label={label}
+      name={name}
+      options={[]}
+      defaultValue=""
+      value={value}
+      onChange={onChange}
+    >
+      <option value="" disabled>
         {placeholder}
       </option>
       {options.map((opt) => (
-        <option value={opt.value}>{opt.label}</option>
+        <option value={opt.value} key={opt.value}>
+          {opt.label}
+        </option>
       ))}
     </Dropdown>
   );
