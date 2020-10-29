@@ -38,37 +38,71 @@ const getTestTypes = () => [
   { label: "Rapid", value: "2" },
   { label: "Home", value: "3" },
 ];
+const getPregnancyResponses = () => [
+  { label: "Yes", value: "77386006" },
+  { label: "No", value: "60001007" },
+  { label: "Would not state", value: "261665006" },
+];
 // END things that should be service calls
 
 // this should get styled to render horizontally
-const YesNoRadio = ({ label, name }) => (
-  <ChoiceList
-    label={label}
+const YesNoRadio = ({ label, name, isYes, setIsYes }) => {
+  return (
+    <ChoiceList
+      label={label}
+      name={name}
+      type="radio"
+      onChange={(evt) => setIsYes(evt.currentTarget.value === "yes")}
+      choices={[
+        { label: "Yes", value: "yes", checked: isYes === true },
+        { label: "No", value: "no", checked: isYes === false },
+      ]}
+    />
+  );
+};
+
+const ManagedDateField = ({
+  name,
+  label,
+  managedDate = { month: "", day: "", year: "" },
+  setManagedDate,
+}) => (
+  <DateField
     name={name}
-    type="radio"
-    choices={[
-      { label: "Yes", value: "yes" },
-      { label: "No", value: "no" },
-    ]}
+    label={label}
+    onChange={(_, newDate) => {
+      setManagedDate(newDate);
+    }}
+    monthValue={managedDate.month}
+    dayValue={managedDate.day}
+    yearValue={managedDate.year}
   />
 );
-
 const NoDefaultDropdown = ({
   label,
   name,
   options,
   value,
-  onChange = () => undefined,
+  onChange,
+  stateSetter,
   placeholder = " - Select - ",
 }) => {
+  const defaultValue = value === undefined ? "" : undefined;
+  if (stateSetter !== undefined && onChange !== undefined) {
+    throw new Error("Cannot have both stateSetter and onChange defined");
+  }
+  const changeHandler =
+    stateSetter === undefined
+      ? onChange
+      : (evt) => stateSetter(evt.currentTarget.value);
   return (
     <Dropdown
       label={label}
       name={name}
       options={[]}
-      defaultValue=""
+      defaultValue={defaultValue}
       value={value}
-      onChange={onChange}
+      onChange={changeHandler}
     >
       <option value="" disabled>
         {placeholder}
@@ -83,7 +117,13 @@ const NoDefaultDropdown = ({
 };
 
 // building block functions that *probably* don't want to be exportable components
-const SymptomInputs = ({ symptomListConfig, currentSymptoms, setSymptoms }) => {
+const SymptomInputs = ({
+  symptomListConfig,
+  currentSymptoms,
+  setSymptoms,
+  onsetDate,
+  setOnsetDate,
+}) => {
   const symptomChange = (evt) => {
     const choice = evt.currentTarget;
     const newSymptoms = { ...currentSymptoms };
@@ -103,27 +143,53 @@ const SymptomInputs = ({ symptomListConfig, currentSymptoms, setSymptoms }) => {
         type="checkbox" // super irritating that this is required
         choices={choiceList}
       />
-      <DateField name="symptom_onset" label="Date of symptom onset" />
+      <ManagedDateField
+        name="symptom_onset"
+        label="Date of symptom onset"
+        managedDate={onsetDate}
+        setManagedDate={setOnsetDate}
+      />
     </React.Fragment>
   );
 };
 
-const PriorTestInputs = ({ testTypeConfig }) => {
+const PriorTestInputs = ({
+  testTypeConfig,
+  hasPriorTest,
+  setHasPriorTest,
+  priorTestDate,
+  setPriorTestDate,
+  priorTestResult,
+  setPriorTestResult,
+  priorTestType,
+  setPriorTestType,
+}) => {
   return (
     <React.Fragment>
-      <YesNoRadio name="prior_test_flag" label="First test?" />
-      <DateField
+      <YesNoRadio
+        name="prior_test_flag"
+        label="First test?"
+        isYes={hasPriorTest}
+        setIsYes={setHasPriorTest}
+      />
+      <ManagedDateField
         name="prior_test_date"
         label="Date of most recent prior test?"
+        managedDate={priorTestDate}
+        setManagedDate={setPriorTestDate}
       />
       <NoDefaultDropdown
         label="Type of prior test"
         name="prior_test_type"
+        value={priorTestType}
+        stateSetter={setPriorTestType}
         options={testTypeConfig}
       />
       <NoDefaultDropdown
         label="Result of prior test"
         name="prior_test_result"
+        value={priorTestResult}
+        stateSetter={setPriorTestResult}
         options={[
           { value: "positive", label: "Positive" },
           { value: "negative", label: "Negative" },
@@ -162,7 +228,20 @@ const AoEModalForm = ({
       initialSymptoms[val] = false;
     });
   }
+  const useDateState = (preLoaded) =>
+    useState(preLoaded || { month: "", day: "", year: "" });
+
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
+  const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
+  const priorTestPreload = loadState.priorTest;
+  const [priorTestDate, setPriorTestDate] = useDateState(
+    priorTestPreload ? priorTestPreload.date : null
+  );
+  const [hasPriorTest, setHasPriorTest] = useState(null);
+  const [priorTestType, setPriorTestType] = useState("");
+  const [priorTestResult, setPriorTestResult] = useState("");
+
+  const [pregnancyResponse, setPregnancyResponse] = useState("");
 
   if (isOpen) {
     const actionButtons = (
@@ -194,10 +273,22 @@ const AoEModalForm = ({
           currentSymptoms={currentSymptoms}
           setSymptoms={setSymptoms}
           symptomListConfig={symptomConfig}
+          setOnsetDate={setOnsetDate}
+          onsetDate={onsetDate}
         />
 
         <h2>Past Tests</h2>
-        <PriorTestInputs testTypeConfig={testConfig} />
+        <PriorTestInputs
+          testTypeConfig={testConfig}
+          priorTestDate={priorTestDate}
+          setPriorTestDate={setPriorTestDate}
+          hasPriorTest={hasPriorTest}
+          setHasPriorTest={setHasPriorTest}
+          priorTestType={priorTestType}
+          setPriorTestType={setPriorTestType}
+          priorTestResult={priorTestResult}
+          setPriorTestResult={setPriorTestResult}
+        />
 
         <h2>Pregancy</h2>
         {/* horizontal? */}
@@ -205,11 +296,11 @@ const AoEModalForm = ({
           label="Pregnancy"
           name="pregnancy"
           type="radio"
-          choices={[
-            { label: "Yes", value: "77386006" },
-            { label: "No", value: "60001007" },
-            { label: "Would not state", value: "261665006" },
-          ]}
+          onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+          choices={getPregnancyResponses().map((opt) => ({
+            ...opt,
+            checked: opt.value === pregnancyResponse,
+          }))}
         />
         {actionButtons}
       </Dialog>
