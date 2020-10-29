@@ -201,7 +201,6 @@ const PriorTestInputs = ({
 };
 
 const AoEModalForm = ({
-  isOpen,
   onClose,
   patient,
   loadState = {},
@@ -234,9 +233,13 @@ const AoEModalForm = ({
   const [hasPriorTest, setHasPriorTest] = useState(priorTestPreload.exists);
   const [priorTestDate, setPriorTestDate] = useDateState(priorTestPreload.date);
   const [priorTestType, setPriorTestType] = useState(priorTestPreload.type);
-  const [priorTestResult, setPriorTestResult] = useState(priorTestPreload.result);
+  const [priorTestResult, setPriorTestResult] = useState(
+    priorTestPreload.result
+  );
 
-  const [pregnancyResponse, setPregnancyResponse] = useState(loadState.pregnancy);
+  const [pregnancyResponse, setPregnancyResponse] = useState(
+    loadState.pregnancy
+  );
 
   const saveAnswers = () => {
     const newState = {
@@ -246,78 +249,75 @@ const AoEModalForm = ({
         exists: hasPriorTest,
         date: priorTestDate,
         type: priorTestType,
-        result: priorTestResult
+        result: priorTestResult,
       },
-      pregnancy: pregnancyResponse
+      pregnancy: pregnancyResponse,
     };
     saveCallback(newState);
     onClose();
   };
 
-  if (isOpen) {
-    const actionButtons = (
-      <div style={{ float: "right" }}>
-        <Button variation="transparent" onClick={onClose}>
-          Cancel
-        </Button>
-        <Button variation="primary" onClick={saveAnswers}>
-          Add to Queue
-        </Button>
-      </div>
-    );
+  const actionButtons = (
+    <div style={{ float: "right" }}>
+      <Button variation="transparent" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button variation="primary" onClick={saveAnswers}>
+        Add to Queue
+      </Button>
+    </div>
+  );
 
-    return (
-      <Dialog
-        onExit={onClose}
-        closeText="Cancel"
-        heading={displayFullName(
-          patient.firstName,
-          patient.middleName,
-          patient.lastName
-        )}
-        getApplicationNode={() => {
-          document.getElementById("#root");
-        }}
-      >
-        <h2>Symptoms</h2>
-        <SymptomInputs
-          currentSymptoms={currentSymptoms}
-          setSymptoms={setSymptoms}
-          symptomListConfig={symptomConfig}
-          setOnsetDate={setOnsetDate}
-          onsetDate={onsetDate}
-        />
+  return (
+    <Dialog
+      onExit={onClose}
+      closeText="Cancel"
+      heading={displayFullName(
+        patient.firstName,
+        patient.middleName,
+        patient.lastName
+      )}
+      getApplicationNode={() => {
+        document.getElementById("#root");
+      }}
+    >
+      <h2>Symptoms</h2>
+      <SymptomInputs
+        currentSymptoms={currentSymptoms}
+        setSymptoms={setSymptoms}
+        symptomListConfig={symptomConfig}
+        setOnsetDate={setOnsetDate}
+        onsetDate={onsetDate}
+      />
 
-        <h2>Past Tests</h2>
-        <PriorTestInputs
-          testTypeConfig={testConfig}
-          priorTestDate={priorTestDate}
-          setPriorTestDate={setPriorTestDate}
-          hasPriorTest={hasPriorTest}
-          setHasPriorTest={setHasPriorTest}
-          priorTestType={priorTestType}
-          setPriorTestType={setPriorTestType}
-          priorTestResult={priorTestResult}
-          setPriorTestResult={setPriorTestResult}
-        />
+      <h2>Past Tests</h2>
+      <PriorTestInputs
+        testTypeConfig={testConfig}
+        priorTestDate={priorTestDate}
+        setPriorTestDate={setPriorTestDate}
+        hasPriorTest={hasPriorTest}
+        setHasPriorTest={setHasPriorTest}
+        priorTestType={priorTestType}
+        setPriorTestType={setPriorTestType}
+        priorTestResult={priorTestResult}
+        setPriorTestResult={setPriorTestResult}
+      />
 
-        <h2>Pregancy</h2>
-        {/* horizontal? */}
-        <ChoiceList
-          label="Pregnancy"
-          name="pregnancy"
-          type="radio"
-          onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
-          choices={getPregnancyResponses().map((opt) => ({
-            ...opt,
-            checked: opt.value === pregnancyResponse,
-          }))}
-        />
-        {actionButtons}
-      </Dialog>
-    );
-  }
-  return null;
+      <h2>Pregancy</h2>
+      {/* horizontal? */}
+      <ChoiceList
+        label="Pregnancy"
+        name="pregnancy"
+        type="radio"
+        onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+        choices={getPregnancyResponses().map((opt) => ({
+          ...opt,
+          checked: opt.value === pregnancyResponse,
+        }))}
+      />
+      {actionButtons}
+    </Dialog>
+  );
 };
 
 AoEModalForm.propTypes = {};

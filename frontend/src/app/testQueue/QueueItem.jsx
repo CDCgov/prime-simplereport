@@ -70,6 +70,7 @@ const QueueItem = ({ patient }) => {
     </div>
   );
   const [aoeAnswers, setAoeAnswers] = useState({});
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item usa-card__container">
@@ -101,13 +102,14 @@ const QueueItem = ({ patient }) => {
                     text="Time of Test Questions"
                     onClick={openAoeModal}
                   />
-                  <AoeModalForm
-                    isOpen={isAoeModalOpen}
-                    onClose={closeAoeModal}
-                    patient={patient}
-                    loadState={aoeAnswers}
-                    saveCallback={setAoeAnswers}
-                  />
+                  {isAoeModalOpen && (
+                    <AoeModalForm
+                      onClose={closeAoeModal}
+                      patient={patient}
+                      loadState={aoeAnswers}
+                      saveCallback={setAoeAnswers}
+                    />
+                  )}
                   <p>
                     <span className="usa-tag">PENDING</span>
                   </p>
