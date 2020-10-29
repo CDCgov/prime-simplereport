@@ -9,6 +9,7 @@ import {
 } from "@cmsgov/design-system";
 
 import "@cmsgov/design-system/dist/css/index.css";
+import { useState } from "react";
 
 // BEGIN things that should be service calls
 const globalSymptomDefinitions = [
@@ -72,25 +73,35 @@ const NoDefaultDropdown = ({
   );
 };
 
-const buildAoEQuestionContent = (
-  symptomListConfig = [],
-  testTypeConfig = []
-) => {
-  const symptomChoices = (
-    <ChoiceList
-      label="Are you experiencing any of the following symptoms?"
-      name="symptoms"
-      type="checkbox" // super irritating that this is required
-      choices={symptomListConfig}
-    />
-  );
+// building block functions that *probably* don't want to be exportable components
+const SymptomInputs = ({ symptomListConfig, currentSymptoms, setSymptoms }) => {
+  const symptomChange = (evt) => {
+    const choice = evt.currentTarget;
+    const newSymptoms = { ...currentSymptoms };
+    newSymptoms[choice.value] = choice.checked;
+    setSymptoms(newSymptoms);
+  };
+  const choiceList = symptomListConfig.map((conf) => {
+    const { label, value } = conf;
+    return { label, value, checked: currentSymptoms[value] };
+  });
   return (
     <React.Fragment>
-      <h2>Symptoms</h2>
-      {symptomChoices}
+      <ChoiceList
+        onChange={symptomChange}
+        label="Are you experiencing any of the following symptoms?"
+        name="symptoms"
+        type="checkbox" // super irritating that this is required
+        choices={choiceList}
+      />
       <DateField name="symptom_onset" label="Date of symptom onset" />
+    </React.Fragment>
+  );
+};
 
-      <h2>Past Tests</h2>
+const PriorTestInputs = ({ testTypeConfig }) => {
+  return (
+    <React.Fragment>
       <YesNoRadio name="prior_test_flag" label="First test?" />
       <DateField
         name="prior_test_date"
@@ -110,27 +121,41 @@ const buildAoEQuestionContent = (
           { value: "undetermined", label: "Undetermined" },
         ]}
       />
-      <h2>Pregnancy</h2>
-      {/* horizontal? */}
-      <ChoiceList
-        label="Pregnancy"
-        name="pregnancy"
-        type="radio"
-        choices={[
-          { label: "Yes", value: "77386006" },
-          { label: "No", value: "60001007" },
-          { label: "Would not state", value: "261665006" },
-        ]}
-      />
     </React.Fragment>
   );
 };
 
-const AoEModalForm = ({ isOpen, onClose, patient }) => {
-  const saveAnswers = onClose; // TODO
+const AoEModalForm = ({
+  isOpen,
+  onClose,
+  patient,
+  loadState = {},
+  saveCallback = () => null,
+}) => {
+  const saveAnswers = () => {
+    saveCallback();
+    onClose();
+  };
+  const testConfig = getTestTypes();
+  const symptomConfig = getSymptomList();
+
+  // this seems like it will do a bunch of wasted work on re-renders and non-renders,
+  // but it's all small-ball stuff for now
+  const initialSymptoms = {};
+  if (loadState.symptoms) {
+    symptomConfig.forEach((opt) => {
+      const val = opt.value;
+      initialSymptoms[val] = loadState.symptoms[val];
+    });
+  } else {
+    symptomConfig.forEach((opt) => {
+      const val = opt.value;
+      initialSymptoms[val] = false;
+    });
+  }
+  const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
+
   if (isOpen) {
-    const testConfig = getTestTypes();
-    const symptomConfig = getSymptomList();
     const actionButtons = (
       <div style={{ float: "right" }}>
         <Button variation="transparent" onClick={onClose}>
@@ -141,6 +166,7 @@ const AoEModalForm = ({ isOpen, onClose, patient }) => {
         </Button>
       </div>
     );
+
     return (
       <Dialog
         onExit={onClose}
@@ -154,7 +180,28 @@ const AoEModalForm = ({ isOpen, onClose, patient }) => {
           document.getElementById("#root");
         }}
       >
-        {buildAoEQuestionContent(symptomConfig, testConfig)}
+        <h2>Symptoms</h2>
+        <SymptomInputs
+          currentSymptoms={currentSymptoms}
+          setSymptoms={setSymptoms}
+          symptomListConfig={symptomConfig}
+        />
+
+        <h2>Past Tests</h2>
+        <PriorTestInputs testTypeConfig={testConfig} />
+
+        <h2>Pregancy</h2>
+        {/* horizontal? */}
+        <ChoiceList
+          label="Pregnancy"
+          name="pregnancy"
+          type="radio"
+          choices={[
+            { label: "Yes", value: "77386006" },
+            { label: "No", value: "60001007" },
+            { label: "Would not state", value: "261665006" },
+          ]}
+        />
         {actionButtons}
       </Dialog>
     );
