@@ -17,17 +17,16 @@ const validate = ajv.compile(schemaPatient.default);
 
 const ManagePatients = () => {
   const patients = useSelector(getPatientsWithLastTestResult());
-  
-  const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);  
-  
-  const openCSVModal = () => {     
+
+  const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
+
+  const openCSVModal = () => {
     updateIsCSVModalOpen(true);
   };
 
   const closeCSVModal = () => {
     updateIsCSVModalOpen(false);
   };
-
 
   const [CSVdata, setCSVData] = useState({});
 
@@ -55,7 +54,6 @@ const ManagePatients = () => {
           jsonImport.badRows.push(err);
         });
 
-
       // NOTE: WE NEED TO REMOVE DUPLICATES WITHIN THIS FILE ITSELF BY KEY!!
 
       // Now we need to check this data against our JSON Schema, row by row, pull out the rows that
@@ -81,7 +79,7 @@ const ManagePatients = () => {
         } else if (row.patientID in patients) {
           // Check for duplicates by ID
           // We don't splice these out because they are going to stay in but we want to summarize
-          // them? I dunno about this.          
+          // them? I dunno about this.
           err = {
             type: "WARNING",
             code: "duplicateID",
@@ -106,8 +104,6 @@ const ManagePatients = () => {
       jsonImport.badRows.forEach((row, index) => {
         console.log("Error", index, ":", row.code, row.message);
       });
-
-
 
       // Adding filtered content to patient store, this all needs to get updated when we finalize
       // this.
@@ -139,7 +135,9 @@ const ManagePatients = () => {
         <td>{patient.patientId}</td>
         <td> {patient.birthDate}</td>
         <td>
-          {patient.lastTestDate === undefined ? "N/A" : patient.lastTestDate}
+          {patient.lastTestDate === undefined
+            ? "N/A"
+            : `${patient.lastTestDate} days`}
         </td>
       </tr>
     ));
@@ -167,7 +165,11 @@ const ManagePatients = () => {
                 accept=".csv"
                 onChange={(csv) => loadFile(csv.target.files[0])}
               />
-              <CSVModalForm isOpen={isCSVModalOpen} onClose={closeCSVModal} data={CSVdata}/>
+              <CSVModalForm
+                isOpen={isCSVModalOpen}
+                onClose={closeCSVModal}
+                data={CSVdata}
+              />
             </div>
           </div>
         </div>
@@ -176,7 +178,7 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> Add People</h2>
+              <h2> All People</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">

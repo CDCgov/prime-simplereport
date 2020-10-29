@@ -1,19 +1,19 @@
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
-
-import LabeledText from "../commonComponents//LabeledText";
-import Dropdown from "../commonComponents//Dropdown";
-import TestResultInputForm from "../testResults/TestResultInputForm";
-import { patientPropType } from "../propTypes";
-import { removePatientFromQueue } from "./state/testQueueActions";
-import { submitTestResult } from "../testResults/state/testResultActions";
-import { DEVICES } from "../devices/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEModalForm";
+import Dropdown from "../commonComponents//Dropdown";
+import LabeledText from "../commonComponents//LabeledText";
+import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName } from "../utils";
+import { patientPropType, devicePropType } from "../propTypes";
+import { removePatientFromQueue } from "./state/testQueueActions";
+import { submitTestResult } from "../testResults/state/testResultActions";
 
-const QueueItem = ({ patient }) => {
+const QueueItem = ({ patient, devices }) => {
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -47,12 +47,10 @@ const QueueItem = ({ patient }) => {
     updateIsAoeModalOpen(false);
   };
 
-  let options = Object.entries(DEVICES).map(([deviceId, { displayName }]) => {
-    return {
-      label: displayName,
-      value: deviceId,
-    };
-  });
+  let options = devices.map((device) => ({
+    label: device.displayName,
+    value: device.deviceId,
+  }));
   options.unshift({
     label: "Select Device",
     value: null,
@@ -137,5 +135,6 @@ const QueueItem = ({ patient }) => {
 
 QueueItem.propTypes = {
   patient: patientPropType,
+  devices: PropTypes.arrayOf(devicePropType),
 };
 export default QueueItem;
