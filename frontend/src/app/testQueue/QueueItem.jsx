@@ -105,12 +105,8 @@ const QueueItem = ({ patient }) => {
                     isOpen={isAoeModalOpen}
                     onClose={closeAoeModal}
                     patient={patient}
-                    loadState={aoeAnswers[patient.patientId]}
-                    saveCallback={(patientAnswers) => {
-                      const newAnswers = { ...aoeAnswers };
-                      newAnswers[patient.patientId] = patientAnswers;
-                      setAoeAnswers(newAnswers);
-                    }}
+                    loadState={aoeAnswers}
+                    saveCallback={setAoeAnswers}
                   />
                   <p>
                     <span className="usa-tag">PENDING</span>
