@@ -10,7 +10,6 @@ import {
 
 import "@cmsgov/design-system/dist/css/index.css";
 
-
 // BEGIN things that should be service calls
 const globalSymptomDefinitions = [
   { value: "426000000", label: "Fever over 100.4F" },
@@ -60,9 +59,10 @@ const NoDefaultDropdown = ({
   placeholder = " - Select - ",
 }) => {
   console.log("Options are", options);
+  //TODO: deprecation warning on "selected"
   return (
     <Dropdown label={label} name={name} options={[]}>
-      <option disabled selected> {/* TODO: deprecation warning on "selected" */}
+      <option disabled selected>
         {placeholder}
       </option>
       {options.map((opt) => (
@@ -74,7 +74,7 @@ const NoDefaultDropdown = ({
 
 const buildAoEQuestionContent = (
   symptomListConfig = [],
-  testTypeConfig = [],
+  testTypeConfig = []
 ) => {
   const symptomChoices = (
     <ChoiceList
@@ -105,9 +105,9 @@ const buildAoEQuestionContent = (
         label="Result of prior test"
         name="prior_test_result"
         options={[
-          {value: "positive", label: "Positive"},
-          {value: "negative", label: "Negative"},
-          {value: "undetermined", label: "Undetermined"}
+          { value: "positive", label: "Positive" },
+          { value: "negative", label: "Negative" },
+          { value: "undetermined", label: "Undetermined" },
         ]}
       />
       <h2>Pregnancy</h2>
@@ -127,22 +127,35 @@ const buildAoEQuestionContent = (
 };
 
 const AoEModalForm = ({ isOpen, onClose, patient }) => {
-  console.log("Test config function is", getTestTypes);
-  console.log("Test list is", getTestTypes());
+  const saveAnswers = onClose; // TODO
   if (isOpen) {
     const testConfig = getTestTypes();
     const symptomConfig = getSymptomList();
+    const actionButtons = (
+      <div style={{ float: "right" }}>
+        <Button variation="transparent" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variation="primary" onClick={saveAnswers}>
+          Add to Queue
+        </Button>
+      </div>
+    );
     return (
       <Dialog
         onExit={onClose}
+        closeText="Cancel"
         heading={displayFullName(
           patient.firstName,
           patient.middleName,
           patient.lastName
         )}
-        getApplicationNode={()=>{document.getElementById("#root");}}
+        getApplicationNode={() => {
+          document.getElementById("#root");
+        }}
       >
         {buildAoEQuestionContent(symptomConfig, testConfig)}
+        {actionButtons}
       </Dialog>
     );
   }
