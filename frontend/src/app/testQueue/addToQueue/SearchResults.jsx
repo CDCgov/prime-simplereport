@@ -13,10 +13,6 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
     return null;
   }
 
-  if (suggestions.length === 0) {
-    return <h1> No results </h1>;
-  }
-
   const addToQueueButton = (patient) =>
     patient.isInQueue ? (
       "Already in queue"
@@ -30,27 +26,37 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
       />
     );
 
-  const renderedSuggestion = suggestions.map((suggestion) => (
-    <tr key={uuidv4()}>
-      <td>{suggestion.displayName}</td>
-      <td>{suggestion.birthDate}</td>
-      <td>{suggestion.patientId}</td>
-      <td>{addToQueueButton(suggestion)}</td>
-    </tr>
-  ));
+  const renderResultsTable = () => {
+    if (suggestions.length === 0) {
+      return <h3> No results </h3>;
+    }
+    let suggestionRows = suggestions.map((suggestion) => (
+      <tr key={uuidv4()}>
+        <td>{suggestion.displayName}</td>
+        <td>{suggestion.birthDate}</td>
+        <td>{suggestion.patientId}</td>
+        <td>{addToQueueButton(suggestion)}</td>
+      </tr>
+    ));
+    return (
+      <table className="usa-table usa-table--borderless">
+        <thead>
+          <tr>
+            <th scope="col">Full name</th>
+            <th scope="col">Date of Birth</th>
+            <th scope="col">Unique ID</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>{suggestionRows}</tbody>
+      </table>
+    );
+  };
 
   return (
-    <table className="usa-table usa-table--borderless">
-      <thead>
-        <tr>
-          <th scope="col">Full name</th>
-          <th scope="col">Date of Birth</th>
-          <th scope="col">Unique ID</th>
-          <th scope="col">Actions</th>
-        </tr>
-      </thead>
-      <tbody>{renderedSuggestion}</tbody>
-    </table>
+    <div className="usa-card__container">
+      <div className="usa-card__body">{renderResultsTable()}</div>
+    </div>
   );
 };
 

@@ -6,16 +6,12 @@ import {
   useLocation,
   useRouteMatch,
 } from "react-router-dom";
-import { useSelector } from "react-redux";
 
-import OrganizationHome from "./OrganizationHome";
+import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
-import { getPatients } from "../patients/patientSelectors";
 import ManagePatients from "../patients/ManagePatients";
 
 const OrganizationHomeContainer = () => {
-  const patients = useSelector(getPatients);
-
   let match = useRouteMatch();
   const location = useLocation();
 
@@ -31,7 +27,7 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/results`}
           render={() => {
-            return <OrganizationHome patients={patients} />;
+            return <TestResultsList />;
           }}
         />
         <Route

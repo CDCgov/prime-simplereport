@@ -3,11 +3,7 @@
 }
 
 .prime-container {
-  flex: 0 0 auto;
   width: 100%;
-  background-color: #ffffff;
-  margin: 1rem 0;
-  padding: 1rem;
 }
 
 .prime-ul {
@@ -17,7 +13,7 @@
 
 .prime-li {
   float: left;
-  margin: 1rem;
+  margin-right: 2rem;
 }
 
 .prime-right-align {
@@ -30,8 +26,13 @@
 
 // header
 
-.prime-patient-nav {
-  background-color: white;
+.active-nav-item {
+  background-color: color($theme-color-primary-darker);
+}
+
+.prime-nav {
+  justify-content: left;
+  padding: 0;
 }
 
 // patient in the queue
@@ -42,6 +43,7 @@
 
 .prime-queue-item {
   padding: 0;
+  margin-bottom: 1rem;
   position: relative;
 }
 
@@ -67,20 +69,23 @@
 // close button
 
 .prime-close-button {
-  float: right;
   top: -1em;
-  right: -1em;
+  right: 0em;
   display: block;
   position: absolute;
-  background-color: white;
-  border-radius: 1em;
   cursor: pointer;
+}
+
+// TestResultInputForm
+.prime-test-result-submit {
+  margin-left: 1em;
+  margin-bottom: 1em;
 }
 
 // radio buttons
 
 .prime-radio__container {
-  padding: 1em;
+  padding: 0.6em;
 }
 
 .prime-radio__title {
