@@ -207,10 +207,6 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback = () => null,
 }) => {
-  const saveAnswers = () => {
-    saveCallback();
-    onClose();
-  };
   const testConfig = getTestTypes();
   const symptomConfig = getSymptomList();
 
@@ -233,15 +229,30 @@ const AoEModalForm = ({
 
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
-  const priorTestPreload = loadState.priorTest;
-  const [priorTestDate, setPriorTestDate] = useDateState(
-    priorTestPreload ? priorTestPreload.date : null
-  );
-  const [hasPriorTest, setHasPriorTest] = useState(null);
-  const [priorTestType, setPriorTestType] = useState("");
-  const [priorTestResult, setPriorTestResult] = useState("");
 
-  const [pregnancyResponse, setPregnancyResponse] = useState("");
+  const priorTestPreload = loadState.priorTest || {};
+  const [hasPriorTest, setHasPriorTest] = useState(priorTestPreload.exists);
+  const [priorTestDate, setPriorTestDate] = useDateState(priorTestPreload.date);
+  const [priorTestType, setPriorTestType] = useState(priorTestPreload.type);
+  const [priorTestResult, setPriorTestResult] = useState(priorTestPreload.result);
+
+  const [pregnancyResponse, setPregnancyResponse] = useState(loadState.pregnancy);
+
+  const saveAnswers = () => {
+    const newState = {
+      symptoms: currentSymptoms,
+      symptomOnset: onsetDate,
+      priorTest: {
+        exists: hasPriorTest,
+        date: priorTestDate,
+        type: priorTestType,
+        result: priorTestResult
+      },
+      pregnancy: pregnancyResponse
+    };
+    saveCallback(newState);
+    onClose();
+  };
 
   if (isOpen) {
     const actionButtons = (

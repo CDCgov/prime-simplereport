@@ -66,7 +66,7 @@ const QueueItem = ({ patient }) => {
       <FontAwesomeIcon icon={"times-circle"} size="2x" />
     </div>
   );
-
+  const [aoeAnswers, setAoeAnswers] = useState({});
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item">
@@ -102,6 +102,12 @@ const QueueItem = ({ patient }) => {
                     isOpen={isAoeModalOpen}
                     onClose={closeAoeModal}
                     patient={patient}
+                    loadState={aoeAnswers[patient.patientId]}
+                    saveCallback={(patientAnswers) => {
+                      const newAnswers = { ...aoeAnswers };
+                      newAnswers[patient.patientId] = patientAnswers;
+                      setAoeAnswers(newAnswers);
+                    }}
                   />
                   <p>
                     <span className="usa-tag">PENDING</span>
