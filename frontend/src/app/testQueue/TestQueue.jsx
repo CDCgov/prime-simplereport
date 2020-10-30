@@ -9,14 +9,27 @@ import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
 import QueueNotification from "./QueueNotification";
 
+const emptyQueueMessage = (
+  <div className="grid-container prime-center usa-card__container">
+    <div className="grid-row">
+      <div className="usa-card__body">
+        <p>
+          There are no people in the queue. Search for people above to add
+          them to the queue.
+        </p>
+      </div>
+    </div>
+  </div>
+);
+
 const TestQueue = () => {
-  const patients = useSelector(getDetailedPatientsInTestQueue);
+  const queue = useSelector(getDetailedPatientsInTestQueue);
   const devices = useSelector(getDevicesArray);
 
-  let shouldRenderQueue = patients.length > 0;
-  const createQueueItems = (patients) =>
+  let shouldRenderQueue = queue.length > 0;
+  const createQueueItems = (patientQueue) =>
     shouldRenderQueue ? (
-      Object.values(patients).map((queueEntry) => (
+      patientQueue.map((queueEntry) => (
         <QueueItem
           key={`patient-${uuidv4()}`}
           patient={queueEntry.patient}
@@ -25,18 +38,7 @@ const TestQueue = () => {
         />
       ))
     ) : (
-      <React.Fragment>
-        <div className="grid-container prime-center usa-card__container">
-          <div className="grid-row">
-            <div className="usa-card__body">
-              <p>
-                There are no people in the queue. Search for people above to add
-                them to the queue.
-              </p>
-            </div>
-          </div>
-        </div>
-      </React.Fragment>
+      emptyQueueMessage
     );
 
   return (
@@ -45,7 +47,7 @@ const TestQueue = () => {
         <div className="grid-row">
           <AddToQueue />
         </div>
-        {createQueueItems(patients)}
+        {createQueueItems(queue)}
         <div className="grid-row">
           <QueueNotification />
         </div>
