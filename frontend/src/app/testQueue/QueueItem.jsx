@@ -13,17 +13,22 @@ import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEModalForm";
 import { displayFullName } from "../utils";
 
-const QueueItem = ({ patient }) => {
+const QueueItem = ({ patient, askOnEntry = {} }) => {
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
+  const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
   const [deviceId, updateDeviceId] = useState(null);
   const [testResultValue, updateTestResultValue] = useState(null);
 
   const onTestResultSubmit = (e) => {
     e.preventDefault();
-    let testResultToSubmit = { deviceId: deviceId, testResultValue };
+    let testResultToSubmit = {
+      deviceId: deviceId,
+      testResultValue,
+      testTimeQuestions: aoeAnswers,
+    };
     dispatch(submitTestResult(patient.patientId, testResultToSubmit));
   };
 
@@ -69,7 +74,6 @@ const QueueItem = ({ patient }) => {
       </span>
     </div>
   );
-  const [aoeAnswers, setAoeAnswers] = useState({});
 
   return (
     <React.Fragment>

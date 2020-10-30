@@ -10,12 +10,15 @@ import QueueNotification from "./QueueNotification";
 
 const TestQueue = () => {
   const patients = useSelector(getDetailedPatientsInTestQueue);
-
-  let shouldRenderQueue = Object.keys(patients).length > 0;
+  let shouldRenderQueue = patients.length > 0;
   const createQueueItems = (patients) =>
     shouldRenderQueue ? (
-      Object.values(patients).map((patient) => (
-        <QueueItem key={`patient-${uuidv4()}`} patient={patient} />
+      Object.values(patients).map((queueEntry) => (
+        <QueueItem
+          key={`patient-${uuidv4()}`}
+          patient={queueEntry.patient}
+          askOnEntry={queueEntry.askOnEntry}
+        />
       ))
     ) : (
       <React.Fragment>

@@ -201,6 +201,7 @@ const PriorTestInputs = ({
 };
 
 const AoEModalForm = ({
+  saveButtonText = "Save",
   onClose,
   patient,
   loadState = {},
@@ -263,7 +264,7 @@ const AoEModalForm = ({
         Cancel
       </Button>
       <Button variation="primary" onClick={saveAnswers}>
-        Add to Queue
+        {saveButtonText}
       </Button>
     </div>
   );
