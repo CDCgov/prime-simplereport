@@ -4,12 +4,15 @@ import { testResultPropType } from "../propTypes";
 import { useSelector } from "react-redux";
 
 import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors";
+import { getDevicesArray } from "../devices/deviceSelectors";
 import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
 import QueueNotification from "./QueueNotification";
 
 const TestQueue = () => {
   const patients = useSelector(getDetailedPatientsInTestQueue);
+  const devices = useSelector(getDevicesArray);
+
   let shouldRenderQueue = patients.length > 0;
   const createQueueItems = (patients) =>
     shouldRenderQueue ? (
@@ -18,6 +21,7 @@ const TestQueue = () => {
           key={`patient-${uuidv4()}`}
           patient={queueEntry.patient}
           askOnEntry={queueEntry.askOnEntry}
+          devices={devices}
         />
       ))
     ) : (
@@ -34,12 +38,6 @@ const TestQueue = () => {
         </div>
       </React.Fragment>
     );
-
-  // <div className="grid-container prime-container prime-queue-item usa-card__container">
-  //     {closeButton}
-  //     <div className="grid-row">
-  //       <div className="tablet:grid-col-9">
-  //         <div className="grid-row prime-test-name usa-card__header">
 
   return (
     <main className="prime-home">
