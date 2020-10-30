@@ -34,9 +34,10 @@ const globalSymptomDefinitions = [
 
 const getSymptomList = () => globalSymptomDefinitions;
 const getTestTypes = () => [
-  { label: "PCR", value: "1" },
-  { label: "Rapid", value: "2" },
-  { label: "Home", value: "3" },
+  { label: "Molecular", value: "1" },
+  { label: "Antigen", value: "2" },
+  { label: "Antibody/Serology", value: "3" },
+  { label: "Unknown", value: "4" },
 ];
 const getPregnancyResponses = () => [
   { label: "Yes", value: "77386006" },
