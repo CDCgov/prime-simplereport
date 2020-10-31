@@ -76,13 +76,12 @@ const ManagedDateField = ({
   const [dayInvalid, setDayInvalid] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const setAll = (isInvalid, message="") => {
+  const setAll = (isInvalid, message = "") => {
     setYearInvalid(isInvalid);
     setMonthInvalid(isInvalid);
     setDayInvalid(isInvalid);
     setErrorMessage(message);
-
-  }
+  };
 
   const findTimestamp = (dateString) => {
     if (dateString === undefined) {
@@ -96,7 +95,7 @@ const ManagedDateField = ({
   const maxAllowedTimestamp = findTimestamp(maxAllowedDate);
   const minAllowedTimestamp = findTimestamp(minAllowedDate);
 
-  const onComponentBlur = (evt)=> {
+  const onComponentBlur = (evt) => {
     console.log("Blurring with date entry", managedDate);
     if (!managedDate.year && !managedDate.month && !managedDate.day) {
       setAll(false);
@@ -107,16 +106,24 @@ const ManagedDateField = ({
       setYearInvalid(true);
       return;
     }
-    const managedTimestamp = Date.parse(`${managedDate.year}-${managedDate.month}-${managedDate.day}`);
+    const managedTimestamp = Date.parse(
+      `${managedDate.year}-${managedDate.month}-${managedDate.day}`
+    );
     if (isNaN(managedTimestamp)) {
-      setAll(true, "Please enter a valid date")
-    } else if (maxAllowedTimestamp !== undefined && managedTimestamp > maxAllowedTimestamp) {
+      setAll(true, "Please enter a valid date");
+    } else if (
+      maxAllowedTimestamp !== undefined &&
+      managedTimestamp > maxAllowedTimestamp
+    ) {
       setAll(
         true,
         "Please enter a date in  " +
           (maxAllowedDate === "now" ? "the past" : "the allowed date range")
       );
-    } else if (minAllowedTimestamp !== undefined && managedTimestamp < minAllowedTimestamp) {
+    } else if (
+      minAllowedTimestamp !== undefined &&
+      managedTimestamp < minAllowedTimestamp
+    ) {
       setAll(
         true,
         "Please enter a date in  " +
@@ -128,23 +135,24 @@ const ManagedDateField = ({
   };
 
   return (
-  <DateField
-    name={name}
-    label={label}
-    onChange={(_, newDate) => {
-      setManagedDate(newDate);
-    }}
-    monthValue={managedDate.month}
-    dayValue={managedDate.day}
-    yearValue={managedDate.year}
-    onComponentBlur={onComponentBlur}
-    errorMessage={errorMessage}
-    yearInvalid={yearInvalid}
-    monthInvalid={monthInvalid}
-    dayInvalid={dayInvalid}
-    {...additionalProps}
-  />)
-  };
+    <DateField
+      name={name}
+      label={label}
+      onChange={(_, newDate) => {
+        setManagedDate(newDate);
+      }}
+      monthValue={managedDate.month}
+      dayValue={managedDate.day}
+      yearValue={managedDate.year}
+      onComponentBlur={onComponentBlur}
+      errorMessage={errorMessage}
+      yearInvalid={yearInvalid}
+      monthInvalid={monthInvalid}
+      dayInvalid={dayInvalid}
+      {...additionalProps}
+    />
+  );
+};
 const NoDefaultDropdown = ({
   label,
   name,

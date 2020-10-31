@@ -14,8 +14,8 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no people in the queue. Search for people above to add
-          them to the queue.
+          There are no people in the queue. Search for people above to add them
+          to the queue.
         </p>
       </div>
     </div>
@@ -28,18 +28,16 @@ const TestQueue = () => {
 
   let shouldRenderQueue = queue.length > 0;
   const createQueueItems = (patientQueue) =>
-    shouldRenderQueue ? (
-      patientQueue.map((queueEntry) => (
-        <QueueItem
-          key={`patient-${uuidv4()}`}
-          patient={queueEntry.patient}
-          askOnEntry={queueEntry.askOnEntry}
-          devices={devices}
-        />
-      ))
-    ) : (
-      emptyQueueMessage
-    );
+    shouldRenderQueue
+      ? patientQueue.map((queueEntry) => (
+          <QueueItem
+            key={`patient-${uuidv4()}`}
+            patient={queueEntry.patient}
+            askOnEntry={queueEntry.askOnEntry}
+            devices={devices}
+          />
+        ))
+      : emptyQueueMessage;
 
   return (
     <main className="prime-home">
