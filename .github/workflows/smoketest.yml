@@ -4,7 +4,7 @@ name: Smoke Test Client
 # Run this on pushes to any branch that change a frontend file or the workflow definition
 on:
   push:
-    branches: '*'
+    branches: '**'
     paths:
       - 'frontend/**'
       - .github/workflows/smoketest.yml
