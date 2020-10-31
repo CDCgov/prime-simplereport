@@ -96,7 +96,6 @@ const ManagedDateField = ({
   const minAllowedTimestamp = findTimestamp(minAllowedDate);
 
   const onComponentBlur = (evt) => {
-    console.log("Blurring with date entry", managedDate);
     if (!managedDate.year && !managedDate.month && !managedDate.day) {
       setAll(false);
       return;
