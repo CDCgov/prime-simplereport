@@ -67,6 +67,7 @@ const ManagedDateField = ({
   label,
   managedDate = { month: "", day: "", year: "" },
   setManagedDate,
+  ...additionalProps
 }) => (
   <DateField
     name={name}
@@ -77,6 +78,7 @@ const ManagedDateField = ({
     monthValue={managedDate.month}
     dayValue={managedDate.day}
     yearValue={managedDate.year}
+    {...additionalProps}
   />
 );
 const NoDefaultDropdown = ({
@@ -87,6 +89,7 @@ const NoDefaultDropdown = ({
   onChange,
   stateSetter,
   placeholder = " - Select - ",
+  ...additionalProps
 }) => {
   const defaultValue = value === undefined ? "" : undefined;
   if (stateSetter !== undefined && onChange !== undefined) {
@@ -104,6 +107,7 @@ const NoDefaultDropdown = ({
       defaultValue={defaultValue}
       value={value}
       onChange={changeHandler}
+      {...additionalProps}
     >
       <option value="" disabled>
         {placeholder}
@@ -156,8 +160,8 @@ const SymptomInputs = ({
 
 const PriorTestInputs = ({
   testTypeConfig,
-  hasPriorTest,
-  setHasPriorTest,
+  isFirstTest,
+  setIsFirstTest,
   priorTestDate,
   setPriorTestDate,
   priorTestResult,
@@ -165,19 +169,22 @@ const PriorTestInputs = ({
   priorTestType,
   setPriorTestType,
 }) => {
+  // disable inputs other than Yes/No if it is "Yes" or unset
+  const disableDetails = isFirstTest !== false;
   return (
     <React.Fragment>
       <YesNoRadio
         name="prior_test_flag"
         label="First test?"
-        isYes={hasPriorTest}
-        setIsYes={setHasPriorTest}
+        isYes={isFirstTest}
+        setIsYes={setIsFirstTest}
       />
       <ManagedDateField
         name="prior_test_date"
         label="Date of most recent prior test?"
         managedDate={priorTestDate}
         setManagedDate={setPriorTestDate}
+        disabled={disableDetails}
       />
       <NoDefaultDropdown
         label="Type of prior test"
@@ -185,6 +192,7 @@ const PriorTestInputs = ({
         value={priorTestType}
         stateSetter={setPriorTestType}
         options={testTypeConfig}
+        disabled={disableDetails}
       />
       <NoDefaultDropdown
         label="Result of prior test"
@@ -196,6 +204,7 @@ const PriorTestInputs = ({
           { value: "negative", label: "Negative" },
           { value: "undetermined", label: "Undetermined" },
         ]}
+        disabled={disableDetails}
       />
     </React.Fragment>
   );
@@ -232,7 +241,7 @@ const AoEModalForm = ({
   const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
 
   const priorTestPreload = loadState.priorTest || {};
-  const [hasPriorTest, setHasPriorTest] = useState(priorTestPreload.exists);
+  const [isFirstTest, setIsFirstTest] = useState(priorTestPreload.exists);
   const [priorTestDate, setPriorTestDate] = useDateState(priorTestPreload.date);
   const [priorTestType, setPriorTestType] = useState(priorTestPreload.type);
   const [priorTestResult, setPriorTestResult] = useState(
@@ -248,7 +257,7 @@ const AoEModalForm = ({
       symptoms: currentSymptoms,
       symptomOnset: onsetDate,
       priorTest: {
-        exists: hasPriorTest,
+        exists: isFirstTest,
         date: priorTestDate,
         type: priorTestType,
         result: priorTestResult,
@@ -297,8 +306,8 @@ const AoEModalForm = ({
         testTypeConfig={testConfig}
         priorTestDate={priorTestDate}
         setPriorTestDate={setPriorTestDate}
-        hasPriorTest={hasPriorTest}
-        setHasPriorTest={setHasPriorTest}
+        isFirstTest={isFirstTest}
+        setIsFirstTest={setIsFirstTest}
         priorTestType={priorTestType}
         setPriorTestType={setPriorTestType}
         priorTestResult={priorTestResult}
