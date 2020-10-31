@@ -16,6 +16,7 @@ const _submitTestResult = (patientId, testResultInfo) => {
       deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
       dateTested: moment().toISOString(),
+      testTimeQuestions: testResultInfo.testTimeQuestions,
     },
   };
 };
