@@ -20,37 +20,29 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
     >
       <div className="grid-container">
         <div className="grid-row">
-          <h1>
-          </h1>
+          <h1>CSV Import</h1>
           <div onClick={onClose}>
             <FontAwesomeIcon icon={"times-circle"} size="2x" />
           </div>
-        </div>        
-        <div className="grid-row">
-          <h1>CSV Import</h1>
         </div>
         <div>
           <h2>Good Rows:</h2>
           {
-            // note this doesn't handle duplicate keys well we 
-          data.data && data.data.map(r => (
-            <p key={r.patientID}>
-              {JSON.stringify(r)}
-            </p>
-          ))
+            // note this doesn't handle duplicate keys well we
+            data.data &&
+              data.data.map((r) => <p key={r.patientID}>{JSON.stringify(r)}</p>)
           }
-          </div>
-          <div>
+        </div>
+        <div>
           <h2>Bad Rows:</h2>
           {
-            // note this doesn't handle duplicate keys well we 
-          data.badRows && data.badRows.map(r => (
-            <p key={r.original.patientID}>
-              {JSON.stringify(r)}
-            </p>
-          ))
+            // note this doesn't handle duplicate keys well we
+            data.badRows &&
+              data.badRows.map((r) => (
+                <p key={r.original.patientID}>{JSON.stringify(r)}</p>
+              ))
           }
-          </div>
+        </div>
       </div>
     </Modal>
   );
