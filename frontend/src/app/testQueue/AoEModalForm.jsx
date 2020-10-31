@@ -67,8 +67,67 @@ const ManagedDateField = ({
   label,
   managedDate = { month: "", day: "", year: "" },
   setManagedDate,
+  maxAllowedDate,
+  minAllowedDate,
   ...additionalProps
-}) => (
+}) => {
+  const [yearInvalid, setYearInvalid] = useState(false);
+  const [monthInvalid, setMonthInvalid] = useState(false);
+  const [dayInvalid, setDayInvalid] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const setAll = (isInvalid, message="") => {
+    setYearInvalid(isInvalid);
+    setMonthInvalid(isInvalid);
+    setDayInvalid(isInvalid);
+    setErrorMessage(message);
+
+  }
+
+  const findTimestamp = (dateString) => {
+    if (dateString === undefined) {
+      return;
+    }
+    if (dateString === "now") {
+      return Date.now(); // this has a time zone problem, of course...
+    }
+    return Date.parse(dateString);
+  };
+  const maxAllowedTimestamp = findTimestamp(maxAllowedDate);
+  const minAllowedTimestamp = findTimestamp(minAllowedDate);
+
+  const onComponentBlur = (evt)=> {
+    console.log("Blurring with date entry", managedDate);
+    if (!managedDate.year && !managedDate.month && !managedDate.day) {
+      setAll(false);
+      return;
+    }
+    if (!managedDate.year || managedDate.year.length < 4) {
+      setErrorMessage("Please enter a four-digit year");
+      setYearInvalid(true);
+      return;
+    }
+    const managedTimestamp = Date.parse(`${managedDate.year}-${managedDate.month}-${managedDate.day}`);
+    if (isNaN(managedTimestamp)) {
+      setAll(true, "Please enter a valid date")
+    } else if (maxAllowedTimestamp !== undefined && managedTimestamp > maxAllowedTimestamp) {
+      setAll(
+        true,
+        "Please enter a date in  " +
+          (maxAllowedDate === "now" ? "the past" : "the allowed date range")
+      );
+    } else if (minAllowedTimestamp !== undefined && managedTimestamp < minAllowedTimestamp) {
+      setAll(
+        true,
+        "Please enter a date in  " +
+          (minAllowedDate === "now" ? "the future" : "the allowed date range")
+      );
+    } else {
+      setAll(false);
+    }
+  };
+
+  return (
   <DateField
     name={name}
     label={label}
@@ -78,9 +137,14 @@ const ManagedDateField = ({
     monthValue={managedDate.month}
     dayValue={managedDate.day}
     yearValue={managedDate.year}
+    onComponentBlur={onComponentBlur}
+    errorMessage={errorMessage}
+    yearInvalid={yearInvalid}
+    monthInvalid={monthInvalid}
+    dayInvalid={dayInvalid}
     {...additionalProps}
-  />
-);
+  />)
+  };
 const NoDefaultDropdown = ({
   label,
   name,
@@ -153,6 +217,7 @@ const SymptomInputs = ({
         label="Date of symptom onset"
         managedDate={onsetDate}
         setManagedDate={setOnsetDate}
+        maxAllowedDate="now"
       />
     </React.Fragment>
   );
@@ -185,6 +250,8 @@ const PriorTestInputs = ({
         managedDate={priorTestDate}
         setManagedDate={setPriorTestDate}
         disabled={disableDetails}
+        maxAllowedDate="now"
+        minAllowedDate="2020-02-01"
       />
       <NoDefaultDropdown
         label="Type of prior test"
