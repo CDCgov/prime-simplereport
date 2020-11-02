@@ -192,7 +192,7 @@ const NoDefaultDropdown = ({
   );
 };
 
-// building block functions that *probably* don't want to be exportable components
+// building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
   symptomListConfig,
   currentSymptoms,
@@ -200,33 +200,55 @@ const SymptomInputs = ({
   onsetDate,
   setOnsetDate,
 }) => {
+  // TODO: should setting this clear the other ones?
+  // TODO: this needs to be externally managed anyway (so, no need?)
+  const [noSymptoms, setNoSymptoms] = useState(false);
   const symptomChange = (evt) => {
     const choice = evt.currentTarget;
-    const newSymptoms = { ...currentSymptoms };
-    newSymptoms[choice.value] = choice.checked;
-    setSymptoms(newSymptoms);
+    setSymptoms({ ...currentSymptoms, [choice.value]: choice.checked });
   };
   const choiceList = symptomListConfig.map((conf) => {
     const { label, value } = conf;
     return { label, value, checked: currentSymptoms[value] };
   });
+  // build the choice list we would have without the no-symptom toggle,
+  // so we can extract its contents to plug into the wrapper.
+  const wrappedSymptomChoiceList = new ChoiceList({
+    name: "symptom_list",
+    label: "__",
+    onChange: symptomChange,
+    type: "checkbox",
+    choices: choiceList,
+  });
+
+  // this is the wrapper choice: if it is unchecked, we show the list
+  // we generated above (and the date field); otherwise, nothing to see
+  const symptomToggleChoice = {
+    label: "No symptoms",
+    value: "",
+    checked: noSymptoms,
+    uncheckedChildren: (
+      <React.Fragment>
+        <hr />
+        {wrappedSymptomChoiceList.choices()}
+        <ManagedDateField
+          name="symptom_onset"
+          label="Date of symptom onset"
+          managedDate={onsetDate}
+          setManagedDate={setOnsetDate}
+          maxAllowedDate="now"
+        />
+      </React.Fragment>
+    ),
+  };
   return (
-    <React.Fragment>
-      <ChoiceList
-        onChange={symptomChange}
-        label="Are you experiencing any of the following symptoms?"
-        name="symptoms"
-        type="checkbox" // super irritating that this is required
-        choices={choiceList}
-      />
-      <ManagedDateField
-        name="symptom_onset"
-        label="Date of symptom onset"
-        managedDate={onsetDate}
-        setManagedDate={setOnsetDate}
-        maxAllowedDate="now"
-      />
-    </React.Fragment>
+    <ChoiceList
+      name="symptom_list"
+      label="Are you experiencing any of the following symptoms?"
+      type="checkbox" // super irritating that this is required
+      choices={[symptomToggleChoice]}
+      onChange={(evt) => setNoSymptoms(evt.currentTarget.checked)}
+    />
   );
 };
 
