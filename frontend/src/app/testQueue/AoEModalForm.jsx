@@ -195,14 +195,13 @@ const NoDefaultDropdown = ({
 // building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
   symptomListConfig,
+  noSymptoms,
+  setNoSymptoms,
   currentSymptoms,
   setSymptoms,
   onsetDate,
   setOnsetDate,
 }) => {
-  // TODO: should setting this clear the other ones?
-  // TODO: this needs to be externally managed anyway (so, no need?)
-  const [noSymptoms, setNoSymptoms] = useState(false);
   const symptomChange = (evt) => {
     const choice = evt.currentTarget;
     setSymptoms({ ...currentSymptoms, [choice.value]: choice.checked });
@@ -333,6 +332,9 @@ const AoEModalForm = ({
   const useDateState = (preLoaded) =>
     useState(preLoaded || { month: "", day: "", year: "" });
 
+  const [noSymptoms, setNoSymptoms] = useState(
+    loadState.noSymptomFlag || false
+  );
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
 
@@ -349,8 +351,15 @@ const AoEModalForm = ({
   );
 
   const saveAnswers = () => {
+    const saveSymptoms = { ...currentSymptoms };
+    if (noSymptoms) {
+      symptomConfig.forEach(({ label, value }) => {
+        saveSymptoms[value] = false;
+      });
+    }
     const newState = {
-      symptoms: currentSymptoms,
+      symptoms: saveSymptoms,
+      noSymptomFlag: noSymptoms,
       symptomOnset: onsetDate,
       priorTest: {
         exists: isFirstTest,
@@ -390,6 +399,8 @@ const AoEModalForm = ({
     >
       <h2>Symptoms</h2>
       <SymptomInputs
+        noSymptoms={noSymptoms}
+        setNoSymptoms={setNoSymptoms}
         currentSymptoms={currentSymptoms}
         setSymptoms={setSymptoms}
         symptomListConfig={symptomConfig}
