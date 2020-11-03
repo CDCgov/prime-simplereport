@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 // import PropTypes from "prop-types";
 import Modal from "react-modal";
+import Button from "../commonComponents/Button";
 
 Modal.setAppElement("#root");
 
@@ -21,9 +21,10 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
       <div className="grid-container">
         <div className="grid-row">
           <h1>CSV Import</h1>
-          <div onClick={onClose}>
-            <FontAwesomeIcon icon={"times-circle"} size="2x" />
-          </div>
+        </div>
+        <div className="grid-row">
+          <Button type="button" onClick={onClose} label="Cancel" />
+          <Button type="button" onClick={() => {}} label="Confirm Import" />
         </div>
         <div>
           <h2>Good Rows:</h2>
@@ -42,6 +43,10 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
                 <p key={r.original.patientID}>{JSON.stringify(r)}</p>
               ))
           }
+        </div>
+        <div className="grid-row">
+          <Button type="button" onClick={onClose} label="Cancel" />
+          <Button type="button" onClick={() => {}} label="Confirm Import" />
         </div>
       </div>
     </Modal>
