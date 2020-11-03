@@ -107,18 +107,18 @@ const ManagePatients = () => {
 
       // Adding filtered content to patient store, this all needs to get updated when we finalize
       // this.
-      jsonImport.data.forEach((row, index) => {
-        // limit actions to avoid spamming localstorage
-        patients[row.patientID] = {
-          firstName: row.patientFirstName,
-          lastName: row.patientLastName,
-          middleName: row.patientMiddleName,
-          patientId: row.patientID,
-          phone: row.patientPhoneNumber,
-          address: row.patientStreet,
-          birthDate: row.patientDOB,
-        };
-      });
+      // jsonImport.data.forEach((row, index) => {
+      //   // limit actions to avoid spamming localstorage
+      //   patients[row.patientID] = {
+      //     firstName: row.patientFirstName,
+      //     lastName: row.patientLastName,
+      //     middleName: row.patientMiddleName,
+      //     patientId: row.patientID,
+      //     phone: row.patientPhoneNumber,
+      //     address: row.patientStreet,
+      //     birthDate: row.patientDOB,
+      //   };
+      // });
       //console.log(patients);
 
       // react state confuses me, not sure if this is doubling memory or just creating a pointer?
