@@ -39,6 +39,12 @@ const QueueItem = ({ patient, devices }) => {
     updateTestResultValue(newTestResultValue);
   };
 
+  const onClearClick = (e) => {
+    e.preventDefault();
+    onTestResultChange(null);
+    updateDeviceId(null);
+  };
+
   const openAoeModal = () => {
     updateIsAoeModalOpen(true);
   };
@@ -125,6 +131,7 @@ const QueueItem = ({ patient, devices }) => {
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
+              onClearClick={onClearClick}
             />
           </div>
         </div>
