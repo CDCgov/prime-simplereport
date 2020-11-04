@@ -1,19 +1,11 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents//Dropdown";
-import { getDevicesArray } from "../devices/deviceSelectors";
 import { DEVICE_TYPES } from "../devices/constants";
-
-const generateDeviceSettings = (devices) => {
-  return devices.reduce((acc, device) => {
-    let name = `device-${uuidv4()}`; // assign a dynamic name to each device
-    acc[name] = device;
-    return acc;
-  }, {});
-};
+import RadioGroup from "../commonComponents/RadioGroup";
 
 const dropdownOptions = Object.entries(DEVICE_TYPES).map(
   ([deviceId, displayName]) => ({
@@ -22,13 +14,11 @@ const dropdownOptions = Object.entries(DEVICE_TYPES).map(
   })
 );
 
-const DeviceSettings = () => {
-  const devices = useSelector(getDevicesArray);
-
-  const [deviceSettings, updateDeviceSettings] = useState(
-    generateDeviceSettings(devices)
-  );
-
+const DeviceSettings = ({
+  deviceSettings,
+  updateDeviceSettings,
+  addDevice,
+}) => {
   const onDeviceChange = (e) => {
     let changedDeviceName = e.target.name;
     let newDeviceId = e.target.value;
@@ -43,6 +33,27 @@ const DeviceSettings = () => {
     updateDeviceSettings(newDeviceSettings);
   };
 
+  const onDefaultChange = (e) => {
+    let changedDeviceName = e.target.name;
+
+    let isDefault = !deviceSettings[changedDeviceName].isDefault;
+    let newDeviceSettings = {};
+
+    Object.entries(deviceSettings).forEach(([name, device]) => {
+      newDeviceSettings[name] = {
+        ...device,
+        isDefault: false,
+      };
+    });
+
+    newDeviceSettings[changedDeviceName] = {
+      ...deviceSettings[changedDeviceName],
+      isDefault,
+    };
+
+    updateDeviceSettings(newDeviceSettings);
+  };
+
   const onDeviceRemove = (deviceName) => {
     let newDeviceSettings = {
       ...deviceSettings,
@@ -53,7 +64,7 @@ const DeviceSettings = () => {
 
   const renderDevicesTable = () => {
     if (Object.keys(deviceSettings).length === 0) {
-      return <p> There are curreently no devices </p>;
+      return <p> There are currently no devices </p>;
     }
     let deviceRows = Object.entries(deviceSettings).map(([name, device]) => {
       let dropdown = (
@@ -74,7 +85,20 @@ const DeviceSettings = () => {
       return (
         <tr key={uuidv4()}>
           <td>{dropdown}</td>
-          <td>is default</td>
+          <td>
+            <RadioGroup
+              type="checkbox"
+              onChange={onDefaultChange}
+              buttons={[
+                {
+                  value: "true",
+                  label: "Set as Default",
+                },
+              ]}
+              selectedRadio={device.isDefault ? "true" : "false"}
+              name={name}
+            />
+          </td>
           <td>{removeDevice}</td>
         </tr>
       );
@@ -101,6 +125,15 @@ const DeviceSettings = () => {
             <h3> Manage Devices </h3>
           </div>
           <div className="usa-card__body">{renderDevicesTable()}</div>
+          <div className="usa-card__footer">
+            <Button
+              onClick={addDevice}
+              type="submit"
+              outline
+              label="Add Another Device"
+              icon="plus"
+            />
+          </div>
         </div>
       </div>
     </div>

@@ -1,33 +1,53 @@
-import React from "react";
-// import { useSelector, useDispatch } from "react-redux";
-// import { clearNotification } from "./state/testQueueActions";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { v4 as uuidv4 } from "uuid";
 
-// import Alert from "../commonComponents/Alert";
-// import { getPatientById } from "../patients/patientSelectors";
-// import Expire from "../commonComponents/Expire";
-// import { getQueueNotification } from "../testQueue/testQueueSelectors";
 import DeviceSettings from "./DeviceSettings";
+import { getDevicesArray } from "../devices/deviceSelectors";
+import { DEVICE_TYPES } from "../devices/constants";
+
+const generateDeviceSettings = (devices) => {
+  return devices.reduce((acc, device) => {
+    let name = `device-${uuidv4()}`; // assign a dynamic name to each device
+    acc[name] = device;
+    return acc;
+  }, {});
+};
+
+const generateDevice = () => {
+  let deviceId = Object.keys(DEVICE_TYPES)[0]; // randomlly pick one
+  return {
+    deviceId,
+    displayName: DEVICE_TYPES[deviceId],
+    isDefault: false,
+  };
+};
+
 const Settings = () => {
-  //   const notification = useSelector(getQueueNotification);
-  //   const { notificationType, patientId } = { ...notification };
-  //   const patient = useSelector(getPatientById(patientId));
+  const devices = useSelector(getDevicesArray);
 
-  //   const dispatch = useDispatch();
-  //   const onNotificationExpire = () => {
-  //     dispatch(clearNotification());
-  //   };
-  //   const shouldDisplay = notification && Object.keys(notification).length > 0;
-  //   if (!shouldDisplay) {
-  //     return null;
-  //   }
+  const [deviceSettings, updateDeviceSettings] = useState(
+    generateDeviceSettings(devices)
+  );
 
-  //   let { type, title, body } = { ...ALERT_CONTENT[notificationType](patient) };
+  const addDevice = (deviceId) => {
+    let name = `device-${uuidv4()}`;
+    let newDeviceSettings = {
+      ...deviceSettings,
+      [name]: generateDevice(deviceId),
+    };
+    updateDeviceSettings(newDeviceSettings);
+  };
   return (
     <main className="prime-home">
       <div className="grid-container">
         <h2>Global Settings</h2>
       </div>
-      <DeviceSettings />
+      <DeviceSettings
+        deviceSettings={deviceSettings}
+        updateDeviceSettings={updateDeviceSettings}
+        addDevice={addDevice}
+      />
     </main>
   );
 };
