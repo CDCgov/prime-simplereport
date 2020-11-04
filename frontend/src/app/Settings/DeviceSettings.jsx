@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents//Dropdown";
-import { DEVICE_TYPES } from "../devices/constants";
 import RadioGroup from "../commonComponents/RadioGroup";
+import { DEVICE_TYPES } from "../devices/constants";
+import { createNewDevice } from "../devices/utils";
 
 const dropdownOptions = Object.entries(DEVICE_TYPES).map(
   ([deviceId, displayName]) => ({
@@ -14,11 +15,7 @@ const dropdownOptions = Object.entries(DEVICE_TYPES).map(
   })
 );
 
-const DeviceSettings = ({
-  deviceSettings,
-  updateDeviceSettings,
-  addDevice,
-}) => {
+const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
   const onDeviceChange = (e) => {
     let changedDeviceName = e.target.name;
     let newDeviceId = e.target.value;
@@ -35,17 +32,15 @@ const DeviceSettings = ({
 
   const onDefaultChange = (e) => {
     let changedDeviceName = e.target.name;
-
     let isDefault = !deviceSettings[changedDeviceName].isDefault;
-    let newDeviceSettings = {};
 
+    let newDeviceSettings = {};
     Object.entries(deviceSettings).forEach(([name, device]) => {
       newDeviceSettings[name] = {
         ...device,
         isDefault: false,
       };
     });
-
     newDeviceSettings[changedDeviceName] = {
       ...deviceSettings[changedDeviceName],
       isDefault,
@@ -62,47 +57,53 @@ const DeviceSettings = ({
     updateDeviceSettings(newDeviceSettings);
   };
 
+  const onAddDevice = (deviceId) => {
+    let name = `device-${uuidv4()}`;
+    let newDeviceSettings = {
+      ...deviceSettings,
+      [name]: createNewDevice(deviceId),
+    };
+    updateDeviceSettings(newDeviceSettings);
+  };
+
+  const generateDeviceRows = () => {
+    return Object.entries(deviceSettings).map(([name, device]) => (
+      <tr key={uuidv4()}>
+        <td>
+          <Dropdown
+            options={dropdownOptions}
+            name={name}
+            selectedValue={device.deviceId}
+            onChange={onDeviceChange}
+          />
+        </td>
+        <td>
+          <RadioGroup
+            type="checkbox"
+            onChange={onDefaultChange}
+            buttons={[
+              {
+                value: "true",
+                label: "Set as Default",
+              },
+            ]}
+            selectedRadio={device.isDefault ? "true" : "false"}
+            name={name}
+          />
+        </td>
+        <td>
+          <div onClick={() => onDeviceRemove(name)}>
+            <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+          </div>
+        </td>
+      </tr>
+    ));
+  };
+
   const renderDevicesTable = () => {
     if (Object.keys(deviceSettings).length === 0) {
       return <p> There are currently no devices </p>;
     }
-    let deviceRows = Object.entries(deviceSettings).map(([name, device]) => {
-      let dropdown = (
-        <Dropdown
-          options={dropdownOptions}
-          name={name}
-          selectedValue={device.deviceId}
-          onChange={onDeviceChange}
-        />
-      );
-
-      let removeDevice = (
-        <div onClick={() => onDeviceRemove(name)}>
-          <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-        </div>
-      );
-
-      return (
-        <tr key={uuidv4()}>
-          <td>{dropdown}</td>
-          <td>
-            <RadioGroup
-              type="checkbox"
-              onChange={onDefaultChange}
-              buttons={[
-                {
-                  value: "true",
-                  label: "Set as Default",
-                },
-              ]}
-              selectedRadio={device.isDefault ? "true" : "false"}
-              name={name}
-            />
-          </td>
-          <td>{removeDevice}</td>
-        </tr>
-      );
-    });
     return (
       <table className="usa-table usa-table--borderless">
         <thead>
@@ -112,7 +113,7 @@ const DeviceSettings = ({
             <th scope="col">Action</th>
           </tr>
         </thead>
-        <tbody>{deviceRows}</tbody>
+        <tbody>{generateDeviceRows()}</tbody>
       </table>
     );
   };
@@ -127,7 +128,7 @@ const DeviceSettings = ({
           <div className="usa-card__body">{renderDevicesTable()}</div>
           <div className="usa-card__footer">
             <Button
-              onClick={addDevice}
+              onClick={onAddDevice}
               type="submit"
               outline
               label="Add Another Device"
