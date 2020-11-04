@@ -14,7 +14,7 @@ const SearchInput = ({
   return (
     <React.Fragment>
       <TextInput
-        placeholder={"Search by Unique " + PATIENT_TERM_CAP + "ID or Name"}
+        placeholder={`Search by Unique ${PATIENT_TERM_CAP}ID or Name`}
         value={queryString}
         onChange={(e) => onInputChange(e)}
         name="add-to-queue-search"
