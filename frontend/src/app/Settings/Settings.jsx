@@ -6,7 +6,7 @@ import React from "react";
 // import { getPatientById } from "../patients/patientSelectors";
 // import Expire from "../commonComponents/Expire";
 // import { getQueueNotification } from "../testQueue/testQueueSelectors";
-
+import DeviceSettings from "./DeviceSettings";
 const Settings = () => {
   //   const notification = useSelector(getQueueNotification);
   //   const { notificationType, patientId } = { ...notification };
@@ -24,7 +24,10 @@ const Settings = () => {
   //   let { type, title, body } = { ...ALERT_CONTENT[notificationType](patient) };
   return (
     <main className="prime-home">
-      <h1> Settings Page</h1>
+      <div className="grid-container">
+        <h2>Global Settings</h2>
+      </div>
+      <DeviceSettings />
     </main>
   );
 };
