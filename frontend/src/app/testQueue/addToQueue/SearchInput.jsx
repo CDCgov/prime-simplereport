@@ -3,12 +3,7 @@ import React from "react";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 
-import {
-  PATIENT_TERM,
-  PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../../config/constants";
+import { PATIENT_TERM_CAP } from "../../../config/constants";
 
 const SearchInput = ({
   onSearchClick,

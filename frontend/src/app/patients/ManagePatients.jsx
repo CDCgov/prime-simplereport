@@ -12,9 +12,7 @@ import CSVModalForm from "./CSVModalForm";
 // this can't be the best way to handle this?
 import * as schemaPatient from "../patient.schema.json";
 import {
-  PATIENT_TERM,
   PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 
@@ -160,7 +158,11 @@ const ManagePatients = () => {
               <h1> Add New {PATIENT_TERM_CAP}</h1>
             </div>
             <div className="usa-card__body">
-              <Button type="button" onClick={() => {}} label="New Patient" />
+              <Button
+                type="button"
+                onClick={() => {}}
+                label={"New " + PATIENT_TERM_CAP}
+              />
               <hr />
 
               <p>or like do a csv or something:</p>

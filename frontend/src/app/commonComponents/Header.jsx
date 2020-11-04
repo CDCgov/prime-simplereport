@@ -1,12 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
-import {
-  PATIENT_TERM,
-  PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../config/constants";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 
 const Header = ({ organizationId }) => {
   return (
