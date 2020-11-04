@@ -2,6 +2,12 @@ import React from "react";
 import moment from "moment";
 import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
+import {
+  PATIENT_TERM,
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 
 import { getTestResultsWithPatientDetails } from "./testResultsSelector";
 
@@ -37,7 +43,7 @@ const TestResultsList = () => {
                 <table className="usa-table usa-table--borderless width-full">
                   <thead>
                     <tr>
-                      <th scope="col">Patient Name</th>
+                      <th scope="col">{PATIENT_TERM_CAP} Name</th>
                       <th scope="col">Unique ID</th>
                       <th scope="col">Date of Test</th>
                       <th scope="col">Result</th>
