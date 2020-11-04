@@ -161,7 +161,7 @@ const ManagePatients = () => {
               <Button
                 type="button"
                 onClick={() => {}}
-                label={"New " + PATIENT_TERM_CAP}
+                label={`New ${PATIENT_TERM_CAP}`}
               />
               <hr />
 
