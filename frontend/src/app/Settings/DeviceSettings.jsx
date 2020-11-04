@@ -1,20 +1,13 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { v4 as uuidv4 } from "uuid";
-// import { useSelector, useDispatch } from "react-redux";
-// import { clearNotification } from "./state/testQueueActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-// import Alert from "../commonComponents/Alert";
-// import { getPatientById } from "../patients/patientSelectors";
-// import Expire from "../commonComponents/Expire";
-// import { getQueueNotification } from "../testQueue/testQueueSelectors";
-// import Devices from "./Devices";
-import { getDevicesArray } from "../devices/deviceSelectors";
 import Dropdown from "../commonComponents//Dropdown";
+import { getDevicesArray } from "../devices/deviceSelectors";
 import { DEVICE_TYPES } from "../devices/constants";
-import { useEffect } from "react";
 
-const generateDevieSettings = (devices) => {
+const generateDeviceSettings = (devices) => {
   return devices.reduce((acc, device) => {
     let name = `device-${uuidv4()}`; // assign a dynamic name to each device
     acc[name] = device;
@@ -22,11 +15,18 @@ const generateDevieSettings = (devices) => {
   }, {});
 };
 
+const dropdownOptions = Object.entries(DEVICE_TYPES).map(
+  ([deviceId, displayName]) => ({
+    label: displayName,
+    value: deviceId,
+  })
+);
+
 const DeviceSettings = () => {
   const devices = useSelector(getDevicesArray);
 
   const [deviceSettings, updateDeviceSettings] = useState(
-    generateDevieSettings(devices)
+    generateDeviceSettings(devices)
   );
 
   const onDeviceChange = (e) => {
@@ -43,12 +43,13 @@ const DeviceSettings = () => {
     updateDeviceSettings(newDeviceSettings);
   };
 
-  const dropdownOptions = Object.entries(DEVICE_TYPES).map(
-    ([deviceId, displayName]) => ({
-      label: displayName,
-      value: deviceId,
-    })
-  );
+  const onDeviceRemove = (deviceName) => {
+    let newDeviceSettings = {
+      ...deviceSettings,
+    };
+    delete newDeviceSettings[deviceName];
+    updateDeviceSettings(newDeviceSettings);
+  };
 
   const renderDevicesTable = () => {
     if (Object.keys(deviceSettings).length === 0) {
@@ -63,11 +64,18 @@ const DeviceSettings = () => {
           onChange={onDeviceChange}
         />
       );
+
+      let removeDevice = (
+        <div onClick={() => onDeviceRemove(name)}>
+          <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+        </div>
+      );
+
       return (
         <tr key={uuidv4()}>
           <td>{dropdown}</td>
           <td>is default</td>
-          <td>trash</td>
+          <td>{removeDevice}</td>
         </tr>
       );
     });
