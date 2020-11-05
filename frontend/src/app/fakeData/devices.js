@@ -7,6 +7,6 @@ export const initialDevicesState = {
     displayName: DEVICE_TYPES[randomDeviceId],
     deviceManufacturer: "Abbott",
     deviceModel: "ID NOW",
-    isDefault: false,
+    isDefault: true,
   },
 };
