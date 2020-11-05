@@ -18,7 +18,9 @@ const QueueItem = ({ patient, devices }) => {
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
 
-  const [deviceId, updateDeviceId] = useState(null);
+  let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
+  let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
+  const [deviceId, updateDeviceId] = useState(defaultDeviceId);
   const [testResultValue, updateTestResultValue] = useState(null);
 
   const onTestResultSubmit = (e) => {
@@ -37,6 +39,12 @@ const QueueItem = ({ patient, devices }) => {
 
   const onTestResultChange = (newTestResultValue) => {
     updateTestResultValue(newTestResultValue);
+  };
+
+  const onClearClick = (e) => {
+    e.preventDefault();
+    onTestResultChange(null);
+    updateDeviceId(null);
   };
 
   const openAoeModal = () => {
@@ -127,6 +135,7 @@ const QueueItem = ({ patient, devices }) => {
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
+              onClearClick={onClearClick}
             />
           </div>
         </div>

@@ -11,6 +11,10 @@ import Ajv from "ajv";
 import CSVModalForm from "./CSVModalForm";
 // this can't be the best way to handle this?
 import * as schemaPatient from "../patient.schema.json";
+import {
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
@@ -151,12 +155,13 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> Add New Patients</h2>
+              <h2> Add New {PATIENT_TERM_CAP}</h2>
             </div>
             <div className="usa-card__body">
               <div></div>
-              <Button type="button" onClick={() => {}} label="New Patient" />
+              <Button type="button" onClick={() => {}} label={`New ${PATIENT_TERM_CAP}`} />
               - OR - &nbsp;
+
               <input
                 type="file"
                 id="uploadCSV"
@@ -177,7 +182,7 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> All People</h2>
+              <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
