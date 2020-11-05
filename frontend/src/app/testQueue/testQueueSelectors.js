@@ -43,13 +43,14 @@ export const getAllPatientsWithQueueStatus = createSelector(
 // fetches the entire patient model for each patient in the queue
 // used to render each item in the queue
 export const getDetailedPatientsInTestQueue = createSelector(
-  _getPatientIdsInTestQueue,
   getPatients,
-  (testQueuePatientIds, allPatients) => {
-    let patientsInQueue = [];
-    testQueuePatientIds.forEach((patientId) =>
-      patientsInQueue.push(allPatients[patientId])
-    );
-    return patientsInQueue;
+  _getPatientsInTestQueue,
+  (patients, queue) => {
+    return Object.keys(queue)
+      .map((patientId) => ({
+        ...queue[patientId],
+        patient: patients[patientId],
+      }))
+      .sort((a, b) => (a.dateAdded < b.dateAdded ? -1 : 1));
   }
 );

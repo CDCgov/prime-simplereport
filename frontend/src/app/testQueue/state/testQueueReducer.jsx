@@ -8,13 +8,14 @@ import {
 export default (state = {}, action) => {
   switch (action.type) {
     case TEST_QUEUE__ADD_PATIENT: {
-      const { patientId, dateAdded } = { ...action.payload };
+      const { patientId, dateAdded, askOnEntry } = { ...action.payload };
       return {
         ...state,
         patients: {
           ...state.patients,
           [patientId]: {
             dateAdded,
+            askOnEntry,
           },
         },
       };

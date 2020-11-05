@@ -13,10 +13,11 @@ import { patientPropType, devicePropType } from "../propTypes";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 
-const QueueItem = ({ patient, devices }) => {
+const QueueItem = ({ patient, devices, askOnEntry }) => {
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
+  const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
   let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
@@ -25,7 +26,11 @@ const QueueItem = ({ patient, devices }) => {
 
   const onTestResultSubmit = (e) => {
     e.preventDefault();
-    let testResultToSubmit = { deviceId: deviceId, testResultValue };
+    let testResultToSubmit = {
+      deviceId: deviceId,
+      testResultValue,
+      testTimeQuestions: aoeAnswers,
+    };
     dispatch(submitTestResult(patient.patientId, testResultToSubmit));
   };
 
@@ -107,11 +112,14 @@ const QueueItem = ({ patient, devices }) => {
                     text="Time of Test Questions"
                     onClick={openAoeModal}
                   />
-                  <AoeModalForm
-                    isOpen={isAoeModalOpen}
-                    onClose={closeAoeModal}
-                    patient={patient}
-                  />
+                  {isAoeModalOpen && (
+                    <AoeModalForm
+                      onClose={closeAoeModal}
+                      patient={patient}
+                      loadState={aoeAnswers}
+                      saveCallback={setAoeAnswers}
+                    />
+                  )}
                   <p>
                     <span className="usa-tag">PENDING</span>
                   </p>
