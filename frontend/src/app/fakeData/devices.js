@@ -1,12 +1,12 @@
+import { DEVICE_TYPES } from "../devices/constants";
+
+let randomDeviceId = Object.keys(DEVICE_TYPES)[0];
+
 export const initialDevicesState = {
-  deviceId1: {
-    displayName: "Abbott - ID NOW",
+  [randomDeviceId]: {
+    displayName: DEVICE_TYPES[randomDeviceId],
     deviceManufacturer: "Abbott",
     deviceModel: "ID NOW",
-  },
-  deviceId2: {
-    displayName: "Abbott - BinaxNOW COVID-19 Ag Card",
-    deviceManufacturer: "Abbott",
-    deviceModel: "BinaxNOW COVID-19 Ag Card",
+    isDefault: true,
   },
 };

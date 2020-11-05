@@ -17,7 +17,7 @@ const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
       </label>
       <select
         className="usa-select"
-        name={id}
+        name={name}
         id={id}
         onChange={onChange}
         value={selectedValue || ""}
