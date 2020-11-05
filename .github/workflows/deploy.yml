@@ -8,6 +8,8 @@ on:
   push:
     branches: # automatically deploy the "sandbox" branch on every push
       - sandbox
+  schedule:
+    - cron: "3 12 * * *" # should deploy latest main every morning at 12:03 UTC
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
