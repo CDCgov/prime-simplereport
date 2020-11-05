@@ -11,19 +11,29 @@ const SearchInput = ({
 }) => {
   return (
     <React.Fragment>
-      <TextInput
-        placeholder="Search by Unique Patient ID or Name"
-        value={queryString}
-        onChange={(e) => onInputChange(e)}
-        name="add-to-queue-search"
-        addClass="usa-input"
-      />
-      <Button
-        type="submit"
-        onClick={(e) => onSearchClick(e)}
-        icon="search"
-        disabled={disabled}
-      />
+      <form className="usa-search width-full margin-bottom-2 margin-left-1" role="search">
+        <TextInput
+          type="search"
+          placeholder="Search by Unique Patient ID or Name"
+          value={queryString}
+          onChange={(e) => onInputChange(e)}
+          name="add-to-queue-search"
+          addClass="usa-input"
+          
+        />
+        <Button
+          type="submit"
+          onClick={(e) => onSearchClick(e)}
+          icon="search"
+          disabled={disabled}
+          addClass="usa-button"
+        />
+      </form>
+
+      
+
+     
+
     </React.Fragment>
   );
 };

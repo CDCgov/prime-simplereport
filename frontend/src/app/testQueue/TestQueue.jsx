@@ -41,7 +41,7 @@ const TestQueue = () => {
   return (
     <main className="prime-home">
       <div className="grid-container">
-        <div className="grid-row">
+        <div className="grid-row position-relative">
           <AddToQueue />
         </div>
         {createQueueItems(patients)}
