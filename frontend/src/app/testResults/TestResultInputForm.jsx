@@ -7,12 +7,12 @@ import Anchor from "../commonComponents/Anchor";
 import { COVID_RESULTS } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 
-const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
-  const onClearClick = (e) => {
-    e.preventDefault();
-    onChange(null);
-  };
-
+const TestResultInputForm = ({
+  testResultValue,
+  onSubmit,
+  onChange,
+  onClearClick,
+}) => {
   const testResultForm = (
     <React.Fragment>
       <RadioGroup

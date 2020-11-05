@@ -11,6 +11,10 @@ import Ajv from "ajv";
 import CSVModalForm from "./CSVModalForm";
 // this can't be the best way to handle this?
 import * as schemaPatient from "../patient.schema.json";
+import {
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
@@ -107,18 +111,18 @@ const ManagePatients = () => {
 
       // Adding filtered content to patient store, this all needs to get updated when we finalize
       // this.
-      jsonImport.data.forEach((row, index) => {
-        // limit actions to avoid spamming localstorage
-        patients[row.patientID] = {
-          firstName: row.patientFirstName,
-          lastName: row.patientLastName,
-          middleName: row.patientMiddleName,
-          patientId: row.patientID,
-          phone: row.patientPhoneNumber,
-          address: row.patientStreet,
-          birthDate: row.patientDOB,
-        };
-      });
+      // jsonImport.data.forEach((row, index) => {
+      //   // limit actions to avoid spamming localstorage
+      //   patients[row.patientID] = {
+      //     firstName: row.patientFirstName,
+      //     lastName: row.patientLastName,
+      //     middleName: row.patientMiddleName,
+      //     patientId: row.patientID,
+      //     phone: row.patientPhoneNumber,
+      //     address: row.patientStreet,
+      //     birthDate: row.patientDOB,
+      //   };
+      // });
       //console.log(patients);
 
       // react state confuses me, not sure if this is doubling memory or just creating a pointer?
@@ -151,10 +155,14 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h1> Add New Patients</h1>
+              <h1> Add New {PATIENT_TERM_CAP}</h1>
             </div>
             <div className="usa-card__body">
-              <Button type="button" onClick={() => {}} label="New Patient" />
+              <Button
+                type="button"
+                onClick={() => {}}
+                label={`New ${PATIENT_TERM_CAP}`}
+              />
               <hr />
 
               <p>or like do a csv or something:</p>
@@ -178,7 +186,7 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> All People</h2>
+              <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
