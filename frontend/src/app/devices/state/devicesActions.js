@@ -1,14 +1,11 @@
-import moment from "moment";
+import { DEVICES__UPDATE_DEVICES } from "./devicesActionTypes";
 
-// import { QUEUE_NOTIFICATION_TYPES } from "../constants";
-import { DEVICES__ADD_DEVICE } from "./deviecsActionTypes";
-
-const addNewDevice = (patientId) => {
+// this just does a `set` operation
+export const updateDeviceSettings = (deviceSettings) => {
   return {
-    type: DEVICES__ADD_DEVICE,
+    type: DEVICES__UPDATE_DEVICES,
     payload: {
-      patientId,
-      dateAdded: moment().toISOString(),
+      deviceSettings,
     },
   };
 };
