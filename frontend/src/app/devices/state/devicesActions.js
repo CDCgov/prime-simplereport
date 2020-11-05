@@ -1,9 +1,9 @@
-import { DEVICES__UPDATE_DEVICES } from "./devicesActionTypes";
+import { DEVICES__SET_DEVICE_SETTINGS } from "./devicesActionTypes";
 
-// this just does a `set` operation
-export const updateDeviceSettings = (deviceSettings) => {
+//
+export const setDeviceSettings = (deviceSettings) => {
   return {
-    type: DEVICES__UPDATE_DEVICES,
+    type: DEVICES__SET_DEVICE_SETTINGS,
     payload: {
       deviceSettings,
     },

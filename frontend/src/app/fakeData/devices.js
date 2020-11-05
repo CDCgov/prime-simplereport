@@ -1,14 +1,12 @@
+import { DEVICE_TYPES } from "../devices/constants";
+
+let randomDeviceId = Object.keys(DEVICE_TYPES)[0];
+
 export const initialDevicesState = {
-  deviceId1: {
-    displayName: "Abbott - ID NOW", // TODO this is a constant and can be removed from redux
+  [randomDeviceId]: {
+    displayName: DEVICE_TYPES[randomDeviceId],
     deviceManufacturer: "Abbott",
     deviceModel: "ID NOW",
-    isDefault: false,
-  },
-  deviceId2: {
-    displayName: "Abbott - BinaxNOW COVID-19 Ag Card",
-    deviceManufacturer: "Abbott",
-    deviceModel: "BinaxNOW COVID-19 Ag Card",
     isDefault: false,
   },
 };

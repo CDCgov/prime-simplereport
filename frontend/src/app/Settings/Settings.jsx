@@ -12,15 +12,12 @@ const Settings = () => {
   const dispatch = useDispatch();
   const devices = useSelector(getDevicesArray);
 
-  console.log(devices);
-
   const [deviceSettings, updateDeviceSettings] = useState(
-    generateDeviceSettings(devices)
+    generateDeviceSettings(devices) // TODO: this needs to update with the latest device schema
   );
 
   const onSaveSettings = () => {
     // add other setting state here
-    console.log("saving settings");
     dispatch(updateSettings(deviceSettings));
   };
 

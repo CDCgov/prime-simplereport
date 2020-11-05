@@ -1,1 +1,1 @@
-export const DEVICES__UPDATE_DEVICES = "devices/updateDevices";
+export const DEVICES__SET_DEVICE_SETTINGS = "devices/setDeviceSettings";

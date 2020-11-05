@@ -1,4 +1,4 @@
-import { updateDeviceSettings } from "../../devices/state/devicesActions";
+import { setDeviceSettings } from "../../devices/state/devicesActions";
 import { SETTINGS__UPDATE_SETTINGS } from "./settingsActionTypes";
 
 const _updateSettings = () => {
@@ -10,6 +10,6 @@ const _updateSettings = () => {
 export const updateSettings = (deviceSettings) => {
   return (dispatch) => {
     dispatch(_updateSettings());
-    dispatch(updateDeviceSettings(deviceSettings));
+    dispatch(setDeviceSettings(deviceSettings));
   };
 };
