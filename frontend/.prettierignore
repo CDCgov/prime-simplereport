@@ -1,7 +1,2 @@
 # GENERATED FILE (ignore forever or until moved)
 src/styles/App.css
-# FILES TO UPDATE (and remove when they're fixed!)
-src/app/testQueue/testQueueSelectors.js
-src/serviceWorker.js
-src/setupTests.js
-

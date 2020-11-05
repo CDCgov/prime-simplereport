@@ -11,8 +11,9 @@ export const getQueueNotification = (state) => state.testQueue.notifications;
 const _getPatientIdsInTestQueue = createSelector(
   _getPatientsInTestQueue,
   (patients) => {
-    return Object.keys(patients)
-      .sort((a, b) => patients[a].dateAdded - patients[b].dateAdded);
+    return Object.keys(patients).sort(
+      (a, b) => patients[a].dateAdded - patients[b].dateAdded
+    );
   }
 );
 
@@ -22,17 +23,19 @@ export const getAllPatientsWithQueueStatus = createSelector(
   getPatients,
   _getPatientsInTestQueue,
   (allPatients, testQueuePatients) => {
-    const patientQueueSearchItems = Object.values(allPatients).map((patient) => {
-      let { firstName, middleName, lastName, birthDate, patientId } = {
-        ...patient,
-      };
-      return {
-        displayName: displayFullName(firstName, middleName, lastName),
-        birthDate,
-        patientId,
-        isInQueue: patientId in testQueuePatients,
-      };
-    });
+    const patientQueueSearchItems = Object.values(allPatients).map(
+      (patient) => {
+        let { firstName, middleName, lastName, birthDate, patientId } = {
+          ...patient,
+        };
+        return {
+          displayName: displayFullName(firstName, middleName, lastName),
+          birthDate,
+          patientId,
+          isInQueue: patientId in testQueuePatients,
+        };
+      }
+    );
     return patientQueueSearchItems;
   }
 );
