@@ -7,6 +7,7 @@ import { getDevicesArray } from "../devices/deviceSelectors";
 import { generateDeviceSettings } from "../devices/utils";
 import Button from "../commonComponents/Button";
 import { updateSettings } from "../Settings/state/settingsActions";
+import OrgSettings from "./OrgSettings";
 
 const Settings = () => {
   const dispatch = useDispatch();
@@ -15,6 +16,7 @@ const Settings = () => {
   const [deviceSettings, updateDeviceSettings] = useState(
     generateDeviceSettings(devices) // TODO: this needs to update with the latest device schema
   );
+  const [orgSettings, updateOrgSettings] = useState({});
 
   const onSaveSettings = () => {
     // add other setting state here
@@ -33,6 +35,11 @@ const Settings = () => {
           />
         </div>
       </div>
+      <OrgSettings
+        orgSettings={orgSettings}
+        updateOrgSettings={updateOrgSettings}
+      />
+
       <DeviceSettings
         deviceSettings={deviceSettings}
         updateDeviceSettings={updateDeviceSettings}
