@@ -47,7 +47,7 @@ const Header = ({ organizationId }) => {
                   color: "white",
                 }}
               >
-                 {PATIENT_TERM_CAP}
+                {PATIENT_TERM_CAP}
               </NavLink>
             </li>
           </ul>

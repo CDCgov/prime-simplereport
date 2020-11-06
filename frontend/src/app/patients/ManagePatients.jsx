@@ -159,9 +159,12 @@ const ManagePatients = () => {
             </div>
             <div className="usa-card__body">
               <div></div>
-              <Button type="button" onClick={() => {}} label={`New ${PATIENT_TERM_CAP}`} />
+              <Button
+                type="button"
+                onClick={() => {}}
+                label={`New ${PATIENT_TERM_CAP}`}
+              />
               - OR - &nbsp;
-
               <input
                 type="file"
                 id="uploadCSV"
