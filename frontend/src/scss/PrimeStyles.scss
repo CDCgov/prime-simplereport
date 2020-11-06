@@ -1,9 +1,11 @@
 .prime-home {
   background-color: color($theme-color-prime-gray-light);
+  padding-top: 1rem;
 }
 
 .prime-container {
   width: 100%;
+  margin-bottom: 1.5rem;
 }
 
 .prime-ul {
@@ -14,6 +16,11 @@
 .prime-li {
   float: left;
   margin-right: 2rem;
+  margin-top: 1rem;
+}
+
+.prime-ul p {
+  margin: 0;
 }
 
 .prime-right-align {
@@ -43,8 +50,12 @@
 
 .prime-queue-item {
   padding: 0;
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
   position: relative;
+}
+
+.prime-queue-item .usa-card__footer .usa-form label {
+  margin-top: 0.5rem;
 }
 
 .prime-container-padding {
@@ -76,10 +87,24 @@
   cursor: pointer;
 }
 
+// other buttons
+
+.prime-red-icon {
+  color: color($theme-color-secondary);
+}
+
 // TestResultInputForm
 .prime-test-result-submit {
   margin-left: 1em;
   margin-bottom: 1em;
+}
+
+//test queue search
+.results-dropdown {
+  position: absolute;
+  height: auto;
+  z-index: 10000;
+  top: 31px;
 }
 
 // radio buttons
@@ -119,3 +144,52 @@
 
 // .prime-modal {
 // }
+
+/* The animation code */
+@keyframes alertanimation {
+  0% {
+    opacity: 0%;
+    bottom: -30px;
+  }
+  10% {
+    opacity: 100%;
+    bottom: 20px;
+  }
+
+  90% {
+    opacity: 100%;
+    bottom: 20px;
+  }
+
+  100% {
+    opacity: 0%;
+    bottom: -30px;
+  }
+}
+
+.usa-alert--success {
+  outline: 2px solid #00a91c;
+  animation-name: alertanimation;
+  animation-fill-mode: forwards;
+  animation-duration: 5s; //time of animation is set here, and also on queuenotification.jsx
+}
+
+//navbar customizations
+@media (min-width: 64em) {
+  .usa-nav__primary > .usa-nav__primary-item > a {
+    padding: 1.5rem;
+    font-size: 1rem;
+    border-right: 1px solid color($theme-color-prime-gray-light);
+  }
+
+  .usa-nav__primary > .usa-nav__primary-item:first-child > a {
+    border-left: 1px solid color($theme-color-prime-gray-light);
+  }
+
+  .usa-logo {
+    margin: 0 0 20px 0;
+  }
+  .usa-header--basic .usa-nav {
+    padding: 0;
+  }
+}

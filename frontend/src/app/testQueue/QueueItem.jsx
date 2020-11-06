@@ -19,7 +19,9 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
-  const [deviceId, updateDeviceId] = useState(null);
+  let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
+  let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
+  const [deviceId, updateDeviceId] = useState(defaultDeviceId);
   const [testResultValue, updateTestResultValue] = useState(null);
 
   const onTestResultSubmit = (e) => {
@@ -42,6 +44,12 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
 
   const onTestResultChange = (newTestResultValue) => {
     updateTestResultValue(newTestResultValue);
+  };
+
+  const onClearClick = (e) => {
+    e.preventDefault();
+    onTestResultChange(null);
+    updateDeviceId(null);
   };
 
   const openAoeModal = () => {
@@ -119,13 +127,15 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
               </ul>
             </div>
             <div className="grid-row usa-card__footer">
-              <Dropdown
-                options={options}
-                label="Device"
-                name="testDevice"
-                selectedValue={deviceId}
-                onChange={onDeviceChange}
-              />
+              <form className="usa-form">
+                <Dropdown
+                  options={options}
+                  label="Device"
+                  name="testDevice"
+                  selectedValue={deviceId}
+                  onChange={onDeviceChange}
+                />
+              </form>
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result">
@@ -133,6 +143,7 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
+              onClearClick={onClearClick}
             />
           </div>
         </div>

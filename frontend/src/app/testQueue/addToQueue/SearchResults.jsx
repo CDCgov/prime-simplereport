@@ -68,7 +68,7 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
   };
 
   return (
-    <div className="usa-card__container">
+    <div className="usa-card__container shadow-3 results-dropdown">
       <div className="usa-card__body">{renderResultsTable()}</div>
     </div>
   );

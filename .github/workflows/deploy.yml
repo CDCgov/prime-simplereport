@@ -8,49 +8,51 @@ on:
   push:
     branches: # automatically deploy the "sandbox" branch on every push
       - sandbox
+  schedule:
+    - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      # VERY IMPORTANT: if you run this on any branch other than master, it will
-      # deploy to SANDBOX_CF_APP
-    - name: Choose deployment environment
-      run: |
-        if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
-          echo We are deploying to the DEMO environment
-          app=$DEMO_CF_APP
-          title="PRIME Data Input Prototype"
-        else
-          echo We are deploying to the SANDBOX environment
-          app=$SANDBOX_CF_APP
-          title="** DEV/TEST ** PRIME Data Input Prototype ** DEV/TEST **"
-          echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
-        fi
-        echo >> $GITHUB_ENV "CF_APPLICATION=$app"
-        echo >> $GITHUB_ENV "REACT_APP_TITLE=$title"
-    - name: Use Node.js 12
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12
-    - name: Cache npm local files
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.npm
-          ./frontend/node_modules
-        key: npm-build-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
-    - name: Node setup
-      working-directory: ./frontend
-      run: npm install
-    - name: Application build
-      working-directory: ./frontend
-      run: npm run-script build
-    - name: Deploy
-      uses: usds/cloud-gov-cli@master
-      with:
-        org: ${{secrets.CLOUD_GOV_ORG}}
-        user: ${{secrets.SERVICE_USER}}
-        password: ${{secrets.SERVICE_PASSWORD}}
-        application: ${{env.CF_APPLICATION}}
-        manifest: frontend/manifest.yml
+      - uses: actions/checkout@v2
+        # VERY IMPORTANT: if you run this on any branch other than master, it will
+        # deploy to SANDBOX_CF_APP
+      - name: Choose deployment environment
+        run: |
+          if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
+            echo We are deploying to the DEMO environment
+            app=$DEMO_CF_APP
+            title="PRIME Data Input Prototype"
+          else
+            echo We are deploying to the SANDBOX environment
+            app=$SANDBOX_CF_APP
+            title="** DEV/TEST ** PRIME Data Input Prototype ** DEV/TEST **"
+            echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
+          fi
+          echo >> $GITHUB_ENV "CF_APPLICATION=$app"
+          echo >> $GITHUB_ENV "REACT_APP_TITLE=$title"
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./frontend/node_modules
+          key: npm-build-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
+      - name: Node setup
+        working-directory: ./frontend
+        run: npm install
+      - name: Application build
+        working-directory: ./frontend
+        run: npm run-script build
+      - name: Deploy
+        uses: usds/cloud-gov-cli@master
+        with:
+          org: ${{secrets.CLOUD_GOV_ORG}}
+          user: ${{secrets.SERVICE_USER}}
+          password: ${{secrets.SERVICE_PASSWORD}}
+          application: ${{env.CF_APPLICATION}}
+          manifest: frontend/manifest.yml

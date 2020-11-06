@@ -1,8 +1,12 @@
+import { DEVICE_TYPES } from "../devices/constants";
+
+let randomDeviceId = Object.keys(DEVICE_TYPES)[0];
+
 export const initialDevicesState = {
-  deviceId1: {
-    displayName: "Abbott ID Now",
-  },
-  deviceId2: {
-    displayName: "Abbott ID Later",
+  [randomDeviceId]: {
+    displayName: DEVICE_TYPES[randomDeviceId],
+    deviceManufacturer: "Abbott",
+    deviceModel: "ID NOW",
+    isDefault: true,
   },
 };

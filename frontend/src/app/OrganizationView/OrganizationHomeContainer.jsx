@@ -10,6 +10,7 @@ import {
 import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
 import ManagePatients from "../patients/ManagePatients";
+import Settings from "../Settings/Settings";
 
 const OrganizationHomeContainer = () => {
   let match = useRouteMatch();
@@ -34,6 +35,12 @@ const OrganizationHomeContainer = () => {
           path={`${match.path}/patients`}
           render={() => {
             return <ManagePatients />;
+          }}
+        />
+        <Route
+          path={`${match.path}/settings`}
+          render={() => {
+            return <Settings />;
           }}
         />
         <Route path={`${match.path}/`}>

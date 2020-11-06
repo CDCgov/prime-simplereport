@@ -25,7 +25,7 @@ const QueueNotification = () => {
 
   let { type, title, body } = { ...ALERT_CONTENT[notificationType](patient) };
   return (
-    <Expire delay={3000} onExpire={onNotificationExpire}>
+    <Expire delay={5000} onExpire={onNotificationExpire}>
       <Alert type={type} body={body} title={title} />
     </Expire>
   );

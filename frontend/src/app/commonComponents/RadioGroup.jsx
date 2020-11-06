@@ -10,6 +10,7 @@ const RadioGroup = ({
   disabled,
   horizontal, // should only be used for radio buttons with two options. 3+ options should be vertically stacked
   selectedRadio,
+  type,
   legend,
 }) => {
   // Note: list Affirmations before negations: Yes before No.
@@ -21,20 +22,24 @@ const RadioGroup = ({
       "prime-radio--success": button.value === selectedRadio && button.success,
       "prime-radio--failure": button.value === selectedRadio && button.failure,
     });
+
     return (
       <li className={classNames} key={button.value}>
         <input
-          className="usa-radio__input"
+          className={`usa-${type || "radio"}__input`}
           checked={button.value === selectedRadio}
           id={uuid}
           key={button.value}
           name={name}
           onChange={onChange}
-          type="radio"
+          type={type || "radio"}
           value={button.value}
           disabled={button.disabled || disabled || false}
         />
-        <label className="usa-radio__label prime-radio__label" htmlFor={uuid}>
+        <label
+          className={`usa-${type || "radio"}__label prime-radio__label`}
+          htmlFor={uuid}
+        >
           {button.label}
         </label>
       </li>

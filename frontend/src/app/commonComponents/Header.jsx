@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 
 const Header = ({ organizationId }) => {
   return (
@@ -9,7 +11,7 @@ const Header = ({ organizationId }) => {
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
-              <Link to="/">PRIME Data Input</Link>
+              <Link to="/">SimpleReport</Link>
             </em>
           </div>
         </div>
@@ -45,7 +47,22 @@ const Header = ({ organizationId }) => {
                   color: "white",
                 }}
               >
-                Manage Patients
+                {PATIENT_TERM_CAP}
+              </NavLink>
+            </li>
+          </ul>
+        </nav>
+        <nav aria-label="Primary navigation" className="usa-nav prime-nav">
+          <ul className="usa-nav__primary usa-accordion">
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/organization/${organizationId}/settings`}
+                activeClassName="active-nav-item"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                <FontAwesomeIcon icon={"cog"} size="2x" />
               </NavLink>
             </li>
           </ul>
