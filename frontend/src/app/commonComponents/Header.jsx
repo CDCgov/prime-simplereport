@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PATIENT_TERM_CAP } from "../../config/constants";
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 
 const Header = ({ organizationId }) => {
   return (
@@ -47,7 +47,7 @@ const Header = ({ organizationId }) => {
                   color: "white",
                 }}
               >
-                {PATIENT_TERM_CAP}
+                {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
           </ul>
