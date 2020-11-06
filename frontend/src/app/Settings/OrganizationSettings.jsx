@@ -8,12 +8,14 @@ const OrganizationSettings = ({ orgSettings, updateOrgSettings }) => {
     let newOrgSettings = { ...orgSettings, [name]: value };
     updateOrgSettings(newOrgSettings);
   };
+
+  let { name, cliaNumber } = { ...orgSettings };
   return (
     <div className="grid-container">
       <div className="grid-row">
         <div className="prime-container usa-card__container">
           <div className="usa-card__header">
-            <h3> Facility Information </h3>
+            <h2> Facility Information </h2>
           </div>
           <div className="usa-card__body">
             <div className="grid-row grid-gap">
@@ -21,7 +23,7 @@ const OrganizationSettings = ({ orgSettings, updateOrgSettings }) => {
                 <TextInput
                   label={"Testing Facility Name"}
                   placeholder={`Facility Name`}
-                  value={orgSettings.name || ""}
+                  value={name || ""}
                   onChange={onInputChange}
                   name="name"
                 />
@@ -30,7 +32,7 @@ const OrganizationSettings = ({ orgSettings, updateOrgSettings }) => {
                 <TextInput
                   label={"CLIA Number"}
                   placeholder={``}
-                  value={orgSettings.cliaNumber}
+                  value={cliaNumber}
                   onChange={onInputChange}
                   name="cliaNumber"
                 />

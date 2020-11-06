@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 
 import Button from "../commonComponents/Button";
 import DeviceSettings from "./DeviceSettings";
+import OrderingProviderSettings from "./OrderingProviderSettings";
 import OrganizationSettings from "./OrganizationSettings";
 import { getDevicesArray } from "../devices/deviceSelectors";
 import { generateDeviceSettings } from "../devices/utils";
@@ -37,6 +38,10 @@ const Settings = () => {
         </div>
       </div>
       <OrganizationSettings
+        orgSettings={orgSettings}
+        updateOrgSettings={updateOrgSettings}
+      />
+      <OrderingProviderSettings
         orgSettings={orgSettings}
         updateOrgSettings={updateOrgSettings}
       />
