@@ -155,17 +155,16 @@ const ManagePatients = () => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h1> Add New {PATIENT_TERM_CAP}</h1>
+              <h2> Add New {PATIENT_TERM_CAP}</h2>
             </div>
             <div className="usa-card__body">
+              <div></div>
               <Button
                 type="button"
                 onClick={() => {}}
                 label={`New ${PATIENT_TERM_CAP}`}
               />
-              <hr />
-
-              <p>or like do a csv or something:</p>
+              - OR - &nbsp;
               <input
                 type="file"
                 id="uploadCSV"

@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 
-const TextInput = ({ value, label, name, placeholder, onChange }) => {
+const TextInput = ({ value, label, name, placeholder, onChange, type }) => {
   let newId = uuidv4();
 
   const labelElem = label ? (
@@ -19,7 +19,7 @@ const TextInput = ({ value, label, name, placeholder, onChange }) => {
         className="usa-input"
         id={newId}
         name={name}
-        type="text"
+        type={type || "text"}
         onChange={onChange}
         placeholder={placeholder}
         value={value}

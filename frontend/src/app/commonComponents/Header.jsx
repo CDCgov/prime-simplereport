@@ -11,7 +11,7 @@ const Header = ({ organizationId }) => {
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
-              <Link to="/">PRIME Data Input</Link>
+              <Link to="/">SimpleReport</Link>
             </em>
           </div>
         </div>
@@ -47,7 +47,7 @@ const Header = ({ organizationId }) => {
                   color: "white",
                 }}
               >
-                Manage {PATIENT_TERM_CAP}
+                {PATIENT_TERM_CAP}
               </NavLink>
             </li>
           </ul>

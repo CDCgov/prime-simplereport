@@ -119,13 +119,15 @@ const QueueItem = ({ patient, devices }) => {
               </ul>
             </div>
             <div className="grid-row usa-card__footer">
-              <Dropdown
-                options={options}
-                label="Device"
-                name="testDevice"
-                selectedValue={deviceId}
-                onChange={onDeviceChange}
-              />
+              <form className="usa-form">
+                <Dropdown
+                  options={options}
+                  label="Device"
+                  name="testDevice"
+                  selectedValue={deviceId}
+                  onChange={onDeviceChange}
+                />
+              </form>
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result">
