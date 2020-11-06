@@ -5,7 +5,6 @@ import {
 } from "./testQueueActionTypes";
 
 import { addNotification } from "../../Notifications/state/notificationActions";
-
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
 
 const _addPatientToQueue = (patientId) => {

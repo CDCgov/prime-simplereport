@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useSelector } from "react-redux";
+
 import Alert from "../commonComponents/Alert";
 import { getNotification } from "./notificationsSelector";
 

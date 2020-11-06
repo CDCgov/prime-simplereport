@@ -1,12 +1,10 @@
 import moment from "moment";
-import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
-
-import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
 
 import { addNotification } from "../../Notifications/state/notificationActions";
-
-import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 import { ALERT_CONTENT } from "../../testQueue/constants";
+import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
+import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
+import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
 
 const _submitTestResult = (patientId, testResultInfo) => {
   return {
