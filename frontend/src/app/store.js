@@ -9,12 +9,14 @@ import testResultReducer from "./testResults/state/testResultReducer";
 import testQueueReducer from "./testQueue/state/testQueueReducer";
 import devicesReducer from "./devices/state/devicesReducer";
 import { initialState } from "./fakeData/initialState";
+import organizationReducers from "./organizations/state/organizationReducers";
 
 const rootReducer = combineReducers({
   patients: patientReducer,
   testResults: testResultReducer,
   testQueue: testQueueReducer,
   devices: devicesReducer,
+  organization: organizationReducers,
 });
 
 const persistConfig = {

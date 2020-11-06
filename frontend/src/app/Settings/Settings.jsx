@@ -2,23 +2,27 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 
+import Button from "../commonComponents/Button";
 import DeviceSettings from "./DeviceSettings";
+import OrderingProviderSettings from "./OrderingProviderSettings";
+import OrganizationSettings from "./OrganizationSettings";
 import { getDevicesArray } from "../devices/deviceSelectors";
 import { generateDeviceSettings } from "../devices/utils";
-import Button from "../commonComponents/Button";
+import { getOrganization } from "../organizations/organizationSelector";
 import { updateSettings } from "../Settings/state/settingsActions";
 
 const Settings = () => {
   const dispatch = useDispatch();
   const devices = useSelector(getDevicesArray);
+  const organization = useSelector(getOrganization);
 
   const [deviceSettings, updateDeviceSettings] = useState(
-    generateDeviceSettings(devices) // TODO: this needs to update with the latest device schema
+    generateDeviceSettings(devices)
   );
+  const [orgSettings, updateOrgSettings] = useState(organization);
 
   const onSaveSettings = () => {
-    // add other setting state here
-    dispatch(updateSettings(deviceSettings));
+    dispatch(updateSettings(deviceSettings, orgSettings));
   };
 
   return (
@@ -33,6 +37,14 @@ const Settings = () => {
           />
         </div>
       </div>
+      <OrganizationSettings
+        orgSettings={orgSettings}
+        updateOrgSettings={updateOrgSettings}
+      />
+      <OrderingProviderSettings
+        orgSettings={orgSettings}
+        updateOrgSettings={updateOrgSettings}
+      />
       <DeviceSettings
         deviceSettings={deviceSettings}
         updateDeviceSettings={updateDeviceSettings}
