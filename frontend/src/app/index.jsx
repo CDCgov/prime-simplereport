@@ -3,7 +3,7 @@ import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
 import LoginView from "./LoginView";
-import Footer from "./commonComponents/Footer";
+//import Footer from "./commonComponents/Footer";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
 
 import {
@@ -36,7 +36,7 @@ const App = () => {
             {/* <Route component={NotFoundComponent} /> */}
           </Switch>
         </Router>
-        <Footer />
+        {/* <Footer /> */}
       </div>
     </div>
   );
