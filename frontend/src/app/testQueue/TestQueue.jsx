@@ -7,7 +7,7 @@ import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors"
 import { getDevicesArray } from "../devices/deviceSelectors";
 import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
-import QueueNotification from "./QueueNotification";
+import Notification from "../Notifications/Notification";
 
 const TestQueue = () => {
   const patients = useSelector(getDetailedPatientsInTestQueue);
@@ -46,7 +46,7 @@ const TestQueue = () => {
         </div>
         {createQueueItems(patients)}
         <div className="grid-row">
-          <QueueNotification />
+          <Notification />
         </div>
       </div>
     </main>

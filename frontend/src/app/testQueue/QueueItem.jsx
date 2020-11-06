@@ -26,7 +26,7 @@ const QueueItem = ({ patient, devices }) => {
   const onTestResultSubmit = (e) => {
     e.preventDefault();
     let testResultToSubmit = { deviceId: deviceId, testResultValue };
-    dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+    dispatch(submitTestResult(patient, testResultToSubmit));
   };
 
   const onDeviceChange = (e) => {

@@ -4,7 +4,6 @@ import { displayFullName } from "../utils";
 import { getPatients } from "../patients/patientSelectors";
 
 const _getPatientsInTestQueue = (state) => state.testQueue.patients;
-export const getQueueNotification = (state) => state.testQueue.notifications;
 
 // returns an array of patientIds that are in the test queue
 // also sorts patients from oldest to newest
@@ -25,13 +24,12 @@ export const getAllPatientsWithQueueStatus = createSelector(
   (allPatients, testQueuePatients) => {
     const patientQueueSearchItems = Object.values(allPatients).map(
       (patient) => {
-        let { firstName, middleName, lastName, birthDate, patientId } = {
+        let { firstName, middleName, lastName, patientId } = {
           ...patient,
         };
         return {
+          ...patient,
           displayName: displayFullName(firstName, middleName, lastName),
-          birthDate,
-          patientId,
           isInQueue: patientId in testQueuePatients,
         };
       }

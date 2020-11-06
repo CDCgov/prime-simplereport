@@ -19,7 +19,7 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
     ) : (
       <Anchor
         onClick={() => {
-          dispatch(addPatientToQueue(patient.patientId));
+          dispatch(addPatientToQueue(patient));
           onAddToQueue();
         }}
         text="Add to Queue"

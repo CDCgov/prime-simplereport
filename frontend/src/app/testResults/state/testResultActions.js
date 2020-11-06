@@ -1,12 +1,12 @@
 import moment from "moment";
 import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
 
-import {
-  removePatientFromQueue,
-  addToQueueNotification,
-} from "../../testQueue/state/testQueueActions";
+import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
+
+import { addNotification } from "../../Notifications/state/notificationActions";
 
 import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
+import { ALERT_CONTENT } from "../../testQueue/constants";
 
 const _submitTestResult = (patientId, testResultInfo) => {
   return {
@@ -22,16 +22,18 @@ const _submitTestResult = (patientId, testResultInfo) => {
 
 // TODO: should the component call each of these actions, or should they be grouped in this one action
 // Note: _submitTestResult will likely be an async action, as would removePatientFromQueue
-export const submitTestResult = (patientId, testResultInfo) => {
+export const submitTestResult = (patient, testResultInfo) => {
   return (dispatch) => {
+    let patientId = patient.patientId;
     dispatch(_submitTestResult(patientId, testResultInfo));
     dispatch(removePatientFromQueue(patientId));
-    dispatch(
-      addToQueueNotification(
-        QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS,
-        patientId
-      )
-    );
+
+    let { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+        patient
+      ),
+    };
+    dispatch(addNotification(type, title, body, 3000));
   };
 };
 
