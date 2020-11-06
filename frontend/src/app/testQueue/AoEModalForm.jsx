@@ -46,6 +46,37 @@ const getPregnancyResponses = () => [
 ];
 // END things that should be service calls
 
+export const areAnswersComplete = (answerDict) => {
+  if (!answerDict.noSymptomFlag) {
+    let symptomFound = false;
+    Object.values(answerDict.symptoms).forEach(val=>{if (val) { symptomFound = true;}})
+    if (!symptomFound) {
+      return false;
+    }
+    if (!answerDict.symptomOnset) {
+      const onsetDate = answerDict.symptomOnsset;
+      if (onsetDate.year === "" || onsetDate.month === "" || onsetDate.day === "") {
+        return false;
+      }
+    }
+  }
+  const priorTest = answerDict.priorTest;
+  if (!priorTest) {
+    return false;
+  } else if (!priorTest.exists) { // this field name is incorrect!
+    if (priorTest.date.year === "" || priorTest.date.month===""|| priorTest.date.day==="") {
+      return false;
+    }
+    if (!priorTest.type|| !priorTest.result) {
+      return false
+    }
+  }
+  if (!answerDict.pregnancy) {
+    return false;
+  }
+  return true;
+};
+
 // this should get styled to render horizontally
 const YesNoRadio = ({ label, name, isYes, setIsYes }) => {
   return (
@@ -305,6 +336,19 @@ const PriorTestInputs = ({
   );
 };
 
+const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
+  <Dialog
+    onExit={cancelHandler}
+    heading="You have incomplete data"
+    size="narrow"
+    alert={true}
+    actions={<Button onClick={continueHandler}>Submit Anyways</Button>}
+  >
+    Time of test questions for <b>{patientName}</b> have not been completed. Do
+    you want to submit results anyways?
+  </Dialog>
+);
+
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
@@ -350,10 +394,14 @@ const AoEModalForm = ({
     loadState.pregnancy
   );
 
-  const saveAnswers = () => {
+  const [showAreYouSure, setShowAreYouSure] = useState(false);
+
+  const saveAnswers = (forceSave=false) => {
+    console.log("SaveAnswers called with forceSave", forceSave);
     const saveSymptoms = { ...currentSymptoms };
     if (noSymptoms) {
-      symptomConfig.forEach(({ label, value }) => {
+      // set all symptoms explicitly to false
+      symptomConfig.forEach(({ value }) => {
         saveSymptoms[value] = false;
       });
     }
@@ -369,8 +417,14 @@ const AoEModalForm = ({
       },
       pregnancy: pregnancyResponse,
     };
-    saveCallback(newState);
-    onClose();
+    if (forceSave || areAnswersComplete(newState)) {
+      console.log("Here we are in the save branch");
+      saveCallback(newState);
+      onClose();
+    } else {
+      console.log("Here we are in the check branch");
+      setShowAreYouSure(true); // call up the are-you-sure dialog
+    }
   };
 
   const actionButtons = (
@@ -378,25 +432,37 @@ const AoEModalForm = ({
       <Button variation="transparent" onClick={onClose}>
         Cancel
       </Button>
-      <Button variation="primary" onClick={saveAnswers}>
+      <Button variation="primary" onClick={()=>saveAnswers(false)}>
         {saveButtonText}
       </Button>
     </div>
   );
-
+  const patientName = displayFullName(
+    patient.firstName,
+    patient.middleName,
+    patient.lastName
+  );
   return (
     <Dialog
       onExit={onClose}
       closeText="Cancel"
-      heading={displayFullName(
-        patient.firstName,
-        patient.middleName,
-        patient.lastName
-      )}
+      heading={patientName}
       getApplicationNode={() => {
         document.getElementById("#root");
       }}
     >
+      {showAreYouSure && (
+        <AreYouSure
+          patientName={patientName}
+          cancelHandler={() => {
+            setShowAreYouSure(false);
+          }}
+          continueHandler={()  =>  {
+            console.log("Yep called it");
+            saveAnswers(true);
+          }}
+        />
+      )}
       <h2>Symptoms</h2>
       <SymptomInputs
         noSymptoms={noSymptoms}

@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete } from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
@@ -12,6 +12,14 @@ import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
+
+const AskOnEntryTag = ({ aoeAnswers }) => {
+  if (areAnswersComplete(aoeAnswers)) {
+    return <span className="usa-tag bg-green">COMPLETED</span>;
+  } else {
+    return <span className="usa-tag">PENDING</span>;
+  }
+};
 
 const QueueItem = ({ patient, devices, askOnEntry }) => {
   const dispatch = useDispatch();
@@ -121,7 +129,7 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
                     />
                   )}
                   <p>
-                    <span className="usa-tag">PENDING</span>
+                    <AskOnEntryTag aoeAnswers={aoeAnswers} />
                   </p>
                 </li>
               </ul>
