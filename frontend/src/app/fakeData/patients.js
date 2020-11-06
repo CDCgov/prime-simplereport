@@ -27,6 +27,15 @@ export const demoPatients = [
     address: "789 Plank St, Nassau",
     phone: "(213) 645-7890",
   },
+  {
+    patientId: "patientId4",
+    firstName: "Sally",
+    middleName: "Mae",
+    lastName: "Map",
+    birthDate: "01/01/1922",
+    address: "789 Road St, Nassau",
+    phone: "(243) 635-7190",
+  },
 ];
 
 // dummy initial data to populate redux
@@ -57,5 +66,14 @@ export const initialPatientState = {
     birthDate: "01/01/1722",
     address: "789 Plank St, Nassau",
     phone: "(213) 645-7890",
+  },
+  patientId4: {
+    patientId: "patientId4",
+    firstName: "Sally",
+    middleName: "Mae",
+    lastName: "Map",
+    birthDate: "01/01/1922",
+    address: "789 Road St, Nassau",
+    phone: "(243) 635-7190",
   },
 };

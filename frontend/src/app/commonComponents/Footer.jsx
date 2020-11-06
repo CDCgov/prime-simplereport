@@ -1,6 +1,5 @@
 import React from "react";
 import usdsLogo from "../../img/usds-logo.png";
-import Button from "../commonComponents/Button";
 
 class Footer extends React.Component {
   render() {
@@ -13,11 +12,12 @@ class Footer extends React.Component {
                 className="usa-footer__logo-img"
                 src={usdsLogo}
                 alt="USDS logo"
-              />
-              <Button
-                label="reset local storage"
-                onClick={() => localStorage.clear()}
-                secondary
+                onClick={() => {
+                  if (window.confirm("Reset Demo Data?")) {
+                    localStorage.clear();
+                    window.location.reload(false);
+                  }
+                }}
               />
             </div>
           </div>

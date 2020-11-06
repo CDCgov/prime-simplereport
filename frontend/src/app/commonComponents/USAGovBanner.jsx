@@ -2,6 +2,7 @@ import React from "react";
 import iconDotGov from "../../img/icons/icon-dot-gov.svg";
 import usFlagSmall from "../../img/icons/us_flag_small.png";
 import iconHttps from "../../img/icons/icon-https.svg";
+import usdsLogo from "../../img/usds-logo.png";
 
 export default class USAGovBanner extends React.Component {
   constructor() {
@@ -71,6 +72,17 @@ export default class USAGovBanner extends React.Component {
           <header className="usa-banner__header">
             <div className="usa-banner__inner">
               <div className="grid-col-auto">
+                <img
+                  className="usa-banner__header-flag"
+                  src={usdsLogo}
+                  alt="USDS logo"
+                  onClick={() => {
+                    if (window.confirm("Reset Demo Data?")) {
+                      localStorage.clear();
+                      window.location.reload(false);
+                    }
+                  }}
+                />
                 <img
                   className="usa-banner__header-flag"
                   src={usFlagSmall}
