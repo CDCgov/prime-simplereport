@@ -7,9 +7,14 @@ export const demoOrganization = {
 
 // dummy initial data to populate redux
 export const initialOrganizationState = {
-  orgId1: {
-    organizationId: "orgId1",
-    name: "GoodHome Nursing",
-    CliaNumber: "321123321",
+  organizationId: "orgId1",
+  name: "GoodHome Nursing",
+  cliaNumber: "321123321",
+  orderingProvder: {
+    name: "Arnold Palmer",
+    npi: "123456780",
+    address: "321 Doc Lane, Arlington, VA",
+    zip: "22222",
+    phone: "(321) 543-4312",
   },
 };
