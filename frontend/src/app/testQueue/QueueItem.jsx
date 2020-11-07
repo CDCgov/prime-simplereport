@@ -4,28 +4,53 @@ import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete, AreYouSure } from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import { removePatientFromQueue } from "./state/testQueueActions";
+import {
+  removePatientFromQueue,
+  updatePatientInQueue,
+} from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 
-const QueueItem = ({ patient, devices }) => {
+const AskOnEntryTag = ({ aoeAnswers }) => {
+  if (areAnswersComplete(aoeAnswers)) {
+    return <span className="usa-tag bg-green">COMPLETED</span>;
+  } else {
+    return <span className="usa-tag">PENDING</span>;
+  }
+};
+
+const QueueItem = ({ patient, devices, askOnEntry }) => {
   const dispatch = useDispatch();
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
+  const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
   let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
   const [deviceId, updateDeviceId] = useState(defaultDeviceId);
   const [testResultValue, updateTestResultValue] = useState(null);
 
+  const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
+    false
+  );
+  const [forceSubmit, setForceSubmit] = useState(false);
+
   const onTestResultSubmit = (e) => {
-    e.preventDefault();
-    let testResultToSubmit = { deviceId: deviceId, testResultValue };
-    dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+    if (e) e.preventDefault();
+    if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      let testResultToSubmit = {
+        deviceId: deviceId,
+        testResultValue,
+        testTimeQuestions: aoeAnswers,
+      };
+      dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+    } else {
+      updateIsConfirmationModalOpen(true);
+    }
   };
 
   const onDeviceChange = (e) => {
@@ -53,6 +78,11 @@ const QueueItem = ({ patient, devices }) => {
     updateIsAoeModalOpen(false);
   };
 
+  const saveAoeCallback = (answers) => {
+    setAoeAnswers(answers);
+    dispatch(updatePatientInQueue(patient.patientId, answers));
+  };
+
   let options = devices.map((device) => ({
     label: device.displayName,
     value: device.deviceId,
@@ -61,6 +91,12 @@ const QueueItem = ({ patient, devices }) => {
     label: "Select Device",
     value: null,
   });
+
+  const patientFullName = displayFullName(
+    patient.firstName,
+    patient.middleName,
+    patient.lastName
+  );
 
   const closeButton = (
     <div
@@ -81,13 +117,7 @@ const QueueItem = ({ patient, devices }) => {
         <div className="grid-row">
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name usa-card__header">
-              <h2>
-                {displayFullName(
-                  patient.firstName,
-                  patient.middleName,
-                  patient.lastName
-                )}
-              </h2>
+              <h2>{patientFullName}</h2>
             </div>
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
@@ -105,13 +135,16 @@ const QueueItem = ({ patient, devices }) => {
                     text="Time of Test Questions"
                     onClick={openAoeModal}
                   />
-                  <AoeModalForm
-                    isOpen={isAoeModalOpen}
-                    onClose={closeAoeModal}
-                    patient={patient}
-                  />
+                  {isAoeModalOpen && (
+                    <AoeModalForm
+                      onClose={closeAoeModal}
+                      patient={patient}
+                      loadState={aoeAnswers}
+                      saveCallback={saveAoeCallback}
+                    />
+                  )}
                   <p>
-                    <span className="usa-tag">PENDING</span>
+                    <AskOnEntryTag aoeAnswers={aoeAnswers} />
                   </p>
                 </li>
               </ul>
@@ -129,6 +162,16 @@ const QueueItem = ({ patient, devices }) => {
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result">
+            {isConfirmationModalOpen && (
+              <AreYouSure
+                patientName={patientFullName}
+                cancelHandler={() => updateIsConfirmationModalOpen(false)}
+                continueHandler={() => {
+                  setForceSubmit(true);
+                  onTestResultSubmit();
+                }}
+              />
+            )}
             <TestResultInputForm
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}

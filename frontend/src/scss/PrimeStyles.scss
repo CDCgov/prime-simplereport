@@ -104,7 +104,7 @@
 .results-dropdown {
   position: absolute;
   height: auto;
-  z-index: 10000;
+  z-index: 1000;
   top: 31px;
 }
 
@@ -149,21 +149,19 @@
 /* The animation code */
 @keyframes alertanimation {
   0% {
-    opacity: 0%;
+    opacity: 0;
     bottom: -30px;
   }
   10% {
-    opacity: 100%;
+    opacity: 1;
     bottom: 20px;
   }
-
   90% {
-    opacity: 100%;
+    opacity: 1;
     bottom: 20px;
   }
-
   100% {
-    opacity: 0%;
+    opacity: 0;
     bottom: -30px;
   }
 }
