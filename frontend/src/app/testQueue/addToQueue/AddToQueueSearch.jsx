@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-
-import { getAllPatientsWithQueueStatus } from "../testQueueSelectors";
-import SearchInput from "./SearchInput";
-import SearchResults from "./SearchResults";
-import { addPatientToQueue } from "../state/testQueueActions";
 import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
+import SearchInput from "./SearchInput";
+import SearchResults from "./SearchResults";
+import { addPatientToQueue } from "../state/testQueueActions";
+import { getAllPatientsWithQueueStatus } from "../testQueueSelectors";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
+import { showNotification } from "../../utils";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
@@ -52,8 +52,8 @@ const AddToQueueSearchBox = () => {
         patient
       ),
     };
-    toast.dismiss(); // removes any existing toasts
-    toast(<Alert type={type} title={title} body={body} />);
+    let alert = <Alert type={type} title={title} body={body} />;
+    showNotification(toast, alert);
   };
 
   return (

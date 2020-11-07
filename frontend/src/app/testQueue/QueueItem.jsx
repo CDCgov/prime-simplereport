@@ -2,20 +2,21 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toast } from "react-toastify";
 
+import Alert from "../commonComponents/Alert";
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
+import { ALERT_CONTENT } from "../testQueue/constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
-import { ALERT_CONTENT } from "../testQueue/constants";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
-import { toast } from "react-toastify";
-import Alert from "../commonComponents/Alert";
+import { showNotification } from "../utils";
 
 const QueueItem = ({ patient, devices }) => {
   const dispatch = useDispatch();
@@ -37,8 +38,8 @@ const QueueItem = ({ patient, devices }) => {
         patient
       ),
     };
-    toast.dismiss(); // removes any existing toasts
-    toast(<Alert type={type} title={title} body={body} />);
+    let alert = <Alert type={type} title={title} body={body} />;
+    showNotification(toast, alert);
   };
 
   const onDeviceChange = (e) => {

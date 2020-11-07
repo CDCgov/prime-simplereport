@@ -39,12 +39,11 @@ const App = () => {
           </Switch>
         </Router>
         <ToastContainer
-          position="bottom-center"
-          autoClose={5000}
+          autoClose={4000}
           closeButton={false}
-          hideProgressBar={true}
           limit={1}
-          containerId={"toastContainerId"}
+          position="bottom-center"
+          hideProgressBar={true}
         />
         {/* <Footer /> */}
       </div>
