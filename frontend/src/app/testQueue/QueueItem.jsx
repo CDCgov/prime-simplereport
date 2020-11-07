@@ -26,6 +26,7 @@ const AskOnEntryTag = ({ aoeAnswers }) => {
 
 const QueueItem = ({ patient, devices, askOnEntry }) => {
   const dispatch = useDispatch();
+
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
