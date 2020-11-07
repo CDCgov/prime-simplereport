@@ -15,7 +15,6 @@ import { submitTestResult } from "../testResults/state/testResultActions";
 
 const QueueItem = ({ patient, devices }) => {
   const dispatch = useDispatch();
-  console.log(patient);
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
