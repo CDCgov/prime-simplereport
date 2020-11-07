@@ -1,20 +1,37 @@
-import React from "react";
+import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import Anchor from "../../commonComponents/Anchor";
+import AoeModalForm from "../AoEModalForm";
+
+const AddToQueueButton = ({ patient, onAddToQueue }) => {
+  const [aoeDialogActive, setAoEDialogActive] = useState(false);
+  if (patient.isInQueue) {
+    return "Already in queue";
+  }
+  const saveHandler = (answers) => {
+    onAddToQueue(patient, answers);
+  };
+  return (
+    <React.Fragment>
+      <Anchor onClick={() => setAoEDialogActive(true)} text="Add to Queue" />
+      {aoeDialogActive && (
+        <AoeModalForm
+          saveButtonText="Add to Queue"
+          patient={patient}
+          onClose={() => setAoEDialogActive(false)}
+          saveCallback={saveHandler}
+        />
+      )}
+    </React.Fragment>
+  );
+};
 
 const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
   if (!shouldDisplay) {
     return null;
   }
-
-  const addToQueueButton = (patient) =>
-    patient.isInQueue ? (
-      "Already in queue"
-    ) : (
-      <Anchor onClick={() => onAddToQueue(patient)} text="Add to Queue" />
-    );
 
   const renderResultsTable = () => {
     if (suggestions.length === 0) {
@@ -25,7 +42,9 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
         <td>{suggestion.displayName}</td>
         <td>{suggestion.birthDate}</td>
         <td>{suggestion.patientId}</td>
-        <td>{addToQueueButton(suggestion)}</td>
+        <td>
+          <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} />
+        </td>
       </tr>
     ));
     return (

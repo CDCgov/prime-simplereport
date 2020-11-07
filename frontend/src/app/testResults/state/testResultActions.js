@@ -11,15 +11,15 @@ const _submitTestResult = (patientId, testResultInfo) => {
       deviceId: testResultInfo.deviceId,
       result: testResultInfo.testResultValue,
       dateTested: moment().toISOString(),
+      testTimeQuestions: testResultInfo.testTimeQuestions,
     },
   };
 };
 
 // TODO: should the component call each of these actions, or should they be grouped in this one action
 // Note: _submitTestResult will likely be an async action, as would removePatientFromQueue
-export const submitTestResult = (patient, testResultInfo) => {
+export const submitTestResult = (patientId, testResultInfo) => {
   return (dispatch) => {
-    let patientId = patient.patientId;
     dispatch(_submitTestResult(patientId, testResultInfo));
     dispatch(removePatientFromQueue(patientId));
   };

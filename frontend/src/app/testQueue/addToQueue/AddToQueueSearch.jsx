@@ -43,9 +43,9 @@ const AddToQueueSearchBox = () => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
-  const onAddToQueue = (patient) => {
+  const onAddToQueue = (patient, aoeAnswers) => {
     setQueryString("");
-    dispatch(addPatientToQueue(patient));
+    dispatch(addPatientToQueue(patient.patientId, aoeAnswers));
 
     let { type, title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
