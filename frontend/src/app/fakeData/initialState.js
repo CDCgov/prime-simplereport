@@ -4,7 +4,6 @@ import { initialOrganizationState } from "./orgs";
 import { initialDevicesState } from "./devices";
 // import { initialUserState } from "./users";
 import { initialTestQueueState } from "./testQueue";
-import { initialNotificationsState } from "./notifications";
 
 export const initialState = {
   patients: initialPatientState,
@@ -12,6 +11,5 @@ export const initialState = {
   testQueue: initialTestQueueState,
   organization: initialOrganizationState,
   devices: initialDevicesState,
-  notifications: initialNotificationsState,
   // user: initialUserState,
 };

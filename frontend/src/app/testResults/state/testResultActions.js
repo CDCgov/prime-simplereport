@@ -1,8 +1,5 @@
 import moment from "moment";
 
-// import { addNotification } from "../../Notifications/state/notificationActions";
-import { ALERT_CONTENT } from "../../testQueue/constants";
-import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
 import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
 
@@ -25,13 +22,6 @@ export const submitTestResult = (patient, testResultInfo) => {
     let patientId = patient.patientId;
     dispatch(_submitTestResult(patientId, testResultInfo));
     dispatch(removePatientFromQueue(patientId));
-
-    let { type, title, body } = {
-      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-        patient
-      ),
-    };
-    // dispatch(addNotification(type, title, body, 3000));
   };
 };
 

@@ -43,7 +43,6 @@ const AddToQueueSearchBox = () => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
-  let alert = null;
   const onAddToQueue = (patient) => {
     setQueryString("");
     dispatch(addPatientToQueue(patient));

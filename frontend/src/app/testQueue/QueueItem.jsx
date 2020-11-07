@@ -12,6 +12,10 @@ import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
 import { removePatientFromQueue } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
+import { ALERT_CONTENT } from "../testQueue/constants";
+import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
+import { toast } from "react-toastify";
+import Alert from "../commonComponents/Alert";
 
 const QueueItem = ({ patient, devices }) => {
   const dispatch = useDispatch();
@@ -27,6 +31,14 @@ const QueueItem = ({ patient, devices }) => {
     e.preventDefault();
     let testResultToSubmit = { deviceId: deviceId, testResultValue };
     dispatch(submitTestResult(patient, testResultToSubmit));
+
+    let { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+        patient
+      ),
+    };
+    toast.dismiss(); // removes any existing toasts
+    toast(<Alert type={type} title={title} body={body} />);
   };
 
   const onDeviceChange = (e) => {
