@@ -3,9 +3,11 @@ import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
 import LoginView from "./LoginView";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 //import Footer from "./commonComponents/Footer";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   BrowserRouter as Router,
   Redirect,
@@ -36,6 +38,14 @@ const App = () => {
             {/* <Route component={NotFoundComponent} /> */}
           </Switch>
         </Router>
+        <ToastContainer
+          position="bottom-center"
+          autoClose={5000}
+          closeButton={false}
+          hideProgressBar={true}
+          limit={1}
+          containerId={"toastContainerId"}
+        />
         {/* <Footer /> */}
       </div>
     </div>

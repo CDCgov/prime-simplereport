@@ -1,6 +1,6 @@
 import moment from "moment";
 
-import { addNotification } from "../../Notifications/state/notificationActions";
+// import { addNotification } from "../../Notifications/state/notificationActions";
 import { ALERT_CONTENT } from "../../testQueue/constants";
 import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
@@ -31,7 +31,7 @@ export const submitTestResult = (patient, testResultInfo) => {
         patient
       ),
     };
-    dispatch(addNotification(type, title, body, 3000));
+    // dispatch(addNotification(type, title, body, 3000));
   };
 };
 
