@@ -5,9 +5,15 @@ applications:
     path: build/ # specify where the app is located. The frontend gets built and deployed alongside the backend
     buildpacks:
       - https://github.com/cloudfoundry/staticfile-buildpack
+    routes:
+      - route: prime-data-input-client.app.cloud.gov
+      - route: simple-report.app.cloud.gov
   - name: prime-data-input-sandbox
     memory: 32M
     pushstate: enabled
     path: build/ # specify where the app is located. The frontend gets built and deployed alongside the backend
     buildpacks:
       - https://github.com/cloudfoundry/staticfile-buildpack
+    routes:
+      - route: prime-data-input-sandbox.app.cloud.gov
+      - route: simple-report-sandbox.app.cloud.gov
