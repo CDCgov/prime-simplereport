@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete } from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete, AreYouSure } from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
@@ -32,14 +32,23 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
   const [deviceId, updateDeviceId] = useState(defaultDeviceId);
   const [testResultValue, updateTestResultValue] = useState(null);
 
+  const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
+    false
+  );
+  const [forceSubmit, setForceSubmit] = useState(false);
+
   const onTestResultSubmit = (e) => {
-    e.preventDefault();
-    let testResultToSubmit = {
-      deviceId: deviceId,
-      testResultValue,
-      testTimeQuestions: aoeAnswers,
-    };
-    dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+    if (e) e.preventDefault();
+    if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      let testResultToSubmit = {
+        deviceId: deviceId,
+        testResultValue,
+        testTimeQuestions: aoeAnswers,
+      };
+      dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+    } else {
+      updateIsConfirmationModalOpen(true);
+    }
   };
 
   const onDeviceChange = (e) => {
@@ -77,6 +86,12 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
     value: null,
   });
 
+  const patientFullName = displayFullName(
+    patient.firstName,
+    patient.middleName,
+    patient.lastName
+  );
+
   const closeButton = (
     <div
       onClick={() => removeFromQueue(patient.patientId)}
@@ -96,13 +111,7 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
         <div className="grid-row">
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name usa-card__header">
-              <h2>
-                {displayFullName(
-                  patient.firstName,
-                  patient.middleName,
-                  patient.lastName
-                )}
-              </h2>
+              <h2>{patientFullName}</h2>
             </div>
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
@@ -147,6 +156,16 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
             </div>
           </div>
           <div className="tablet:grid-col-3 prime-test-result">
+            {isConfirmationModalOpen && (
+              <AreYouSure
+                patientName={patientFullName}
+                cancelHandler={() => updateIsConfirmationModalOpen(false)}
+                continueHandler={() => {
+                  setForceSubmit(true);
+                  onTestResultSubmit();
+                }}
+              />
+            )}
             <TestResultInputForm
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}

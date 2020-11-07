@@ -1,12 +1,7 @@
 import React from "react";
 import { displayFullName } from "../utils";
-import {
-  Button,
-  ChoiceList,
-  DateField,
-  Dropdown,
-  Dialog,
-} from "@cmsgov/design-system";
+import { Button, ChoiceList, DateField, Dropdown } from "@cmsgov/design-system";
+import CMSDialog from "../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
 import { useState } from "react";
@@ -49,13 +44,21 @@ const getPregnancyResponses = () => [
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptomFlag) {
     let symptomFound = false;
-    Object.values(answerDict.symptoms).forEach(val=>{if (val) { symptomFound = true;}})
+    Object.values(answerDict.symptoms).forEach((val) => {
+      if (val) {
+        symptomFound = true;
+      }
+    });
     if (!symptomFound) {
       return false;
     }
     if (!answerDict.symptomOnset) {
       const onsetDate = answerDict.symptomOnsset;
-      if (onsetDate.year === "" || onsetDate.month === "" || onsetDate.day === "") {
+      if (
+        onsetDate.year === "" ||
+        onsetDate.month === "" ||
+        onsetDate.day === ""
+      ) {
         return false;
       }
     }
@@ -63,12 +66,17 @@ export const areAnswersComplete = (answerDict) => {
   const priorTest = answerDict.priorTest;
   if (!priorTest) {
     return false;
-  } else if (!priorTest.exists) { // this field name is incorrect!
-    if (priorTest.date.year === "" || priorTest.date.month===""|| priorTest.date.day==="") {
+  } else if (!priorTest.exists) {
+    // this field name is incorrect!
+    if (
+      priorTest.date.year === "" ||
+      priorTest.date.month === "" ||
+      priorTest.date.day === ""
+    ) {
       return false;
     }
-    if (!priorTest.type|| !priorTest.result) {
-      return false
+    if (!priorTest.type || !priorTest.result) {
+      return false;
     }
   }
   if (!answerDict.pregnancy) {
@@ -336,17 +344,30 @@ const PriorTestInputs = ({
   );
 };
 
-const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
-  <Dialog
+export const AreYouSure = ({
+  patientName,
+  cancelHandler,
+  continueHandler,
+  yoloButtonText = "Submit Anyways",
+  yoloDesc = "submit results anyways",
+}) => (
+  <CMSDialog
     onExit={cancelHandler}
     heading="You have incomplete data"
     size="narrow"
     alert={true}
-    actions={<Button onClick={continueHandler}>Submit Anyways</Button>}
+    actions={
+      <React.Fragment>
+        <Button onClick={cancelHandler} variation="transparent">
+          No, go back
+        </Button>
+        <Button onClick={continueHandler}>{yoloButtonText}</Button>
+      </React.Fragment>
+    }
   >
     Time of test questions for <b>{patientName}</b> have not been completed. Do
-    you want to submit results anyways?
-  </Dialog>
+    you want to {yoloDesc}?
+  </CMSDialog>
 );
 
 const AoEModalForm = ({
@@ -394,10 +415,13 @@ const AoEModalForm = ({
     loadState.pregnancy
   );
 
+  const [confirmButtonText, confirmSentenceText] =
+    "Save" === saveButtonText
+      ? ["Save Partial Answers", "save these answers"]
+      : ["Add to queue anyways", "add them to the queue anyways"];
   const [showAreYouSure, setShowAreYouSure] = useState(false);
 
-  const saveAnswers = (forceSave=false) => {
-    console.log("SaveAnswers called with forceSave", forceSave);
+  const saveAnswers = (forceSave = false) => {
     const saveSymptoms = { ...currentSymptoms };
     if (noSymptoms) {
       // set all symptoms explicitly to false
@@ -418,11 +442,9 @@ const AoEModalForm = ({
       pregnancy: pregnancyResponse,
     };
     if (forceSave || areAnswersComplete(newState)) {
-      console.log("Here we are in the save branch");
       saveCallback(newState);
       onClose();
     } else {
-      console.log("Here we are in the check branch");
       setShowAreYouSure(true); // call up the are-you-sure dialog
     }
   };
@@ -432,7 +454,7 @@ const AoEModalForm = ({
       <Button variation="transparent" onClick={onClose}>
         Cancel
       </Button>
-      <Button variation="primary" onClick={()=>saveAnswers(false)}>
+      <Button variation="primary" onClick={() => saveAnswers(false)}>
         {saveButtonText}
       </Button>
     </div>
@@ -443,22 +465,25 @@ const AoEModalForm = ({
     patient.lastName
   );
   return (
-    <Dialog
+    <CMSDialog
       onExit={onClose}
       closeText="Cancel"
       heading={patientName}
       getApplicationNode={() => {
         document.getElementById("#root");
       }}
+      actions={actionButtons}
+      actionsInHeader={true}
     >
       {showAreYouSure && (
         <AreYouSure
           patientName={patientName}
+          yoloButtonText={confirmButtonText}
+          yoloDesc={confirmSentenceText}
           cancelHandler={() => {
             setShowAreYouSure(false);
           }}
-          continueHandler={()  =>  {
-            console.log("Yep called it");
+          continueHandler={() => {
             saveAnswers(true);
           }}
         />
@@ -499,8 +524,7 @@ const AoEModalForm = ({
           checked: opt.value === pregnancyResponse,
         }))}
       />
-      {actionButtons}
-    </Dialog>
+    </CMSDialog>
   );
 };
 
