@@ -3,7 +3,6 @@ import moment from "moment";
 import Modal from "react-modal";
 import { v4 as uuidv4 } from "uuid";
 
-import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
 import { displayFullName } from "../utils";
 
