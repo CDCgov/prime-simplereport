@@ -1,6 +1,7 @@
 import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
+  TEST_QUEUE__UPDATE_PATIENT,
   TEST_QUEUE__SHOW_NOTIFICATION,
   TEST_QUEUE__CLEAR_NOTIFICATION,
 } from "./testQueueActionTypes";
@@ -29,6 +30,21 @@ export default (state = {}, action) => {
       return {
         ...state,
         patients: newPatients,
+      };
+    }
+    case TEST_QUEUE__UPDATE_PATIENT: {
+      const { patientId, askOnEntry, dateUpdated } = { ...action.payload };
+      const newEntry = {
+        ...state.patients[patientId],
+        dateUpdated,
+        askOnEntry,
+      };
+      return {
+        ...state,
+        patients: {
+          ...state.patients,
+          [patientId]: newEntry,
+        },
       };
     }
     case TEST_QUEUE__SHOW_NOTIFICATION: {

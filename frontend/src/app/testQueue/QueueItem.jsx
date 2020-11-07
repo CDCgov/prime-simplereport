@@ -10,7 +10,10 @@ import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import { removePatientFromQueue } from "./state/testQueueActions";
+import {
+  removePatientFromQueue,
+  updatePatientInQueue,
+} from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
@@ -77,6 +80,11 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
     updateIsAoeModalOpen(false);
   };
 
+  const saveAoeCallback = (answers) => {
+    setAoeAnswers(answers);
+    dispatch(updatePatientInQueue(patient.patientId, answers));
+  };
+
   let options = devices.map((device) => ({
     label: device.displayName,
     value: device.deviceId,
@@ -134,7 +142,7 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
                       onClose={closeAoeModal}
                       patient={patient}
                       loadState={aoeAnswers}
-                      saveCallback={setAoeAnswers}
+                      saveCallback={saveAoeCallback}
                     />
                   )}
                   <p>

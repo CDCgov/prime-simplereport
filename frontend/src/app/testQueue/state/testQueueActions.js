@@ -2,6 +2,7 @@ import moment from "moment";
 import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
+  TEST_QUEUE__UPDATE_PATIENT,
   TEST_QUEUE__SHOW_NOTIFICATION,
   TEST_QUEUE__CLEAR_NOTIFICATION,
 } from "./testQueueActionTypes";
@@ -51,6 +52,18 @@ export const addPatientToQueue = (patientId, aoeAnswers) => {
       )
     );
   };
+};
+
+export const updatePatientInQueue = (patientId, aoeAnswers) => {
+  return (dispatch) =>
+    dispatch({
+      type: TEST_QUEUE__UPDATE_PATIENT,
+      payload: {
+        patientId,
+        dateUpdated: moment().toISOString(),
+        askOnEntry: aoeAnswers,
+      },
+    });
 };
 
 export const removePatientFromQueue = (patientId) => {
