@@ -44,7 +44,6 @@ const QueueItem = ({ patient, devices }) => {
   const onClearClick = (e) => {
     e.preventDefault();
     onTestResultChange(null);
-    updateDeviceId(null);
   };
 
   const openAoeModal = () => {
