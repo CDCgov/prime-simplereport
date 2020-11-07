@@ -194,3 +194,9 @@
     padding: 0;
   }
 }
+
+// tags
+// TODO: there is probably some USWDS default color to use
+.success-tag {
+  background-color: color($theme-color-prime-green);
+}

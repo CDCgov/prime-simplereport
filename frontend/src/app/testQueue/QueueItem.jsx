@@ -15,7 +15,7 @@ import { submitTestResult } from "../testResults/state/testResultActions";
 
 const QueueItem = ({ patient, devices }) => {
   const dispatch = useDispatch();
-
+  console.log(patient);
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
@@ -75,6 +75,13 @@ const QueueItem = ({ patient, devices }) => {
     </div>
   );
 
+  const isAoeComplete = true; // TODO update this after Ben's PR is merged
+  const aoeStatusTag = isAoeComplete ? (
+    <span className="usa-tag success-tag">COMPLETED</span>
+  ) : (
+    <span className="usa-tag">PENDING</span>
+  );
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item usa-card__container">
@@ -111,9 +118,7 @@ const QueueItem = ({ patient, devices }) => {
                     onClose={closeAoeModal}
                     patient={patient}
                   />
-                  <p>
-                    <span className="usa-tag">PENDING</span>
-                  </p>
+                  <p>{aoeStatusTag}</p>
                 </li>
               </ul>
             </div>
