@@ -1,15 +1,11 @@
 const { ApolloServer, gql } = require("apollo-server");
 
-// A schema is a collection of type definitions (hence "typeDefs")
-// that together define the "shape" of queries that are executed against
-// your data.
-
 // THIS IS A PROOF OF CONCEPT - long term these schemas and data won't sit all in this file
 // most likely.
 
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-  type Devices {
+  type Device {
     deviceId: String
     displayName: String
     deviceManufacturer: String
@@ -17,7 +13,7 @@ const typeDefs = gql`
     isDefault: Boolean
   }
 
-  type Patients {
+  type Patient {
     patientId: String
     firstName: String
     middleName: String
@@ -27,12 +23,13 @@ const typeDefs = gql`
     phone: String
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
   type Query {
-    devices: [Devices]
-    patients: [Patients]
+    device: [Device]
+    patient: [Patient]
+  }
+
+  type Mutation {
+    addPatient(patientId: String): Patient
   }
 `;
 
@@ -112,8 +109,8 @@ const patients = [
 // schema. This resolver retrieves books from the "books" array above.
 const resolvers = {
   Query: {
-    devices: () => devices,
-    patients: () => patients,
+    device: () => devices,
+    patient: () => patients,
   },
 };
 

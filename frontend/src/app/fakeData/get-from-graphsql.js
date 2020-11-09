@@ -16,7 +16,7 @@ aclient
   .query({
     query: gql`
       query GetInitialPatientState {
-        patients {
+        patient {
           patientId
           firstName
           middleName
@@ -38,7 +38,7 @@ aclient
       .query({
         query: gql`
           query GetInitialDevicesState {
-            devices {
+            device {
               deviceId
               deviceModel
               deviceManufacturer
