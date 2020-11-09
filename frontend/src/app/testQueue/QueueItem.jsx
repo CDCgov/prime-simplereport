@@ -3,9 +3,12 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { Button } from "@cmsgov/design-system";
+
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete, AreYouSure } from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete } from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
+import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName } from "../utils";
@@ -23,6 +26,26 @@ const AskOnEntryTag = ({ aoeAnswers }) => {
     return <span className="usa-tag">PENDING</span>;
   }
 };
+
+const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
+  <CMSDialog
+    onExit={cancelHandler}
+    heading="You have incomplete data"
+    size="narrow"
+    alert={true}
+    actions={
+      <React.Fragment>
+        <Button onClick={cancelHandler} variation="transparent">
+          No, go back
+        </Button>
+        <Button onClick={continueHandler}>Submit Anyways</Button>
+      </React.Fragment>
+    }
+  >
+    Time of test questions for <b>{patientName}</b> have not been completed. Do
+    you want to submit results anyways?
+  </CMSDialog>
+);
 
 const QueueItem = ({ patient, devices, askOnEntry }) => {
   const dispatch = useDispatch();
