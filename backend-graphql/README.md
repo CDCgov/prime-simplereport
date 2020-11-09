@@ -1,2 +1,5 @@
-npm install && node index.js
+`npm install && node index.js`
 
+Then navigate to http://localhost:4000
+
+Yeah this is rudimentary at the moment!
