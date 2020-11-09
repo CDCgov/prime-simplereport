@@ -3,9 +3,12 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { Button } from "@cmsgov/design-system";
+
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete, AreYouSure } from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete } from "./AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
+import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { displayFullName } from "../utils";
@@ -24,7 +27,33 @@ const AskOnEntryTag = ({ aoeAnswers }) => {
   }
 };
 
-const QueueItem = ({ patient, devices, askOnEntry }) => {
+const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
+  <CMSDialog
+    onExit={cancelHandler}
+    heading="You have incomplete data"
+    size="narrow"
+    alert={true}
+    actions={
+      <React.Fragment>
+        <Button onClick={cancelHandler} variation="transparent">
+          No, go back
+        </Button>
+        <Button onClick={continueHandler}>Submit Anyways</Button>
+      </React.Fragment>
+    }
+  >
+    Time of test questions for <b>{patientName}</b> have not been completed. Do
+    you want to submit results anyways?
+  </CMSDialog>
+);
+
+const QueueItem = ({
+  patient,
+  devices,
+  askOnEntry,
+  selectedDeviceId,
+  selectedTestResult,
+}) => {
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -32,8 +61,10 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
   let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
-  const [deviceId, updateDeviceId] = useState(defaultDeviceId);
-  const [testResultValue, updateTestResultValue] = useState(null);
+  const [deviceId, updateDeviceId] = useState(
+    selectedDeviceId || defaultDeviceId
+  );
+  const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
 
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
@@ -81,7 +112,14 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
-    dispatch(updatePatientInQueue(patient.patientId, answers));
+    dispatch(
+      updatePatientInQueue(
+        patient.patientId,
+        answers,
+        deviceId,
+        testResultValue
+      )
+    );
   };
 
   let options = devices.map((device) => ({
