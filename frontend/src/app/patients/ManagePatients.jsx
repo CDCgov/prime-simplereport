@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { getPatientsWithLastTestResult } from "../patients/patientSelectors";
 
-import Button from "../commonComponents/Button";
-import { v4 as uuidv4 } from "uuid";
+import { NavLink } from "react-router-dom";
 import { readString } from "react-papaparse";
 import Ajv from "ajv";
 
@@ -134,8 +133,12 @@ const ManagePatients = () => {
 
   const patientRows = (patients) => {
     return patients.map((patient) => (
-      <tr key={`patient-${uuidv4()}`}>
-        <th scope="row">{patient.displayName}</th>
+      <tr key={patient.patientId}>
+        <th scope="row">
+          <NavLink to={`patient/${patient.patientId}`}>
+            {patient.displayName}
+          </NavLink>
+        </th>
         <td>{patient.patientId}</td>
         <td> {patient.birthDate}</td>
         <td>
@@ -158,12 +161,11 @@ const ManagePatients = () => {
               <h2> Add New {PATIENT_TERM_CAP}</h2>
             </div>
             <div className="usa-card__body">
-              <div></div>
-              <Button
-                type="button"
-                onClick={() => {}}
-                label={`New ${PATIENT_TERM_CAP}`}
-              />
+              <div style={{ display: "inline-block" }}>
+                <NavLink className="usa-button" to={"patient/NEW"}>
+                  New {PATIENT_TERM_CAP}
+                </NavLink>
+              </div>
               - OR - &nbsp;
               <input
                 type="file"
