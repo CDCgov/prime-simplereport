@@ -54,7 +54,12 @@ export const addPatientToQueue = (patientId, aoeAnswers) => {
   };
 };
 
-export const updatePatientInQueue = (patientId, aoeAnswers) => {
+export const updatePatientInQueue = (
+  patientId,
+  aoeAnswers,
+  deviceId,
+  testResult
+) => {
   return (dispatch) =>
     dispatch({
       type: TEST_QUEUE__UPDATE_PATIENT,
@@ -62,6 +67,8 @@ export const updatePatientInQueue = (patientId, aoeAnswers) => {
         patientId,
         dateUpdated: moment().toISOString(),
         askOnEntry: aoeAnswers,
+        deviceId,
+        testResult,
       },
     });
 };

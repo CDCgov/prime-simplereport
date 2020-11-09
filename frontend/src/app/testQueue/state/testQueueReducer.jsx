@@ -33,11 +33,13 @@ export default (state = {}, action) => {
       };
     }
     case TEST_QUEUE__UPDATE_PATIENT: {
-      const { patientId, askOnEntry, dateUpdated } = { ...action.payload };
+      const { patientId, dateUpdated, ...updateContent } = {
+        ...action.payload,
+      };
       const newEntry = {
         ...state.patients[patientId],
+        ...updateContent,
         dateUpdated,
-        askOnEntry,
       };
       return {
         ...state,

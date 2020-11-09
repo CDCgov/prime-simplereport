@@ -47,7 +47,13 @@ const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
   </CMSDialog>
 );
 
-const QueueItem = ({ patient, devices, askOnEntry }) => {
+const QueueItem = ({
+  patient,
+  devices,
+  askOnEntry,
+  selectedDeviceId,
+  selectedTestResult,
+}) => {
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
@@ -55,8 +61,10 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
 
   let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
   let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
-  const [deviceId, updateDeviceId] = useState(defaultDeviceId);
-  const [testResultValue, updateTestResultValue] = useState(null);
+  const [deviceId, updateDeviceId] = useState(
+    selectedDeviceId || defaultDeviceId
+  );
+  const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
 
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
@@ -104,7 +112,14 @@ const QueueItem = ({ patient, devices, askOnEntry }) => {
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
-    dispatch(updatePatientInQueue(patient.patientId, answers));
+    dispatch(
+      updatePatientInQueue(
+        patient.patientId,
+        answers,
+        deviceId,
+        testResultValue
+      )
+    );
   };
 
   let options = devices.map((device) => ({
