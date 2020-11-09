@@ -6,7 +6,7 @@ const { ApolloServer, gql } = require("apollo-server");
 const typeDefs = gql`
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
   type Device {
-    deviceId: String
+    deviceId: ID
     displayName: String
     deviceManufacturer: String
     deviceModel: String
@@ -14,7 +14,7 @@ const typeDefs = gql`
   }
 
   type Patient {
-    patientId: String
+    patientId: ID
     firstName: String
     middleName: String
     lastName: String
@@ -29,7 +29,22 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    addPatient(patientId: String): Patient
+    addDevice(
+      deviceId: ID
+      displayName: String
+      deviceManufacturer: String
+      deviceModel: String
+      isDefault: Boolean
+    ): String
+    addPatient(
+      patientId: ID
+      firstName: String
+      middleName: String
+      lastName: String
+      birthDate: String
+      address: String
+      phone: String
+    ): String
   }
 `;
 
@@ -111,6 +126,16 @@ const resolvers = {
   Query: {
     device: () => devices,
     patient: () => patients,
+  },
+  Mutation: {
+    addDevice(_, args) {
+      devices.push(args);
+      console.log(args);
+    },
+    addPatient(_, args) {
+      patients.push(args);
+      console.log(args);
+    },
   },
 };
 
