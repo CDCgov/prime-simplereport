@@ -51,6 +51,13 @@ const devices = [
     deviceModel: "Binax Now",
     isDefault: false,
   },
+  {
+    deviceId: "graphQLTest",
+    displayName: "Does GraphQL Work",
+    deviceManufacturer: "Apollo",
+    deviceModel: "GraphQL",
+    isDefault: false,
+  },
 ];
 
 const patients = [
@@ -89,6 +96,15 @@ const patients = [
     birthDate: "01/01/1922",
     address: "789 Road St, Nassau",
     phone: "(243) 635-7190",
+  },
+  {
+    patientId: "patientId5",
+    firstName: "Apollo",
+    middleName: "Graph",
+    lastName: "QL",
+    birthDate: "01/01/1901",
+    address: "411 Test Highway",
+    phone: "(243) 555-5555",
   },
 ];
 

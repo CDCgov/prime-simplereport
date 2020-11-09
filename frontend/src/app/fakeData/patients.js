@@ -3,7 +3,7 @@ export const demoPatients = [
   {
     patientId: "patientId1",
     firstName: "Edward",
-    middleName: "",
+    middleName: "D",
     lastName: "Teach",
     birthDate: "01/01/1717",
     address: "123 Plank St, Nassau",
@@ -43,7 +43,7 @@ export const initialPatientState = {
   patientId1: {
     patientId: "patientId1",
     firstName: "Edward",
-    middleName: "",
+    middleName: "I",
     lastName: "Teach",
     birthDate: "01/01/1717",
     address: "123 Plank St, Nassau",
