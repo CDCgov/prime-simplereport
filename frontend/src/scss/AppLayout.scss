@@ -18,3 +18,29 @@ body,
 main {
   flex: 1;
 }
+
+.usa-breadcrumb {
+  background: inherit;
+  margin: 1em;
+}
+
+.prime-fieldset {
+  position: relative;
+  background: #fff;
+  margin: 1em;
+  padding: 1em;
+  border: none;
+  outline: 1px solid #ccc;
+  padding-top: 2em;
+
+  > legend {
+    position: absolute;
+    top: 0;
+    left: 1em;
+  }
+}
+
+.prime-radios,
+.prime-checkboxes {
+  margin-top: 1em;
+}
