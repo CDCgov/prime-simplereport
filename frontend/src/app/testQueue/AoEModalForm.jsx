@@ -512,7 +512,7 @@ const AoEModalForm = ({
         setPriorTestResult={setPriorTestResult}
       />
 
-      <h2>Pregancy</h2>
+      <h2>Pregnancy</h2>
       {/* horizontal? */}
       <ChoiceList
         label="Pregnancy"
