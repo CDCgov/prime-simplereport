@@ -410,6 +410,7 @@ const AoEModalForm = ({
       pregnancy: pregnancyResponse,
     };
     saveCallback(newState);
+    onClose();
   };
 
   const actionButtons = (
