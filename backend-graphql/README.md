@@ -1,4 +1,4 @@
-`npm install && node index.js`
+`npm install && node src/server.js`
 
 Then navigate to http://localhost:4000
 
