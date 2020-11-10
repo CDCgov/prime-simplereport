@@ -25,28 +25,29 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
         patientLastName,
         patientFirstName,
         patientMiddleName,
-        // patientSuffix,
+        patientSuffix,
         patientRace,
         patientDOB,
         patientGender,
         patientEthnicity,
-        // patientStreet,
-        // patientStreet2,
-        // patientCity,
-        // patientCounty,
-        // patientState,
-        // patientZipCode,
-        // patientPhoneNumber,
-        // patientEmail,
-        // patientAge,
-        // employedInHealthcare,
-        // typeOfHealthcareProfessional,
-        // residentCongregateSetting,
-        // patientResidencyType,
+        patientStreet,
+        patientStreet2,
+        patientCity,
+        patientCounty,
+        patientState,
+        patientZipCode,
+        patientPhoneNumber,
+        patientEmail,
+        patientAge,
+        employedInHealthcare,
+        typeOfHealthcareProfessional,
+        residentCongregateSetting,
+        patientResidencyType,
       } = { ...row };
 
       return (
         <tr key={`patient-${uuidv4()}`}>
+          <td>{patientSuffix}</td>
           <th scope="row">
             {displayFullName(
               patientFirstName,
@@ -59,24 +60,53 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
           <td>{patientGender}</td>
           <td>{patientEthnicity}</td>
           <td>{patientRace}</td>
+          <td>{patientAge}</td>
+          <td>{patientPhoneNumber}</td>
+          <td>{patientEmail}</td>
+          <td>{patientStreet}</td>
+          <td>{patientStreet2}</td>
+          <td>{patientCity}</td>
+          <td>{patientCounty}</td>
+          <td>{patientState}</td>
+          <td>{patientZipCode}</td>
+          <td>{employedInHealthcare}</td>
+          <td>{typeOfHealthcareProfessional}</td>
+          <td>{residentCongregateSetting}</td>
+          <td>{patientResidencyType}</td>
         </tr>
       );
     });
 
     return (
-      <table className="usa-table usa-table--borderless width-full">
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Unique ID</th>
-            <th scope="col">Date of Birth</th>
-            <th scope="col">Gender</th>
-            <th scope="col">Ethnicity</th>
-            <th scope="col">Race</th>
-          </tr>
-        </thead>
-        <tbody>{rows}</tbody>
-      </table>
+      <div className="prime-csv-import-columns">
+        <table className="usa-table usa-table--borderless width-full">
+          <thead>
+            <tr>
+              <th scope="col">Suffix</th>
+              <th scope="col">Name</th>
+              <th scope="col">Unique ID</th>
+              <th scope="col">Date of Birth</th>
+              <th scope="col">Gender</th>
+              <th scope="col">Ethnicity</th>
+              <th scope="col">Race</th>
+              <th scope="col">Age</th>
+              <th scope="col">Phone</th>
+              <th scope="col">Email</th>
+              <th scope="col">Street</th>
+              <th scope="col">Street 2</th>
+              <th scope="col">City</th>
+              <th scope="col">County</th>
+              <th scope="col">State</th>
+              <th scope="col">Zip Code</th>
+              <th scope="col">Employed in Healthcare</th>
+              <th scope="col">Type of Healthcare Professional</th>
+              <th scope="col">Resident Congregate Setting</th>
+              <th scope="col">Residency Type</th>
+            </tr>
+          </thead>
+          <tbody>{rows}</tbody>
+        </table>
+      </div>
     );
   };
 
@@ -117,17 +147,19 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
         <p>
           {`The following ${data.length} will not be added due to exact matches found in the system`}{" "}
         </p>
-        <table className="usa-table usa-table--borderless width-full">
-          <thead>
-            <tr>
-              <th scope="col">Name</th>
-              <th scope="col">Unique ID</th>
-              <th scope="col">Row #</th>
-              <th scope="col">Message</th>
-            </tr>
-          </thead>
-          <tbody>{rows}</tbody>
-        </table>
+        <div className="prime-csv-import-columns">
+          <table className="usa-table usa-table--borderless width-full">
+            <thead>
+              <tr>
+                <th scope="col">Name</th>
+                <th scope="col">Unique ID</th>
+                <th scope="col">Row #</th>
+                <th scope="col">Message</th>
+              </tr>
+            </thead>
+            <tbody>{rows}</tbody>
+          </table>
+        </div>
       </React.Fragment>
     );
   };
