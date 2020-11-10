@@ -14,8 +14,7 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-
-	implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
+	implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:8.0.0'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
