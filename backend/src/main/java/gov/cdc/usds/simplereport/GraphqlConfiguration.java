@@ -3,8 +3,11 @@ package gov.cdc.usds.simplereport;
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.chartset.Charset;
 import java.time.LocalDate;
 
 import org.springframework.context.annotation.Bean;
@@ -32,8 +35,10 @@ public class GraphqlConfiguration {
 
 	@Bean
 	public GraphQLSchema buildSchema(RuntimeWiring wiring) throws SchemaProblem, URISyntaxException {
-		URL schemalUrl = GraphqlConfiguration.class.getResource("/schema.graphqls");
-		TypeDefinitionRegistry registry = new SchemaParser().parse(new File(schemalUrl.toURI()));
+		InputStream stream = getClass().getClassLoader().getResourceAsStream("schema.graphqls");
+		TypeDefinitionRegistry registry = new SchemaParser().parse(
+			new InputStreamReader(stream, Charset.defaultCharset())
+		);
 		return new SchemaGenerator().makeExecutableSchema(registry, wiring);
 	}
 

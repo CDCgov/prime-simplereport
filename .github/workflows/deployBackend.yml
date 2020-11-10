@@ -1,0 +1,47 @@
+name: Backend Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - tim-best/backend-cd
+
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1
+        with:
+          path: ./backend
+          registry: docker.pkg.github.com
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          repository: cdcgov/prime-data-input-client/base
+          dockerfile: backend/Dockerfile.prod
+          add_git_labels: true
+          tag_with_sha: true
+          tags: latest
+      - name: Install cloud.gov dependencies
+        run: |
+          curl -v -L -o cf-cli_amd64.deb 'https://cli.run.pivotal.io/stable?release=debian64&source=github'
+          sudo dpkg -i cf-cli_amd64.deb
+          cf -v
+      - name: Login to cloud.gov
+        env:
+          CF_USER: ${{ secrets.SERVICE_USER }}
+          CF_PASS: ${{ secrets.SERVICE_PASSWORD }}
+          CF_ORG: ${{ secrets.CLOUD_GOV_ORG }}
+          CF_SPACE: ${{ secrets.CLOUD_GOV_SPACE }}
+        run: cf login -a https://api.fr.cloud.gov -u $CF_USER -p $CF_PASS -o $CF_ORG -s $CF_SPACE
+
+      - name: Deploy to cloud.gov
+        env:
+          GIT_USERNAME: ${{ secrets.CLOUD_GOV_DOCKER_USERNAME }}
+          GIT_TOKEN: ${{ secrets.CLOUD_GOV_DOCKER_PASSWORD }}
+        run: CF_DOCKER_PASSWORD=$GIT_TOKEN cf push prime-data-input-backend --docker-image docker.pkg.github.com/cdcgov/prime-data-input-client/base:sha-${GITHUB_SHA::7} --docker-username $GIT_USERNAME
