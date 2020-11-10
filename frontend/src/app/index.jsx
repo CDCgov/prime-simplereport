@@ -39,7 +39,7 @@ const App = () => {
           </Switch>
         </Router>
         <ToastContainer
-          autoClose={4000}
+          autoClose={5000}
           closeButton={false}
           limit={1}
           position="bottom-center"
