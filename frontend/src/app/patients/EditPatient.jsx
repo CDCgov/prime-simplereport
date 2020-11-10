@@ -1,7 +1,6 @@
 import React from "react";
 
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import Button from "../commonComponents/Button";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
