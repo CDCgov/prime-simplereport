@@ -41,7 +41,14 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/patient/:patientId`}
           render={({ match }) => {
-            return <EditPatient patientId={match.params.patientId} />;
+            let patientId = match.params.patientId;
+            let isNew = false;
+            if (!patientId || patientId === "NEW") {
+              // TODO: patientId generation algorithm
+              patientId = "person" + Math.round(10 + Math.random() * 10000);
+              isNew = true;
+            }
+            return <EditPatient patientId={patientId} isNew={isNew} />;
           }}
         />
         <Route

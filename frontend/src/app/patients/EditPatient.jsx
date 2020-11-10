@@ -1,11 +1,16 @@
 import React from "react";
 
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import Button from "../commonComponents/Button";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Checkboxes from "../commonComponents/Checkboxes";
+import { getPatientById } from "./patientSelectors";
+import { useDispatch, useSelector } from "react-redux";
+import { updatePatient } from "./state/patientActions";
+import moment from "moment";
+import { getTestResultById } from "../testResults/testResultsSelector";
 
 const Fieldset = (props) => (
   <fieldset className="prime-fieldset">
@@ -17,12 +22,24 @@ const Fieldset = (props) => (
 );
 
 const EditPatient = (props) => {
+  const dispatch = useDispatch();
+  const { patientId, isNew } = props;
+  const foundPatient = useSelector(getPatientById(props.patientId));
+  const patient = (isNew ? null : foundPatient) || { patientId };
   const onChange = (e) => {
-    console.log("Change", e.target.name, e.target.value);
+    //TODO let reducer update one thang
+    const newPatient = { ...patient, patientId };
+    let value = e.target.value;
+    if (e.target.type === "checkbox") {
+      value = {
+        ...patient[e.target.name],
+        [e.target.value]: e.target.checked,
+      };
+    }
+    dispatch(updatePatient({ ...newPatient, [e.target.name]: value }));
   };
-  const patient = {
-    /*TODO: sync up names and plumbing*/
-  };
+  const results = useSelector(getTestResultById(props.patientId));
+  //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
       <Breadcrumbs
@@ -35,20 +52,20 @@ const EditPatient = (props) => {
         <div>
           <TextInput
             label="First Name"
-            name="first_name"
-            value={patient.first_name}
+            name="firstName"
+            value={patient.firstName}
             onChange={onChange}
           />
           <TextInput
             label="Middle Name (optional)"
-            name="middle_name"
-            value={patient.middle_name}
+            name="middleName"
+            value={patient.middleName}
             onChange={onChange}
           />
           <TextInput
             label="Last Name"
-            name="last_name"
-            value={patient.last_name}
+            name="lastName"
+            value={patient.lastName}
             onChange={onChange}
           />
         </div>
@@ -68,7 +85,7 @@ const EditPatient = (props) => {
               { label: "Staff", value: "staff" },
               { label: "Resident", value: "resident" },
             ]}
-            value={patient.patientType}
+            selectedRadio={patient.patientType}
             onChange={onChange}
           />
         </div>
@@ -137,7 +154,7 @@ const EditPatient = (props) => {
             legend="Race"
             displayLegend
             name="race"
-            checkedValues={{}}
+            checkedValues={patient.race}
             checkboxes={[
               {
                 value: "native",
@@ -168,6 +185,7 @@ const EditPatient = (props) => {
                 label: "Refused to Answer",
               },
             ]}
+            onChange={onChange}
           />
         </div>
         <div>
@@ -179,7 +197,7 @@ const EditPatient = (props) => {
               { label: "Hispanic or Latino", value: "hispanic" },
               { label: "Not Hispanic", value: "not_hispanic" },
             ]}
-            value={patient.ethnicity}
+            selectedRadio={patient.ethnicity}
             onChange={onChange}
           />
         </div>
@@ -193,7 +211,7 @@ const EditPatient = (props) => {
               { label: "Female", value: "female" },
               { label: "Other", value: "other" },
             ]}
-            value={patient.sex}
+            selectedRadio={patient.sex}
             onChange={onChange}
           />
         </div>
@@ -208,7 +226,7 @@ const EditPatient = (props) => {
               { label: "Yes", value: "YES" },
               { label: "No", value: "NO" },
             ]}
-            value={patient.resident_congregate_setting}
+            selectedRadio={patient.resident_congregate_setting}
             onChange={onChange}
           />
         </div>
@@ -221,12 +239,31 @@ const EditPatient = (props) => {
               { label: "Yes", value: "YES" },
               { label: "No", value: "NO" },
             ]}
-            value={patient.employed_in_healthcare}
+            selectedRadio={patient.employed_in_healthcare}
             onChange={onChange}
           />
         </div>
       </Fieldset>
-      <Fieldset legend="Test History"></Fieldset>
+      <Fieldset legend="Test History">
+        {results && results.length && (
+          <table className="usa-table usa-table--borderless">
+            <thead>
+              <tr>
+                <th scope="col">Date of Test</th>
+                <th scope="col">Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((r, i) => (
+                <tr key={i}>
+                  <td>{moment(r.dateTested).format("MMM DD YYYY")}</td>
+                  <td>{r.result}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </Fieldset>
     </main>
   );
 };

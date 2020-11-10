@@ -140,7 +140,7 @@ const ManagePatients = () => {
           </NavLink>
         </th>
         <td>{patient.patientId}</td>
-        <td> {patient.birthDate}</td>
+        <td>{patient.birthDate}</td>
         <td>
           {patient.lastTestDate === undefined
             ? "N/A"

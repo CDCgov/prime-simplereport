@@ -3,7 +3,7 @@ import React from "react";
 const Breadcrumbs = (props) => {
   const crumbs = props.crumbs || [{}];
   const [current] = crumbs.slice(-1);
-  console.log(current);
+
   return (
     <nav className="usa-breadcrumb" aria-label="Breadcrumbs">
       <ol className="usa-breadcrumb__list">
