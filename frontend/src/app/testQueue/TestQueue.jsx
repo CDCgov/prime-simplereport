@@ -33,6 +33,8 @@ const TestQueue = () => {
             key={`patient-${uuidv4()}`}
             patient={queueEntry.patient}
             askOnEntry={queueEntry.askOnEntry}
+            selectedDeviceId={queueEntry.deviceId}
+            selectedTestResult={queueEntry.testResult}
             devices={devices}
           />
         ))

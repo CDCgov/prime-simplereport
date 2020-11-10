@@ -96,7 +96,7 @@ docker run \
 
 ## To deploy to the stable (ish) demo environment:
 
-1. Point your browser to the [Deploy Client Application](actions?query=workflow%3A"Deploy+Client+Application") action
+1. Point your browser to the [Deploy Client Application](https://github.com/CDCgov/prime-data-input-client/actions?query=workflow%3A%22Deploy+Client+Application%22) action
 2. Click the "Run workflow" button, and select `main` as the branch
 3. Get up and stretch
 
@@ -109,14 +109,14 @@ Either
 
 Or
 
-1. Point your browser to the [Deploy Client Application](actions?query=workflow%3A"Deploy+Client+Application") action
+1. Point your browser to the [Deploy Client Application](https://github.com/CDCgov/prime-data-input-client/actions?query=workflow%3A%22Deploy+Client+Application%22) action
 2. Click the "Run workflow" button, and select your feature branch
 
 In either case, get up and stretch and have a glass of water.
 
 ## To restage a deployment in cloud.gov
 
-1. Point your browser to the [Restage Application](actions?query=workflow%3A"Restage+Application") action
+1. Point your browser to the [Restage Application](https://github.com/CDCgov/prime-data-input-client/actions?query=workflow%3A"Restage+Application") action
 2. Click the "Run workflow" button, and enter either "client" (for the demo deployment) or
    "staging" (for the dev-test deployment). Yes, that's silly and we will probably change it in the future--if
    we have, update this text!

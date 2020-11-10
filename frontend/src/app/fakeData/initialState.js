@@ -1,7 +1,10 @@
 import { initialPatientState } from "./patients";
+import { initialDevicesState } from "./devices";
+// This doesn't work yet
+//import { initialPatientState, initialDevicesState } from "./get-from-graphsql";
+
 import { initialTestResultsState } from "./testResults";
 import { initialOrganizationState } from "./orgs";
-import { initialDevicesState } from "./devices";
 // import { initialUserState } from "./users";
 import { initialTestQueueState } from "./testQueue";
 

@@ -344,32 +344,6 @@ const PriorTestInputs = ({
   );
 };
 
-export const AreYouSure = ({
-  patientName,
-  cancelHandler,
-  continueHandler,
-  yoloButtonText = "Submit Anyways",
-  yoloDesc = "submit results anyways",
-}) => (
-  <CMSDialog
-    onExit={cancelHandler}
-    heading="You have incomplete data"
-    size="narrow"
-    alert={true}
-    actions={
-      <React.Fragment>
-        <Button onClick={cancelHandler} variation="transparent">
-          No, go back
-        </Button>
-        <Button onClick={continueHandler}>{yoloButtonText}</Button>
-      </React.Fragment>
-    }
-  >
-    Time of test questions for <b>{patientName}</b> have not been completed. Do
-    you want to {yoloDesc}?
-  </CMSDialog>
-);
-
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
@@ -415,13 +389,7 @@ const AoEModalForm = ({
     loadState.pregnancy
   );
 
-  const [confirmButtonText, confirmSentenceText] =
-    "Save" === saveButtonText
-      ? ["Save Partial Answers", "save these answers"]
-      : ["Add to queue anyways", "add them to the queue anyways"];
-  const [showAreYouSure, setShowAreYouSure] = useState(false);
-
-  const saveAnswers = (forceSave = false) => {
+  const saveAnswers = (evt) => {
     const saveSymptoms = { ...currentSymptoms };
     if (noSymptoms) {
       // set all symptoms explicitly to false
@@ -441,12 +409,8 @@ const AoEModalForm = ({
       },
       pregnancy: pregnancyResponse,
     };
-    if (forceSave || areAnswersComplete(newState)) {
-      saveCallback(newState);
-      onClose();
-    } else {
-      setShowAreYouSure(true); // call up the are-you-sure dialog
-    }
+    saveCallback(newState);
+    onClose();
   };
 
   const actionButtons = (
@@ -454,7 +418,7 @@ const AoEModalForm = ({
       <Button variation="transparent" onClick={onClose}>
         Cancel
       </Button>
-      <Button variation="primary" onClick={() => saveAnswers(false)}>
+      <Button variation="primary" onClick={saveAnswers}>
         {saveButtonText}
       </Button>
     </div>
@@ -475,19 +439,6 @@ const AoEModalForm = ({
       actions={actionButtons}
       actionsInHeader={true}
     >
-      {showAreYouSure && (
-        <AreYouSure
-          patientName={patientName}
-          yoloButtonText={confirmButtonText}
-          yoloDesc={confirmSentenceText}
-          cancelHandler={() => {
-            setShowAreYouSure(false);
-          }}
-          continueHandler={() => {
-            saveAnswers(true);
-          }}
-        />
-      )}
       <h2>Symptoms</h2>
       <SymptomInputs
         noSymptoms={noSymptoms}
@@ -512,7 +463,7 @@ const AoEModalForm = ({
         setPriorTestResult={setPriorTestResult}
       />
 
-      <h2>Pregancy</h2>
+      <h2>Pregnancy</h2>
       {/* horizontal? */}
       <ChoiceList
         label="Pregnancy"
