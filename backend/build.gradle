@@ -13,16 +13,13 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
 
 	implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 test {
