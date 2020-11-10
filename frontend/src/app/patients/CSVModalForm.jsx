@@ -3,6 +3,7 @@ import moment from "moment";
 import Modal from "react-modal";
 import { v4 as uuidv4 } from "uuid";
 
+import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
 import { displayFullName } from "../utils";
 
@@ -133,20 +134,17 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
     });
 
     // alerts styles are currently broken
-    const alert = null;
-    //   <Alert
-    //     type="warning"
-    //     title="The following recrods will not be added due to exact matches found in the system"
-    //     body={`${data.length} records will not be included in the upload.`}
-    //   />
-    // );
+    const alert = (
+      <Alert
+        type="warning"
+        title="The following recrods will not be added due to exact matches found in the system"
+        body={`${data.length} records will not be included in the upload.`}
+      />
+    );
 
     return (
       <React.Fragment>
         {alert}
-        <p>
-          {`The following ${data.length} will not be added due to exact matches found in the system`}{" "}
-        </p>
         <div className="prime-csv-import-columns">
           <table className="usa-table usa-table--borderless width-full">
             <thead>

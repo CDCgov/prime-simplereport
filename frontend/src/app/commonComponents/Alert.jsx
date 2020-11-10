@@ -37,10 +37,7 @@ const Alert = ({ type, title, body, role, children }) => {
   };
 
   return (
-    <div
-      className={`pin-bottom position-fixed usa-alert usa-alert--${type}`}
-      role={getRole()}
-    >
+    <div className={`usa-alert usa-alert--${type}`} role={getRole()}>
       <div className="usa-alert__body">
         <h3 className="usa-alert__heading">{title}</h3>
         <div className="usa-alert__text">{body}</div>
