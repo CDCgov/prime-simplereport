@@ -29,5 +29,6 @@ export const getPatients = async (organizationId) => {
   //   );
   //   return patients;
   // }
+  console.log("is this actually running anywhere");
   return demoPatients;
 };

@@ -1,1 +1,1 @@
-export const initialTestQueueState = { patients: {}, notifications: {} };
+export const initialTestQueueState = { patients: {} };

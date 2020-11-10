@@ -7,6 +7,8 @@
     "npm": "6.13.4"
   },
   "dependencies": {
+    "@apollo/client": "^3.2.5",
+    "@cmsgov/design-system": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
@@ -17,6 +19,7 @@
     "ajv": "^6.12.6",
     "axios": "^0.20.0",
     "classnames": "^2.2.6",
+    "graphql": "^15.4.0",
     "lodash": "^4.17.20",
     "moment": "^2.29.1",
     "prop-types": "^15.7.2",
@@ -28,6 +31,7 @@
     "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.4",
+    "react-toastify": "^6.1.0",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",

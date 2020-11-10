@@ -137,7 +137,7 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
     const alert = (
       <Alert
         type="warning"
-        title="The following recrods will not be added due to exact matches found in the system"
+        title="The following records will not be added due to exact matches found in the system"
         body={`${data.length} records will not be included in the upload.`}
       />
     );

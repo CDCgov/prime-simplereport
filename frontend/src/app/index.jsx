@@ -1,17 +1,19 @@
 import React, { useState } from "react";
-import Header from "./commonComponents/Header";
-import USAGovBanner from "./commonComponents/USAGovBanner";
-import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
-import LoginView from "./LoginView";
-//import Footer from "./commonComponents/Footer";
-import ProtectedRoute from "./commonComponents/ProtectedRoute";
-
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   BrowserRouter as Router,
   Redirect,
   Route,
   Switch,
 } from "react-router-dom";
+
+import Header from "./commonComponents/Header";
+import USAGovBanner from "./commonComponents/USAGovBanner";
+import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
+import LoginView from "./LoginView";
+//import Footer from "./commonComponents/Footer";
+import ProtectedRoute from "./commonComponents/ProtectedRoute";
 const isAuthenticated = true;
 
 const App = () => {
@@ -36,6 +38,13 @@ const App = () => {
             {/* <Route component={NotFoundComponent} /> */}
           </Switch>
         </Router>
+        <ToastContainer
+          autoClose={5000}
+          closeButton={false}
+          limit={1}
+          position="bottom-center"
+          hideProgressBar={true}
+        />
         {/* <Footer /> */}
       </div>
     </div>
