@@ -2,8 +2,6 @@ import {
   TEST_QUEUE__ADD_PATIENT,
   TEST_QUEUE__REMOVE_PATIENT,
   TEST_QUEUE__UPDATE_PATIENT,
-  TEST_QUEUE__SHOW_NOTIFICATION,
-  TEST_QUEUE__CLEAR_NOTIFICATION,
 } from "./testQueueActionTypes";
 
 export default (state = {}, action) => {
@@ -47,22 +45,6 @@ export default (state = {}, action) => {
           ...state.patients,
           [patientId]: newEntry,
         },
-      };
-    }
-    case TEST_QUEUE__SHOW_NOTIFICATION: {
-      const { notificationType, patientId } = { ...action.payload };
-      return {
-        ...state,
-        notifications: {
-          notificationType,
-          patientId,
-        },
-      };
-    }
-    case TEST_QUEUE__CLEAR_NOTIFICATION: {
-      return {
-        ...state,
-        notifications: null,
       };
     }
     default:

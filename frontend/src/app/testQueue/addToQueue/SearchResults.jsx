@@ -1,22 +1,17 @@
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
 import Anchor from "../../commonComponents/Anchor";
 import AoeModalForm from "../AoEModalForm";
 
-import { addPatientToQueue } from "../state/testQueueActions";
-
-const AddToQueueButton = ({ patient, onAddToQueue = () => null }) => {
-  const dispatch = useDispatch();
+const AddToQueueButton = ({ patient, onAddToQueue }) => {
   const [aoeDialogActive, setAoEDialogActive] = useState(false);
   if (patient.isInQueue) {
     return "Already in queue";
   }
   const saveHandler = (answers) => {
-    dispatch(addPatientToQueue(patient.patientId, answers));
-    onAddToQueue();
+    onAddToQueue(patient, answers);
   };
   return (
     <React.Fragment>

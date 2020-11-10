@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toast } from "react-toastify";
 
+import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
@@ -11,6 +13,7 @@ import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
+import { ALERT_CONTENT } from "../testQueue/constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
 import {
@@ -18,6 +21,8 @@ import {
   updatePatientInQueue,
 } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
+import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
+import { showNotification } from "../utils";
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
   if (areAnswersComplete(aoeAnswers)) {
@@ -80,6 +85,13 @@ const QueueItem = ({
         testTimeQuestions: aoeAnswers,
       };
       dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+      let { type, title, body } = {
+        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+          patient
+        ),
+      };
+      let alert = <Alert type={type} title={title} body={body} />;
+      showNotification(toast, alert);
     } else {
       updateIsConfirmationModalOpen(true);
     }

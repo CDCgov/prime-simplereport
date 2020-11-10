@@ -7,7 +7,6 @@ import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors"
 import { getDevicesArray } from "../devices/deviceSelectors";
 import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
-import QueueNotification from "./QueueNotification";
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -48,9 +47,6 @@ const TestQueue = () => {
           <AddToQueue />
         </div>
         {createQueueItems(queue)}
-        <div className="grid-row">
-          <QueueNotification />
-        </div>
       </div>
     </main>
   );

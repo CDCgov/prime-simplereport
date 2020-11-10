@@ -143,34 +143,8 @@
   z-index: 1000;
 }
 
-// .prime-modal {
-// }
-
-/* The animation code */
-@keyframes alertanimation {
-  0% {
-    opacity: 0;
-    bottom: -30px;
-  }
-  10% {
-    opacity: 1;
-    bottom: 20px;
-  }
-  90% {
-    opacity: 1;
-    bottom: 20px;
-  }
-  100% {
-    opacity: 0;
-    bottom: -30px;
-  }
-}
-
 .usa-alert--success {
-  outline: 2px solid #00a91c;
-  animation-name: alertanimation;
-  animation-fill-mode: forwards;
-  animation-duration: 5s; //time of animation is set here, and also on queuenotification.jsx
+  outline: 3px solid #00a91c;
 }
 
 //navbar customizations
@@ -191,4 +165,18 @@
   .usa-header--basic .usa-nav {
     padding: 0;
   }
+}
+
+// toast
+
+.Toastify__toast-container {
+  width: auto;
+}
+
+.Toastify__toast--default {
+  color: #1b1b1b;
+}
+
+.Toastify__toast {
+  padding: 3px;
 }

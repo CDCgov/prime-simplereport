@@ -4,7 +4,6 @@ import { displayFullName } from "../utils";
 import { getPatients } from "../patients/patientSelectors";
 
 const _getPatientsInTestQueue = (state) => state.testQueue.patients;
-export const getQueueNotification = (state) => state.testQueue.notifications;
 
 // returns a superset of patient fields, including the queue status, for *ALL* patients
 // used for searching patients to add to the queue

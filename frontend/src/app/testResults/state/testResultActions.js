@@ -1,12 +1,7 @@
 import moment from "moment";
+
+import { removePatientFromQueue } from "../../testQueue/state/testQueueActions";
 import { TEST_RESULT__SUBMIT } from "./testResultActionTypes";
-
-import {
-  removePatientFromQueue,
-  addToQueueNotification,
-} from "../../testQueue/state/testQueueActions";
-
-import { QUEUE_NOTIFICATION_TYPES } from "../../testQueue/constants";
 
 const _submitTestResult = (patientId, testResultInfo) => {
   return {
@@ -27,12 +22,6 @@ export const submitTestResult = (patientId, testResultInfo) => {
   return (dispatch) => {
     dispatch(_submitTestResult(patientId, testResultInfo));
     dispatch(removePatientFromQueue(patientId));
-    dispatch(
-      addToQueueNotification(
-        QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS,
-        patientId
-      )
-    );
   };
 };
 

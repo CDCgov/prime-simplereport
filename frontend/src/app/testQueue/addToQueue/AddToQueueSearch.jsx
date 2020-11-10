@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 
-import { getAllPatientsWithQueueStatus } from "../testQueueSelectors";
+import Alert from "../../commonComponents/Alert";
 import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
+import { addPatientToQueue } from "../state/testQueueActions";
+import { getAllPatientsWithQueueStatus } from "../testQueueSelectors";
+import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
+import { showNotification } from "../../utils";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const AddToQueueSearchBox = () => {
+  const dispatch = useDispatch();
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
   const allPatients = useSelector(getAllPatientsWithQueueStatus);
@@ -37,6 +43,19 @@ const AddToQueueSearchBox = () => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
+  const onAddToQueue = (patient, aoeAnswers) => {
+    setQueryString("");
+    dispatch(addPatientToQueue(patient.patientId, aoeAnswers));
+
+    let { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
+        patient
+      ),
+    };
+    let alert = <Alert type={type} title={title} body={body} />;
+    showNotification(toast, alert);
+  };
+
   return (
     <React.Fragment>
       <SearchInput
@@ -48,9 +67,7 @@ const AddToQueueSearchBox = () => {
       <SearchResults
         suggestions={suggestions}
         shouldDisplay={shouldShowSuggestions}
-        onAddToQueue={() => {
-          setQueryString("");
-        }}
+        onAddToQueue={onAddToQueue}
       />
     </React.Fragment>
   );
