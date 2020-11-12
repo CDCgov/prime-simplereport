@@ -2,12 +2,18 @@ plugins {
 	id 'org.springframework.boot' version '2.3.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
+	id 'checkstyle'
+	id 'jacoco'
+	id 'org.sonarqube'  version '2.7.1'
 }
 
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
+ext {
+	kickstartVersion = '8.0.0'
+}
 repositories {
 	mavenCentral()
 }
@@ -18,16 +24,18 @@ dependencies {
 
 	// data layer dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation "com.vladmihalcea:hibernate-types-52:2.5.0"
-	implementation "org.liquibase:liquibase-core"
+	implementation 'com.vladmihalcea:hibernate-types-52:2.5.0'
+	implementation 'org.liquibase:liquibase-core'
 	runtimeOnly 'org.postgresql:postgresql'
+
 	// UI layer dependencies
-	implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:8.0.0'
+	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
 }
 
 test {
