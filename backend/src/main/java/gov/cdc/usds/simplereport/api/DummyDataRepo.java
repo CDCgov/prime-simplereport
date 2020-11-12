@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.api.model.TestResult;
 import graphql.schema.DataFetcher;
 
 @Repository
@@ -17,8 +18,8 @@ public class DummyDataRepo {
 
 	private static final ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1),
-			"123 Plank St, Nassau", "(123) 456-7890"),
-		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "456 Plank St, Nassau", "(321) 546-7890"),
+			"123 Plank St, Nassau", "(123) 456-7890", new TestResult(LocalDate.of(2020, 11, 1))),
+		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "456 Plank St, Nassau", "(321) 546-7890", new TestResult(LocalDate.of(2020, 11, 3))),
 		new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1722, 1, 1), "789 Plank St, Nassau", "(213) 645-7890)"),
 		new Patient("patientId4","Sally","Mae","Map",LocalDate.of(1922, 1, 1),"789 Road St, Nassau","(243) 635-7190"),
 		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"411 Test Highway","(243) 555-5555")
