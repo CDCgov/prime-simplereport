@@ -116,32 +116,38 @@
     "employedInHealthcare",
     "residentCongregateSetting"
   ],
-  "if": {
-    "properties": {
-      "employedInHealthcare": {
-        "const": {
-          "type": "YES"
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "employedInHealthcare": {
+            "const": {
+              "type": "YES"
+            }
+          }
+        }
+      },
+      "then": {
+        "dependencies": {
+          "employedInHealthcare": ["typeOfHealthcareProfessional"]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "residentCongregateSetting": {
+            "const": {
+              "type": "YES"
+            }
+          }
+        }
+      },
+      "then": {
+        "dependencies": {
+          "residentCongregateSetting": ["patientResidencyType"]
         }
       }
     }
-  },
-  "then": {
-    "dependencies": {
-      "employedInHealthcare": ["typeOfHealthcareProfessional"]
-    }
-  },
-  "if": {
-    "properties": {
-      "residentCongregateSetting": {
-        "const": {
-          "type": "YES"
-        }
-      }
-    }
-  },
-  "then": {
-    "dependencies": {
-      "residentCongregateSetting": ["patientResidencyType"]
-    }
-  }
+  ]
 }
