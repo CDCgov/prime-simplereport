@@ -1,0 +1,28 @@
+version: "3.2"
+services:
+  db:
+    image: postgres
+    ports:
+      - "${SR_DB_PORT:-5432}:5432"
+    volumes:
+      # Create/use a named volume so that the database is not wiped if we recreate the container
+      - type: volume
+        source: case-issues-dev-db-data
+        target: /var/lib/postgresql/data
+      # Mount init scripts for first-run user/schema creation
+      - type: bind
+        source: ./db-setup/create-db.sh
+        target: /docker-entrypoint-initdb.d/01-user-schema-creation.sh
+  api:
+    build:
+      context: .
+    image:  simple-report-api-build
+    command: bootRun
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,db-dockerized
+      SPRING_LIQUIBASE_ENABLED: "true"
+    ports:
+      # map SR_API_PORT on localhost to the API server in the container
+      - "${SR_API_PORT:-8080}:8080"
+volumes:
+  case-issues-dev-db-data:

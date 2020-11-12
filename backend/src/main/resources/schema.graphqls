@@ -1,0 +1,39 @@
+# Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+type Device {
+  deviceId: ID
+  displayName: String
+  deviceManufacturer: String
+  deviceModel: String
+  isDefault: Boolean
+}
+type Patient {
+  patientId: ID
+  firstName: String
+  middleName: String
+  lastName: String
+  birthDate: String
+  address: String
+  phone: String
+}
+type Query {
+  device: [Device]
+  patient: [Patient]
+}
+type Mutation {
+  addDevice(
+    deviceId: ID
+    displayName: String
+    deviceManufacturer: String
+    deviceModel: String
+    isDefault: Boolean
+  ): String
+  addPatient(
+    patientId: ID
+    firstName: String
+    middleName: String
+    lastName: String
+    birthDate: String
+    address: String
+    phone: String
+  ): String
+}
