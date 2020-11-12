@@ -11,7 +11,7 @@ const Header = ({ organizationId }) => {
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
-              <Link to="/">SimpleReport</Link>
+              <Link to="/">{process.env.REACT_APP_TITLE}</Link>
             </em>
           </div>
         </div>
