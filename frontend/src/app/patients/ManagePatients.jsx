@@ -1,7 +1,7 @@
+import {gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 
-import { useSelector } from "react-redux";
-import { getPatientsWithLastTestResult } from "../patients/patientSelectors";
+import { displayFullName } from "../utils";
 
 import Button from "../commonComponents/Button";
 import { v4 as uuidv4 } from "uuid";
@@ -19,8 +19,10 @@ import {
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
 
+const patientQuery = gql`{patient{patientId,firstName,lastName,middleName,birthDate}}`;
+
 const ManagePatients = () => {
-  const patients = useSelector(getPatientsWithLastTestResult());
+  const {data, loading, error} = useQuery(patientQuery)
 
   const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
 
@@ -34,7 +36,7 @@ const ManagePatients = () => {
 
   const [CSVdata, setCSVData] = useState({});
 
-  var loadFile = (file) => {
+  var loadFile = (file, patients) => {
     var thisReader = new FileReader();
     thisReader.onloadend = function (e) {
       // then schema validating
@@ -135,7 +137,7 @@ const ManagePatients = () => {
   const patientRows = (patients) => {
     return patients.map((patient) => (
       <tr key={`patient-${uuidv4()}`}>
-        <th scope="row">{patient.displayName}</th>
+        <th scope="row">{displayFullName(patient.firstName, patient.middleName, patient.lastName)}</th>
         <td>{patient.patientId}</td>
         <td> {patient.birthDate}</td>
         <td>
@@ -146,8 +148,6 @@ const ManagePatients = () => {
       </tr>
     ));
   };
-
-  let rows = patientRows(patients);
 
   return (
     <main className="prime-home">
@@ -170,7 +170,7 @@ const ManagePatients = () => {
                 id="uploadCSV"
                 className="input-file"
                 accept=".csv"
-                onChange={(csv) => loadFile(csv.target.files[0])}
+                onChange={(csv) => loadFile(csv.target.files[0], data? data.patient : {})}
               />
               <CSVModalForm
                 isOpen={isCSVModalOpen}
@@ -188,6 +188,7 @@ const ManagePatients = () => {
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
             </div>
             <div className="usa-card__body">
+              {error? <p>Error in loading patients</p> : loading ? <p>Loading patients...</p> : data?
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
@@ -197,8 +198,8 @@ const ManagePatients = () => {
                     <th scope="col">Days since last test</th>
                   </tr>
                 </thead>
-                <tbody>{rows}</tbody>
-              </table>
+                <tbody>{patientRows(data.patient)}</tbody>
+              </table> : <p> no patients found</p>}
             </div>
           </div>
         </div>
