@@ -1,0 +1,7 @@
+databaseChangeLog:
+  # This is a placeholder to make the thing parse, but also useful if we decide to use
+  # Spring Session JPA at some point.
+  - property:
+        name: attribute_bytes_type
+        value: BYTEA
+        dbms: postgresql
