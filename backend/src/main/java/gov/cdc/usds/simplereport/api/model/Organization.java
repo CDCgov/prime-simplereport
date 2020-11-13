@@ -52,6 +52,26 @@ public class Organization {
 		this.devices = devices;
 	}
 
+	public Organization(
+		String testingFacilityName,
+		String cliaNumber,
+		String orderingProviderName,
+		String orderingProviderNPI,
+		String orderingProviderStreet,
+		String orderingProviderStreetTwo,
+		String orderingProviderCity,
+		String orderingProviderCounty,
+		String orderingProviderState,
+		String orderingProviderZipCode,
+		String orderingProviderPhone
+	) {
+		this(
+			testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI,
+			orderingProviderStreet, orderingProviderStreetTwo, orderingProviderCity, orderingProviderCounty,
+			orderingProviderState, orderingProviderZipCode, orderingProviderPhone)
+		this.devices = devices;
+	}
+
 	public void updateOrg(
 		String testingFacilityName,
 		String cliaNumber,
