@@ -24,7 +24,7 @@ public class DummyDataRepo {
 		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", new TestResult(LocalDate.of(2020, 11, 3))),
 		new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1722, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)"),
 		new Patient("patientId4","Sally","Mae","Map",LocalDate.of(1922, 1, 1),"123 bird St", "", "mountain top", "VA", "12075","(243) 635-7190"),
-		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065",,"(243) 555-5555")
+		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555")
 	));
 
 	private static final ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(

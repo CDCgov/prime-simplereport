@@ -65,7 +65,7 @@ public class Patient {
 		String streetTwo,
 		String city,
 		String state,
-		String zipCode
+		String zipCode,
 		String phone,
 		TestResult testResult
 	) {
