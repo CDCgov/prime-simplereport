@@ -30,6 +30,7 @@ dependencies {
 
 	// UI layer dependencies
 	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
+	implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
