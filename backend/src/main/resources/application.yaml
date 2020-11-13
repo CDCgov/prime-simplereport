@@ -1,3 +1,14 @@
 spring:
   main:
     banner-mode: "OFF"
+  datasource:
+    username: simple_report_app
+    password: api123
+    url: jdbc:postgresql://localhost:${SR_DB_PORT:5432}/simple_report
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report
+  liquibase:
+    default-schema: ${spring.jpa.properties.hibernate.default_schema}
+
