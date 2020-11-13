@@ -64,7 +64,7 @@ public class DummyDataRepo {
 		String orderingProviderCounty,
 		String orderingProviderState,
 		String orderingProviderZipCode,
-		String orderingProviderPhone,
+		String orderingProviderPhone
 	) {
 		defaultOrg.updateOrg(
 			testingFacilityName,
