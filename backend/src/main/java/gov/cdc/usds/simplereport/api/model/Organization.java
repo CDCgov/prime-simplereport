@@ -52,6 +52,32 @@ public class Organization {
 		this.devices = devices;
 	}
 
+	public void updateOrg(
+		String testingFacilityName,
+		String cliaNumber,
+		String orderingProviderName,
+		String orderingProviderNPI,
+		String orderingProviderStreet,
+		String orderingProviderStreetTwo,
+		String orderingProviderCity,
+		String orderingProviderCounty,
+		String orderingProviderState,
+		String orderingProviderZipCode,
+		String orderingProviderPhone
+	) {
+		this.testingFacilityName = testingFacilityName;
+		this.cliaNumber = cliaNumber;
+		this.orderingProviderName = orderingProviderName;
+		this.orderingProviderNPI = orderingProviderNPI;
+		this.orderingProviderStreet = orderingProviderStreet;
+		this.orderingProviderStreetTwo = orderingProviderStreetTwo;
+		this.orderingProviderCity = orderingProviderCity;
+		this.orderingProviderCounty = orderingProviderCounty;
+		this.orderingProviderState = orderingProviderState;
+		this.orderingProviderZipCode = orderingProviderZipCode;
+		this.orderingProviderPhone = orderingProviderPhone;
+	}
+
 	public String getId() {
 		return id;
 	}

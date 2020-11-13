@@ -59,6 +59,19 @@ type Query {
   user: User
 }
 type Mutation {
+  updateOrganization(
+    testingFacilityName: String
+    cliaNumber: String
+    orderingProviderName: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+  ): String
   addDevice(
     displayName: String
     deviceManufacturer: String

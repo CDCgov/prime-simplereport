@@ -54,17 +54,33 @@ public class GraphqlConfiguration {
 			);
 		};
 
+		DataFetcher<String> updateOrganization = context -> {
+			return repo.updateOrganization(
+				context.getArgument("testingFacilityName"),
+				context.getArgument("cliaNumber"),
+				context.getArgument("orderingProviderName"),
+				context.getArgument("orderingProviderNPI"),
+				context.getArgument("orderingProviderStreet"),
+				context.getArgument("orderingProviderStreetTwo"),
+				context.getArgument("orderingProviderCity"),
+				context.getArgument("orderingProviderCounty"),
+				context.getArgument("orderingProviderState"),
+				context.getArgument("orderingProviderZipCode"),
+				context.getArgument("orderingProviderPhone")
+			);
+		};
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
-					newTypeWiring("Query")
-						.dataFetcher("patient", repo.patientFetcher())
-						.dataFetcher("user", repo.userFetcher())
-						.build()
-			     )
+				newTypeWiring("Query")
+					.dataFetcher("patient", repo.patientFetcher())
+					.dataFetcher("user", repo.userFetcher())
+					.build()
+			)
 			.type(
-					newTypeWiring("Mutation")
-						.dataFetcher("addDevice", addDevice)
-			     )
+				newTypeWiring("Mutation")
+					.dataFetcher("addDevice", addDevice)
+					.dataFetcher("updateOrganization", updateOrganization)
+			)
 			.build();
 	}
 }
