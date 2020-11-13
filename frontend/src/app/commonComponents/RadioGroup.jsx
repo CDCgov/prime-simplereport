@@ -9,7 +9,7 @@ const RadioGroup = ({
   name,
   disabled,
   horizontal, // should only be used for radio buttons with two options. 3+ options should be vertically stacked
-  selectedRadio,
+  selectedRadio, // for checkboxes that only support one checked item, use this. Otherwise, add a `checked: Boolean` property to each button in the buttons prop
   type,
   legend,
   label,
@@ -23,12 +23,11 @@ const RadioGroup = ({
       "prime-radio--success": button.value === selectedRadio && button.success,
       "prime-radio--failure": button.value === selectedRadio && button.failure,
     });
-
     return (
       <li className={classNames} key={button.value}>
         <input
           className={`usa-${type || "radio"}__input`}
-          checked={button.value === selectedRadio}
+          checked={button.value === selectedRadio || button.checked}
           id={uuid}
           key={button.value}
           name={name}

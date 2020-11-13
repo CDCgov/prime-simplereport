@@ -1,6 +1,6 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { ChoiceList, DateField } from "@cmsgov/design-system";
+import { DateField } from "@cmsgov/design-system";
 import CMSDialog from "../../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
@@ -168,44 +168,43 @@ const SymptomInputs = ({
     const { label, value } = conf;
     return { label, value, checked: currentSymptoms[value] };
   });
+
   // build the choice list we would have without the no-symptom toggle,
   // so we can extract its contents to plug into the wrapper.
-  const wrappedSymptomChoiceList = new ChoiceList({
-    name: "symptom_list",
-    label: "__",
-    onChange: symptomChange,
-    type: "checkbox",
-    choices: choiceList,
-  });
+  const wrappedSymptomChoiceList = noSymptoms ? null : (
+    <React.Fragment>
+      <hr />
+      <RadioGroup
+        type="checkbox"
+        name="symptom_list"
+        onChange={symptomChange}
+        buttons={choiceList}
+      />
+      <ManagedDateField
+        name="symptom_onset"
+        label="Date of symptom onset"
+        managedDate={onsetDate}
+        setManagedDate={setOnsetDate}
+        maxAllowedDate="now"
+      />
+    </React.Fragment>
+  );
 
-  // this is the wrapper choice: if it is unchecked, we show the list
-  // we generated above (and the date field); otherwise, nothing to see
-  const symptomToggleChoice = {
-    label: "No symptoms",
-    value: "",
-    checked: noSymptoms,
-    uncheckedChildren: (
-      <React.Fragment>
-        <hr />
-        {wrappedSymptomChoiceList.choices()}
-        <ManagedDateField
-          name="symptom_onset"
-          label="Date of symptom onset"
-          managedDate={onsetDate}
-          setManagedDate={setOnsetDate}
-          maxAllowedDate="now"
-        />
-      </React.Fragment>
-    ),
-  };
   return (
-    <ChoiceList
-      name="symptom_list"
-      label="Are you experiencing any of the following symptoms?"
-      type="checkbox" // super irritating that this is required
-      choices={[symptomToggleChoice]}
-      onChange={(evt) => setNoSymptoms(evt.currentTarget.checked)}
-    />
+    <React.Fragment>
+      <RadioGroup
+        type="checkbox"
+        name="symptom_list"
+        label="Are you experiencing any of the following symptoms?"
+        onChange={(evt) => {
+          console.log("new value:", evt.currentTarget.checked);
+          setNoSymptoms(evt.currentTarget.checked);
+        }}
+        buttons={[{ value: "hasNoSymptoms", label: "No Symptoms" }]}
+        selectedRadio={noSymptoms ? "hasNoSymptoms" : null}
+      />
+      {wrappedSymptomChoiceList}
+    </React.Fragment>
   );
 };
 
@@ -397,16 +396,13 @@ const AoEModalForm = ({
       />
 
       <h2>Pregnancy</h2>
-      {/* horizontal? */}
-      <ChoiceList
+      <RadioGroup
         label="Pregnancy"
         name="pregnancy"
         type="radio"
         onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
-        choices={getPregnancyResponses().map((opt) => ({
-          ...opt,
-          checked: opt.value === pregnancyResponse,
-        }))}
+        buttons={getPregnancyResponses()}
+        selectedRadio={pregnancyResponse}
       />
     </CMSDialog>
   );
