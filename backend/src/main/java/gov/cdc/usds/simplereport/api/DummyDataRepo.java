@@ -18,6 +18,11 @@ import graphql.schema.DataFetcher;
 @Repository
 public class DummyDataRepo {
 
+	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "");
+	private User defaultUser = new User(defaultOrg);
+
+	private ArrayList<Device> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
+
 	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		new Device("BD Veritor","BD","Veritor", true),
 		new Device("Abbott Binax Now","Abbott","Binax Now",false),
@@ -33,21 +38,47 @@ public class DummyDataRepo {
 		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555")
 	));
 
-	private User user = new User(
-		new Organization("","","","", "", "", "", "", "", "", "", allDevices)
-	);
 
 	public DataFetcher<List<Patient>> patientFetcher() {
 		return (env) -> allPatients;
 	}
 
 	public  DataFetcher<User> userFetcher() {
-		return (env) -> user;
+		return (env) -> defaultUser;
 	}
 
 	public String addDevice(String displayName, String deviceManufacturer, String deviceModel, Boolean isDefault) {
 		Device newDevice = new Device(displayName, deviceManufacturer, deviceModel, isDefault);
 		allDevices.add(newDevice);
 		return newDevice.getId();
+	}
+
+	public String updateOrganization(
+		String testingFacilityName,
+		String cliaNumber,
+		String orderingProviderName,
+		String orderingProviderNPI,
+		String orderingProviderStreet,
+		String orderingProviderStreetTwo,
+		String orderingProviderCity,
+		String orderingProviderCounty,
+		String orderingProviderState,
+		String orderingProviderZipCode,
+		String orderingProviderPhone,
+	) {
+		defaultOrg.updateOrg(
+			testingFacilityName,
+			cliaNumber,
+			orderingProviderName,
+			orderingProviderNPI,
+			orderingProviderStreet,
+			orderingProviderStreetTwo,
+			orderingProviderCity,
+			orderingProviderCounty,
+			orderingProviderState,
+			orderingProviderZipCode,
+			orderingProviderPhone
+		);
+		return defaultOrg.getId();
 	}
 }
