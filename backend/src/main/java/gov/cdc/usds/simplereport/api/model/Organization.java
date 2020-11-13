@@ -36,19 +36,10 @@ public class Organization {
 		String orderingProviderPhone,
 		ArrayList<Device> devices
 	) {
-		super();
-		this.id = UUID.randomUUID().toString();
-		this.testingFacilityName = testingFacilityName;
-		this.cliaNumber = cliaNumber;
-		this.orderingProviderName = orderingProviderName;
-		this.orderingProviderNPI = orderingProviderNPI;
-		this.orderingProviderStreet = orderingProviderStreet;
-		this.orderingProviderStreetTwo = orderingProviderStreetTwo;
-		this.orderingProviderCity = orderingProviderCity;
-		this.orderingProviderCounty = orderingProviderCounty;
-		this.orderingProviderState = orderingProviderState;
-		this.orderingProviderZipCode = orderingProviderZipCode;
-		this.orderingProviderPhone = orderingProviderPhone;
+		this(
+			testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI,
+			orderingProviderStreet, orderingProviderStreetTwo, orderingProviderCity, orderingProviderCounty,
+			orderingProviderState, orderingProviderZipCode, orderingProviderPhone);
 		this.devices = devices;
 	}
 
@@ -65,11 +56,19 @@ public class Organization {
 		String orderingProviderZipCode,
 		String orderingProviderPhone
 	) {
-		this(
-			testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI,
-			orderingProviderStreet, orderingProviderStreetTwo, orderingProviderCity, orderingProviderCounty,
-			orderingProviderState, orderingProviderZipCode, orderingProviderPhone)
-		this.devices = devices;
+		super();
+		this.id = UUID.randomUUID().toString();
+		this.testingFacilityName = testingFacilityName;
+		this.cliaNumber = cliaNumber;
+		this.orderingProviderName = orderingProviderName;
+		this.orderingProviderNPI = orderingProviderNPI;
+		this.orderingProviderStreet = orderingProviderStreet;
+		this.orderingProviderStreetTwo = orderingProviderStreetTwo;
+		this.orderingProviderCity = orderingProviderCity;
+		this.orderingProviderCounty = orderingProviderCounty;
+		this.orderingProviderState = orderingProviderState;
+		this.orderingProviderZipCode = orderingProviderZipCode;
+		this.orderingProviderPhone = orderingProviderPhone;
 	}
 
 	public void updateOrg(
