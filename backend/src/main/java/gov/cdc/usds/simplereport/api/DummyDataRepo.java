@@ -18,16 +18,18 @@ import graphql.schema.DataFetcher;
 @Repository
 public class DummyDataRepo {
 
-	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "");
+	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
+		new Device("Quidel Sofia 2","Quidel","Sofia 2", true),
+		new Device("BD Veritor","BD","Veritor", true),
+		new Device("Abbott Binax Now","Abbott","Binax Now",false),
+		new Device("Abbott IDNow","Abbott","IDNow",false),
+		new Device("LumiraDX","LumiraDX","",false),
+	));
+
+	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "", allDevices);
 	private User defaultUser = new User(defaultOrg);
 
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
-
-	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
-		new Device("BD Veritor","BD","Veritor", true),
-		new Device("Abbott Binax Now","Abbott","Binax Now",false),
-		new Device("Does GraphQL Work","Apollo","GraphQL",false)
-	));
 
 	private ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1),
@@ -64,8 +66,18 @@ public class DummyDataRepo {
 		String orderingProviderCounty,
 		String orderingProviderState,
 		String orderingProviderZipCode,
-		String orderingProviderPhone
+		String orderingProviderPhone,
+		ArrayList<String> deviceIds
 	) {
+		ArrayList<Device> newDevices = new ArrayList<Device>();
+
+		deviceIds.forEach((id) -> {
+			Device device = allDevices.stream().filter(device -> id.equals(device.getId())).findAny().orElse(null);
+			if(device != null) {
+				newDevices.add(device);
+			}
+		});
+
 		defaultOrg.updateOrg(
 			testingFacilityName,
 			cliaNumber,
@@ -77,8 +89,11 @@ public class DummyDataRepo {
 			orderingProviderCounty,
 			orderingProviderState,
 			orderingProviderZipCode,
-			orderingProviderPhone
+			orderingProviderPhone,
+			newDevices
 		);
 		return defaultOrg.getId();
+
+
 	}
 }
