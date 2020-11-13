@@ -45,16 +45,6 @@ public class GraphqlConfiguration {
 
 	@Bean
     public RuntimeWiring buildWiring() {
-		DataFetcher<String> deviceAdder = context -> {
-			String newId = context.getArgument("deviceId");
-			String displayName = context.getArgument("displayName");
-			String deviceManufacturer = context.getArgument("deviceManufacturer");
-			String deviceModel = context.getArgument("deviceModel");
-			boolean isDefault = context.getArgument("isDefault");
-			DummyDataRepo.addDevice(new Device(newId, displayName, deviceManufacturer, deviceModel, isDefault));
-			return newId;
-		};
-
 		DataFetcher<String> patientAdder = context -> {
 			String patientId = context.getArgument("patientId");
 			String firstName = context.getArgument("firstName");
@@ -76,13 +66,11 @@ public class GraphqlConfiguration {
 			.type(
 					newTypeWiring("Query")
 						.dataFetcher("patient", DummyDataRepo.patientFetcher())
-						.dataFetcher("device", DummyDataRepo.deviceFetcher())
 						.dataFetcher("user", DummyDataRepo.userFetcher())
 						.build()
 			     )
 			.type(
 					newTypeWiring("Mutation")
-						.dataFetcher("addDevice", deviceAdder)
 						.dataFetcher("addPatient", patientAdder)
 			     )
 			.build();

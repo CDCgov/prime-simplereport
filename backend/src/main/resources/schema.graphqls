@@ -42,6 +42,7 @@ type Organization {
   orderingProviderState: String
   orderingProviderZipCode: String
   orderingProviderPhone: String
+  devices: [Device]
 }
 type User {
   organization: Organization
@@ -50,18 +51,10 @@ type TestResult {
   dateTested: String
 }
 type Query {
-  device: [Device]
   patient: [Patient]
   user: User
 }
 type Mutation {
-  addDevice(
-    deviceId: ID
-    displayName: String
-    deviceManufacturer: String
-    deviceModel: String
-    isDefault: Boolean
-  ): String
   addPatient(
     patientId: ID
     firstName: String

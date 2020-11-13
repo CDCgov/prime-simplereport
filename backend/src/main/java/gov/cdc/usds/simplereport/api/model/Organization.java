@@ -1,6 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+
+import gov.cdc.usds.simplereport.api.model.Device;
+
 
 public class Organization {
 
@@ -15,6 +19,7 @@ public class Organization {
 	private String orderingProviderState;
 	private String orderingProviderZipCode;
 	private String orderingProviderPhone;
+	private ArrayList<Device> devices;
 
 	public Organization(
 		String testingFacilityName,
@@ -27,7 +32,8 @@ public class Organization {
 		String orderingProviderCounty,
 		String orderingProviderState,
 		String orderingProviderZipCode,
-		String orderingProviderPhone
+		String orderingProviderPhone,
+		ArrayList<Device> devices
 	) {
 		super();
 		this.testingFacilityName = testingFacilityName;
@@ -41,6 +47,7 @@ public class Organization {
 		this.orderingProviderState = orderingProviderState;
 		this.orderingProviderZipCode = orderingProviderZipCode;
 		this.orderingProviderPhone = orderingProviderPhone;
+		this.devices = devices;
 	}
 
 	public String getTestingFacilityName() {
