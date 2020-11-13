@@ -8,7 +8,7 @@ public class User {
 
 	private Organization organization;
 
-	public User(organization) {
+	public User(Organization organization) {
 		super();
 		this.organization = organization;
 	}
