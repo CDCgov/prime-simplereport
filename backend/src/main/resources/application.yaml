@@ -10,16 +10,5 @@ spring:
       hibernate:
         default_schema: simple_report
   liquibase:
-    user: simple_report_migrations
-    password: migrations456
+    default-schema: ${spring.jpa.properties.hibernate.default_schema}
 
----
-spring:
-    profiles: cloud
-    datasource:
-        username: ${cloud.services.postgresql.credentials.username}
-        password: ${cloud.services.postgresql.credentials.password}
-        url: jdbc:postgresql://${cloud.services.postgresql.credentials.host}:${cloud.services.postgresql.credentials.port}/${cloud.services.postgresql.credentials.name}
-    liquibase:
-        user: ${cloud.services.postgresql.credentials.username}
-        password: ${cloud.services.postgresql.credentials.password}
