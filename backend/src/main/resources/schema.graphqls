@@ -71,6 +71,7 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String
     orderingProviderPhone: String
+    devices: [String]
   ): String
   addDevice(
     displayName: String
