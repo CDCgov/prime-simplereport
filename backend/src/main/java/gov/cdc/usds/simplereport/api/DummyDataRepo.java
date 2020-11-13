@@ -27,20 +27,19 @@ public class DummyDataRepo {
 		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555")
 	));
 
-	private static final ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
-		new Device("deviceId2","BD Veritor","BD","Veritor", true),
-		new Device("deviceId3","Abbott Binax Now","Abbott","Binax Now",false),
-		new Device("graphQLTest","Does GraphQL Work","Apollo","GraphQL",false)
-	));
-
-	private static final User user = new User(new Organization("","","","", "", "", "", "", "", "", ""));
+	private static final User user = new User(
+		new Organization(
+			"","","","", "", "", "", "", "", "", "",
+			new ArrayList<>(Arrays.asList(
+				new Device("deviceId2","BD Veritor","BD","Veritor", true),
+				new Device("deviceId3","Abbott Binax Now","Abbott","Binax Now",false),
+				new Device("graphQLTest","Does GraphQL Work","Apollo","GraphQL",false)
+			))
+		)
+	);
 
 	public static final DataFetcher<List<Patient>> patientFetcher() {
 		return (env) -> Collections.unmodifiableList(allPatients);
-	}
-
-	public static final DataFetcher<List<Device>> deviceFetcher() {
-		return (env) -> Collections.unmodifiableList(allDevices);
 	}
 
 	public static final DataFetcher<User> userFetcher() {
