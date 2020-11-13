@@ -61,17 +61,23 @@ public class GraphqlConfiguration {
 			String middleName = context.getArgument("middleName");
 			String lastName = context.getArgument("lastName");
 			String birthDate = context.getArgument("birthDate");
-			String address = context.getArgument("address");
+			String street = context.getArgument("street");
+			String streetTwo = context.getArgument("streetTwo");
+			String city = context.getArgument("city");
+			String state = context.getArgument("state");
+			String zipCode = context.getArgument("zipCode");
 			String phone = context.getArgument("phone");
 			LocalDate realDate = LocalDate.parse(birthDate);
-			DummyDataRepo.addPatient(new Patient(patientId, firstName, middleName, lastName, realDate, address, phone));
+			DummyDataRepo.addPatient(new Patient(patientId, firstName, middleName, lastName, realDate, street, streetTwo, city, state, zipCode, phone));
 			return patientId;
 		};
+
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 					newTypeWiring("Query")
 						.dataFetcher("patient", DummyDataRepo.patientFetcher())
 						.dataFetcher("device", DummyDataRepo.deviceFetcher())
+						.dataFetcher("user", DummyDataRepo.userFetcher())
 						.build()
 			     )
 			.type(
