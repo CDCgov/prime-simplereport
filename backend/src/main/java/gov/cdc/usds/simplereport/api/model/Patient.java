@@ -6,32 +6,72 @@ import gov.cdc.usds.simplereport.api.model.TestResult;
 
 public class Patient {
 
-	private String patientId;
+	private String patientId; // not the database ID
 	private String firstName;
 	private String middleName;
 	private String lastName;
+	private String suffix;
+	private String race;
 	private LocalDate birthDate;
-	private String address; // super dubious
+	private String gender;
+	private String ethnicity;
+	private String street;
+	private String streetTwo;
+	private String city;
+	private String state;
+	private String zipCode;
 	private String phone;
-        private TestResult testResult;
+	private String email;
+	private Boolean employedInHealthcare;
+	private String typeOfHealthcareProfessional;
+	private Boolean residentCongregateSetting;
+	private String patientResidencyType;
+	private TestResult testResult;
 
-	public Patient(String patientId, String firstName, String middleName, String lastName, LocalDate birthDate,
-			String address, String phone) {
+	public Patient(
+		String patientId,
+		String firstName,
+		String middleName,
+		String lastName,
+		LocalDate birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone
+	) {
 		super();
 		this.patientId = patientId;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.birthDate = birthDate;
-		this.address = address;
+		this.street = street;
+		this.streetTwo = streetTwo;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
 		this.phone = phone;
 	}
 
-	public Patient(String patientId, String firstName, String middleName, String lastName, LocalDate birthDate,
-                        String address, String phone, TestResult testResult) {
-                this(patientId, firstName, middleName, lastName, birthDate, address, phone);
-                this.testResult = testResult;
-        }
+	public Patient(
+		String patientId,
+		String firstName,
+		String middleName,
+		String lastName,
+		LocalDate birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode
+		String phone,
+		TestResult testResult
+	) {
+		this(patientId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone);
+		this.testResult = testResult;
+	}
 
 	public String getPatientId() {
 		return patientId;
@@ -53,8 +93,12 @@ public class Patient {
 		return birthDate;
 	}
 
-	public String getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
+	}
+
+	public String getStreetTwo() {
+		return streetTwo;
 	}
 
 	public String getPhone() {

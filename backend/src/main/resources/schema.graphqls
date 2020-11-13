@@ -11,10 +11,40 @@ type Patient {
   firstName: String
   middleName: String
   lastName: String
+  suffix: String
+  race: String
   birthDate: String
-  address: String
+  gender: String
+  ethnicity: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
   phone: String
+  email: String
+  employedInHealthcare: Boolean
+  typeOfHealthcareProfessional: String
+  residentCongregateSetting: Boolean
+  patientResidencyType: String
   testResult: TestResult
+}
+type Organization {
+  testingFacilityName: String
+  cliaNumber: String
+  orderingProviderName: String
+  orderingProviderNPI: String
+  orderingProviderStreet: String
+  orderingProviderStreetTwo: String
+  orderingProviderCity: String
+  orderingProviderCounty: String
+  orderingProviderState: String
+  orderingProviderZipCode: String
+  orderingProviderPhone: String
+}
+type User {
+  organization: Organization
 }
 type TestResult {
   dateTested: String
@@ -22,6 +52,7 @@ type TestResult {
 type Query {
   device: [Device]
   patient: [Patient]
+  user: User
 }
 type Mutation {
   addDevice(
