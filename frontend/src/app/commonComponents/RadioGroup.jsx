@@ -12,6 +12,7 @@ const RadioGroup = ({
   selectedRadio,
   type,
   legend,
+  label,
 }) => {
   // Note: list Affirmations before negations: Yes before No.
   const radioGroupItems = buttons.map((button) => {
@@ -46,9 +47,12 @@ const RadioGroup = ({
     );
   });
 
+  let labelElem = label ? <strong>{label} </strong> : null;
+
   return (
     <fieldset className="usa-fieldset">
       <legend className="usa-sr-only">{legend}</legend>
+      {labelElem}
       <ul
         className={
           horizontal ? "prime-radio--horizontal" : "usa-list--unstyled"
