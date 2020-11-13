@@ -47,12 +47,12 @@ public class GraphqlConfiguration {
 		DummyDataRepo repo = new DummyDataRepo();
 		DataFetcher<String> addDevice = context -> {
 			return repo.addDevice(
-				context.getArgument("DeviceName"),
+				context.getArgument("displayName"),
 				context.getArgument("deviceManufacturer"),
 				context.getArgument("deviceModel"),
-				context.getArgument("isDefault"),
-			)
-		} 
+				context.getArgument("isDefault")
+			);
+		};
 
 		return RuntimeWiring.newRuntimeWiring()
 			.type(

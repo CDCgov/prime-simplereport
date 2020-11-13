@@ -18,7 +18,7 @@ import graphql.schema.DataFetcher;
 @Repository
 public class DummyDataRepo {
 
-	private ArrayList<Devices> allDevices = new ArrayList<>(Arrays.asList(
+	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		new Device("BD Veritor","BD","Veritor", true),
 		new Device("Abbott Binax Now","Abbott","Binax Now",false),
 		new Device("Does GraphQL Work","Apollo","GraphQL",false)
