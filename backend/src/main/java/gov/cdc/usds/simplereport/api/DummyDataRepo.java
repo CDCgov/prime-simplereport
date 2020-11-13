@@ -33,9 +33,7 @@ public class DummyDataRepo {
 		new Device("graphQLTest","Does GraphQL Work","Apollo","GraphQL",false)
 	));
 
-	private static final ArrayList<User> user = new ArrayList<>(Arrays.asList(
-		new User(new Organization("","","","", "", "", "", "", "", "", ""))
-	));
+	private static final User user = new User(new Organization("","","","", "", "", "", "", "", "", ""));
 
 	public static final DataFetcher<List<Patient>> patientFetcher() {
 		return (env) -> Collections.unmodifiableList(allPatients);
@@ -46,7 +44,7 @@ public class DummyDataRepo {
 	}
 
 	public static final DataFetcher<User> userFetcher() {
-		return (env) -> Collections.unmodifiableList(user);
+		return (env) -> user;
 	}
 
 	public static void addDevice(Device d) {
