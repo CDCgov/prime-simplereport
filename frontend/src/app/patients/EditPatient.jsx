@@ -1,6 +1,10 @@
 import React from "react";
 
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM_PLURAL_CAP,
+  PATIENT_TERM_CAP,
+  stateCodes,
+} from "../../config/constants";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -10,6 +14,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { updatePatient } from "./state/patientActions";
 import moment from "moment";
 import { getTestResultById } from "../testResults/testResultsSelector";
+import Dropdown from "../commonComponents/Dropdown";
+import { displayFullName } from "../utils";
+import "./EditPatient.scss";
 
 const Fieldset = (props) => (
   <fieldset className="prime-fieldset">
@@ -23,8 +30,9 @@ const Fieldset = (props) => (
 const EditPatient = (props) => {
   const dispatch = useDispatch();
   const { patientId, isNew } = props;
-  const foundPatient = useSelector(getPatientById(props.patientId));
-  const patient = (isNew ? null : foundPatient) || { patientId };
+  const foundPatient = useSelector(getPatientById(patientId));
+  //TODO: work out edge cases
+  const patient = foundPatient || { patientId };
   const onChange = (e) => {
     //TODO let reducer update one thang
     const newPatient = { ...patient, patientId };
@@ -38,17 +46,30 @@ const EditPatient = (props) => {
     dispatch(updatePatient({ ...newPatient, [e.target.name]: value }));
   };
   const results = useSelector(getTestResultById(props.patientId));
+  const fullName = displayFullName(
+    patient.firstName,
+    patient.middleName,
+    patient.lastName
+  );
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
       <Breadcrumbs
         crumbs={[
           { link: "../patients", text: PATIENT_TERM_PLURAL_CAP },
-          { text: props.patientId },
+          {
+            text: isNew ? `Create New ${PATIENT_TERM_CAP}` : fullName,
+          },
         ]}
       />
+      <div className="prime-edit-patient-heading">
+        <h2>{isNew ? `Create New ${PATIENT_TERM_CAP}` : fullName}</h2>
+        <button className="usa-button prime-save-patient-changes">
+          Save Changes
+        </button>
+      </div>
       <Fieldset legend="General info">
-        <div>
+        <div className="prime-form-line">
           <TextInput
             label="First Name"
             name="firstName"
@@ -68,81 +89,98 @@ const EditPatient = (props) => {
             onChange={onChange}
           />
         </div>
-        <div>
+        <div className="prime-form-line">
           <TextInput
-            label="Unique ID"
+            label="Lookup ID"
             name="patientId"
             value={patient.patientId}
             onChange={onChange}
           />
-          <RadioGroup
-            horizontal
-            legend="Type"
-            displayLegend
+          <Dropdown
+            label="Role"
             name="patientType"
-            buttons={[
+            selectedValue={patient.patientType}
+            onChange={onChange}
+            options={[
               { label: "Staff", value: "staff" },
               { label: "Resident", value: "resident" },
+              { label: "Student", value: "student" },
+              { label: "Visitor", value: "visitor" },
             ]}
-            selectedRadio={patient.patientType}
+          />
+        </div>
+        <div class="prime-form-line">
+          <TextInput
+            label="Date of Birth"
+            name="birthDate"
+            value={patient.birthDate}
             onChange={onChange}
           />
         </div>
       </Fieldset>
       <Fieldset legend="Contact Information">
-        <div>
+        <div className="prime-form-line">
           <TextInput
-            label="Phone"
+            label="Phone Number"
             name="phone_number"
             value={patient.phone_number}
+            addClass="prime-phone"
             onChange={onChange}
           />
           <TextInput
-            label="Email"
+            label="Email Address"
             name="email_address"
             value={patient.email_address}
+            addClass="prime-email"
             onChange={onChange}
           />
         </div>
-        <div>
+        <div className="prime-form-line">
           <TextInput
             label="Street address 1"
             name="street"
             value={patient.street}
+            addClass="prime-street-address"
             onChange={onChange}
           />
         </div>
-        <div>
+        <div className="prime-form-line">
           <TextInput
             label="Street address 2"
             name="street2"
             value={patient.street2}
+            addClass="prime-street-address"
             onChange={onChange}
           />
         </div>
-        <div>
+        <div className="prime-form-line">
           <TextInput
             label="City"
             name="city"
             value={patient.city}
+            addClass="prime-city"
             onChange={onChange}
           />
           <TextInput
             label="County"
             name="county"
             value={patient.county}
+            addClass="prime-county"
             onChange={onChange}
           />
-          <TextInput
+          <Dropdown
             label="State"
             name="state"
-            value={patient.state}
+            selectedValue={patient.state}
+            options={stateCodes.map((c) => ({ label: c, value: c }))}
+            addClass="prime-state"
             onChange={onChange}
           />
           <TextInput
             label="Zip"
             name="zip_code"
             value={patient.zip_code}
+            addClass="prime-zip"
             onChange={onChange}
           />
         </div>
