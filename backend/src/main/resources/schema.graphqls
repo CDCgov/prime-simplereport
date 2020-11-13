@@ -59,13 +59,10 @@ type Query {
   user: User
 }
 type Mutation {
-  addPatient(
-    patientId: ID
-    firstName: String
-    middleName: String
-    lastName: String
-    birthDate: String
-    address: String
-    phone: String
+  addDevice(
+    displayName: String
+    deviceManufacturer: String
+    deviceModel: String
+    isDefault: Boolean
   ): String
 }
