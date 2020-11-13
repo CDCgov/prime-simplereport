@@ -1,11 +1,14 @@
-name: Backend Deploy
+name: Deploy Back-end API
 
 on:
   workflow_dispatch:
   push:
     branches:
       - main
-      - benwarfield-usds/initial-db-setup
+    paths:
+      - "backend/**"
+  schedule:
+    - cron: "04 12 * * *" # deploy main every day at 12:04 UTC
 
 defaults:
   run:
