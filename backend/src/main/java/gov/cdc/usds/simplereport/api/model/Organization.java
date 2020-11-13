@@ -4,17 +4,17 @@ import java.time.LocalDate;
 
 public class Organization {
 
-	private testingFacilityName: String
-	private cliaNumber: String
-	private orderingProviderName: String
-	private orderingProviderNPI: String
-	private orderingProviderStreet: String
-	private orderingProviderStreetTwo: String
-	private orderingProviderCity: String
-	private orderingProviderCounty: String
-	private orderingProviderState: String
-	private orderingProviderZipCode: String
-	private orderingProviderPhone: String
+	private String testingFacilityName;
+	private String cliaNumber;
+	private String orderingProviderName;
+	private String orderingProviderNPI;
+	private String orderingProviderStreet;
+	private String orderingProviderStreetTwo;
+	private String orderingProviderCity;
+	private String orderingProviderCounty;
+	private String orderingProviderState;
+	private String orderingProviderZipCode;
+	private String orderingProviderPhone;
 
 	public Organization(
 		String testingFacilityName,
