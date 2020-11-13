@@ -66,7 +66,8 @@ public class GraphqlConfiguration {
 				context.getArgument("orderingProviderCounty"),
 				context.getArgument("orderingProviderState"),
 				context.getArgument("orderingProviderZipCode"),
-				context.getArgument("orderingProviderPhone")
+				context.getArgument("orderingProviderPhone"),
+				context.getArgument("devices")
 			);
 		};
 		return RuntimeWiring.newRuntimeWiring()

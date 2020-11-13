@@ -82,7 +82,8 @@ public class Organization {
 		String orderingProviderCounty,
 		String orderingProviderState,
 		String orderingProviderZipCode,
-		String orderingProviderPhone
+		String orderingProviderPhone,
+		ArrayList<Device> devices
 	) {
 		this.testingFacilityName = testingFacilityName;
 		this.cliaNumber = cliaNumber;
@@ -95,6 +96,7 @@ public class Organization {
 		this.orderingProviderState = orderingProviderState;
 		this.orderingProviderZipCode = orderingProviderZipCode;
 		this.orderingProviderPhone = orderingProviderPhone;
+		this.devices = devices;
 	}
 
 	public String getId() {
