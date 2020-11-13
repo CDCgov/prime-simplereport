@@ -42,3 +42,12 @@ dependencies {
 test {
 	useJUnitPlatform()
 }
+
+configurations {
+	compileClasspath {
+		resolutionStrategy.activateDependencyLocking()
+	}
+	runtimeClasspath {
+		resolutionStrategy.activateDependencyLocking()
+	}
+}
