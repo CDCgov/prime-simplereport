@@ -9,12 +9,12 @@ const Dropdown = ({
   name,
   onChange,
   disabled,
+  addClass,
   defaultOption, // value of the default option
   selectedValue,
 }) => {
   const [selectId] = useUniqueIds("dropdown", 1);
 
-  const id = uuidv4();
   return (
     <div className={classnames("prime-dropdown", addClass)}>
       <label className="usa-label" htmlFor={selectId}>

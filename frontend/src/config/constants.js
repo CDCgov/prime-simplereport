@@ -9,7 +9,6 @@ export const PATIENT_TERM_PLURAL = "people";
 export const PATIENT_TERM_PLURAL_CAP = "People";
 
 export const stateCodes = [
-  "-select-",
   "AK",
   "AL",
   "AR",
