@@ -1,6 +1,6 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { Button, ChoiceList, DateField } from "@cmsgov/design-system";
+import { ChoiceList, DateField } from "@cmsgov/design-system";
 import CMSDialog from "../../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
@@ -12,6 +12,8 @@ import {
 } from "./constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
+import Anchor from "../../commonComponents/Anchor";
+import Button from "../../commonComponents/Button";
 
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptomFlag) {
@@ -350,12 +352,8 @@ const AoEModalForm = ({
 
   const actionButtons = (
     <div style={{ float: "right" }}>
-      <Button variation="transparent" onClick={onClose}>
-        Cancel
-      </Button>
-      <Button variation="primary" onClick={saveAnswers}>
-        {saveButtonText}
-      </Button>
+      <Anchor text="Cancel" onClick={onClose} />
+      <Button label={saveButtonText} onClick={saveAnswers} />
     </div>
   );
   const patientName = displayFullName(
