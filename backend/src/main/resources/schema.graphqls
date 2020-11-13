@@ -1,13 +1,14 @@
 # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 type Device {
-  deviceId: ID
+  id: ID
   displayName: String
   deviceManufacturer: String
   deviceModel: String
   isDefault: Boolean
 }
 type Patient {
-  patientId: ID
+  id: ID
+  patientId: String
   firstName: String
   middleName: String
   lastName: String
@@ -31,6 +32,7 @@ type Patient {
   testResult: TestResult
 }
 type Organization {
+  id: ID
   testingFacilityName: String
   cliaNumber: String
   orderingProviderName: String
@@ -45,9 +47,11 @@ type Organization {
   devices: [Device]
 }
 type User {
+  id: ID
   organization: Organization
 }
 type TestResult {
+  id: ID
   dateTested: String
 }
 type Query {

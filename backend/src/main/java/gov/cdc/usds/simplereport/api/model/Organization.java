@@ -7,7 +7,7 @@ import gov.cdc.usds.simplereport.api.model.Device;
 
 
 public class Organization {
-
+	private Stirng id;
 	private String testingFacilityName;
 	private String cliaNumber;
 	private String orderingProviderName;
@@ -36,6 +36,7 @@ public class Organization {
 		ArrayList<Device> devices
 	) {
 		super();
+		this.id = UUID.randomUUID().toString();
 		this.testingFacilityName = testingFacilityName;
 		this.cliaNumber = cliaNumber;
 		this.orderingProviderName = orderingProviderName;
@@ -48,6 +49,10 @@ public class Organization {
 		this.orderingProviderZipCode = orderingProviderZipCode;
 		this.orderingProviderPhone = orderingProviderPhone;
 		this.devices = devices;
+	}
+
+	public String getId() {
+		return id;
 	}
 
 	public String getTestingFacilityName() {

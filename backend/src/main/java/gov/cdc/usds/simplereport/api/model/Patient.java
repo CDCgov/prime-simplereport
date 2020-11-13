@@ -6,7 +6,8 @@ import gov.cdc.usds.simplereport.api.model.TestResult;
 
 public class Patient {
 
-	private String patientId; // not the database ID
+	private String id;
+	private String patientId;
 	private String firstName;
 	private String middleName;
 	private String lastName;
@@ -42,6 +43,7 @@ public class Patient {
 		String phone
 	) {
 		super();
+		this.id = UUID.randomUUID().toString();
 		this.patientId = patientId;
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -71,6 +73,11 @@ public class Patient {
 	) {
 		this(patientId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone);
 		this.testResult = testResult;
+	}
+
+
+	public String getId() {
+		return id;
 	}
 
 	public String getPatientId() {
