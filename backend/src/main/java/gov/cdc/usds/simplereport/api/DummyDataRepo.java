@@ -34,7 +34,7 @@ public class DummyDataRepo {
 	));
 
 	private static final ArrayList<User> user = new ArrayList<>(Arrays.asList(
-		new User(new Organization("","","","", "", "", "", "", "", "", "")),
+		new User(new Organization("","","","", "", "", "", "", "", "", ""))
 	));
 
 	public static final DataFetcher<List<Patient>> patientFetcher() {
