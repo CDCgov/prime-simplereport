@@ -21,7 +21,7 @@ public class DummyDataRepo {
 	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "");
 	private User defaultUser = new User(defaultOrg);
 
-	private ArrayList<Device> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
+	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
 	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		new Device("BD Veritor","BD","Veritor", true),
