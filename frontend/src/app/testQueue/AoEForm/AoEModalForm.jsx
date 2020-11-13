@@ -1,6 +1,6 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { Button, ChoiceList, DateField, Dropdown } from "@cmsgov/design-system";
+import { Button, ChoiceList, DateField } from "@cmsgov/design-system";
 import CMSDialog from "../../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
@@ -12,8 +12,6 @@ import {
 } from "./constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
-
-// import PriorTestInputs from "./PriorTestInputs";
 
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptomFlag) {
@@ -58,22 +56,6 @@ export const areAnswersComplete = (answerDict) => {
   }
   return true;
 };
-
-// this should get styled to render horizontally
-// const YesNoRadio = ({ label, name, isYes, setIsYes }) => {
-//   return (
-//     <ChoiceList
-//       label={label}
-//       name={name}
-//       type="radio"
-//       onChange={(evt) => setIsYes(evt.currentTarget.value === "yes")}
-//       choices={[
-//         { label: "Yes", value: "yes", checked: isYes === true },
-//         { label: "No", value: "no", checked: isYes === false },
-//       ]}
-//     />
-//   );
-// };
 
 const ManagedDateField = ({
   name,
@@ -165,45 +147,6 @@ const ManagedDateField = ({
     />
   );
 };
-const NoDefaultDropdown = ({
-  label,
-  name,
-  options,
-  value,
-  onChange,
-  stateSetter,
-  placeholder = " - Select - ",
-  ...additionalProps
-}) => {
-  const defaultValue = value === undefined ? "" : undefined;
-  if (stateSetter !== undefined && onChange !== undefined) {
-    throw new Error("Cannot have both stateSetter and onChange defined");
-  }
-  const changeHandler =
-    stateSetter === undefined
-      ? onChange
-      : (evt) => stateSetter(evt.currentTarget.value);
-  return (
-    <Dropdown
-      label={label}
-      name={name}
-      options={[]}
-      defaultValue={defaultValue}
-      value={value}
-      onChange={changeHandler}
-      {...additionalProps}
-    >
-      <option value="" disabled>
-        {placeholder}
-      </option>
-      {options.map((opt) => (
-        <option value={opt.value} key={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </Dropdown>
-  );
-};
 
 // building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
@@ -283,6 +226,7 @@ const PriorTestInputs = ({
     : isFirstTest === false
     ? "no"
     : undefined;
+
   return (
     <React.Fragment>
       <RadioGroup
@@ -310,24 +254,24 @@ const PriorTestInputs = ({
         maxAllowedDate="now"
         minAllowedDate="2020-02-01"
       />
-      <NoDefaultDropdown
+      <Dropdown
+        options={testTypeConfig}
         label="Type of prior test"
         name="prior_test_type"
-        value={priorTestType}
-        stateSetter={setPriorTestType}
-        options={testTypeConfig}
+        selectedValue={priorTestType}
+        onChange={(e) => setPriorTestType(e.target.value)}
         disabled={disableDetails}
       />
-      <NoDefaultDropdown
-        label="Result of prior test"
-        name="prior_test_result"
-        value={priorTestResult}
-        stateSetter={setPriorTestResult}
+      <Dropdown
         options={[
           { value: "positive", label: "Positive" },
           { value: "negative", label: "Negative" },
           { value: "undetermined", label: "Undetermined" },
         ]}
+        label="Result of prior test"
+        name="prior_test_result"
+        selectedValue={priorTestResult}
+        onChange={(e) => setPriorTestResult(e.target.value)}
         disabled={disableDetails}
       />
     </React.Fragment>
