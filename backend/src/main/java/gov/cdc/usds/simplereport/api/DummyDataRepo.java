@@ -23,7 +23,7 @@ public class DummyDataRepo {
 		new Device("BD Veritor","BD","Veritor", true),
 		new Device("Abbott Binax Now","Abbott","Binax Now",false),
 		new Device("Abbott IDNow","Abbott","IDNow",false),
-		new Device("LumiraDX","LumiraDX","",false),
+		new Device("LumiraDX","LumiraDX","",false)
 	));
 
 	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "", allDevices);
@@ -72,8 +72,8 @@ public class DummyDataRepo {
 		ArrayList<Device> newDevices = new ArrayList<Device>();
 
 		deviceIds.forEach((id) -> {
-			Device device = allDevices.stream().filter(device -> id.equals(device.getId())).findAny().orElse(null);
-			if(device != null) {
+			Device device = allDevices.stream().filter(d -> id.equals(d.getId())).findAny().orElse(null);
+			if (device != null) {
 				newDevices.add(device);
 			}
 		});
