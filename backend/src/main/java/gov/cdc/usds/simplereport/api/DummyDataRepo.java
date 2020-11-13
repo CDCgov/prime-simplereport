@@ -46,10 +46,6 @@ public class DummyDataRepo {
 		return (env) -> user;
 	}
 
-	public static void addDevice(Device d) {
-		allDevices.add(d);
-	}
-
 	public static void addPatient(Patient patient) {
 		allPatients.add(patient);
 	}
