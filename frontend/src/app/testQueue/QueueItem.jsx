@@ -8,7 +8,7 @@ import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete } from "./AoEModalForm";
+import AoeModalForm, { areAnswersComplete } from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";

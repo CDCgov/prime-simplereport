@@ -1,0 +1,4 @@
+spring:
+  liquibase:
+    user: simple_report_migrations
+    password: migrations456

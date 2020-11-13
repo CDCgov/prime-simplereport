@@ -130,6 +130,24 @@
   background-color: color($theme-color-prime-red-lightest);
 }
 
+.prime-radio--horizontal {
+  list-style-type: none;
+  margin-top: 0;
+  padding: 0;
+  text-align: center;
+}
+.prime-radio--horizontal__container {
+  position: relative;
+  display: list-item;
+  width: 45%;
+  max-width: 5rem;
+  float: left;
+  margin: 0;
+}
+.prime-radio--horizontal__container:first-child {
+  margin-right: units(1);
+}
+
 // MODAL
 
 // the background behind the modal
