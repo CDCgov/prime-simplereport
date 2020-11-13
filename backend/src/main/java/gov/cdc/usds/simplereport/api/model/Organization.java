@@ -5,9 +5,10 @@ import java.util.ArrayList;
 
 import gov.cdc.usds.simplereport.api.model.Device;
 
+import java.util.UUID;
 
 public class Organization {
-	private Stirng id;
+	private String id;
 	private String testingFacilityName;
 	private String cliaNumber;
 	private String orderingProviderName;
