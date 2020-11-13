@@ -1,10 +1,11 @@
 name: Backend Deploy
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-      - benwarfield-usds/initial-boot-api
+      - benwarfield-usds/initial-db-setup
 
 defaults:
   run:
