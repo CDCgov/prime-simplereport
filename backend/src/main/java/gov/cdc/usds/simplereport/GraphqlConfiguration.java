@@ -42,36 +42,28 @@ public class GraphqlConfiguration {
 		return new SchemaGenerator().makeExecutableSchema(registry, wiring);
 	}
 
-
 	@Bean
-    public RuntimeWiring buildWiring() {
-		DataFetcher<String> patientAdder = context -> {
-			String patientId = context.getArgument("patientId");
-			String firstName = context.getArgument("firstName");
-			String middleName = context.getArgument("middleName");
-			String lastName = context.getArgument("lastName");
-			String birthDate = context.getArgument("birthDate");
-			String street = context.getArgument("street");
-			String streetTwo = context.getArgument("streetTwo");
-			String city = context.getArgument("city");
-			String state = context.getArgument("state");
-			String zipCode = context.getArgument("zipCode");
-			String phone = context.getArgument("phone");
-			LocalDate realDate = LocalDate.parse(birthDate);
-			DummyDataRepo.addPatient(new Patient(patientId, firstName, middleName, lastName, realDate, street, streetTwo, city, state, zipCode, phone));
-			return patientId;
-		};
+	public RuntimeWiring buildWiring() {
+		DummyDataRepo repo = new DummyDataRepo();
+		DataFetcher<String> addDevice = context -> {
+			return repo.addDevice(
+				context.getArgument("DeviceName"),
+				context.getArgument("deviceManufacturer"),
+				context.getArgument("deviceModel"),
+				context.getArgument("isDefault"),
+			)
+		} 
 
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 					newTypeWiring("Query")
-						.dataFetcher("patient", DummyDataRepo.patientFetcher())
-						.dataFetcher("user", DummyDataRepo.userFetcher())
+						.dataFetcher("patient", repo.patientFetcher())
+						.dataFetcher("user", repo.userFetcher())
 						.build()
 			     )
 			.type(
 					newTypeWiring("Mutation")
-						.dataFetcher("addPatient", patientAdder)
+						.dataFetcher("addDevice", addDevice)
 			     )
 			.build();
 	}
