@@ -2,11 +2,9 @@ package gov.cdc.usds.simplereport;
 
 import static graphql.schema.idl.TypeRuntimeWiring.newTypeWiring;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.time.LocalDate;
 
