@@ -31,9 +31,9 @@ public class DummyDataRepo {
 		new Organization(
 			"","","","", "", "", "", "", "", "", "",
 			new ArrayList<>(Arrays.asList(
-				new Device("deviceId2","BD Veritor","BD","Veritor", true),
-				new Device("deviceId3","Abbott Binax Now","Abbott","Binax Now",false),
-				new Device("graphQLTest","Does GraphQL Work","Apollo","GraphQL",false)
+				new Device("BD Veritor","BD","Veritor", true),
+				new Device("Abbott Binax Now","Abbott","Binax Now",false),
+				new Device("Does GraphQL Work","Apollo","GraphQL",false)
 			))
 		)
 	);
