@@ -53,10 +53,14 @@ type User {
 type TestResult {
   id: ID
   dateTested: String
+  deviceId: String
+  result: String
+  patientId: String
 }
 type Query {
   patient: [Patient]
   user: User
+  testResult: [TestResult]
 }
 type Mutation {
   updateOrganization(

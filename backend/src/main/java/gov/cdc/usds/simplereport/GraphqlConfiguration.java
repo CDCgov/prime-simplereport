@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import gov.cdc.usds.simplereport.api.DummyDataRepo;
 import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.api.model.TestResult;
 import graphql.GraphQL;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLSchema;
@@ -75,6 +76,7 @@ public class GraphqlConfiguration {
 				newTypeWiring("Query")
 					.dataFetcher("patient", repo.patientFetcher())
 					.dataFetcher("user", repo.userFetcher())
+					.dataFetcher("testResult", repo.testResultFetcher())
 					.build()
 			)
 			.type(

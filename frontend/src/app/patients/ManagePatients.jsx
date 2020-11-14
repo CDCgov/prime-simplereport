@@ -1,4 +1,4 @@
-import {gql, useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 
 import { displayFullName } from "../utils";
@@ -19,10 +19,21 @@ import {
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
 
-const patientQuery = gql`{patient{patientId,firstName,lastName,middleName,birthDate}}`;
+const patientQuery = gql`
+  {
+    patient {
+      patientId
+      firstName
+      lastName
+      middleName
+      birthDate
+    }
+  }
+`;
 
 const ManagePatients = () => {
-  const {data, loading, error} = useQuery(patientQuery)
+  const { data, loading, error } = useQuery(patientQuery);
+  console.log("data", data);
 
   const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
 
@@ -137,7 +148,13 @@ const ManagePatients = () => {
   const patientRows = (patients) => {
     return patients.map((patient) => (
       <tr key={`patient-${uuidv4()}`}>
-        <th scope="row">{displayFullName(patient.firstName, patient.middleName, patient.lastName)}</th>
+        <th scope="row">
+          {displayFullName(
+            patient.firstName,
+            patient.middleName,
+            patient.lastName
+          )}
+        </th>
         <td>{patient.patientId}</td>
         <td> {patient.birthDate}</td>
         <td>
@@ -170,7 +187,9 @@ const ManagePatients = () => {
                 id="uploadCSV"
                 className="input-file"
                 accept=".csv"
-                onChange={(csv) => loadFile(csv.target.files[0], data? data.patient : {})}
+                onChange={(csv) =>
+                  loadFile(csv.target.files[0], data ? data.patient : {})
+                }
               />
               <CSVModalForm
                 isOpen={isCSVModalOpen}
@@ -188,18 +207,25 @@ const ManagePatients = () => {
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
             </div>
             <div className="usa-card__body">
-              {error? <p>Error in loading patients</p> : loading ? <p>Loading patients...</p> : data?
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Unique ID</th>
-                    <th scope="col">Date of Birth</th>
-                    <th scope="col">Days since last test</th>
-                  </tr>
-                </thead>
-                <tbody>{patientRows(data.patient)}</tbody>
-              </table> : <p> no patients found</p>}
+              {error ? (
+                <p>Error in loading patients</p>
+              ) : loading ? (
+                <p>Loading patients...</p>
+              ) : data ? (
+                <table className="usa-table usa-table--borderless width-full">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Unique ID</th>
+                      <th scope="col">Date of Birth</th>
+                      <th scope="col">Days since last test</th>
+                    </tr>
+                  </thead>
+                  <tbody>{patientRows(data.patient)}</tbody>
+                </table>
+              ) : (
+                <p> no patients found</p>
+              )}
             </div>
           </div>
         </div>
