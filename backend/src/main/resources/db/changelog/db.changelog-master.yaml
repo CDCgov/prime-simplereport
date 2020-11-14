@@ -1,7 +1,197 @@
+x-ref-data:
+  type-defs:
+    - &idtype bigint
+    - &string varchar(255)
+  column-defs:
+    - column: &pk_column
+        name: internal_id
+        type: *idtype
+        remarks: The internal database identifier for this entity.
+        constraints:
+          primaryKey: true
+          nullable: false
+    - column: &created_at_column
+        name: created_at
+        type: DATETIME
+        remarks: The creation timestamp for this entity.
+        constraints:
+          nullable: false
+    - column: &updated_at_column
+        name: updated_at
+        type: DATETIME
+        remarks: The timestamp for the most recent update of this entity.
+        constraints:
+          nullable: false
 databaseChangeLog:
   # This is a placeholder to make the thing parse, but also useful if we decide to use
   # Spring Session JPA at some point.
   - property:
-        name: attribute_bytes_type
-        value: BYTEA
-        dbms: postgresql
+      name: attribute_bytes_type
+      value: BYTEA
+      dbms: postgresql
+  - changeSet:
+      id: define-enum-types
+      author: bwarfield@cdc.gov
+      comment: Type definitions for our initial tables.
+      changes:
+        - sql:
+            remarks: Create the enumerations needed for tracking test orders.
+            # these may need to be tweaked if we ever might care about their sort order
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.TEST_ORDER_STATUS as ENUM('PENDING', 'COMPLETED', 'CANCELED');
+              CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT as ENUM('POSITIVE','NEGATIVE','UNDETERMINED');
+      rollback:
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.TEST_ORDER_STATUS;
+          DROP TYPE ${database.defaultSchemaName}.TEST_RESULT;
+  - changeSet:
+      id: initial-schema
+      author: bwarfield@cdc.gov
+      comment: The database schema required for the initial prototype deployment of the Simple Report API.
+      changes:
+        - createSequence:
+            sequenceName: simple_report_entity_id_sequence
+            startValue: 1
+            incrementBy: 50
+        - createTable:
+            tableName: device_type
+            remarks: Testing devices that may be present.
+            columns:
+              - column: *pk_column
+              # is there an external ID? I think so?
+              - column:
+                  name: name
+                  type: *string
+                  remarks: The name of the device, as displayed in isolation
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__device_type
+              - column:
+                  name: manufacturer
+                  remarks: The manufacturer of the device.
+                  type: *string
+              - column:
+                  name: model
+                  type: *string
+                  remarks: The device model name.
+        - createTable:
+            tableName: organization # may contain facility information as well, until/unless we split
+            remarks: A site where testing occurs, and also the main user grouping entity.
+            columns:
+              - column: *pk_column
+              - column:
+                  name: facility_name
+                  type: *string
+                  remarks: The human-readable name for this facility.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__facility__name
+              - column:
+                  name: organization_external_id
+                  type: *string
+                  remarks: The external ID of the organization, for authorization purposes.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__facility__organization_id
+              - column:
+                  name: default_device_type
+                  remarks: The default device type (if any) for tests at this facility.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__organization__default_device_type
+                    references: device_type
+        - createTable:
+            tableName: facility_device_type
+            remarks: Many-to-many table for device configuration at a facility.
+            columns:
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_type__organization
+                    references: organization
+              - column:
+                  name: device_type_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_type__device_type
+                    references: device_type
+        - createTable:
+            tableName: person # this is kind of fascinating -- is a user also a person? Probably so, actually?
+            remarks: The personal information we store about users and patients
+            columns:
+              - column: *pk_column
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__person__organization
+                    references: organization
+              - column:
+                  name: first_name
+                  remarks: The person's given name, if any.
+                  type: *string
+              - column:
+                  name: middle_name
+                  remarks: The person's middle name, if any.
+                  type: *string
+              - column:
+                  name: last_name
+                  remarks: The person's family name or only name.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: birth_date
+                  remarks: The person's date of birth.
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address # nopenopenope
+                  remarks: The person's home address, as an unstructure string.
+                  type: *string
+              - column:
+                  name: telephone
+                  remarks: The person's contact phone number,
+                  type: *string
+        - createTable:
+            tableName: test_order
+            remarks: Test orders, whether pending, completed or canceled.
+            columns:
+              - column: *pk_column
+              - column:
+                  name: patient_id
+                  remarks: The person who is being given the test.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_order__patient__person
+                    references: person
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__person__organization
+                    references: organization
+              - column:
+                  name: order_status
+                  remarks: The status of the order. "Pending" orders are the test queue; "COMPLETED" orders have results.
+                  type: ${database.defaultSchemaName}.TEST_ORDER_STATUS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: result
+                  remarks: The result of the test, once it has been given.
+                  type: ${database.defaultSchemaName}.TEST_RESULT
+              - column: *created_at_column
+              - column: *updated_at_column
