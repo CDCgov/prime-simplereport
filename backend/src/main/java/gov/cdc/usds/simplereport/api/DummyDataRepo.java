@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -65,6 +66,40 @@ public class DummyDataRepo {
 
 	public  DataFetcher<User> userFetcher() {
 		return (env) -> defaultUser;
+	}
+
+	public String addPatient(
+		String patientId,
+		String firstName,
+		String middleName,
+		String lastName,
+		String birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone
+	) {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");		 
+		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
+
+		Patient newPatient = new Patient(
+			patientId,
+			firstName,
+			middleName,
+			lastName,
+			localBirthDateDate,
+			street,
+			streetTwo,
+			city,
+			state,
+			zipCode,
+			phone,
+			defaultOrg
+		);
+		allPatients.add(newPatient);
+		return newPatient.getId();
 	}
 
 	public String updateOrganization(
