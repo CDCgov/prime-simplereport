@@ -32,3 +32,15 @@ export const getPatients = async (organizationId) => {
   console.log("is this actually running anywhere");
   return demoPatients;
 };
+
+// Create a temporary patientId, used until the server returns an official one
+//TODO: Is this good enough?
+//TODO: Write code to update temp id when server gives us official one
+
+export const createPatientId = () => {
+  return (
+    "$PATIENT-" +
+    Math.round(Math.random() * 30000).toString(36) +
+    Date.now().toString(36)
+  );
+};

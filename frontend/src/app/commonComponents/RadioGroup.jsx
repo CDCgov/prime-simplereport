@@ -27,7 +27,7 @@ const RadioGroup = ({
       <li className={classNames} key={button.value}>
         <input
           className={`usa-${type || "radio"}__input`}
-          checked={button.value === selectedRadio || button.checked}
+          checked={button.value === selectedRadio || button.checked || false}
           id={uuid}
           key={button.value}
           name={name}
