@@ -18,7 +18,7 @@ services:
   api:
     build:
       context: .
-    image:  simple-report-api-build
+    image: simple-report-api-build
     command: bootRun
     environment:
       SPRING_PROFILES_ACTIVE: dev,db-dockerized

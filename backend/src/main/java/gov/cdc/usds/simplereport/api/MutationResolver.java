@@ -30,7 +30,6 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     public void addPatient(String patientID, String firstName, String middleName, String lastName, LocalDate birthDate, String street, String street2, String city, String state, String zipCode, String phone) {
         repo.addPatient(patientID, firstName, middleName, lastName, birthDate.toString(), street, street2, city, state, zipCode, phone);
-//        DummyDataRepo.allPatients.add(p);
     }
 
     public void updateOrganization(String testingFacilityName,
