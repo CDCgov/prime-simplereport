@@ -57,11 +57,18 @@ type TestResult {
   result: String
   patient: Patient
 }
+type Queue {
+  id: ID
+  patient: Patient
+  organization: Organization
+}
 type Query {
   device: [Device]
   patient: [Patient]
   user: User
+  organization: Organization
   testResult: [TestResult]
+  queue: [Queue]
 }
 type Mutation {
   updateOrganization(
@@ -92,4 +99,5 @@ type Mutation {
     phone: String
   ): String
   addTestResult(deviceId: String, result: String, patientId: String): String
+  addPatientToQueue(patientId: String): String
 }

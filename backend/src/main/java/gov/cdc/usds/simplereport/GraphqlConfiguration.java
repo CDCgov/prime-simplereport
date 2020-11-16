@@ -88,13 +88,22 @@ public class GraphqlConfiguration {
 				context.getArgument("patientId")
 			);
 		};
+
+		DataFetcher<String> addPatientToQueue = context -> {
+			return repo.addPatientToQueue(
+				context.getArgument("patientId")
+			);
+		};
+
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 				newTypeWiring("Query")
 					.dataFetcher("device", repo.deviceFetcher())
 					.dataFetcher("patient", repo.patientFetcher())
 					.dataFetcher("user", repo.userFetcher())
+					.dataFetcher("organization", repo.organizationFetcher())
 					.dataFetcher("testResult", repo.testResultFetcher())
+					.dataFetcher("queue", repo.queueFetcher())
 					.build()
 			)
 			.type(
@@ -102,6 +111,7 @@ public class GraphqlConfiguration {
 					.dataFetcher("updateOrganization", updateOrganization)
 					.dataFetcher("addPatient", addPatient)
 					.dataFetcher("addTestResult", addTestResult)
+					.dataFetcher("addPatientToQueue", addPatientToQueue)
 			)
 			.build();
 	}
