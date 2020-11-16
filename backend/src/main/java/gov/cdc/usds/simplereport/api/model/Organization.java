@@ -5,10 +5,7 @@ import java.util.ArrayList;
 
 import gov.cdc.usds.simplereport.api.model.Device;
 
-<<<<<<< HEAD
-=======
 import java.util.List;
->>>>>>> b712ae3865146c0fe825f4ea7af681ad337ef4a7
 import java.util.UUID;
 
 public class Organization {
