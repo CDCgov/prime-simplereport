@@ -47,14 +47,6 @@ public class GraphqlConfiguration {
 	public RuntimeWiring buildWiring() {
 		DummyDataRepo repo = new DummyDataRepo();
 		repo.init_relations();
-		DataFetcher<String> addDevice = context -> {
-			return repo.addDevice(
-				context.getArgument("displayName"),
-				context.getArgument("deviceManufacturer"),
-				context.getArgument("deviceModel"),
-				context.getArgument("isDefault")
-			);
-		};
 
 		DataFetcher<String> updateOrganization = context -> {
 			return repo.updateOrganization(
@@ -82,7 +74,6 @@ public class GraphqlConfiguration {
 			)
 			.type(
 				newTypeWiring("Mutation")
-					.dataFetcher("addDevice", addDevice)
 					.dataFetcher("updateOrganization", updateOrganization)
 			)
 			.build();

@@ -77,10 +77,4 @@ type Mutation {
     orderingProviderPhone: String
     devices: [String]
   ): String
-  addDevice(
-    displayName: String
-    deviceManufacturer: String
-    deviceModel: String
-    isDefault: Boolean
-  ): String
 }

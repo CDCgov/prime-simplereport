@@ -67,12 +67,6 @@ public class DummyDataRepo {
 		return (env) -> defaultUser;
 	}
 
-	public String addDevice(String displayName, String deviceManufacturer, String deviceModel, Boolean isDefault) {
-		Device newDevice = new Device(displayName, deviceManufacturer, deviceModel, isDefault);
-		allDevices.add(newDevice);
-		return newDevice.getId();
-	}
-
 	public String updateOrganization(
 		String testingFacilityName,
 		String cliaNumber,
