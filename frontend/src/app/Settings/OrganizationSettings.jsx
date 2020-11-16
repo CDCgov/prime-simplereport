@@ -9,7 +9,7 @@ const OrganizationSettings = ({ orgSettings, updateOrgSettings }) => {
     updateOrgSettings(newOrgSettings);
   };
 
-  let { name, cliaNumber } = { ...orgSettings };
+  let { testingFacilityName, cliaNumber } = { ...orgSettings };
   return (
     <div className="grid-container">
       <div className="grid-row">
@@ -22,17 +22,15 @@ const OrganizationSettings = ({ orgSettings, updateOrgSettings }) => {
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Testing Facility Name"}
-                  placeholder={`Facility Name`}
-                  value={name || ""}
+                  value={testingFacilityName || ""}
                   onChange={onInputChange}
-                  name="name"
+                  name="testingFacilityName"
                 />
               </div>
               <div className="tablet:grid-col">
                 <TextInput
                   label={"CLIA Number"}
-                  placeholder={``}
-                  value={cliaNumber}
+                  value={cliaNumber || ""}
                   onChange={onInputChange}
                   name="cliaNumber"
                 />

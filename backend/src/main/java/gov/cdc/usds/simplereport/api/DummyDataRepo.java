@@ -34,9 +34,9 @@ public class DummyDataRepo {
 	public DataFetcher<List<Device>> deviceFetcher() {
 		return (env) -> allDevices;
 	}
-
+		w
 	// set up default user and org
-	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "", allDevices);
+	private Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices);
 	private User defaultUser = new User(defaultOrg);
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
