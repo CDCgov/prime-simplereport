@@ -29,7 +29,7 @@ type Patient {
   typeOfHealthcareProfessional: String
   residentCongregateSetting: Boolean
   patientResidencyType: String
-  testResult: TestResult
+  testResults: [TestResult]
 }
 type Organization {
   id: ID
@@ -55,7 +55,7 @@ type TestResult {
   dateTested: String
   deviceId: String
   result: String
-  patientId: String
+  patient: Patient
 }
 type Query {
   patient: [Patient]

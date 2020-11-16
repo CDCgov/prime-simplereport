@@ -46,6 +46,7 @@ public class GraphqlConfiguration {
 	@Bean
 	public RuntimeWiring buildWiring() {
 		DummyDataRepo repo = new DummyDataRepo();
+		repo.init_relations();
 		DataFetcher<String> addDevice = context -> {
 			return repo.addDevice(
 				context.getArgument("displayName"),

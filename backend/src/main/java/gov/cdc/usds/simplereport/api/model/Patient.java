@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import gov.cdc.usds.simplereport.api.model.Organization;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 
 public class Patient {
@@ -28,7 +30,8 @@ public class Patient {
 	private String typeOfHealthcareProfessional;
 	private Boolean residentCongregateSetting;
 	private String patientResidencyType;
-	private TestResult testResult;
+	private ArrayList<TestResult> testResults;
+	private Organization organization;
 
 	public Patient(
 		String patientId,
@@ -41,7 +44,8 @@ public class Patient {
 		String city,
 		String state,
 		String zipCode,
-		String phone
+		String phone,
+		Organization organization
 	) {
 		super();
 		this.id = UUID.randomUUID().toString();
@@ -56,6 +60,7 @@ public class Patient {
 		this.state = state;
 		this.zipCode = zipCode;
 		this.phone = phone;
+		this.organization = organization;
 	}
 
 	public Patient(
@@ -70,12 +75,16 @@ public class Patient {
 		String state,
 		String zipCode,
 		String phone,
-		TestResult testResult
+		Organization organization,
+		ArrayList<TestResult> testResults
 	) {
-		this(patientId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone);
-		this.testResult = testResult;
+		this(patientId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone, organization);
+		this.testResults = testResults;
 	}
 
+	public void setTestResults(ArrayList<TestResult> testResults) {
+		this.testResults = testResults;
+	}
 
 	public String getId() {
 		return id;
