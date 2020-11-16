@@ -53,7 +53,7 @@ type User {
 type TestResult {
   id: ID
   dateTested: String
-  deviceId: String
+  device: Device
   result: String
   patient: Patient
 }
