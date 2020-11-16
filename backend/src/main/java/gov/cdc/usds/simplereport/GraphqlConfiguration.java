@@ -48,6 +48,22 @@ public class GraphqlConfiguration {
 		DummyDataRepo repo = new DummyDataRepo();
 		repo.init_relations();
 
+		DataFetcher<String> addPatient = context -> {
+			return repo.addPatient(
+				context.getArgument("patientId"),
+				context.getArgument("firstName"),
+				context.getArgument("middleName"),
+				context.getArgument("lastName"),
+				context.getArgument("birthDate"),
+				context.getArgument("street"),
+				context.getArgument("streetTwo"),
+				context.getArgument("city"),
+				context.getArgument("state"),
+				context.getArgument("zipCode"),
+				context.getArgument("phone")
+			);
+		};
+
 		DataFetcher<String> updateOrganization = context -> {
 			return repo.updateOrganization(
 				context.getArgument("testingFacilityName"),
@@ -75,6 +91,7 @@ public class GraphqlConfiguration {
 			.type(
 				newTypeWiring("Mutation")
 					.dataFetcher("updateOrganization", updateOrganization)
+					.dataFetcher("addPatient", addPatient)
 			)
 			.build();
 	}

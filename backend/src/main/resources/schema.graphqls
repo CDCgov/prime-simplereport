@@ -77,4 +77,17 @@ type Mutation {
     orderingProviderPhone: String
     devices: [String]
   ): String
+  addPatient(
+    patientId: String
+    firstName: String
+    middleName: String
+    lastName: String
+    birthDate: String
+    street: String
+    streetTwo: String
+    city: String
+    state: String
+    zipCode: String
+    phone: String
+  ): String
 }
