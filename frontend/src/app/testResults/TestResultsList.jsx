@@ -1,6 +1,5 @@
 import React from "react";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
 import { useSelector } from "react-redux";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 
@@ -15,7 +14,7 @@ const TestResultsList = () => {
     }
 
     return results.map((result) => (
-      <tr key={`patient-${uuidv4()}`}>
+      <tr key={result.patientId}>
         <th scope="row">{result.displayName}</th>
         <td>{result.patientId}</td>
         <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>

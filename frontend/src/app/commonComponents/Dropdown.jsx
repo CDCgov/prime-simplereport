@@ -1,30 +1,41 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { v4 as uuidv4 } from "uuid";
+import useUniqueIds from "../commonComponents/useUniqueIds";
+import classnames from "classnames";
 
-const Dropdown = ({ options, label, name, onChange, selectedValue }) => {
-  const optionsElements = options.map(({ value, label }) => (
-    <option key={`dropdown-${uuidv4()}`} value={value}>
-      {label}
-    </option>
-  ));
+const Dropdown = ({
+  options,
+  label,
+  name,
+  onChange,
+  disabled,
+  addClass,
+  defaultOption, // value of the default option
+  selectedValue,
+}) => {
+  const [selectId] = useUniqueIds("dropdown", 1);
 
-  const id = uuidv4();
   return (
-    <React.Fragment>
-      <label className="usa-label" htmlFor={id}>
-        <strong>{label}</strong>
+    <div className={classnames("prime-dropdown", addClass)}>
+      <label className="usa-label" htmlFor={selectId}>
+        {label}
       </label>
       <select
         className="usa-select"
         name={name}
-        id={id}
+        id={selectId}
         onChange={onChange}
-        value={selectedValue || ""}
+        value={selectedValue || defaultOption || ""}
+        disabled={disabled}
       >
-        {optionsElements}
+        <option value={null}>- Select -</option>
+        {options.map(({ value, label }, i) => (
+          <option key={value + i} value={value}>
+            {label}
+          </option>
+        ))}
       </select>
-    </React.Fragment>
+    </div>
   );
 };
 
@@ -39,6 +50,8 @@ Dropdown.propTypes = {
   name: PropTypes.string,
   onChange: PropTypes.func,
   selectedValue: PropTypes.string,
+  disabled: PropTypes.bool,
+  defaultOption: PropTypes.bool,
 };
 
 export default Dropdown;

@@ -126,4 +126,9 @@ public class Patient {
 	public String getPhone() {
 		return phone;
 	}
+
+	// FIXME: We need the actual county wired
+	public String getCounty() {
+		return "";
+	}
 }

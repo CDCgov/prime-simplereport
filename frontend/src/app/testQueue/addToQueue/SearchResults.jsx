@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import PropTypes from "prop-types";
 
 import Anchor from "../../commonComponents/Anchor";
-import AoeModalForm from "../AoEModalForm";
+import AoeModalForm from "../AoEForm/AoEModalForm";
 
 const AddToQueueButton = ({ patient, onAddToQueue }) => {
   const [aoeDialogActive, setAoEDialogActive] = useState(false);

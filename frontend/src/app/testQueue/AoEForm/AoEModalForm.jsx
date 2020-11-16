@@ -1,45 +1,19 @@
 import React from "react";
-import { displayFullName } from "../utils";
-import { Button, ChoiceList, DateField, Dropdown } from "@cmsgov/design-system";
-import CMSDialog from "../commonComponents/CMSDialog";
+import { displayFullName } from "../../utils";
+import { DateField } from "@cmsgov/design-system";
+import CMSDialog from "../../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
 import { useState } from "react";
-
-// BEGIN things that should be service calls
-const globalSymptomDefinitions = [
-  { value: "426000000", label: "Fever over 100.4F" },
-  { value: "103001002", label: "Feeling feverish" },
-  { value: "43724002", label: "Chills" },
-  { value: "49727002", label: "Cough" },
-  { value: "267036007", label: "Shortness of breath" },
-  { value: "230145002", label: "Difficulty breathing" },
-  { value: "84229001", label: "Fatigue" },
-  { value: "68962001", label: "Muscle or body aches" },
-  { value: "25064002", label: "Headache" },
-  { value: "36955009", label: "New loss of taste" },
-  { value: "44169009", label: "New loss of smell" },
-  { value: "162397003", label: "Sore throat" },
-  { value: "68235000", label: "Nasal congestion" },
-  { value: "64531003", label: "Runny nose" },
-  { value: "422587007", label: "Nausea" },
-  { value: "422400008", label: "Vomiting" },
-  { value: "62315008", label: "Diarrhea" },
-];
-
-const getSymptomList = () => globalSymptomDefinitions;
-const getTestTypes = () => [
-  { label: "Molecular", value: "1" },
-  { label: "Antigen", value: "2" },
-  { label: "Antibody/Serology", value: "3" },
-  { label: "Unknown", value: "4" },
-];
-const getPregnancyResponses = () => [
-  { label: "Yes", value: "77386006" },
-  { label: "No", value: "60001007" },
-  { label: "Would not state", value: "261665006" },
-];
-// END things that should be service calls
+import {
+  getSymptomList,
+  getTestTypes,
+  getPregnancyResponses,
+} from "./constants";
+import RadioGroup from "../../commonComponents/RadioGroup";
+import Dropdown from "../../commonComponents/Dropdown";
+import Anchor from "../../commonComponents/Anchor";
+import Button from "../../commonComponents/Button";
 
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptomFlag) {
@@ -83,22 +57,6 @@ export const areAnswersComplete = (answerDict) => {
     return false;
   }
   return true;
-};
-
-// this should get styled to render horizontally
-const YesNoRadio = ({ label, name, isYes, setIsYes }) => {
-  return (
-    <ChoiceList
-      label={label}
-      name={name}
-      type="radio"
-      onChange={(evt) => setIsYes(evt.currentTarget.value === "yes")}
-      choices={[
-        { label: "Yes", value: "yes", checked: isYes === true },
-        { label: "No", value: "no", checked: isYes === false },
-      ]}
-    />
-  );
 };
 
 const ManagedDateField = ({
@@ -191,45 +149,6 @@ const ManagedDateField = ({
     />
   );
 };
-const NoDefaultDropdown = ({
-  label,
-  name,
-  options,
-  value,
-  onChange,
-  stateSetter,
-  placeholder = " - Select - ",
-  ...additionalProps
-}) => {
-  const defaultValue = value === undefined ? "" : undefined;
-  if (stateSetter !== undefined && onChange !== undefined) {
-    throw new Error("Cannot have both stateSetter and onChange defined");
-  }
-  const changeHandler =
-    stateSetter === undefined
-      ? onChange
-      : (evt) => stateSetter(evt.currentTarget.value);
-  return (
-    <Dropdown
-      label={label}
-      name={name}
-      options={[]}
-      defaultValue={defaultValue}
-      value={value}
-      onChange={changeHandler}
-      {...additionalProps}
-    >
-      <option value="" disabled>
-        {placeholder}
-      </option>
-      {options.map((opt) => (
-        <option value={opt.value} key={opt.value}>
-          {opt.label}
-        </option>
-      ))}
-    </Dropdown>
-  );
-};
 
 // building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
@@ -249,44 +168,43 @@ const SymptomInputs = ({
     const { label, value } = conf;
     return { label, value, checked: currentSymptoms[value] };
   });
+
   // build the choice list we would have without the no-symptom toggle,
   // so we can extract its contents to plug into the wrapper.
-  const wrappedSymptomChoiceList = new ChoiceList({
-    name: "symptom_list",
-    label: "__",
-    onChange: symptomChange,
-    type: "checkbox",
-    choices: choiceList,
-  });
+  const wrappedSymptomChoiceList = noSymptoms ? null : (
+    <React.Fragment>
+      <hr />
+      <RadioGroup
+        type="checkbox"
+        name="symptom_list"
+        onChange={symptomChange}
+        buttons={choiceList}
+      />
+      <ManagedDateField
+        name="symptom_onset"
+        label="Date of symptom onset"
+        managedDate={onsetDate}
+        setManagedDate={setOnsetDate}
+        maxAllowedDate="now"
+      />
+    </React.Fragment>
+  );
 
-  // this is the wrapper choice: if it is unchecked, we show the list
-  // we generated above (and the date field); otherwise, nothing to see
-  const symptomToggleChoice = {
-    label: "No symptoms",
-    value: "",
-    checked: noSymptoms,
-    uncheckedChildren: (
-      <React.Fragment>
-        <hr />
-        {wrappedSymptomChoiceList.choices()}
-        <ManagedDateField
-          name="symptom_onset"
-          label="Date of symptom onset"
-          managedDate={onsetDate}
-          setManagedDate={setOnsetDate}
-          maxAllowedDate="now"
-        />
-      </React.Fragment>
-    ),
-  };
   return (
-    <ChoiceList
-      name="symptom_list"
-      label="Are you experiencing any of the following symptoms?"
-      type="checkbox" // super irritating that this is required
-      choices={[symptomToggleChoice]}
-      onChange={(evt) => setNoSymptoms(evt.currentTarget.checked)}
-    />
+    <React.Fragment>
+      <RadioGroup
+        type="checkbox"
+        name="symptom_list"
+        label="Are you experiencing any of the following symptoms?"
+        onChange={(evt) => {
+          console.log("new value:", evt.currentTarget.checked);
+          setNoSymptoms(evt.currentTarget.checked);
+        }}
+        buttons={[{ value: "hasNoSymptoms", label: "No Symptoms" }]}
+        selectedRadio={noSymptoms ? "hasNoSymptoms" : null}
+      />
+      {wrappedSymptomChoiceList}
+    </React.Fragment>
   );
 };
 
@@ -303,13 +221,30 @@ const PriorTestInputs = ({
 }) => {
   // disable inputs other than Yes/No if it is "Yes" or unset
   const disableDetails = isFirstTest !== false;
+
+  let radioValue = isFirstTest
+    ? "yes"
+    : isFirstTest === false
+    ? "no"
+    : undefined;
+
   return (
     <React.Fragment>
-      <YesNoRadio
+      <RadioGroup
+        buttons={[
+          { label: "Yes", value: "yes" },
+          { label: "No", value: "no" },
+        ]}
+        selectedRadio={radioValue}
+        onChange={(e) => {
+          let value = e.target.value;
+          let isFirstTest = value === "yes" ? true : false;
+          setIsFirstTest(isFirstTest);
+        }}
+        label="Is this the first test?"
+        legend="First covid test?"
         name="prior_test_flag"
-        label="First test?"
-        isYes={isFirstTest}
-        setIsYes={setIsFirstTest}
+        horizontal
       />
       <ManagedDateField
         name="prior_test_date"
@@ -320,24 +255,24 @@ const PriorTestInputs = ({
         maxAllowedDate="now"
         minAllowedDate="2020-02-01"
       />
-      <NoDefaultDropdown
+      <Dropdown
+        options={testTypeConfig}
         label="Type of prior test"
         name="prior_test_type"
-        value={priorTestType}
-        stateSetter={setPriorTestType}
-        options={testTypeConfig}
+        selectedValue={priorTestType}
+        onChange={(e) => setPriorTestType(e.target.value)}
         disabled={disableDetails}
       />
-      <NoDefaultDropdown
-        label="Result of prior test"
-        name="prior_test_result"
-        value={priorTestResult}
-        stateSetter={setPriorTestResult}
+      <Dropdown
         options={[
           { value: "positive", label: "Positive" },
           { value: "negative", label: "Negative" },
           { value: "undetermined", label: "Undetermined" },
         ]}
+        label="Result of prior test"
+        name="prior_test_result"
+        selectedValue={priorTestResult}
+        onChange={(e) => setPriorTestResult(e.target.value)}
         disabled={disableDetails}
       />
     </React.Fragment>
@@ -368,6 +303,7 @@ const AoEModalForm = ({
       initialSymptoms[val] = false;
     });
   }
+
   const useDateState = (preLoaded) =>
     useState(preLoaded || { month: "", day: "", year: "" });
 
@@ -415,12 +351,8 @@ const AoEModalForm = ({
 
   const actionButtons = (
     <div style={{ float: "right" }}>
-      <Button variation="transparent" onClick={onClose}>
-        Cancel
-      </Button>
-      <Button variation="primary" onClick={saveAnswers}>
-        {saveButtonText}
-      </Button>
+      <Anchor text="Cancel" onClick={onClose} />
+      <Button label={saveButtonText} onClick={saveAnswers} />
     </div>
   );
   const patientName = displayFullName(
@@ -464,16 +396,13 @@ const AoEModalForm = ({
       />
 
       <h2>Pregnancy</h2>
-      {/* horizontal? */}
-      <ChoiceList
+      <RadioGroup
         label="Pregnancy"
         name="pregnancy"
         type="radio"
         onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
-        choices={getPregnancyResponses().map((opt) => ({
-          ...opt,
-          checked: opt.value === pregnancyResponse,
-        }))}
+        buttons={getPregnancyResponses()}
+        selectedRadio={pregnancyResponse}
       />
     </CMSDialog>
   );

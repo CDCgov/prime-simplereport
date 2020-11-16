@@ -18,9 +18,4 @@ graphql:
     corsEnabled: true
   tools:
     schema-location-pattern: "**/*.graphqls"
-okta:
-  oauth2:
-    issuer: https://prime-eval.okta.com/oauth2/default
-    client-id: ${clientID}
-    client-secret: ${clientSecret}
 

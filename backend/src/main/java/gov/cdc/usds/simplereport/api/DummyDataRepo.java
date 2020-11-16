@@ -24,7 +24,7 @@ public class DummyDataRepo {
 
 	// set up or devices
 	private Device device1 =  new Device("Quidel Sofia 2","Quidel","Sofia 2", true);
-	private ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
+	public ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		device1,
 		new Device("BD Veritor","BD","Veritor", true),
 		new Device("Abbott Binax Now","Abbott","Binax Now",false),
@@ -34,10 +34,10 @@ public class DummyDataRepo {
 	public DataFetcher<List<Device>> deviceFetcher() {
 		return (env) -> allDevices;
 	}
-		w
+
 	// set up default user and org
 	private Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices);
-	private User defaultUser = new User(defaultOrg);
+	public User defaultUser = new User(defaultOrg);
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
 	// add patients to org
@@ -49,7 +49,7 @@ public class DummyDataRepo {
 	private TestResult testResult2 = new TestResult(device1, "negative", patient1);
 	private TestResult testResult3 = new TestResult(device1, "inconclusive", patient3);
 
-	private ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
+	public ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		patient1,
 		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", defaultOrg),
 		patient3,
@@ -60,7 +60,7 @@ public class DummyDataRepo {
 		return (env) -> allPatients;
 	}
 
-	private ArrayList<TestResult> allTestResults = new ArrayList<>(Arrays.asList(
+	public ArrayList<TestResult> allTestResults = new ArrayList<>(Arrays.asList(
 		testResult1,
 		testResult2,
 		testResult3
@@ -78,7 +78,7 @@ public class DummyDataRepo {
 		return (env) -> defaultOrg;
 	}
 
-	private ArrayList<TestOrder> queue = new ArrayList<>();
+	public ArrayList<TestOrder> queue = new ArrayList<>();
 
 	public DataFetcher<List<TestOrder>> queueFetcher() {
 		return (env) -> queue;
@@ -129,9 +129,9 @@ public class DummyDataRepo {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		ArrayList<String> deviceIds
+		List<String> deviceIds
 	) {
-		ArrayList<Device> newDevices = new ArrayList<Device>();
+		List<Device> newDevices = new ArrayList<Device>();
 
 		deviceIds.forEach((id) -> {
 			Device device = allDevices.stream().filter(d -> id.equals(d.getId())).findAny().orElse(null);

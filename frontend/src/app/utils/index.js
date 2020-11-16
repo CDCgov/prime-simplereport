@@ -1,5 +1,5 @@
 export const displayFullName = (first, middle, last) => {
-  return `${first} ${middle} ${last}`.replace(/ +/g, " ");
+  return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
 };
 
 export const isLocalHost = () =>
