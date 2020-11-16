@@ -7,7 +7,7 @@ psql -v ON_ERROR_STOP=1  -U "$POSTGRES_USER" simple_report <<-SQL
     ALTER ROLE simple_report_app PASSWORD 'api123';
     ALTER ROLE simple_report_migrations PASSWORD 'migrations456';
     GRANT ALL PRIVILEGES ON SCHEMA simple_report TO simple_report_migrations;
-    GRANT USAGE ON SCHEMA simple_report TO simple_report_app;
+    GRANT ALL PRIVILEGES ON SCHEMA simple_report TO simple_report_app;
     ALTER DEFAULT PRIVILEGES FOR USER simple_report_migrations IN SCHEMA simple_report
         GRANT SELECT, INSERT, DELETE, UPDATE, TRUNCATE ON TABLES TO simple_report_app;
     ALTER DEFAULT PRIVILEGES FOR USER simple_report_migrations IN SCHEMA simple_report
