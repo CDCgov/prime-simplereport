@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Organization;
 import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.api.model.Queue;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
 import graphql.schema.DataFetcher;
@@ -69,6 +70,16 @@ public class DummyDataRepo {
 
 	public  DataFetcher<User> userFetcher() {
 		return (env) -> defaultUser;
+	}
+
+	public  DataFetcher<Organization> organizationFetcher() {
+		return (env) -> defaultOrg;
+	}
+
+	private ArrayList<Queue> queue = new ArrayList<>();
+
+	public DataFetcher<List<Queue>> queueFetcher() {
+		return (env) -> queue;
 	}
 
 	public String addPatient(
@@ -178,6 +189,19 @@ public class DummyDataRepo {
 		allTestResults.add(newTestResult);
 		return newTestResult.getId();
 	}
+
+	public String addPatientToQueue(
+		String patientId
+	) {
+		Patient patient = this.getPatient(patientId);
+		Queue newQueue = new Queue(
+			patient,
+			defaultOrg
+		);
+		queue.add(newQueue);
+		return newQueue.getId();
+	}
+
 
 	public void init_relations() {
 		patient1.setTestResults(new ArrayList<>(Arrays.asList(testResult1, testResult2)));
