@@ -25,8 +25,11 @@ public class Queue {
     this.dateAdded = LocalDate.now();
 	}
 
-
 	public String getId() {
 		return id;
+	}
+
+	public String getPatientId() {
+		return this.patient.getId();
 	}
 }
