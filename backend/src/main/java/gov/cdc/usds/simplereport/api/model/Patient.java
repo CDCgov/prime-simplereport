@@ -61,6 +61,7 @@ public class Patient {
 		this.zipCode = zipCode;
 		this.phone = phone;
 		this.organization = organization;
+		this.testResults = new ArrayList<TestResult>();
 	}
 
 	public Patient(
@@ -84,6 +85,10 @@ public class Patient {
 
 	public void setTestResults(ArrayList<TestResult> testResults) {
 		this.testResults = testResults;
+	}
+
+	public void addTestResult(TestResult testResult) {
+		this.testResults.add(testResult);
 	}
 
 	public String getId() {

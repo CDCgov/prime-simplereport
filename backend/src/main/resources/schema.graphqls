@@ -58,6 +58,7 @@ type TestResult {
   patient: Patient
 }
 type Query {
+  device: [Device]
   patient: [Patient]
   user: User
   testResult: [TestResult]
@@ -90,4 +91,5 @@ type Mutation {
     zipCode: String
     phone: String
   ): String
+  addTestResult(deviceId: String, result: String, patientId: String): String
 }

@@ -28,6 +28,9 @@ public class DummyDataRepo {
 		new Device("Abbott IDNow","Abbott","IDNow",false),
 		new Device("LumiraDX","LumiraDX","",false)
 	));
+	public DataFetcher<List<Device>> deviceFetcher() {
+		return (env) -> allDevices;
+	}
 
 	// set up default user and org
 	private Organization defaultOrg = new Organization("","","","", "", "", "", "", "", "", "", allDevices);
@@ -39,9 +42,9 @@ public class DummyDataRepo {
 	private Patient patient3 = new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1729, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)", defaultOrg);
 
 	// create test results
-	private TestResult testResult1 = new TestResult(LocalDate.of(2020, 11, 1), device1.getId(), "positive", patient1);
-	private TestResult testResult2 = new TestResult(LocalDate.of(2020, 11, 2), device1.getId(), "negative", patient1);
-	private TestResult testResult3 = new TestResult(LocalDate.of(2020, 11, 3), device1.getId(), "inconclusive", patient3);
+	private TestResult testResult1 = new TestResult(device1, "positive", patient1);
+	private TestResult testResult2 = new TestResult(device1, "negative", patient1);
+	private TestResult testResult3 = new TestResult(device1, "inconclusive", patient3);
 
 	private ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		patient1,
@@ -81,7 +84,7 @@ public class DummyDataRepo {
 		String zipCode,
 		String phone
 	) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");		 
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
 
 		Patient newPatient = new Patient(
@@ -140,6 +143,40 @@ public class DummyDataRepo {
 			newDevices
 		);
 		return defaultOrg.getId();
+	}
+
+	Patient getPatient(String patientId) {
+		for(Patient p : allPatients) {
+			if(p.getId().equals(patientId)) {
+				return p;
+			}
+		}
+		return null;
+	}
+
+	Device getDevice(String deviceId) {
+		for(Device d : allDevices) {
+			if(d.getId().equals(deviceId)) {
+				return d;
+			}
+		}
+		return null;
+	}
+
+	public String addTestResult(
+		String deviceId,
+		String result,
+		String patientId
+	) {
+		Patient patient = this.getPatient(patientId);
+		TestResult newTestResult = new TestResult(
+			this.getDevice(deviceId),
+			result,
+			patient
+		);
+		patient.addTestResult(newTestResult);
+		allTestResults.add(newTestResult);
+		return newTestResult.getId();
 	}
 
 	public void init_relations() {
