@@ -80,9 +80,18 @@ public class GraphqlConfiguration {
 				context.getArgument("devices")
 			);
 		};
+
+		DataFetcher<String> addTestResult = context -> {
+			return repo.addTestResult(
+				context.getArgument("deviceId"),
+				context.getArgument("result"),
+				context.getArgument("patientId")
+			);
+		};
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 				newTypeWiring("Query")
+					.dataFetcher("device", repo.deviceFetcher())
 					.dataFetcher("patient", repo.patientFetcher())
 					.dataFetcher("user", repo.userFetcher())
 					.dataFetcher("testResult", repo.testResultFetcher())
@@ -92,6 +101,7 @@ public class GraphqlConfiguration {
 				newTypeWiring("Mutation")
 					.dataFetcher("updateOrganization", updateOrganization)
 					.dataFetcher("addPatient", addPatient)
+					.dataFetcher("addTestResult", addTestResult)
 			)
 			.build();
 	}

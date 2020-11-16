@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Patient;
 
 public class TestResult {
@@ -10,15 +11,15 @@ public class TestResult {
   private String id;
   private Patient patient;
   private LocalDate dateTested;
-  private String deviceId;
+  private Device device;
   private String result;
 
-  public TestResult(LocalDate dateTested, String deviceId, String result, Patient patient) {
+  public TestResult(Device device, String result, Patient patient) {
     super();
 		this.id = UUID.randomUUID().toString();
     this.patient = patient;
-    this.dateTested = dateTested;
-    this.deviceId = deviceId;
+    this.dateTested = LocalDate.now();
+    this.device = device;
     this.result = result;
   }
 
@@ -28,10 +29,6 @@ public class TestResult {
 
   public LocalDate getDateTested() {
     return dateTested;
-  }
-
-  public String getDeviceId() {
-    return deviceId;
   }
 
   public String getResult() {
