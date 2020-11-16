@@ -242,6 +242,18 @@ public class DummyDataRepo {
 		return "";
 	}
 
+	public String updateDeviceForPatientInQueue(String patientID, String deviceId) {
+		TestOrder testOrder = queue.get(this.getQueueIndexByPatientId(patientID));
+		testOrder.setDevice(this.getDevice(deviceId));
+		return "";
+	}
+
+	public String updateResultForPatientInQueue(String patientID, String result) {
+		TestOrder testOrder = queue.get(this.getQueueIndexByPatientId(patientID));
+		testOrder.setTestResult(result);
+		return "";
+	}
+
 	public void init_relations() {
 		patient1.setTestResults(new ArrayList<>(Arrays.asList(testResult1, testResult2)));
 		patient3.setTestResults(new ArrayList<>(Arrays.asList(testResult3)));

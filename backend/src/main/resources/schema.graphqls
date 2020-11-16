@@ -116,4 +116,6 @@ type Mutation {
     priorTestDate: String
     priorTestType: String
   ): String
+  updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
+  updateResultForPatientInQueue(patientId: String, result: String): String
 }

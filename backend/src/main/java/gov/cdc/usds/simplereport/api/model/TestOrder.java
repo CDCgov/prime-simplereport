@@ -19,6 +19,8 @@ public class TestOrder {
 	private Boolean firstTest;
 	private LocalDate priorTestDate;
 	private String priorTestType;
+	private String result;
+	private Device device;
 	private TestResult testResult;
 
 	public TestOrder(
@@ -32,8 +34,12 @@ public class TestOrder {
     this.dateAdded = LocalDate.now();
 	}
 
-	public void setTestResult(TestResult testResult) {
-		this.testResult = testResult;
+	public void setDevice(Device device) {
+		this.device = device;
+	}
+
+	public void setTestResult(String result) {
+		this.result = result;
 	}
 
 	public void setSurveyResponses(

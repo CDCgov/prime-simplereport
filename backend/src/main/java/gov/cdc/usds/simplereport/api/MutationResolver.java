@@ -64,4 +64,12 @@ public class MutationResolver implements GraphQLMutationResolver {
     public void updateTimeOfTestQuestions(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType) {
         repo.updateTimeOfTestQuestions(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType);
     }
+
+    public void updateDeviceForPatientInQueue(String patientID, String deviceId) {
+        repo.updateDeviceForPatientInQueue(patientID, deviceId);
+    }
+
+    public void updateResultForPatientInQueue(String patientID, String result) {
+        repo.updateResultForPatientInQueue(patientID, result);
+    }
 }
