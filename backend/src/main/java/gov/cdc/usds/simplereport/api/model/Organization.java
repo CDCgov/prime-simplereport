@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import gov.cdc.usds.simplereport.api.model.Device;
 
+import java.util.List;
 import java.util.UUID;
 
 public class Organization {
@@ -20,7 +21,7 @@ public class Organization {
 	private String orderingProviderState;
 	private String orderingProviderZipCode;
 	private String orderingProviderPhone;
-	private ArrayList<Device> devices;
+	private List<Device> devices;
 
 	public Organization(
 		String testingFacilityName,
@@ -34,7 +35,7 @@ public class Organization {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		ArrayList<Device> devices
+		List<Device> devices
 	) {
 		this(
 			testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI,
@@ -83,7 +84,7 @@ public class Organization {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		ArrayList<Device> devices
+		List<Device> devices
 	) {
 		this.testingFacilityName = testingFacilityName;
 		this.cliaNumber = cliaNumber;
