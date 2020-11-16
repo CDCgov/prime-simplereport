@@ -101,6 +101,17 @@ public class GraphqlConfiguration {
 			);
 		};
 
+		DataFetcher<String> updateTimeOfTestQuestions = context -> {
+			return repo.updateTimeOfTestQuestions(
+				context.getArgument("patientId"),
+				context.getArgument("pregnancy"),
+				context.getArgument("symptoms"),
+				context.getArgument("firstTest"),
+				context.getArgument("priorTestDate"),
+				context.getArgument("priorTestType")
+			);
+		};
+
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 				newTypeWiring("Query")
@@ -119,6 +130,7 @@ public class GraphqlConfiguration {
 					.dataFetcher("addTestResult", addTestResult)
 					.dataFetcher("addPatientToQueue", addPatientToQueue)
 					.dataFetcher("removePatientFromQueue", removePatientFromQueue)
+					.dataFetcher("updateTimeOfTestQuestions", updateTimeOfTestQuestions)
 			)
 			.build();
 	}

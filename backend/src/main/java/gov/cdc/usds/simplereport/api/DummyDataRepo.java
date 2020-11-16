@@ -12,13 +12,15 @@ import org.springframework.stereotype.Repository;
 import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Organization;
 import gov.cdc.usds.simplereport.api.model.Patient;
-import gov.cdc.usds.simplereport.api.model.Queue;
+import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
 import graphql.schema.DataFetcher;
 
 @Repository
 public class DummyDataRepo {
+
+	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	// set up or devices
 	private Device device1 =  new Device("Quidel Sofia 2","Quidel","Sofia 2", true);
@@ -76,9 +78,9 @@ public class DummyDataRepo {
 		return (env) -> defaultOrg;
 	}
 
-	private ArrayList<Queue> queue = new ArrayList<>();
+	private ArrayList<TestOrder> queue = new ArrayList<>();
 
-	public DataFetcher<List<Queue>> queueFetcher() {
+	public DataFetcher<List<TestOrder>> queueFetcher() {
 		return (env) -> queue;
 	}
 
@@ -95,7 +97,6 @@ public class DummyDataRepo {
 		String zipCode,
 		String phone
 	) {
-		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
 
 		Patient newPatient = new Patient(
@@ -194,19 +195,19 @@ public class DummyDataRepo {
 		String patientId
 	) {
 		Patient patient = this.getPatient(patientId);
-		Queue newQueue = new Queue(
+		TestOrder newTestOrder = new TestOrder(
 			patient,
 			defaultOrg
 		);
-		queue.add(newQueue);
-		return newQueue.getId();
+		queue.add(newTestOrder);
+		return newTestOrder.getId();
 	}
 
 	public int getQueueIndexByPatientId(String patientId) {
 		int index = 0;
 		while(index < queue.size()) {
-				Queue q = queue.get(index);
-				if(q.getPatientId().equals(patientId)) {
+			  TestOrder order = queue.get(index);
+				if(order.getPatientId().equals(patientId)) {
 					return index;
 				}
 				index++;
@@ -217,6 +218,27 @@ public class DummyDataRepo {
 	public String removePatientFromQueue(String patientId) {
 		int index = this.getQueueIndexByPatientId(patientId);
 		queue.remove(index);
+		return "";
+	}
+
+	public String updateTimeOfTestQuestions(
+		String patientId,
+		String pregnancy,
+		String symptoms,
+		Boolean firstTest,
+		String priorTestDate,
+		String priorTestType
+	) {
+		TestOrder testOrder = queue.get(this.getQueueIndexByPatientId(patientId));
+		LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
+
+		testOrder.setSurveyResponses(
+			pregnancy,
+			symptoms,
+			firstTest,
+			localPriorTestDate,
+			priorTestType
+		);
 		return "";
 	}
 

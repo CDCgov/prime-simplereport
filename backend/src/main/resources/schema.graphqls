@@ -61,6 +61,13 @@ type Queue {
   id: ID
   patient: Patient
   organization: Organization
+  dateAdded: String
+  pregnancy: String
+  symptoms: String
+  firstTest: Boolean
+  priorTestDate: String
+  priorTestType: String
+  testResult: TestResult
 }
 type Query {
   device: [Device]
@@ -101,4 +108,12 @@ type Mutation {
   addTestResult(deviceId: String, result: String, patientId: String): String
   addPatientToQueue(patientId: String): String
   removePatientFromQueue(patientId: String): String
+  updateTimeOfTestQuestions(
+    patientId: String
+    pregnancy: String
+    symptoms: String
+    firstTest: Boolean
+    priorTestDate: String
+    priorTestType: String
+  ): String
 }
