@@ -100,4 +100,5 @@ type Mutation {
   ): String
   addTestResult(deviceId: String, result: String, patientId: String): String
   addPatientToQueue(patientId: String): String
+  removePatientFromQueue(patientId: String): String
 }

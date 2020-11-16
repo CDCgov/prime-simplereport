@@ -95,6 +95,12 @@ public class GraphqlConfiguration {
 			);
 		};
 
+		DataFetcher<String> removePatientFromQueue = context -> {
+			return repo.removePatientFromQueue(
+				context.getArgument("patientId")
+			);
+		};
+
 		return RuntimeWiring.newRuntimeWiring()
 			.type(
 				newTypeWiring("Query")
@@ -112,6 +118,7 @@ public class GraphqlConfiguration {
 					.dataFetcher("addPatient", addPatient)
 					.dataFetcher("addTestResult", addTestResult)
 					.dataFetcher("addPatientToQueue", addPatientToQueue)
+					.dataFetcher("removePatientFromQueue", removePatientFromQueue)
 			)
 			.build();
 	}

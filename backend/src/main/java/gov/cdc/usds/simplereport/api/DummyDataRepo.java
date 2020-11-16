@@ -202,6 +202,23 @@ public class DummyDataRepo {
 		return newQueue.getId();
 	}
 
+	public int getQueueIndexByPatientId(String patientId) {
+		int index = 0;
+		while(index < queue.size()) {
+				Queue q = queue.get(index);
+				if(q.getPatientId().equals(patientId)) {
+					return index;
+				}
+				index++;
+		} 
+		return -1;
+	}
+
+	public String removePatientFromQueue(String patientId) {
+		int index = this.getQueueIndexByPatientId(patientId);
+		queue.remove(index);
+		return "";
+	}
 
 	public void init_relations() {
 		patient1.setTestResults(new ArrayList<>(Arrays.asList(testResult1, testResult2)));
