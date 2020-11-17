@@ -9,7 +9,8 @@ import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete, dateToString } from "./AoEForm/AoEModalForm";
+import AoeModalForm from "./AoEForm/AoEModalForm";
+import { dateToString } from "./AoEForm/dateUtils";
 import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
@@ -22,7 +23,7 @@ import {
 } from "./state/testQueueActions";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
-
+import AskOnEntryTag, { areAnswersComplete }  from "./AskOnEntryTag";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
 mutation($patientId: String!) {
@@ -51,13 +52,6 @@ mutation($patientId: String, $symptoms: String, $symptomOnset: String, $pregnanc
   )
 }
 `;
-const AskOnEntryTag = ({ aoeAnswers }) => {
-  if (areAnswersComplete(aoeAnswers)) {
-    return <span className="usa-tag bg-green">COMPLETED</span>;
-  } else {
-    return <span className="usa-tag">PENDING</span>;
-  }
-};
 
 const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
   <CMSDialog
@@ -173,8 +167,8 @@ const QueueItem = ({
         variables: 
           {
             patientId: patient.id,
-            symptoms: answers.noSymptomFlag ? JSON.stringify(answers.symptoms) : null,
-            symptomOnset: dateToString(answers.symptomOnset),
+            symptoms: answers.symptoms,
+            symptomOnset: answers.symptomOnset,
             pregnancy: answers.pregnancy,
             firstTest: answers.priorTest.exists,
             priorTestDate: dateToString(answers.priorTest.date),

@@ -201,7 +201,8 @@ public class DummyDataRepo {
 		String priorTestDate,
 		String priorTestType,
 		String priorTestResult,
-		String symptomOnset
+		String symptomOnset,
+		Boolean noSymptoms
 	) {
 		Patient patient = this.getPatient(patientId);
 		TestOrder newTestOrder = new TestOrder(
@@ -219,7 +220,8 @@ public class DummyDataRepo {
 			localPriorTestDate,
 			priorTestType,
 			priorTestResult,
-			localSymptomOnset
+			localSymptomOnset,
+			noSymptoms
 		);
 		newTestOrder.setDevice(defaultOrg.getDefaultDevice());
 		return newTestOrder.getId();
@@ -251,7 +253,8 @@ public class DummyDataRepo {
 		String priorTestDate,
 		String priorTestType,
 		String priorTestResult,
-		String symptomOnset
+		String symptomOnset,
+		Boolean noSymptoms
 	) {
 		TestOrder testOrder = queue.get(this.getQueueIndexByPatientId(patientId));
 		LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, this.dateTimeFormatter);
@@ -264,7 +267,8 @@ public class DummyDataRepo {
 			localPriorTestDate,
 			priorTestType,
 			priorTestResult,
-			localSymptomOnset
+			localSymptomOnset,
+			noSymptoms
 		);
 		return "";
 	}
