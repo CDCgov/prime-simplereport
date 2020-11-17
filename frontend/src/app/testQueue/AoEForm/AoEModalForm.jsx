@@ -15,8 +15,20 @@ import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
 
+export const dateToString = (date) => {
+  const day = date.day.length === 2 ? date.day : date.day.length === 1 ? `0${date.day}` : "";
+  const month = date.month.length === 2 ? date.month : date.month.length === 1 ? `0${date.month}` : "";
+  const year = date.year.length === 4 ? date.year : "";
+  if (month.length === 2 && day.length === 2 && year.length === 4) {
+    return `${day}/${month}/${year}`;
+  }
+  console.error("Invalid date", date)
+  return null;
+
+} 
+
 export const areAnswersComplete = (answerDict) => {
-  if (answerDict.symptoms !== null) {
+  if (answerDict.symptoms) {
     let symptomFound = false;
     Object.values(answerDict.symptoms).forEach((val) => {
       if (val) {
@@ -26,8 +38,8 @@ export const areAnswersComplete = (answerDict) => {
     if (!symptomFound) {
       return false;
     }
-    if (!answerDict.symptomOnset) {
-      const onsetDate = answerDict.symptomOnsset;
+    if (answerDict.symptomOnset) {
+      const onsetDate = answerDict.symptomOnset;
       if (
         onsetDate.year === "" ||
         onsetDate.month === "" ||
