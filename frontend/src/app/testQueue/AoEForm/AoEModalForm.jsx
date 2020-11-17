@@ -14,62 +14,7 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
-
-export const dateToString = (date) => {
-  const day = date.day.length === 2 ? date.day : date.day.length === 1 ? `0${date.day}` : "";
-  const month = date.month.length === 2 ? date.month : date.month.length === 1 ? `0${date.month}` : "";
-  const year = date.year.length === 4 ? date.year : "";
-  if (month.length === 2 && day.length === 2 && year.length === 4) {
-    return `${day}/${month}/${year}`;
-  }
-  console.error("Invalid date", date)
-  return null;
-
-} 
-
-export const areAnswersComplete = (answerDict) => {
-  if (answerDict.symptoms) {
-    let symptomFound = false;
-    Object.values(answerDict.symptoms).forEach((val) => {
-      if (val) {
-        symptomFound = true;
-      }
-    });
-    if (!symptomFound) {
-      return false;
-    }
-    if (answerDict.symptomOnset) {
-      const onsetDate = answerDict.symptomOnset;
-      if (
-        onsetDate.year === "" ||
-        onsetDate.month === "" ||
-        onsetDate.day === ""
-      ) {
-        return false;
-      }
-    }
-  }
-  const priorTest = answerDict.priorTest;
-  if (!priorTest) {
-    return false;
-  } else if (!priorTest.exists) {
-    // this field name is incorrect!
-    if (
-      priorTest.date.year === "" ||
-      priorTest.date.month === "" ||
-      priorTest.date.day === ""
-    ) {
-      return false;
-    }
-    if (!priorTest.type || !priorTest.result) {
-      return false;
-    }
-  }
-  if (!answerDict.pregnancy) {
-    return false;
-  }
-  return true;
-};
+import {dateToString} from "../dteUtils";
 
 const ManagedDateField = ({
   name,
@@ -310,10 +255,10 @@ const AoEModalForm = ({
       initialSymptoms[val] = loadState.symptoms[val];
     });
   } else {
-    symptomConfig.forEach((opt) => {
-      const val = opt.value;
-      initialSymptoms[val] = false;
-    });
+    // symptomConfig.forEach((opt) => {
+    //   const val = opt.value;
+    //   initialSymptoms[val] = false;
+    // });
   }
 
   const useDateState = (preLoaded) =>
@@ -345,16 +290,23 @@ const AoEModalForm = ({
         saveSymptoms[value] = false;
       });
     }
+    const priorTest = isFirstTest ? {
+      firstTest: true,
+      priorTestDate: null,
+      priorTestType: null,
+      priorTestResult: null,
+    } : {
+      firstTest: false,
+      priorTestDate: dateToString(priorTestDate),
+      priorTestType: priorTestType,
+      priorTestResult: priorTestResult,
+    };
+
+
     const newState = {
-      symptoms: saveSymptoms,
-      noSymptomFlag: noSymptoms,
-      symptomOnset: onsetDate,
-      priorTest: {
-        exists: isFirstTest,
-        date: priorTestDate,
-        type: priorTestType,
-        result: priorTestResult,
-      },
+      symptoms: JSON.stringify(saveSymptoms),
+      symptomOnset: dateToString(onsetDate),
+      ...priorTest,
       pregnancy: pregnancyResponse,
     };
     saveCallback(newState);
