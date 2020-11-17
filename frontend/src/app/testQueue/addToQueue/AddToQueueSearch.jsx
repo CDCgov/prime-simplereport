@@ -72,7 +72,7 @@ const AddToQueueSearchBox = () => {
       variables: 
         {
           patientId: patient.patientId,
-          symptoms: noSymptomFlag ? JSON.stringify(aoeAnswers.symptoms) : null,
+          symptoms: aoeAnswers.noSymptomFlag ? JSON.stringify(aoeAnswers.symptoms) : null,
           pregnancy: aoeAnswers.pregnancy,
           firstTest: aoeAnswers.priorTest.exists,
           priorTestDate: aoeAnswers.priorTest.date,
