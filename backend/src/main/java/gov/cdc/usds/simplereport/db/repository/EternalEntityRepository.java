@@ -17,7 +17,7 @@ import gov.cdc.usds.simplereport.db.model.EternalEntity;
 @NoRepositoryBean
 public interface EternalEntityRepository<T extends EternalEntity> extends AuditedEntityRepository<T> {
 
-	public static final String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false";
+	public static final String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false ";
 
 	@Override
 	@Query(BASE_QUERY)
