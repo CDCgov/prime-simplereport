@@ -4,7 +4,6 @@ type Device {
   displayName: String
   deviceManufacturer: String
   deviceModel: String
-  isDefault: Boolean
 }
 type Patient {
   id: ID
@@ -92,6 +91,7 @@ type Mutation {
     orderingProviderZipCode: String
     orderingProviderPhone: String
     devices: [String]
+    defaultDevice: String
   ): String
   addPatient(
     patientId: String

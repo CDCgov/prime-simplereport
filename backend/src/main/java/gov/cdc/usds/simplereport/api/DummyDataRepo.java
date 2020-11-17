@@ -24,20 +24,20 @@ public class DummyDataRepo {
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	// set up or devices
-	private Device device1 = new Device("Quidel Sofia 2","Quidel","Sofia 2", true);
+	private Device device1 = new Device("Quidel Sofia 2","Quidel","Sofia 2");
 	public ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		device1,
-		new Device("BD Veritor","BD","Veritor", true),
-		new Device("Abbott Binax Now","Abbott","Binax Now",false),
-		new Device("Abbott IDNow","Abbott","IDNow",false),
-		new Device("LumiraDX","LumiraDX","",false)
+		new Device("BD Veritor","BD","Veritor"),
+		new Device("Abbott Binax Now","Abbott","Binax Now"),
+		new Device("Abbott IDNow","Abbott","IDNow"),
+		new Device("LumiraDX","LumiraDX","")
 	));
 	public DataFetcher<List<Device>> deviceFetcher() {
 		return (env) -> allDevices;
 	}
 
 	// set up default user and org
-	public Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices);
+	public Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices, device1);
 	public User defaultUser = new User(defaultOrg);
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
@@ -130,10 +130,10 @@ public class DummyDataRepo {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		List<String> deviceIds
+		List<String> deviceIds,
+		String defaultDeviceId
 	) {
 		List<Device> newDevices = new ArrayList<Device>();
-
 		deviceIds.forEach((id) -> {
 			Device device = allDevices.stream().filter(d -> id.equals(d.getId())).findAny().orElse(null);
 			if (device != null) {
@@ -153,7 +153,8 @@ public class DummyDataRepo {
 			orderingProviderState,
 			orderingProviderZipCode,
 			orderingProviderPhone,
-			newDevices
+			newDevices,
+			this.getDevice(defaultDeviceId)
 		);
 		return defaultOrg.getId();
 	}

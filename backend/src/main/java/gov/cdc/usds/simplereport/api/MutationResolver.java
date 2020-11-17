@@ -22,11 +22,7 @@ public class MutationResolver implements GraphQLMutationResolver {
         this.repo = repo;
     }
 
-    @PreAuthorize("hasAuthority('PDI admins')")
-    public void addDevice(String deviceID, String displayName, String deviceManufacturer, String deviceModel, boolean isDefault) {
-        final Device d = new Device(displayName, deviceManufacturer, deviceModel, isDefault);
-//        DummyDataRepo.allDevices.add(d);
-    }
+    // @PreAuthorize("hasAuthority('PDI admins')")
 
     public void addPatient(String patientID, String firstName, String middleName, String lastName, LocalDate birthDate, String street, String street2, String city, String state, String zipCode, String phone) {
         repo.addPatient(patientID, firstName, middleName, lastName, birthDate.toString(), street, street2, city, state, zipCode, phone);
@@ -43,9 +39,10 @@ public class MutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderState,
                                    String orderingProviderZipCode,
                                    String orderingProviderPhone,
-                                   List<String> devices) {
+                                   List<String> devices,
+                                   String defaultDevice) {
         repo.updateOrganization(testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI, orderingProviderStreet, orderingProviderStreetTwo
-                , orderingProviderCity, orderingProviderCounty, orderingProviderState, orderingProviderZipCode, orderingProviderPhone, devices);
+                , orderingProviderCity, orderingProviderCounty, orderingProviderState, orderingProviderZipCode, orderingProviderPhone, devices, defaultDevice);
     }
 
     public void addTestResult(String deviceID, String result, String patientID) {

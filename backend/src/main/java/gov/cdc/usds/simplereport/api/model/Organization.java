@@ -22,6 +22,7 @@ public class Organization {
 	private String orderingProviderZipCode;
 	private String orderingProviderPhone;
 	private List<Device> devices;
+	private Device defaultDevice;
 
 	public Organization(
 		String testingFacilityName,
@@ -35,13 +36,15 @@ public class Organization {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		List<Device> devices
+		List<Device> devices,
+		Device defaultDevice
 	) {
 		this(
 			testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI,
 			orderingProviderStreet, orderingProviderStreetTwo, orderingProviderCity, orderingProviderCounty,
 			orderingProviderState, orderingProviderZipCode, orderingProviderPhone);
 		this.devices = devices;
+		this.defaultDevice = defaultDevice;
 	}
 
 	public Organization(
@@ -84,7 +87,8 @@ public class Organization {
 		String orderingProviderState,
 		String orderingProviderZipCode,
 		String orderingProviderPhone,
-		List<Device> devices
+		List<Device> devices,
+		Device defaultDevice
 	) {
 		this.testingFacilityName = testingFacilityName;
 		this.cliaNumber = cliaNumber;
@@ -98,6 +102,7 @@ public class Organization {
 		this.orderingProviderZipCode = orderingProviderZipCode;
 		this.orderingProviderPhone = orderingProviderPhone;
 		this.devices = devices;
+		this.defaultDevice = defaultDevice;
 	}
 
 	public String getId() {
