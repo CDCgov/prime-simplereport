@@ -16,8 +16,9 @@ import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
 import graphql.schema.DataFetcher;
+import org.springframework.stereotype.Service;
 
-@Repository
+@Service
 public class DummyDataRepo {
 
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
