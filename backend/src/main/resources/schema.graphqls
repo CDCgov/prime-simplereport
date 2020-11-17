@@ -44,7 +44,7 @@ type Organization {
   orderingProviderZipCode: String
   orderingProviderPhone: String
   devices: [Device]
-  defaultDevice: String
+  defaultDevice: Device
 }
 type User {
   id: ID
@@ -69,6 +69,7 @@ type Queue {
   priorTestType: String
   priorTestResult: String
   testResult: TestResult
+  device: Device
 }
 type Query {
   device: [Device]

@@ -16,7 +16,7 @@ import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
 
 export const areAnswersComplete = (answerDict) => {
-  if (!answerDict.noSymptomFlag) {
+  if (answerDict.symptoms !== null) {
     let symptomFound = false;
     Object.values(answerDict.symptoms).forEach((val) => {
       if (val) {

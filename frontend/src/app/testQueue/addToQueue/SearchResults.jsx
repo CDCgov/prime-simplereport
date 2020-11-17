@@ -46,7 +46,7 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
             suggestion.lastName
           )}</td>
         <td>{suggestion.birthDate}</td>
-        <td>{suggestion.patientId}</td>
+        <td>{suggestion.lookupId}</td>
         <td>
           <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} />
         </td>
