@@ -67,6 +67,7 @@ type Queue {
   firstTest: Boolean
   priorTestDate: String
   priorTestType: String
+  priorTestResult: String
   testResult: TestResult
 }
 type Query {
@@ -113,6 +114,7 @@ type Mutation {
     firstTest: Boolean
     priorTestDate: String
     priorTestType: String
+    priorTestResult: String
   ): String
   removePatientFromQueue(patientId: String): String
   updateTimeOfTestQuestions(
@@ -122,6 +124,7 @@ type Mutation {
     firstTest: Boolean
     priorTestDate: String
     priorTestType: String
+    priorTestResult: String
   ): String
   updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
   updateResultForPatientInQueue(patientId: String, result: String): String
