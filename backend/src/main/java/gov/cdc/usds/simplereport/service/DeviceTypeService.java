@@ -1,0 +1,37 @@
+package gov.cdc.usds.simplereport.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+
+/**
+ * Service for fetching the device-type reference list (<i>not</i> the device types available for a
+ * specific facility or organization).
+ */
+@Service
+@Transactional(readOnly = true)
+public class DeviceTypeService {
+
+	private DeviceTypeRepository _repo;
+	public DeviceTypeService(DeviceTypeRepository repo) {
+		_repo = repo;
+	}
+
+	@Transactional(readOnly = false)
+	public void removeDeviceType(DeviceType d) {
+		_repo.delete(d);
+	}
+
+	public List<DeviceType> fetchDeviceTypes() {
+		return _repo.findAll();
+	}
+
+	@Transactional(readOnly = false)
+	public DeviceType createDeviceType(String name, String model, String manufacturer) {
+		return _repo.save(new DeviceType(name, manufacturer, model));
+	}
+}
