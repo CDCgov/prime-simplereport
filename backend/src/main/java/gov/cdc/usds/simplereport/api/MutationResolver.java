@@ -52,8 +52,8 @@ public class MutationResolver implements GraphQLMutationResolver {
         repo.addTestResult(deviceID, result, patientID);
     }
 
-    public void addPatientToQueue(String patientID) {
-        repo.addPatientToQueue(patientID);
+    public void addPatientToQueue(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType) {
+        repo.addPatientToQueue(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType);
     }
 
     public void removePatientFromQueue(String patientID) {

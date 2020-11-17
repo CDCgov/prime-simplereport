@@ -193,7 +193,12 @@ public class DummyDataRepo {
 	}
 
 	public String addPatientToQueue(
-		String patientId
+		String patientId,
+		String pregnancy,
+		String symptoms,
+		Boolean firstTest,
+		String priorTestDate,
+		String priorTestType
 	) {
 		Patient patient = this.getPatient(patientId);
 		TestOrder newTestOrder = new TestOrder(
@@ -201,6 +206,15 @@ public class DummyDataRepo {
 			defaultOrg
 		);
 		queue.add(newTestOrder);
+		LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
+
+		newTestOrder.setSurveyResponses(
+			pregnancy,
+			symptoms,
+			firstTest,
+			localPriorTestDate,
+			priorTestType
+		);
 		return newTestOrder.getId();
 	}
 
