@@ -23,7 +23,7 @@ public class DummyDataRepo {
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	// set up or devices
-	private Device device1 =  new Device("Quidel Sofia 2","Quidel","Sofia 2", true);
+	private Device device1 = new Device("Quidel Sofia 2","Quidel","Sofia 2", true);
 	public ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 		device1,
 		new Device("BD Veritor","BD","Veritor", true),
