@@ -1,14 +1,14 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import gov.cdc.usds.simplereport.db.model.Organization;
+
 import java.time.LocalDate;
 import java.util.UUID;
-
-import gov.cdc.usds.simplereport.api.model.Organization;
 
 public class User {
 
 	private String id;
-	private Organization organization;
+	private gov.cdc.usds.simplereport.db.model.Organization organization;
 
 	public User(Organization organization) {
 		super();

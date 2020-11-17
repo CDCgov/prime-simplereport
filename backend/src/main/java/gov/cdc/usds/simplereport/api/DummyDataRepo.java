@@ -4,14 +4,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
-
 import gov.cdc.usds.simplereport.api.model.Device;
-import gov.cdc.usds.simplereport.api.model.Organization;
-import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
@@ -42,22 +39,22 @@ public class DummyDataRepo {
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
 	// add patients to org
-	private Patient patient1 = new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1), "123 Plank St", "", "Nassau", "NY", "12065", "(123) 456-7890", defaultOrg);
-	private Patient patient3 = new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1729, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)", defaultOrg);
+	private Person patient1 = new Person("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1), "123 Plank St", "", "Nassau", "NY", "12065", "(123) 456-7890", defaultOrg);
+	private Person patient3 = new Person("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1729, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)", defaultOrg);
 
 	// create test results
 	private TestResult testResult1 = new TestResult(device1, "positive", patient1);
 	private TestResult testResult2 = new TestResult(device1, "negative", patient1);
 	private TestResult testResult3 = new TestResult(device1, "inconclusive", patient3);
 
-	public ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
+	public ArrayList<Person> allPatients = new ArrayList<>(Arrays.asList(
 		patient1,
-		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", defaultOrg),
+		new Person("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", defaultOrg),
 		patient3,
-		new Patient("patientId4","Sally","Mae","Map", LocalDate.of(1922, 1, 1),"123 bird St", "", "mountain top", "VA", "12075","(243) 635-7190", defaultOrg),
-		new Patient("patientId5","Apollo","Graph","QL", LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555", defaultOrg)
+		new Person("patientId4","Sally","Mae","Map", LocalDate.of(1922, 1, 1),"123 bird St", "", "mountain top", "VA", "12075","(243) 635-7190", defaultOrg),
+		new Person("patientId5","Apollo","Graph","QL", LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555", defaultOrg)
 	));
-	public DataFetcher<List<Patient>> patientFetcher() {
+	public DataFetcher<List<Person>> patientFetcher() {
 		return (env) -> allPatients;
 	}
 
@@ -100,7 +97,7 @@ public class DummyDataRepo {
 	) {
 		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
 
-		Patient newPatient = new Patient(
+		Person newPatient = new Person(
 			lookupId,
 			firstName,
 			middleName,
@@ -141,26 +138,27 @@ public class DummyDataRepo {
 			}
 		});
 
-		defaultOrg.updateOrg(
-			testingFacilityName,
-			cliaNumber,
-			orderingProviderName,
-			orderingProviderNPI,
-			orderingProviderStreet,
-			orderingProviderStreetTwo,
-			orderingProviderCity,
-			orderingProviderCounty,
-			orderingProviderState,
-			orderingProviderZipCode,
-			orderingProviderPhone,
-			newDevices,
-			this.getDevice(defaultDeviceId)
-		);
-		return defaultOrg.getId();
+//		defaultOrg.updateOrg(
+//			testingFacilityName,
+//			cliaNumber,
+//			orderingProviderName,
+//			orderingProviderNPI,
+//			orderingProviderStreet,
+//			orderingProviderStreetTwo,
+//			orderingProviderCity,
+//			orderingProviderCounty,
+//			orderingProviderState,
+//			orderingProviderZipCode,
+//			orderingProviderPhone,
+//			newDevices,
+//			this.getDevice(defaultDeviceId)
+//		);
+//		return defaultOrg.getId();
+		return defaultOrg.getExternalId();
 	}
 
-	Patient getPatient(String patientId) {
-		for(Patient p : allPatients) {
+	Person getPatient(String patientId) {
+		for(Person p : allPatients) {
 			if(p.getId().equals(patientId)) {
 				return p;
 			}
@@ -182,7 +180,7 @@ public class DummyDataRepo {
 		String result,
 		String patientId
 	) {
-		Patient patient = this.getPatient(patientId);
+		Person patient = this.getPatient(patientId);
 		TestResult newTestResult = new TestResult(
 			this.getDevice(deviceId),
 			result,
@@ -202,7 +200,7 @@ public class DummyDataRepo {
 		String priorTestType,
 		String priorTestResult
 	) {
-		Patient patient = this.getPatient(patientId);
+		Person patient = this.getPatient(patientId);
 		TestOrder newTestOrder = new TestOrder(
 			patient,
 			defaultOrg

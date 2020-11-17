@@ -1,18 +1,16 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import gov.cdc.usds.simplereport.api.model.Organization;
-import gov.cdc.usds.simplereport.api.model.Patient;
-import gov.cdc.usds.simplereport.api.model.TestResult;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
 
 public class TestOrder {
 
 	private String id;
-	private Patient patient;
-  private Organization organization;
+	private Person patient;
+  private gov.cdc.usds.simplereport.db.model.Organization organization;
 	private LocalDate dateAdded;
 	private String pregnancy;
 	private String symptoms; // JSON object
@@ -25,7 +23,7 @@ public class TestOrder {
 	private TestResult testResult;
 
 	public TestOrder(
-    Patient patient,
+    Person patient,
     Organization organization
 	) {
 		super();
