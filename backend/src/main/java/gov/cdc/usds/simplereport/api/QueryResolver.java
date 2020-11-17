@@ -1,10 +1,11 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.api.model.*;
+import gov.cdc.usds.simplereport.api.model.Device;
+import gov.cdc.usds.simplereport.api.model.TestOrder;
+import gov.cdc.usds.simplereport.api.model.TestResult;
+import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.PatientService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -16,9 +17,6 @@ import java.util.List;
 public class QueryResolver implements GraphQLQueryResolver {
 
     private final DummyDataRepo repo;
-
-    @Autowired
-    private PatientService ps;
 
     public QueryResolver(DummyDataRepo repo) {
         this.repo = repo;

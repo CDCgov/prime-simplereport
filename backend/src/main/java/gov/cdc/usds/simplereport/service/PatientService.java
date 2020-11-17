@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,5 +24,10 @@ public class PatientService {
 
     public List<Person> getPatients() {
         return _repo.findAllByOrganization(_os.getCurrentOrganization());
+    }
+
+    public void addPatient(String lookupId, String firstName, String middleName, String lastName, LocalDate birthDate, String street, String street2, String city, String state, String zipCode, String phone) {
+        final Person person = new Person(lookupId, firstName, middleName, lastName, birthDate, street, street2, city, state, zipCode, phone, _os.getCurrentOrganization());
+        _repo.save(person);
     }
 }

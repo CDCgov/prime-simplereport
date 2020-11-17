@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -76,6 +75,11 @@ public class Person extends EternalEntity {
         this.zipCode = zipCode;
         this.phone = phone;
         this.organization = organization;
+
+        // Fill this in
+        this.race = "N/A";
+        this.gender = "N/A";
+        this.ethnicity = "N/A";
 //        this.testResults = new ArrayList<TestResult>();
     }
 
