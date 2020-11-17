@@ -9,7 +9,7 @@ import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete } from "./AoEForm/AoEModalForm";
+import AoeModalForm, { areAnswersComplete, dateToString } from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
@@ -20,7 +20,6 @@ import { patientPropType, devicePropType } from "../propTypes";
 import {
   updatePatientInQueue,
 } from "./state/testQueueActions";
-import { submitTestResult } from "../testResults/state/testResultActions";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 
@@ -38,6 +37,20 @@ mutation($patientId: String!, $deviceId: String!, $result: String!) {
 }
 `;
 
+const UPDATE_AOE = gql`
+mutation($patientId: String, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String) {
+  updateTimeOfTestQuestions(
+    patientId: $patientId
+    pregnancy: $pregnancy
+    symptoms: $symptoms
+    firstTest: $firstTest
+    priorTestDate: $priorTestDate
+    priorTestType: $priorTestType
+    priorTestResult: $priorTestResult
+    symptomOnset: $symptomOnset
+  )
+}
+`;
 const AskOnEntryTag = ({ aoeAnswers }) => {
   if (areAnswersComplete(aoeAnswers)) {
     return <span className="usa-tag bg-green">COMPLETED</span>;
@@ -76,6 +89,7 @@ const QueueItem = ({
 }) => {
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
+  const [updateAoe] = useMutation(UPDATE_AOE);
 
   const dispatch = useDispatch();
 
@@ -92,6 +106,16 @@ const QueueItem = ({
   );
   const [forceSubmit, setForceSubmit] = useState(false);
 
+  const testResultsSumbitted = () => {
+    let { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+        patient
+      ),
+    };
+    let alert = <Alert type={type} title={title} body={body} />;
+    showNotification(toast, alert);
+  }
+
   const onTestResultSubmit = (e) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
@@ -101,15 +125,11 @@ const QueueItem = ({
             patientId: patient.id,
             deviceId: deviceId,
             result: testResultValue
-          }
+          },
+          onCompleted: testResultsSumbitted,
+          onError: (error) => console.error("error submitting test results", error)
       });
-      let { type, title, body } = {
-        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-          patient
-        ),
-      };
-      let alert = <Alert type={type} title={title} body={body} />;
-      showNotification(toast, alert);
+
     } else {
       updateIsConfirmationModalOpen(true);
     }
@@ -124,7 +144,9 @@ const QueueItem = ({
       variables: 
         {
           patientId
-        }
+        },
+        onCompleted: () => console.log("removed patient from queue"),
+        onError: (error) => console.error("error removing patietn from queue", error)
     });
   };
 
@@ -147,14 +169,31 @@ const QueueItem = ({
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
-    dispatch(
-      updatePatientInQueue(
-        patient.patientId,
-        answers,
-        deviceId,
-        testResultValue
-      )
-    );
+    updateAoe({
+        variables: 
+          {
+            patientId: patient.id,
+            symptoms: answers.noSymptomFlag ? JSON.stringify(answers.symptoms) : null,
+            symptomOnset: dateToString(answers.symptomOnset),
+            pregnancy: answers.pregnancy,
+            firstTest: answers.priorTest.exists,
+            priorTestDate: dateToString(answers.priorTest.date),
+            priorTestType: answers.priorTest.type,
+            priorTestResult: answers.priorTest.result,
+          },
+          onCompleted: () => {
+            dispatch(
+              updatePatientInQueue(
+                patient.patientId,
+                answers,
+                deviceId,
+                testResultValue
+              )
+            );
+          },
+          onError: (error) => console.error("error saving aoe", error)
+      });
+
   };
 
   let options = devices.map((device) => ({
