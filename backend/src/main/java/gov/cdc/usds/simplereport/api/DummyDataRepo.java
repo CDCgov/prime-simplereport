@@ -15,7 +15,7 @@ import graphql.schema.DataFetcher;
 @Repository
 public class DummyDataRepo {
 
-	private static final ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
+	public static final ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1),
 			"123 Plank St, Nassau", "(123) 456-7890"),
 		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "456 Plank St, Nassau", "(321) 546-7890"),
@@ -24,7 +24,7 @@ public class DummyDataRepo {
 		new Patient("patientId5","Apollo","Graph","QL",LocalDate.of(1901, 1, 1),"411 Test Highway","(243) 555-5555")
 	));
 
-	private static final ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
+	public static final ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
 			new Device("deviceId2","BD Veritor","BD","Veritor", true),
 			new Device("deviceId3","Abbott Binax Now","Abbott","Binax Now",false),
 			new Device("graphQLTest","Does GraphQL Work","Apollo","GraphQL",false)
