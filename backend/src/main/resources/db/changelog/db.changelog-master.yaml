@@ -1,6 +1,6 @@
 x-ref-data:
   type-defs:
-    - &idtype bigint
+    - &idtype uuid
     - &string varchar(255)
   column-defs:
     - column: &pk_column
@@ -20,6 +20,12 @@ x-ref-data:
         name: updated_at
         type: DATETIME
         remarks: The timestamp for the most recent update of this entity.
+        constraints:
+          nullable: false
+    - column: &soft_delete_column
+        name: is_deleted
+        type: boolean
+        remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
         constraints:
           nullable: false
 databaseChangeLog:
@@ -49,16 +55,15 @@ databaseChangeLog:
       author: bwarfield@cdc.gov
       comment: The database schema required for the initial prototype deployment of the Simple Report API.
       changes:
-        - createSequence:
-            sequenceName: simple_report_entity_id_sequence
-            startValue: 1
-            incrementBy: 50
         - createTable:
             tableName: device_type
             remarks: Testing devices that may be present.
             columns:
               - column: *pk_column
               # is there an external ID? I think so?
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
               - column:
                   name: name
                   type: *string
@@ -80,6 +85,9 @@ databaseChangeLog:
             remarks: A site where testing occurs, and also the main user grouping entity.
             columns:
               - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
               - column:
                   name: facility_name
                   type: *string
@@ -126,6 +134,9 @@ databaseChangeLog:
             remarks: The personal information we store about users and patients
             columns:
               - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
               - column:
                   name: organization_id
                   remarks: Foreign key to the facility/organization responsible for entering this person's information.
@@ -167,6 +178,8 @@ databaseChangeLog:
             remarks: Test orders, whether pending, completed or canceled.
             columns:
               - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
@@ -193,5 +206,3 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
-              - column: *created_at_column
-              - column: *updated_at_column
