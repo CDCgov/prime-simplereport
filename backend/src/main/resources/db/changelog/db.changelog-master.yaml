@@ -146,6 +146,10 @@ databaseChangeLog:
                     foreignKeyName: fk__person__organization
                     references: organization
               - column:
+                  - name: lookup_id
+                    remarks: Public facing natural id
+                    type: *string
+              - column:
                   name: first_name
                   remarks: The person's given name, if any.
                   type: *string
@@ -160,19 +164,78 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: suffix
+                  remarks: Person's suffix, if any
+                  type: *string
+              - column:
+                  name: race
+                  remarks: Person's race (by OMB category)
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
                   name: birth_date
                   remarks: The person's date of birth.
                   type: DATE
                   constraints:
                     nullable: false
               - column:
-                  name: address # nopenopenope
-                  remarks: The person's home address, as an unstructure string.
+                  name: gender
+                  remarks: The person's gender
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: ethnicity
+                  remarks: The person's ethnicity (by OMB code)
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  remarks: The person's home address.
                   type: *string
               - column:
-                  name: telephone
-                  remarks: The person's contact phone number,
+                  name: street_two
+                  remarks: The person's second address line, if any
                   type: *string
+              - column:
+                  name: city
+                  remarks: The person's city
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The person's state
+                  type: *string
+              - column:
+                  name: zip_code
+                  remarks: The person's zip code
+                  type: *string
+              - column:
+                  name: phone
+                  remarks: The person's contact phone number.
+                  type: *string
+              - column:
+                  name: email
+                  remarks: The person's contact email.
+                  type: *string
+              - column:
+                  name: employed_in_healthcare
+                  remarks: Whether or not the person works in the healthcare industry
+                  type: boolean
+              - column:
+                  name: type_of_healthcare_professional
+                  remarks: The person's role in the healthcare industry, if any
+                  type: *string
+              - column:
+                  name: resident_congregate_setting
+                  remarks: Whether or not the person resides in a residence facility
+                  type: boolean
+              - column:
+                  name: patient_residency_type
+                  remarks: The person's resident facility type (if any)
+                  type: *string
+
         - createTable:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.

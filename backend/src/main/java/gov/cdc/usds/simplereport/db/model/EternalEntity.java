@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
+import java.io.Serializable;
 
 /**
  * Intermediate base class for entities that should be tagged as "deleted" in

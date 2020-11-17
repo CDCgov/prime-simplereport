@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -8,8 +9,7 @@ import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.TestResult;
 
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 
 @Entity
 public class Person extends EternalEntity {
@@ -20,6 +20,7 @@ public class Person extends EternalEntity {
         // Not used
     }
 
+    @Column(name = "internalId", insertable = false, updatable = false)
     private String id;
     private String lookupId;
     private String firstName;
@@ -41,6 +42,9 @@ public class Person extends EternalEntity {
     private String typeOfHealthcareProfessional;
     private Boolean residentCongregateSetting;
     private String patientResidencyType;
+    @JoinColumn(name = "organization_id")
+    @OneToOne
+    private Organization organization;
 //    @OneToMany
 //    private List<TestResult> testResults;
 
@@ -70,7 +74,8 @@ public class Person extends EternalEntity {
         this.city = city;
         this.state = state;
         this.zipCode = zipCode;
-        this.phone = phone;;
+        this.phone = phone;
+        this.organization = organization;
 //        this.testResults = new ArrayList<TestResult>();
     }
 

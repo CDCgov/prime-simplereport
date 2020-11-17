@@ -26,6 +26,10 @@ public class Organization extends EternalEntity {
 	@JoinColumn(name = "default_device_type")
 	private DeviceType defaultDeviceType;
 
+	public Organization() {
+		// Not used
+	}
+
 	public Organization(String facilityName, String externalId, DeviceType defaultDeviceType) {
 		super();
 		this.facilityName = facilityName;
