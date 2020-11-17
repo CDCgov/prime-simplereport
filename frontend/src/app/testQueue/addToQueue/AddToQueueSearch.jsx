@@ -47,7 +47,7 @@ const AddToQueueSearchBox = () => {
             patient.middleName,
             patient.lastName
           ).toLowerCase().indexOf(formattedQueryString) > -1 ||
-          patient.patientId.toLowerCase().indexOf(formattedQueryString) > -1
+          patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
       );
       return suggestions;
     }
@@ -71,7 +71,7 @@ const AddToQueueSearchBox = () => {
     addPatientToQueue({
       variables: 
         {
-          patientId: patient.patientId,
+          patientId: patient.id,
           symptoms: aoeAnswers.noSymptomFlag ? JSON.stringify(aoeAnswers.symptoms) : null,
           pregnancy: aoeAnswers.pregnancy,
           firstTest: aoeAnswers.priorTest.exists,
