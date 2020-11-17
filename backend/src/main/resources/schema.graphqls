@@ -7,7 +7,7 @@ type Device {
 }
 type Patient {
   id: ID
-  patientId: String
+  lookupId: String
   firstName: String
   middleName: String
   lastName: String
@@ -94,7 +94,7 @@ type Mutation {
     defaultDevice: String
   ): String
   addPatient(
-    patientId: String
+    lookupId: String
     firstName: String
     middleName: String
     lastName: String

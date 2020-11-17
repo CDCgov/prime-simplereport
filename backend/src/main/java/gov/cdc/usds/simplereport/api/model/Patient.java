@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.api.model.TestResult;
 public class Patient {
 
 	private String id;
-	private String patientId;
+	private String lookupId;
 	private String firstName;
 	private String middleName;
 	private String lastName;
@@ -34,7 +34,7 @@ public class Patient {
 	private Organization organization;
 
 	public Patient(
-		String patientId,
+		String lookupId,
 		String firstName,
 		String middleName,
 		String lastName,
@@ -49,7 +49,7 @@ public class Patient {
 	) {
 		super();
 		this.id = UUID.randomUUID().toString();
-		this.patientId = patientId;
+		this.lookupId = lookupId;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
@@ -65,7 +65,7 @@ public class Patient {
 	}
 
 	public Patient(
-		String patientId,
+		String lookupId,
 		String firstName,
 		String middleName,
 		String lastName,
@@ -79,7 +79,7 @@ public class Patient {
 		Organization organization,
 		ArrayList<TestResult> testResults
 	) {
-		this(patientId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone, organization);
+		this(lookupId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone, organization);
 		this.testResults = testResults;
 	}
 
@@ -95,8 +95,8 @@ public class Patient {
 		return id;
 	}
 
-	public String getPatientId() {
-		return patientId;
+	public String getLookupId() {
+		return lookupId;
 	}
 
 	public String getFirstName() {

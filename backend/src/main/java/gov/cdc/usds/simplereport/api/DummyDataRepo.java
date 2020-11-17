@@ -86,7 +86,7 @@ public class DummyDataRepo {
 	}
 
 	public String addPatient(
-		String patientId,
+		String lookupId,
 		String firstName,
 		String middleName,
 		String lastName,
@@ -101,7 +101,7 @@ public class DummyDataRepo {
 		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
 
 		Patient newPatient = new Patient(
-			patientId,
+			lookupId,
 			firstName,
 			middleName,
 			lastName,
