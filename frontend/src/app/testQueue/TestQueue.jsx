@@ -3,6 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
 
+import {parseDate} from "./AoEForm/dateUtils";
 import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
 
@@ -80,17 +81,19 @@ const TestQueue = () => {
           priorTestResult,
           device,
           patient,
-          testResult
+          testResult,
+          symptomOnset
         }) => (
           <QueueItem
             key={`patient-${uuidv4()}`}
             patient={patient}
             askOnEntry={{
               pregnancy,
-              dateAdded,
+              dateAdded: parseDate(dateAdded),
               symptoms,
+              symptomOnset: parseDate(symptomOnset),
               firstTest,
-              priorTestDate,
+              priorTestDate: parseDate(priorTestDate),
               priorTestType,
               priorTestResult,
             }}

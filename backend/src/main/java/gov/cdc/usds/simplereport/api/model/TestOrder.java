@@ -16,6 +16,7 @@ public class TestOrder {
 	private LocalDate dateAdded;
 	private String pregnancy;
 	private String symptoms; // JSON object
+	private Boolean noSymptoms;
 	private Boolean firstTest;
 	private LocalDate priorTestDate;
 	private LocalDate symptomOnset;
@@ -51,7 +52,8 @@ public class TestOrder {
 		LocalDate priorTestDate,
 		String priorTestType,
 		String priorTestResult,
-		LocalDate symptomOnset
+		LocalDate symptomOnset,
+		Boolean noSymptoms
 	) {
 		this.pregnancy = pregnancy;
 		this.symptoms = symptoms;
@@ -60,6 +62,7 @@ public class TestOrder {
 		this.priorTestType = priorTestType;
 		this.priorTestResult = priorTestResult;
 		this.symptomOnset = symptomOnset;
+		this.noSymptoms = noSymptoms;
 	}
 
 	public String getId() {
@@ -96,5 +99,9 @@ public class TestOrder {
 
 	public LocalDate getSymptomOnset() {
 		return this.symptomOnset;
+	}
+
+	public Boolean getNoSymptoms() {
+		return this.noSymptoms;
 	}
 }

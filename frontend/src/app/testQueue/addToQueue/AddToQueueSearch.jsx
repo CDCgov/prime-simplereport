@@ -7,7 +7,6 @@ import SearchResults from "./SearchResults";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
 import { showNotification } from "../../utils";
 import { displayFullName } from "../../utils";
-import {dateToString} from "../AoEForm/AoEModalForm";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
@@ -87,13 +86,13 @@ const AddToQueueSearchBox = () => {
     addPatientToQueue({
       variables: {
         patientId: patient.id,
-        symptoms: "",//aoeAnswers.noSymptomFlag ? JSON.stringify(aoeAnswers.symptoms) : null,
-        symptomOnset: dateToString(aoeAnswers.symptomOnset),
+        symptoms: aoeAnswers.symptoms,
+        symptomOnset: aoeAnswers.symptomOnset,
         pregnancy: aoeAnswers.pregnancy,
         firstTest: aoeAnswers.priorTest.exists,
-        priorTestDate: dateToString(aoeAnswers.priorTest.date),
-        priorTestType: aoeAnswers.priorTest.type,
-        priorTestResult: aoeAnswers.priorTest.result,
+        priorTestDate: aoeAnswers.priorTestDate,
+        priorTestType: aoeAnswers.priorTestType,
+        priorTestResult: aoeAnswers.priorTestResult,
       },
       onCompleted: () => {
         let { type, title, body } = {
