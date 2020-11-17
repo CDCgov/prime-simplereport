@@ -24,6 +24,12 @@ dependencies {
 	// UI layer dependencies
 	implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:8.0.0'
 
+//	Okta dependencies
+	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
+	implementation 'org.springframework.security.oauth:spring-security-oauth2'
+	implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.3.4.RELEASE'
+
+
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

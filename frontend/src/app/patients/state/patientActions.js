@@ -20,10 +20,10 @@ const requestPatients = (organizationId) => {
   };
 };
 
-export const updatePatient = (patientId) => {
+export const updatePatient = (patient) => {
   return {
     type: PATIENTS__UPDATE_PATIENT,
-    payload: {},
+    patient,
   };
 };
 
