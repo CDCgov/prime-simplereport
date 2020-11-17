@@ -1,39 +1,121 @@
 # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 type Device {
-  deviceId: ID
+  id: ID
   displayName: String
   deviceManufacturer: String
   deviceModel: String
   isDefault: Boolean
 }
 type Patient {
-  patientId: ID
+  id: ID
+  patientId: String
   firstName: String
   middleName: String
   lastName: String
+  suffix: String
+  race: String
   birthDate: String
-  address: String
+  gender: String
+  ethnicity: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
   phone: String
+  email: String
+  employedInHealthcare: Boolean
+  typeOfHealthcareProfessional: String
+  residentCongregateSetting: Boolean
+  patientResidencyType: String
+  testResults: [TestResult]
+}
+type Organization {
+  id: ID
+  testingFacilityName: String
+  cliaNumber: String
+  orderingProviderName: String
+  orderingProviderNPI: String
+  orderingProviderStreet: String
+  orderingProviderStreetTwo: String
+  orderingProviderCity: String
+  orderingProviderCounty: String
+  orderingProviderState: String
+  orderingProviderZipCode: String
+  orderingProviderPhone: String
+  devices: [Device]
+}
+type User {
+  id: ID
+  organization: Organization
+}
+type TestResult {
+  id: ID
+  dateTested: String
+  device: Device
+  result: String
+  patient: Patient
+}
+type Queue {
+  id: ID
+  patient: Patient
+  organization: Organization
+  dateAdded: String
+  pregnancy: String
+  symptoms: String
+  firstTest: Boolean
+  priorTestDate: String
+  priorTestType: String
+  testResult: TestResult
 }
 type Query {
   device: [Device]
   patient: [Patient]
+  user: User
+  organization: Organization
+  testResult: [TestResult]
+  queue: [Queue]
 }
 type Mutation {
-  addDevice(
-    deviceId: ID
-    displayName: String
-    deviceManufacturer: String
-    deviceModel: String
-    isDefault: Boolean
+  updateOrganization(
+    testingFacilityName: String
+    cliaNumber: String
+    orderingProviderName: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    devices: [String]
   ): String
   addPatient(
-    patientId: ID
+    patientId: String
     firstName: String
     middleName: String
     lastName: String
     birthDate: String
-    address: String
+    street: String
+    streetTwo: String
+    city: String
+    state: String
+    zipCode: String
     phone: String
   ): String
+  addTestResult(deviceId: String, result: String, patientId: String): String
+  addPatientToQueue(patientId: String): String
+  removePatientFromQueue(patientId: String): String
+  updateTimeOfTestQuestions(
+    patientId: String
+    pregnancy: String
+    symptoms: String
+    firstTest: Boolean
+    priorTestDate: String
+    priorTestType: String
+  ): String
+  updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
+  updateResultForPatientInQueue(patientId: String, result: String): String
 }
