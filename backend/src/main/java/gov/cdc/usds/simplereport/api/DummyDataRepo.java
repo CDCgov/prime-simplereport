@@ -36,7 +36,6 @@ public class DummyDataRepo {
 	// set up default user and org
 	public Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices, device1);
 	public User defaultUser = new User(defaultOrg);
-	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
 	// add patients to org
 	private Person patient1 = new Person("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1), "123 Plank St", "", "Nassau", "NY", "12065", "(123) 456-7890", defaultOrg);
@@ -113,48 +112,6 @@ public class DummyDataRepo {
 		);
 		allPatients.add(newPatient);
 		return newPatient.getId();
-	}
-
-	public String updateOrganization(
-		String testingFacilityName,
-		String cliaNumber,
-		String orderingProviderName,
-		String orderingProviderNPI,
-		String orderingProviderStreet,
-		String orderingProviderStreetTwo,
-		String orderingProviderCity,
-		String orderingProviderCounty,
-		String orderingProviderState,
-		String orderingProviderZipCode,
-		String orderingProviderPhone,
-		List<String> deviceIds,
-		String defaultDeviceId
-	) {
-		List<Device> newDevices = new ArrayList<Device>();
-		deviceIds.forEach((id) -> {
-			Device device = allDevices.stream().filter(d -> id.equals(d.getId())).findAny().orElse(null);
-			if (device != null) {
-				newDevices.add(device);
-			}
-		});
-
-//		defaultOrg.updateOrg(
-//			testingFacilityName,
-//			cliaNumber,
-//			orderingProviderName,
-//			orderingProviderNPI,
-//			orderingProviderStreet,
-//			orderingProviderStreetTwo,
-//			orderingProviderCity,
-//			orderingProviderCounty,
-//			orderingProviderState,
-//			orderingProviderZipCode,
-//			orderingProviderPhone,
-//			newDevices,
-//			this.getDevice(defaultDeviceId)
-//		);
-//		return defaultOrg.getId();
-		return defaultOrg.getExternalId();
 	}
 
 	Person getPatient(String patientId) {

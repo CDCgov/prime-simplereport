@@ -1,14 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.api.model.Device;
-import gov.cdc.usds.simplereport.api.model.Organization;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by nickrobison on 11/15/20
@@ -23,25 +16,6 @@ public class MutationResolver implements GraphQLMutationResolver {
     }
 
     // @PreAuthorize("hasAuthority('PDI admins')")
-
-
-
-    public void updateOrganization(String testingFacilityName,
-                                   String cliaNumber,
-                                   String orderingProviderName,
-                                   String orderingProviderNPI,
-                                   String orderingProviderStreet,
-                                   String orderingProviderStreetTwo,
-                                   String orderingProviderCity,
-                                   String orderingProviderCounty,
-                                   String orderingProviderState,
-                                   String orderingProviderZipCode,
-                                   String orderingProviderPhone,
-                                   List<String> devices,
-                                   String defaultDevice) {
-        repo.updateOrganization(testingFacilityName, cliaNumber, orderingProviderName, orderingProviderNPI, orderingProviderStreet, orderingProviderStreetTwo
-                , orderingProviderCity, orderingProviderCounty, orderingProviderState, orderingProviderZipCode, orderingProviderPhone, devices, defaultDevice);
-    }
 
     public void addTestResult(String deviceID, String result, String patientID) {
         repo.addTestResult(deviceID, result, patientID);

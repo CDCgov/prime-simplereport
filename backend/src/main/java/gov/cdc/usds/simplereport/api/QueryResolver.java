@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
 
@@ -28,10 +27,6 @@ public class QueryResolver implements GraphQLQueryResolver {
 
     public User getUser() {
         return repo.defaultUser;
-    }
-
-    public Organization getOrganization() {
-        return repo.defaultOrg;
     }
 
     public List<TestResult> getTestResult() {

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
@@ -22,10 +23,22 @@ public class OrganizationService {
 
 	public Organization getCurrentOrganization() {
 		Optional<Organization> maybe = _repo.findByExternalId(FAKE_ORG_ID);
-		if (maybe.isPresent()) {
-			return maybe.get();
-		} else {
-			return _repo.save(new Organization("This Place", FAKE_ORG_ID, null));
-		}
+		return maybe.orElseGet(() -> _repo.save(new Organization("This Place", FAKE_ORG_ID, null)));
+	}
+
+	public void updateOrganization(String testingFacilityName,
+								   String cliaNumber,
+								   String orderingProviderName,
+								   String orderingProviderNPI,
+								   String orderingProviderStreet,
+								   String orderingProviderStreetTwo,
+								   String orderingProviderCity,
+								   String orderingProviderCounty,
+								   String orderingProviderState,
+								   String orderingProviderZipCode,
+								   String orderingProviderPhone,
+								   List<String> devices,
+								   String defaultDevice) {
+		throw new UnsupportedOperationException("Org updates aren't supported yet");
 	}
 }
