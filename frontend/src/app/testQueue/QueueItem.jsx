@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
+import { gql, useMutation } from "@apollo/client";
 
 import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
@@ -17,12 +18,25 @@ import { ALERT_CONTENT } from "../testQueue/constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
 import {
-  removePatientFromQueue,
   updatePatientInQueue,
 } from "./state/testQueueActions";
 import { submitTestResult } from "../testResults/state/testResultActions";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
+
+
+const REMOVE_PATIENT_FROM_QUEUE = gql`
+mutation($patientId: String!) {
+  removePatientFromQueue(patientId: $patientId)
+}
+`;
+
+const SUBMIT_TEST_RESULT = gql`
+mutation($patientId: String!, $deviceId: String!, $result: String!) {
+  removePatientFromQueue(patientId: $patientId)
+  addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
+}
+`;
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
   if (areAnswersComplete(aoeAnswers)) {
@@ -58,16 +72,18 @@ const QueueItem = ({
   askOnEntry,
   selectedDeviceId,
   selectedTestResult,
+  defaultDevice
 }) => {
+  const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
+  const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
+
   const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
-  let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
-  let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
   const [deviceId, updateDeviceId] = useState(
-    selectedDeviceId || defaultDeviceId
+    selectedDeviceId || defaultDevice.id
   );
   const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
 
@@ -79,12 +95,14 @@ const QueueItem = ({
   const onTestResultSubmit = (e) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      let testResultToSubmit = {
-        deviceId: deviceId,
-        testResultValue,
-        testTimeQuestions: aoeAnswers,
-      };
-      dispatch(submitTestResult(patient.patientId, testResultToSubmit));
+      submitTestResult({
+        variables: 
+          {
+            patientId: patient.id,
+            deviceId: deviceId,
+            result: testResultValue
+          }
+      });
       let { type, title, body } = {
         ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
           patient
@@ -102,7 +120,12 @@ const QueueItem = ({
   };
 
   const removeFromQueue = (patientId) => {
-    dispatch(removePatientFromQueue(patientId));
+    removePatientFromQueue({
+      variables: 
+        {
+          patientId
+        }
+    });
   };
 
   const onTestResultChange = (newTestResultValue) => {
@@ -136,7 +159,7 @@ const QueueItem = ({
 
   let options = devices.map((device) => ({
     label: device.displayName,
-    value: device.deviceId,
+    value: device.id,
   }));
   options.unshift({
     label: "Select Device",
@@ -151,7 +174,7 @@ const QueueItem = ({
 
   const closeButton = (
     <div
-      onClick={() => removeFromQueue(patient.patientId)}
+      onClick={() => removeFromQueue(patient.id)}
       className="prime-close-button"
     >
       <span className="fa-layers">
@@ -173,7 +196,7 @@ const QueueItem = ({
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
                 <li className="prime-li">
-                  <LabeledText text={patient.patientId} label="Unique ID" />
+                  <LabeledText text={patient.lookupId} label="Unique ID" />
                 </li>
                 <li className="prime-li">
                   <LabeledText text={patient.phone} label="Phone Number" />

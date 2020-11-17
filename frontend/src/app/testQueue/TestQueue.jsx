@@ -1,10 +1,8 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
-import { useSelector } from "react-redux";
 
-import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors";
-import { getDevicesArray } from "../devices/deviceSelectors";
 import AddToQueue from "./addToQueue/AddToQueue";
 import QueueItem from "./QueueItem";
 
@@ -21,21 +19,84 @@ const emptyQueueMessage = (
   </div>
 );
 
-const TestQueue = () => {
-  const queue = useSelector(getDetailedPatientsInTestQueue);
-  const devices = useSelector(getDevicesArray);
+const queueQuery = gql`{
+  queue {
+    pregnancy
+    dateAdded
+    symptoms
+    firstTest
+    priorTestDate
+    priorTestType
+    priorTestResult
+    device {
+      id
+      displayName
+    }
+    patient {
+      id
+      phone
+      birthDate
+      lookupId
+      firstName
+      middleName
+      lastName
+    }
+    testResult {id}
+  }
+  organization {
+    devices {
+      id
+      displayName
+    }
+    defaultDevice {
+      id
+      displayName
+    }
+  }
+}`;
 
-  let shouldRenderQueue = queue.length > 0;
+
+const TestQueue = () => {
+  const { data, loading, error } = useQuery(queueQuery);
+
+  if (error) {
+    return <p>Error in loading patients</p>;
+  }
+  if (loading) {
+    return <p>Loading patients...</p>;
+  }
+
+  let shouldRenderQueue = data.queue.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
-      ? patientQueue.map((queueEntry) => (
+      ? patientQueue.map(({
+          pregnancy,
+          dateAdded,
+          symptoms,
+          firstTest,
+          priorTestDate,
+          priorTestType,
+          priorTestResult,
+          device,
+          patient,
+          testResult
+        }) => (
           <QueueItem
             key={`patient-${uuidv4()}`}
-            patient={queueEntry.patient}
-            askOnEntry={queueEntry.askOnEntry}
-            selectedDeviceId={queueEntry.deviceId}
-            selectedTestResult={queueEntry.testResult}
-            devices={devices}
+            patient={patient}
+            askOnEntry={{
+              pregnancy,
+              dateAdded,
+              symptoms,
+              firstTest,
+              priorTestDate,
+              priorTestType,
+              priorTestResult,
+            }}
+            selectedDeviceId={device.id}
+            selectedTestResult={testResult}
+            devices={data.organization.devices}
+            defaultDevice={data.organization.defaultDevice}
           />
         ))
       : emptyQueueMessage;
@@ -46,7 +107,7 @@ const TestQueue = () => {
         <div className="grid-row position-relative">
           <AddToQueue />
         </div>
-        {createQueueItems(queue)}
+        {createQueueItems(data.queue)}
       </div>
     </main>
   );

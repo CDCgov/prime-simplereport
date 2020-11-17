@@ -218,6 +218,7 @@ public class DummyDataRepo {
 			priorTestType,
 			priorTestResult
 		);
+		newTestOrder.setDevice(defaultOrg.getDefaultDevice());
 		return newTestOrder.getId();
 	}
 
