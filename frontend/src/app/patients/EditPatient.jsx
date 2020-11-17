@@ -45,7 +45,7 @@ const EditPatient = (props) => {
     }
     dispatch(updatePatient({ ...newPatient, [e.target.name]: value }));
   };
-  const results = useSelector(getTestResultById(props.patientId));
+  const results = useSelector(getTestResultById(patientId));
   const fullName = displayFullName(
     patient.firstName,
     patient.middleName,
@@ -92,8 +92,8 @@ const EditPatient = (props) => {
         <div className="prime-form-line">
           <TextInput
             label="Lookup ID"
-            name="patientId"
-            value={patient.patientId}
+            name="lookupId"
+            value={patient.lookupId}
             onChange={onChange}
           />
           <Dropdown
@@ -109,7 +109,7 @@ const EditPatient = (props) => {
             ]}
           />
         </div>
-        <div class="prime-form-line">
+        <div className="prime-form-line">
           <TextInput
             label="Date of Birth"
             name="birthDate"
