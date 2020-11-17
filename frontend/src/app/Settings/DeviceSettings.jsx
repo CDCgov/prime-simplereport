@@ -9,9 +9,9 @@ import { DEVICE_TYPES } from "../devices/constants";
 import { createNewDevice } from "../devices/utils";
 
 const dropdownOptions = Object.entries(DEVICE_TYPES).map(
-  ([deviceId, displayName]) => ({
+  ([id, displayName]) => ({
     label: displayName,
-    value: deviceId,
+    value: id,
   })
 );
 
@@ -23,7 +23,7 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
       ...deviceSettings,
       [changedDeviceName]: {
         ...deviceSettings[changedDeviceName],
-        deviceId: newDeviceId,
+        id: newDeviceId,
         displayName: DEVICE_TYPES[newDeviceId],
       },
     };
@@ -73,7 +73,7 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
           <Dropdown
             options={dropdownOptions}
             name={name}
-            selectedValue={device.deviceId}
+            selectedValue={device.id}
             onChange={onDeviceChange}
           />
         </td>

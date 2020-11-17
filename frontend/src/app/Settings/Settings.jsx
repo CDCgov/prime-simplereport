@@ -1,29 +1,65 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
+import { gql, useQuery } from "@apollo/client";
 
 import Button from "../commonComponents/Button";
 import DeviceSettings from "./DeviceSettings";
 import OrderingProviderSettings from "./OrderingProviderSettings";
 import OrganizationSettings from "./OrganizationSettings";
-import { getDevicesArray } from "../devices/deviceSelectors";
 import { generateDeviceSettings } from "../devices/utils";
-import { getOrganization } from "../organizations/organizationSelector";
 import { updateSettings } from "../Settings/state/settingsActions";
+import { useEffect } from "react";
+
+const getDevicesQuery = gql`
+  {
+    device {
+      id
+      displayName
+      deviceModel
+      deviceManufacturer
+      isDefault
+    }
+    organization {
+      id
+      cliaNumber
+      testingFacilityName
+      orderingProviderNPI
+      orderingProviderName
+      orderingProviderStreet
+      orderingProviderStreetTwo
+      orderingProviderCity
+      orderingProviderZipCode
+      orderingProviderCounty
+      orderingProviderState
+      orderingProviderPhone
+    }
+  }
+`;
 
 const Settings = () => {
   const dispatch = useDispatch();
-  const devices = useSelector(getDevicesArray);
-  const organization = useSelector(getOrganization);
+  const { data, loading, error } = useQuery(getDevicesQuery);
 
-  const [deviceSettings, updateDeviceSettings] = useState(
-    generateDeviceSettings(devices)
-  );
-  const [orgSettings, updateOrgSettings] = useState(organization);
+  const [deviceSettings, updateDeviceSettings] = useState({});
+  const [orgSettings, updateOrgSettings] = useState({});
+
+  useEffect(() => {
+    if (data) {
+      updateDeviceSettings(generateDeviceSettings(data.device));
+      updateOrgSettings(data.organization);
+    }
+  }, [data]);
 
   const onSaveSettings = () => {
     dispatch(updateSettings(deviceSettings, orgSettings));
   };
+
+  if (error) {
+    return <p> There was an error </p>;
+  }
+  if (loading) {
+    return <p> Loading... </p>;
+  }
 
   return (
     <main className="prime-home">
