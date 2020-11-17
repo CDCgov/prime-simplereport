@@ -22,7 +22,7 @@ const validate = ajv.compile(schemaPatient.default);
 const patientQuery = gql`
   {
     patient {
-      patientId
+      lookupId
       firstName
       lastName
       middleName
@@ -155,7 +155,7 @@ const ManagePatients = () => {
             patient.lastName
           )}
         </th>
-        <td>{patient.patientId}</td>
+        <td>{patient.lookupId}</td>
         <td> {patient.birthDate}</td>
         <td>
           {patient.lastTestDate === undefined

@@ -20,7 +20,7 @@ const testResultQuery = gql`
         firstName
         middleName
         lastName
-        patientId
+        lookupId
       }
     }
   }
@@ -47,7 +47,7 @@ const TestResultsList = () => {
     }
     return testResults.map((result) => {
       // TODO: patientId is the lookup id. This needs to be renamed
-      const { firstName, middleName, lastName, patientId } = {
+      const { firstName, middleName, lastName, lookupId } = {
         ...result.patient,
       };
 
@@ -56,7 +56,7 @@ const TestResultsList = () => {
           <th scope="row">
             {displayFullName(firstName, middleName, lastName)}
           </th>
-          <td>{patientId}</td>
+          <td>{lookupId}</td>
           <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
           <td>{result.result}</td>
           <td>{result.device.displayName}</td>
