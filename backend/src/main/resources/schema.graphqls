@@ -44,6 +44,7 @@ type Organization {
   orderingProviderZipCode: String
   orderingProviderPhone: String
   devices: [Device]
+  defaultDevice: String
 }
 type User {
   id: ID
