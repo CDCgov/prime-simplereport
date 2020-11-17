@@ -64,6 +64,7 @@ type Queue {
   dateAdded: String
   pregnancy: String
   symptoms: String
+  symptomOnset: String
   firstTest: Boolean
   priorTestDate: String
   priorTestType: String
@@ -117,6 +118,7 @@ type Mutation {
     priorTestDate: String
     priorTestType: String
     priorTestResult: String
+    symptomOnset: String
   ): String
   removePatientFromQueue(patientId: String): String
   updateTimeOfTestQuestions(
@@ -127,6 +129,7 @@ type Mutation {
     priorTestDate: String
     priorTestType: String
     priorTestResult: String
+    symptomOnset: String
   ): String
   updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
   updateResultForPatientInQueue(patientId: String, result: String): String

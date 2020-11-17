@@ -49,16 +49,16 @@ public class MutationResolver implements GraphQLMutationResolver {
         repo.addTestResult(deviceID, result, patientID);
     }
 
-    public void addPatientToQueue(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult) {
-        repo.addPatientToQueue(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult);
+    public void addPatientToQueue(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult, String symptomOnset) {
+        repo.addPatientToQueue(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult, symptomOnset);
     }
 
     public void removePatientFromQueue(String patientID) {
         repo.removePatientFromQueue(patientID);
     }
 
-    public void updateTimeOfTestQuestions(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult) {
-        repo.updateTimeOfTestQuestions(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult);
+    public void updateTimeOfTestQuestions(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult, String symptomOnset) {
+        repo.updateTimeOfTestQuestions(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult, symptomOnset);
     }
 
     public void updateDeviceForPatientInQueue(String patientID, String deviceId) {

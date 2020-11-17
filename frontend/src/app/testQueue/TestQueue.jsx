@@ -24,6 +24,7 @@ const queueQuery = gql`{
     pregnancy
     dateAdded
     symptoms
+    symptomOnset
     firstTest
     priorTestDate
     priorTestType
