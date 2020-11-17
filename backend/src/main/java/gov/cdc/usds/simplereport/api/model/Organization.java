@@ -105,6 +105,10 @@ public class Organization {
 		this.defaultDevice = defaultDevice;
 	}
 
+	public Device getDefaultDevice() {
+		return defaultDevice;
+	}
+
 	public String getId() {
 		return id;
 	}
