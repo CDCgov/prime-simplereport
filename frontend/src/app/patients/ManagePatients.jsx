@@ -144,7 +144,7 @@ const ManagePatients = () => {
 
   const patientRows = (patients) => {
     return patients.map((patient) => (
-      <tr key={patient.id}>
+      <tr key={patient.lookupId}>
         <th scope="row">
           <NavLink to={`patient/${patient.patientId}`}>
             {displayFullName(
