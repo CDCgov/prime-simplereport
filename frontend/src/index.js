@@ -14,7 +14,7 @@ import { store, persistor } from "./app/store";
 import { PersistGate } from "redux-persist/integration/react";
 
 const cache = new InMemoryCache({});
-const client = new ApolloClient({cache, uri: "http://localhost:8080/graphql"})
+const client = new ApolloClient({cache, uri: process.env.REACT_APP_BACKEND_URL})
 
 ReactDOM.render(
   <ApolloProvider client={client}>
