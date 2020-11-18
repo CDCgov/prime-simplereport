@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-// import { useDispatch } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
+import { toast } from "react-toastify";
+import { useEffect } from "react";
 
+import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
 import DeviceSettings from "./DeviceSettings";
 import OrderingProviderSettings from "./OrderingProviderSettings";
 import OrganizationSettings from "./OrganizationSettings";
-// import { updateSettings } from "../Settings/state/settingsActions";
-import { useEffect } from "react";
+import { showNotification } from "../utils";
 
-const getSettings = gql`
+const GET_SETTINGS_QUERY = gql`
   {
     organization {
       id
@@ -25,7 +26,9 @@ const getSettings = gql`
       orderingProviderCounty
       orderingProviderState
       orderingProviderPhone
-      defaultDevice
+      defaultDevice {
+        id
+      }
       devices {
         id
       }
@@ -33,10 +36,10 @@ const getSettings = gql`
   }
 `;
 
-const setSettings = gql`
+const SET_SETTINGS_MUTATION = gql`
   mutation(
-    $name: String
-    $clia: String
+    $testingFacilityName: String
+    $cliaNumber: String
     $orderingProviderName: String
     $orderingProviderNPI: String
     $orderingProviderStreet: String
@@ -50,8 +53,8 @@ const setSettings = gql`
     $defaultDevice: String
   ) {
     updateOrganization(
-      testingFacilityName: $name
-      cliaNumber: $clia
+      testingFacilityName: $testingFacilityName
+      cliaNumber: $cliaNumber
       orderingProviderName: $orderingProviderName
       orderingProviderNPI: $orderingProviderNPI
       orderingProviderStreet: $orderingProviderStreet
@@ -68,17 +71,28 @@ const setSettings = gql`
 `;
 
 const Settings = () => {
-  // const dispatch = useDispatch();
   const {
     data: settings,
     loading: isLoadingSettings,
     error: errorFetchingSettings,
-  } = useQuery(getSettings);
+    refetch: refetchSettings,
+  } = useQuery(GET_SETTINGS_QUERY);
 
-  const [saveSettings, { as }] = useMutation(setSettings);
+  const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
 
   const [deviceSettings, updateDeviceSettings] = useState({});
   const [orgSettings, updateOrgSettings] = useState({});
+  const [formChanged, updateFormChanged] = useState(false);
+
+  const updateDeviceSettingsHandler = (data) => {
+    updateDeviceSettings(data);
+    updateFormChanged(true);
+  };
+
+  const updateOrgSettingsHandler = (data) => {
+    updateOrgSettings(data);
+    updateFormChanged(true);
+  };
 
   useEffect(() => {
     if (settings) {
@@ -93,23 +107,50 @@ const Settings = () => {
 
       let deviceSettings = {
         supportedDevices: supportedDevices,
-        defaultDeviceId: settings.organization.defaultDevice,
+        defaultDeviceId: settings.organization.defaultDevice
+          ? settings.organization.defaultDevice.id
+          : null,
       };
       updateDeviceSettings(deviceSettings);
+      updateOrgSettings(settings.organization);
     }
   }, [settings]);
 
   const onSaveSettings = () => {
-    console.log("deviceSettings", deviceSettings);
-    console.log("orgSettings", orgSettings);
-    // dispatch(updateSettings(deviceSettings, orgSettings));
+    setSettings({
+      variables: {
+        testingFacilityName: orgSettings.testingFacilityName,
+        cliaNumber: orgSettings.cliaNumber,
+        orderingProviderName: orgSettings.orderingProviderName,
+        orderingProviderNPI: orgSettings.orderingProviderNPI,
+        orderingProviderStreet: orgSettings.orderingProviderStreet,
+        orderingProviderStreetTwo: orgSettings.orderingProviderStreetTwo,
+        orderingProviderCity: orgSettings.orderingProviderCity,
+        orderingProviderCounty: orgSettings.orderingProviderCounty,
+        orderingProviderState: orgSettings.orderingProviderState,
+        orderingProviderZipCode: orgSettings.orderingProviderZipCode,
+        orderingProviderPhone: orgSettings.orderingProviderPhone,
+        devices: Object.values(deviceSettings.supportedDevices),
+        defaultDevice: deviceSettings.defaultDeviceId,
+      },
+    }).then((d) => {
+      console.log("success!", d); // TODO: should return an id
+      let alert = (
+        <Alert
+          type={"success"}
+          title={"Updated Organization"}
+          body={"The settings for the organization has been updated"}
+        />
+      );
+      showNotification(toast, alert);
+      refetchSettings(); // this does nothing
+    });
   };
 
   if (isLoadingSettings) {
     return <p> Loading... </p>;
   }
   if (errorFetchingSettings) {
-    console.log(errorFetchingSettings);
     return <p> There was an error </p>;
   }
 
@@ -122,20 +163,21 @@ const Settings = () => {
             type="button"
             onClick={onSaveSettings}
             label="Save Settings"
+            disabled={!formChanged}
           />
         </div>
       </div>
       <OrganizationSettings
         orgSettings={orgSettings}
-        updateOrgSettings={updateOrgSettings}
+        updateOrgSettings={updateOrgSettingsHandler}
       />
       <OrderingProviderSettings
         orgSettings={orgSettings}
-        updateOrgSettings={updateOrgSettings}
+        updateOrgSettings={updateOrgSettingsHandler}
       />
       <DeviceSettings
         deviceSettings={deviceSettings}
-        updateDeviceSettings={updateDeviceSettings}
+        updateDeviceSettings={updateDeviceSettingsHandler}
       />
     </main>
   );
