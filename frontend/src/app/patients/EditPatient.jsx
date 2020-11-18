@@ -76,6 +76,7 @@ const EditPatient = (props) => {
         <h2>{isNew ? `Create New ${PATIENT_TERM_CAP}` : fullName}</h2>
         <button
           className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
           onClick={savePatientData}
         >
           Save Changes
