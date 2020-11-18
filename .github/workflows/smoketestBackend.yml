@@ -45,5 +45,5 @@ jobs:
           ~/.gradle/caches
           ~/.gradle/wrapper
         key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-    - name: Run Java Tests
+    - name: Run Checkstyle
       run: ./gradlew checkstyleMain checkstyleTest
