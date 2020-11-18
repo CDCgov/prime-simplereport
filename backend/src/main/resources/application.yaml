@@ -21,6 +21,6 @@ graphql:
 okta:
   oauth2:
     issuer: https://prime-eval.okta.com/oauth2/default
-    client-id: ${clientID}
-    client-secret: ${clientSecret}
+    client-id: ${clientID:FAKE}
+    client-secret: ${clientSecret:FAKE}
 

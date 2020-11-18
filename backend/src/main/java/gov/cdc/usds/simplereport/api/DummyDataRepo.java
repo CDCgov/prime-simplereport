@@ -42,8 +42,8 @@ public class DummyDataRepo {
 	private ArrayList<Organization> allOrganizations = new ArrayList<>(Arrays.asList(defaultOrg));
 
 	// add patients to org
-	private Patient patient1 = new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1), "123 Plank St", "", "Nassau", "NY", "12065", "(123) 456-7890", defaultOrg);
-	private Patient patient3 = new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1729, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)", defaultOrg);
+	private Patient patient1 = new Patient("patientId1", "Edward", "", "Teach", LocalDate.of(1717, 1, 1), "123 Plank St", "", "Nassau", "NY", "12065", "(123) 456-7890", defaultOrg, "", "", "", "", "", "", false, false);
+	private Patient patient3 = new Patient("patientId3", "John", "\"Long\"", "Silver", LocalDate.of(1729, 1, 1), "123 cat St", "", "lake view", "MI", "12067", "(213) 645-7890)", defaultOrg, "", "", "", "", "", "", false, false);
 
 	// create test results
 	private TestResult testResult1 = new TestResult(device1, "positive", patient1);
@@ -52,10 +52,10 @@ public class DummyDataRepo {
 
 	public ArrayList<Patient> allPatients = new ArrayList<>(Arrays.asList(
 		patient1,
-		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", defaultOrg),
+		new Patient("patientId2", "James", "D.", "Flint", LocalDate.of(1719, 1, 1), "123 dog St", "apt 2", "Jamestown", "VT", "12068", "(321) 546-7890", defaultOrg, "", "", "", "", "", "", false, false),
 		patient3,
-		new Patient("patientId4","Sally","Mae","Map", LocalDate.of(1922, 1, 1),"123 bird St", "", "mountain top", "VA", "12075","(243) 635-7190", defaultOrg),
-		new Patient("patientId5","Apollo","Graph","QL", LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555", defaultOrg)
+		new Patient("patientId4","Sally","Mae","Map", LocalDate.of(1922, 1, 1),"123 bird St", "", "mountain top", "VA", "12075","(243) 635-7190", defaultOrg, "", "", "", "", "", "", false, false),
+		new Patient("patientId5","Apollo","Graph","QL", LocalDate.of(1901, 1, 1),"987 Plank St", "", "town name", "CA", "15065","(243) 555-5555", defaultOrg, "", "", "", "", "", "", false, false)
 	));
 	public DataFetcher<List<Patient>> patientFetcher() {
 		return (env) -> allPatients;
@@ -96,9 +96,17 @@ public class DummyDataRepo {
 		String city,
 		String state,
 		String zipCode,
-		String phone
+		String phone,
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
 	) {
-		LocalDate localBirthDateDate = LocalDate.parse(birthDate, dateTimeFormatter);
+		LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
 
 		Patient newPatient = new Patient(
 			lookupId,
@@ -112,10 +120,67 @@ public class DummyDataRepo {
 			state,
 			zipCode,
 			phone,
-			defaultOrg
+			defaultOrg,
+			typeOfHealthcareProfessional,
+			email,
+			county,
+			race,
+			ethnicity,
+			gender,
+			residentCongregateSetting,
+			employedInHealthcare
 		);
 		allPatients.add(newPatient);
 		return newPatient.getId();
+	}
+
+	public String updatePatient(
+		String patientId,
+		String lookupId,
+		String firstName,
+		String middleName,
+		String lastName,
+		String birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone,
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
+	) {
+		LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
+		Patient patientToUpdate  = getPatient(patientId);
+		patientToUpdate.updatePatient(
+			lookupId,
+			firstName,
+			middleName,
+			lastName,
+			localBirthDateDate,
+			street,
+			streetTwo,
+			city,
+			state,
+			zipCode,
+			phone,
+			defaultOrg,
+			typeOfHealthcareProfessional,
+			email,
+			county,
+			race,
+			ethnicity,
+			gender,
+			residentCongregateSetting,
+			employedInHealthcare
+		);
+		return patientToUpdate.getId();
 	}
 
 	public String updateOrganization(

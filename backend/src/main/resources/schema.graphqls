@@ -28,6 +28,14 @@ type Patient {
   typeOfHealthcareProfessional: String
   residentCongregateSetting: Boolean
   patientResidencyType: String
+  typeOfHealthcareProfessional: String
+  email: String
+  county: String
+  race: String
+  ethnicity: String
+  gender: String
+  residentCongregateSetting: Boolean
+  employedInHealthcare: Boolean
   testResults: [TestResult]
 }
 type Organization {
@@ -109,6 +117,36 @@ type Mutation {
     state: String
     zipCode: String
     phone: String
+    typeOfHealthcareProfessional: String
+    email: String
+    county: String
+    race: String
+    ethnicity: String
+    gender: String
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
+  ): String
+  updatePatient(
+    patientId: String
+    lookupId: String
+    firstName: String
+    middleName: String
+    lastName: String
+    birthDate: String
+    street: String
+    streetTwo: String
+    city: String
+    state: String
+    zipCode: String
+    phone: String
+    typeOfHealthcareProfessional: String
+    email: String
+    county: String
+    race: String
+    ethnicity: String
+    gender: String
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
   ): String
   addTestResult(deviceId: String, result: String, patientId: String): String
   addPatientToQueue(
