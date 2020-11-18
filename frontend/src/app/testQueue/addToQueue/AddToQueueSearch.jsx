@@ -24,7 +24,7 @@ const QUERY_PATIENT = gql`
 `;
 
 const ADD_PATIENT_TO_QUEUE = gql`
-mutation($patientId: String!, $symptoms: String!, $symptomOnset: String!, $pregnancy: String!, $firstTest: Boolean!, $priorTestDate: String!, $priorTestType: String!, $priorTestResult: String!) {
+mutation($patientId: String!, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String) {
   addPatientToQueue(
     patientId: $patientId
     pregnancy: $pregnancy
@@ -38,7 +38,7 @@ mutation($patientId: String!, $symptoms: String!, $symptomOnset: String!, $pregn
 }
 `;
 
-const AddToQueueSearchBox = () => {
+const AddToQueueSearchBox = ({refetchQueue}) => {
   const { data, loading, error } = useQuery(QUERY_PATIENT);
   if (loading) {
     console.log("loading patient data for search");
@@ -82,29 +82,33 @@ const AddToQueueSearchBox = () => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
-  const onAddToQueue = (patient, aoeAnswers) => {
+  const onAddToQueue = (patient, {symptoms, symptomOnset, pregnancy, firstTest, priorTestResult, priorTestDate, priorTestType}) => {
+    updateSuggestions([]);
+    setQueryString("");
     addPatientToQueue({
       variables: {
         patientId: patient.id,
-        symptoms: aoeAnswers.symptoms,
-        symptomOnset: aoeAnswers.symptomOnset,
-        pregnancy: aoeAnswers.pregnancy,
-        firstTest: aoeAnswers.priorTest.exists,
-        priorTestDate: aoeAnswers.priorTestDate,
-        priorTestType: aoeAnswers.priorTestType,
-        priorTestResult: aoeAnswers.priorTestResult,
-      },
-      onCompleted: () => {
+        symptoms,
+        symptomOnset,
+        pregnancy,
+        firstTest,
+        priorTestDate,
+        priorTestType,
+        priorTestResult,
+      }
+    }).then(
+      (res) => {
         let { type, title, body } = {
-          ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
-            patient
-          ),
-        };
-        let alert = <Alert type={type} title={title} body={body} />;
-        showNotification(toast, alert);
-      },
-      onError: (error) => console.error("error adding patient to queue", error)
-    });
+        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
+          patient
+        ),
+      };
+      let alert = <Alert type={type} title={title} body={body} />;
+      showNotification(toast, alert);
+      refetchQueue();
+    },
+    (err) => console.error(err)
+    );
   };
 
   return (
