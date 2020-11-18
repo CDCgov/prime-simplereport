@@ -254,8 +254,9 @@ const AoEModalForm = ({
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
   const initialSymptoms = {};
-  const loadedSymptoms = JSON.parse(loadState.symptoms);
   if (loadState.symptoms) {
+    const loadedSymptoms = JSON.parse(loadState.symptoms);
+
     symptomConfig.forEach((opt) => {
       const val = opt.value;
       initialSymptoms[val] = loadedSymptoms[val] || false;
