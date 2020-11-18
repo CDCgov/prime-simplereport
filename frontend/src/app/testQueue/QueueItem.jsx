@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
@@ -10,7 +9,6 @@ import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
-import { dateToString } from "./AoEForm/dateUtils";
 import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
@@ -18,9 +16,6 @@ import TestResultInputForm from "../testResults/TestResultInputForm";
 import { ALERT_CONTENT } from "../testQueue/constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import {
-  updatePatientInQueue,
-} from "./state/testQueueActions";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete }  from "./AskOnEntryTag";
@@ -39,11 +34,12 @@ mutation($patientId: String!, $deviceId: String!, $result: String!) {
 `;
 
 const UPDATE_AOE = gql`
-mutation($patientId: String, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String) {
+mutation($patientId: String, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String, $noSymptoms: Boolean) {
   updateTimeOfTestQuestions(
     patientId: $patientId
     pregnancy: $pregnancy
     symptoms: $symptoms
+    noSymptoms: $noSymptoms
     firstTest: $firstTest
     priorTestDate: $priorTestDate
     priorTestType: $priorTestType
@@ -85,8 +81,6 @@ const QueueItem = ({
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
-
-  const dispatch = useDispatch();
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -168,24 +162,18 @@ const QueueItem = ({
     updateAoe({
         variables: {
           patientId: patient.id,
+          noSymptoms: answers.noSymptoms,
           symptoms: answers.symptoms,
           symptomOnset: answers.symptomOnset,
           pregnancy: answers.pregnancy,
-          firstTest: answers.priorTest.exists,
-          priorTestDate: dateToString(answers.priorTest.date),
-          priorTestType: answers.priorTest.type,
-          priorTestResult: answers.priorTest.result,
+          firstTest: answers.firstTest,
+          priorTestDate: answers.priorTestDate,
+          priorTestType: answers.priorTestType,
+          priorTestResult: answers.priorTestResult,
         },
       }).then(
         (_response) => {
-          dispatch(
-            updatePatientInQueue(
-              patient.patientId,
-              answers,
-              deviceId,
-              testResultValue
-            )
-          );
+          refetchQueue()
         },
         (error) => console.error("error saving aoe", error)
       );
