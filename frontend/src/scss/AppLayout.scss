@@ -26,6 +26,13 @@ main {
 
 //TODO: determine where these belong and convert to SASS
 
+//TODO: resolve design discrepancies across forms in the app
+// Time-of-test design wants these bold; other pages, I dunno
+.prime-radios > .usa-legend,
+.prime-checkboxes > .usa-legend {
+  font-weight: bold;
+}
+
 .prime-fieldset {
   position: relative;
   background: #fff;
