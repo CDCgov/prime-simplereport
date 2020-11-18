@@ -81,6 +81,50 @@ public class Patient {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
+	public void updatePatient(
+		String lookupId,
+		String firstName,
+		String middleName,
+		String lastName,
+		LocalDate birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone,
+		Organization organization,
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
+	) {
+		this.lookupId = lookupId;
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.birthDate = birthDate;
+		this.street = street;
+		this.streetTwo = streetTwo;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.phone = phone;
+		this.organization = organization;
+		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
+		this.email = email;
+		this.county = county;
+		this.race = race;
+		this.ethnicity = ethnicity;
+		this.gender = gender;
+		this.residentCongregateSetting = residentCongregateSetting;
+		this.employedInHealthcare = employedInHealthcare;
+	}
+
 	public void setTestResults(ArrayList<TestResult> testResults) {
 		this.testResults = testResults;
 	}

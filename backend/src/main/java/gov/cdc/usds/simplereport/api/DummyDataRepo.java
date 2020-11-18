@@ -134,6 +134,55 @@ public class DummyDataRepo {
 		return newPatient.getId();
 	}
 
+	public String updatePatient(
+		String patientId,
+		String lookupId,
+		String firstName,
+		String middleName,
+		String lastName,
+		String birthDate,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone,
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
+	) {
+		LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
+		Patient patientToUpdate  = getPatient(patientId);
+		patientToUpdate.updatePatient(
+			lookupId,
+			firstName,
+			middleName,
+			lastName,
+			localBirthDateDate,
+			street,
+			streetTwo,
+			city,
+			state,
+			zipCode,
+			phone,
+			defaultOrg,
+			typeOfHealthcareProfessional,
+			email,
+			county,
+			race,
+			ethnicity,
+			gender,
+			residentCongregateSetting,
+			employedInHealthcare
+		);
+		return patientToUpdate.getId();
+	}
+
 	public String updateOrganization(
 		String testingFacilityName,
 		String cliaNumber,
