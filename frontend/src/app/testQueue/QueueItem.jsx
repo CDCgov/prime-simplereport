@@ -103,6 +103,7 @@ const QueueItem = ({
     };
     let alert = <Alert type={type} title={title} body={body} />;
     showNotification(toast, alert);
+    refetchQueue();
   }
 
   const onTestResultSubmit = (e) => {
