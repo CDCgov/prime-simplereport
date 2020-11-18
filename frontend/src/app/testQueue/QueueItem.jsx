@@ -79,7 +79,8 @@ const QueueItem = ({
   askOnEntry,
   selectedDeviceId,
   selectedTestResult,
-  defaultDevice
+  defaultDevice,
+  refetchQueue
 }) => {
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
@@ -100,7 +101,7 @@ const QueueItem = ({
   );
   const [forceSubmit, setForceSubmit] = useState(false);
 
-  const testResultsSumbitted = () => {
+  const testResultsSubmitted = () => {
     let { type, title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
         patient
@@ -119,10 +120,11 @@ const QueueItem = ({
             patientId: patient.id,
             deviceId: deviceId,
             result: testResultValue
-          },
-          onCompleted: testResultsSumbitted,
-          onError: (error) => console.error("error submitting test results", error)
-      });
+          }
+      }).then(
+        (_response) => testResultsSubmitted(),
+        (error) => console.error("error submitting test results", error)
+      );
 
     } else {
       updateIsConfirmationModalOpen(true);
@@ -135,13 +137,13 @@ const QueueItem = ({
 
   const removeFromQueue = (patientId) => {
     removePatientFromQueue({
-      variables: 
-        {
-          patientId
-        },
-        onCompleted: () => console.log("removed patient from queue"),
-        onError: (error) => console.error("error removing patietn from queue", error)
-    });
+      variables: {
+        patientId
+      }
+    }).then(
+      (_response) => refetchQueue(),
+      (error) => console.error("error removing patient from queue", error)
+    );;
   };
 
   const onTestResultChange = (newTestResultValue) => {
@@ -164,29 +166,29 @@ const QueueItem = ({
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
     updateAoe({
-        variables: 
-          {
-            patientId: patient.id,
-            symptoms: answers.symptoms,
-            symptomOnset: answers.symptomOnset,
-            pregnancy: answers.pregnancy,
-            firstTest: answers.priorTest.exists,
-            priorTestDate: dateToString(answers.priorTest.date),
-            priorTestType: answers.priorTest.type,
-            priorTestResult: answers.priorTest.result,
-          },
-          onCompleted: () => {
-            dispatch(
-              updatePatientInQueue(
-                patient.patientId,
-                answers,
-                deviceId,
-                testResultValue
-              )
-            );
-          },
-          onError: (error) => console.error("error saving aoe", error)
-      });
+        variables: {
+          patientId: patient.id,
+          symptoms: answers.symptoms,
+          symptomOnset: answers.symptomOnset,
+          pregnancy: answers.pregnancy,
+          firstTest: answers.priorTest.exists,
+          priorTestDate: dateToString(answers.priorTest.date),
+          priorTestType: answers.priorTest.type,
+          priorTestResult: answers.priorTest.result,
+        },
+      }).then(
+        (_response) => {
+          dispatch(
+            updatePatientInQueue(
+              patient.patientId,
+              answers,
+              deviceId,
+              testResultValue
+            )
+          );
+        },
+        (error) => console.error("error saving aoe", error)
+      );
 
   };
 
