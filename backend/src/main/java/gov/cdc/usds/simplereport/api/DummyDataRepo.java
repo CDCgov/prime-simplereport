@@ -4,10 +4,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.Organization;
@@ -16,9 +15,9 @@ import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
 import graphql.schema.DataFetcher;
-import org.springframework.stereotype.Service;
 
 @Service
+@SuppressWarnings("checkstyle:MagicNumber")
 public class DummyDataRepo {
 
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");

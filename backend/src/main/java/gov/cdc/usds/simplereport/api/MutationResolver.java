@@ -1,14 +1,10 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.api.model.Device;
-import gov.cdc.usds.simplereport.api.model.Organization;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import graphql.kickstart.tools.GraphQLMutationResolver;
 
 /**
  * Created by nickrobison on 11/15/20

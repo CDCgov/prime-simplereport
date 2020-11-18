@@ -1,11 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.UUID;
-
-import gov.cdc.usds.simplereport.api.model.Organization;
-import gov.cdc.usds.simplereport.api.model.TestResult;
 
 public class Patient {
 
