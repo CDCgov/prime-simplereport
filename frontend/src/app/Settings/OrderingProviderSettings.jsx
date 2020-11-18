@@ -7,16 +7,23 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
     let value = e.target.value;
     let newOrgSettings = {
       ...orgSettings,
-      orderingProvider: {
-        ...orgSettings.orderingProvider,
-        [name]: value,
-      },
+      [name]: value,
     };
     updateOrgSettings(newOrgSettings);
   };
 
-  let { name, npi, address, zip, phone } = {
-    ...orgSettings.orderingProvider,
+  let {
+    orderingProviderName,
+    orderingProviderNPI,
+    orderingProviderStreet,
+    orderingProviderStreetTwo,
+    orderingProviderCity,
+    orderingProviderCounty,
+    orderingProviderZipCode,
+    orderingProviderState,
+    orderingProviderPhone,
+  } = {
+    ...orgSettings,
   };
 
   return (
@@ -31,41 +38,75 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Name"}
-                  value={name || ""}
+                  value={orderingProviderName || ""}
                   onChange={onInputChange}
-                  name={"name"} // TODO: don't hardcode this.
+                  name={"orderingProviderName"}
                 />
               </div>
               <div className="tablet:grid-col">
                 <TextInput
                   label={"NPI"}
-                  value={npi || ""}
+                  value={orderingProviderNPI || ""}
                   onChange={onInputChange}
-                  name={"npi"}
+                  name={"orderingProviderNPI"}
                 />
               </div>
               <div className="tablet:grid-col">
                 <TextInput
-                  label={"Address"}
-                  value={address || ""}
+                  label={"Street 1"}
+                  value={orderingProviderStreet || ""}
                   onChange={onInputChange}
-                  name={"address"}
+                  name={"orderingProviderStreet"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Street 2"}
+                  value={orderingProviderStreetTwo || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderStreetTwo"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"City"}
+                  value={orderingProviderCity || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderCity"}
+                />
+              </div>
+            </div>
+            <div className="grid-row grid-gap">
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"County"}
+                  value={orderingProviderCounty || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderCounty"}
                 />
               </div>
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Zip Code"}
-                  value={zip || ""}
+                  value={orderingProviderZipCode || ""}
                   onChange={onInputChange}
-                  name={"zip"}
+                  name={"orderingProviderZipCode"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"State"}
+                  value={orderingProviderState || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderState"}
                 />
               </div>
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Phone Number"}
-                  value={phone || ""}
+                  value={orderingProviderPhone || ""}
                   onChange={onInputChange}
-                  name={"phone"}
+                  name={"orderingProviderPhone"}
                 />
               </div>
             </div>

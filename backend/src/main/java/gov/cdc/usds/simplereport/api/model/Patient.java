@@ -21,6 +21,7 @@ public class Patient {
 	private String ethnicity;
 	private String street;
 	private String streetTwo;
+	private String county;
 	private String city;
 	private String state;
 	private String zipCode;
@@ -45,7 +46,15 @@ public class Patient {
 		String state,
 		String zipCode,
 		String phone,
-		Organization organization
+		Organization organization,
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
 	) {
 		super();
 		this.id = UUID.randomUUID().toString();
@@ -62,9 +71,17 @@ public class Patient {
 		this.phone = phone;
 		this.organization = organization;
 		this.testResults = new ArrayList<TestResult>();
+		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
+		this.email = email;
+		this.county = county;
+		this.race = race;
+		this.ethnicity = ethnicity;
+		this.gender = gender;
+		this.residentCongregateSetting = residentCongregateSetting;
+		this.employedInHealthcare = employedInHealthcare;
 	}
 
-	public Patient(
+	public void updatePatient(
 		String lookupId,
 		String firstName,
 		String middleName,
@@ -77,10 +94,35 @@ public class Patient {
 		String zipCode,
 		String phone,
 		Organization organization,
-		ArrayList<TestResult> testResults
+		String typeOfHealthcareProfessional,
+		String email,
+		String county,
+		String race,
+		String ethnicity,
+		String gender,
+		Boolean residentCongregateSetting,
+		Boolean employedInHealthcare
 	) {
-		this(lookupId, firstName, middleName, lastName, birthDate, street, streetTwo, city, state, zipCode, phone, organization);
-		this.testResults = testResults;
+		this.lookupId = lookupId;
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.birthDate = birthDate;
+		this.street = street;
+		this.streetTwo = streetTwo;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.phone = phone;
+		this.organization = organization;
+		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
+		this.email = email;
+		this.county = county;
+		this.race = race;
+		this.ethnicity = ethnicity;
+		this.gender = gender;
+		this.residentCongregateSetting = residentCongregateSetting;
+		this.employedInHealthcare = employedInHealthcare;
 	}
 
 	public void setTestResults(ArrayList<TestResult> testResults) {
@@ -127,8 +169,35 @@ public class Patient {
 		return phone;
 	}
 
-	// FIXME: We need the actual county wired
+	public String getEmail() {
+		return phone;
+	}
+
 	public String getCounty() {
-		return "";
+		return county;
+	}
+
+	public String getTypeOfHealthcareProfessional() {
+		return typeOfHealthcareProfessional;
+	}
+
+	public String getRace() {
+		return race;
+	}
+
+	public String getEthnicity() {
+		return ethnicity;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public Boolean getResidentCongregateSetting() {
+		return residentCongregateSetting;
+	}
+
+	public Boolean getEmployedInHealthcare() {
+		return employedInHealthcare;
 	}
 }
