@@ -24,10 +24,11 @@ const QUERY_PATIENT = gql`
 `;
 
 const ADD_PATIENT_TO_QUEUE = gql`
-mutation($patientId: String!, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String) {
+mutation($patientId: String!, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String, $noSymptoms: Boolean) {
   addPatientToQueue(
     patientId: $patientId
     pregnancy: $pregnancy
+    noSymptoms: $noSymptoms
     symptoms: $symptoms
     firstTest: $firstTest
     priorTestDate: $priorTestDate
@@ -82,12 +83,13 @@ const AddToQueueSearchBox = ({refetchQueue}) => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
-  const onAddToQueue = (patient, {symptoms, symptomOnset, pregnancy, firstTest, priorTestResult, priorTestDate, priorTestType}) => {
+  const onAddToQueue = (patient, {noSymptoms, symptoms, symptomOnset, pregnancy, firstTest, priorTestResult, priorTestDate, priorTestType}) => {
     updateSuggestions([]);
     setQueryString("");
     addPatientToQueue({
       variables: {
         patientId: patient.id,
+        noSymptoms,
         symptoms,
         symptomOnset,
         pregnancy,

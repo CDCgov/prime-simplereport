@@ -199,39 +199,44 @@ const PriorTestInputs = ({
           setIsFirstTest(isFirstTest);
         }}
         label="Is this the first test?"
-        legend="First covid test?"
+        legend="First test?"
         name="prior_test_flag"
         horizontal
+        displayLegend="true"
       />
-      <ManagedDateField
-        name="prior_test_date"
-        label="Date of most recent prior test?"
-        managedDate={priorTestDate}
-        setManagedDate={setPriorTestDate}
-        disabled={disableDetails}
-        maxAllowedDate="now"
-        minAllowedDate="2020-02-01"
-      />
-      <Dropdown
-        options={testTypeConfig}
-        label="Type of prior test"
-        name="prior_test_type"
-        selectedValue={priorTestType}
-        onChange={(e) => setPriorTestType(e.target.value)}
-        disabled={disableDetails}
-      />
-      <Dropdown
-        options={[
-          { value: "positive", label: "Positive" },
-          { value: "negative", label: "Negative" },
-          { value: "undetermined", label: "Undetermined" },
-        ]}
-        label="Result of prior test"
-        name="prior_test_result"
-        selectedValue={priorTestResult}
-        onChange={(e) => setPriorTestResult(e.target.value)}
-        disabled={disableDetails}
-      />
+      {isFirstTest ? null : (
+        <>
+          <ManagedDateField
+            name="prior_test_date"
+            label="Date of most recent prior test?"
+            managedDate={priorTestDate}
+            setManagedDate={setPriorTestDate}
+            disabled={disableDetails}
+            maxAllowedDate="now"
+            minAllowedDate="2020-02-01"
+          />
+          <Dropdown
+            options={testTypeConfig}
+            label="Type of prior test"
+            name="prior_test_type"
+            selectedValue={priorTestType}
+            onChange={(e) => setPriorTestType(e.target.value)}
+            disabled={disableDetails}
+          />
+          <Dropdown
+            options={[
+              { value: "positive", label: "Positive" },
+              { value: "negative", label: "Negative" },
+              { value: "undetermined", label: "Undetermined" },
+            ]}
+            label="Result of prior test"
+            name="prior_test_result"
+            selectedValue={priorTestResult}
+            onChange={(e) => setPriorTestResult(e.target.value)}
+            disabled={disableDetails}
+          />
+        </>
+      )}
     </React.Fragment>
   );
 };
@@ -249,33 +254,33 @@ const AoEModalForm = ({
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
   const initialSymptoms = {};
+  const loadedSymptoms = JSON.parse(loadState.symptoms);
   if (loadState.symptoms) {
     symptomConfig.forEach((opt) => {
       const val = opt.value;
-      initialSymptoms[val] = loadState.symptoms[val];
+      initialSymptoms[val] = loadedSymptoms[val] || false;
     });
+    console.log(initialSymptoms)
+
   } else {
-    // symptomConfig.forEach((opt) => {
-    //   const val = opt.value;
-    //   initialSymptoms[val] = false;
-    // });
+    symptomConfig.forEach((opt) => {
+      const val = opt.value;
+      initialSymptoms[val] = false;
+    });
   }
 
   const useDateState = (preLoaded) =>
     useState(preLoaded || { month: "", day: "", year: "" });
 
-  const [noSymptoms, setNoSymptoms] = useState(
-    loadState.noSymptomFlag || false
-  );
+  const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
 
-  const priorTestPreload = loadState.priorTest || {};
-  const [isFirstTest, setIsFirstTest] = useState(priorTestPreload.exists);
-  const [priorTestDate, setPriorTestDate] = useDateState(priorTestPreload.date);
-  const [priorTestType, setPriorTestType] = useState(priorTestPreload.type);
+  const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
+  const [priorTestDate, setPriorTestDate] = useDateState(loadState.priorTestDate);
+  const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState(
-    priorTestPreload.result
+    loadState.priorTestResult
   );
 
   const [pregnancyResponse, setPregnancyResponse] = useState(
@@ -302,14 +307,13 @@ const AoEModalForm = ({
       priorTestResult: priorTestResult,
     };
 
-
-    const newState = {
+    saveCallback({
+      noSymptoms,
       symptoms: JSON.stringify(saveSymptoms),
       symptomOnset: dateToString(onsetDate),
       ...priorTest,
       pregnancy: pregnancyResponse,
-    };
-    saveCallback(newState);
+    });
     onClose();
   };
 

@@ -26,6 +26,7 @@ const queueQuery = gql`{
     dateAdded
     symptoms
     symptomOnset
+    noSymptoms
     firstTest
     priorTestDate
     priorTestType
@@ -74,6 +75,7 @@ const TestQueue = () => {
           pregnancy,
           dateAdded,
           symptoms,
+          noSymptoms,
           firstTest,
           priorTestDate,
           priorTestType,
@@ -89,6 +91,7 @@ const TestQueue = () => {
             askOnEntry={{
               pregnancy,
               dateAdded: parseDate(dateAdded),
+              noSymptoms,
               symptoms,
               symptomOnset: parseDate(symptomOnset),
               firstTest,
