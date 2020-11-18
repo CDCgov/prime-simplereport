@@ -31,13 +31,13 @@ resource "azurerm_postgresql_database" "simple_report" {
   server_name = azurerm_postgresql_server.db.name
 }
 
-//resource "azurerm_postgresql_firewall_rule" "all" {
-//  end_ip_address = "0.0.0.0"
-//  name = "AllowAllAzureIps"
-//  resource_group_name = data.azurerm_resource_group.k8s.name
-//  server_name = azurerm_postgresql_server.db.name
-//  start_ip_address = "0.0.0.0"
-//}
+resource "azurerm_postgresql_firewall_rule" "all" {
+  name = "AllowAllAzureIps"
+  resource_group_name = data.azurerm_resource_group.k8s.name
+  server_name = azurerm_postgresql_server.db.name
+  start_ip_address = "0.0.0.0"
+  end_ip_address = "0.0.0.0"
+}
 
 resource "azurerm_container_group" "backend" {
   name = "pdi-backend"
@@ -57,14 +57,15 @@ resource "azurerm_container_group" "backend" {
       protocol = "TCP"
     }
     environment_variables = {
-      "SPRING_DATASOURCE_URL": "jdbc:postgresql://${azurerm_postgresql_server.db.fqdn}:5432/simple_report"
+      "SPRING_DATASOURCE_URL": "jdbc:postgresql://${azurerm_postgresql_server.db.fqdn}:5432/simple_report?user=simple_report_app@pdi-db-nrobison"
       "SPRING_DATASOURCE_PASSWORD": "H@Sh1CoR3!"
+      "SPRING_PROFILES_ACTIVE": "dev"
     }
   }
 
   depends_on = [
     azurerm_postgresql_database.simple_report
-//    azurerm_postgresql_firewall_rule.all
+    azurerm_postgresql_firewall_rule.all
   ]
 }
 
