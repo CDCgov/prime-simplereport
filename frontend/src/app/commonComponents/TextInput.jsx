@@ -4,7 +4,7 @@ import classnames from "classnames";
 import useUniqueId from "../commonComponents/useUniqueIds";
 
 const TextInput = ({
-  value,
+  value = "",
   label,
   name,
   placeholder,

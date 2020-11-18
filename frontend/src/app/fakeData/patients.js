@@ -1,7 +1,8 @@
 // dummy responses for async queries
 export const demoPatients = [
   {
-    patientId: "patientId1",
+    patientId: "$PATIENT-b3xkhkyxb70",
+    lookupId: "patientId1",
     firstName: "Edward",
     middleName: "D",
     lastName: "Teach",
@@ -10,7 +11,8 @@ export const demoPatients = [
     phone: "(123) 456-7890",
   },
   {
-    patientId: "patientId2",
+    patientId: "$PATIENT-3xpkhkyx51m",
+    lookupId: "patientId2",
     firstName: "James",
     middleName: "D.",
     lastName: "Flint",
@@ -19,7 +21,8 @@ export const demoPatients = [
     phone: "(321) 546-7890",
   },
   {
-    patientId: "patientId3",
+    patientId: "$PATIENT-2ockhkyx15k",
+    lookupId: "patientId3",
     firstName: "John",
     middleName: "'Long'",
     lastName: "Silver",
@@ -28,7 +31,8 @@ export const demoPatients = [
     phone: "(213) 645-7890",
   },
   {
-    patientId: "patientId4",
+    patientId: "$PATIENT-mh5khkzccs0",
+    lookupId: "patientId4",
     firstName: "Sally",
     middleName: "Mae",
     lastName: "Map",
@@ -40,8 +44,9 @@ export const demoPatients = [
 
 // dummy initial data to populate redux
 export const initialPatientState = {
-  patientId1: {
-    patientId: "patientId1",
+  "$PATIENT-b3xkhkyxb70": {
+    patientId: "$PATIENT-b3xkhkyxb70",
+    lookupId: "patientId1",
     firstName: "Edward",
     middleName: "I",
     lastName: "Teach",
@@ -49,8 +54,9 @@ export const initialPatientState = {
     address: "123 Plank St, Nassau",
     phone: "(123) 456-7890",
   },
-  patientId2: {
-    patientId: "patientId2",
+  "$PATIENT-3xpkhkyx51m": {
+    patientId: "$PATIENT-3xpkhkyx51m",
+    lookupId: "patientId2",
     firstName: "James",
     middleName: "D.",
     lastName: "Flint",
@@ -58,8 +64,9 @@ export const initialPatientState = {
     address: "456 Plank St, Nassau",
     phone: "(321) 546-7890",
   },
-  patientId3: {
-    patientId: "patientId3",
+  "$PATIENT-2ockhkyx15k": {
+    patientId: "$PATIENT-2ockhkyx15k",
+    lookupId: "patientId3",
     firstName: "John",
     middleName: "'Long'",
     lastName: "Silver",
@@ -67,8 +74,9 @@ export const initialPatientState = {
     address: "789 Plank St, Nassau",
     phone: "(213) 645-7890",
   },
-  patientId4: {
-    patientId: "patientId4",
+  "$PATIENT-mh5khkzccs0": {
+    patientId: "$PATIENT-mh5khkzccs0",
+    lookupId: "patientId4",
     firstName: "Sally",
     middleName: "Mae",
     lastName: "Map",

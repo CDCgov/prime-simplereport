@@ -37,7 +37,7 @@ const TestResultInputForm = ({
         selectedRadio={testResultValue}
       />
       <div className="prime-test-result-submit">
-        <Button onClick={onSubmit} type="submit" outline label="Submit" />
+        <Button onClick={onSubmit} type="submit" disabled={testResultValue === null || testResultValue=== undefined} outline label="Submit" />
         <Anchor onClick={onClearClick} text="Clear" />
       </div>
     </React.Fragment>

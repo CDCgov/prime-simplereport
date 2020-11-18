@@ -14,11 +14,14 @@ services:
       # Mount init scripts for first-run user/schema creation
       - type: bind
         source: ./db-setup/create-db.sh
-        target: /docker-entrypoint-initdb.d/01-user-schema-creation.sh
+        target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
+      - type: bind
+        source: ./db-setup/reset-db.sql
+        target: /usr/local/lib/reset-db.sql
   api:
     build:
       context: .
-    image:  simple-report-api-build
+    image: simple-report-api-build
     command: bootRun
     environment:
       SPRING_PROFILES_ACTIVE: dev,db-dockerized

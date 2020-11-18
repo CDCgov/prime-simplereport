@@ -1,21 +1,10 @@
 spring:
-  main:
-    banner-mode: "OFF"
-  datasource:
-    username: simple_report_app
-    password: api123
-    url: jdbc:postgresql://localhost:${SR_DB_PORT:5432}/simple_report
+  profiles.include: no-security
+  liquibase:
+    user: simple_report_migrations
+    password: migrations456
   jpa:
     properties:
       hibernate:
-        default_schema: simple_report
-  liquibase:
-    default-schema: ${spring.jpa.properties.hibernate.default_schema}
-graphql:
-  servlet:
-    mapping: /graphql
-    enabled: true
-    corsEnabled: true
-  tools:
-    schema-location-pattern: "**/*.graphqls"
+        show_sql: true
 

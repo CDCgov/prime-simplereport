@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { gql, useQuery, useMutation } from "@apollo/client";
 
 import {
   PATIENT_TERM_PLURAL_CAP,
@@ -10,13 +11,60 @@ import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { getPatientById } from "./patientSelectors";
-import { useDispatch, useSelector } from "react-redux";
-import { updatePatient } from "./state/patientActions";
+import { useSelector } from "react-redux";
+import { Prompt } from "react-router-dom";
 import moment from "moment";
 import { getTestResultById } from "../testResults/testResultsSelector";
 import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName } from "../utils";
 import "./EditPatient.scss";
+
+
+const ADD_PATIENT = gql`
+mutation(
+  $lookupId: String
+  $firstName: String
+  $middleName: String
+  $lastName: String
+  $birthDate: String
+  $street: String
+  $streetTwo: String
+  $city: String
+  $state: String
+  $zipCode: String
+  $phone: String
+  $typeOfHealthcareProfessional: String
+  $email: String
+  $county: String
+  $race: String
+  $ethnicity: String
+  $gender: String
+  $residentCongregateSetting: Boolean
+  $employedInHealthcare: Boolean
+) {
+  addPatient(
+    lookupId: $lookupId
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    birthDate: $birthDate
+    street: $street
+    streetTwo: $streetTwo
+    city: $city
+    state: $state
+    zipCode: $zipCode
+    phone: $phone
+    typeOfHealthcareProfessional: $typeOfHealthcareProfessional
+    email: $email
+    county: $county
+    race: $race
+    ethnicity: $ethnicity
+    gender: $gender
+    residentCongregateSetting: $residentCongregateSetting
+    employedInHealthcare: $employedInHealthcare
+  )
+}
+`;
 
 const Fieldset = (props) => (
   <fieldset className="prime-fieldset">
@@ -28,14 +76,12 @@ const Fieldset = (props) => (
 );
 
 const EditPatient = (props) => {
-  const dispatch = useDispatch();
+  const [addPatient] = useMutation(ADD_PATIENT);
+  const [formChanged, setFormChanged] = useState(false);
   const { patientId, isNew } = props;
   const foundPatient = useSelector(getPatientById(patientId));
-  //TODO: work out edge cases
-  const patient = foundPatient || { patientId };
+  const [patient, setPatient] = useState(foundPatient || { patientId });
   const onChange = (e) => {
-    //TODO let reducer update one thang
-    const newPatient = { ...patient, patientId };
     let value = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
@@ -43,17 +89,54 @@ const EditPatient = (props) => {
         [e.target.value]: e.target.checked,
       };
     }
-    dispatch(updatePatient({ ...newPatient, [e.target.name]: value }));
+    setFormChanged(true);
+    setPatient({ ...patient, [e.target.name]: value });
   };
-  const results = useSelector(getTestResultById(props.patientId));
+  const results = useSelector(getTestResultById(patientId));
   const fullName = displayFullName(
     patient.firstName,
     patient.middleName,
     patient.lastName
   );
+
+  const savePatientData = () => {
+    setFormChanged(false);
+    addPatient({
+      variables: {
+        lookupId: patient.lookupId,
+        firstName: patient.firstName,
+        middleName: patient.middleName,
+        lastName: patient.lastName,
+        birthDate: patient.birthDate,
+        street: patient.street,
+        streetTwo: patient.streetTwo,
+        city: patient.city,
+        state: patient.state,
+        zipCode: patient.zipCode,
+        phone: patient.phone,
+        typeOfHealthcareProfessional: patient.patientType,
+        email: patient.email_address,
+        county: patient.county,
+        race: patient.race,
+        ethnicity: patient.ethnicity,
+        gender: patient.sex,
+        residentCongregateSetting: patient.resident_congregate_setting,
+        employedInHealthcare: patient.employed_in_healthcare
+      }
+    }).then(
+      () => console.log("success!!!"),
+      (error) => console.error(error),
+    );
+  }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
+      <Prompt
+        when={formChanged}
+        message={(location) =>
+          "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
+        }
+      />
       <Breadcrumbs
         crumbs={[
           { link: "../patients", text: PATIENT_TERM_PLURAL_CAP },
@@ -64,7 +147,11 @@ const EditPatient = (props) => {
       />
       <div className="prime-edit-patient-heading">
         <h2>{isNew ? `Create New ${PATIENT_TERM_CAP}` : fullName}</h2>
-        <button className="usa-button prime-save-patient-changes">
+        <button
+          className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
           Save Changes
         </button>
       </div>
@@ -92,8 +179,8 @@ const EditPatient = (props) => {
         <div className="prime-form-line">
           <TextInput
             label="Lookup ID"
-            name="patientId"
-            value={patient.patientId}
+            name="lookupId"
+            value={patient.lookupId}
             onChange={onChange}
           />
           <Dropdown
@@ -109,7 +196,7 @@ const EditPatient = (props) => {
             ]}
           />
         </div>
-        <div class="prime-form-line">
+        <div className="prime-form-line">
           <TextInput
             label="Date of Birth"
             name="birthDate"
@@ -301,6 +388,16 @@ const EditPatient = (props) => {
           </table>
         )}
       </Fieldset>
+      <div className="prime-edit-patient-heading">
+        <div></div>
+        <button
+          className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
+          Save Changes
+        </button>
+      </div>
     </main>
   );
 };

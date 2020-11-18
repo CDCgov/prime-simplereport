@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 
 import Anchor from "../../commonComponents/Anchor";
 import AoeModalForm from "../AoEForm/AoEModalForm";
+import { displayFullName } from "../../utils";
 
 const AddToQueueButton = ({ patient, onAddToQueue }) => {
   const [aoeDialogActive, setAoEDialogActive] = useState(false);
@@ -39,9 +40,13 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
     }
     let suggestionRows = suggestions.map((suggestion) => (
       <tr key={uuidv4()}>
-        <td>{suggestion.displayName}</td>
+        <td>{displayFullName(
+            suggestion.firstName,
+            suggestion.middleName,
+            suggestion.lastName
+          )}</td>
         <td>{suggestion.birthDate}</td>
-        <td>{suggestion.patientId}</td>
+        <td>{suggestion.lookupId}</td>
         <td>
           <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} />
         </td>

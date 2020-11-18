@@ -8,17 +8,19 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
 /**
- * Created by nickrobison on 11/16/20
+ * Stub no-op configuration for development and test environments.
  */
-@Profile("dev") // Configuration is only active in the dev profile
+@Profile(DevSecurityConfiguration.PROFILE)
 @Configuration
 public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
+    public static final String PROFILE = "no-security";
+
     @Override
     public void configure(WebSecurity web) {
-        logger.warn("SECURITY DISABLED IN DEV PROFILE");
+        logger.warn("SECURITY DISABLED BY {} PROFILE", PROFILE);
         web
                 .ignoring()
                 .antMatchers("/**");

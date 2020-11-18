@@ -25,6 +25,10 @@
       "description": "",
       "type": "string"
     },
+    "patientLookupID": {
+      "description": "User-created lookup information",
+      "type": "string"
+    },
     "patientRace": {
       "description": "Patient race",
       "type": "string"

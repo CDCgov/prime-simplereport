@@ -12,6 +12,7 @@ import TestQueue from "../testQueue/TestQueue";
 import ManagePatients from "../patients/ManagePatients";
 import EditPatient from "../patients/EditPatient";
 import Settings from "../Settings/Settings";
+import { createPatientId } from "../query/patients";
 
 const OrganizationHomeContainer = () => {
   let match = useRouteMatch();
@@ -44,8 +45,7 @@ const OrganizationHomeContainer = () => {
             let patientId = match.params.patientId;
             let isNew = false;
             if (!patientId || patientId === "NEW") {
-              // TODO: patientId generation algorithm
-              patientId = "person" + Math.round(10 + Math.random() * 10000);
+              patientId = createPatientId();
               isNew = true;
             }
             return <EditPatient patientId={patientId} isNew={isNew} />;
