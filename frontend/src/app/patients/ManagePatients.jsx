@@ -3,8 +3,7 @@ import React, { useState } from "react";
 
 import { displayFullName } from "../utils";
 
-import Button from "../commonComponents/Button";
-import { v4 as uuidv4 } from "uuid";
+import { NavLink } from "react-router-dom";
 import { readString } from "react-papaparse";
 import Ajv from "ajv";
 
@@ -33,8 +32,6 @@ const patientQuery = gql`
 
 const ManagePatients = () => {
   const { data, loading, error } = useQuery(patientQuery);
-  console.log("data", data);
-
   const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
 
   const openCSVModal = () => {
@@ -147,13 +144,15 @@ const ManagePatients = () => {
 
   const patientRows = (patients) => {
     return patients.map((patient) => (
-      <tr key={`patient-${uuidv4()}`}>
+      <tr key={patient.id}>
         <th scope="row">
-          {displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )}
+          <NavLink to={`patient/${patient.patientId}`}>
+            {displayFullName(
+              patient.firstName,
+              patient.middleName,
+              patient.lastName
+            )}
+          </NavLink>
         </th>
         <td>{patient.lookupId}</td>
         <td> {patient.birthDate}</td>
@@ -175,12 +174,11 @@ const ManagePatients = () => {
               <h2> Add New {PATIENT_TERM_CAP}</h2>
             </div>
             <div className="usa-card__body">
-              <div></div>
-              <Button
-                type="button"
-                onClick={() => {}}
-                label={`New ${PATIENT_TERM_CAP}`}
-              />
+              <div style={{ display: "inline-block" }}>
+                <NavLink className="usa-button" to={"patient/NEW"}>
+                  New {PATIENT_TERM_CAP}
+                </NavLink>
+              </div>
               - OR - &nbsp;
               <input
                 type="file"
