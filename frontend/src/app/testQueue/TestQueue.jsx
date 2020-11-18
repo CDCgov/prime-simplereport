@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
 
 import {parseDate} from "./AoEForm/dateUtils";
-import AddToQueue from "./addToQueue/AddToQueue";
+import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 
 const emptyQueueMessage = (
@@ -57,9 +57,8 @@ const queueQuery = gql`{
   }
 }`;
 
-
 const TestQueue = () => {
-  const { data, loading, error } = useQuery(queueQuery);
+  const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery);
 
   if (error) {
     return <p>Error in loading patients</p>;
@@ -101,6 +100,7 @@ const TestQueue = () => {
             selectedTestResult={testResult}
             devices={data.organization.devices}
             defaultDevice={data.organization.defaultDevice}
+            refetchQueue={refetchQueue}
           />
         ))
       : emptyQueueMessage;
@@ -109,7 +109,7 @@ const TestQueue = () => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <AddToQueue />
+          <AddToQueueSearch refetchQueue={refetchQueue}/>
         </div>
         {createQueueItems(data.queue)}
       </div>
