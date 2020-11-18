@@ -2,9 +2,10 @@
 import React from "react";
 
 export const areAnswersComplete = (answerDict) => {
-  if (answerDict.symptoms) {
+  if (!answerDict.noSymptoms) {
     let symptomFound = false;
-    Object.values(answerDict.symptoms).forEach((val) => {
+    const symptoms = JSON.parse(answerDict.symptoms)
+    Object.values(symptoms).forEach((val) => {
       if (val) {
         symptomFound = true;
       }
@@ -23,19 +24,15 @@ export const areAnswersComplete = (answerDict) => {
       }
     }
   }
-  const priorTest = answerDict.priorTest;
-  if (!priorTest) {
-    return false;
-  } else if (!priorTest.exists) {
-    // this field name is incorrect!
-    if (
-      priorTest.date.year === "" ||
-      priorTest.date.month === "" ||
-      priorTest.date.day === ""
+  if (!answerDict.firstTest) {
+    if (!answerDict.priorTestDate ||
+      answerDict.priorTestDate.year === "" ||
+      answerDict.priorTestDate.month === "" ||
+      answerDict.priorTestDate.day === ""
     ) {
       return false;
     }
-    if (!priorTest.type || !priorTest.result) {
+    if (!answerDict.priorTestType || !answerDict.priorTestResult) {
       return false;
     }
   }
