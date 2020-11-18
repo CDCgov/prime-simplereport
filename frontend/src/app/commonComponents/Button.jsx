@@ -18,6 +18,7 @@ const Button = ({
   label,
   outline,
   addClass,
+  title,
 }) => {
   let classNames = classnames(
     {
@@ -30,7 +31,7 @@ const Button = ({
       "usa-button-disabled": disabled,
       "usa-button-secondary-disabled": secondaryDisabled,
     },
-    addClass
+    addClass,
   );
 
   const buttonIcon = !icon ? null : <FontAwesomeIcon icon={icon} />;
@@ -45,6 +46,7 @@ const Button = ({
       onClick={onClick}
       type={type || "button"}
       disabled={disabled}
+      title={title || label || ""}
     >
       {buttonIcon}
       {label}
@@ -65,6 +67,7 @@ Button.propTypes = {
   label: PropTypes.string,
   outline: PropTypes.bool,
   addClass: PropTypes.string,
+  title: PropTypes.string,
 };
 
 export default Button;

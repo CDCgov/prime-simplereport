@@ -10,20 +10,26 @@ const Dropdown = ({
   onChange,
   disabled,
   addClass,
+  id,
   defaultOption, // value of the default option
   selectedValue,
 }) => {
   const [selectId] = useUniqueIds("dropdown", 1);
+  const elemId = (id || selectId);
+
+  const labelElem = label ? (
+      <label className="usa-label" htmlFor={elemId}>
+      <strong>{label}</strong>
+    </label>
+  ) : null;
 
   return (
-    <div className={classnames("prime-dropdown", addClass)}>
-      <label className="usa-label" htmlFor={selectId}>
-        {label}
-      </label>
+    <React.Fragment>
+      {labelElem}
       <select
         className="usa-select"
         name={name}
-        id={selectId}
+        id={elemId}
         onChange={onChange}
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
@@ -35,7 +41,7 @@ const Dropdown = ({
           </option>
         ))}
       </select>
-    </div>
+    </React.Fragment>
   );
 };
 

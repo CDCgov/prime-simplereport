@@ -206,3 +206,16 @@
 .Toastify__toast {
   padding: 3px;
 }
+
+// very basic required-field indicator and validator
+// can't use outline because USDS style already overloads it
+input:required {
+  background-color: rgba(255, 247, 237, 0.85);
+}
+input:valid {
+  background-color: white;
+}
+// todo: this is in normalize.scss, but not getting included
+.hidden {
+  display: none;
+}
