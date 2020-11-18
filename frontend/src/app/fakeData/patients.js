@@ -44,7 +44,7 @@ export const demoPatients = [
 
 // dummy initial data to populate redux
 export const initialPatientState = {
-  patientId1: {
+  "$PATIENT-b3xkhkyxb70": {
     patientId: "$PATIENT-b3xkhkyxb70",
     lookupId: "patientId1",
     firstName: "Edward",
@@ -54,7 +54,7 @@ export const initialPatientState = {
     address: "123 Plank St, Nassau",
     phone: "(123) 456-7890",
   },
-  patientId2: {
+  "$PATIENT-3xpkhkyx51m": {
     patientId: "$PATIENT-3xpkhkyx51m",
     lookupId: "patientId2",
     firstName: "James",
@@ -64,7 +64,7 @@ export const initialPatientState = {
     address: "456 Plank St, Nassau",
     phone: "(321) 546-7890",
   },
-  patientId3: {
+  "$PATIENT-2ockhkyx15k": {
     patientId: "$PATIENT-2ockhkyx15k",
     lookupId: "patientId3",
     firstName: "John",
@@ -74,7 +74,7 @@ export const initialPatientState = {
     address: "789 Plank St, Nassau",
     phone: "(213) 645-7890",
   },
-  patientId4: {
+  "$PATIENT-mh5khkzccs0": {
     patientId: "$PATIENT-mh5khkzccs0",
     lookupId: "patientId4",
     firstName: "Sally",
