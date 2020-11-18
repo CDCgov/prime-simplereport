@@ -31,7 +31,7 @@ const Button = ({
       "usa-button-disabled": disabled,
       "usa-button-secondary-disabled": secondaryDisabled,
     },
-    addClass,
+    addClass
   );
 
   const buttonIcon = !icon ? null : <FontAwesomeIcon icon={icon} />;

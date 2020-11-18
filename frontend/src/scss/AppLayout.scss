@@ -48,17 +48,21 @@ main {
   align-items: center;
   margin: 1em;
 }
+
 .prime-save-patient-changes {
   padding: 1em;
 }
+
 .prime-form-line {
   display: flex;
   flex-flow: row wrap;
 }
+
 .prime-text-input,
 .prime-dropdown {
   margin-left: 2em;
 }
+
 .prime-radios,
 .prime-checkboxes {
   margin-top: 1em;
@@ -69,24 +73,31 @@ main {
 .prime-text-input.prime-last-name {
   width: 10em;
 }
+
 .prime-text-input.prime-phone {
   width: 10em;
 }
+
 .prime-text-input.prime-email {
   width: 18em;
 }
+
 .prime-text-input.prime-street-address {
   width: 100%;
 }
+
 .prime-text-input.prime-city {
   width: 12em;
 }
+
 .prime-text-input.prime-county {
   width: 10em;
 }
+
 .prime-dropdown.prime-state {
   width: 7em;
 }
+
 .prime-text-input.prime-zip {
   width: 8em;
 }

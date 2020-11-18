@@ -7,10 +7,10 @@ import { useEffect } from "react";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
 import DeviceSettings from "./DeviceSettings";
-import StaffSettings from "./StaffSettings";
 import OrderingProviderSettings from "./OrderingProviderSettings";
 import OrganizationSettings from "./OrganizationSettings";
 import { showNotification } from "../utils";
+import StaffSettings from "./StaffSettings";
 
 const GET_SETTINGS_QUERY = gql`
   {
@@ -180,9 +180,10 @@ const Settings = () => {
         deviceSettings={deviceSettings}
         updateDeviceSettings={updateDeviceSettingsHandler}
       />
+      />
       <StaffSettings
-          orgSettings={orgSettings}
-          updateOrgSettings={updateOrgSettings}
+        orgSettings={orgSettings}
+        updateOrgSettings={updateOrgSettingsHandler}
       />
     </main>
   );

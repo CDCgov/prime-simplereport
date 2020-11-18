@@ -3,12 +3,12 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import useUniqueId from "../commonComponents/useUniqueIds";
 
-const TextInput = ({ label, type='text', ...inputProps }) => {
+const TextInput = ({ label, type = "text", ...inputProps }) => {
   const [newId] = useUniqueId("textinput", 1);
-  const id = (inputProps.id || newId);
-  const props = {id, type, ...inputProps};
+  const id = inputProps.id || newId;
+  const props = { id, type, ...inputProps };
   // merge in css classes
-  props.className = classnames('usa-input', inputProps.className);
+  props.className = classnames("usa-input", inputProps.className);
   const labelElem = label ? (
     <label className="usa-label" htmlFor={id}>
       {label}
@@ -18,10 +18,7 @@ const TextInput = ({ label, type='text', ...inputProps }) => {
   return (
     <React.Fragment>
       {labelElem}
-      <input
-        autoComplete="off"
-        {...props}
-      />
+      <input autoComplete="off" {...props} />
     </React.Fragment>
   );
 };

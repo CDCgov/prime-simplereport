@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from "react";
 
 /**
  * We should consider using a full, robust form component
@@ -20,12 +20,10 @@ import {useState, useEffect, useRef} from 'react';
  * @returns {{handleBlur: handleBlur, touched: {}, handleSubmit: handleSubmit, handleChange: handleChange, values: unknown, errors: {}}}
  */
 
-const useCustomForm = ({initialValues, onSubmit}) => {
+const useCustomForm = ({ initialValues, onSubmit }) => {
   const [values, setValues] = useState(initialValues || {});
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
-  const [onSubmitting, setOnSubmitting] = useState(false);
-  const [onBlur, setOnBlur] = useState(false);
 
   const formRendered = useRef(true);
 
@@ -34,30 +32,28 @@ const useCustomForm = ({initialValues, onSubmit}) => {
       setValues(initialValues);
       setErrors({});
       setTouched({});
-      setOnSubmitting(false);
-      setOnBlur(false);
     }
     formRendered.current = false;
   }, [initialValues]);
 
   const handleChange = (event) => {
-    const {target} = event;
-    const {name, value} = target;
+    const { target } = event;
+    const { name, value } = target;
     // event.persist();
-    setValues({...values, [name]: value});
+    setValues({ ...values, [name]: value });
   };
 
   const handleBlur = (event) => {
-    const {target} = event;
-    const {name} = target;
-    setTouched({...touched, [name]: true});
-    setErrors({...errors});
+    const { target } = event;
+    const { name } = target;
+    setTouched({ ...touched, [name]: true });
+    setErrors({ ...errors });
   };
 
   const handleSubmit = (event) => {
     if (event) event.preventDefault();
-    setErrors({...errors});
-    onSubmit({values, errors});
+    setErrors({ ...errors });
+    onSubmit({ values, errors });
   };
 
   return {

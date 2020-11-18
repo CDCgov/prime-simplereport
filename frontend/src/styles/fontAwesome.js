@@ -47,5 +47,5 @@ library.add(
   faCircle,
   faCog,
   faEdit,
-  faSave,
+  faSave
 );

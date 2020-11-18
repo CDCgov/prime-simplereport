@@ -81,7 +81,7 @@
 
 .prime-close-button {
   top: -1em;
-  right: 0em;
+  right: 0;
   display: block;
   position: absolute;
   z-index: 1000;
@@ -136,6 +136,7 @@
   padding: 0;
   text-align: center;
 }
+
 .prime-radio--horizontal__container {
   position: relative;
   display: list-item;
@@ -144,6 +145,7 @@
   float: left;
   margin: 0;
 }
+
 .prime-radio--horizontal__container:first-child {
   margin-right: units(1);
 }
@@ -212,9 +214,11 @@
 input:required {
   background-color: rgba(255, 247, 237, 0.85);
 }
+
 input:valid {
   background-color: white;
 }
+
 // todo: this is in normalize.scss, but not getting included
 .hidden {
   display: none;

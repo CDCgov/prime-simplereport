@@ -1,23 +1,25 @@
-import React, {useState} from 'react';
-import {ROLE_TYPES} from '../devices/constants';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import Button from '../commonComponents/Button';
-import Dropdown from '../commonComponents/Dropdown';
-import TextInput from '../commonComponents/TextInput';
+import React, { useState } from "react";
+import { ROLE_TYPES } from "../devices/constants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Button from "../commonComponents/Button";
+import Dropdown from "../commonComponents/Dropdown";
+import TextInput from "../commonComponents/TextInput";
 import { v4 as uuidv4 } from "uuid";
 // import useUniqueId from "../commonComponents/useUniqueIds";  // todo: switch to using
-import useCustomForm from '../commonHooks/FormHook';
-
+import useCustomForm from "../commonHooks/FormHook";
 
 // todo: sanitize input somewhere central.
 const MAX_FIELD_LEN = 64;
 
 // todo: replace with something localizable
-const rollToString = (roleType) => {
-  return {
-    [ROLE_TYPES.ADMIN]: "Admin",
-    [ROLE_TYPES.TESTING]: "Testing",
-    [ROLE_TYPES.INTAKE]: "Intake"}[roleType] || '';
+const roleToString = (roleType) => {
+  return (
+    {
+      [ROLE_TYPES.ADMIN]: "Admin",
+      [ROLE_TYPES.TESTING]: "Testing",
+      [ROLE_TYPES.INTAKE]: "Intake",
+    }[roleType] || ""
+  );
 };
 
 /**
@@ -26,22 +28,22 @@ const rollToString = (roleType) => {
  * @returns {JSX.Element}
  * @constructor
  */
-const StaffSettings = ({orgSettings, updateOrgSettings}) => {
+const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
   const [copyStaffSettings, setCopyStaffSettings] = useState(
-    {...orgSettings.staff} || {});
+    { ...orgSettings.staff } || {}
+  );
 
   const saveLocalCopyBackTopParent = () => {
     // we don't want private fields
     const staff = {};
-    Object.entries(copyStaffSettings)
-      .forEach(([key, value]) => {
-        staff[key] = {
-          name: value.name.substring(0, MAX_FIELD_LEN),
-          email: value.email.substring(0, MAX_FIELD_LEN),
-          role: value.role.substring(0, 50), // todo: restrict to valid strings
-        };
-      });
-    updateOrgSettings({...orgSettings, staff});
+    Object.entries(copyStaffSettings).forEach(([key, value]) => {
+      staff[key] = {
+        name: value.name.substring(0, MAX_FIELD_LEN),
+        email: value.email.substring(0, MAX_FIELD_LEN),
+        role: value.role.substring(0, 50), // todo: restrict to valid strings
+      };
+    });
+    updateOrgSettings({ ...orgSettings, staff });
   };
 
   const onStaffAddNew = () => {
@@ -52,8 +54,8 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
     setCopyStaffSettings({
       ...copyStaffSettings,
       [newStaffId]: {
-        name: '',
-        email: '',
+        name: "",
+        email: "",
         role: ROLE_TYPES.INTAKE,
         _editable: true,
       },
@@ -64,23 +66,21 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
     // This approach to changing _editable forces the entry to rerender
     const staffentry = copyStaffSettings[staffkey];
     setCopyStaffSettings({
-        ...copyStaffSettings,
-        [staffkey]: {...staffentry, _editable: true},
-      },
-    );
+      ...copyStaffSettings,
+      [staffkey]: { ...staffentry, _editable: true },
+    });
   };
 
-  const onStaffUpdate = ({staffkey, staffentry}) => {
-    copyStaffSettings[staffkey] = {...staffentry};
+  const onStaffUpdate = ({ staffkey, staffentry }) => {
+    copyStaffSettings[staffkey] = { ...staffentry };
     setCopyStaffSettings(copyStaffSettings);
   };
 
-  const onStaffSave = ({staffkey, staffentry}) => {
+  const onStaffSave = ({ staffkey, staffentry }) => {
     setCopyStaffSettings({
-        ...copyStaffSettings,
-        [staffkey]: {...staffentry, _editable: false},
-      },
-    );
+      ...copyStaffSettings,
+      [staffkey]: { ...staffentry, _editable: false },
+    });
     saveLocalCopyBackTopParent();
   };
 
@@ -95,30 +95,24 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
    * Generate options for dropdown (select)
    * @returns {[]}
    */
-  const rollsDropdown = Object.entries(ROLE_TYPES).map(
-    ([key, label]) => ({
-      label: rollToString(key),
-      value: key,
-    }),
-  );
+  const rolesDropdown = Object.entries(ROLE_TYPES).map(([key]) => ({
+    label: roleToString(key),
+    value: key,
+  }));
 
-  const StaffRowComponent = ({initialValues, onUpdate}) => {
-    const staffkey = initialValues.staffkey;   // ID elements should NOT regen across data update
-    const {
-      values,
-      handleChange,
-      handleBlur,
-      handleSubmit,
-    } = useCustomForm({
+  const StaffRowComponent = ({ initialValues }) => {
+    const staffkey = initialValues.staffkey; // ID elements should NOT regen across data update
+    const { values, handleChange, handleBlur, handleSubmit } = useCustomForm({
       initialValues,
-      onSubmit: valuesAndErrors => onStaffSave({
-        staffkey: valuesAndErrors.values.staffkey,
-        staffentry: {
-          name: valuesAndErrors.values.name,
-          email: valuesAndErrors.values.email,
-          role: valuesAndErrors.values.role,
-        },
-      }),
+      onSubmit: (valuesAndErrors) =>
+        onStaffSave({
+          staffkey: valuesAndErrors.values.staffkey,
+          staffentry: {
+            name: valuesAndErrors.values.name,
+            email: valuesAndErrors.values.email,
+            role: valuesAndErrors.values.role,
+          },
+        }),
     });
 
     const persistOnBlur = (event) => {
@@ -136,85 +130,95 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
 
     return (
       <React.Fragment>
-        {
-          (values._editable) ?
-            (
-              <tr key={values.staffkey}>
-                <td>
-                  <TextInput name="name"
-                             id={`${staffkey}_name`}
-                             type="text"
-                             defaultValue={values.name}
-                             onChange={handleChange}
-                             onBlur={persistOnBlur}
-                             placeholder="User name"
-                             required={true}
-                  />
-                </td>
-                <td>
-                  <TextInput name="email"
-                             id={`${staffkey}_email`}
-                             type="email"
-                             placeholder="email address"
-                             required={true}
-                             onChange={handleChange}
-                             onBlur={persistOnBlur}
-                             pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-                             defaultValue={values.email}/>
-                </td>
-                <td>
-                  <Dropdown
-                    name="role"
-                    id={`${staffkey}_role`}
-                    onChange={handleChange}
-                    options={rollsDropdown}
-                    onBlur={persistOnBlur}
-                    selectedValue={values.role}/>
-                </td>
+        {values._editable ? (
+          <tr key={values.staffkey}>
+            <td>
+              <TextInput
+                name="name"
+                id={`${staffkey}_name`}
+                type="text"
+                defaultValue={values.name}
+                onChange={handleChange}
+                onBlur={persistOnBlur}
+                placeholder="User name"
+                required={true}
+                aria-labelledby="tableLabelName"
+              />
+            </td>
+            <td>
+              <TextInput
+                name="email"
+                id={`${staffkey}_email`}
+                type="email"
+                defaultValue={values.email}
+                placeholder="email address"
+                required={true}
+                onChange={handleChange}
+                onBlur={persistOnBlur}
+                pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+                aria-labelledby="tableLabelEmail"
+              />
+            </td>
+            <td>
+              <Dropdown
+                name="role"
+                id={`${staffkey}_role`}
+                onChange={handleChange}
+                options={rolesDropdown}
+                onBlur={persistOnBlur}
+                selectedValue={values.role}
+                aria-labelledby="tableLabelRole"
+              />
+            </td>
 
-                <td>
-                  <div aria-label="Actions" className="usa-button-group">
-                    <Button onClick={handleSubmit}
-                            icon="save"
-                            title="save"
-                            type={'submit'}
-                            addClass="usa-button-group__item">
-                    </Button>
-                    <Button onClick={() => onStaffRemove(values.staffkey)}
-                            icon="trash"
-                            title="trash"
-                            addClass="usa-button-group__item usa-button--outline prime-red-icon">
-                      <span hidden>Delete</span>
-                      <FontAwesomeIcon icon="trash"/>
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              <tr key={values.staffkey}>
-                <td width="33%">{values.name}</td>
-                <td width="33%">{values.email}</td>
-                <td>{rollToString(values.role)}</td>
+            <td>
+              <div aria-label="Actions" className="usa-button-group">
+                <Button
+                  onClick={handleSubmit}
+                  icon="save"
+                  title="save"
+                  type={"submit"}
+                  addClass="usa-button-group__item"
+                />
+                <Button
+                  onClick={() => onStaffRemove(values.staffkey)}
+                  icon="trash"
+                  title="trash"
+                  addClass="usa-button-group__item usa-button--outline prime-red-icon"
+                >
+                  <span hidden>Delete</span>
+                  <FontAwesomeIcon icon="trash" />
+                </Button>
+              </div>
+            </td>
+          </tr>
+        ) : (
+          <tr key={values.staffkey}>
+            <td width="33%">{values.name}</td>
+            <td width="33%">{values.email}</td>
+            <td>{roleToString(values.role)}</td>
 
-                <td>
-                  <div aria-label="Actions" className="usa-button-group">
-                    <Button onClick={() => onStaffEditStart(values.staffkey)}
-                            icon="edit"
-                            title="edit"
-                            addClass="usa-button-group__item usa-button--outline">
-                    </Button>
-                    <Button onClick={() => onStaffRemove(values.staffkey)}
-                            icon="trash"
-                            title="trash"
-                            addClass="usa-button-group__item usa-button--outline prime-red-icon">
-                      <span hidden>Delete</span>
-                      <FontAwesomeIcon icon="trash"/>
-                    </Button>
-                  </div>
-                </td>
-              </tr>
-            )
-        }
+            <td>
+              <div aria-label="Actions" className="usa-button-group">
+                <Button
+                  onClick={() => onStaffEditStart(values.staffkey)}
+                  icon="edit"
+                  title="edit"
+                  addClass="usa-button-group__item usa-button--outline"
+                />
+                <Button
+                  onClick={() => onStaffRemove(values.staffkey)}
+                  icon="trash"
+                  title="trash"
+                  addClass="usa-button-group__item usa-button--outline prime-red-icon"
+                >
+                  <span hidden>Delete</span>
+                  <FontAwesomeIcon icon="trash" />
+                </Button>
+              </div>
+            </td>
+          </tr>
+        )}
       </React.Fragment>
     );
   };
@@ -222,14 +226,15 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
   // const StaffRow = useMemo(StaffRowComponent);
 
   const generateStaffRows = () => {
-    return Object.entries(copyStaffSettings || {})
-      .map(([staffkey, staffentry]) => (
-        <StaffRowComponent
-          key={staffkey}
-          initialValues={{staffkey, ...staffentry}}
-          editable={staffentry._editable}
-        />
-      ));
+    return Object.entries(
+      copyStaffSettings || {}
+    ).map(([staffkey, staffentry]) => (
+      <StaffRowComponent
+        key={staffkey}
+        initialValues={{ staffkey, ...staffentry }}
+        editable={staffentry._editable}
+      />
+    ));
   };
 
   const renderStaffTable = () => {
@@ -239,11 +244,17 @@ const StaffSettings = ({orgSettings, updateOrgSettings}) => {
     return (
       <table className="usa-table usa-table--borderless width-full">
         <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Email</th>
-          <th scope="col">Access Level</th>
-        </tr>
+          <tr>
+            <th scope="col" id="tableLabelName">
+              Name
+            </th>
+            <th scope="col" id="tableLabelEmail">
+              Email
+            </th>
+            <th scope="col" id="tableLabelRole">
+              Access Level
+            </th>
+          </tr>
         </thead>
         <tbody>{generateStaffRows()}</tbody>
       </table>

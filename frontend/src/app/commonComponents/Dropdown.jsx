@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import useUniqueIds from "../commonComponents/useUniqueIds";
-import classnames from "classnames";
+// import classnames from "classnames";
 
 const Dropdown = ({
   options,
@@ -9,16 +9,16 @@ const Dropdown = ({
   name,
   onChange,
   disabled,
-  addClass,
+  // addClass,
   id,
   defaultOption, // value of the default option
   selectedValue,
 }) => {
   const [selectId] = useUniqueIds("dropdown", 1);
-  const elemId = (id || selectId);
+  const elemId = id || selectId;
 
   const labelElem = label ? (
-      <label className="usa-label" htmlFor={elemId}>
+    <label className="usa-label" htmlFor={elemId}>
       <strong>{label}</strong>
     </label>
   ) : null;
