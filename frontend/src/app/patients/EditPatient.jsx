@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   PATIENT_TERM_PLURAL_CAP,
@@ -11,6 +11,7 @@ import RadioGroup from "../commonComponents/RadioGroup";
 import Checkboxes from "../commonComponents/Checkboxes";
 import { getPatientById } from "./patientSelectors";
 import { useDispatch, useSelector } from "react-redux";
+import { Prompt } from "react-router-dom";
 import { updatePatient } from "./state/patientActions";
 import moment from "moment";
 import { getTestResultById } from "../testResults/testResultsSelector";
@@ -29,13 +30,11 @@ const Fieldset = (props) => (
 
 const EditPatient = (props) => {
   const dispatch = useDispatch();
+  const [formChanged, setFormChanged] = useState(false);
   const { patientId, isNew } = props;
   const foundPatient = useSelector(getPatientById(patientId));
-  //TODO: work out edge cases
-  const patient = foundPatient || { patientId };
+  const [patient, setPatient] = useState(foundPatient || { patientId });
   const onChange = (e) => {
-    //TODO let reducer update one thang
-    const newPatient = { ...patient, patientId };
     let value = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
@@ -43,7 +42,12 @@ const EditPatient = (props) => {
         [e.target.value]: e.target.checked,
       };
     }
-    dispatch(updatePatient({ ...newPatient, [e.target.name]: value }));
+    setFormChanged(true);
+    setPatient({ ...patient, [e.target.name]: value });
+  };
+  const savePatientData = () => {
+    setFormChanged(false);
+    dispatch(updatePatient(patient));
   };
   const results = useSelector(getTestResultById(patientId));
   const fullName = displayFullName(
@@ -54,6 +58,12 @@ const EditPatient = (props) => {
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
+      <Prompt
+        when={formChanged}
+        message={(location) =>
+          "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
+        }
+      />
       <Breadcrumbs
         crumbs={[
           { link: "../patients", text: PATIENT_TERM_PLURAL_CAP },
@@ -64,7 +74,11 @@ const EditPatient = (props) => {
       />
       <div className="prime-edit-patient-heading">
         <h2>{isNew ? `Create New ${PATIENT_TERM_CAP}` : fullName}</h2>
-        <button className="usa-button prime-save-patient-changes">
+        <button
+          className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
           Save Changes
         </button>
       </div>
@@ -301,6 +315,16 @@ const EditPatient = (props) => {
           </table>
         )}
       </Fieldset>
+      <div className="prime-edit-patient-heading">
+        <div></div>
+        <button
+          className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
+          Save Changes
+        </button>
+      </div>
     </main>
   );
 };
