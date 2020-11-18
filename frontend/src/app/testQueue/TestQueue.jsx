@@ -3,7 +3,7 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
 
-import {parseDate} from "./AoEForm/dateUtils";
+import { parseDate } from "./AoEForm/dateUtils";
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 
@@ -20,43 +20,47 @@ const emptyQueueMessage = (
   </div>
 );
 
-const queueQuery = gql`{
-  queue {
-    pregnancy
-    dateAdded
-    symptoms
-    symptomOnset
-    noSymptoms
-    firstTest
-    priorTestDate
-    priorTestType
-    priorTestResult
-    device {
-      id
-      displayName
+const queueQuery = gql`
+  {
+    queue {
+      pregnancy
+      dateAdded
+      symptoms
+      symptomOnset
+      noSymptoms
+      firstTest
+      priorTestDate
+      priorTestType
+      priorTestResult
+      device {
+        id
+        displayName
+      }
+      patient {
+        id
+        phone
+        birthDate
+        lookupId
+        firstName
+        middleName
+        lastName
+      }
+      testResult {
+        id
+      }
     }
-    patient {
-      id
-      phone
-      birthDate
-      lookupId
-      firstName
-      middleName
-      lastName
+    organization {
+      devices {
+        id
+        displayName
+      }
+      defaultDevice {
+        id
+        displayName
+      }
     }
-    testResult {id}
   }
-  organization {
-    devices {
-      id
-      displayName
-    }
-    defaultDevice {
-      id
-      displayName
-    }
-  }
-}`;
+`;
 
 const TestQueue = () => {
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery);
@@ -68,51 +72,54 @@ const TestQueue = () => {
     return <p>Loading patients...</p>;
   }
 
-  let shouldRenderQueue = data.queue.length > 0;
+  let shouldRenderQueue =
+    data.queue.length > 0 && data.organization.devices.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
-      ? patientQueue.map(({
-          pregnancy,
-          dateAdded,
-          symptoms,
-          noSymptoms,
-          firstTest,
-          priorTestDate,
-          priorTestType,
-          priorTestResult,
-          device,
-          patient,
-          testResult,
-          symptomOnset
-        }) => (
-          <QueueItem
-            key={`patient-${uuidv4()}`}
-            patient={patient}
-            askOnEntry={{
-              pregnancy,
-              dateAdded: parseDate(dateAdded),
-              noSymptoms,
-              symptoms,
-              symptomOnset: parseDate(symptomOnset),
-              firstTest,
-              priorTestDate: parseDate(priorTestDate),
-              priorTestType,
-              priorTestResult,
-            }}
-            selectedDeviceId={device.id}
-            selectedTestResult={testResult}
-            devices={data.organization.devices}
-            defaultDevice={data.organization.defaultDevice}
-            refetchQueue={refetchQueue}
-          />
-        ))
+      ? patientQueue.map(
+          ({
+            pregnancy,
+            dateAdded,
+            symptoms,
+            noSymptoms,
+            firstTest,
+            priorTestDate,
+            priorTestType,
+            priorTestResult,
+            device,
+            patient,
+            testResult,
+            symptomOnset,
+          }) => (
+            <QueueItem
+              key={`patient-${uuidv4()}`}
+              patient={patient}
+              askOnEntry={{
+                pregnancy,
+                dateAdded: parseDate(dateAdded),
+                noSymptoms,
+                symptoms,
+                symptomOnset: parseDate(symptomOnset),
+                firstTest,
+                priorTestDate: parseDate(priorTestDate),
+                priorTestType,
+                priorTestResult,
+              }}
+              selectedDeviceId={device ? device.id : null}
+              selectedTestResult={testResult}
+              devices={data.organization.devices}
+              defaultDevice={data.organization.defaultDevice}
+              refetchQueue={refetchQueue}
+            />
+          )
+        )
       : emptyQueueMessage;
 
   return (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <AddToQueueSearch refetchQueue={refetchQueue}/>
+          <AddToQueueSearch refetchQueue={refetchQueue} />
         </div>
         {createQueueItems(data.queue)}
       </div>
