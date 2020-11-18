@@ -270,12 +270,12 @@ databaseChangeLog:
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
   - changeSet:
-      id: add-devices
+      id: add-test-resources
       author: nicholas.a.robison@omb.eop.gov
-      comment: Add the ability add devices and link them to organizations
+      comment: Additional tables for test results, orders and devices
       changes:
         - createTable:
-            tableName: devices
+            tableName: device
             remarks: Test devices
             columns:
               - column: *pk_column
@@ -299,5 +299,40 @@ databaseChangeLog:
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__person__organization
+                    foreignKeyName: fk__device__organization
                     references: organization
+        - createTable:
+            tableName: results
+            remarks: Test results
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: patient_id
+                  remarks: Foreign key to patient which the result is associated to
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__person
+                    references: person
+              - column:
+                  name: device_id
+                  remarks: Foreign key to device which produced this result
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__result__device
+                    references: device
+              - column:
+                  name: date_tested
+                  remarks: When the test was performed
+                  type: DATETIME
+                  constraints:
+                    nullable: false
+              - column:
+                  name: result
+                  remarks: The result of the test
+                  type: *string
+                  constraints:
+                    nullable: false

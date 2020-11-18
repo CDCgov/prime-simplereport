@@ -17,10 +17,6 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     // @PreAuthorize("hasAuthority('PDI admins')")
 
-    public void addTestResult(String deviceID, String result, String patientID) {
-        repo.addTestResult(deviceID, result, patientID);
-    }
-
     public void addPatientToQueue(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult) {
         repo.addPatientToQueue(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult);
     }

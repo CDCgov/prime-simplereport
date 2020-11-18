@@ -6,6 +6,7 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.db.model.Device;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestResult;
 
 public class TestOrder {
 

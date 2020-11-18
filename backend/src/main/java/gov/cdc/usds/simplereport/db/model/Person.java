@@ -2,11 +2,8 @@ package gov.cdc.usds.simplereport.db.model;
 
 import java.util.ArrayList;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import gov.cdc.usds.simplereport.api.model.TestResult;
 
 import javax.persistence.*;
 
@@ -44,8 +41,8 @@ public class Person extends EternalEntity {
     @JoinColumn(name = "organization_id")
     @OneToOne
     private Organization organization;
-//    @OneToMany
-//    private List<TestResult> testResults;
+    @OneToMany
+    private List<TestResult> testResults;
 
     public Person(
             String lookupId,
@@ -80,7 +77,6 @@ public class Person extends EternalEntity {
         this.race = "N/A";
         this.gender = "N/A";
         this.ethnicity = "N/A";
-//        this.testResults = new ArrayList<TestResult>();
     }
 
     public Person(
@@ -102,12 +98,16 @@ public class Person extends EternalEntity {
 //        this.testResults = testResults;
     }
 
-    public void setTestResults(ArrayList<TestResult> testResults) {
-//        this.testResults = testResults;
+    public void setTestResults(List<TestResult> testResults) {
+        this.testResults = testResults;
+    }
+
+    public List<TestResult> getTestResults() {
+        return testResults;
     }
 
     public void addTestResult(TestResult testResult) {
-//        this.testResults.add(testResult);
+        this.testResults.add(testResult);
     }
 
     public String getId() {
@@ -149,9 +149,5 @@ public class Person extends EternalEntity {
     // FIXME: We need the actual county wired
     public String getCounty() {
         return "";
-    }
-
-    public List<TestResult> testResults() {
-        return Collections.emptyList();
     }
 }
