@@ -315,6 +315,16 @@ const EditPatient = (props) => {
           </table>
         )}
       </Fieldset>
+      <div className="prime-edit-patient-heading">
+        <div></div>
+        <button
+          className="usa-button prime-save-patient-changes"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
+          Save Changes
+        </button>
+      </div>
     </main>
   );
 };
