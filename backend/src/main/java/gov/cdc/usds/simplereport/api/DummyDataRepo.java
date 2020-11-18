@@ -4,9 +4,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import gov.cdc.usds.simplereport.api.model.Device;
+import gov.cdc.usds.simplereport.db.model.Device;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.api.model.TestOrder;
@@ -21,20 +22,10 @@ public class DummyDataRepo {
 	private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	// set up or devices
-	private Device device1 = new Device("Quidel Sofia 2","Quidel","Sofia 2");
-	public ArrayList<Device> allDevices = new ArrayList<>(Arrays.asList(
-		device1,
-		new Device("BD Veritor","BD","Veritor"),
-		new Device("Abbott Binax Now","Abbott","Binax Now"),
-		new Device("Abbott IDNow","Abbott","IDNow"),
-		new Device("LumiraDX","LumiraDX","")
-	));
-	public DataFetcher<List<Device>> deviceFetcher() {
-		return (env) -> allDevices;
-	}
+	private gov.cdc.usds.simplereport.db.model.Device device1 = new gov.cdc.usds.simplereport.db.model.Device("Quidel Sofia 2","Quidel","Sofia 2");
 
 	// set up default user and org
-	public Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", allDevices, device1);
+	public Organization defaultOrg = new Organization("Feel Good Inc", "clia1234" , "Gorillaz", "npi123", "123 abc st", "Apt 2", "Tuscon", "Pima County", "AZ", "54323", "123 456 7890", Collections.emptyList(), device1);
 	public User defaultUser = new User(defaultOrg);
 
 	// add patients to org
@@ -124,11 +115,11 @@ public class DummyDataRepo {
 	}
 
 	Device getDevice(String deviceId) {
-		for(Device d : allDevices) {
-			if(d.getId().equals(deviceId)) {
-				return d;
-			}
-		}
+//		for(gov.cdc.usds.simplereport.db.model.Device d : allDevices) {
+//			if(d.id().equals(deviceId)) {
+//				return d;
+//			}
+//		}
 		return null;
 	}
 

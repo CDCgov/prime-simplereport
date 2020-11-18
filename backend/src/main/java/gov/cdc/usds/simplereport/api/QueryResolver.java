@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.api.model.Device;
 import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
@@ -19,10 +18,6 @@ public class QueryResolver implements GraphQLQueryResolver {
 
     public QueryResolver(DummyDataRepo repo) {
         this.repo = repo;
-    }
-
-    public List<Device> getDevice() {
-        return repo.allDevices;
     }
 
     public User getUser() {

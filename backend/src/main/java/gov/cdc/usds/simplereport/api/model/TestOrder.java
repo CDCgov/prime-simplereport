@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
+import gov.cdc.usds.simplereport.db.model.Device;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 
@@ -19,7 +20,7 @@ public class TestOrder {
 	private String priorTestType;
 	private String priorTestResult;
 	private String result;
-	private Device device;
+	private gov.cdc.usds.simplereport.db.model.Device device;
 	private TestResult testResult;
 
 	public TestOrder(

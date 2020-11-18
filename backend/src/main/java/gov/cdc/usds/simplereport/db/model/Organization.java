@@ -1,15 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
-import gov.cdc.usds.simplereport.api.model.Device;
 import org.hibernate.annotations.NaturalId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -26,6 +21,9 @@ public class Organization extends EternalEntity {
 	@JoinColumn(name = "default_device_type")
 	private DeviceType defaultDeviceType;
 
+	@OneToMany
+	private List<Device> devices;
+
 	public Organization() {
 		// Not used
 	}
@@ -38,7 +36,7 @@ public class Organization extends EternalEntity {
 	}
 
 	// FIXME: This should be removed, only for compatibility with dummy repo
-	public Organization(String feel_good_inc, String clia1234, String gorillaz, String npi123, String s, String s1, String tuscon, String pima_county, String az, String s2, String s3, ArrayList<Device> allDevices, Device device1) {
+	public Organization(String feel_good_inc, String clia1234, String gorillaz, String npi123, String s, String s1, String tuscon, String pima_county, String az, String s2, String s3, List<Device> allDevices, Device device1) {
 		super();
 		this.facilityName = feel_good_inc;
 		this.externalId = clia1234;
@@ -58,6 +56,10 @@ public class Organization extends EternalEntity {
 
 	public DeviceType getDefaultDeviceType() {
 		return defaultDeviceType;
+	}
+
+	public List<Device> getDevices() {
+		return devices;
 	}
 
 	// These should be temporary
@@ -106,7 +108,5 @@ public class Organization extends EternalEntity {
 		return "555-555-5555";
 	}
 
-	public List<Device> devices() {
-		return Collections.emptyList();
-	}
+
 }

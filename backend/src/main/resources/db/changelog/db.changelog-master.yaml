@@ -269,3 +269,35 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
+  - changeSet:
+      id: add-devices
+      author: nicholas.a.robison@omb.eop.gov
+      comment: Add the ability add devices and link them to organizations
+      changes:
+        - createTable:
+            tableName: devices
+            remarks: Test devices
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: device_manufacturer
+                  remarks: This device's manufacturer
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: device_model
+                  remarks: The model of this device
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization which operates this device.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__person__organization
+                    references: organization
