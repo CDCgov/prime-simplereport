@@ -24,8 +24,48 @@ public class MutationResolver implements GraphQLMutationResolver {
 
     // @PreAuthorize("hasAuthority('PDI admins')")
 
-    public void addPatient(String lookupId, String firstName, String middleName, String lastName, LocalDate birthDate, String street, String street2, String city, String state, String zipCode, String phone) {
-        repo.addPatient(lookupId, firstName, middleName, lastName, birthDate.toString(), street, street2, city, state, zipCode, phone);
+    public void addPatient(
+        String lookupId,
+        String firstName,
+        String middleName,
+        String lastName,
+        LocalDate birthDate,
+        String street,
+        String street2,
+        String city,
+        String state,
+        String zipCode,
+        String phone,
+        String typeOfHealthcareProfessional,
+        String email,
+        String county,
+        String race,
+        String ethnicity,
+        String gender,
+        Boolean residentCongregateSetting,
+        Boolean employedInHealthcare
+    ) {
+        repo.addPatient(
+            lookupId,
+            firstName,
+            middleName,
+            lastName,
+            birthDate.toString(),
+            street,
+            street2,
+            city,
+            state,
+            zipCode,
+            phone,
+            typeOfHealthcareProfessional,
+            email,
+            county,
+            race,
+            ethnicity,
+            gender,
+            residentCongregateSetting,
+            employedInHealthcare
+        );
     }
 
     public void updateOrganization(String testingFacilityName,
