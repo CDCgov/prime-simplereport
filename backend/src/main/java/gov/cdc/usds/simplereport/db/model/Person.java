@@ -4,6 +4,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Person extends EternalEntity {
@@ -20,7 +22,11 @@ public class Person extends EternalEntity {
 	private String address;
 	@Column
 	private String telephone;
-	public Person(String firstName, String middleName, String lastName, LocalDate birthDate, String address,
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "organization_id")
+	private Organization organization;
+
+	public Person(Organization org, String firstName, String middleName, String lastName, LocalDate birthDate, String address,
 			String telephone) {
 		super();
 		this.firstName = firstName;
@@ -29,6 +35,7 @@ public class Person extends EternalEntity {
 		this.birthDate = birthDate;
 		this.address = address;
 		this.telephone = telephone;
+		this.organization = org;
 	}
 	public String getFirstName() {
 		return firstName;
@@ -47,5 +54,8 @@ public class Person extends EternalEntity {
 	}
 	public String getTelephone() {
 		return telephone;
+	}
+	public Organization getOrganization() {
+		return organization;
 	}
 }

@@ -19,9 +19,13 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 
 	public void doPersonOperations() {
 		Organization org = _orgRepo.save(new Organization("Here", "there", null));
-		_repo.save(new Person("Joe", null, "Schmoe", LocalDate.now(), "nowheresville", "(1) (234) 456-7890"));
+		Organization other = _orgRepo.save(new Organization("There", "where?", null));
+
+		_repo.save(new Person(org, "Joe", null, "Schmoe", LocalDate.now(), "nowheresville", "(1) (234) 456-7890"));
 		List<Person> found = _repo.findAllByOrganization(org);
-		assertEquals(0, found.size());
+		assertEquals(1, found.size());
 		assertEquals("Joe", found.get(0).getFirstName());
+		found = _repo.findAllByOrganization(other);
+		assertEquals(0, found.size());
 	}
 }
