@@ -4,20 +4,19 @@ provider "azurerm" {
   skip_provider_registration = true
 }
 
-terraform {
-}
-
 data "azurerm_resource_group" "k8s" {
   name = "prime-dev-nrobison"
 }
 
-module "persistent" {
-  source = "./persistent"
-  resource_group = data.azurerm_resource_group.k8s.name
-  resource_group_location = data.azurerm_resource_group.k8s.location
+data "azurerm_log_analytics_workspace" "pdi" {
+  name = "pdi-log-workspace"
+  resource_group_name = data.azurerm_resource_group.k8s.name
 }
 
-// Network stuff
+data "azurerm_postgresql_server" "db" {
+  name = "pdi-db-nrobison"
+  resource_group_name = data.azurerm_resource_group.k8s.name
+}
 
 # since these variables are re-used - a locals block makes this more maintainable
 
@@ -27,6 +26,8 @@ resource "azurerm_virtual_network" "pdi" {
   location = data.azurerm_resource_group.k8s.location
   address_space = [
     "10.254.0.0/16"]
+
+  tags = local.management_tags
 }
 
 locals {
@@ -46,13 +47,10 @@ locals {
     "AllMetrics",
   ]
 
-  diag_db_logs = [
-    "PostgreSQLLogs"
-  ]
-
-  diag_db_metrics = [
-    "AllMetrics"
-  ]
+  management_tags = {
+    prime-app = "simplereport"
+    environment = "development"
+  }
 }
 
 resource "azurerm_subnet" "frontend" {
@@ -61,6 +59,7 @@ resource "azurerm_subnet" "frontend" {
   virtual_network_name = azurerm_virtual_network.pdi.name
   address_prefixes = [
     "10.254.0.0/24"]
+
 }
 
 resource "azurerm_subnet" "backend" {
@@ -76,6 +75,8 @@ resource "azurerm_public_ip" "pdi-backend" {
   resource_group_name = data.azurerm_resource_group.k8s.name
   location = data.azurerm_resource_group.k8s.location
   allocation_method = "Dynamic"
+
+  tags = local.management_tags
 }
 
 // Yes, this probably will take ~20 minutes to deploy and ~5 minutes to change.
@@ -136,16 +137,8 @@ resource "azurerm_application_gateway" "backend" {
   depends_on = [
     azurerm_virtual_network.pdi,
     azurerm_public_ip.pdi-backend]
-}
 
-// Log analytics
-
-resource "azurerm_log_analytics_workspace" "pdi-log" {
-  name = "pdi-log-workspace"
-  location = data.azurerm_resource_group.k8s.location
-  resource_group_name = data.azurerm_resource_group.k8s.name
-  sku = "PerGB2018"
-  retention_in_days = 30
+  tags = local.management_tags
 }
 
 // This would be nice to add at some point
@@ -164,7 +157,7 @@ resource "azurerm_log_analytics_workspace" "pdi-log" {
 resource "azurerm_monitor_diagnostic_setting" "backend-awg" {
   name = "backend-awg1-diag"
   target_resource_id = azurerm_application_gateway.backend.id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.pdi-log.id
+  log_analytics_workspace_id = data.azurerm_log_analytics_workspace.pdi.id
   dynamic "log" {
     for_each = local.diag_appgw_logs
     content {
@@ -178,34 +171,6 @@ resource "azurerm_monitor_diagnostic_setting" "backend-awg" {
 
   dynamic "metric" {
     for_each = local.diag_appgw_metrics
-    content {
-      category = metric.value
-
-      retention_policy {
-        enabled = false
-      }
-    }
-  }
-}
-
-resource "azurerm_monitor_diagnostic_setting" "backend-db" {
-  name = "backend-db-diag"
-  target_resource_id = module.persistent.server_id
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.pdi-log.id
-
-  dynamic "log" {
-    for_each = local.diag_db_logs
-    content {
-      category = log.value
-
-      retention_policy {
-        enabled = false
-      }
-    }
-  }
-
-  dynamic "metric" {
-    for_each = local.diag_db_metrics
     content {
       category = metric.value
 
@@ -238,7 +203,7 @@ resource "azurerm_container_group" "backend" {
       protocol = "TCP"
     }
     environment_variables = {
-      "SPRING_DATASOURCE_URL": "jdbc:postgresql://${module.persistent.dns_name}:5432/simple_report?user=simple_report_app@pdi-db-nrobison"
+      "SPRING_DATASOURCE_URL": "jdbc:postgresql://${data.azurerm_postgresql_server.db.fqdn}:5432/simple_report?user=simple_report_app@pdi-db-nrobison"
       "SPRING_DATASOURCE_PASSWORD": "H@Sh1CoR3!"
       "SPRING_PROFILES_ACTIVE": "dev"
     }
@@ -246,8 +211,10 @@ resource "azurerm_container_group" "backend" {
 
   diagnostics {
     log_analytics {
-      workspace_id = azurerm_log_analytics_workspace.pdi-log.workspace_id
-      workspace_key = azurerm_log_analytics_workspace.pdi-log.primary_shared_key
+      workspace_id = data.azurerm_log_analytics_workspace.pdi.workspace_id
+      workspace_key = data.azurerm_log_analytics_workspace.pdi.primary_shared_key
     }
   }
+
+  tags = local.management_tags
 }
