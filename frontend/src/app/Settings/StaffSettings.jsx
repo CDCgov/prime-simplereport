@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ROLE_TYPES } from "../devices/constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents/Dropdown";
@@ -10,6 +9,13 @@ import useCustomForm from "../commonHooks/FormHook";
 
 // todo: sanitize input somewhere central.
 const MAX_FIELD_LEN = 64;
+
+// todo: move somewhere central. These are roles as defined in the database.
+export const ROLE_TYPES = {
+  ADMIN: "ADMIN",
+  TESTING: "TESTING",
+  INTAKE: "INTAKE",
+};
 
 // todo: replace with something localizable
 const roleToString = (roleType) => {
