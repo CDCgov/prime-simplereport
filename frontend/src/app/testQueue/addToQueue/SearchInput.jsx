@@ -1,8 +1,5 @@
 import React from "react";
 
-import Button from "../../commonComponents/Button";
-import TextInput from "../../commonComponents/TextInput";
-
 const SearchInput = ({
   onSearchClick,
   onInputChange,
@@ -10,28 +7,28 @@ const SearchInput = ({
   disabled,
 }) => {
   return (
-    <React.Fragment>
-      <form
-        className="usa-search width-full margin-bottom-2 margin-left-1"
-        role="search"
+    <form class="usa-search usa-search--small prime-search-input" role="search">
+      <label class="usa-sr-only" for="search-field-small">
+        Search
+      </label>
+      <input
+        autocomplete="off"
+        class="usa-input"
+        id="search-field-small"
+        type="search"
+        name="search"
+        value={queryString}
+        onChange={onInputChange}
+      />
+      <button
+        class="usa-button"
+        type="submit"
+        disabled={disabled}
+        onClick={onSearchClick}
       >
-        <TextInput
-          placeholder={`Search by Unique ID or Name`}
-          value={queryString}
-          onChange={(e) => onInputChange(e)}
-          name="add-to-queue-search"
-          addClass="usa-input"
-          type="search"
-        />
-        <Button
-          type="submit"
-          onClick={(e) => onSearchClick(e)}
-          icon="search"
-          disabled={disabled}
-          addClass="usa-button"
-        />
-      </form>
-    </React.Fragment>
+        <span class="usa-sr-only">Search</span>
+      </button>
+    </form>
   );
 };
 
