@@ -11,8 +11,8 @@ import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
 import ManagePatients from "../patients/ManagePatients";
 import EditPatient from "../patients/EditPatient";
+import AddPatient from "../patients/EditPatient";
 import Settings from "../Settings/Settings";
-import { createPatientId } from "../query/patients";
 
 const OrganizationHomeContainer = () => {
   let match = useRouteMatch();
@@ -41,15 +41,7 @@ const OrganizationHomeContainer = () => {
         />
         <Route
           path={`${match.path}/patient/:patientId`}
-          render={({ match }) => {
-            let patientId = match.params.patientId;
-            let isNew = false;
-            if (!patientId || patientId === "NEW") {
-              patientId = createPatientId();
-              isNew = true;
-            }
-            return <EditPatient patientId={patientId} isNew={isNew} />;
-          }}
+          render={({ match }) => <EditPatient patientId={match.params.patientId}/>}
         />
         <Route
           path={`${match.path}/settings`}

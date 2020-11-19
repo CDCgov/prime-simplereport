@@ -12,7 +12,7 @@ const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const QUERY_PATIENT = gql`
 {
-  patient {
+  patients {
     id
     lookupId
     firstName

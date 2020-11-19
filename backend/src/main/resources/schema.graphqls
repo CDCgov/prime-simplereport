@@ -83,7 +83,8 @@ type Queue {
 }
 type Query {
   device: [Device]
-  patient: [Patient]
+  patients: [Patient]
+  patient(id: String): Patient
   user: User
   organization: Organization
   testResult: [TestResult]

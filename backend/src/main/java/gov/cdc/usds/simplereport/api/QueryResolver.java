@@ -18,8 +18,12 @@ public class QueryResolver implements GraphQLQueryResolver {
         this.repo = repo;
     }
 
-    public List<Patient> getPatient() {
+    public List<Patient> getPatients() {
         return repo.allPatients;
+    }
+
+    public Patient getPatient(String id) {
+        return repo.getPatient(id);
     }
 
     public List<Device> getDevice() {

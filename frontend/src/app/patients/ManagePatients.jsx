@@ -20,7 +20,8 @@ const validate = ajv.compile(schemaPatient.default);
 
 const patientQuery = gql`
   {
-    patient {
+    patients {
+      id
       lookupId
       firstName
       lastName
@@ -146,7 +147,7 @@ const ManagePatients = () => {
     return patients.map((patient) => (
       <tr key={patient.lookupId}>
         <th scope="row">
-          <NavLink to={`patient/${patient.patientId}`}>
+          <NavLink to={`patient/${patient.id}`}>
             {displayFullName(
               patient.firstName,
               patient.middleName,
@@ -175,7 +176,7 @@ const ManagePatients = () => {
             </div>
             <div className="usa-card__body">
               <div style={{ display: "inline-block" }}>
-                <NavLink className="usa-button" to={"patient/NEW"}>
+                <NavLink className="usa-button" to={"patient/new"}>
                   New {PATIENT_TERM_CAP}
                 </NavLink>
               </div>
@@ -186,7 +187,7 @@ const ManagePatients = () => {
                 className="input-file"
                 accept=".csv"
                 onChange={(csv) =>
-                  loadFile(csv.target.files[0], data ? data.patient : {})
+                  loadFile(csv.target.files[0], data ? data.patients : {})
                 }
               />
               <CSVModalForm
@@ -219,7 +220,7 @@ const ManagePatients = () => {
                       <th scope="col">Days since last test</th>
                     </tr>
                   </thead>
-                  <tbody>{patientRows(data.patient)}</tbody>
+                  <tbody>{patientRows(data.patients)}</tbody>
                 </table>
               ) : (
                 <p> no patients found</p>
