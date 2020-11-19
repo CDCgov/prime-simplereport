@@ -1,13 +1,17 @@
 package gov.cdc.usds.simplereport.api;
 
-import gov.cdc.usds.simplereport.api.model.*;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import gov.cdc.usds.simplereport.api.model.Device;
+import gov.cdc.usds.simplereport.api.model.Organization;
+import gov.cdc.usds.simplereport.api.model.TestOrder;
+import gov.cdc.usds.simplereport.api.model.TestResult;
+import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.service.PersonService;
+import graphql.kickstart.tools.GraphQLQueryResolver;
 
 /**
  * Created by nickrobison on 11/15/20

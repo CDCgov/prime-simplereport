@@ -1,10 +1,9 @@
 package gov.cdc.usds.simplereport.api.patient;
 
-import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
+import gov.cdc.usds.simplereport.service.PersonService;
+import graphql.kickstart.tools.GraphQLMutationResolver;
 
 /**
  * Created by nickrobison on 11/17/20
