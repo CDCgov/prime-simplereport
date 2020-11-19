@@ -1,4 +1,7 @@
 package gov.cdc.usds.simplereport.api.model;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -6,7 +9,7 @@ import java.util.UUID;
 public class TestOrder {
 
 	private String id;
-	private Patient patient;
+	private Person patient;
 	private Organization organization;
 	private LocalDate dateAdded;
 	private String pregnancy;
@@ -18,11 +21,11 @@ public class TestOrder {
 	private String priorTestType;
 	private String priorTestResult;
 	private String result;
-	private Device device;
+	private DeviceType device;
 	private TestResult testResult;
 
 	public TestOrder(
-    Patient patient,
+    Person patient,
     Organization organization
 	) {
 		super();
@@ -32,7 +35,7 @@ public class TestOrder {
     this.dateAdded = LocalDate.now();
 	}
 
-	public void setDevice(Device device) {
+	public void setDevice(DeviceType device) {
 		this.device = device;
 	}
 
@@ -65,7 +68,7 @@ public class TestOrder {
 	}
 
 	public String getPatientId() {
-		return this.patient.getId();
+		return "" ;//this.patient.getId();
 	}
 
 	public String getPregnancy() {
@@ -98,5 +101,9 @@ public class TestOrder {
 
 	public Boolean getNoSymptoms() {
 		return this.noSymptoms;
+	}
+
+	public DeviceType getDeviceType() {
+		return this.device;
 	}
 }

@@ -17,8 +17,6 @@ import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.NaturalId;
 
-import gov.cdc.usds.simplereport.api.model.Device;
-
 @Entity
 public class Organization extends EternalEntity {
 
@@ -70,6 +68,33 @@ public class Organization extends EternalEntity {
 			Collection<DeviceType> configuredDevices) {
 		this(facilityName, externalId, defaultDeviceType, orderingProvider);
 		this.configuredDevices.addAll(configuredDevices);
+	}
+
+
+	public void updateOrg(
+		String facilityName,
+		String cliaNumber,
+		String orderingProviderName,
+		String orderingProviderNPI,
+		String orderingProviderStreet,
+		String orderingProviderStreetTwo,
+		String orderingProviderCity,
+		String orderingProviderCounty,
+		String orderingProviderState,
+		String orderingProviderZipCode,
+		String orderingProviderPhone
+	) {
+		this.facilityName = facilityName;
+		this.externalId = cliaNumber;
+		// this.orderingProviderName = orderingProviderName;
+		// this.orderingProviderNPI = orderingProviderNPI;
+		// this.orderingProviderStreet = orderingProviderStreet;
+		// this.orderingProviderStreetTwo = orderingProviderStreetTwo;
+		// this.orderingProviderCity = orderingProviderCity;
+		// this.orderingProviderCounty = orderingProviderCounty;
+		// this.orderingProviderState = orderingProviderState;
+		// this.orderingProviderZipCode = orderingProviderZipCode;
+		// this.orderingProviderPhone = orderingProviderPhone;
 	}
 
 	public String getFacilityName() {
@@ -151,7 +176,4 @@ public class Organization extends EternalEntity {
 		return "555-555-5555";
 	}
 
-	public List<Device> devices() {
-		return Collections.emptyList();
-	}
 }

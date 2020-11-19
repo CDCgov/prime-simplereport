@@ -30,6 +30,11 @@ public class DeviceTypeService {
 		return _repo.findAll();
 	}
 
+
+	public DeviceType getDeviceType(String InternalId) {
+		return _repo.findByInternalId(InternalId);
+	}
+
 	@Transactional(readOnly = false)
 	public DeviceType createDeviceType(String name, String model, String manufacturer) {
 		return _repo.save(new DeviceType(name, manufacturer, model));

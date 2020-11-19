@@ -1,5 +1,10 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import gov.cdc.usds.simplereport.service.PersonService;
+import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.service.PersonService;
@@ -10,6 +15,7 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
  */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver  {
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final PersonService _ps;
   
@@ -38,12 +44,13 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
+      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
       _ps.addPatient(
             lookupId,
             firstName,
             middleName,
             lastName,
-            birthDate,
+            (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter),
             street,
             street2,
             city,
@@ -83,13 +90,14 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare
   ) {
+      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
       _ps.updatePatient(
           patientId,
           lookupId,
           firstName,
           middleName,
           lastName,
-          birthDate,
+          (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter),
           street,
           street2,
           city,

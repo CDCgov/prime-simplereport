@@ -8,6 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import gov.cdc.usds.simplereport.api.model.TestResult;
+import java.util.List;
+
+
 @Entity
 public class Person extends EternalEntity {
 
@@ -156,5 +160,33 @@ public class Person extends EternalEntity {
 	}
 	public Organization getOrganization() {
 		return organization;
+	}
+
+	public String getStreet() {
+		return address.getStreet().get(0);
+	}
+
+	public String getStreetTwo() {
+		return address.getStreet().get(1);
+	}
+
+	public String getCity() {
+		return address.getCity();
+	}
+
+	public String getState() {
+		return address.getState();
+	}
+
+	public String getZipCode() {
+		return address.getPostalCode();
+	}
+
+	public String getCounty() {
+		return address.getCounty();
+	}
+
+	public List<TestResult> getTestResults() {
+		return null;
 	}
 }

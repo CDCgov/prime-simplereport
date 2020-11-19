@@ -4,9 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import gov.cdc.usds.simplereport.api.DummyDataRepo;
-import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.service.PersonService; 
+import gov.cdc.usds.simplereport.db.model.Person;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
 /**
@@ -16,13 +15,13 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 public class PatientResolver implements GraphQLQueryResolver {
 
     @Autowired
-    private DummyDataRepo _dummy;
+    private PersonService ps;
 
-    public List<Patient> getPatients() {
-        return _dummy.allPatients;
+    public List<Person> getPatients() {
+        return ps.getPatients();
     }
 
-    public Patient getPatient(String id) {
-        return _dummy.getPatient(id);
+    public Person getPatient(String id) {
+        return ps.getPatient(id);
     }
 }

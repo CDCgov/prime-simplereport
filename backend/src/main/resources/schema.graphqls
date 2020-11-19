@@ -1,12 +1,12 @@
 # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
-type Device {
-  id: ID
-  displayName: String
-  deviceManufacturer: String
-  deviceModel: String
+type DeviceType {
+  internalId: ID
+  name: String
+  manufacturer: String
+  model: String
 }
 type Patient {
-  id: ID
+  internalId: ID
   lookupId: String
   firstName: String
   middleName: String
@@ -27,7 +27,6 @@ type Patient {
   employedInHealthcare: Boolean
   typeOfHealthcareProfessional: String
   residentCongregateSetting: Boolean
-  patientResidencyType: String
   typeOfHealthcareProfessional: String
   email: String
   county: String
@@ -39,7 +38,7 @@ type Patient {
   testResults: [TestResult]
 }
 type Organization {
-  id: ID
+  internalId: ID
   testingFacilityName: String
   cliaNumber: String
   orderingProviderName: String
@@ -51,8 +50,8 @@ type Organization {
   orderingProviderState: String
   orderingProviderZipCode: String
   orderingProviderPhone: String
-  devices: [Device]
-  defaultDevice: Device
+  deviceTypes: [DeviceType]
+  defaultDeviceType: DeviceType
 }
 type User {
   id: ID
@@ -61,7 +60,7 @@ type User {
 type TestResult {
   id: ID
   dateTested: String
-  device: Device
+  deviceType: DeviceType
   result: String
   patient: Patient
 }
@@ -79,10 +78,10 @@ type Queue {
   priorTestType: String
   priorTestResult: String
   testResult: TestResult
-  device: Device
+  deviceType: DeviceType
 }
 type Query {
-  device: [Device]
+  deviceType: [DeviceType]
   patients: [Patient]
   patient(id: String): Patient
   user: User
@@ -103,7 +102,7 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String!
     orderingProviderPhone: String
-    devices: [String]
+    deviceTypes: [String]
     defaultDevice: String
   ): String
   addPatient(
