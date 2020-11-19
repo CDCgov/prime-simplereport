@@ -41,8 +41,6 @@ public class Person extends EternalEntity {
 	private String typeOfHealthcareProfessional;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
-	@Column
-	private String patientResidencyType;
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
