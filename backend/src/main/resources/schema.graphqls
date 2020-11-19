@@ -173,6 +173,4 @@ type Mutation {
     symptomOnset: String
     noSymptoms: Boolean
   ): String
-  updateDeviceForPatientInQueue(patientId: String!, deviceId: String!): String
-  updateResultForPatientInQueue(patientId: String!, result: String!): String
 }
