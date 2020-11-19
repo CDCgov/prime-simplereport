@@ -35,7 +35,8 @@ public class PersonService {
 
 
 	public Person getPatient(String id) {
-		return _repo.findByInternalIdAndOrganization(id, _os.getCurrentOrganization());
+		UUID actualId = UUID.fromString(id);
+		return _repo.findByIDAndOrganization(actualId,_os.getCurrentOrganization());
 	}
 
 	public String addPatient(

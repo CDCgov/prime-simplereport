@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,8 +32,9 @@ public class DeviceTypeService {
 	}
 
 
-	public DeviceType getDeviceType(String InternalId) {
-		return _repo.findByInternalId(InternalId);
+	public DeviceType getDeviceType(String internalId) {
+		UUID actualId = UUID.fromString(internalId);
+		return _repo.findById(actualId).orElseThrow();
 	}
 
 	@Transactional(readOnly = false)
