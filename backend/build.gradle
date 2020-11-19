@@ -42,7 +42,7 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
-	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
+	testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
 }
 
 test {
