@@ -92,66 +92,66 @@ type Query {
 }
 type Mutation {
   updateOrganization(
-    testingFacilityName: String
+    testingFacilityName: String!
     cliaNumber: String
-    orderingProviderName: String
-    orderingProviderNPI: String
+    orderingProviderName: String!
+    orderingProviderNPI: String!
     orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
     orderingProviderState: String
-    orderingProviderZipCode: String
+    orderingProviderZipCode: String!
     orderingProviderPhone: String
     devices: [String]
     defaultDevice: String
   ): String
   addPatient(
     lookupId: String
-    firstName: String
+    firstName: String!
     middleName: String
-    lastName: String
-    birthDate: String
-    street: String
+    lastName: String!
+    birthDate: String!
+    street: String!
     streetTwo: String
     city: String
-    state: String
-    zipCode: String
-    phone: String
+    state: String!
+    zipCode: String!
+    phone: String!
     typeOfHealthcareProfessional: String
     email: String
     county: String
     race: String
     ethnicity: String
     gender: String
-    residentCongregateSetting: Boolean
-    employedInHealthcare: Boolean
+    residentCongregateSetting: Boolean!
+    employedInHealthcare: Boolean!
   ): String
   updatePatient(
-    patientId: String
+    patientId: String!
     lookupId: String
-    firstName: String
+    firstName: String!
     middleName: String
-    lastName: String
-    birthDate: String
-    street: String
+    lastName: String!
+    birthDate: String!
+    street: String!
     streetTwo: String
     city: String
-    state: String
-    zipCode: String
-    phone: String
+    state: String!
+    zipCode: String!
+    phone: String!
     typeOfHealthcareProfessional: String
     email: String
     county: String
     race: String
     ethnicity: String
     gender: String
-    residentCongregateSetting: Boolean
-    employedInHealthcare: Boolean
+    residentCongregateSetting: Boolean!
+    employedInHealthcare: Boolean!
   ): String
-  addTestResult(deviceId: String, result: String, patientId: String): String
+  addTestResult(deviceId: String!, result: String!, patientId: String!): String
   addPatientToQueue(
-    patientId: String
+    patientId: String!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
@@ -161,9 +161,9 @@ type Mutation {
     symptomOnset: String
     noSymptoms: Boolean
   ): String
-  removePatientFromQueue(patientId: String): String
+  removePatientFromQueue(patientId: String!): String
   updateTimeOfTestQuestions(
-    patientId: String
+    patientId: String!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
@@ -173,6 +173,4 @@ type Mutation {
     symptomOnset: String
     noSymptoms: Boolean
   ): String
-  updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
-  updateResultForPatientInQueue(patientId: String, result: String): String
 }

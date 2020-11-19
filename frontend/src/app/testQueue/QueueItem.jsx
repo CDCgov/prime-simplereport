@@ -35,7 +35,7 @@ const SUBMIT_TEST_RESULT = gql`
 
 const UPDATE_AOE = gql`
   mutation(
-    $patientId: String
+    $patientId: String!
     $symptoms: String
     $symptomOnset: String
     $pregnancy: String

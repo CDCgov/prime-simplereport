@@ -38,16 +38,16 @@ const GET_SETTINGS_QUERY = gql`
 
 const SET_SETTINGS_MUTATION = gql`
   mutation(
-    $testingFacilityName: String
+    $testingFacilityName: String!
     $cliaNumber: String
-    $orderingProviderName: String
-    $orderingProviderNPI: String
+    $orderingProviderName: String!
+    $orderingProviderNPI: String!
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
     $orderingProviderCounty: String
     $orderingProviderState: String
-    $orderingProviderZipCode: String
+    $orderingProviderZipCode: String!
     $orderingProviderPhone: String
     $devices: [String]
     $defaultDevice: String
