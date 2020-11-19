@@ -152,7 +152,8 @@ const SymptomInputs = ({
       <RadioGroup
         type="checkbox"
         name="symptom_list"
-        label="Are you experiencing any of the following symptoms?"
+        legend="Are you experiencing any of the following symptoms?"
+        displayLegend
         onChange={(evt) => {
           console.log("new value:", evt.currentTarget.checked);
           setNoSymptoms(evt.currentTarget.checked);
@@ -198,11 +199,10 @@ const PriorTestInputs = ({
           let isFirstTest = value === "yes" ? true : false;
           setIsFirstTest(isFirstTest);
         }}
-        label="Is this the first test?"
-        legend="First test?"
+        legend="First covid test?"
+        displayLegend
         name="prior_test_flag"
         horizontal
-        displayLegend="true"
       />
       {isFirstTest ? null : (
         <>
@@ -369,7 +369,8 @@ const AoEModalForm = ({
 
       <h2>Pregnancy</h2>
       <RadioGroup
-        label="Pregnancy"
+        legend="Currently pregnant?"
+        displayLegend
         name="pregnancy"
         type="radio"
         onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
