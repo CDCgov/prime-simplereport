@@ -22,7 +22,7 @@ type Patient {
   county: String
   state: String
   zipCode: String
-  phone: String
+  telephone: String
   email: String
   employedInHealthcare: Boolean
   typeOfHealthcareProfessional: String
@@ -117,7 +117,7 @@ type Mutation {
     city: String
     state: String!
     zipCode: String!
-    phone: String!
+    telephone: String!
     typeOfHealthcareProfessional: String
     email: String
     county: String
@@ -139,7 +139,7 @@ type Mutation {
     city: String
     state: String!
     zipCode: String!
-    phone: String!
+    telephone: String!
     typeOfHealthcareProfessional: String
     email: String
     county: String

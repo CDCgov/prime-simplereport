@@ -12,7 +12,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import gov.cdc.usds.simplereport.api.model.Device;
 import org.hibernate.annotations.NaturalId;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 public class Organization extends EternalEntity {
@@ -85,5 +90,54 @@ public class Organization extends EternalEntity {
 		if (defaultDeviceType != null && existingDevice.getInternalId().equals(defaultDeviceType.getInternalId())) {
 			defaultDeviceType = null;
 		}
+	// These should be temporary
+	}
+
+	public String getTestingFacilityName() {
+		return this.facilityName;
+	}
+
+	public String getCliaNumber() {
+		return this.externalId;
+	}
+
+	public String orderingProviderName() {
+		return "Not a provider";
+	}
+
+	public String orderingProviderNPI() {
+		return "Not an NPI";
+	}
+
+	public String orderingProviderStreet() {
+		return "Not a street";
+	}
+
+	public String orderingProviderStreetTwo() {
+		return "Not a street";
+	}
+
+	public String orderingProviderCity() {
+		return "Not a city";
+	}
+
+	public String orderingProviderCounty() {
+		return "Not a city";
+	}
+
+	public String orderingProviderState() {
+		return "Not a city";
+	}
+
+	public String orderingProviderZipCode() {
+		return "Not a city";
+	}
+
+	public String orderingProviderPhone() {
+		return "555-555-5555";
+	}
+
+	public List<Device> devices() {
+		return Collections.emptyList();
 	}
 }
