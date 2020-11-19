@@ -20,24 +20,24 @@ import "./EditPatient.scss";
 const ADD_PATIENT = gql`
   mutation(
     $lookupId: String
-    $firstName: String
+    $firstName: String!
     $middleName: String
-    $lastName: String
-    $birthDate: String
-    $street: String
+    $lastName: String!
+    $birthDate: String!
+    $street: String!
     $streetTwo: String
     $city: String
-    $state: String
-    $zipCode: String
-    $phone: String
+    $state: String!
+    $zipCode: String!
+    $phone: String!
     $typeOfHealthcareProfessional: String
     $email: String
     $county: String
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean
-    $employedInHealthcare: Boolean
+    $residentCongregateSetting: Boolean!
+    $employedInHealthcare: Boolean!
   ) {
     addPatient(
       lookupId: $lookupId
@@ -65,28 +65,28 @@ const ADD_PATIENT = gql`
 
 const UPDATE_PATIENT = gql`
   mutation(
-    $patientId: String
+    $patientId: String!
     $lookupId: String
-    $firstName: String
+    $firstName: String!
     $middleName: String
-    $lastName: String
-    $birthDate: String
-    $street: String
+    $lastName: String!
+    $birthDate: String!
+    $street: String!
     $streetTwo: String
     $city: String
-    $state: String
-    $zipCode: String
-    $phone: String
+    $state: String!
+    $zipCode: String!
+    $phone: String!
     $typeOfHealthcareProfessional: String
     $email: String
     $county: String
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean
-    $employedInHealthcare: Boolean
+    $residentCongregateSetting: Boolean!
+    $employedInHealthcare: Boolean!
   ) {
-    addPatient(
+    updatePatient(
       patientId: $patientId
       lookupId: $lookupId
       firstName: $firstName
