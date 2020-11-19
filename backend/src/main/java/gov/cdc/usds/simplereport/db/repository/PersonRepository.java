@@ -15,5 +15,5 @@ public interface PersonRepository extends EternalEntityRepository<Person> {
     public List<Person> findAllByOrganization(Organization org);
 
     @Query(BASE_QUERY + " and organization = :org")
-    public List<Person> findByIDAndOrganization(String id, Organization org);
+    public Person findByIDAndOrganization(String id, Organization org);
 }

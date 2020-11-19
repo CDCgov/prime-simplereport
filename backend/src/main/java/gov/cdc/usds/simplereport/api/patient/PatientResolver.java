@@ -21,7 +21,7 @@ public class PatientResolver implements GraphQLQueryResolver {
         return ps.getPatients();
     }
 
-    public List<Person> getPatient(String id) {
+    public Person getPatient(String id) {
         return ps.getPatient(id);
     }
 }
