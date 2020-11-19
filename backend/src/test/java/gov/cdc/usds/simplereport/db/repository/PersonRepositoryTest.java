@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -17,11 +18,16 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	private OrganizationRepository _orgRepo;
 
+	@Test
 	public void doPersonOperations() {
 		Organization org = _orgRepo.save(new Organization("Here", "there", null));
-		_repo.save(new Person("Joe", null, "Schmoe", LocalDate.now(), "nowheresville", "(1) (234) 456-7890"));
+		Organization other = _orgRepo.save(new Organization("There", "where?", null));
+
+		_repo.save(new Person(org, "Joe", null, "Schmoe", LocalDate.now(), "nowheresville", "(1) (234) 456-7890"));
 		List<Person> found = _repo.findAllByOrganization(org);
-		assertEquals(0, found.size());
+		assertEquals(1, found.size());
 		assertEquals("Joe", found.get(0).getFirstName());
+		found = _repo.findAllByOrganization(other);
+		assertEquals(0, found.size());
 	}
 }
