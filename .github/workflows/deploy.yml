@@ -8,6 +8,7 @@ on:
   push:
     branches: # automatically deploy the "sandbox" branch on every push
       - sandbox
+      - main
   schedule:
     - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
 jobs:

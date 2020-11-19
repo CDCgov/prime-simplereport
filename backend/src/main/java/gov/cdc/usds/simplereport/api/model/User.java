@@ -1,9 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.time.LocalDate;
 import java.util.UUID;
-
-import gov.cdc.usds.simplereport.api.model.Organization;
 
 public class User {
 

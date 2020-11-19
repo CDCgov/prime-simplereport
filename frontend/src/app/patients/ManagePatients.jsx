@@ -1,7 +1,7 @@
+import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 
-import { useSelector } from "react-redux";
-import { getPatientsWithLastTestResult } from "../patients/patientSelectors";
+import { displayFullName } from "../utils";
 
 import { NavLink } from "react-router-dom";
 import { readString } from "react-papaparse";
@@ -18,9 +18,21 @@ import {
 const ajv = new Ajv({ allErrors: true });
 const validate = ajv.compile(schemaPatient.default);
 
-const ManagePatients = () => {
-  const patients = useSelector(getPatientsWithLastTestResult());
+const patientQuery = gql`
+  {
+    patients {
+      id
+      lookupId
+      firstName
+      lastName
+      middleName
+      birthDate
+    }
+  }
+`;
 
+const ManagePatients = () => {
+  const { data, loading, error } = useQuery(patientQuery);
   const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
 
   const openCSVModal = () => {
@@ -33,7 +45,7 @@ const ManagePatients = () => {
 
   const [CSVdata, setCSVData] = useState({});
 
-  var loadFile = (file) => {
+  var loadFile = (file, patients) => {
     var thisReader = new FileReader();
     thisReader.onloadend = function (e) {
       // then schema validating
@@ -133,14 +145,18 @@ const ManagePatients = () => {
 
   const patientRows = (patients) => {
     return patients.map((patient) => (
-      <tr key={patient.patientId}>
+      <tr key={patient.lookupId}>
         <th scope="row">
-          <NavLink to={`patient/${patient.patientId}`}>
-            {patient.displayName}
+          <NavLink to={`patient/${patient.id}`}>
+            {displayFullName(
+              patient.firstName,
+              patient.middleName,
+              patient.lastName
+            )}
           </NavLink>
         </th>
         <td>{patient.lookupId}</td>
-        <td>{patient.birthDate}</td>
+        <td> {patient.birthDate}</td>
         <td>
           {patient.lastTestDate === undefined
             ? "N/A"
@@ -149,8 +165,6 @@ const ManagePatients = () => {
       </tr>
     ));
   };
-
-  let rows = patientRows(patients);
 
   return (
     <main className="prime-home">
@@ -162,7 +176,7 @@ const ManagePatients = () => {
             </div>
             <div className="usa-card__body">
               <div style={{ display: "inline-block" }}>
-                <NavLink className="usa-button" to={"patient/NEW"}>
+                <NavLink className="usa-button" to={"patient/new"}>
                   New {PATIENT_TERM_CAP}
                 </NavLink>
               </div>
@@ -172,7 +186,9 @@ const ManagePatients = () => {
                 id="uploadCSV"
                 className="input-file"
                 accept=".csv"
-                onChange={(csv) => loadFile(csv.target.files[0])}
+                onChange={(csv) =>
+                  loadFile(csv.target.files[0], data ? data.patients : {})
+                }
               />
               <CSVModalForm
                 isOpen={isCSVModalOpen}
@@ -190,17 +206,25 @@ const ManagePatients = () => {
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
             </div>
             <div className="usa-card__body">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Unique ID</th>
-                    <th scope="col">Date of Birth</th>
-                    <th scope="col">Days since last test</th>
-                  </tr>
-                </thead>
-                <tbody>{rows}</tbody>
-              </table>
+              {error ? (
+                <p>Error in loading patients</p>
+              ) : loading ? (
+                <p>Loading patients...</p>
+              ) : data ? (
+                <table className="usa-table usa-table--borderless width-full">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Unique ID</th>
+                      <th scope="col">Date of Birth</th>
+                      <th scope="col">Days since last test</th>
+                    </tr>
+                  </thead>
+                  <tbody>{patientRows(data.patients)}</tbody>
+                </table>
+              ) : (
+                <p> no patients found</p>
+              )}
             </div>
           </div>
         </div>

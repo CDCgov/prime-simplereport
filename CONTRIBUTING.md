@@ -47,10 +47,22 @@ of this repository.
 
 ## Formatting and Styling
 
+**If you are editing a file that requires formatting changes please commit those changes separately
+from any changes to the code function!** PR those separately as well so we don't have to
+parse through style changes and code changes at the same time. _pew pew_
+
+### Client (Javascript)
+
 We're just defaulting to `prettier` for formatting and styling. Easiest thing to do is enable format
 on save to avoid crazy weird formatting changes in pull requests. Inside the frontend some of this
 is handled with tests.
 
-**If you are editing a file that requires formatting changes please commit those changes separately
-from any changes to the code function!** PR those separately as well so we don't have to
-parse through style changes and code changes at the same time. _pew pew_
+### API (Java)
+
+The initial code uses the default code formatting settings from Spring Tool
+Suite, because they are there. As we develop opinions on what changes should
+be made to those settings, we will add them here.
+
+In addition, we have a small set of checkstyle rules: these  rules are intended
+to remain few in number, but by the same token they should not be bypassed
+without an extremely compelling reason.

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * Created by nickrobison on 11/13/20
  */
 @Configuration
-@Profile("!dev") // Configuration should be active in every profile EXCEPT dev
+@Profile("!" + DevSecurityConfiguration.PROFILE) // Activate this profile to disable security
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 

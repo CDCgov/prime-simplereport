@@ -28,6 +28,14 @@ type Patient {
   typeOfHealthcareProfessional: String
   residentCongregateSetting: Boolean
   patientResidencyType: String
+  typeOfHealthcareProfessional: String
+  email: String
+  county: String
+  race: String
+  ethnicity: String
+  gender: String
+  residentCongregateSetting: Boolean
+  employedInHealthcare: Boolean
   testResults: [TestResult]
 }
 type Organization {
@@ -44,7 +52,7 @@ type Organization {
   orderingProviderZipCode: String
   orderingProviderPhone: String
   devices: [Device]
-  defaultDevice: String
+  defaultDevice: Device
 }
 type User {
   id: ID
@@ -63,16 +71,20 @@ type Queue {
   organization: Organization
   dateAdded: String
   pregnancy: String
+  noSymptoms: Boolean
   symptoms: String
+  symptomOnset: String
   firstTest: Boolean
   priorTestDate: String
   priorTestType: String
   priorTestResult: String
   testResult: TestResult
+  device: Device
 }
 type Query {
   device: [Device]
-  patient: [Patient]
+  patients: [Patient]
+  patient(id: String): Patient
   user: User
   organization: Organization
   testResult: [TestResult]
@@ -106,6 +118,36 @@ type Mutation {
     state: String
     zipCode: String
     phone: String
+    typeOfHealthcareProfessional: String
+    email: String
+    county: String
+    race: String
+    ethnicity: String
+    gender: String
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
+  ): String
+  updatePatient(
+    patientId: String
+    lookupId: String
+    firstName: String
+    middleName: String
+    lastName: String
+    birthDate: String
+    street: String
+    streetTwo: String
+    city: String
+    state: String
+    zipCode: String
+    phone: String
+    typeOfHealthcareProfessional: String
+    email: String
+    county: String
+    race: String
+    ethnicity: String
+    gender: String
+    residentCongregateSetting: Boolean
+    employedInHealthcare: Boolean
   ): String
   addTestResult(deviceId: String, result: String, patientId: String): String
   addPatientToQueue(
@@ -116,6 +158,8 @@ type Mutation {
     priorTestDate: String
     priorTestType: String
     priorTestResult: String
+    symptomOnset: String
+    noSymptoms: Boolean
   ): String
   removePatientFromQueue(patientId: String): String
   updateTimeOfTestQuestions(
@@ -126,6 +170,8 @@ type Mutation {
     priorTestDate: String
     priorTestType: String
     priorTestResult: String
+    symptomOnset: String
+    noSymptoms: Boolean
   ): String
   updateDeviceForPatientInQueue(patientId: String, deviceId: String): String
   updateResultForPatientInQueue(patientId: String, result: String): String

@@ -1,10 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-
-import gov.cdc.usds.simplereport.api.model.Device;
-
 import java.util.List;
 import java.util.UUID;
 
@@ -103,6 +98,10 @@ public class Organization {
 		this.orderingProviderPhone = orderingProviderPhone;
 		this.devices = devices;
 		this.defaultDevice = defaultDevice;
+	}
+
+	public Device getDefaultDevice() {
+		return defaultDevice;
 	}
 
 	public String getId() {
