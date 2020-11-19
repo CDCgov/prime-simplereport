@@ -17,6 +17,10 @@
 })
 @TypeDefs({
 	@TypeDef(
+		name = "list-array",
+		typeClass = ListArrayType.class
+	),
+	@TypeDef(
 	    name = "pg_enum",
 	    typeClass = PostgreSQLEnumType.class
 	)
@@ -29,4 +33,5 @@ import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;

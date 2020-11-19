@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
@@ -43,5 +44,10 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		found.addDefaultDeviceType(bill);
 		_repo.save(found);
 		found = _repo.findById(saved.getInternalId()).get();
+		found.removeDeviceType(bill);;
+		_repo.save(found);
+		found = _repo.findById(saved.getInternalId()).get();
+		assertNull(found.getDefaultDeviceType());
+		assertEquals(1, found.getDeviceTypes().size());
 	}
 }

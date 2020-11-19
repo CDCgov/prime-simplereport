@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import java.time.LocalDate;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -18,15 +19,15 @@ public class Person extends EternalEntity {
 	private String lastName;
 	@Column(nullable = false)
 	private LocalDate birthDate;
-	@Column
-	private String address;
+	@Embedded
+	private StreetAddress address;
 	@Column
 	private String telephone;
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
 
-	public Person(Organization org, String firstName, String middleName, String lastName, LocalDate birthDate, String address,
+	public Person(Organization org, String firstName, String middleName, String lastName, LocalDate birthDate, StreetAddress address,
 			String telephone) {
 		super();
 		this.firstName = firstName;
@@ -49,7 +50,7 @@ public class Person extends EternalEntity {
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}
-	public String getAddress() {
+	public StreetAddress getAddress() {
 		return address;
 	}
 	public String getTelephone() {

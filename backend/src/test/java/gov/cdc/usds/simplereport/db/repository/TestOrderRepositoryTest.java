@@ -26,7 +26,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void runChanges() {
 		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
-		Person hoya = _personRepo.save(new Person(gtown, "George", "Town", "Student", LocalDate.of(1900, 03, 29), "", ""));
+		Person hoya = _personRepo.save(new Person(gtown, "George", "Town", "Student", LocalDate.of(1900, 03, 29), null, ""));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
 		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);
 		assertEquals(0, queue.size());

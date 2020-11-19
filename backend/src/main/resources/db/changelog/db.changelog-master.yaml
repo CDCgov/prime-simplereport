@@ -1,7 +1,7 @@
 x-ref-data:
   type-defs:
     - &idtype uuid
-    - &string varchar(255)
+    - &string text
   column-defs:
     - column: &pk_column
         name: internal_id
@@ -166,8 +166,24 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: address # nopenopenope
-                  remarks: The person's home address, as an unstructure string.
+                  name: street
+                  remarks: The street portion of the person's address.
+                  type: "text ARRAY"
+              - column:
+                  name: city
+                  remarks: The city of the person's address.
+                  type: *string
+              - column:
+                  name: county
+                  remarks: The county (NOT THE COUNTRY) of the person's address, if applicable.
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The state or province of the person's address.
+                  type: *string
+              - column:
+                  name: postal_code
+                  remarks: The zip/postal code of the person's address.
                   type: *string
               - column:
                   name: telephone
