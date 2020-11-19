@@ -12,29 +12,30 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+import java.time.LocalDate;
+
+
 /**
  * Created by nickrobison on 11/17/20
  */
 @Service
 @Transactional(readOnly = false)
 public class PersonService {
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private OrganizationService _os;
+    private PersonRepository _repo;
 
-	private OrganizationService _os;
-	private PersonRepository _repo;
+    public PersonService(OrganizationService os, PersonRepository repo) {
+        _os = os;
+        _repo = repo;
+    }
 
-	public PersonService(OrganizationService os, PersonRepository repo) {
-		_os = os;
-		_repo = repo;
-	}
+    public List<Person> getPatients() {
+        return _repo.findAllByOrganization(_os.getCurrentOrganization());
+    }
 
-	public List<Person> getPatients() {
-		return _repo.findAllByOrganization(_os.getCurrentOrganization());
-	}
 
 	public Person getPatient(String id) {
-		UUID internalId = UUID.fromString(id);
-		return _repo.findByIDAndOrganization(internalId, _os.getCurrentOrganization());
+		return _repo.findByInternalIdAndOrganization(id, _os.getCurrentOrganization());
 	}
 
 	public String addPatient(
@@ -42,7 +43,7 @@ public class PersonService {
 		String firstName,
 		String middleName,
 		String lastName,
-		String birthDate,
+		LocalDate birthDate,
 		String street,
 		String streetTwo,
 		String city,
@@ -58,7 +59,6 @@ public class PersonService {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
-		LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person newPatient = new Person(
 			_os.getCurrentOrganization(),
@@ -66,7 +66,7 @@ public class PersonService {
 			firstName,
 			middleName,
 			lastName,
-			localBirthDateDate,
+			birthDate,
 			patientAddress,
 			telephone,
 			typeOfHealthcareProfessional,
@@ -87,7 +87,7 @@ public class PersonService {
 		String firstName,
 		String middleName,
 		String lastName,
-		String birthDate,
+		LocalDate birthDate,
 		String street,
 		String streetTwo,
 		String city,
@@ -103,15 +103,14 @@ public class PersonService {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
-        LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
-        Person patientToUpdate = this.getPatient(patientId);
+		Person patientToUpdate = this.getPatient(patientId);
 		patientToUpdate.updatePatient(
 			lookupId,
 			firstName,
 			middleName,
 			lastName,
-			localBirthDateDate,
+			birthDate,
 			patientAddress,
 			telephone,
 			typeOfHealthcareProfessional,

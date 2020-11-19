@@ -5,8 +5,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.cdc.usds.simplereport.api.model.Device;
-import gov.cdc.usds.simplereport.api.model.Organization;
 import gov.cdc.usds.simplereport.api.model.TestOrder;
 import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.api.model.User;
@@ -28,16 +26,8 @@ public class QueryResolver implements GraphQLQueryResolver {
         this.repo = repo;
     }
 
-    public List<Device> getDevice() {
-        return repo.allDevices;
-    }
-
     public User getUser() {
         return repo.defaultUser;
-    }
-
-    public Organization getOrganization() {
-        return repo.defaultOrg;
     }
 
     public List<TestResult> getTestResult() {

@@ -1,4 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
+import gov.cdc.usds.simplereport.db.model.Organization;
 
 import java.util.UUID;
 
