@@ -1,10 +1,9 @@
-
 import React from "react";
 
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptoms) {
     let symptomFound = false;
-    const symptoms = JSON.parse(answerDict.symptoms)
+    const symptoms = JSON.parse(answerDict.symptoms);
     Object.values(symptoms).forEach((val) => {
       if (val) {
         symptomFound = true;
@@ -25,7 +24,8 @@ export const areAnswersComplete = (answerDict) => {
     }
   }
   if (!answerDict.firstTest) {
-    if (!answerDict.priorTestDate ||
+    if (
+      !answerDict.priorTestDate ||
       answerDict.priorTestDate.year === "" ||
       answerDict.priorTestDate.month === "" ||
       answerDict.priorTestDate.day === ""
@@ -41,8 +41,6 @@ export const areAnswersComplete = (answerDict) => {
   }
   return true;
 };
-
-
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
   if (areAnswersComplete(aoeAnswers)) {

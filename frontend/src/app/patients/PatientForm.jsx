@@ -16,99 +16,98 @@ import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName } from "../utils";
 import "./EditPatient.scss";
 
-
 const ADD_PATIENT = gql`
-mutation(
-  $lookupId: String
-  $firstName: String
-  $middleName: String
-  $lastName: String
-  $birthDate: String
-  $street: String
-  $streetTwo: String
-  $city: String
-  $state: String
-  $zipCode: String
-  $phone: String
-  $typeOfHealthcareProfessional: String
-  $email: String
-  $county: String
-  $race: String
-  $ethnicity: String
-  $gender: String
-  $residentCongregateSetting: Boolean
-  $employedInHealthcare: Boolean
-) {
-  addPatient(
-    lookupId: $lookupId
-    firstName: $firstName
-    middleName: $middleName
-    lastName: $lastName
-    birthDate: $birthDate
-    street: $street
-    streetTwo: $streetTwo
-    city: $city
-    state: $state
-    zipCode: $zipCode
-    phone: $phone
-    typeOfHealthcareProfessional: $typeOfHealthcareProfessional
-    email: $email
-    county: $county
-    race: $race
-    ethnicity: $ethnicity
-    gender: $gender
-    residentCongregateSetting: $residentCongregateSetting
-    employedInHealthcare: $employedInHealthcare
-  )
-}
+  mutation(
+    $lookupId: String
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $birthDate: String
+    $street: String
+    $streetTwo: String
+    $city: String
+    $state: String
+    $zipCode: String
+    $phone: String
+    $typeOfHealthcareProfessional: String
+    $email: String
+    $county: String
+    $race: String
+    $ethnicity: String
+    $gender: String
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
+  ) {
+    addPatient(
+      lookupId: $lookupId
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      birthDate: $birthDate
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
+      typeOfHealthcareProfessional: $typeOfHealthcareProfessional
+      email: $email
+      county: $county
+      race: $race
+      ethnicity: $ethnicity
+      gender: $gender
+      residentCongregateSetting: $residentCongregateSetting
+      employedInHealthcare: $employedInHealthcare
+    )
+  }
 `;
 
 const UPDATE_PATIENT = gql`
-mutation(
-  $patientId: String
-  $lookupId: String
-  $firstName: String
-  $middleName: String
-  $lastName: String
-  $birthDate: String
-  $street: String
-  $streetTwo: String
-  $city: String
-  $state: String
-  $zipCode: String
-  $phone: String
-  $typeOfHealthcareProfessional: String
-  $email: String
-  $county: String
-  $race: String
-  $ethnicity: String
-  $gender: String
-  $residentCongregateSetting: Boolean
-  $employedInHealthcare: Boolean
-) {
-  addPatient(
-    patientId: $patientId
-    lookupId: $lookupId
-    firstName: $firstName
-    middleName: $middleName
-    lastName: $lastName
-    birthDate: $birthDate
-    street: $street
-    streetTwo: $streetTwo
-    city: $city
-    state: $state
-    zipCode: $zipCode
-    phone: $phone
-    typeOfHealthcareProfessional: $typeOfHealthcareProfessional
-    email: $email
-    county: $county
-    race: $race
-    ethnicity: $ethnicity
-    gender: $gender
-    residentCongregateSetting: $residentCongregateSetting
-    employedInHealthcare: $employedInHealthcare
-  )
-}
+  mutation(
+    $patientId: String
+    $lookupId: String
+    $firstName: String
+    $middleName: String
+    $lastName: String
+    $birthDate: String
+    $street: String
+    $streetTwo: String
+    $city: String
+    $state: String
+    $zipCode: String
+    $phone: String
+    $typeOfHealthcareProfessional: String
+    $email: String
+    $county: String
+    $race: String
+    $ethnicity: String
+    $gender: String
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
+  ) {
+    addPatient(
+      patientId: $patientId
+      lookupId: $lookupId
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      birthDate: $birthDate
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
+      typeOfHealthcareProfessional: $typeOfHealthcareProfessional
+      email: $email
+      county: $county
+      race: $race
+      ethnicity: $ethnicity
+      gender: $gender
+      residentCongregateSetting: $residentCongregateSetting
+      employedInHealthcare: $employedInHealthcare
+    )
+  }
 `;
 
 const Fieldset = (props) => (
@@ -137,7 +136,7 @@ const PatientForm = (props) => {
     setFormChanged(true);
     setPatient({ ...patient, [e.target.name]: value });
   };
-  console.log(props)
+  console.log(props);
   const fullName = displayFullName(
     patient.firstName,
     patient.middleName,
@@ -165,23 +164,25 @@ const PatientForm = (props) => {
       ethnicity: patient.ethnicity,
       gender: patient.sex,
       residentCongregateSetting: patient.resident_congregate_setting,
-      employedInHealthcare: patient.employed_in_healthcare
-    }
+      employedInHealthcare: patient.employed_in_healthcare,
+    };
     if (props.patientId) {
-      updatePatient({variables: {
-        patientId: props.patientId,
-        ...variables
-      }}).then(
+      updatePatient({
+        variables: {
+          patientId: props.patientId,
+          ...variables,
+        },
+      }).then(
         () => console.log("success!!!"),
-        (error) => console.error(error),
+        (error) => console.error(error)
       );
     } else {
-      addPatient({variables}).then(
+      addPatient({ variables }).then(
         () => console.log("success!!!"),
-        (error) => console.error(error),
+        (error) => console.error(error)
       );
     }
-  }
+  };
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
@@ -195,12 +196,16 @@ const PatientForm = (props) => {
         crumbs={[
           { link: "../patients", text: PATIENT_TERM_PLURAL_CAP },
           {
-            text: !props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName,
+            text: !props.patientId
+              ? `Create New ${PATIENT_TERM_CAP}`
+              : fullName,
           },
         ]}
       />
       <div className="prime-edit-patient-heading">
-        <h2>{!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}</h2>
+        <h2>
+          {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
+        </h2>
         <button
           className="usa-button prime-save-patient-changes"
           disabled={!formChanged}

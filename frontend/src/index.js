@@ -1,8 +1,4 @@
-import {
-  ApolloClient,
-  ApolloProvider,
-  InMemoryCache
-} from "@apollo/client"
+import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -14,7 +10,10 @@ import { store, persistor } from "./app/store";
 import { PersistGate } from "redux-persist/integration/react";
 
 const cache = new InMemoryCache({});
-const client = new ApolloClient({cache, uri: process.env.REACT_APP_BACKEND_URL})
+const client = new ApolloClient({
+  cache,
+  uri: process.env.REACT_APP_BACKEND_URL,
+});
 
 ReactDOM.render(
   <ApolloProvider client={client}>

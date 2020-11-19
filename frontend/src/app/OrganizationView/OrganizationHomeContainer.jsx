@@ -41,7 +41,9 @@ const OrganizationHomeContainer = () => {
         />
         <Route
           path={`${match.path}/patient/:patientId`}
-          render={({ match }) => <EditPatient patientId={match.params.patientId}/>}
+          render={({ match }) => (
+            <EditPatient patientId={match.params.patientId} />
+          )}
         />
         <Route
           path={`${match.path}/settings`}

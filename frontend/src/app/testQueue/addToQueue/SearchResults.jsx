@@ -40,11 +40,13 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
     }
     let suggestionRows = suggestions.map((suggestion) => (
       <tr key={uuidv4()}>
-        <td>{displayFullName(
+        <td>
+          {displayFullName(
             suggestion.firstName,
             suggestion.middleName,
             suggestion.lastName
-          )}</td>
+          )}
+        </td>
         <td>{suggestion.birthDate}</td>
         <td>{suggestion.lookupId}</td>
         <td>
