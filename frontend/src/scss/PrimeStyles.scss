@@ -164,6 +164,14 @@
   bottom: 0;
   z-index: 1000;
 }
+.prime-modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 1em;
+}
+.prime-modal-text {
+  margin: 1em;
+}
 
 .usa-alert--success {
   outline: 3px solid #00a91c;

@@ -4,13 +4,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
 
+import Modal from "react-modal";
 import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
-import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { ALERT_CONTENT } from "../testQueue/constants";
@@ -60,24 +60,33 @@ const UPDATE_AOE = gql`
 `;
 
 const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
-  <CMSDialog
-    onExit={cancelHandler}
-    heading="You have incomplete data"
-    size="narrow"
-    alert={true}
-    actions={
-      <React.Fragment>
-        <Button onClick={cancelHandler} variation="transparent">
-          No, go back
-        </Button>
-        <Button onClick={continueHandler}>Submit Anyways</Button>
-      </React.Fragment>
-    }
+  <Modal
+    isOpen={true}
+    style={{
+      content: {
+        top: "50%",
+        left: "50%",
+        width: "40%",
+        marginRight: "-50%",
+        transform: "translate(-50%, -50%)",
+      },
+    }}
+    overlayClassName={"prime-modal-overlay"}
+    contentLabel="Questions not answered"
   >
-    Time of test questions for <b>{patientName}</b> have not been completed. Do
-    you want to submit results anyways?
-  </CMSDialog>
+    <p className="usa-prose prime-modal-text">
+      Time of test questions for <b> {` ${patientName} `} </b> have not been
+      completed. Do you want to submit results anyway?
+    </p>
+    <div className="prime-modal-buttons">
+      <Button onClick={cancelHandler} variation="transparent">
+        No, go back
+      </Button>
+      <Button onClick={continueHandler}>Submit Anyway</Button>
+    </div>
+  </Modal>
 );
+Modal.setAppElement("#root");
 
 const QueueItem = ({
   patient,
@@ -103,7 +112,7 @@ const QueueItem = ({
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
   );
-  const [forceSubmit, setForceSubmit] = useState(false);
+  let forceSubmit = false;
 
   const testResultsSubmitted = () => {
     let { type, title, body } = {
@@ -272,7 +281,7 @@ const QueueItem = ({
                 patientName={patientFullName}
                 cancelHandler={() => updateIsConfirmationModalOpen(false)}
                 continueHandler={() => {
-                  setForceSubmit(true);
+                  forceSubmit = true;
                   onTestResultSubmit();
                 }}
               />

@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
 
 import { parseDate } from "./AoEForm/dateUtils";
@@ -77,22 +76,25 @@ const TestQueue = () => {
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
       ? patientQueue.map(
-          ({
-            pregnancy,
-            dateAdded,
-            symptoms,
-            noSymptoms,
-            firstTest,
-            priorTestDate,
-            priorTestType,
-            priorTestResult,
-            device,
-            patient,
-            testResult,
-            symptomOnset,
-          }) => (
+          (
+            {
+              pregnancy,
+              dateAdded,
+              symptoms,
+              noSymptoms,
+              firstTest,
+              priorTestDate,
+              priorTestType,
+              priorTestResult,
+              device,
+              patient,
+              testResult,
+              symptomOnset,
+            },
+            i
+          ) => (
             <QueueItem
-              key={`patient-${uuidv4()}`}
+              key={patient.patientId + i}
               patient={patient}
               askOnEntry={{
                 pregnancy,
