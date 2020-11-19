@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -17,6 +18,7 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	private OrganizationRepository _orgRepo;
 
+	@Test
 	public void doPersonOperations() {
 		Organization org = _orgRepo.save(new Organization("Here", "there", null));
 		Organization other = _orgRepo.save(new Organization("There", "where?", null));
