@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Provider;
 
 public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
@@ -21,10 +22,13 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	private OrganizationRepository _repo;
 	@Autowired
 	private DeviceTypeRepository _devices;
+	@Autowired
+	private ProviderRepository _providers;
 
 	@Test
 	public void createAndFindSomething() {
-		Organization saved = _repo.save(new Organization("My House", "12345", null));
+		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+		Organization saved = _repo.save(new Organization("My House", "12345", null, mccoy));
 		assertNotNull(saved);
 		assertNotNull(saved.getInternalId());
 		Optional<Organization> sameOrg = _repo.findByExternalId("12345");
@@ -36,9 +40,10 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	public void smokeTestDeviceOperations() {
 		Set<DeviceType> configuredDevices = new HashSet<>();
 		DeviceType bill = new DeviceType("Bill", "Weasleys", "1");
+		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
 		configuredDevices.add(_devices.save(bill));
 		configuredDevices.add(_devices.save(new DeviceType("Percy", "Weasleys", "2")));
-		Organization saved = _repo.save(new Organization("My Office", "650", null, configuredDevices));
+		Organization saved = _repo.save(new Organization("My Office", "650", null, mccoy, configuredDevices));
 		Organization found = _repo.findByExternalId(saved.getExternalId()).get();
 		assertEquals(2, found.getDeviceTypes().size());
 		found.addDefaultDeviceType(bill);

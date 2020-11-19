@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder.TestResult;
 
@@ -21,11 +22,15 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	private PersonRepository _personRepo;
 	@Autowired
 	private OrganizationRepository _orgRepo;
+	@Autowired
+	private ProviderRepository _providers;
 
 	@Test
 	public void runChanges() {
-		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+
+		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", null, mccoy));
+		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", LocalDate.now(), null, "(123) 456-7890", "", "", "", "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
 		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);

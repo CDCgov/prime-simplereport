@@ -12,6 +12,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
@@ -20,8 +21,8 @@ public class OrganizationServiceTest {
 
 	private OrganizationService _service;
 	
-	public OrganizationServiceTest(@Autowired OrganizationRepository repo) {
-		_service = new OrganizationService(repo);
+	public OrganizationServiceTest(@Autowired OrganizationRepository repo, @Autowired ProviderRepository providers) {
+		_service = new OrganizationService(repo, providers);
 	}
 
 	@Test

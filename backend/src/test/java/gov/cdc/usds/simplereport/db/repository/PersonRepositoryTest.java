@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 
 public class PersonRepositoryTest extends BaseRepositoryTest {
@@ -18,11 +19,15 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 	private PersonRepository _repo;
 	@Autowired
 	private OrganizationRepository _orgRepo;
+	@Autowired
+	private ProviderRepository _providerRepo;
 
 	@Test
 	public void doPersonOperations() {
-		Organization org = _orgRepo.save(new Organization("Here", "there", null));
-		Organization other = _orgRepo.save(new Organization("There", "where?", null));
+		Provider goodDoc = _providerRepo.save(new Provider("Madam Pomfrey", "YAY", null, ""));
+		Provider badDoc = _providerRepo.save(new Provider("Gilderoy Lockhart", "UHOH", null, ""));
+		Organization org = _orgRepo.save(new Organization("Here", "there", null, goodDoc));
+		Organization other = _orgRepo.save(new Organization("There", "where?", null, badDoc));
 
 		StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
 		_repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", LocalDate.now(),  addy, "(123) 456-7890", "", "", "", "", "", false, false));
