@@ -207,28 +207,24 @@ databaseChangeLog:
                   type: *string
               - column:
                   name: telephone
-                  remarks: The person's contact phone number
+                  remarks: The person's contact phone number.
                   type: *string
               - column:
                   name: email
-                  remarks: The person's contact email
+                  remarks: The person's contact email.
                   type: *string
               - column:
                   name: employed_in_healthcare
-                  remarks: is the person employed in healthcare
-                  type: *boolean
+                  remarks: Is the person employed in healthcare?
+                  type: boolean
               - column:
                   name: type_of_healthcare_professional
-                  remarks: persons role in healthcare
+                  remarks: The person's role in healthcare.
                   type: *string
               - column:
                   name: resident_congregate_setting
-                  remarks: does the person live in a congregate setting
-                  type: *boolean
-              - column:
-                  name: patient_residency_type
-                  remarks: type of residency
-                  type: *string
+                  remarks: Does the person live in a congregate setting?
+                  type: boolean
         - createTable:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.

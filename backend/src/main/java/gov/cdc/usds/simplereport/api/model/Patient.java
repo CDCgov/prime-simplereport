@@ -1,79 +1,76 @@
-package gov.cdc.usds.simplereport.db.model;
+package gov.cdc.usds.simplereport.api.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+public class Patient {
 
-@Entity
-public class Person extends EternalEntity {
-
-	@Column
+	private String id;
 	private String lookupId;
-	@Column(nullable = false)
 	private String firstName;
-	@Column
 	private String middleName;
-	@Column(nullable = false)
 	private String lastName;
-	@Column
 	private String suffix;
-	@Column(nullable = false)
-	private LocalDate birthDate;
-	@Embedded
-	private StreetAddress address;
-	@Column
-	private String gender;
-	@Column
 	private String race;
-	@Column
+	private LocalDate birthDate;
+	private String gender;
 	private String ethnicity;
-	@Column
-	private String telephone;
-	@Column
+	private String street;
+	private String streetTwo;
+	private String county;
+	private String city;
+	private String state;
+	private String zipCode;
+	private String phone;
 	private String email;
-	@Column(nullable = false)
-	private boolean employedInHealthcare;
-	@Column
+	private Boolean employedInHealthcare;
 	private String typeOfHealthcareProfessional;
-	@Column(nullable = false)
-	private boolean residentCongregateSetting;
-	@Column
+	private Boolean residentCongregateSetting;
 	private String patientResidencyType;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id")
+	private ArrayList<TestResult> testResults;
 	private Organization organization;
 
-	public Person(
-		Organization organization,
+	public Patient(
 		String lookupId,
 		String firstName,
 		String middleName,
 		String lastName,
 		LocalDate birthDate,
-		StreetAddress address,
-		String telephone,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone,
+		Organization organization,
 		String typeOfHealthcareProfessional,
 		String email,
+		String county,
 		String race,
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
+		super();
+		this.id = UUID.randomUUID().toString();
 		this.lookupId = lookupId;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.birthDate = birthDate;
-		this.telephone = telephone;
-		this.address = address;
+		this.street = street;
+		this.streetTwo = streetTwo;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.phone = phone;
 		this.organization = organization;
+		this.testResults = new ArrayList<TestResult>();
 		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
 		this.email = email;
+		this.county = county;
 		this.race = race;
 		this.ethnicity = ethnicity;
 		this.gender = gender;
@@ -87,10 +84,16 @@ public class Person extends EternalEntity {
 		String middleName,
 		String lastName,
 		LocalDate birthDate,
-		StreetAddress address,
-		String telephone,
+		String street,
+		String streetTwo,
+		String city,
+		String state,
+		String zipCode,
+		String phone,
+		Organization organization,
 		String typeOfHealthcareProfessional,
 		String email,
+		String county,
 		String race,
 		String ethnicity,
 		String gender,
@@ -102,10 +105,16 @@ public class Person extends EternalEntity {
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.birthDate = birthDate;
-		this.telephone = telephone;
-		this.address = address;
+		this.street = street;
+		this.streetTwo = streetTwo;
+		this.city = city;
+		this.state = state;
+		this.zipCode = zipCode;
+		this.phone = phone;
+		this.organization = organization;
 		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
 		this.email = email;
+		this.county = county;
 		this.race = race;
 		this.ethnicity = ethnicity;
 		this.gender = gender;
@@ -113,31 +122,62 @@ public class Person extends EternalEntity {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
+	public void setTestResults(ArrayList<TestResult> testResults) {
+		this.testResults = testResults;
+	}
+
+	public void addTestResult(TestResult testResult) {
+		this.testResults.add(testResult);
+	}
+
+	public String getId() {
+		return id;
+	}
+
 	public String getLookupId() {
 		return lookupId;
 	}
+
 	public String getFirstName() {
 		return firstName;
 	}
+
 	public String getMiddleName() {
 		return middleName;
 	}
+
 	public String getLastName() {
 		return lastName;
 	}
+
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}
 
-	public StreetAddress getAddress() {
-		return address;
+	public String getStreet() {
+		return street;
 	}
+
+	public String getStreetTwo() {
+		return streetTwo;
+	}
+
 	public String getTelephone() {
-		return telephone;
+		return phone;
 	}
+
 	public String getEmail() {
-		return email;
+		return phone;
 	}
+
+	public String getCounty() {
+		return county;
+	}
+
+	public String getTypeOfHealthcareProfessional() {
+		return typeOfHealthcareProfessional;
+	}
+
 	public String getRace() {
 		return race;
 	}
@@ -149,14 +189,12 @@ public class Person extends EternalEntity {
 	public String getGender() {
 		return gender;
 	}
+
 	public Boolean getResidentCongregateSetting() {
 		return residentCongregateSetting;
 	}
 
 	public Boolean getEmployedInHealthcare() {
 		return employedInHealthcare;
-	}
-	public Organization getOrganization() {
-		return organization;
 	}
 }

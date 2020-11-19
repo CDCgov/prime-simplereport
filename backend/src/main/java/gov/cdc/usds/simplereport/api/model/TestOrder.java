@@ -3,14 +3,11 @@ package gov.cdc.usds.simplereport.api.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
-
 public class TestOrder {
 
 	private String id;
-	private Person patient;
-  private Organization organization;
+	private Patient patient;
+	private Organization organization;
 	private LocalDate dateAdded;
 	private String pregnancy;
 	private String symptoms; // JSON object
@@ -25,7 +22,7 @@ public class TestOrder {
 	private TestResult testResult;
 
 	public TestOrder(
-    Person patient,
+    Patient patient,
     Organization organization
 	) {
 		super();
@@ -68,7 +65,7 @@ public class TestOrder {
 	}
 
 	public String getPatientId() {
-		return this.patient.getInternalId().toString();
+		return this.patient.getId();
 	}
 
 	public String getPregnancy() {

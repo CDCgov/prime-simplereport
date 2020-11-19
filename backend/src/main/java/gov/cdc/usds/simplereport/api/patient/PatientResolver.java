@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.api.patient;
 
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import gov.cdc.usds.simplereport.api.DummyDataRepo;
+import gov.cdc.usds.simplereport.api.model.Patient;
+import graphql.kickstart.tools.GraphQLQueryResolver;
 
 /**
  * Created by nickrobison on 11/17/20
@@ -15,13 +16,13 @@ import java.util.List;
 public class PatientResolver implements GraphQLQueryResolver {
 
     @Autowired
-    private PersonService ps;
+    private DummyDataRepo _dummy;
 
-    public List<Person> getPatients() {
-        return ps.getPatients();
+    public List<Patient> getPatients() {
+        return _dummy.allPatients;
     }
 
-    public Person getPatient(String id) {
-        return ps.getPatient(id);
+    public Patient getPatient(String id) {
+        return _dummy.getPatient(id);
     }
 }

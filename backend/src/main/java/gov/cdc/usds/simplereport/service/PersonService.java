@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by nickrobison on 11/17/20
@@ -31,7 +33,8 @@ public class PersonService {
 	}
 
 	public Person getPatient(String id) {
-		return _repo.findByIDAndOrganization(id, _os.getCurrentOrganization());
+		UUID internalId = UUID.fromString(id);
+		return _repo.findByIDAndOrganization(internalId, _os.getCurrentOrganization());
 	}
 
 	public String addPatient(
@@ -56,6 +59,7 @@ public class PersonService {
 		Boolean employedInHealthcare
 	) {
 		LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
+		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person newPatient = new Person(
 			_os.getCurrentOrganization(),
 			lookupId,
@@ -63,15 +67,10 @@ public class PersonService {
 			middleName,
 			lastName,
 			localBirthDateDate,
-			street,
-			streetTwo,
-			city,
-			state,
-			zipCode,
+			patientAddress,
 			telephone,
 			typeOfHealthcareProfessional,
 			email,
-			county,
 			race,
 			ethnicity,
 			gender,
@@ -105,22 +104,18 @@ public class PersonService {
 		Boolean employedInHealthcare
 	) {
         LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
-		Person patientToUpdate = this.getPatient(patientId);
+		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        Person patientToUpdate = this.getPatient(patientId);
 		patientToUpdate.updatePatient(
 			lookupId,
 			firstName,
 			middleName,
 			lastName,
 			localBirthDateDate,
-			street,
-			streetTwo,
-			city,
-			state,
-			zipCode,
+			patientAddress,
 			telephone,
 			typeOfHealthcareProfessional,
 			email,
-			county,
 			race,
 			ethnicity,
 			gender,

@@ -44,7 +44,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 		found.addDefaultDeviceType(bill);
 		_repo.save(found);
 		found = _repo.findById(saved.getInternalId()).get();
-		found.removeDeviceType(bill);;
+		found.removeDeviceType(bill);
 		_repo.save(found);
 		found = _repo.findById(saved.getInternalId()).get();
 		assertNull(found.getDefaultDeviceType());
