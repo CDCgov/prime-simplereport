@@ -11,35 +11,45 @@ import { displayFullName } from "../../utils";
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const QUERY_PATIENT = gql`
-{
-  patients {
-    id
-    lookupId
-    firstName
-    lastName
-    middleName
-    birthDate
+  {
+    patients {
+      id
+      lookupId
+      firstName
+      lastName
+      middleName
+      birthDate
+    }
   }
-}
 `;
 
 const ADD_PATIENT_TO_QUEUE = gql`
-mutation($patientId: String!, $symptoms: String, $symptomOnset: String, $pregnancy: String, $firstTest: Boolean, $priorTestDate: String, $priorTestType: String, $priorTestResult: String, $noSymptoms: Boolean) {
-  addPatientToQueue(
-    patientId: $patientId
-    pregnancy: $pregnancy
-    noSymptoms: $noSymptoms
-    symptoms: $symptoms
-    firstTest: $firstTest
-    priorTestDate: $priorTestDate
-    priorTestType: $priorTestType
-    priorTestResult: $priorTestResult
-    symptomOnset: $symptomOnset
-  )
-}
+  mutation(
+    $patientId: String!
+    $symptoms: String
+    $symptomOnset: String
+    $pregnancy: String
+    $firstTest: Boolean
+    $priorTestDate: String
+    $priorTestType: String
+    $priorTestResult: String
+    $noSymptoms: Boolean
+  ) {
+    addPatientToQueue(
+      patientId: $patientId
+      pregnancy: $pregnancy
+      noSymptoms: $noSymptoms
+      symptoms: $symptoms
+      firstTest: $firstTest
+      priorTestDate: $priorTestDate
+      priorTestType: $priorTestType
+      priorTestResult: $priorTestResult
+      symptomOnset: $symptomOnset
+    )
+  }
 `;
 
-const AddToQueueSearchBox = ({refetchQueue}) => {
+const AddToQueueSearchBox = ({ refetchQueue }) => {
   const { data, loading, error } = useQuery(QUERY_PATIENT);
   if (loading) {
     console.log("loading patient data for search");
@@ -54,7 +64,7 @@ const AddToQueueSearchBox = ({refetchQueue}) => {
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const getSuggestionsFromQueryString = (queryString) => {
-    if(data && data.patient) {
+    if (data && data.patient) {
       let formattedQueryString = queryString.toLowerCase();
       let suggestions = data.patient.filter(
         (patient) =>
@@ -62,7 +72,9 @@ const AddToQueueSearchBox = ({refetchQueue}) => {
             patient.firstName,
             patient.middleName,
             patient.lastName
-          ).toLowerCase().indexOf(formattedQueryString) > -1 ||
+          )
+            .toLowerCase()
+            .indexOf(formattedQueryString) > -1 ||
           patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
       );
       return suggestions;
@@ -83,7 +95,19 @@ const AddToQueueSearchBox = ({refetchQueue}) => {
     updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
-  const onAddToQueue = (patient, {noSymptoms, symptoms, symptomOnset, pregnancy, firstTest, priorTestResult, priorTestDate, priorTestType}) => {
+  const onAddToQueue = (
+    patient,
+    {
+      noSymptoms,
+      symptoms,
+      symptomOnset,
+      pregnancy,
+      firstTest,
+      priorTestResult,
+      priorTestDate,
+      priorTestType,
+    }
+  ) => {
     updateSuggestions([]);
     setQueryString("");
     addPatientToQueue({
@@ -97,19 +121,19 @@ const AddToQueueSearchBox = ({refetchQueue}) => {
         priorTestDate,
         priorTestType,
         priorTestResult,
-      }
+      },
     }).then(
       (res) => {
         let { type, title, body } = {
-        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
-          patient
-        ),
-      };
-      let alert = <Alert type={type} title={title} body={body} />;
-      showNotification(toast, alert);
-      refetchQueue();
-    },
-    (err) => console.error(err)
+          ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
+            patient
+          ),
+        };
+        let alert = <Alert type={type} title={title} body={body} />;
+        showNotification(toast, alert);
+        refetchQueue();
+      },
+      (err) => console.error(err)
     );
   };
 

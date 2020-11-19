@@ -14,7 +14,7 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
-import {dateToString} from "./dateUtils";
+import { dateToString } from "./dateUtils";
 
 const ManagedDateField = ({
   name,
@@ -261,8 +261,7 @@ const AoEModalForm = ({
       const val = opt.value;
       initialSymptoms[val] = loadedSymptoms[val] || false;
     });
-    console.log(initialSymptoms)
-
+    console.log(initialSymptoms);
   } else {
     symptomConfig.forEach((opt) => {
       const val = opt.value;
@@ -278,7 +277,9 @@ const AoEModalForm = ({
   const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
 
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useDateState(loadState.priorTestDate);
+  const [priorTestDate, setPriorTestDate] = useDateState(
+    loadState.priorTestDate
+  );
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState(
     loadState.priorTestResult
@@ -296,17 +297,19 @@ const AoEModalForm = ({
         saveSymptoms[value] = false;
       });
     }
-    const priorTest = isFirstTest ? {
-      firstTest: true,
-      priorTestDate: null,
-      priorTestType: null,
-      priorTestResult: null,
-    } : {
-      firstTest: false,
-      priorTestDate: dateToString(priorTestDate),
-      priorTestType: priorTestType,
-      priorTestResult: priorTestResult,
-    };
+    const priorTest = isFirstTest
+      ? {
+          firstTest: true,
+          priorTestDate: null,
+          priorTestType: null,
+          priorTestResult: null,
+        }
+      : {
+          firstTest: false,
+          priorTestDate: dateToString(priorTestDate),
+          priorTestType: priorTestType,
+          priorTestResult: priorTestResult,
+        };
 
     saveCallback({
       noSymptoms,

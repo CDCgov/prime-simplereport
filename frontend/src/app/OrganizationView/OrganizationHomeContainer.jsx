@@ -11,7 +11,7 @@ import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
 import ManagePatients from "../patients/ManagePatients";
 import EditPatient from "../patients/EditPatient";
-import AddPatient from "../patients/EditPatient";
+//import AddPatient from "../patients/EditPatient";
 import Settings from "../Settings/Settings";
 
 const OrganizationHomeContainer = () => {
@@ -41,7 +41,9 @@ const OrganizationHomeContainer = () => {
         />
         <Route
           path={`${match.path}/patient/:patientId`}
-          render={({ match }) => <EditPatient patientId={match.params.patientId}/>}
+          render={({ match }) => (
+            <EditPatient patientId={match.params.patientId} />
+          )}
         />
         <Route
           path={`${match.path}/settings`}
