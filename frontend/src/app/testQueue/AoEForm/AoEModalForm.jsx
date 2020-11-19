@@ -203,7 +203,6 @@ const PriorTestInputs = ({
         displayLegend
         name="prior_test_flag"
         horizontal
-        displayLegend="true"
       />
       {isFirstTest ? null : (
         <>
