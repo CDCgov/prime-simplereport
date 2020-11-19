@@ -1,9 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,6 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -30,6 +29,10 @@ public class Organization extends EternalEntity {
 	@JoinColumn(name = "default_device_type")
 	private DeviceType defaultDeviceType;
 
+	@OneToOne(optional=false)
+	@JoinColumn(name = "ordering_provider_id", nullable = false)
+	private Provider orderingProvider;
+
 	@ManyToMany
 	@JoinTable(
 		name = "facility_device_type",
@@ -38,19 +41,30 @@ public class Organization extends EternalEntity {
 	)
 	private Set<DeviceType> configuredDevices = new HashSet<>();
 
+	protected Organization() { /* for hibernate */ }
+
 	public Organization(String facilityName, String externalId) {
-		super();
+		this();
 		this.facilityName = facilityName;
 		this.externalId = externalId;
 	}
-	public Organization(String facilityName, String externalId, DeviceType defaultDeviceType) {
+
+	public Organization(String facilityName, String externalId, DeviceType defaultDeviceType, Provider orderingProvider) {
 		this(facilityName, externalId);
 		this.defaultDeviceType = defaultDeviceType;
+		if (defaultDeviceType != null) {
+			this.configuredDevices.add(defaultDeviceType);
+		}
+		this.orderingProvider = orderingProvider;
 	}
 
-	public Organization(String facilityName, String externalId, DeviceType defaultDeviceType,
+	public Organization(
+			String facilityName,
+			String externalId,
+			DeviceType defaultDeviceType,
+			Provider orderingProvider,
 			Collection<DeviceType> configuredDevices) {
-		this(facilityName, externalId, defaultDeviceType);
+		this(facilityName, externalId, defaultDeviceType, orderingProvider);
 		this.configuredDevices.addAll(configuredDevices);
 	}
 
@@ -114,7 +128,6 @@ public class Organization extends EternalEntity {
 		if (defaultDeviceType != null && existingDevice.getInternalId().equals(defaultDeviceType.getInternalId())) {
 			defaultDeviceType = null;
 		}
-	// These should be temporary
 	}
 
 	public String getTestingFacilityName() {

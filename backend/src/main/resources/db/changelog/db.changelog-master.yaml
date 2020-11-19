@@ -81,6 +81,50 @@ databaseChangeLog:
                   type: *string
                   remarks: The device model name.
         - createTable:
+            tableName: provider
+            remarks: A provider who can (we hope) write test orders.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
+              - column:
+                  name: name
+                  remarks: The provider's full name.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_id
+                  remarks: The external ID (NPI) for this provider.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  remarks: The street portion of the person's address.
+                  type: "text ARRAY"
+              - column:
+                  name: city
+                  remarks: The city of the provider's address.
+                  type: *string
+              - column:
+                  name: county
+                  remarks: The county (NOT THE COUNTRY) of the provider's address, if applicable.
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The state or province of the provider's address.
+                  type: *string
+              - column:
+                  name: postal_code
+                  remarks: The zip/postal code of the provider's address.
+                  type: *string
+              - column:
+                  name: telephone
+                  remarks: The provider's contact phone number.
+                  type: *string
+        - createTable:
             tableName: organization # may contain facility information as well, until/unless we split
             remarks: A site where testing occurs, and also the main user grouping entity.
             columns:
@@ -111,6 +155,14 @@ databaseChangeLog:
                   constraints:
                     foreignKeyName: fk__organization__default_device_type
                     references: device_type
+              - column:
+                  name: ordering_provider_id
+                  type: *idtype
+                  remarks: at what point does this blow up on me?
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__organization__ordering_provider
+                    references: provider
         - createTable:
             tableName: facility_device_type
             remarks: Many-to-many table for device configuration at a facility.
