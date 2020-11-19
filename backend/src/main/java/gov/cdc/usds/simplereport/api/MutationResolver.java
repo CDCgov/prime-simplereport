@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
