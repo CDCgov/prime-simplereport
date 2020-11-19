@@ -15,8 +15,18 @@
 	)
 
 })
+@TypeDefs({
+	@TypeDef(
+	    name = "pg_enum",
+	    typeClass = PostgreSQLEnumType.class
+	)
+})
 package gov.cdc.usds.simplereport.db.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.GenericGenerators;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
+
+import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
