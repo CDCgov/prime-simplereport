@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
+//import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 
 import {
   PATIENT_TERM_PLURAL_CAP,

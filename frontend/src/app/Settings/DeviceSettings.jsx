@@ -21,7 +21,7 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
   const {
     data: allDevices,
     loading: isLoadingAllDevices,
-    error: errorFetchingAllDevices,
+    //error: errorFetchingAllDevices,
   } = useQuery(getAllDevices);
 
   let isLoading =
