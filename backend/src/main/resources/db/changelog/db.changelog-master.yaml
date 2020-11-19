@@ -160,18 +160,78 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: suffix
+                  remarks: generational or positional designations appended to a persons name
+                  type: *string
+              - column:
+                  name: race
+                  remarks: grouping of humans based on shared physical or social qualities
+                  type: *string
+              - column:
+                  name: gender
+                  remarks: biological sex
+                  type: *string
+              - column:
+                  name: ethnicity
+                  remarks: ethnic group
+                  type: *string
+              - column:
+                  name: lookup_id
+                  remarks: user entered. hopefully unique. patient identifier used for patient search
+                  type: *string
+              - column:
                   name: birth_date
                   remarks: The person's date of birth.
                   type: DATE
                   constraints:
                     nullable: false
               - column:
-                  name: address # nopenopenope
-                  remarks: The person's home address, as an unstructure string.
+                  name: street
+                  remarks: address line 1
+                  type: *string
+              - column:
+                  name: street_two
+                  remarks: address line 2
+                  type: *string
+              - column:
+                  name: city
+                  remarks: the city the person currently resides in
+                  type: *string
+              - column:
+                  name: state
+                  remarks: the state the person currently resides in
+                  type: *string
+              - column:
+                  name: county
+                  remarks: the county the person currently resides in
+                  type: *string
+              - column:
+                  name: zip_code
+                  remarks: the zipCode the person currently resides in
                   type: *string
               - column:
                   name: telephone
-                  remarks: The person's contact phone number,
+                  remarks: The person's contact phone number
+                  type: *string
+              - column:
+                  name: email
+                  remarks: The person's contact email
+                  type: *string
+              - column:
+                  name: employed_in_healthcare
+                  remarks: is the person employed in healthcare
+                  type: *boolean
+              - column:
+                  name: type_of_healthcare_professional
+                  remarks: persons role in healthcare
+                  type: *string
+              - column:
+                  name: resident_congregate_setting
+                  remarks: does the person live in a congregate setting
+                  type: *boolean
+              - column:
+                  name: patient_residency_type
+                  remarks: type of residency
                   type: *string
         - createTable:
             tableName: test_order

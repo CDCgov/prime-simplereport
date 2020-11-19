@@ -3,18 +3,17 @@ package gov.cdc.usds.simplereport.api.model;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import gov.cdc.usds.simplereport.api.model.Device;
-import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.db.model.Person;
 
 public class TestResult {
 
   private String id;
-  private Patient patient;
+  private Person patient;
   private LocalDate dateTested;
   private Device device;
   private String result;
 
-  public TestResult(Device device, String result, Patient patient) {
+  public TestResult(Device device, String result, Person patient) {
     super();
 		this.id = UUID.randomUUID().toString();
     this.patient = patient;
