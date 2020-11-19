@@ -4,5 +4,5 @@ variable "resource_group" {
 
 variable "log_analytics_name" {
   description = "Name of log analytics workspace"
-  default = "pdi-log-workspace"
+  default = "simple-report-log-workspace"
 }

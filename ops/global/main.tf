@@ -7,7 +7,7 @@ provider "azurerm" {
 locals {
   management_tags = {
     prime-app = "simplereport"
-    stack = "management"
+    prime-environment = "all"
   }
 }
 
@@ -19,7 +19,7 @@ data "azurerm_resource_group" "rg" {
 
 resource "azurerm_storage_container" "state_container" {
   name = "sr-tfstate"
-  storage_account_name = "srterraform"
+  storage_account_name = "usdssimplereportprod"
 
   lifecycle {
     prevent_destroy = true
@@ -30,7 +30,7 @@ resource "azurerm_storage_container" "state_container" {
 // Log analytics
 
 resource "azurerm_log_analytics_workspace" "pdi-log" {
-  name = "pdi-log-workspace"
+  name = "simple-report-log-workspace"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   sku = "PerGB2018"

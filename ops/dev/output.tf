@@ -1,3 +1,3 @@
 output "dns" {
-  value = azurerm_container_group.backend[0].fqdn
+  value = azurerm_public_ip.pdi-backend.fqdn
 }

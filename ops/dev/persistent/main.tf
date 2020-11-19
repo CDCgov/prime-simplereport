@@ -28,7 +28,7 @@ data "azurerm_resource_group" "rg" {
 }
 
 resource "azurerm_postgresql_server" "db" {
-  name = "pdi-db-nrobison"
+  name = "sr-db-dev"
   location = data.azurerm_resource_group.rg.location
   resource_group_name = data.azurerm_resource_group.rg.name
   sku_name = "GP_Gen5_4"
@@ -60,7 +60,7 @@ resource "azurerm_postgresql_firewall_rule" "all" {
 
 
 resource "azurerm_monitor_diagnostic_setting" "backend-db" {
-  name = "backend-db-diag"
+  name = "sr-dev-db-diag"
   target_resource_id = azurerm_postgresql_server.db.id
   log_analytics_workspace_id = data.azurerm_log_analytics_workspace.law.id
 
