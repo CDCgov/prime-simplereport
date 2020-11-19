@@ -36,6 +36,23 @@ locals {
   http_setting_name = "${azurerm_virtual_network.pdi.name}-be-htst"
   listener_name = "${azurerm_virtual_network.pdi.name}-httplstn"
   request_routing_rule_name = "${azurerm_virtual_network.pdi.name}-rqrt"
+
+  diag_appgw_logs = [
+    "ApplicationGatewayAccessLog",
+    "ApplicationGatewayPerformanceLog",
+    "ApplicationGatewayFirewallLog",
+  ]
+  diag_appgw_metrics = [
+    "AllMetrics",
+  ]
+
+  diag_db_logs = [
+    "PostgreSQLLogs"
+  ]
+
+  diag_db_metrics = [
+    "AllMetrics"
+  ]
 }
 
 resource "azurerm_subnet" "frontend" {
@@ -61,6 +78,7 @@ resource "azurerm_public_ip" "pdi-backend" {
   allocation_method = "Dynamic"
 }
 
+// Yes, this probably will take ~20 minutes to deploy and ~5 minutes to change.
 resource "azurerm_application_gateway" "backend" {
   name = "backend-appgateway"
   resource_group_name = data.azurerm_resource_group.k8s.name
@@ -89,7 +107,7 @@ resource "azurerm_application_gateway" "backend" {
 
   backend_address_pool {
     name = local.backend_address_pool_name
-        fqdns = azurerm_container_group.backend.*.fqdn
+    fqdns = azurerm_container_group.backend.*.fqdn
   }
 
   backend_http_settings {
@@ -115,7 +133,87 @@ resource "azurerm_application_gateway" "backend" {
     backend_http_settings_name = local.http_setting_name
   }
 
-  depends_on = [azurerm_virtual_network.pdi, azurerm_public_ip.pdi-backend]
+  depends_on = [
+    azurerm_virtual_network.pdi,
+    azurerm_public_ip.pdi-backend]
+}
+
+// Log analytics
+
+resource "azurerm_log_analytics_workspace" "pdi-log" {
+  name = "pdi-log-workspace"
+  location = data.azurerm_resource_group.k8s.location
+  resource_group_name = data.azurerm_resource_group.k8s.name
+  sku = "PerGB2018"
+  retention_in_days = 30
+}
+
+// This would be nice to add at some point
+//resource "azurerm_log_analytics_solution" "backend-awg" {
+//  location = data.azurerm_resource_group.k8s.location
+//  resource_group_name = data.azurerm_resource_group.k8s.name
+//  solution_name = "AzureAppGatewayAnalytics"
+//  workspace_name = azurerm_log_analytics_workspace.pdi-log.name
+//  workspace_resource_id = azurerm_log_analytics_workspace.pdi-log.id
+//  plan {
+//    product = "Microsoft"
+//    publisher = "OMSGallery/AzureAppGatewayAnalytics"
+//  }
+//}
+
+resource "azurerm_monitor_diagnostic_setting" "backend-awg" {
+  name = "backend-awg1-diag"
+  target_resource_id = azurerm_application_gateway.backend.id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.pdi-log.id
+  dynamic "log" {
+    for_each = local.diag_appgw_logs
+    content {
+      category = log.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
+  }
+
+  dynamic "metric" {
+    for_each = local.diag_appgw_metrics
+    content {
+      category = metric.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
+  }
+}
+
+resource "azurerm_monitor_diagnostic_setting" "backend-db" {
+  name = "backend-db-diag"
+  target_resource_id = module.persistent.server_id
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.pdi-log.id
+
+  dynamic "log" {
+    for_each = local.diag_db_logs
+    content {
+      category = log.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
+  }
+
+  dynamic "metric" {
+    for_each = local.diag_db_metrics
+    content {
+      category = metric.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
+  }
 }
 
 
@@ -143,6 +241,13 @@ resource "azurerm_container_group" "backend" {
       "SPRING_DATASOURCE_URL": "jdbc:postgresql://${module.persistent.dns_name}:5432/simple_report?user=simple_report_app@pdi-db-nrobison"
       "SPRING_DATASOURCE_PASSWORD": "H@Sh1CoR3!"
       "SPRING_PROFILES_ACTIVE": "dev"
+    }
+  }
+
+  diagnostics {
+    log_analytics {
+      workspace_id = azurerm_log_analytics_workspace.pdi-log.workspace_id
+      workspace_key = azurerm_log_analytics_workspace.pdi-log.primary_shared_key
     }
   }
 }
