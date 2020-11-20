@@ -298,8 +298,8 @@ databaseChangeLog:
                   remarks: Is the person employed in healthcare?
                   type: boolean
               - column:
-                  name: type_of_healthcare_professional
-                  remarks: The person's role in healthcare.
+                  name: role
+                  remarks: The person's role at the facility where they are tested (e.g. "staff", "visitor", "resident").
                   type: *string
               - column:
                   name: resident_congregate_setting

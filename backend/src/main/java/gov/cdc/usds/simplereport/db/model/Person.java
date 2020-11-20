@@ -10,7 +10,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
@@ -45,8 +44,7 @@ public class Person extends EternalEntity {
 	@Column(nullable = false)
 	private boolean employedInHealthcare;
 	@Column
-	@JsonProperty(value = "role")
-	private String typeOfHealthcareProfessional;
+	private String role;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
 	@ManyToOne(optional = false)
@@ -66,10 +64,6 @@ public class Person extends EternalEntity {
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.suffix = suffix;
-	}
-
-	public String getTypeOfHealthcareProfessional() {
-		return typeOfHealthcareProfessional;
 	}
 
 	public List<TestOrder> getTestOrders() {
@@ -102,7 +96,7 @@ public class Person extends EternalEntity {
 		this.telephone = telephone;
 		this.address = address;
 		this.organization = organization;
-		this.typeOfHealthcareProfessional = role;
+		this.role = role;
 		this.email = email;
 		this.race = race;
 		this.ethnicity = ethnicity;
@@ -135,7 +129,7 @@ public class Person extends EternalEntity {
 		this.birthDate = birthDate;
 		this.telephone = telephone;
 		this.address = address;
-		this.typeOfHealthcareProfessional = role;
+		this.role = role;
 		this.email = email;
 		this.race = race;
 		this.ethnicity = ethnicity;
@@ -247,8 +241,7 @@ public class Person extends EternalEntity {
 		return testOrders;
 	}
 
-	@JsonIgnore
 	public String getRole() {
-		return typeOfHealthcareProfessional; // TODO this is extremely bad smelling
+		return role;
 	}
 }
