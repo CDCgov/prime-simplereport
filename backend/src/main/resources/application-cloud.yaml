@@ -1,1 +1,6 @@
-spring.profiles.include: no-security
+spring:
+  profiles.include: no-security
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report

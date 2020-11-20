@@ -7,4 +7,4 @@ spring:
     properties:
       hibernate:
         show_sql: true
-
+        default_schema: simple_report
