@@ -21,7 +21,7 @@ services:
   api:
     build:
       context: .
-    image: simple-report-api-build
+    image: simplereport.azurecr.io/dev/simple-report-api-build
     command: bootRun
     environment:
       SPRING_PROFILES_ACTIVE: dev,db-dockerized
