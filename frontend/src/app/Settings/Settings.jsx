@@ -152,7 +152,14 @@ const Settings = () => {
     return <p> Loading... </p>;
   }
   if (errorFetchingSettings) {
-    return <p> There was an error </p>;
+    showNotification(
+      toast,
+      <Alert
+        type={"error"}
+        title={"Offline"}
+        body={"You are offline or the service is unavailable"}
+      />
+    );
   }
 
   return (
