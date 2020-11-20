@@ -3,23 +3,37 @@ import PropTypes from "prop-types";
 import classnames from "classnames";
 import useUniqueId from "../commonComponents/useUniqueIds";
 
-const TextInput = ({ label, type = "text", ...inputProps }) => {
-  const [newId] = useUniqueId("textinput", 1);
-  const id = inputProps.id || newId;
-  const props = { id, type, ...inputProps };
-  // merge in css classes
-  props.className = classnames("usa-input", inputProps.className);
+const TextInput = ({
+  value = "",
+  label,
+  name,
+  placeholder,
+  onChange,
+  type,
+  addClass,
+}) => {
+  let [newId] = useUniqueId("textinput", 1);
+
   const labelElem = label ? (
-    <label className="usa-label" htmlFor={id}>
+    <label className="usa-label" htmlFor={newId}>
       {label}
     </label>
   ) : null;
 
   return (
-    <React.Fragment>
+    <div className={classnames("prime-text-input", addClass)}>
       {labelElem}
-      <input autoComplete="off" {...props} />
-    </React.Fragment>
+      <input
+        autoComplete="off"
+        className="usa-input"
+        id={newId}
+        name={name}
+        type={type || "text"}
+        onChange={onChange}
+        placeholder={placeholder}
+        value={value}
+      />
+    </div>
   );
 };
 
@@ -27,9 +41,8 @@ TextInput.propTypes = {
   value: PropTypes.string,
   label: PropTypes.string,
   name: PropTypes.string,
-  type: PropTypes.string,
-  onChange: PropTypes.func,
   placeholder: PropTypes.string,
+  onChange: PropTypes.func,
 };
 
 export default TextInput;
