@@ -1,11 +1,10 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { testResultPropType } from "../propTypes";
-import { useSelector } from "react-redux";
 
-import { getDetailedPatientsInTestQueue } from "../testQueue/testQueueSelectors";
-import { getDevicesArray } from "../devices/deviceSelectors";
-import AddToQueue from "./addToQueue/AddToQueue";
+import { parseDate } from "./AoEForm/dateUtils";
+import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 
 const emptyQueueMessage = (
@@ -21,32 +20,105 @@ const emptyQueueMessage = (
   </div>
 );
 
-const TestQueue = () => {
-  const queue = useSelector(getDetailedPatientsInTestQueue);
-  const devices = useSelector(getDevicesArray);
+const queueQuery = gql`
+  {
+    queue {
+      pregnancy
+      dateAdded
+      symptoms
+      symptomOnset
+      noSymptoms
+      firstTest
+      priorTestDate
+      priorTestType
+      priorTestResult
+      deviceType {
+        internalId
+        name
+      }
+      patient {
+        internalId
+        telephone
+        birthDate
+        lookupId
+        firstName
+        middleName
+        lastName
+      }
+    }
+    organization {
+      deviceTypes {
+        internalId
+        name
+      }
+      defaultDeviceType {
+        internalId
+        name
+      }
+    }
+  }
+`;
 
-  let shouldRenderQueue = queue.length > 0;
+const TestQueue = () => {
+  const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery);
+
+  if (error) {
+    return <p>Error in loading patients</p>;
+  }
+  if (loading) {
+    return <p>Loading patients...</p>;
+  }
+
+  let shouldRenderQueue =
+    data.queue.length > 0 && data.organization.deviceTypes.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
-      ? patientQueue.map((queueEntry) => (
-          <QueueItem
-            key={`patient-${uuidv4()}`}
-            patient={queueEntry.patient}
-            askOnEntry={queueEntry.askOnEntry}
-            selectedDeviceId={queueEntry.deviceId}
-            selectedTestResult={queueEntry.testResult}
-            devices={devices}
-          />
-        ))
+      ? patientQueue.map(
+          ({
+            pregnancy,
+            dateAdded,
+            symptoms,
+            noSymptoms,
+            firstTest,
+            priorTestDate,
+            priorTestType,
+            priorTestResult,
+            device,
+            patient,
+            testResult,
+            symptomOnset,
+          }) => (
+            <QueueItem
+              key={`patient-${uuidv4()}`}
+              patient={patient}
+              askOnEntry={{
+                pregnancy,
+                dateAdded: parseDate(dateAdded),
+                noSymptoms,
+                symptoms,
+                symptomOnset: parseDate(symptomOnset),
+                firstTest,
+                priorTestDate: parseDate(priorTestDate),
+                priorTestType,
+                priorTestResult,
+              }}
+              selectedDeviceId={device ? device.internalId : null}
+              selectedTestResult={testResult}
+              devices={data.organization.deviceTypes}
+              defaultDevice={data.organization.defaultDeviceType}
+              refetchQueue={refetchQueue}
+            />
+          )
+        )
       : emptyQueueMessage;
 
   return (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <AddToQueue />
+          <AddToQueueSearch refetchQueue={refetchQueue} />
         </div>
-        {createQueueItems(queue)}
+        {createQueueItems(data.queue)}
       </div>
     </main>
   );

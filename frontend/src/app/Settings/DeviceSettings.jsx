@@ -1,103 +1,150 @@
 import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { gql, useQuery } from "@apollo/client";
+import PropTypes from "prop-types";
 
 import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents//Dropdown";
 import RadioGroup from "../commonComponents/RadioGroup";
-import { DEVICE_TYPES } from "../devices/constants";
-import { createNewDevice } from "../devices/utils";
 
-const dropdownOptions = Object.entries(DEVICE_TYPES).map(
-  ([deviceId, displayName]) => ({
-    label: displayName,
-    value: deviceId,
-  })
-);
+const getAllDevices = gql`
+  {
+    deviceType {
+      internalId
+      name
+    }
+  }
+`;
 
 const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
+  const {
+    data: allDevices,
+    loading: isLoadingAllDevices,
+    //error: errorFetchingAllDevices,
+  } = useQuery(getAllDevices);
+
+  let isLoading =
+    Object.keys(deviceSettings).length === 0 || isLoadingAllDevices;
+
+  if (isLoading) {
+    return (
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container usa-card__container">
+            <div className="usa-card__header">
+              <h3> Manage Devices </h3>
+            </div>
+            <div className="usa-card__body">Devices are loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  let dropdownOptions;
+  if (allDevices) {
+    dropdownOptions = allDevices.deviceType.map((device) => ({
+      label: device.name,
+      value: device.internalId,
+    }));
+  }
+
   const onDeviceChange = (e) => {
-    let changedDeviceName = e.target.name;
+    let name = e.target.name;
     let newDeviceId = e.target.value;
+
     let newDeviceSettings = {
       ...deviceSettings,
-      [changedDeviceName]: {
-        ...deviceSettings[changedDeviceName],
-        deviceId: newDeviceId,
-        displayName: DEVICE_TYPES[newDeviceId],
+      supportedDevices: {
+        ...deviceSettings.supportedDevices,
+        [name]: newDeviceId,
       },
     };
     updateDeviceSettings(newDeviceSettings);
   };
 
   const onDefaultChange = (e) => {
-    let changedDeviceName = e.target.name;
-    let isDefault = !deviceSettings[changedDeviceName].isDefault;
+    let name = e.target.name;
+    let deviceId = deviceSettings.supportedDevices[name];
 
-    let newDeviceSettings = {};
-    Object.entries(deviceSettings).forEach(([name, device]) => {
-      newDeviceSettings[name] = {
-        ...device,
-        isDefault: false,
-      };
-    });
-    newDeviceSettings[changedDeviceName] = {
-      ...deviceSettings[changedDeviceName],
-      isDefault,
+    let newDeviceSettings = {
+      ...deviceSettings,
+      defaultDeviceId:
+        deviceSettings.defaultDeviceId === deviceId ? null : deviceId,
     };
 
     updateDeviceSettings(newDeviceSettings);
   };
 
-  const onDeviceRemove = (deviceName) => {
+  const onDeviceRemove = (name) => {
     let newDeviceSettings = {
       ...deviceSettings,
     };
-    delete newDeviceSettings[deviceName];
+    delete newDeviceSettings.supportedDevices[name];
     updateDeviceSettings(newDeviceSettings);
   };
 
-  const onAddDevice = (deviceId) => {
-    let name = `device-${uuidv4()}`;
+  // returns a list of deviceIds that have *not* been selected so far
+  const _getRemainingDeviceOptions = () => {
+    let supportedDeviceIds = Object.values(deviceSettings.supportedDevices);
+
+    return allDevices.deviceType.filter((d) => !supportedDeviceIds.includes(d.internalId));
+  };
+
+  const onAddDevice = () => {
+    let remainingDeviceOptions = _getRemainingDeviceOptions();
+
+    let newDeviceName = `device-${uuidv4()}`;
+    let newDeviceId = remainingDeviceOptions[0].internalId;
     let newDeviceSettings = {
       ...deviceSettings,
-      [name]: createNewDevice(deviceId),
+      supportedDevices: {
+        ...deviceSettings.supportedDevices,
+        [newDeviceName]: newDeviceId,
+      },
     };
     updateDeviceSettings(newDeviceSettings);
   };
 
   const generateDeviceRows = () => {
-    return Object.entries(deviceSettings).map(([name, device]) => (
-      <tr key={uuidv4()}>
-        <td>
-          <Dropdown
-            options={dropdownOptions}
-            name={name}
-            selectedValue={device.deviceId}
-            onChange={onDeviceChange}
-          />
-        </td>
-        <td>
-          <RadioGroup
-            type="checkbox"
-            onChange={onDefaultChange}
-            buttons={[
-              {
-                value: "true",
-                label: "Set as Default",
-              },
-            ]}
-            selectedRadio={device.isDefault ? "true" : "false"}
-            name={name}
-          />
-        </td>
-        <td>
-          <div onClick={() => onDeviceRemove(name)}>
-            <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-          </div>
-        </td>
-      </tr>
-    ));
+    return Object.entries(deviceSettings.supportedDevices).map(
+      ([name, supportedDeviceId]) => (
+        <tr key={uuidv4()}>
+          <td>
+            <Dropdown
+              options={dropdownOptions}
+              name={name}
+              selectedValue={supportedDeviceId}
+              onChange={onDeviceChange}
+            />
+          </td>
+          <td>
+            <RadioGroup
+              type="checkbox"
+              onChange={onDefaultChange}
+              buttons={[
+                {
+                  value: "true",
+                  label: "Set as Default",
+                },
+              ]}
+              selectedRadio={
+                supportedDeviceId === deviceSettings.defaultDeviceId
+                  ? "true"
+                  : "false"
+              }
+              name={name}
+            />
+          </td>
+          <td>
+            <div onClick={() => onDeviceRemove(name)}>
+              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+            </div>
+          </td>
+        </tr>
+      )
+    );
   };
 
   const renderDevicesTable = () => {
@@ -133,12 +180,27 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
               outline
               label="Add Another Device"
               icon="plus"
+              disabled={_getRemainingDeviceOptions().length === 0}
             />
           </div>
         </div>
       </div>
     </div>
   );
+};
+
+DeviceSettings.propTypes = {
+  updateDeviceSettings: PropTypes.func,
+  deviceSettings: PropTypes.shape({
+    defaultDeviceId: PropTypes.string,
+    supportedDevices: PropTypes.objectOf(PropTypes.string),
+  }),
+  allDevices: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string,
+      displayName: PropTypes.string,
+    })
+  ),
 };
 
 export default DeviceSettings;

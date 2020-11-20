@@ -7,6 +7,6 @@ export const initialOrganizationState = {
     npi: "",
     address: "",
     zip: "",
-    phone: "",
+    telephone: "",
   },
 };

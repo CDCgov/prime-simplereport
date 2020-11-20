@@ -20,7 +20,7 @@ const TestResultView = ({ testResult, patient }) => {
         <h4> Date of Birth</h4>
         <p> {testResult.birthDate} </p>
         <h4> Phone Number</h4>
-        <p> {testResult.phone} </p>
+        <p> {testResult.telephone} </p>
         <h4> Address</h4>
         <p> {testResult.address} </p>
         <Link to={`${location.pathname}/update`}>

@@ -8,7 +8,7 @@ export const patientPropType = PropTypes.shape({
   lastName: PropTypes.string,
   birthDate: PropTypes.string,
   address: PropTypes.string,
-  phone: PropTypes.string,
+  telephone: PropTypes.string,
   city: PropTypes.string,
   state: PropTypes.string,
 });

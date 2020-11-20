@@ -1,7 +1,356 @@
+x-ref-data:
+  type-defs:
+    - &idtype uuid
+    - &string text
+  column-defs:
+    - column: &pk_column
+        name: internal_id
+        type: *idtype
+        remarks: The internal database identifier for this entity.
+        constraints:
+          primaryKey: true
+          nullable: false
+    - column: &created_at_column
+        name: created_at
+        type: DATETIME
+        remarks: The creation timestamp for this entity.
+        constraints:
+          nullable: false
+    - column: &updated_at_column
+        name: updated_at
+        type: DATETIME
+        remarks: The timestamp for the most recent update of this entity.
+        constraints:
+          nullable: false
+    - column: &soft_delete_column
+        name: is_deleted
+        type: boolean
+        remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+        constraints:
+          nullable: false
 databaseChangeLog:
   # This is a placeholder to make the thing parse, but also useful if we decide to use
   # Spring Session JPA at some point.
   - property:
-        name: attribute_bytes_type
-        value: BYTEA
-        dbms: postgresql
+      name: attribute_bytes_type
+      value: BYTEA
+      dbms: postgresql
+  - changeSet:
+      id: define-enum-types
+      author: bwarfield@cdc.gov
+      comment: Type definitions for our initial tables.
+      changes:
+        - sql:
+            remarks: Create the enumerations needed for tracking test orders.
+            # these may need to be tweaked if we ever might care about their sort order
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.TEST_ORDER_STATUS as ENUM('PENDING', 'COMPLETED', 'CANCELED');
+              CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT as ENUM('POSITIVE','NEGATIVE','UNDETERMINED');
+      rollback:
+        sql: |
+          DROP TYPE ${database.defaultSchemaName}.TEST_ORDER_STATUS;
+          DROP TYPE ${database.defaultSchemaName}.TEST_RESULT;
+  - changeSet:
+      id: initial-schema
+      author: bwarfield@cdc.gov
+      comment: The database schema required for the initial prototype deployment of the Simple Report API.
+      changes:
+        - createTable:
+            tableName: api_user
+            remarks: Any user who authenticates to the API to take actions using it.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: login_email
+                  type: *string
+                  remarks: The e-mail of the logged-in user, assuming that is our unique ID for users.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: person_id
+                  type: *idtype
+                  remarks: A foreign key to the Person table, where we can find any other details we know about this user.
+                  constraints:
+                    unique: true
+                    nullable: false
+                    # what no foreign key? Right, that table doesn't exist yet.
+              - column:
+                  name: last_seen
+                  type: DATETIME
+                  remarks: The last time this user connected to the API.
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: device_type
+            remarks: Testing devices that may be present.
+            columns:
+              - column: *pk_column
+              # is there an external ID? I think so?
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
+              - column:
+                  name: name
+                  type: *string
+                  remarks: The name of the device, as displayed in isolation
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__device_type
+              - column:
+                  name: manufacturer
+                  remarks: The manufacturer of the device.
+                  type: *string
+              - column:
+                  name: model
+                  type: *string
+                  remarks: The device model name.
+        - createTable:
+            tableName: provider
+            remarks: A provider who can (we hope) write test orders.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
+              - column:
+                  name: name
+                  remarks: The provider's full name.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: provider_id
+                  remarks: The external ID (NPI) for this provider.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  remarks: The street portion of the person's address.
+                  type: "text ARRAY"
+              - column:
+                  name: city
+                  remarks: The city of the provider's address.
+                  type: *string
+              - column:
+                  name: county
+                  remarks: The county (NOT THE COUNTRY) of the provider's address, if applicable.
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The state or province of the provider's address.
+                  type: *string
+              - column:
+                  name: postal_code
+                  remarks: The zip/postal code of the provider's address.
+                  type: *string
+              - column:
+                  name: telephone
+                  remarks: The provider's contact phone number.
+                  type: *string
+        - createTable:
+            tableName: organization # may contain facility information as well, until/unless we split
+            remarks: A site where testing occurs, and also the main user grouping entity.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
+              - column:
+                  name: facility_name
+                  type: *string
+                  remarks: The human-readable name for this facility.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__facility__name
+              - column:
+                  name: organization_external_id
+                  type: *string
+                  remarks: The external ID of the organization, for authorization purposes.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__facility__organization_id
+              - column:
+                  name: default_device_type
+                  remarks: The default device type (if any) for tests at this facility.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__organization__default_device_type
+                    references: device_type
+              - column:
+                  name: ordering_provider_id
+                  type: *idtype
+                  remarks: at what point does this blow up on me?
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__organization__ordering_provider
+                    references: provider
+        - createTable:
+            tableName: facility_device_type
+            remarks: Many-to-many table for device configuration at a facility.
+            columns:
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_type__organization
+                    references: organization
+              - column:
+                  name: device_type_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_type__device_type
+                    references: device_type
+        - createTable:
+            tableName: person
+            remarks: The personal information we store about users and patients
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column: *soft_delete_column
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__person__organization
+                    references: organization
+              - column:
+                  name: first_name
+                  remarks: The person's given name, if any.
+                  type: *string
+              - column:
+                  name: middle_name
+                  remarks: The person's middle name, if any.
+                  type: *string
+              - column:
+                  name: last_name
+                  remarks: The person's family name or only name.
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: suffix
+                  remarks: generational or positional designations appended to a persons name
+                  type: *string
+              - column:
+                  name: race
+                  remarks: grouping of humans based on shared physical or social qualities
+                  type: *string
+              - column:
+                  name: gender
+                  remarks: biological sex
+                  type: *string
+              - column:
+                  name: ethnicity
+                  remarks: ethnic group
+                  type: *string
+              - column:
+                  name: lookup_id
+                  remarks: user entered. hopefully unique. patient identifier used for patient search
+                  type: *string
+              - column:
+                  name: birth_date
+                  remarks: The person's date of birth.
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column:
+                  name: street
+                  remarks: The street portion of the person's address.
+                  type: "text ARRAY"
+              - column:
+                  name: city
+                  remarks: The city of the person's address.
+                  type: *string
+              - column:
+                  name: county
+                  remarks: The county (NOT THE COUNTRY) of the person's address, if applicable.
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The state or province of the person's address.
+                  type: *string
+              - column:
+                  name: postal_code
+                  remarks: The zip/postal code of the person's address.
+                  type: *string
+              - column:
+                  name: telephone
+                  remarks: The person's contact phone number.
+                  type: *string
+              - column:
+                  name: email
+                  remarks: The person's contact email.
+                  type: *string
+              - column:
+                  name: employed_in_healthcare
+                  remarks: Is the person employed in healthcare?
+                  type: boolean
+              - column:
+                  name: type_of_healthcare_professional
+                  remarks: The person's role in healthcare.
+                  type: *string
+              - column:
+                  name: resident_congregate_setting
+                  remarks: Does the person live in a congregate setting?
+                  type: boolean
+        - addForeignKeyConstraint: # have to add this after the fact because of the (eventual) circular relationship
+            constraintName: fk__api_user__person
+            baseTableName: api_user
+            baseColumnNames: person_id
+            referencedTableName: person
+            referencedColumnNames: internal_id
+        - createTable:
+            tableName: test_order
+            remarks: Test orders, whether pending, completed or canceled.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: patient_id
+                  remarks: The person who is being given the test.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_order__patient__person
+                    references: person
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__person__organization
+                    references: organization
+              - column:
+                  name: order_status
+                  remarks: The status of the order. "Pending" orders are the test queue; "COMPLETED" orders have results.
+                  type: ${database.defaultSchemaName}.TEST_ORDER_STATUS
+                  constraints:
+                    nullable: false
+              - column:
+                  name: result
+                  remarks: The result of the test, once it has been given.
+                  type: ${database.defaultSchemaName}.TEST_RESULT
+        - createTable:
+            tableName: patient_answers
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: ask_on_entry
+                  type: jsonb
+                  remarks: The questions asked at order entry or at test time.

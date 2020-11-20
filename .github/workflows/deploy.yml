@@ -8,6 +8,7 @@ on:
   push:
     branches: # automatically deploy the "sandbox" branch on every push
       - sandbox
+      - main
   schedule:
     - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
 jobs:
@@ -22,11 +23,11 @@ jobs:
           if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
             echo We are deploying to the DEMO environment
             app=$DEMO_CF_APP
-            title="SimpleReport Prototype"
+            title="SimpleReport"
           else
             echo We are deploying to the SANDBOX environment
             app=$SANDBOX_CF_APP
-            title="** DEV/TEST ** SimpleReport Prototype ** DEV/TEST **"
+            title="** DEV/TEST ** SimpleReport ** DEV/TEST **"
             echo >> $GITHUB_ENV "REACT_APP_ICON=optimus_prime.svg"
           fi
           echo >> $GITHUB_ENV "CF_APPLICATION=$app"

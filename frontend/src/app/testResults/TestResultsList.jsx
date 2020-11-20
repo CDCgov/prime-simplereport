@@ -1,30 +1,71 @@
+import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import moment from "moment";
-import { v4 as uuidv4 } from "uuid";
-import { useSelector } from "react-redux";
-import { PATIENT_TERM_CAP } from "../../config/constants";
 
-import { getTestResultsWithPatientDetails } from "./testResultsSelector";
+import { PATIENT_TERM_CAP } from "../../config/constants";
+import { displayFullName } from "../utils";
+
+const testResultQuery = gql`
+  {
+    testResults {
+      internalId
+      dateTested
+      result
+      deviceType {
+        internalId
+        name
+      }
+      patient {
+        internalId
+        firstName
+        middleName
+        lastName
+        lookupId
+      }
+    }
+  }
+`;
 
 const TestResultsList = () => {
-  const testResults = useSelector(getTestResultsWithPatientDetails);
+  const { data, loading, error } = useQuery(testResultQuery);
 
-  const testResultRows = (results) => {
-    if (results.length === 0) {
+  if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    console.error(error)
+    return (
+      <div>
+        <h3>There was an error:</h3>
+      </div>
+    );
+  }
+
+  const testResultRows = (testResults) => {
+    if (testResults.length === 0) {
       return;
     }
+    return testResults.map((result) => {
+      // TODO: patientId is the lookup id. This needs to be renamed
+      const { firstName, middleName, lastName, lookupId } = {
+        ...result.patient,
+      };
 
-    return results.map((result) => (
-      <tr key={`patient-${uuidv4()}`}>
-        <th scope="row">{result.displayName}</th>
-        <td>{result.patientId}</td>
-        <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
-        <td>{result.result}</td>
-      </tr>
-    ));
+      return (
+        <tr key={result.internalId}>
+          <th scope="row">
+            {displayFullName(firstName, middleName, lastName)}
+          </th>
+          <td>{lookupId}</td>
+          <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
+          <td>{result.result}</td>
+          <td>{result.deviceType.name}</td>
+        </tr>
+      );
+    });
   };
 
-  let rows = testResultRows(testResults);
+  let rows = testResultRows(data.testResults);
   return (
     <React.Fragment>
       <main className="prime-home">
@@ -42,6 +83,7 @@ const TestResultsList = () => {
                       <th scope="col">Unique ID</th>
                       <th scope="col">Date of Test</th>
                       <th scope="col">Result</th>
+                      <th scope="col">Device</th>
                     </tr>
                   </thead>
                   <tbody>{rows}</tbody>

@@ -41,7 +41,7 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
         patientEmail,
         patientAge,
         employedInHealthcare,
-        typeOfHealthcareProfessional,
+        role,
         residentCongregateSetting,
         patientResidencyType,
       } = { ...row };
@@ -71,7 +71,7 @@ const CSVModalForm = ({ isOpen, onClose, data }) => {
           <td>{patientState}</td>
           <td>{patientZipCode}</td>
           <td>{employedInHealthcare}</td>
-          <td>{typeOfHealthcareProfessional}</td>
+          <td>{role}</td>
           <td>{residentCongregateSetting}</td>
           <td>{patientResidencyType}</td>
         </tr>

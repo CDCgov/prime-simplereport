@@ -18,3 +18,82 @@ body,
 main {
   flex: 1;
 }
+
+.usa-breadcrumb {
+  background: inherit;
+  margin: 1em;
+}
+
+//TODO: determine where these belong and convert to SASS
+
+//TODO: resolve design discrepancies across forms in the app
+// Time-of-test design wants these bold; other pages, I dunno
+.prime-radios > .usa-legend,
+.prime-checkboxes > .usa-legend {
+  font-weight: bold;
+}
+
+.prime-fieldset {
+  position: relative;
+  background: #fff;
+  margin: 1em;
+  padding: 1em;
+  border: none;
+  outline: 1px solid #ccc;
+  padding-top: 2em;
+
+  > legend {
+    position: absolute;
+    top: 0;
+    left: 1em;
+  }
+}
+
+.prime-edit-patient-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 1em;
+}
+.prime-save-patient-changes {
+  padding: 1em;
+}
+.prime-form-line {
+  display: flex;
+  flex-flow: row wrap;
+}
+.prime-text-input,
+.prime-dropdown {
+  margin-left: 2em;
+}
+.prime-radios,
+.prime-checkboxes {
+  margin-top: 1em;
+}
+
+.prime-text-input.prime-first-name,
+.prime-text-input.prime-middle-name,
+.prime-text-input.prime-last-name {
+  width: 10em;
+}
+.prime-text-input.prime-phone {
+  width: 10em;
+}
+.prime-text-input.prime-email {
+  width: 18em;
+}
+.prime-text-input.prime-street-address {
+  width: 100%;
+}
+.prime-text-input.prime-city {
+  width: 12em;
+}
+.prime-text-input.prime-county {
+  width: 10em;
+}
+.prime-dropdown.prime-state {
+  width: 7em;
+}
+.prime-text-input.prime-zip {
+  width: 8em;
+}

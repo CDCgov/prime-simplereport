@@ -12,7 +12,7 @@ const RadioGroup = ({
   selectedRadio, // for checkboxes that only support one checked item, use this. Otherwise, add a `checked: Boolean` property to each button in the buttons prop
   type,
   legend,
-  label,
+  displayLegend,
 }) => {
   // Note: list Affirmations before negations: Yes before No.
   const radioGroupItems = buttons.map((button) => {
@@ -27,7 +27,7 @@ const RadioGroup = ({
       <li className={classNames} key={button.value}>
         <input
           className={`usa-${type || "radio"}__input`}
-          checked={button.value === selectedRadio || button.checked}
+          checked={button.value === selectedRadio || button.checked || false}
           id={uuid}
           key={button.value}
           name={name}
@@ -46,15 +46,16 @@ const RadioGroup = ({
     );
   });
 
-  let labelElem = label ? <strong>{label} </strong> : null;
-
   return (
-    <fieldset className="usa-fieldset">
-      <legend className="usa-sr-only">{legend}</legend>
-      {labelElem}
+    <fieldset className="usa-fieldset prime-radios">
+      <legend className={displayLegend ? "usa-legend" : "usa-sr-only"}>
+        {legend}
+      </legend>
       <ul
         className={
-          horizontal ? "prime-radio--horizontal" : "usa-list--unstyled"
+          horizontal
+            ? "usa-list--unstyled prime-radio--horizontal"
+            : "usa-list--unstyled"
         }
       >
         {radioGroupItems}

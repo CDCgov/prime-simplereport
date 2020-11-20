@@ -1,9 +1,18 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { v4 as uuidv4 } from "uuid";
+import classnames from "classnames";
+import useUniqueId from "../commonComponents/useUniqueIds";
 
-const TextInput = ({ value, label, name, placeholder, onChange, type }) => {
-  let newId = uuidv4();
+const TextInput = ({
+  value = "",
+  label,
+  name,
+  placeholder,
+  onChange,
+  type,
+  addClass,
+}) => {
+  let [newId] = useUniqueId("textinput", 1);
 
   const labelElem = label ? (
     <label className="usa-label" htmlFor={newId}>
@@ -12,7 +21,7 @@ const TextInput = ({ value, label, name, placeholder, onChange, type }) => {
   ) : null;
 
   return (
-    <React.Fragment>
+    <div className={classnames("prime-text-input", addClass)}>
       {labelElem}
       <input
         autoComplete="off"
@@ -24,7 +33,7 @@ const TextInput = ({ value, label, name, placeholder, onChange, type }) => {
         placeholder={placeholder}
         value={value}
       />
-    </React.Fragment>
+    </div>
   );
 };
 

@@ -85,10 +85,10 @@ export const address = {
   },
 };
 
-export const phone = {
-  phone: {
-    renamedKey: "phone",
-    setValue: (object) => object["phone"],
+export const telephone = {
+  telephone: {
+    renamedKey: "telephone",
+    setValue: (object) => object["telephone"],
   },
 };
 

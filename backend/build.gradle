@@ -2,12 +2,18 @@ plugins {
 	id 'org.springframework.boot' version '2.3.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
+	id 'checkstyle'
+	id 'jacoco'
+	id 'org.sonarqube'  version '2.7.1'
 }
 
 group = 'gov.cdc.usds'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
+ext {
+	kickstartVersion = '8.0.0'
+}
 repositories {
 	mavenCentral()
 }
@@ -18,18 +24,36 @@ dependencies {
 
 	// data layer dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation "com.vladmihalcea:hibernate-types-52:2.10.0"
-	implementation "org.liquibase:liquibase-core"
+	implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+	implementation 'org.liquibase:liquibase-core'
 	runtimeOnly 'org.postgresql:postgresql'
+
 	// UI layer dependencies
-	implementation 'com.graphql-java-kickstart:graphql-spring-boot-starter:8.0.0'
+	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
+	implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
+
+//	Okta dependencies
+	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
+	implementation 'org.springframework.security.oauth:spring-security-oauth2'
+	implementation 'org.springframework.security.oauth.boot:spring-security-oauth2-autoconfigure:2.3.4.RELEASE'
+
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
 }
 
 test {
 	useJUnitPlatform()
+}
+
+configurations {
+	compileClasspath {
+		resolutionStrategy.activateDependencyLocking()
+	}
+	runtimeClasspath {
+		resolutionStrategy.activateDependencyLocking()
+	}
 }

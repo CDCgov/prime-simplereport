@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { useDispatch } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
+import { gql, useMutation } from "@apollo/client";
 
 import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 
 import Anchor from "../commonComponents/Anchor";
-import AoeModalForm, { areAnswersComplete } from "./AoEForm/AoEModalForm";
+import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
 import CMSDialog from "../commonComponents/CMSDialog";
 import LabeledText from "../commonComponents//LabeledText";
@@ -16,21 +16,47 @@ import TestResultInputForm from "../testResults/TestResultInputForm";
 import { ALERT_CONTENT } from "../testQueue/constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import {
-  removePatientFromQueue,
-  updatePatientInQueue,
-} from "./state/testQueueActions";
-import { submitTestResult } from "../testResults/state/testResultActions";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
+import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 
-const AskOnEntryTag = ({ aoeAnswers }) => {
-  if (areAnswersComplete(aoeAnswers)) {
-    return <span className="usa-tag bg-green">COMPLETED</span>;
-  } else {
-    return <span className="usa-tag">PENDING</span>;
+const REMOVE_PATIENT_FROM_QUEUE = gql`
+  mutation($patientId: String!) {
+    removePatientFromQueue(patientId: $patientId)
   }
-};
+`;
+
+const SUBMIT_TEST_RESULT = gql`
+  mutation($patientId: String!, $deviceId: String!, $result: String!) {
+    addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
+  }
+`;
+
+const UPDATE_AOE = gql`
+  mutation(
+    $patientId: String!
+    $symptoms: String
+    $symptomOnset: String
+    $pregnancy: String
+    $firstTest: Boolean
+    $priorTestDate: String
+    $priorTestType: String
+    $priorTestResult: String
+    $noSymptoms: Boolean
+  ) {
+    updateTimeOfTestQuestions(
+      patientId: $patientId
+      pregnancy: $pregnancy
+      symptoms: $symptoms
+      noSymptoms: $noSymptoms
+      firstTest: $firstTest
+      priorTestDate: $priorTestDate
+      priorTestType: $priorTestType
+      priorTestResult: $priorTestResult
+      symptomOnset: $symptomOnset
+    )
+  }
+`;
 
 const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
   <CMSDialog
@@ -58,16 +84,18 @@ const QueueItem = ({
   askOnEntry,
   selectedDeviceId,
   selectedTestResult,
+  defaultDevice,
+  refetchQueue,
 }) => {
-  const dispatch = useDispatch();
+  const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
+  const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
+  const [updateAoe] = useMutation(UPDATE_AOE);
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
-  let defaultDevice = devices.find((device) => device.isDefault); // might be null if no devices have been added to the org
-  let defaultDeviceId = defaultDevice ? defaultDevice.deviceId : null;
   const [deviceId, updateDeviceId] = useState(
-    selectedDeviceId || defaultDeviceId
+    selectedDeviceId || defaultDevice.internalId
   );
   const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
 
@@ -76,22 +104,30 @@ const QueueItem = ({
   );
   const [forceSubmit, setForceSubmit] = useState(false);
 
+  const testResultsSubmitted = () => {
+    let { type, title, body } = {
+      ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
+        patient
+      ),
+    };
+    let alert = <Alert type={type} title={title} body={body} />;
+    showNotification(toast, alert);
+    refetchQueue();
+  };
+
   const onTestResultSubmit = (e) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      let testResultToSubmit = {
-        deviceId: deviceId,
-        testResultValue,
-        testTimeQuestions: aoeAnswers,
-      };
-      dispatch(submitTestResult(patient.patientId, testResultToSubmit));
-      let { type, title, body } = {
-        ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
-          patient
-        ),
-      };
-      let alert = <Alert type={type} title={title} body={body} />;
-      showNotification(toast, alert);
+      submitTestResult({
+        variables: {
+          patientId: patient.internalId,
+          deviceId: deviceId,
+          result: testResultValue,
+        },
+      }).then(
+        (_response) => testResultsSubmitted(),
+        (error) => console.error("error submitting test results", error)
+      );
     } else {
       updateIsConfirmationModalOpen(true);
     }
@@ -102,7 +138,14 @@ const QueueItem = ({
   };
 
   const removeFromQueue = (patientId) => {
-    dispatch(removePatientFromQueue(patientId));
+    removePatientFromQueue({
+      variables: {
+        patientId,
+      },
+    }).then(
+      (_response) => refetchQueue(),
+      (error) => console.error("error removing patient from queue", error)
+    );
   };
 
   const onTestResultChange = (newTestResultValue) => {
@@ -124,19 +167,29 @@ const QueueItem = ({
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
-    dispatch(
-      updatePatientInQueue(
-        patient.patientId,
-        answers,
-        deviceId,
-        testResultValue
-      )
+    updateAoe({
+      variables: {
+        patientId: patient.internalId,
+        noSymptoms: answers.noSymptoms,
+        symptoms: answers.symptoms,
+        symptomOnset: answers.symptomOnset,
+        pregnancy: answers.pregnancy,
+        firstTest: answers.firstTest,
+        priorTestDate: answers.priorTestDate,
+        priorTestType: answers.priorTestType,
+        priorTestResult: answers.priorTestResult,
+      },
+    }).then(
+      (_response) => {
+        refetchQueue();
+      },
+      (error) => console.error("error saving aoe", error)
     );
   };
 
   let options = devices.map((device) => ({
-    label: device.displayName,
-    value: device.deviceId,
+    label: device.name,
+    value: device.internalId,
   }));
   options.unshift({
     label: "Select Device",
@@ -151,7 +204,7 @@ const QueueItem = ({
 
   const closeButton = (
     <div
-      onClick={() => removeFromQueue(patient.patientId)}
+      onClick={() => removeFromQueue(patient.internalId)}
       className="prime-close-button"
     >
       <span className="fa-layers">
@@ -173,10 +226,10 @@ const QueueItem = ({
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
                 <li className="prime-li">
-                  <LabeledText text={patient.patientId} label="Unique ID" />
+                  <LabeledText text={patient.lookupId} label="Unique ID" />
                 </li>
                 <li className="prime-li">
-                  <LabeledText text={patient.phone} label="Phone Number" />
+                  <LabeledText text={patient.telephone} label="Phone Number" />
                 </li>
                 <li className="prime-li">
                   <LabeledText text={patient.birthDate} label="Date of Birth" />
