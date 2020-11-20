@@ -56,6 +56,7 @@ jobs:
       run: ./gradlew test
     - name: Archive Test Results
       uses: actions/upload-artifact@v2
+      if: failure()
       with:
         name: test-report
         path: backend/build/reports/tests/test
