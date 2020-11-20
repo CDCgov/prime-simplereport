@@ -66,18 +66,22 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   const getSuggestionsFromQueryString = (queryString) => {
     if (data && data.patients) {
       let formattedQueryString = queryString.toLowerCase();
-      let suggestions = data.patients.filter(
-        (patient) =>
+      let searchResults = data.patients.filter((patient) => {
+        let doesMatchPatientName =
           displayFullName(
             patient.firstName,
             patient.middleName,
             patient.lastName
           )
             .toLowerCase()
-            .indexOf(formattedQueryString) > -1 ||
-          patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
-      );
-      return suggestions;
+            .indexOf(formattedQueryString) > -1;
+
+        let doesMatchLookupId = patient.lookupId
+          ? patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
+          : false;
+        return doesMatchPatientName || doesMatchLookupId;
+      });
+      return searchResults;
     }
     return [];
   };
