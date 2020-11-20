@@ -16,7 +16,7 @@ const GET_PATIENT = gql`
       city
       state
       zipCode
-      teltphone
+      telephone
       role
       email
       county
