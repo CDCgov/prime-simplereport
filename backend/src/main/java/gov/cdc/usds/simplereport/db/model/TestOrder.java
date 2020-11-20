@@ -10,16 +10,11 @@ import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+
 @Entity
 public class TestOrder extends AuditedEntity {
-
-	public enum OrderStatus {
-		PENDING, COMPLETED, CANCELED;
-	}
-
-	public enum TestResult {
-		POSITIVE, NEGATIVE, UNDETERMINED;
-	}
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")

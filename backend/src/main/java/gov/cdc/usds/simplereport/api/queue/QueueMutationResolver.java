@@ -3,11 +3,11 @@ package gov.cdc.usds.simplereport.api.queue;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService; 
 import gov.cdc.usds.simplereport.service.TestOrderService; 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
@@ -29,7 +29,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
     public void addTestResult(String deviceID, String result, String patientID) {
       _tos.addTestResult(
         deviceID,
-        TestOrder.TestResult.valueOf(result),
+        TestResult.valueOf(result),
         patientID
       );
     }
