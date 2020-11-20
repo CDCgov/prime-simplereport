@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../commonComponents/Button";
-import Dropdown from "../commonComponents/Dropdown";
 import { v4 as uuidv4 } from "uuid";
 // import useUniqueId from "../commonComponents/useUniqueIds";  // todo: switch to using
 import useCustomForm from "../commonHooks/FormHook";
@@ -96,15 +95,6 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
     saveLocalCopyBackTopParent();
   };
 
-  /**
-   * Generate options for dropdown (select)
-   * @returns {[]}
-   */
-  const rolesDropdown = Object.entries(ROLE_TYPES).map(([key]) => ({
-    label: roleToString(key),
-    value: key,
-  }));
-
   const StaffRowComponent = ({ initialValues }) => {
     const staffkey = initialValues.staffkey; // ID elements should NOT regen across data update
     const { values, handleChange, handleBlur, handleSubmit } = useCustomForm({
@@ -139,41 +129,50 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
           <tr key={values.staffkey}>
             <td>
               <input
-                name="name"
-                id={`${staffkey}_name`}
                 type="text"
+                id={`${staffkey}_name`}
+                name="name"
                 defaultValue={values.name}
+                className="usa-input"
+                required={true}
                 onChange={handleChange}
                 onBlur={persistOnBlur}
                 placeholder="User name"
-                required={true}
                 aria-describedby="tableLabelName"
               />
             </td>
             <td>
               <input
+                type="email"
                 name="email"
                 id={`${staffkey}_email`}
-                type="email"
                 defaultValue={values.email}
-                placeholder="email address"
+                className="usa-input"
                 required={true}
                 onChange={handleChange}
                 onBlur={persistOnBlur}
                 pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+                placeholder="email address"
                 aria-describedby="tableLabelEmail"
               />
             </td>
             <td>
-              <Dropdown
+              <select
+                className="usa-select"
                 name="role"
                 id={`${staffkey}_role`}
                 onChange={handleChange}
-                options={rolesDropdown}
+                value={values.role}
                 onBlur={persistOnBlur}
-                selectedValue={values.role}
                 aria-describedby="tableLabelRole"
-              />
+              >
+                {Object.entries(ROLE_TYPES).map(([key], i) => (
+                  <option value={key} key={key + i}>
+                    {" "}
+                    {roleToString(key)}
+                  </option>
+                ))}
+              </select>
             </td>
 
             <td>
