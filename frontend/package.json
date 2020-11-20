@@ -51,7 +51,9 @@
     "test": "react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
-    "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss"
+    "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
+    "deploy-azure-dev": "react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdev --destination-path '/app'",
+    "deploy-azure-prod": "react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportprod --destination-path '/app'"
   },
   "eslintConfig": {
     "extends": "react-app"
