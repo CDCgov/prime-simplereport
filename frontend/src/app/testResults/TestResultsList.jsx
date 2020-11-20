@@ -33,7 +33,7 @@ const TestResultsList = () => {
     return <p>Loading</p>;
   }
   if (error) {
-    console.error(error)
+    console.error(error);
     return (
       <div>
         <h3>There was an error:</h3>
