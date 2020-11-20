@@ -17,6 +17,10 @@
 })
 @TypeDefs({
 	@TypeDef(
+		name = "jsonb",
+		typeClass=JsonBinaryType.class
+	),
+	@TypeDef(
 		name = "list-array",
 		typeClass = ListArrayType.class
 	),
@@ -35,3 +39,4 @@ import org.hibernate.annotations.TypeDefs;
 
 import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;

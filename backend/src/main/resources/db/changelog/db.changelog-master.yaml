@@ -344,3 +344,13 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
+        - createTable:
+            tableName: patient_answers
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: ask_on_entry
+                  type: jsonb
+                  remarks: The questions asked at order entry or at test time.
