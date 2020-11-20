@@ -31,6 +31,7 @@ dependencies {
 	// UI layer dependencies
 	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
 	implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
+	implementation 'org.json:json:20201115'
 
 //	Okta dependencies
 	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'

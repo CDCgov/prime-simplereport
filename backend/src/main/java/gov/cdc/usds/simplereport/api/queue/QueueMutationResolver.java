@@ -2,6 +2,11 @@ package gov.cdc.usds.simplereport.api.queue;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
+import org.json.JSONObject;
+import org.json.JSONException;
+import java.util.Iterator;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService; 
@@ -44,17 +49,29 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         String priorTestResult,
         String symptomOnset,
         boolean noSymptoms
-    ) {
+    ) throws JSONException {
+      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
+      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, this.dateTimeFormatter);
+
+      Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
+      JSONObject symptomsJSONObject = new JSONObject(symptoms);
+      Iterator<?> keys = symptomsJSONObject.keys();
+      while(keys.hasNext() ){
+          String key = (String)keys.next();
+          Boolean value = symptomsJSONObject.getBoolean(key); 
+          symptomsMap.put(key, value);
+      }
+
       _tos.addPatientToQueue(
-        _ps.getPatient(patientID)
-        // pregnancy,
-        // symptoms,
-        // firstTest,
-        // priorTestDate,
-        // priorTestType,
-        // priorTestResult,
-        // symptomOnset,
-        // noSymptoms
+        _ps.getPatient(patientID),
+        pregnancy,
+        symptomsMap,
+        firstTest,
+        localPriorTestDate,
+        priorTestType,
+        TestResult.valueOf(priorTestResult),
+        localSymptomOnset,
+        noSymptoms
       );
     }
 
@@ -62,9 +79,40 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       _tos.removePatientFromQueue(patientID);
     }
 
-    public void updateTimeOfTestQuestions(String patientID, String pregnancy, String symptoms, boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult, String symptomOnset, boolean noSymptoms) {
-      // TODO 
-      // repo.updateTimeOfTestQuestions(patientID, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult, symptomOnset, noSymptoms);
+    public void updateTimeOfTestQuestions(
+      String patientID,
+      String pregnancy,
+      String symptoms,
+      boolean firstTest,
+      String priorTestDate,
+      String priorTestType,
+      String priorTestResult,
+      String symptomOnset,
+      boolean noSymptoms
+    ) {
+      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
+      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, this.dateTimeFormatter);
+
+      Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
+      JSONObject symptomsJSONObject = new JSONObject(symptoms);
+      Iterator<?> keys = symptomsJSONObject.keys();
+      while(keys.hasNext() ){
+          String key = (String)keys.next();
+          Boolean value = symptomsJSONObject.getBoolean(key); 
+          symptomsMap.put(key, value);
+      }
+
+      _tos.updateTimeOfTestQuestions(
+        patientID,
+        pregnancy,
+        symptomsMap,
+        firstTest,
+        localPriorTestDate,
+        priorTestType,
+        TestResult.valueOf(priorTestResult),
+        localSymptomOnset,
+        noSymptoms
+      );
     }
 
 }

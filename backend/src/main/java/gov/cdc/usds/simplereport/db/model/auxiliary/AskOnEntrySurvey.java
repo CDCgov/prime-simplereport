@@ -10,7 +10,7 @@ import java.util.Map;
  */
 public class AskOnEntrySurvey {
 
-	private OptionalBoolean pregnancy;
+	private String pregnancy;
 	private Map<String, Boolean> symptoms;
 	private Boolean noSymptoms;
 	private LocalDate symptomOnsetDate;
@@ -19,7 +19,7 @@ public class AskOnEntrySurvey {
 	private String /* should be an enum */ priorTestType;
 	private TestResult priorTestResult;
 
-	public AskOnEntrySurvey(OptionalBoolean pregnancy, Map<String, Boolean> symptoms, Boolean noSymptoms,
+	public AskOnEntrySurvey(String pregnancy, Map<String, Boolean> symptoms, Boolean noSymptoms,
 			LocalDate symptomOnsetDate, Boolean firstTest, LocalDate priorTestDate, String priorTestType,
 			TestResult priorTestResult) {
 		this.pregnancy = pregnancy;
@@ -32,11 +32,11 @@ public class AskOnEntrySurvey {
 		this.priorTestResult = priorTestResult;
 	}
 
-	public OptionalBoolean getPregnancy() {
+	public String getPregnancy() {
 		return pregnancy;
 	}
 
-	public void setPregnancy(OptionalBoolean pregnancy) {
+	public void setPregnancy(String pregnancy) {
 		this.pregnancy = pregnancy;
 	}
 

@@ -6,12 +6,15 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.time.LocalDate;
 import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 
 @Entity
 public class TestOrder extends AuditedEntity {
@@ -22,6 +25,14 @@ public class TestOrder extends AuditedEntity {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
+	@ManyToOne()
+	@JoinColumn(name = "patient_answers_id")
+	private PatientAnswers askOnEntrySurvey;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "device_type_id")
+	private DeviceType deviceType;
+	@Column
+	private LocalDate dateTested;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
@@ -49,6 +60,16 @@ public class TestOrder extends AuditedEntity {
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
+
+	public void setAskOnEntrySurvey(PatientAnswers askOnEntrySurvey) {
+		this.askOnEntrySurvey = askOnEntrySurvey;
+	}
+
+	public PatientAnswers getAskOnEntrySurvey() {
+		return askOnEntrySurvey;
+	}
+
+
 	public TestResult getTestResult() {
 		return result;
 	}
@@ -57,18 +78,17 @@ public class TestOrder extends AuditedEntity {
 		return getCreatedAt();
 	}
 
-	public Date getDateTested() {
-		// TODO add this field
-		return new Date();
+	public LocalDate getDateTested() {
+		return dateTested;
 	}
 
 	public DeviceType getDeviceType() {
-		return null;
+		return deviceType;
 	}
 
 	public void setResult(TestResult finalResult) {
 		result = finalResult;
-		// TODO set dateTested
+		dateTested = LocalDate.now();
 		orderStatus = OrderStatus.COMPLETED;
 	}
 

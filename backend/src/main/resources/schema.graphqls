@@ -63,13 +63,8 @@ type TestOrder {
   dateTested: String
 }
 type User {
-  id: ID
-  firstName: String
-  middleName: String
-  lastName: String
-  suffix: String
-  organization: Organization
- }
+  internalId: ID
+}
 
 type Query {
   deviceType: [DeviceType]

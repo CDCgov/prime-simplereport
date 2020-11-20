@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -24,8 +23,7 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
         return _userService.getCurrentUser().getPerson().getOrganization();
     }
 
-    public User getWhoami() {
-		ApiUser currentUser = _userService.getCurrentUser();
-		return new User(currentUser.getInternalId(), currentUser.getPerson());
+    public ApiUser getWhoami() {
+		return _userService.getCurrentUser();
 	}
 }

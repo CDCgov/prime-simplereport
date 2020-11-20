@@ -312,6 +312,16 @@ databaseChangeLog:
             referencedTableName: person
             referencedColumnNames: internal_id
         - createTable:
+            tableName: patient_answers
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: ask_on_entry
+                  type: jsonb
+                  remarks: The questions asked at order entry or at test time.
+        - createTable:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.
             columns:
@@ -335,6 +345,26 @@ databaseChangeLog:
                     foreignKeyName: fk__person__organization
                     references: organization
               - column:
+                  name: patient_answers_id
+                  remarks: The questions asked at order entry or at test time.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__patient_answers
+                    references: patient_answers
+              - column:
+                  name: device_type_id
+                  remarks: The device used to record the test result
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__device_type
+                    references: device_type
+              - column:
+                  name: date_tested
+                  remarks: the date the test result was submitted
+                  type: DATE
+                  constraints:
+                    nullable: true
+              - column:
                   name: order_status
                   remarks: The status of the order. "Pending" orders are the test queue; "COMPLETED" orders have results.
                   type: ${database.defaultSchemaName}.TEST_ORDER_STATUS
@@ -344,13 +374,3 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
-        - createTable:
-            tableName: patient_answers
-            columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *updated_at_column
-              - column:
-                  name: ask_on_entry
-                  type: jsonb
-                  remarks: The questions asked at order entry or at test time.
