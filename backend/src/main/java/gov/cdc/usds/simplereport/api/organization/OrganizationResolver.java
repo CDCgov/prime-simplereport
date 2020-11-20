@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
@@ -11,13 +14,18 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrganizationResolver implements GraphQLQueryResolver  {
 
-    private final OrganizationService _os;
+    private ApiUserService _userService;
 
-    public OrganizationResolver(OrganizationService os) {
-        _os = os;
+    public OrganizationResolver(OrganizationService os, ApiUserService users) {
+        _userService = users;
     }
 
     public Organization getOrganization() {
-        return _os.getCurrentOrganization();
+        return _userService.getCurrentUser().getPerson().getOrganization();
     }
+
+    public User getWhoami() {
+		ApiUser currentUser = _userService.getCurrentUser();
+		return new User(currentUser.getInternalId(), currentUser.getPerson());
+	}
 }

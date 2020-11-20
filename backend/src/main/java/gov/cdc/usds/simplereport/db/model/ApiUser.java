@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
 /**
@@ -14,15 +15,18 @@ import org.hibernate.annotations.NaturalId;
  * elsewhere in the schema.
  */
 @Entity
+@DynamicUpdate
 public class ApiUser extends AuditedEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false, updatable = false)
 	@NaturalId
 	private String loginEmail;
 	@OneToOne(optional = false)
 	@JoinColumn(name="person_id")
 	private Person person;
 	private Date lastSeen;
+
+	protected ApiUser() { /* for hibernate */ }
 
 	public ApiUser(String email, Person attachePerson) {
 		loginEmail = email;

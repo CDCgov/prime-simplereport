@@ -264,7 +264,7 @@ databaseChangeLog:
                   remarks: The person's date of birth.
                   type: DATE
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: street
                   remarks: The street portion of the person's address.
