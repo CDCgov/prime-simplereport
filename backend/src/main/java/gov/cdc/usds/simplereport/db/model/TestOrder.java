@@ -9,6 +9,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
 
@@ -40,6 +41,11 @@ public class TestOrder extends AuditedEntity {
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
+	@OneToOne(optional = true)
+	@JoinColumn(name="test_event_id")
+	private TestEvent testEvent;
+
+	protected TestOrder() { /* for hibernate */ }
 
 	public TestOrder(Person patient, Organization organization, OrderStatus orderStatus, TestResult result) {
 		this.patient = patient;
@@ -93,6 +99,13 @@ public class TestOrder extends AuditedEntity {
 
 	public void cancelOrder() {
 		orderStatus = OrderStatus.CANCELED;
+	}
+
+	public TestEvent getTestEvent() {
+		return testEvent;
+	}
+	public void setTestEvent(TestEvent testEvent) {
+		this.testEvent = testEvent;
 	}
 
 	public String getPregnancy() {

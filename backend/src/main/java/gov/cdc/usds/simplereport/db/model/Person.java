@@ -9,6 +9,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 
 
@@ -42,14 +45,17 @@ public class Person extends EternalEntity {
 	@Column(nullable = false)
 	private boolean employedInHealthcare;
 	@Column
+	@JsonProperty(value = "role")
 	private String typeOfHealthcareProfessional;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
+	@JsonIgnore // don't descend this model graph when serializing for TestEvent
 	private Organization organization;
 	@OneToMany()
 	@JoinColumn(name = "patient_id")
+	@JsonIgnore // dear Lord do not attempt to serialize this
 	private List<TestOrder> testOrders;
 
 	protected Person() { /* for hibernate */ }
@@ -188,6 +194,7 @@ public class Person extends EternalEntity {
 		return organization;
 	}
 
+	@JsonIgnore
 	public String getStreet() {
 		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
 			return "";
@@ -195,6 +202,7 @@ public class Person extends EternalEntity {
 		return address.getStreet().get(0);
 	}
 
+	@JsonIgnore
 	public String getStreetTwo() {
 		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
 			return "";
@@ -202,6 +210,7 @@ public class Person extends EternalEntity {
 		return address.getStreet().get(1);
 	}
 
+	@JsonIgnore
 	public String getCity() {
 		if(address == null) {
 			return "";
@@ -209,6 +218,7 @@ public class Person extends EternalEntity {
 		return address.getCity();
 	}
 
+	@JsonIgnore
 	public String getState() {
 		if(address == null) {
 			return "";
@@ -216,6 +226,7 @@ public class Person extends EternalEntity {
 		return address.getState();
 	}
 
+	@JsonIgnore
 	public String getZipCode() {
 		if(address == null) {
 			return "";
@@ -223,6 +234,7 @@ public class Person extends EternalEntity {
 		return address.getPostalCode();
 	}
 
+	@JsonIgnore
 	public String getCounty() {
 		if(address == null) {
 			return "";
@@ -230,11 +242,13 @@ public class Person extends EternalEntity {
 		return address.getCounty();
 	}
 
+	@JsonIgnore
 	public List<TestOrder> getTestResults() {
 		return testOrders;
 	}
 
+	@JsonIgnore
 	public String getRole() {
-		return typeOfHealthcareProfessional;
+		return typeOfHealthcareProfessional; // TODO this is extremely bad smelling
 	}
 }
