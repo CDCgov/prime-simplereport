@@ -1,8 +1,9 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.Collection;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -40,7 +41,7 @@ public class Organization extends EternalEntity {
 		joinColumns = @JoinColumn(name="organization_id"),
 		inverseJoinColumns = @JoinColumn(name="device_type_id")
 	)
-	private List<DeviceType> configuredDevices = new ArrayList<>();
+	private Set<DeviceType> configuredDevices = new HashSet<>();
 
 	protected Organization() { /* for hibernate */ }
 
