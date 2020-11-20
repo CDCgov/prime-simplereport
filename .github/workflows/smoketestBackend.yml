@@ -54,6 +54,12 @@ jobs:
         db-setup/create-db.sh
     - name: Run Java Tests
       run: ./gradlew test
+    - name: Archive Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-report
+        path: backend/build/reports/tests/test
+        retention-days: 7
   build-jar:
     runs-on: ubuntu-latest
     steps:
