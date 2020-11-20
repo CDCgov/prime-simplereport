@@ -56,6 +56,34 @@ databaseChangeLog:
       comment: The database schema required for the initial prototype deployment of the Simple Report API.
       changes:
         - createTable:
+            tableName: api_user
+            remarks: Any user who authenticates to the API to take actions using it.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: login_email
+                  type: *string
+                  remarks: The e-mail of the logged-in user, assuming that is our unique ID for users.
+                  constraints:
+                    unique: true
+                    nullable: false
+              - column:
+                  name: person_id
+                  type: *idtype
+                  remarks: A foreign key to the Person table, where we can find any other details we know about this user.
+                  constraints:
+                    unique: true
+                    nullable: false
+                    # what no foreign key? Right, that table doesn't exist yet.
+              - column:
+                  name: last_seen
+                  type: DATETIME
+                  remarks: The last time this user connected to the API.
+                  constraints:
+                    nullable: false
+        - createTable:
             tableName: device_type
             remarks: Testing devices that may be present.
             columns:
@@ -182,7 +210,7 @@ databaseChangeLog:
                     foreignKeyName: fk__facility_device_type__device_type
                     references: device_type
         - createTable:
-            tableName: person # this is kind of fascinating -- is a user also a person? Probably so, actually?
+            tableName: person
             remarks: The personal information we store about users and patients
             columns:
               - column: *pk_column
@@ -236,7 +264,7 @@ databaseChangeLog:
                   remarks: The person's date of birth.
                   type: DATE
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: street
                   remarks: The street portion of the person's address.
@@ -277,6 +305,12 @@ databaseChangeLog:
                   name: resident_congregate_setting
                   remarks: Does the person live in a congregate setting?
                   type: boolean
+        - addForeignKeyConstraint: # have to add this after the fact because of the (eventual) circular relationship
+            constraintName: fk__api_user__person
+            baseTableName: api_user
+            baseColumnNames: person_id
+            referencedTableName: person
+            referencedColumnNames: internal_id
         - createTable:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.
@@ -310,3 +344,13 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
+        - createTable:
+            tableName: patient_answers
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: ask_on_entry
+                  type: jsonb
+                  remarks: The questions asked at order entry or at test time.

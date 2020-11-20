@@ -62,13 +62,23 @@ type TestOrder {
   result: String
   dateTested: String
 }
+type User {
+  id: ID
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+  organization: Organization
+ }
+
 type Query {
   deviceType: [DeviceType]
   patients: [Patient]
-  patient(id: String): Patient
+  patient(id: String!): Patient
   organization: Organization
   queue: [TestOrder]
   testResults: [TestOrder]
+  whoami: User!
 }
 type Mutation {
   updateOrganization(

@@ -12,7 +12,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.TestOrder.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 public class TestOrderRepositoryTest extends BaseRepositoryTest {
 

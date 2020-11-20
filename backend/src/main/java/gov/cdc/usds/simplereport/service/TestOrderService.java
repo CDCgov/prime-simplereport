@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
@@ -32,7 +33,7 @@ public class TestOrderService {
 		return _repo.fetchPastResultsForOrganization(_os.getCurrentOrganization());
   }
 
-  public void addTestResult(String deviceID, TestOrder.TestResult result, String patientId) {
+  public void addTestResult(String deviceID, TestResult result, String patientId) {
     TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), patientId);
     order.setResult(result);
     // TODO set device

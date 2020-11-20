@@ -25,7 +25,7 @@ public class Person extends EternalEntity {
 	private String lastName;
 	@Column
 	private String suffix;
-	@Column(nullable = false)
+	@Column
 	private LocalDate birthDate;
 	@Embedded
 	private StreetAddress address;
@@ -51,6 +51,24 @@ public class Person extends EternalEntity {
 	@OneToMany()
 	@JoinColumn(name = "patient_id")
 	private List<TestOrder> testOrders;
+
+	protected Person() { /* for hibernate */ }
+
+	public Person(String firstName, String middleName, String lastName, String suffix, Organization org) {
+		this.organization = org;
+		this.firstName = firstName;
+		this.middleName = middleName;
+		this.lastName = lastName;
+		this.suffix = suffix;
+	}
+
+	public String getTypeOfHealthcareProfessional() {
+		return typeOfHealthcareProfessional;
+	}
+
+	public List<TestOrder> getTestOrders() {
+		return testOrders;
+	}
 
 	public Person(
 		Organization organization,
@@ -129,6 +147,9 @@ public class Person extends EternalEntity {
 	}
 	public String getLastName() {
 		return lastName;
+	}
+	public String getSuffix() {
+		return suffix;
 	}
 	public LocalDate getBirthDate() {
 		return birthDate;
