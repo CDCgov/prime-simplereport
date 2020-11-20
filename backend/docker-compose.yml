@@ -9,7 +9,7 @@ services:
     volumes:
       # Create/use a named volume so that the database is not wiped if we recreate the container
       - type: volume
-        source: case-issues-dev-db-data
+        source: simple-report-dev-db-data
         target: /var/lib/postgresql/data
       # Mount init scripts for first-run user/schema creation
       - type: bind
@@ -30,4 +30,4 @@ services:
       # map SR_API_PORT on localhost to the API server in the container
       - "${SR_API_PORT:-8080}:8080"
 volumes:
-  case-issues-dev-db-data:
+  simple-report-dev-db-data:

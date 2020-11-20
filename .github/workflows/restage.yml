@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       deploy-to:
-        description: Which instance should we restage ("client" or "staging")?
-        default: staging
+        description: Which instance should we restage ("client" or "sandbox" or "sandbox-backend")?
+        default: sandbox
 jobs:
   restage:
     runs-on: ubuntu-latest
