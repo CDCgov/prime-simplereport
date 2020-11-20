@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents/Dropdown";
-import TextInput from "../commonComponents/TextInput";
 import { v4 as uuidv4 } from "uuid";
 // import useUniqueId from "../commonComponents/useUniqueIds";  // todo: switch to using
 import useCustomForm from "../commonHooks/FormHook";
@@ -139,7 +138,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
         {values._editable ? (
           <tr key={values.staffkey}>
             <td>
-              <TextInput
+              <input
                 name="name"
                 id={`${staffkey}_name`}
                 type="text"
@@ -148,11 +147,11 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 onBlur={persistOnBlur}
                 placeholder="User name"
                 required={true}
-                aria-labelledby="tableLabelName"
+                aria-describedby="tableLabelName"
               />
             </td>
             <td>
-              <TextInput
+              <input
                 name="email"
                 id={`${staffkey}_email`}
                 type="email"
@@ -162,7 +161,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 onChange={handleChange}
                 onBlur={persistOnBlur}
                 pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-                aria-labelledby="tableLabelEmail"
+                aria-describedby="tableLabelEmail"
               />
             </td>
             <td>
@@ -173,7 +172,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 options={rolesDropdown}
                 onBlur={persistOnBlur}
                 selectedValue={values.role}
-                aria-labelledby="tableLabelRole"
+                aria-describedby="tableLabelRole"
               />
             </td>
 
@@ -252,10 +251,10 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
         <thead>
           <tr>
             <th scope="col" id="tableLabelName">
-              Name
+              Name (Required)
             </th>
             <th scope="col" id="tableLabelEmail">
-              Email
+              Email (Required)
             </th>
             <th scope="col" id="tableLabelRole">
               Access Level

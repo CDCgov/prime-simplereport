@@ -46,7 +46,6 @@ const Button = ({
       onClick={onClick}
       type={type || "button"}
       disabled={disabled}
-      title={title || label || ""}
     >
       {buttonIcon}
       {label}
