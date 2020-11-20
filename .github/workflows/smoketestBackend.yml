@@ -44,7 +44,7 @@ jobs:
         key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
     - name: Set up postgresql sidecar
       env:
-        PGHOST: test-db
+        PGHOST: localhost
         POSTGRES_USER: postgres
         POSTGRES_DB: postgres
         LIB_DIR: db-setup
