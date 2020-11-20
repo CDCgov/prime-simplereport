@@ -77,6 +77,12 @@ databaseChangeLog:
                     unique: true
                     nullable: false
                     # what no foreign key? Right, that table doesn't exist yet.
+              - column:
+                  name: last_seen
+                  type: DATETIME
+                  remarks: The last time this user connected to the API.
+                  constraints:
+                    nullable: false
         - createTable:
             tableName: device_type
             remarks: Testing devices that may be present.
