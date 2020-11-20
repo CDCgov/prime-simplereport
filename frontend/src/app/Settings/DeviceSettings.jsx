@@ -89,7 +89,9 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
   const _getRemainingDeviceOptions = () => {
     let supportedDeviceIds = Object.values(deviceSettings.supportedDevices);
 
-    return allDevices.deviceType.filter((d) => !supportedDeviceIds.includes(d.internalId));
+    return allDevices.deviceType.filter(
+      (d) => !supportedDeviceIds.includes(d.internalId)
+    );
   };
 
   const onAddDevice = () => {
