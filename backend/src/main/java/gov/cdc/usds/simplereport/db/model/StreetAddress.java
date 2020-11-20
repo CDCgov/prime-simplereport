@@ -54,9 +54,14 @@ public class StreetAddress {
 		return Collections.unmodifiableList(street);
 	}
 
-	public void setStreet(List<String> newStreet) {
+	public void setStreet(String street1, String street2) {
 		street.clear();
-		street.addAll(newStreet);
+		if (street1 != null && !street1.isEmpty()) {
+			street.add(street1);
+		}
+		if (street2 != null && !street2.isEmpty()) {
+			street.add(street2);
+		}
 	}
 
 	public String getCity() {

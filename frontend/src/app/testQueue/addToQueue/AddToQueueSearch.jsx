@@ -13,7 +13,7 @@ const MIN_SEARCH_CHARACTER_COUNT = 3;
 const QUERY_PATIENT = gql`
   {
     patients {
-      id
+      internalId
       lookupId
       firstName
       lastName
@@ -112,7 +112,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
     setQueryString("");
     addPatientToQueue({
       variables: {
-        patientId: patient.id,
+        patientId: patient.internalId,
         noSymptoms,
         symptoms,
         symptomOnset,

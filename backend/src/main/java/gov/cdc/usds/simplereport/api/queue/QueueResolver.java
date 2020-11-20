@@ -21,7 +21,7 @@ public class QueueResolver implements GraphQLQueryResolver {
     return tos.getQueue();
   }
 
-  public List<TestOrder> getTestResult() {
+  public List<TestOrder> getTestResults() {
     return tos.getTestResults();
   }
 }

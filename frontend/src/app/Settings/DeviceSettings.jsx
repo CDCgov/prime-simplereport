@@ -10,9 +10,9 @@ import RadioGroup from "../commonComponents/RadioGroup";
 
 const getAllDevices = gql`
   {
-    device {
-      id
-      displayName
+    deviceType {
+      internalId
+      name
     }
   }
 `;
@@ -44,9 +44,9 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
 
   let dropdownOptions;
   if (allDevices) {
-    dropdownOptions = allDevices.device.map((device) => ({
-      label: device.displayName,
-      value: device.id,
+    dropdownOptions = allDevices.deviceType.map((device) => ({
+      label: device.name,
+      value: device.internalId,
     }));
   }
 
@@ -89,14 +89,14 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
   const _getRemainingDeviceOptions = () => {
     let supportedDeviceIds = Object.values(deviceSettings.supportedDevices);
 
-    return allDevices.device.filter((d) => !supportedDeviceIds.includes(d.id));
+    return allDevices.deviceType.filter((d) => !supportedDeviceIds.includes(d.internalId));
   };
 
   const onAddDevice = () => {
     let remainingDeviceOptions = _getRemainingDeviceOptions();
 
     let newDeviceName = `device-${uuidv4()}`;
-    let newDeviceId = remainingDeviceOptions[0].id;
+    let newDeviceId = remainingDeviceOptions[0].internalId;
     let newDeviceSettings = {
       ...deviceSettings,
       supportedDevices: {

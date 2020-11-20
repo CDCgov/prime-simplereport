@@ -32,31 +32,28 @@ const queueQuery = gql`
       priorTestDate
       priorTestType
       priorTestResult
-      device {
-        id
-        displayName
+      deviceType {
+        internalId
+        name
       }
       patient {
-        id
-        phone
+        internalId
+        telephone
         birthDate
         lookupId
         firstName
         middleName
         lastName
       }
-      testResult {
-        id
-      }
     }
     organization {
-      devices {
-        id
-        displayName
+      deviceTypes {
+        internalId
+        name
       }
-      defaultDevice {
-        id
-        displayName
+      defaultDeviceType {
+        internalId
+        name
       }
     }
   }
@@ -73,7 +70,7 @@ const TestQueue = () => {
   }
 
   let shouldRenderQueue =
-    data.queue.length > 0 && data.organization.devices.length > 0;
+    data.queue.length > 0 && data.organization.deviceTypes.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
       ? patientQueue.map(
@@ -105,10 +102,10 @@ const TestQueue = () => {
                 priorTestType,
                 priorTestResult,
               }}
-              selectedDeviceId={device ? device.id : null}
+              selectedDeviceId={device ? device.internalId : null}
               selectedTestResult={testResult}
-              devices={data.organization.devices}
-              defaultDevice={data.organization.defaultDevice}
+              devices={data.organization.deviceTypes}
+              defaultDevice={data.organization.defaultDeviceType}
               refetchQueue={refetchQueue}
             />
           )

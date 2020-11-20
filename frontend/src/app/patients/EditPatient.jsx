@@ -16,8 +16,8 @@ const GET_PATIENT = gql`
       city
       state
       zipCode
-      phone
-      typeOfHealthcareProfessional
+      teltphone
+      role
       email
       county
       race
@@ -26,7 +26,7 @@ const GET_PATIENT = gql`
       residentCongregateSetting
       employedInHealthcare
       testResults {
-        id
+        internalId
         dateTested
         result
       }

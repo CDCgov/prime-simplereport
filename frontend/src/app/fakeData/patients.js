@@ -8,7 +8,7 @@ export const demoPatients = [
     lastName: "Teach",
     birthDate: "01/01/1717",
     address: "123 Plank St, Nassau",
-    phone: "(123) 456-7890",
+    telephone: "(123) 456-7890",
   },
   {
     patientId: "$PATIENT-3xpkhkyx51m",
@@ -18,7 +18,7 @@ export const demoPatients = [
     lastName: "Flint",
     birthDate: "01/01/1719",
     address: "456 Plank St, Nassau",
-    phone: "(321) 546-7890",
+    telephone: "(321) 546-7890",
   },
   {
     patientId: "$PATIENT-2ockhkyx15k",
@@ -28,7 +28,7 @@ export const demoPatients = [
     lastName: "Silver",
     birthDate: "01/01/1722",
     address: "789 Plank St, Nassau",
-    phone: "(213) 645-7890",
+    telephone: "(213) 645-7890",
   },
   {
     patientId: "$PATIENT-mh5khkzccs0",
@@ -38,7 +38,7 @@ export const demoPatients = [
     lastName: "Map",
     birthDate: "01/01/1922",
     address: "789 Road St, Nassau",
-    phone: "(243) 635-7190",
+    telephone: "(243) 635-7190",
   },
 ];
 
@@ -52,7 +52,7 @@ export const initialPatientState = {
     lastName: "Teach",
     birthDate: "01/01/1717",
     address: "123 Plank St, Nassau",
-    phone: "(123) 456-7890",
+    telephone: "(123) 456-7890",
   },
   "$PATIENT-3xpkhkyx51m": {
     patientId: "$PATIENT-3xpkhkyx51m",
@@ -62,7 +62,7 @@ export const initialPatientState = {
     lastName: "Flint",
     birthDate: "01/01/1719",
     address: "456 Plank St, Nassau",
-    phone: "(321) 546-7890",
+    telephone: "(321) 546-7890",
   },
   "$PATIENT-2ockhkyx15k": {
     patientId: "$PATIENT-2ockhkyx15k",
@@ -72,7 +72,7 @@ export const initialPatientState = {
     lastName: "Silver",
     birthDate: "01/01/1722",
     address: "789 Plank St, Nassau",
-    phone: "(213) 645-7890",
+    telephone: "(213) 645-7890",
   },
   "$PATIENT-mh5khkzccs0": {
     patientId: "$PATIENT-mh5khkzccs0",
@@ -82,6 +82,6 @@ export const initialPatientState = {
     lastName: "Map",
     birthDate: "01/01/1922",
     address: "789 Road St, Nassau",
-    phone: "(243) 635-7190",
+    telephone: "(243) 635-7190",
   },
 };

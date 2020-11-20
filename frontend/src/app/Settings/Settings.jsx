@@ -14,7 +14,7 @@ import { showNotification } from "../utils";
 const GET_SETTINGS_QUERY = gql`
   {
     organization {
-      id
+      internalId
       cliaNumber
       testingFacilityName
       orderingProviderNPI
@@ -26,11 +26,11 @@ const GET_SETTINGS_QUERY = gql`
       orderingProviderCounty
       orderingProviderState
       orderingProviderPhone
-      defaultDevice {
-        id
+      defaultDeviceType {
+        internalId
       }
-      devices {
-        id
+      deviceTypes {
+        internalId
       }
     }
   }
@@ -96,10 +96,10 @@ const Settings = () => {
 
   useEffect(() => {
     if (settings) {
-      let supportedDevices = settings.organization.devices.reduce(
+      let supportedDevices = settings.organization.deviceTypes.reduce(
         (acc, device) => {
           let name = `device-${uuidv4()}`;
-          acc[name] = device.id;
+          acc[name] = device.internalId;
           return acc;
         },
         {}
@@ -107,8 +107,8 @@ const Settings = () => {
 
       let deviceSettings = {
         supportedDevices: supportedDevices,
-        defaultDeviceId: settings.organization.defaultDevice
-          ? settings.organization.defaultDevice.id
+        defaultDeviceId: settings.organization.defaultDeviceType
+          ? settings.organization.defaultDeviceType.internalId
           : null,
       };
       updateDeviceSettings(deviceSettings);

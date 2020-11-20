@@ -28,7 +28,6 @@ const REMOVE_PATIENT_FROM_QUEUE = gql`
 
 const SUBMIT_TEST_RESULT = gql`
   mutation($patientId: String!, $deviceId: String!, $result: String!) {
-    removePatientFromQueue(patientId: $patientId)
     addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
   }
 `;
@@ -96,7 +95,7 @@ const QueueItem = ({
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
 
   const [deviceId, updateDeviceId] = useState(
-    selectedDeviceId || defaultDevice.id
+    selectedDeviceId || defaultDevice.internalId
   );
   const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
 
@@ -121,7 +120,7 @@ const QueueItem = ({
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       submitTestResult({
         variables: {
-          patientId: patient.id,
+          patientId: patient.internalId,
           deviceId: deviceId,
           result: testResultValue,
         },
@@ -170,7 +169,7 @@ const QueueItem = ({
     setAoeAnswers(answers);
     updateAoe({
       variables: {
-        patientId: patient.id,
+        patientId: patient.internalId,
         noSymptoms: answers.noSymptoms,
         symptoms: answers.symptoms,
         symptomOnset: answers.symptomOnset,
@@ -189,8 +188,8 @@ const QueueItem = ({
   };
 
   let options = devices.map((device) => ({
-    label: device.displayName,
-    value: device.id,
+    label: device.name,
+    value: device.internalId,
   }));
   options.unshift({
     label: "Select Device",
@@ -205,7 +204,7 @@ const QueueItem = ({
 
   const closeButton = (
     <div
-      onClick={() => removeFromQueue(patient.id)}
+      onClick={() => removeFromQueue(patient.internalId)}
       className="prime-close-button"
     >
       <span className="fa-layers">
@@ -230,7 +229,7 @@ const QueueItem = ({
                   <LabeledText text={patient.lookupId} label="Unique ID" />
                 </li>
                 <li className="prime-li">
-                  <LabeledText text={patient.phone} label="Phone Number" />
+                  <LabeledText text={patient.telephone} label="Phone Number" />
                 </li>
                 <li className="prime-li">
                   <LabeledText text={patient.birthDate} label="Date of Birth" />

@@ -61,7 +61,7 @@ public class Person extends EternalEntity {
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
-		String typeOfHealthcareProfessional,
+		String role,
 		String email,
 		String race,
 		String ethnicity,
@@ -77,7 +77,7 @@ public class Person extends EternalEntity {
 		this.telephone = telephone;
 		this.address = address;
 		this.organization = organization;
-		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
+		this.typeOfHealthcareProfessional = role;
 		this.email = email;
 		this.race = race;
 		this.ethnicity = ethnicity;
@@ -94,7 +94,7 @@ public class Person extends EternalEntity {
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
-		String typeOfHealthcareProfessional,
+		String role,
 		String email,
 		String race,
 		String ethnicity,
@@ -109,7 +109,7 @@ public class Person extends EternalEntity {
 		this.birthDate = birthDate;
 		this.telephone = telephone;
 		this.address = address;
-		this.typeOfHealthcareProfessional = typeOfHealthcareProfessional;
+		this.typeOfHealthcareProfessional = role;
 		this.email = email;
 		this.race = race;
 		this.ethnicity = ethnicity;
@@ -166,31 +166,59 @@ public class Person extends EternalEntity {
 	}
 
 	public String getStreet() {
+		if(address == null) {
+			return "";
+		}
+		if(address.getStreet() == null) {
+			return "";
+		}
 		return address.getStreet().get(0);
 	}
 
 	public String getStreetTwo() {
+		if(address == null) {
+			return "";
+		}
+		if(address.getStreet() == null) {
+			return "";
+		}
 		return address.getStreet().get(1);
 	}
 
 	public String getCity() {
+		if(address == null) {
+			return "";
+		}
 		return address.getCity();
 	}
 
 	public String getState() {
+		if(address == null) {
+			return "";
+		}
 		return address.getState();
 	}
 
 	public String getZipCode() {
+		if(address == null) {
+			return "";
+		}
 		return address.getPostalCode();
 	}
 
 	public String getCounty() {
+		if(address == null) {
+			return "";
+		}
 		return address.getCounty();
 	}
 
 	public List<TestOrder> getTestResults() {
 		// TODO: where completed
 		return testOrders;
+	}
+
+	public String getRole() {
+		return typeOfHealthcareProfessional;
 	}
 }

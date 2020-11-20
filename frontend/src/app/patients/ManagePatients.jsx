@@ -21,7 +21,7 @@ const validate = ajv.compile(schemaPatient.default);
 const patientQuery = gql`
   {
     patients {
-      id
+      internalId
       lookupId
       firstName
       lastName
@@ -129,7 +129,7 @@ const ManagePatients = () => {
       //     lastName: row.patientLastName,
       //     middleName: row.patientMiddleName,
       //     patientId: row.patientID,
-      //     phone: row.patientPhoneNumber,
+      //     telephone: row.patientPhoneNumber,
       //     address: row.patientStreet,
       //     birthDate: row.patientDOB,
       //   };
@@ -147,7 +147,7 @@ const ManagePatients = () => {
     return patients.map((patient) => (
       <tr key={patient.lookupId}>
         <th scope="row">
-          <NavLink to={`patient/${patient.id}`}>
+          <NavLink to={`patient/${patient.internalId}`}>
             {displayFullName(
               patient.firstName,
               patient.middleName,

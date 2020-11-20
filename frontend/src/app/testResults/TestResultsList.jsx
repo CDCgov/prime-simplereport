@@ -7,16 +7,16 @@ import { displayFullName } from "../utils";
 
 const testResultQuery = gql`
   {
-    testResult {
-      id
+    testResults {
+      internalId
       dateTested
       result
-      device {
-        id
-        displayName
+      deviceType {
+        internalId
+        name
       }
       patient {
-        id
+        internalId
         firstName
         middleName
         lastName
@@ -33,10 +33,10 @@ const TestResultsList = () => {
     return <p>Loading</p>;
   }
   if (error) {
+    console.error(error)
     return (
       <div>
         <h3>There was an error:</h3>
-        <p>{error}</p>
       </div>
     );
   }
@@ -52,20 +52,20 @@ const TestResultsList = () => {
       };
 
       return (
-        <tr key={result.id}>
+        <tr key={result.internalId}>
           <th scope="row">
             {displayFullName(firstName, middleName, lastName)}
           </th>
           <td>{lookupId}</td>
           <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
           <td>{result.result}</td>
-          <td>{result.device.displayName}</td>
+          <td>{result.deviceType.name}</td>
         </tr>
       );
     });
   };
 
-  let rows = testResultRows(data.testResult);
+  let rows = testResultRows(data.testResults);
   return (
     <React.Fragment>
       <main className="prime-home">

@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -33,13 +34,13 @@ public class Organization extends EternalEntity {
 	@JoinColumn(name = "ordering_provider_id", nullable = false)
 	private Provider orderingProvider;
 
-	@ManyToMany
+	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 		name = "facility_device_type",
 		joinColumns = @JoinColumn(name="organization_id"),
 		inverseJoinColumns = @JoinColumn(name="device_type_id")
 	)
-	private Set<DeviceType> configuredDevices = new HashSet<>();
+	private List<DeviceType> configuredDevices = new ArrayList<>();
 
 	protected Organization() { /* for hibernate */ }
 
@@ -68,31 +69,8 @@ public class Organization extends EternalEntity {
 		this.configuredDevices.addAll(configuredDevices);
 	}
 
-
-	public void updateOrg(
-		String facilityName,
-		String cliaNumber,
-		String orderingProviderName,
-		String orderingProviderNPI,
-		String orderingProviderStreet,
-		String orderingProviderStreetTwo,
-		String orderingProviderCity,
-		String orderingProviderCounty,
-		String orderingProviderState,
-		String orderingProviderZipCode,
-		String orderingProviderPhone
-	) {
+	public void setFacilityName(String facilityName) {
 		this.facilityName = facilityName;
-		this.externalId = cliaNumber;
-		// this.orderingProviderName = orderingProviderName;
-		// this.orderingProviderNPI = orderingProviderNPI;
-		// this.orderingProviderStreet = orderingProviderStreet;
-		// this.orderingProviderStreetTwo = orderingProviderStreetTwo;
-		// this.orderingProviderCity = orderingProviderCity;
-		// this.orderingProviderCounty = orderingProviderCounty;
-		// this.orderingProviderState = orderingProviderState;
-		// this.orderingProviderZipCode = orderingProviderZipCode;
-		// this.orderingProviderPhone = orderingProviderPhone;
 	}
 
 	public String getFacilityName() {
@@ -103,15 +81,19 @@ public class Organization extends EternalEntity {
 		return externalId;
 	}
 
+	public void setExternalId(String externalId) {
+		this.externalId = externalId;
+	}
+
 	public DeviceType getDefaultDeviceType() {
 		return defaultDeviceType;
 	}
 
-	public Set<DeviceType> getDeviceTypes() {
+	public List<DeviceType> getDeviceTypes() {
 		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
 		return configuredDevices.stream()
 			.filter(e -> !e.isDeleted())
-			.collect(Collectors.toSet());
+			.collect(Collectors.toList());
 	}
 
 	public void addDeviceType(DeviceType newDevice) {
@@ -138,40 +120,95 @@ public class Organization extends EternalEntity {
 		return this.externalId;
 	}
 
+	public Provider getOrderingProvider() {
+		return orderingProvider;
+	}
+
 	public String orderingProviderName() {
-		return "Not a provider";
+		if(orderingProvider == null) {
+			return "";
+		}
+		return orderingProvider.getName();
 	}
 
 	public String orderingProviderNPI() {
-		return "Not an NPI";
+		if(orderingProvider == null) {
+			return "";
+		}
+		return orderingProvider.getProviderId();
 	}
 
 	public String orderingProviderStreet() {
-		return "Not a street";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress().getStreet() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getStreet().get(0);
 	}
 
 	public String orderingProviderStreetTwo() {
-		return "Not a street";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress().getStreet() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getStreet().get(1);
 	}
 
 	public String orderingProviderCity() {
-		return "Not a city";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getCity();
 	}
 
 	public String orderingProviderCounty() {
-		return "Not a city";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getCounty();
 	}
 
 	public String orderingProviderState() {
-		return "Not a city";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getState();
 	}
 
 	public String orderingProviderZipCode() {
-		return "Not a city";
+		if(orderingProvider == null) {
+			return "";
+		}
+		if(orderingProvider.getAddress() == null) {
+			return "";
+		}
+		return orderingProvider.getAddress().getPostalCode();
 	}
 
 	public String orderingProviderPhone() {
-		return "555-555-5555";
+		if(orderingProvider == null) {
+			return "";
+		}
+		return orderingProvider.getTelephone();
 	}
 
 }

@@ -29,8 +29,8 @@ const ADD_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
-    $phone: String!
-    $typeOfHealthcareProfessional: String
+    $telephone: String!
+    $role: String
     $email: String
     $county: String
     $race: String
@@ -50,8 +50,8 @@ const ADD_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
-      phone: $phone
-      typeOfHealthcareProfessional: $typeOfHealthcareProfessional
+      telephone: $telephone
+      role: $role
       email: $email
       county: $county
       race: $race
@@ -76,8 +76,8 @@ const UPDATE_PATIENT = gql`
     $city: String
     $state: String!
     $zipCode: String!
-    $phone: String!
-    $typeOfHealthcareProfessional: String
+    $telephone: String!
+    $role: String
     $email: String
     $county: String
     $race: String
@@ -98,8 +98,8 @@ const UPDATE_PATIENT = gql`
       city: $city
       state: $state
       zipCode: $zipCode
-      phone: $phone
-      typeOfHealthcareProfessional: $typeOfHealthcareProfessional
+      telephone: $telephone
+      role: $role
       email: $email
       county: $county
       race: $race
@@ -157,8 +157,8 @@ const PatientForm = (props) => {
       city: patient.city,
       state: patient.state,
       zipCode: patient.zipCode,
-      phone: patient.phone,
-      typeOfHealthcareProfessional: patient.patientType,
+      telephone: patient.telephone,
+      role: patient.patientType,
       email: patient.email_address,
       county: patient.county,
       race: patient.race,
@@ -270,7 +270,7 @@ const PatientForm = (props) => {
           <TextInput
             label="Phone Number"
             name="phone_number"
-            value={patient.phone_number}
+            value={patient.telephone}
             addClass="prime-phone"
             onChange={onChange}
           />
@@ -429,7 +429,7 @@ const PatientForm = (props) => {
         </div>
       </Fieldset>
       <Fieldset legend="Test History">
-        {patient.results && patient.results.length && (
+        {patient.testResults && patient.testResults.length && (
           <table className="usa-table usa-table--borderless">
             <thead>
               <tr>

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
@@ -52,25 +53,25 @@ public class OrganizationService {
 		DeviceType defaultDeviceType
 	) {
 		Organization org = this.getCurrentOrganization();
-		org.updateOrg(
-			testingFacilityName,
-			cliaNumber,
-			orderingProviderName,
-			orderingProviderNPI,
-			orderingProviderStreet,
-			orderingProviderStreetTwo,
-			orderingProviderCity,
-			orderingProviderCounty,
-			orderingProviderState,
-			orderingProviderZipCode,
-			orderingProviderTelephone
-		);
+		org.setFacilityName(testingFacilityName);
+		org.setExternalId(cliaNumber);
 		org.addDefaultDeviceType(defaultDeviceType);
 
+		Provider p = org.getOrderingProvider();
+		p.setName(orderingProviderName);
+		p.setProviderId(orderingProviderNPI);
+		p.setTelephone(orderingProviderTelephone);
+
+		StreetAddress a = p.getAddress();
+		a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
+		a.setCity(orderingProviderCity);
+		a.setCounty(orderingProviderCounty);
+		a.setState(orderingProviderState);
+		a.setPostalCode(orderingProviderZipCode);
+
 		// remove all existing devices
-		Iterator<DeviceType> it = org.getDeviceTypes().iterator();
-		while (it.hasNext()) {
-			org.removeDeviceType(it.next());
+		for(DeviceType d : org.getDeviceTypes()) {
+			org.removeDeviceType(d);
 		}
 
 		// add new devices

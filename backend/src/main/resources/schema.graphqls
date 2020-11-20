@@ -24,15 +24,7 @@ type Patient {
   zipCode: String
   telephone: String
   email: String
-  employedInHealthcare: Boolean
-  typeOfHealthcareProfessional: String
-  residentCongregateSetting: Boolean
-  typeOfHealthcareProfessional: String
-  email: String
-  county: String
-  race: String
-  ethnicity: String
-  gender: String
+  role: String
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
   testResults: [TestOrder]
@@ -76,6 +68,7 @@ type Query {
   patient(id: String): Patient
   organization: Organization
   queue: [TestOrder]
+  testResults: [TestOrder]
 }
 type Mutation {
   updateOrganization(
@@ -105,7 +98,7 @@ type Mutation {
     state: String!
     zipCode: String!
     telephone: String!
-    typeOfHealthcareProfessional: String
+    role: String
     email: String
     county: String
     race: String
@@ -127,7 +120,7 @@ type Mutation {
     state: String!
     zipCode: String!
     telephone: String!
-    typeOfHealthcareProfessional: String
+    role: String
     email: String
     county: String
     race: String
