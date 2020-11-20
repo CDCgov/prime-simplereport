@@ -64,7 +64,7 @@ const SET_SETTINGS_MUTATION = gql`
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
-      devices: $devices
+      deviceTypes: $devices
       defaultDevice: $defaultDevice
     )
   }
