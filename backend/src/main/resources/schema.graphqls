@@ -35,7 +35,7 @@ type Patient {
   gender: String
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
-  testResults: [TestResult]
+  testResults: [TestOrder]
 }
 type Organization {
   internalId: ID
@@ -53,19 +53,8 @@ type Organization {
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
 }
-type User {
-  id: ID
-  organization: Organization
-}
-type TestResult {
-  id: ID
-  dateTested: String
-  deviceType: DeviceType
-  result: String
-  patient: Patient
-}
-type Queue {
-  id: ID
+type TestOrder {
+  internalId: ID
   patient: Patient
   organization: Organization
   dateAdded: String
@@ -77,17 +66,16 @@ type Queue {
   priorTestDate: String
   priorTestType: String
   priorTestResult: String
-  testResult: TestResult
   deviceType: DeviceType
+  result: String
+  dateTested: String
 }
 type Query {
   deviceType: [DeviceType]
   patients: [Patient]
   patient(id: String): Patient
-  user: User
   organization: Organization
-  testResult: [TestResult]
-  queue: [Queue]
+  queue: [TestOrder]
 }
 type Mutation {
   updateOrganization(

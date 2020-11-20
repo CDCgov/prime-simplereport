@@ -7,8 +7,8 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-import gov.cdc.usds.simplereport.api.model.TestResult;
 import java.util.List;
 
 
@@ -48,6 +48,9 @@ public class Person extends EternalEntity {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
+	@OneToMany()
+	@JoinColumn(name = "patient_id")
+	private List<TestOrder> testOrders;
 
 	public Person(
 		Organization organization,
@@ -186,7 +189,8 @@ public class Person extends EternalEntity {
 		return address.getCounty();
 	}
 
-	public List<TestResult> getTestResults() {
-		return null;
+	public List<TestOrder> getTestResults() {
+		// TODO: where completed
+		return testOrders;
 	}
 }

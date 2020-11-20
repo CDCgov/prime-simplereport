@@ -21,6 +21,10 @@ public interface TestOrderRepository extends CrudRepository<TestOrder, UUID> {
 	@EntityGraph(attributePaths = "patient")
 	public List<TestOrder> fetchQueueForOrganization(Organization org);
 
+	@Query(BASE_ORG_QUERY + "and q.orderStatus = 'PENDING' and q.patient.internalId = :id")
+	@EntityGraph(attributePaths = "patient")
+	public TestOrder fetchQueueItemByIDForOrganization(Organization org, String id);
+
 	@Query(BASE_ORG_QUERY + " and q.orderStatus = 'COMPLETED' ")
 	@EntityGraph(attributePaths = "patient")
 	public List<TestOrder> fetchPastResultsForOrganization(Organization org);

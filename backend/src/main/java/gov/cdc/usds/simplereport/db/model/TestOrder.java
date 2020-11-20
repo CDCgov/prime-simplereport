@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
@@ -53,16 +54,62 @@ public class TestOrder extends AuditedEntity {
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
-	public TestResult getResult() {
+	public TestResult getTestResult() {
 		return result;
+	}
+
+	public Date getDateAdded() {
+		return getCreatedAt();
+	}
+
+	public Date getDateTested() {
+		// TODO add this field
+		return new Date();
+	}
+
+	public DeviceType getDeviceType() {
+		return null;
 	}
 
 	public void setResult(TestResult finalResult) {
 		result = finalResult;
+		// TODO set dateTested
 		orderStatus = OrderStatus.COMPLETED;
 	}
 
 	public void cancelOrder() {
 		orderStatus = OrderStatus.CANCELED;
+	}
+
+	public String getPregnancy() {
+		return "";
+	}
+
+	public String getSymptoms() {
+		return "";
+	}
+
+	public Boolean getFirstTest() {
+		return false;
+	}
+
+	public Date getPriorTestDate() {
+		return new Date();
+	}
+
+	public String getPriorTestType() {
+		return "";
+	}
+
+	public String getPriorTestResult() {
+		return "";
+	}
+
+	public Date getSymptomOnset() {
+		return new Date();
+	}
+
+	public Boolean getNoSymptoms() {
+		return false;
 	}
 }

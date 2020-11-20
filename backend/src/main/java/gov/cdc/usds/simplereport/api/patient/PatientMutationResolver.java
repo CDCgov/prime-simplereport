@@ -7,9 +7,6 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
-import gov.cdc.usds.simplereport.service.PersonService;
-import graphql.kickstart.tools.GraphQLMutationResolver;
-
 /**
  * Created by nickrobison on 11/17/20
  */
