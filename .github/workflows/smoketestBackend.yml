@@ -45,11 +45,12 @@ jobs:
     - name: Set up postgresql sidecar
       env:
         PGHOST: localhost
+        PGPASSFILE: db-setup/.pgpass_ci
         POSTGRES_USER: postgres
         POSTGRES_DB: postgres
         LIB_DIR: db-setup
       run: |
-        chmod 0600 db-setup/.pgpass
+        chmod 0600 $PGPASSFILE
         db-setup/create-db.sh
     - name: Run Java Tests
       run: ./gradlew test
