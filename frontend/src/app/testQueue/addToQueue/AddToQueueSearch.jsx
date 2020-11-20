@@ -64,9 +64,9 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const getSuggestionsFromQueryString = (queryString) => {
-    if (data && data.patient) {
+    if (data && data.patients) {
       let formattedQueryString = queryString.toLowerCase();
-      let suggestions = data.patient.filter(
+      let suggestions = data.patients.filter(
         (patient) =>
           displayFullName(
             patient.firstName,

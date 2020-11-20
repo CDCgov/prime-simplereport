@@ -28,7 +28,7 @@ public class TestOrder extends AuditedEntity {
 	@ManyToOne()
 	@JoinColumn(name = "patient_answers_id")
 	private PatientAnswers askOnEntrySurvey;
-	@ManyToOne(optional = false)
+	@ManyToOne()
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
 	@Column
@@ -84,6 +84,10 @@ public class TestOrder extends AuditedEntity {
 
 	public DeviceType getDeviceType() {
 		return deviceType;
+	}
+
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
 	}
 
 	public void setResult(TestResult finalResult) {

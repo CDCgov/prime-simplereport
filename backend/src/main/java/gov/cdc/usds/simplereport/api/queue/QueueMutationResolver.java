@@ -69,7 +69,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         firstTest,
         localPriorTestDate,
         priorTestType,
-        TestResult.valueOf(priorTestResult),
+        (priorTestResult == null) ? null : TestResult.valueOf(priorTestResult),
         localSymptomOnset,
         noSymptoms
       );
