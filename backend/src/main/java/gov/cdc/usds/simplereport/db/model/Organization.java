@@ -146,10 +146,7 @@ public class Organization extends EternalEntity {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
-		if(orderingProvider.getAddress().getStreet() == null) {
-			return "";
-		}
-		return orderingProvider.getAddress().getStreet().get(0);
+		return orderingProvider.getAddress().getStreet();
 	}
 
 	public String orderingProviderStreetTwo() {
@@ -159,10 +156,7 @@ public class Organization extends EternalEntity {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
-		if(orderingProvider.getAddress().getStreet() == null) {
-			return "";
-		}
-		return orderingProvider.getAddress().getStreet().get(1);
+		return orderingProvider.getAddress().getStreetTwo();
 	}
 
 	public String orderingProviderCity() {
