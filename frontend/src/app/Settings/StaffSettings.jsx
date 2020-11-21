@@ -129,8 +129,11 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
     return (
       <React.Fragment>
         {values._editable ? (
-          <div className="grid-row grid-gap-lg" key={values.staffkey}>
-            <div className="tablet:grid-col">
+          <div
+            className="grid-row grid-gap-lg mobile-lg:border-bottom-1px"
+            key={values.staffkey}
+          >
+            <div className="tablet:grid-col minw-15">
               <label className="usa-label" htmlFor={`${staffkey}_name`}>
                 Name (required)
               </label>
@@ -146,7 +149,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 maxLength={MAX_FIELD_LEN}
               />
             </div>
-            <div className="tablet:grid-col">
+            <div className="tablet:grid-col minw-15">
               <label className="usa-label" htmlFor={`${staffkey}_email`}>
                 Email (required)
               </label>
@@ -155,7 +158,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 name="email"
                 id={`${staffkey}_email`}
                 defaultValue={values.email}
-                className="usa-input minw-10"
+                className="usa-input"
                 required={true}
                 onChange={handleChange}
                 maxLength={MAX_FIELD_LEN}
@@ -168,7 +171,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 Role
               </label>
               <select
-                className="usa-select minw-10"
+                className="usa-select"
                 name="role"
                 id={`${staffkey}_role`}
                 onChange={handleChange}
@@ -184,7 +187,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
               </select>
             </div>
 
-            <div className="tablet:grid-col-auto">
+            <div className="tablet:grid-col-auto ">
               <label className="usa-label" htmlFor={`${staffkey}_actions`}>
                 &nbsp;
               </label>
@@ -213,20 +216,25 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
             </div>
           </div>
         ) : (
-          <div className="grid-row" key={values.staffkey}>
-            <div className="tablet:grid-col minw-10">
+          <div
+            className="grid-row mobile-lg:border-bottom-1px"
+            key={values.staffkey}
+          >
+            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
               <b>Name: </b>
-              {values.name}
+              <span className="padding-1 prime-no-wrap">{values.name}</span>
             </div>
-            <div className="tablet:grid-col minw-10">
+            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
               <b>Email: </b>
-              {values.email}
+              <span className="padding-1 prime-no-wrap">{values.email}</span>
             </div>
-            <div className="tablet:grid-col minw-5">
+            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
               <b>Role: </b>
-              {roleToString(values.role)}
+              <span className="padding-1 prime-no-wrap">
+                {roleToString(values.role)}
+              </span>
             </div>
-            <div className="tablet:grid-col-auto">
+            <div className="tablet:grid-col-auto prime-staff-user-list-item">
               <div aria-label="Actions" className="usa-button-group">
                 <Button
                   onClick={() => onStaffEditStart(values.staffkey)}

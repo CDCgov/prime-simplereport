@@ -219,7 +219,12 @@ input:valid {
   background-color: white;
 }
 
-// todo: this is in normalize.scss, but not getting included
-.hidden {
-  display: none;
+.prime-staff-user-list-item {
+  padding: 0.5em;
+  top: 0.25em;
+}
+
+.prime-no-wrap {
+  display: table-caption;
+  white-space: nowrap;
 }
