@@ -4,3 +4,10 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+graphql.servlet.cors:
+  allowed-origins:
+    - http://localhost:3000
+    - https://prime-data-input-client.app.cloud.gov
+    - https://prime-data-input-sandbox.app.cloud.gov
+    - https://simple-report.app.cloud.gov
+    - https://simple-report-sandbox.app.cloud.gov
