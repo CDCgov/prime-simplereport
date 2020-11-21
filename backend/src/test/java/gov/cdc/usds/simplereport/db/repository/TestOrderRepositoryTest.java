@@ -53,7 +53,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", "", "", "", "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
 		flush();
-		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, null, hoya, mccoy));
+		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, null, hoya, gtown));
 		order.setTestEvent(ev);
 		_repo.save(order);
 		flush();

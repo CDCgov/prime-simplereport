@@ -20,6 +20,12 @@ public class TestEvent extends AuditedEntity {
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "organization_id")
+	private Organization organization;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "patient_id")
+	private Person patient;
 	@ManyToOne
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
@@ -32,11 +38,14 @@ public class TestEvent extends AuditedEntity {
 
 	public TestEvent() {}
 
-	public TestEvent(TestResult result, DeviceType deviceType, Person patientData, Provider providerData) {
+	public TestEvent(TestResult result, DeviceType deviceType, Person patient, Organization org) {
 		this.result = result;
 		this.deviceType = deviceType;
-		this.patientData = patientData;
-		this.providerData = providerData;
+		// store a link, and *also* store the object as JSON
+		this.patient = patient;
+		this.patientData = patient;
+		this.organization = org;
+		this.providerData = org.getOrderingProvider();
 	}
 
 	public TestResult getResult() {

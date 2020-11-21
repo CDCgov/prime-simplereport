@@ -328,6 +328,22 @@ databaseChangeLog:
               - column: *created_at_column
               - column: *updated_at_column
               - column:
+                  name: patient_id
+                  remarks: The person who is being given the test.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event__patient__person
+                    references: person
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event__organization
+                    references: organization
+              - column:
                   name: device_type_id
                   remarks: The device used to record the test result.
                   type: *idtype
