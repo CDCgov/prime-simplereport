@@ -63,4 +63,12 @@ public class TestEvent extends AuditedEntity {
 	public Provider getProviderData() {
 		return providerData;
 	}
+
+	public Organization getOrganization() {
+		return organization;
+	}
+
+	public Person getPatient() {
+		return patient;
+	}
 }
