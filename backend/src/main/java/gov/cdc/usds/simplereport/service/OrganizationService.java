@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import java.util.Optional;
 import java.util.List;
-import java.util.Iterator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
