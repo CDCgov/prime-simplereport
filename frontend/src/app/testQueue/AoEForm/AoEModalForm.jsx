@@ -260,9 +260,8 @@ const AoEModalForm = ({
 
     symptomConfig.forEach((opt) => {
       const val = opt.value;
-      initialSymptoms[val] = loadedSymptoms[val] || false;
+      initialSymptoms[val] = loadedSymptoms[val] === 'true' || false;
     });
-    console.log(initialSymptoms);
   } else {
     symptomConfig.forEach((opt) => {
       const val = opt.value;
