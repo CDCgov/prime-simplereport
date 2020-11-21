@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Service;
