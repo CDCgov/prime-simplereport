@@ -62,8 +62,14 @@ type TestOrder {
   result: String
   dateTested: String
 }
+
 type User {
-  internalId: ID
+  id: ID
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+  organization: Organization
 }
 
 type Query {
@@ -96,6 +102,7 @@ type Mutation {
     firstName: String!
     middleName: String
     lastName: String!
+    suffix: String
     birthDate: String!
     street: String!
     streetTwo: String

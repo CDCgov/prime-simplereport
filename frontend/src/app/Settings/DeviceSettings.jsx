@@ -42,14 +42,6 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
     );
   }
 
-  let dropdownOptions;
-  if (allDevices) {
-    dropdownOptions = allDevices.deviceType.map((device) => ({
-      label: device.name,
-      value: device.internalId,
-    }));
-  }
-
   const onDeviceChange = (e) => {
     let name = e.target.name;
     let newDeviceId = e.target.value;

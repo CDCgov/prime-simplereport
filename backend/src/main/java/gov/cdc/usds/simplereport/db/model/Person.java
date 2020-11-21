@@ -76,6 +76,7 @@ public class Person extends EternalEntity {
 		String firstName,
 		String middleName,
 		String lastName,
+		String suffix,
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
@@ -102,6 +103,7 @@ public class Person extends EternalEntity {
 		this.gender = gender;
 		this.residentCongregateSetting = residentCongregateSetting;
 		this.employedInHealthcare = employedInHealthcare;
+		this.suffix = suffix;
 	}
 
 	public void updatePatient(
@@ -187,20 +189,14 @@ public class Person extends EternalEntity {
 	}
 
 	public String getStreet() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
+		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
 			return "";
 		}
 		return address.getStreet().get(0);
 	}
 
 	public String getStreetTwo() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
+		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
 			return "";
 		}
 		return address.getStreet().get(1);
@@ -235,7 +231,6 @@ public class Person extends EternalEntity {
 	}
 
 	public List<TestOrder> getTestResults() {
-		// TODO: where completed
 		return testOrders;
 	}
 
