@@ -133,13 +133,14 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
             className="grid-row grid-gap-lg mobile-lg:border-bottom-1px"
             key={values.staffkey}
           >
-            <div className="tablet:grid-col minw-15">
+            <div className="tablet:grid-col-12 minw-15">
               <label className="usa-label" htmlFor={`${staffkey}_name`}>
                 Name (required)
               </label>
               <input
                 type="text"
                 id={`${staffkey}_name`}
+                autoComplete="off"
                 name="name"
                 defaultValue={values.name}
                 className="usa-input"
@@ -149,13 +150,14 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 maxLength={MAX_FIELD_LEN}
               />
             </div>
-            <div className="tablet:grid-col minw-15">
+            <div className="tablet:grid-col-12 minw-15">
               <label className="usa-label" htmlFor={`${staffkey}_email`}>
                 Email (required)
               </label>
               <input
                 type="email"
                 name="email"
+                autoComplete="off"
                 id={`${staffkey}_email`}
                 defaultValue={values.email}
                 className="usa-input"
@@ -166,7 +168,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
               />
             </div>
-            <div className="tablet:grid-col">
+            <div className="tablet:grid-col-12">
               <label className="usa-label" htmlFor={`${staffkey}_role`}>
                 Role
               </label>
@@ -187,7 +189,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
               </select>
             </div>
 
-            <div className="tablet:grid-col-auto ">
+            <div className="tablet:grid-col-auto">
               <label className="usa-label" htmlFor={`${staffkey}_actions`}>
                 &nbsp;
               </label>
@@ -220,21 +222,18 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
             className="grid-row mobile-lg:border-bottom-1px"
             key={values.staffkey}
           >
-            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
+            <div className="tablet:grid-col-12 prime-staff-user-list-item">
               <b>Name: </b>
-              <span className="padding-1 prime-no-wrap">{values.name}</span>
+              {values.name}
             </div>
-            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
+            <div className="tablet:grid-col-12 prime-staff-user-list-item">
               <b>Email: </b>
-              <span className="padding-1 prime-no-wrap">{values.email}</span>
+              {values.email}
             </div>
-            <div className="tablet:grid-col minw-15 prime-staff-user-list-item">
-              <b>Role: </b>
-              <span className="padding-1 prime-no-wrap">
-                {roleToString(values.role)}
-              </span>
+            <div className="tablet:grid-col-12 minw-15 prime-staff-user-list-item">
+              <b>Role: </b> {roleToString(values.role)}
             </div>
-            <div className="tablet:grid-col-auto prime-staff-user-list-item">
+            <div className="tablet:grid-col-12 prime-staff-user-list-item">
               <div aria-label="Actions" className="usa-button-group">
                 <Button
                   onClick={() => onStaffEditStart(values.staffkey)}
