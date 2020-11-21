@@ -1,7 +1,7 @@
 export const COVID_RESULTS = {
-  POSITIVE: "positive",
-  NEGATIVE: "negative",
-  INCONCLUSIVE: "inconclusive",
+  POSITIVE: "POSITIVE",
+  NEGATIVE: "NEGATIVE",
+  INCONCLUSIVE: "UNDETERMINED",
 };
 
 export const TEST_RESULT_VALUES = {

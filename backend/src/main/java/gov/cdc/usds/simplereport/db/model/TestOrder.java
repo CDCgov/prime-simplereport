@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,8 +11,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.FetchType;
 
 import org.hibernate.annotations.Type;
+import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -25,8 +28,8 @@ public class TestOrder extends AuditedEntity {
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	private Organization organization;
-	@ManyToOne()
-	@JoinColumn(name = "patient_answers_id")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "device_type_id")
@@ -109,36 +112,43 @@ public class TestOrder extends AuditedEntity {
 	}
 
 	public String getPregnancy() {
-		return "";
+		return askOnEntrySurvey.getSurvey().getPregnancy();
 	}
 
 	public String getSymptoms() {
-		return "";
+		Map<String, Boolean> s = askOnEntrySurvey.getSurvey().getSymptoms();
+		JSONObject obj = new JSONObject();
+		for (Map.Entry<String,Boolean> entry : s.entrySet()) {
+			obj.put(entry.getKey(), entry.getValue().toString());
+		}
+		return obj.toString();
 	}
 
 	public Boolean getFirstTest() {
-		return false;
+		return askOnEntrySurvey.getSurvey().getFirstTest();
 	}
 
-	public Date getPriorTestDate() {
-		return new Date();
+	public LocalDate getPriorTestDate() {
+		return askOnEntrySurvey.getSurvey().getPriorTestDate();
 	}
 
 	public String getPriorTestType() {
-		return "";
+		return askOnEntrySurvey.getSurvey().getPriorTestType();
 	}
 
 	public String getPriorTestResult() {
-		return "";
+		TestResult result = askOnEntrySurvey.getSurvey().getPriorTestResult();
+		return result == null ? "" : result.toString();
 	}
 
-	public Date getSymptomOnset() {
-		return new Date();
+	public LocalDate getSymptomOnset() {
+		return askOnEntrySurvey.getSurvey().getSymptomOnsetDate();
 	}
 
 	public Boolean getNoSymptoms() {
-		return false;
+		return askOnEntrySurvey.getSurvey().getNoSymptoms();
 	}
+
 	public void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}

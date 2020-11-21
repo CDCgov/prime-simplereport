@@ -3,12 +3,18 @@ import React from "react";
 export const areAnswersComplete = (answerDict) => {
   if (!answerDict.noSymptoms) {
     let symptomFound = false;
-    const symptoms = JSON.parse(answerDict.symptoms);
-    Object.values(symptoms).forEach((val) => {
-      if (val) {
-        symptomFound = true;
-      }
-    });
+
+    try {
+      const symptoms = JSON.parse(answerDict.symptoms);
+      Object.values(symptoms).forEach((val) => {
+        if (val) {
+          symptomFound = true;
+        }
+      });
+    } catch (e) {
+      console.error("expected json response. found:", e);
+    }
+
     if (!symptomFound) {
       return false;
     }

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +44,7 @@ public class TestOrderService {
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), patientId);
+    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
     order.setDeviceType(_dts.getDeviceType(deviceID));
     order.setResult(result);
     _repo.save(order);
@@ -89,9 +90,10 @@ public class TestOrderService {
     LocalDate symptomOnsetDate,
     Boolean noSymptoms
   ) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), patientId);
+    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
 
-    AskOnEntrySurvey survey = order.getAskOnEntrySurvey().getSurvey();
+    PatientAnswers answers = order.getAskOnEntrySurvey();
+    AskOnEntrySurvey survey = answers.getSurvey();
     survey.setPregnancy(pregnancy);
     survey.setSymptoms(symptoms);
     survey.setNoSymptoms(noSymptoms);
@@ -100,13 +102,15 @@ public class TestOrderService {
     survey.setPriorTestDate(priorTestDate);
     survey.setPriorTestType(priorTestType);
     survey.setPriorTestResult(priorTestResult);
-
+    answers.setSurvey(survey);
+    _parepo.save(answers);
+    order.setAskOnEntrySurvey(answers);
     _repo.save(order);
   }
 
 
   public void removePatientFromQueue(String patientId) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), patientId);
+    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
     order.cancelOrder();
     _repo.save(order);
   }

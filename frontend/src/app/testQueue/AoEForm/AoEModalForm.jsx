@@ -15,6 +15,7 @@ import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
 import { dateToString } from "./dateUtils";
+import { COVID_RESULTS } from "../../constants";
 
 const ManagedDateField = ({
   name,
@@ -225,9 +226,9 @@ const PriorTestInputs = ({
           />
           <Dropdown
             options={[
-              { value: "positive", label: "Positive" },
-              { value: "negative", label: "Negative" },
-              { value: "undetermined", label: "Undetermined" },
+              { value: COVID_RESULTS.POSITIVE, label: "Positive" },
+              { value: COVID_RESULTS.NEGATIVE, label: "Negative" },
+              { value: COVID_RESULTS.INCONCLUSIVE, label: "Undetermined" },
             ]}
             label="Result of prior test"
             name="prior_test_result"
@@ -259,9 +260,8 @@ const AoEModalForm = ({
 
     symptomConfig.forEach((opt) => {
       const val = opt.value;
-      initialSymptoms[val] = loadedSymptoms[val] || false;
+      initialSymptoms[val] = loadedSymptoms[val] === "true" || false;
     });
-    console.log(initialSymptoms);
   } else {
     symptomConfig.forEach((opt) => {
       const val = opt.value;
