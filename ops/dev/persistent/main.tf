@@ -23,6 +23,11 @@ data "azurerm_log_analytics_workspace" "law" {
   resource_group_name = var.resource_group
 }
 
+data "azurerm_key_vault_secret" "simplereport-db-development-password" {
+  name = "simplereport"
+  vault_uri = "https://simplereport.vault.azure.net/"
+}
+
 data "azurerm_resource_group" "rg" {
   name = var.resource_group
 }
@@ -35,7 +40,7 @@ resource "azurerm_postgresql_server" "db" {
   version = "11"
   ssl_enforcement_enabled = false
   administrator_login = "simple_report_app"
-  administrator_login_password = "H@Sh1CoR3!"
+  administrator_login_password = ${data.azurerm_key_vault_secret.simplereport-db-development-password.value}
   public_network_access_enabled = true
 
   tags = local.management_tags

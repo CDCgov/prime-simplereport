@@ -76,6 +76,7 @@ public class Person extends EternalEntity {
 		String firstName,
 		String middleName,
 		String lastName,
+		String suffix,
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
@@ -87,14 +88,15 @@ public class Person extends EternalEntity {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
+		this.organization = organization;
 		this.lookupId = lookupId;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
+		this.suffix = suffix;
 		this.birthDate = birthDate;
 		this.telephone = telephone;
-		this.address = address;
-		this.organization = organization;
+		// this.address = address;
 		this.typeOfHealthcareProfessional = role;
 		this.email = email;
 		this.race = race;
@@ -187,23 +189,11 @@ public class Person extends EternalEntity {
 	}
 
 	public String getStreet() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
-			return "";
-		}
-		return address.getStreet().get(0);
+		return address.getStreet();
 	}
 
 	public String getStreetTwo() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
-			return "";
-		}
-		return address.getStreet().get(1);
+		return address.getStreetTwo();
 	}
 
 	public String getCity() {

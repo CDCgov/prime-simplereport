@@ -8,6 +8,11 @@ data "azurerm_resource_group" "rg" {
   name = "prime-simple-report-prod"
 }
 
+data "azurerm_key_vault_secret" "simplereport-db-development-password" {
+  name = "simplereport"
+  vault_uri = "https://simplereport.vault.azure.net/"
+}
+
 data "azurerm_log_analytics_workspace" "pdi" {
   name = "simple-report-log-workspace"
   resource_group_name = data.azurerm_resource_group.rg.name
@@ -218,7 +223,7 @@ resource "azurerm_container_group" "backend" {
     }
     environment_variables = {
       "SPRING_DATASOURCE_URL": "jdbc:postgresql://${data.azurerm_postgresql_server.db.fqdn}:5432/simple_report?user=simple_report_app@${data.azurerm_postgresql_server.db.name}"
-      "SPRING_DATASOURCE_PASSWORD": "H@Sh1CoR3!"
+      "SPRING_DATASOURCE_PASSWORD": ${data.azurerm_key_vault_secret.simplereport-db-development-password.value}
       "SPRING_PROFILES_ACTIVE": "dev"
     }
   }
