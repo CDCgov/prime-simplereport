@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ActiveProfiles("dev")
+@SuppressWarnings("checkstyle:MagicNumber")
 public class PersonServiceTest {
 
 	private PersonService _service;
