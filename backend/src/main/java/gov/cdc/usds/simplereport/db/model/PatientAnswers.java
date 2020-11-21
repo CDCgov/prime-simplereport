@@ -23,4 +23,8 @@ public class PatientAnswers extends AuditedEntity {
 	public AskOnEntrySurvey getSurvey() {
 		return askOnEntry;
 	}
+
+	public void setSurvey(AskOnEntrySurvey askOnEntry) {
+		this.askOnEntry = askOnEntry;
+	}
 }
