@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
-import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 /**
  * A representation of the questions we ask on test entry, somewhat but not excessively
  * flexibly arranged to be stored and retrieved as a JSON object.

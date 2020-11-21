@@ -11,8 +11,8 @@ export const areAnswersComplete = (answerDict) => {
           symptomFound = true;
         }
       });
-    } catch(e) {
-      console.error("expected json response. found:",e);
+    } catch (e) {
+      console.error("expected json response. found:", e);
     }
 
     if (!symptomFound) {
