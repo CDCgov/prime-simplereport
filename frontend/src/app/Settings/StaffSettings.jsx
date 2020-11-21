@@ -4,7 +4,6 @@ import Button from "../commonComponents/Button";
 import { v4 as uuidv4 } from "uuid";
 // import useUniqueId from "../commonComponents/useUniqueIds";  // todo: switch to using
 import useCustomForm from "../commonHooks/FormHook";
-import TextInput from "../commonComponents/TextInput";
 
 // todo: sanitize input somewhere central.
 const MAX_FIELD_LEN = 64;
