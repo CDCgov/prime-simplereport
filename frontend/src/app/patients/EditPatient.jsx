@@ -45,11 +45,8 @@ const EditPatient = (props) => {
   if (error) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
-  if (props.patientId === "new") {
-    return <PatientForm patient={{ id: "" }} patientId="" />;
-  } else {
-    return <PatientForm patient={data.patient} patientId={props.patientId} />;
-  }
+
+  return <PatientForm patient={data.patient} patientId={props.patientId} />;
 };
 
 export default EditPatient;
