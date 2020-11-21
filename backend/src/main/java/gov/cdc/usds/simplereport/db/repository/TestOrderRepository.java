@@ -1,16 +1,14 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 
-public interface TestOrderRepository extends CrudRepository<TestOrder, UUID> {
+public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> {
 
 	public static final String BASE_ORG_QUERY = "from #{#entityName} q "
 				+ "where q.organization = :org "

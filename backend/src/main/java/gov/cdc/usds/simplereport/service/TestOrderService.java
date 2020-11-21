@@ -13,22 +13,25 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
  * specific facility or organization).
  */
 @Service
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 public class TestOrderService {
   private OrganizationService _os;
   private DeviceTypeService _dts;
   private TestOrderRepository _repo;
+  private PatientAnswersRepository _parepo;
 
-  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo) {
+  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo, PatientAnswersRepository parepo) {
     _os = os;
     _dts = dts;
     _repo = repo;
+    _parepo = parepo;
 }
 
 	public List<TestOrder> getQueue() {
@@ -69,8 +72,9 @@ public class TestOrderService {
       priorTestType,
       priorTestResult
     );
-    newOrder.setAskOnEntrySurvey(new PatientAnswers(survey));
-
+    PatientAnswers answers = new PatientAnswers(survey);
+    _parepo.save(answers);
+    newOrder.setAskOnEntrySurvey(answers);
     _repo.save(newOrder);
   }
 
