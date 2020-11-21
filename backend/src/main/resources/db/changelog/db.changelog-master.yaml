@@ -131,7 +131,7 @@ databaseChangeLog:
               - column:
                   name: street
                   remarks: The street portion of the person's address.
-                  type: "text ARRAY"
+                  type: "text[]"
               - column:
                   name: city
                   remarks: The city of the provider's address.
@@ -268,7 +268,7 @@ databaseChangeLog:
               - column:
                   name: street
                   remarks: The street portion of the person's address.
-                  type: "text ARRAY"
+                  type: "text[]"
               - column:
                   name: city
                   remarks: The city of the person's address.
