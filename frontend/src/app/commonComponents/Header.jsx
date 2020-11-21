@@ -34,7 +34,7 @@ const Header = ({ organizationId }) => {
             className="usa-nav__close prime-nav-close-button"
             onClick={() => setMenuVisible(false)}
           >
-            <img src={iconClose} role="img" alt="close menu" />
+            <img src={iconClose} alt="close menu" />
           </button>
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
