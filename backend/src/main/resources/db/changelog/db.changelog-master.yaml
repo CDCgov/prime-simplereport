@@ -298,8 +298,8 @@ databaseChangeLog:
                   remarks: Is the person employed in healthcare?
                   type: boolean
               - column:
-                  name: type_of_healthcare_professional
-                  remarks: The person's role in healthcare.
+                  name: role
+                  remarks: The person's role at the facility where they are tested (e.g. "staff", "visitor", "resident").
                   type: *string
               - column:
                   name: resident_congregate_setting
@@ -322,6 +322,47 @@ databaseChangeLog:
                   type: jsonb
                   remarks: The questions asked at order entry or at test time.
         - createTable:
+            tableName: test_event
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: patient_id
+                  remarks: The person who is being given the test.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event__patient__person
+                    references: person
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the facility/organization responsible for entering this person's information.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__test_event__organization
+                    references: organization
+              - column:
+                  name: device_type_id
+                  remarks: The device used to record the test result.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__test_event__device_type
+                    references: device_type
+              - column:
+                  name: patient_data
+                  type: jsonb
+                  remarks: The patient's demographics and address at the time the test was administered.
+              - column:
+                  name: provider_data
+                  type: jsonb
+                  remarks: The name and contact of the provider who ordered the test.
+              - column:
+                  name: result
+                  remarks: The result of the test, once it has been given.
+                  type: ${database.defaultSchemaName}.TEST_RESULT
+        - createTable:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.
             columns:
@@ -342,21 +383,21 @@ databaseChangeLog:
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__person__organization
+                    foreignKeyName: fk__test_order__organization
                     references: organization
               - column:
                   name: patient_answers_id
                   remarks: The questions asked at order entry or at test time.
                   type: *idtype
                   constraints:
-                    foreignKeyName: fk__patient_answers
+                    foreignKeyName: fk__test_order__patient_answers
                     references: patient_answers
               - column:
                   name: device_type_id
                   remarks: The device used to record the test result
                   type: *idtype
                   constraints:
-                    foreignKeyName: fk__device_type
+                    foreignKeyName: fk__test_order__device_type
                     references: device_type
               - column:
                   name: date_tested
@@ -374,3 +415,13 @@ databaseChangeLog:
                   name: result
                   remarks: The result of the test, once it has been given.
                   type: ${database.defaultSchemaName}.TEST_RESULT
+              - column:
+                  name: test_event_id
+                  type: *idtype
+                  remarks: Data saved at the time the test is marked completed.
+                  constraints:
+                    nullable: true
+                    unique: true
+                    foreignKeyName: fk__test_order__test_event
+                    references: test_event
+                    uniqueKeyName: uk__test_order__test_event
