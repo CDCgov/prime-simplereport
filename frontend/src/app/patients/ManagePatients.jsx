@@ -176,7 +176,7 @@ const ManagePatients = () => {
             </div>
             <div className="usa-card__body">
               <div style={{ display: "inline-block" }}>
-                <NavLink className="usa-button" to={"patient/new"}>
+                <NavLink className="usa-button" to={"add-patient"}>
                   New {PATIENT_TERM_CAP}
                 </NavLink>
               </div>

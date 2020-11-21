@@ -137,7 +137,6 @@ const PatientForm = (props) => {
     setFormChanged(true);
     setPatient({ ...patient, [e.target.name]: value });
   };
-  console.log(props);
   const fullName = displayFullName(
     patient.firstName,
     patient.middleName,
@@ -158,14 +157,14 @@ const PatientForm = (props) => {
       state: patient.state,
       zipCode: patient.zipCode,
       telephone: patient.telephone,
-      role: patient.patientType,
-      email: patient.email_address,
+      role: patient.role,
+      email: patient.email,
       county: patient.county,
       race: patient.race,
       ethnicity: patient.ethnicity,
-      gender: patient.sex,
-      residentCongregateSetting: patient.resident_congregate_setting,
-      employedInHealthcare: patient.employed_in_healthcare,
+      gender: patient.gender,
+      residentCongregateSetting: patient.residentCongregateSetting === "YES",
+      employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.patientId) {
       updatePatient({
@@ -245,8 +244,8 @@ const PatientForm = (props) => {
           />
           <Dropdown
             label="Role"
-            name="patientType"
-            selectedValue={patient.patientType}
+            name="role"
+            selectedValue={patient.role}
             onChange={onChange}
             options={[
               { label: "Staff", value: "staff" },
@@ -258,7 +257,7 @@ const PatientForm = (props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Date of Birth"
+            label="Date of Birth (MM/dd/yyyy)"
             name="birthDate"
             value={patient.birthDate}
             onChange={onChange}
@@ -269,15 +268,15 @@ const PatientForm = (props) => {
         <div className="prime-form-line">
           <TextInput
             label="Phone Number"
-            name="phone_number"
+            name="telephone"
             value={patient.telephone}
             addClass="prime-phone"
             onChange={onChange}
           />
           <TextInput
             label="Email Address"
-            name="email_address"
-            value={patient.email_address}
+            name="email"
+            value={patient.email}
             addClass="prime-email"
             onChange={onChange}
           />
@@ -294,8 +293,8 @@ const PatientForm = (props) => {
         <div className="prime-form-line">
           <TextInput
             label="Street address 2"
-            name="street2"
-            value={patient.street2}
+            name="streetTwo"
+            value={patient.streetTwo}
             addClass="prime-street-address"
             onChange={onChange}
           />
@@ -325,8 +324,8 @@ const PatientForm = (props) => {
           />
           <TextInput
             label="Zip"
-            name="zip_code"
-            value={patient.zip_code}
+            name="zipCode"
+            value={patient.zipCode}
             addClass="prime-zip"
             onChange={onChange}
           />
@@ -389,13 +388,13 @@ const PatientForm = (props) => {
           <RadioGroup
             legend="Biological Sex"
             displayLegend
-            name="sex"
+            name="gender"
             buttons={[
               { label: "Male", value: "male" },
               { label: "Female", value: "female" },
               { label: "Other", value: "other" },
             ]}
-            selectedRadio={patient.sex}
+            selectedRadio={patient.gender}
             onChange={onChange}
           />
         </div>
@@ -405,12 +404,12 @@ const PatientForm = (props) => {
           <RadioGroup
             legend="Resident in congregate care/living setting?"
             displayLegend
-            name="resident_congregate_setting"
+            name="residentCongregateSetting"
             buttons={[
               { label: "Yes", value: "YES" },
               { label: "No", value: "NO" },
             ]}
-            selectedRadio={patient.resident_congregate_setting}
+            selectedRadio={patient.residentCongregateSetting}
             onChange={onChange}
           />
         </div>
@@ -418,12 +417,12 @@ const PatientForm = (props) => {
           <RadioGroup
             legend="Work in Healthcare?"
             displayLegend
-            name="employed_in_healthcare"
+            name="employedInHealthcare"
             buttons={[
               { label: "Yes", value: "YES" },
               { label: "No", value: "NO" },
             ]}
-            selectedRadio={patient.employed_in_healthcare}
+            selectedRadio={patient.employedInHealthcare}
             onChange={onChange}
           />
         </div>
