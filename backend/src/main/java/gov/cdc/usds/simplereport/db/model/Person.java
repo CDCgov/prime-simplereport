@@ -231,7 +231,6 @@ public class Person extends EternalEntity {
 	}
 
 	public List<TestOrder> getTestResults() {
-		// TODO: where completed
 		return testOrders;
 	}
 
