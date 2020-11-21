@@ -29,8 +29,8 @@ const Dropdown = ({
         disabled={disabled}
       >
         <option value={null}>- Select -</option>
-        {options.map(({ value, label }, i) => (
-          <option key={value + i} value={value}>
+        {options.map(({ value, label, disabled }, i) => (
+          <option key={value + i} value={value} disabled={disabled}>
             {label}
           </option>
         ))}

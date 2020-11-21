@@ -109,43 +109,63 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
     updateDeviceSettings(newDeviceSettings);
   };
 
+  // in the dropdown, disable options that are already selected by another dropdown
+  const _shouldDisableOption = (supportedDeviceId, deviceId) => {
+    return (
+      supportedDeviceId !== deviceId &&
+      Object.values(deviceSettings.supportedDevices).includes(deviceId)
+    );
+  };
+
   const generateDeviceRows = () => {
     return Object.entries(deviceSettings.supportedDevices).map(
-      ([name, supportedDeviceId]) => (
-        <tr key={uuidv4()}>
-          <td>
-            <Dropdown
-              options={dropdownOptions}
-              name={name}
-              selectedValue={supportedDeviceId}
-              onChange={onDeviceChange}
-            />
-          </td>
-          <td>
-            <RadioGroup
-              type="checkbox"
-              onChange={onDefaultChange}
-              buttons={[
-                {
-                  value: "true",
-                  label: "Set as Default",
-                },
-              ]}
-              selectedRadio={
-                supportedDeviceId === deviceSettings.defaultDeviceId
-                  ? "true"
-                  : "false"
-              }
-              name={name}
-            />
-          </td>
-          <td>
-            <div onClick={() => onDeviceRemove(name)}>
-              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-            </div>
-          </td>
-        </tr>
-      )
+      ([name, supportedDeviceId]) => {
+        let dropdownOptions = allDevices.deviceType.map((device) => {
+          return {
+            label: device.name,
+            value: device.internalId,
+            disabled: _shouldDisableOption(
+              supportedDeviceId,
+              device.internalId
+            ),
+          };
+        });
+        return (
+          <tr key={uuidv4()}>
+            <td>
+              <Dropdown
+                options={dropdownOptions}
+                name={name}
+                selectedValue={supportedDeviceId}
+                onChange={onDeviceChange}
+              />
+            </td>
+            <td>
+              <RadioGroup
+                type="checkbox"
+                onChange={onDefaultChange}
+                buttons={[
+                  {
+                    value: "true",
+                    label: "Set as Default",
+                  },
+                ]}
+                selectedRadio={
+                  supportedDeviceId === deviceSettings.defaultDeviceId
+                    ? "true"
+                    : "false"
+                }
+                name={name}
+              />
+            </td>
+            <td>
+              <div onClick={() => onDeviceRemove(name)}>
+                <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+              </div>
+            </td>
+          </tr>
+        );
+      }
     );
   };
 
@@ -195,7 +215,7 @@ DeviceSettings.propTypes = {
   updateDeviceSettings: PropTypes.func,
   deviceSettings: PropTypes.shape({
     defaultDeviceId: PropTypes.string,
-    supportedDevices: PropTypes.objectOf(PropTypes.string),
+    supportedDevices: PropTypes.objectOf(PropTypes.string), // maps deviceName to deviceInternalId
   }),
   allDevices: PropTypes.arrayOf(
     PropTypes.shape({
