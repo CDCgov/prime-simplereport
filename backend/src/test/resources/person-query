@@ -1,0 +1,4 @@
+{ 
+patients {
+  firstName lastName
+}}
