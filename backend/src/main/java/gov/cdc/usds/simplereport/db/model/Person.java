@@ -76,6 +76,7 @@ public class Person extends EternalEntity {
 		String firstName,
 		String middleName,
 		String lastName,
+		String suffix,
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
@@ -102,6 +103,7 @@ public class Person extends EternalEntity {
 		this.gender = gender;
 		this.residentCongregateSetting = residentCongregateSetting;
 		this.employedInHealthcare = employedInHealthcare;
+		this.suffix = suffix;
 	}
 
 	public void updatePatient(

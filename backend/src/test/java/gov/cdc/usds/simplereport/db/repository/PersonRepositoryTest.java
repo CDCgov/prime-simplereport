@@ -30,7 +30,7 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 		Organization other = _orgRepo.save(new Organization("There", "where?", null, badDoc));
 
 		StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
-		_repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", LocalDate.now(),  addy, "(123) 456-7890", "", "", "", "", "", false, false));
+		_repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(),  addy, "(123) 456-7890", "", "", "", "", "", false, false));
 		List<Person> found = _repo.findAllByOrganization(org);
 		assertEquals(1, found.size());
 		assertEquals("Joe", found.get(0).getFirstName());
