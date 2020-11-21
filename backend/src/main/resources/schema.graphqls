@@ -94,8 +94,8 @@ type Mutation {
     orderingProviderState: String
     orderingProviderZipCode: String!
     orderingProviderPhone: String
-    deviceTypes: [String]
-    defaultDevice: String
+    deviceTypes: [String]!
+    defaultDevice: String!
   ): String
   addPatient(
     lookupId: String

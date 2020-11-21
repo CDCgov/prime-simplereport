@@ -34,20 +34,20 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderZipCode,
                                    String orderingProviderTelephone,
                                    List<String> deviceIds,
-                                   String defaultDeviceId) {
+                                   String defaultDeviceId) throws Exception {
         if (!deviceIds.contains(defaultDeviceId)) {
-          // throw new Exception("deviceIds must include defaultDeviceId");
+          throw new Exception("deviceIds must include defaultDeviceId");
         }
         DeviceType defaultDeviceType = _dts.getDeviceType(defaultDeviceId);
         if (defaultDeviceType == null) {
-          // throw new Exception("default device does not exist");
+          throw new Exception("default device does not exist");
         }
 
         List<DeviceType> devices = new ArrayList<>();
         for(String id : deviceIds) {
           DeviceType d = _dts.getDeviceType(id);
           if(d==null) {
-            // throw new Exception("device does not exist");
+            throw new Exception("device does not exist");
           }
           devices.add(d);
         }
