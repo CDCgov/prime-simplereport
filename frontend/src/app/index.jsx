@@ -23,7 +23,7 @@ const App = () => {
     <div className="App">
       <div id="main-wrapper">
         <USAGovBanner />
-        <Router>
+        <Router basename={process.env.PUBLIC_URL}>
           <Header organizationId={organization.id} />
           <Switch>
             <Route path="/login" component={LoginView} />
