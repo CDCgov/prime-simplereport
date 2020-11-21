@@ -90,6 +90,10 @@ public class Organization extends EternalEntity {
 		return defaultDeviceType;
 	}
 
+	public void setDefaultDeviceType(DeviceType defaultDeviceType) {
+		this.defaultDeviceType = defaultDeviceType;
+	}
+
 	public List<DeviceType> getDeviceTypes() {
 		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
 		return configuredDevices.stream()

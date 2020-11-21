@@ -49,8 +49,8 @@ const SET_SETTINGS_MUTATION = gql`
     $orderingProviderState: String
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
-    $devices: [String]
-    $defaultDevice: String
+    $devices: [String]!
+    $defaultDevice: String!
   ) {
     updateOrganization(
       testingFacilityName: $testingFacilityName

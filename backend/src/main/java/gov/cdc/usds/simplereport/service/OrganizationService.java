@@ -62,7 +62,14 @@ public class OrganizationService {
 		p.setProviderId(orderingProviderNPI);
 		p.setTelephone(orderingProviderTelephone);
 
-		StreetAddress a = p.getAddress();
+		StreetAddress a = p.getAddress() == null ? new StreetAddress(
+			orderingProviderStreet,
+			orderingProviderStreetTwo,
+			orderingProviderCity,
+			orderingProviderState,
+			orderingProviderZipCode,
+			orderingProviderCounty
+		 ) : p.getAddress();
 		a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
 		a.setCity(orderingProviderCity);
 		a.setCounty(orderingProviderCounty);
@@ -78,6 +85,7 @@ public class OrganizationService {
 		for(DeviceType d : devices) {
 			org.addDeviceType(d);
 		}
+		org.setDefaultDeviceType(defaultDeviceType);
 		return _repo.save(org);
 
 	}
