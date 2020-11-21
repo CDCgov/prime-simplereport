@@ -96,7 +96,6 @@ type Mutation {
     firstName: String!
     middleName: String
     lastName: String!
-    suffix: String
     birthDate: String!
     street: String!
     streetTwo: String

@@ -23,12 +23,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 @Transactional(readOnly = true)
 public class TestOrderService {
   private OrganizationService _os;
-  private DeviceTypeService _dts;
-  private TestOrderRepository _repo;
 
-  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo) {
+	private TestOrderRepository _repo;
+  public TestOrderService(OrganizationService os, TestOrderRepository repo) {
     _os = os;
-    _dts = dts;
     _repo = repo;
 }
 
@@ -42,8 +40,8 @@ public class TestOrderService {
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
     TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), patientId);
-    order.setDeviceType(_dts.getDeviceType(deviceID));
     order.setResult(result);
+    // TODO set device
     _repo.save(order);
   }
 
