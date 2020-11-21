@@ -30,7 +30,7 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
     public Organization getOrganization() {
 
         List<DeviceType> currentDevices = _deviceService.fetchDeviceTypes();
-        ArrayList<String> currentDeviceNames = new ArrayList<String>();
+        List<String> currentDeviceNames = currentDevices.stream().map(d->d.getName()).collect(Collectors.toList());
         for (int i = 0; i < currentDevices.size(); i++) {
             currentDeviceNames.add(currentDevices.get(i).getName());
         }
