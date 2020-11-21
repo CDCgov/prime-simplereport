@@ -1,9 +1,9 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import java.util.List;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -52,7 +52,8 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
         return _userService.getCurrentUser().getPerson().getOrganization();
     }
 
-    public ApiUser getWhoami() {
-		return _userService.getCurrentUser();
+    public User getWhoami() {
+		ApiUser currentUser = _userService.getCurrentUser();
+		return new User(currentUser.getInternalId(), currentUser.getPerson());
 	}
 }
