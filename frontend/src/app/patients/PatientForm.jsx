@@ -156,7 +156,7 @@ const PatientForm = (props) => {
       streetTwo: patient.streetTwo,
       city: patient.city,
       state: patient.state,
-      zipCode: patient.zipCode,
+      zipCode: patient.zip_code,
       telephone: patient.telephone,
       role: patient.patientType,
       email: patient.email_address,
@@ -269,7 +269,7 @@ const PatientForm = (props) => {
         <div className="prime-form-line">
           <TextInput
             label="Phone Number"
-            name="phone_number"
+            name="telephone"
             value={patient.telephone}
             addClass="prime-phone"
             onChange={onChange}
