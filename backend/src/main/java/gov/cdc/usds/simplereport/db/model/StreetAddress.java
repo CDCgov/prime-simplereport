@@ -15,10 +15,9 @@ import org.hibernate.annotations.Type;
 @Embeddable
 public class StreetAddress {
 
-	@Column
-	private String street;
-	@Column
-	private String streetTwo;
+	@Type(type = "list-array")
+	@Column(columnDefinition = "text ARRAY") // needed by auto-ddl validation, just for the array type
+	private List<String> street = new ArrayList<>();
 	@Column
 	private String city;
 	@Column
@@ -30,32 +29,40 @@ public class StreetAddress {
 
 	protected StreetAddress() { /* for hibernate */ }
 
-
-	/** Convenience constructor for situations where we have a two-line address already */
-	public StreetAddress(String street, String streetTwo, String city, String state, String postalCode, String county) {
-		this.street = street;
-		this.streetTwo = streetTwo;
+	public StreetAddress(List<String> street, String city, String state, String postalCode, String county) {
+		if (street != null) {
+			this.street.addAll(street);
+		}
 		this.city = city;
+		this.state = state;
 		this.postalCode = postalCode;
 		this.county = county;
 	}
 
-	public String getStreet() {
-		return street;
-	}
-	
-	public void setStreet(String street) {
-		this.street = street;
-	}
-
-	public String getStreetTwo() {
-		return streetTwo;
-	}
-
-	public void setStreetTwo(String streetTwo) {
-		this.streetTwo = streetTwo;
+	/** Convenience constructor for situations where we have a two-line address already */
+	public StreetAddress(String street1, String street2, String city, String state, String postalCode, String county) {
+		this(null, city, state, postalCode, county);
+		if (street1 != null && !street1.isEmpty()) {
+			street.add(street1);
+		}
+		if (street2 != null && !street2.isEmpty()) {
+			street.add(street2);
+		}
 	}
 
+	public List<String> getStreet() {
+		return Collections.unmodifiableList(street);
+	}
+
+	public void setStreet(String street1, String street2) {
+		street.clear();
+		if (street1 != null && !street1.isEmpty()) {
+			street.add(street1);
+		}
+		if (street2 != null && !street2.isEmpty()) {
+			street.add(street2);
+		}
+	}
 
 	public String getCity() {
 		return city;

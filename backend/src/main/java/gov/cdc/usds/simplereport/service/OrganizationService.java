@@ -63,8 +63,7 @@ public class OrganizationService {
 		p.setTelephone(orderingProviderTelephone);
 
 		StreetAddress a = p.getAddress();
-		a.setStreet(orderingProviderStreet);
-		a.setStreetTwo(orderingProviderStreetTwo);
+		a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
 		a.setCity(orderingProviderCity);
 		a.setCounty(orderingProviderCounty);
 		a.setState(orderingProviderState);
