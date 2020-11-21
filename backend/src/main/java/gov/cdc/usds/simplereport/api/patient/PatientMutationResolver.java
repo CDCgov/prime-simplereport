@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver  {
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final PersonService _ps;
   
