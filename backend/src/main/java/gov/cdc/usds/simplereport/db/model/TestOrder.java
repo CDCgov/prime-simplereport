@@ -1,20 +1,19 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDate;
-import java.util.Date;
 
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 
 @Entity
 public class TestOrder extends AuditedEntity {
@@ -28,7 +27,7 @@ public class TestOrder extends AuditedEntity {
 	@ManyToOne()
 	@JoinColumn(name = "patient_answers_id")
 	private PatientAnswers askOnEntrySurvey;
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = true)
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
 	@Column
@@ -126,5 +125,8 @@ public class TestOrder extends AuditedEntity {
 
 	public Boolean getNoSymptoms() {
 		return false;
+	}
+	public void setDeviceType(DeviceType deviceType) {
+		this.deviceType = deviceType;
 	}
 }
