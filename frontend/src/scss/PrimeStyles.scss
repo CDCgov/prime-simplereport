@@ -44,6 +44,7 @@
 .prime-nav {
   justify-content: left;
   padding: 0;
+  transition: 0.2s ease-in-out;
 }
 
 // patient in the queue
@@ -187,6 +188,15 @@
   .usa-header--basic .usa-nav {
     padding: 0;
   }
+  .prime-settings-hidden {
+    display:none;
+  }
+}
+.prime-nav-close-button {
+  margin: 0 0 0 auto;
+}
+.prime-nav-close-button img {
+  width: 1rem;
 }
 
 // export
