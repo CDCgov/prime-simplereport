@@ -4,6 +4,7 @@ import Button from "../commonComponents/Button";
 import { v4 as uuidv4 } from "uuid";
 // import useUniqueId from "../commonComponents/useUniqueIds";  // todo: switch to using
 import useCustomForm from "../commonHooks/FormHook";
+import TextInput from "../commonComponents/TextInput";
 
 // todo: sanitize input somewhere central.
 const MAX_FIELD_LEN = 64;
@@ -123,11 +124,17 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
       handleBlur(event);
     };
 
+    // cannot use <Dropdown> or <TextInput> because they do
+    // not play well with the FormHook component. We need a standard form
+    // across the project
     return (
       <React.Fragment>
         {values._editable ? (
-          <tr key={values.staffkey}>
-            <td>
+          <div className="grid-row grid-gap-lg" key={values.staffkey}>
+            <div className="tablet:grid-col">
+              <label className="usa-label" htmlFor={`${staffkey}_name`}>
+                Name (required)
+              </label>
               <input
                 type="text"
                 id={`${staffkey}_name`}
@@ -137,34 +144,37 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                 required={true}
                 onChange={handleChange}
                 onBlur={persistOnBlur}
-                placeholder="User name"
-                aria-describedby="tableLabelName"
+                maxLength={MAX_FIELD_LEN}
               />
-            </td>
-            <td>
+            </div>
+            <div className="tablet:grid-col">
+              <label className="usa-label" htmlFor={`${staffkey}_email`}>
+                Email (required)
+              </label>
               <input
                 type="email"
                 name="email"
                 id={`${staffkey}_email`}
                 defaultValue={values.email}
-                className="usa-input"
+                className="usa-input minw-10"
                 required={true}
                 onChange={handleChange}
+                maxLength={MAX_FIELD_LEN}
                 onBlur={persistOnBlur}
                 pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
-                placeholder="email address"
-                aria-describedby="tableLabelEmail"
               />
-            </td>
-            <td>
+            </div>
+            <div className="tablet:grid-col">
+              <label className="usa-label" htmlFor={`${staffkey}_role`}>
+                Role
+              </label>
               <select
-                className="usa-select"
+                className="usa-select minw-10"
                 name="role"
                 id={`${staffkey}_role`}
                 onChange={handleChange}
                 value={values.role}
                 onBlur={persistOnBlur}
-                aria-describedby="tableLabelRole"
               >
                 {Object.entries(ROLE_TYPES).map(([key], i) => (
                   <option value={key} key={key + i}>
@@ -173,10 +183,17 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                   </option>
                 ))}
               </select>
-            </td>
+            </div>
 
-            <td>
-              <div aria-label="Actions" className="usa-button-group">
+            <div className="tablet:grid-col-auto">
+              <label className="usa-label" htmlFor={`${staffkey}_actions`}>
+                &nbsp;
+              </label>
+              <div
+                aria-label="Actions"
+                className="usa-button-group"
+                id={`${staffkey}_actions`}
+              >
                 <Button
                   onClick={handleSubmit}
                   icon="save"
@@ -194,15 +211,23 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                   <FontAwesomeIcon icon="trash" />
                 </Button>
               </div>
-            </td>
-          </tr>
+            </div>
+          </div>
         ) : (
-          <tr key={values.staffkey}>
-            <td width="33%">{values.name}</td>
-            <td width="33%">{values.email}</td>
-            <td>{roleToString(values.role)}</td>
-
-            <td>
+          <div className="grid-row" key={values.staffkey}>
+            <div className="tablet:grid-col minw-10">
+              <b>Name: </b>
+              {values.name}
+            </div>
+            <div className="tablet:grid-col minw-10">
+              <b>Email: </b>
+              {values.email}
+            </div>
+            <div className="tablet:grid-col minw-5">
+              <b>Role: </b>
+              {roleToString(values.role)}
+            </div>
+            <div className="tablet:grid-col-auto">
               <div aria-label="Actions" className="usa-button-group">
                 <Button
                   onClick={() => onStaffEditStart(values.staffkey)}
@@ -220,8 +245,8 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
                   <FontAwesomeIcon icon="trash" />
                 </Button>
               </div>
-            </td>
-          </tr>
+            </div>
+          </div>
         )}
       </React.Fragment>
     );
@@ -245,24 +270,7 @@ const StaffSettings = ({ orgSettings, updateOrgSettings }) => {
     if (Object.keys(copyStaffSettings || {}).length === 0) {
       return <p> There are currently no users </p>;
     }
-    return (
-      <table className="usa-table usa-table--borderless width-full">
-        <thead>
-          <tr>
-            <th scope="col" id="tableLabelName">
-              Name (Required)
-            </th>
-            <th scope="col" id="tableLabelEmail">
-              Email (Required)
-            </th>
-            <th scope="col" id="tableLabelRole">
-              Access Level
-            </th>
-          </tr>
-        </thead>
-        <tbody>{generateStaffRows()}</tbody>
-      </table>
-    );
+    return generateStaffRows();
   };
 
   return (

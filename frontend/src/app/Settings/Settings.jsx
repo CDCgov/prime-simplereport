@@ -187,7 +187,6 @@ const Settings = () => {
         deviceSettings={deviceSettings}
         updateDeviceSettings={updateDeviceSettingsHandler}
       />
-      />
       <StaffSettings
         orgSettings={orgSettings}
         updateOrgSettings={updateOrgSettingsHandler}
