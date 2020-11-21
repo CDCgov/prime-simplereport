@@ -189,20 +189,14 @@ public class Person extends EternalEntity {
 	}
 
 	public String getStreet() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
+		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
 			return "";
 		}
 		return address.getStreet().get(0);
 	}
 
 	public String getStreetTwo() {
-		if(address == null) {
-			return "";
-		}
-		if(address.getStreet() == null) {
+		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
 			return "";
 		}
 		return address.getStreet().get(1);
