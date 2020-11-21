@@ -91,7 +91,7 @@ const TestQueue = () => {
             i
           ) => (
             <QueueItem
-              key={patient.patientId + i}
+              key={patient.internalId}
               patient={patient}
               askOnEntry={{
                 pregnancy,
