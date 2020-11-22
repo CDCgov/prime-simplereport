@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,35 +28,36 @@ public class UploadService {
     }
 
     public void processPersonCSV(InputStream csvStream) throws IOException {
-        final MappingIterator<Map<String, Object>> valueIterator = new CsvMapper()
+        final MappingIterator<Map<String, String>> valueIterator = new CsvMapper()
+                .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
                 .readerFor(Map.class)
                 .with(PERSON_SCHEMA)
                 .readValues(csvStream);
 
         while (valueIterator.hasNext()) {
-            final Map<String, Object> row = valueIterator.next();
+            final Map<String, String> row = valueIterator.next();
 
-            final LocalDate patientDOB = LocalDate.parse((String) row.get("patientDOB"));
-            _ps.addPatient((String) row.get("patientID"),
-                    (String) row.get("patientFirstName"),
-                    (String) row.get("patientMiddleName"),
-                    (String) row.get("patientLastName"),
-                    (String) row.get("patientSuffix"),
+            final LocalDate patientDOB = LocalDate.parse(row.get("patientDOB"));
+            _ps.addPatient(row.get("patientID"),
+                    row.get("patientFirstName"),
+                    row.get("patientMiddleName"),
+                    row.get("patientLastName"),
+                    row.get("patientSuffix"),
                     patientDOB,
-                    (String) row.get("patientStreet"),
-                    (String) row.get("patientStreet2"),
-                    (String) row.get("patientCity"),
-                    (String) row.get("patientState"),
-                    (String) row.get("patientZipCode"),
-                    (String) row.get("patientCounty"),
-                    (String) row.get("patientPhoneNumber"),
-                    (String) row.get("typeOfHealthcareProfessional"),
-                    (String) row.get("patientEmail"),
-                    (String) row.get("patientRace"),
-                    (String) row.get("patientGender"),
-                    (String) row.get("patientEthnicity"),
-                    Boolean.parseBoolean((String) row.get("residentCongregateSetting")),
-                    Boolean.parseBoolean((String) row.get("employedInHealthcare")));
+                    row.get("patientStreet"),
+                    row.get("patientStreet2"),
+                    row.get("patientCity"),
+                    row.get("patientState"),
+                    row.get("patientZipCode"),
+                    row.get("patientCounty"),
+                    row.get("patientPhoneNumber"),
+                    row.get("typeOfHealthcareProfessional"),
+                    row.get("patientEmail"),
+                    row.get("patientRace"),
+                    row.get("patientGender"),
+                    row.get("patientEthnicity"),
+                    Boolean.parseBoolean(row.get("residentCongregateSetting")),
+                    Boolean.parseBoolean(row.get("employedInHealthcare")));
         }
     }
 
