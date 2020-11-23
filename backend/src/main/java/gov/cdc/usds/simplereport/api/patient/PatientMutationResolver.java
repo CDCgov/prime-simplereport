@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver  {
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final PersonService _ps;
   
@@ -43,14 +44,14 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
+      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, DATE_FORMATTER);
       _ps.addPatient(
             lookupId,
             firstName,
             middleName,
             lastName,
             suffix,
-            (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter),
+            localBirthDateDate,
             street,
             street2,
             city,
@@ -91,7 +92,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare
   ) {
-      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter);
+      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, DATE_FORMATTER);
       _ps.updatePatient(
           patientId,
           lookupId,
@@ -99,7 +100,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           middleName,
           lastName,
           suffix,
-          (birthDate == null) ? null : LocalDate.parse(birthDate, this.dateTimeFormatter),
+          localBirthDateDate,
           street,
           street2,
           city,
