@@ -27,7 +27,9 @@ const testResultQuery = gql`
 `;
 
 const TestResultsList = () => {
-  const { data, loading, error } = useQuery(testResultQuery);
+  const { data, loading, error } = useQuery(testResultQuery, {
+    fetchPolicy: "cache-and-network",
+  });
 
   if (loading) {
     return <p>Loading</p>;
