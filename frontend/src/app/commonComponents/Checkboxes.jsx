@@ -39,7 +39,7 @@ const Checkboxes /*: React.FC<CheckboxesProps>*/ = (props) => {
       <div className="usa-checkbox" key={checkboxIds[i]}>
         <input
           className="usa-checkbox__input"
-          checked={checked || checkedValues[value] || false}
+          checked={checked || (checkedValues && checkedValues[value]) || false}
           id={checkboxIds[i]}
           onChange={onChange}
           type="checkbox"
