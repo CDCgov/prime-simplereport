@@ -43,25 +43,25 @@ public class UploadService {
         while (valueIterator.hasNext()) {
             final Map<String, String> row = valueIterator.next();
 
-            final LocalDate patientDOB = LocalDate.parse(row.get("patientDOB"));
-            _ps.addPatient(row.get("patientID"),
-                    row.get("patientFirstName"),
-                    row.get("patientMiddleName"),
-                    row.get("patientLastName"),
-                    row.get("patientSuffix"),
+            final LocalDate patientDOB = LocalDate.parse(row.get("DOB"));
+            _ps.addPatient(row.get("ID"),
+                    row.get("FirstName"),
+                    row.get("MiddleName"),
+                    row.get("LastName"),
+                    row.get("Suffix"),
                     patientDOB,
-                    row.get("patientStreet"),
-                    row.get("patientStreet2"),
-                    row.get("patientCity"),
-                    row.get("patientState"),
-                    row.get("patientZipCode"),
-                    row.get("patientCounty"),
-                    row.get("patientPhoneNumber"),
+                    row.get("Street"),
+                    row.get("Street2"),
+                    row.get("City"),
+                    row.get("State"),
+                    row.get("ZipCode"),
+                    row.get("County"),
+                    row.get("PhoneNumber"),
                     row.get("typeOfHealthcareProfessional"),
-                    row.get("patientEmail"),
-                    row.get("patientRace"),
-                    row.get("patientGender"),
-                    row.get("patientEthnicity"),
+                    row.get("Email"),
+                    row.get("Race"),
+                    row.get("Gender"),
+                    row.get("Ethnicity"),
                     Boolean.parseBoolean(row.get("residentCongregateSetting")),
                     Boolean.parseBoolean(row.get("employedInHealthcare")));
         }
@@ -69,27 +69,27 @@ public class UploadService {
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
-                .addColumn("patientID", CsvSchema.ColumnType.STRING)
-                .addColumn("patientFirstName", CsvSchema.ColumnType.STRING)
-                .addColumn("patientMiddleName", CsvSchema.ColumnType.STRING)
-                .addColumn("patientLastName", CsvSchema.ColumnType.STRING)
-                .addColumn("patientSuffix", CsvSchema.ColumnType.STRING)
-                .addColumn("patientRace", CsvSchema.ColumnType.STRING)
-                .addColumn("patientDOB", CsvSchema.ColumnType.STRING)
-                .addColumn("patientGender", CsvSchema.ColumnType.STRING)
-                .addColumn("patientEthnicity", CsvSchema.ColumnType.STRING)
-                .addColumn("patientStreet", CsvSchema.ColumnType.STRING)
-                .addColumn("patientStreet2", CsvSchema.ColumnType.STRING)
-                .addColumn("patientCity", CsvSchema.ColumnType.STRING)
-                .addColumn("patientCounty", CsvSchema.ColumnType.STRING)
-                .addColumn("patientState", CsvSchema.ColumnType.STRING)
-                .addColumn("patientZipCode", CsvSchema.ColumnType.STRING)
-                .addColumn("patientPhoneNumber", CsvSchema.ColumnType.STRING)
-                .addColumn("patientEmail", CsvSchema.ColumnType.STRING)
+                .addColumn("ID", CsvSchema.ColumnType.STRING)
+                .addColumn("FirstName", CsvSchema.ColumnType.STRING)
+                .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
+                .addColumn("LastName", CsvSchema.ColumnType.STRING)
+                .addColumn("Suffix", CsvSchema.ColumnType.STRING)
+                .addColumn("Race", CsvSchema.ColumnType.STRING)
+                .addColumn("DOB", CsvSchema.ColumnType.STRING)
+                .addColumn("Gender", CsvSchema.ColumnType.STRING)
+                .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
+                .addColumn("Street", CsvSchema.ColumnType.STRING)
+                .addColumn("Street2", CsvSchema.ColumnType.STRING)
+                .addColumn("City", CsvSchema.ColumnType.STRING)
+                .addColumn("County", CsvSchema.ColumnType.STRING)
+                .addColumn("State", CsvSchema.ColumnType.STRING)
+                .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
+                .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
+                .addColumn("Email", CsvSchema.ColumnType.STRING)
                 .addColumn("employedInHealthcare", CsvSchema.ColumnType.BOOLEAN)
                 .addColumn("typeOfHealthcareProfessional", CsvSchema.ColumnType.STRING)
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.BOOLEAN)
-                .addColumn("patientResidencyType", CsvSchema.ColumnType.STRING)
+                .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
     }

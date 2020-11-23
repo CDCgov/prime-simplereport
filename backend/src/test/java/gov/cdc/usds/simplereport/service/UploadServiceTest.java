@@ -44,7 +44,7 @@ class UploadServiceTest {
     void testInsert() throws IOException {
         // Read the test CSV file
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader().getResourceAsStream("test-upload.csv")) {
-             this._service.processPersonCSV(inputStream);
+            this._service.processPersonCSV(inputStream);
         }
 
         final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "");
