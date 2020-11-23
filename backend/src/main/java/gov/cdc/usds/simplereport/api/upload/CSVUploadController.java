@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.service.UploadService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,7 +27,7 @@ public class CSVUploadController {
     }
 
     @PostMapping(value = "/person", consumes = {"text/csv"})
-    public ResponseEntity<?> uploadPersonCSV(@RequestBody InputStream csvStream) throws IOException {
+    public ResponseEntity<?> uploadPersonCSV(InputStream csvStream) throws IOException {
         _us.processPersonCSV(csvStream);
         return ResponseEntity.accepted().build();
     }

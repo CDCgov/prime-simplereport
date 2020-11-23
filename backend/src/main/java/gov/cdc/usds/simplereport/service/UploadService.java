@@ -34,6 +34,12 @@ public class UploadService {
                 .with(PERSON_SCHEMA)
                 .readValues(csvStream);
 
+        // Since the CSV parser won't fail when give a single string, we simple check to see if it has any parsed values
+        // If not, we throw an error assuming the user didn't actually want to submit something empty.
+        if (!valueIterator.hasNext()) {
+            throw new IllegalArgumentException("Empty or invalid CSV submitted");
+        }
+
         while (valueIterator.hasNext()) {
             final Map<String, String> row = valueIterator.next();
 

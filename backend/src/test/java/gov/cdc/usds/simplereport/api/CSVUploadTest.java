@@ -52,7 +52,7 @@ class CSVUploadTest {
             final int read = inputStream.read(targetArray);
             assertTrue(read > 0, "Should have read bytes");
             mockMvc.perform(post("/upload/person").content(targetArray).contentType("text/csv"))
-                    .andExpect(status().isOk())
+                    .andExpect(status().isAccepted())
                     .andReturn();
         }
 
@@ -60,6 +60,5 @@ class CSVUploadTest {
         assertTrue(postMultipart.isOk());
         final JsonNode jsonResponse = postMultipart.readTree();
         assertTrue(jsonResponse.get("data").get("patients").has(0));
-
     }
 }

@@ -18,7 +18,10 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -41,12 +44,10 @@ class UploadServiceTest {
     void testInsert() throws IOException {
         // Read the test CSV file
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader().getResourceAsStream("test-upload.csv")) {
-            this._service.processPersonCSV(inputStream);
+             this._service.processPersonCSV(inputStream);
         }
 
         final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "");
-
-
         final List<Person> patients = this._ps.getPatients();
         assertAll(() -> assertEquals(1, patients.size()),
                 () -> assertEquals("Doe", patients.get(0).getFirstName()),
@@ -55,8 +56,9 @@ class UploadServiceTest {
 
     @Test
     void testNotCSV() throws IOException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream("this is not a CSV\n".getBytes(StandardCharsets.UTF_8))) {
-            this._service.processPersonCSV(bis);
+        try (ByteArrayInputStream bis = new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
+            final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis), "Should fail to parse");
+            assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
             assertEquals(0, this._ps.getPatients().size(), "Should not have any patients");
         }
     }
