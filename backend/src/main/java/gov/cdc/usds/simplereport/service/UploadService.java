@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -45,7 +46,7 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"));
-            ArrayList<String> race = new ArrayList<String>();
+            List<String> race = new ArrayList<String>();
             race.add(row.get("Race"));
             _ps.addPatient(row.get("ID"),
                     row.get("FirstName"),
@@ -77,7 +78,7 @@ public class UploadService {
                 .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
                 .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
-                .addColumn("Race", CsvSchema.ColumnType.ARRAY)
+                .addColumn("Race", CsvSchema.ColumnType.STRING)
                 .addColumn("DOB", CsvSchema.ColumnType.STRING)
                 .addColumn("Gender", CsvSchema.ColumnType.STRING)
                 .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
