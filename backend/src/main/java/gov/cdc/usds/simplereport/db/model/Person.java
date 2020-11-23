@@ -1,6 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import org.hibernate.annotations.Type;
+
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -10,8 +14,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.List;
 
 
 @Entity
@@ -33,8 +35,9 @@ public class Person extends EternalEntity {
 	private StreetAddress address;
 	@Column
 	private String gender;
-	@Column
-	private String race;
+	@Type(type = "list-array")
+	@Column(columnDefinition = "text ARRAY") // needed by auto-ddl validation, just for the array type
+	private List<String> race = new ArrayList<>();
 	@Column
 	private String ethnicity;
 	@Column
@@ -82,7 +85,7 @@ public class Person extends EternalEntity {
 		String telephone,
 		String role,
 		String email,
-		String race,
+		List<String> race,
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
@@ -116,7 +119,7 @@ public class Person extends EternalEntity {
 		String telephone,
 		String role,
 		String email,
-		String race,
+		List<String> race,
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
@@ -166,7 +169,7 @@ public class Person extends EternalEntity {
 	public String getEmail() {
 		return email;
 	}
-	public String getRace() {
+	public List<String> getRace() {
 		return race;
 	}
 

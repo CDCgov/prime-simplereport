@@ -12,7 +12,7 @@ type Patient {
   middleName: String
   lastName: String
   suffix: String
-  race: String
+  race: [String]
   birthDate: String
   gender: String
   ethnicity: String
@@ -113,7 +113,7 @@ type Mutation {
     role: String
     email: String
     county: String
-    race: String
+    race: [String]
     ethnicity: String
     gender: String
     residentCongregateSetting: Boolean!
@@ -135,7 +135,7 @@ type Mutation {
     role: String
     email: String
     county: String
-    race: String
+    race: [String]
     ethnicity: String
     gender: String
     residentCongregateSetting: Boolean!

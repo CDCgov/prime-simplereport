@@ -246,7 +246,7 @@ databaseChangeLog:
               - column:
                   name: race
                   remarks: grouping of humans based on shared physical or social qualities
-                  type: *string
+                  type: "text[]"
               - column:
                   name: gender
                   remarks: biological sex

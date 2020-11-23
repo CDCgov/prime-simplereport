@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.patient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -36,7 +37,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         String role,
         String email,
         String county,
-        String race,
+        List<String> race,
         String ethnicity,
         String gender,
         Boolean residentCongregateSetting,
@@ -83,7 +84,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       String role,
       String email,
       String county,
-      String race,
+      List<String> race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
