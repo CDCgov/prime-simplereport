@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Provider extends EternalEntity {
 
@@ -47,6 +49,54 @@ public class Provider extends EternalEntity {
 
 	public void setAddress(StreetAddress address) {
 		this.address = address;
+	}
+
+	@JsonIgnore
+	public String getStreet() {
+		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
+			return "";
+		}
+		return address.getStreet().get(0);
+	}
+
+	@JsonIgnore
+	public String getStreetTwo() {
+		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
+			return "";
+		}
+		return address.getStreet().get(1);
+	}
+
+	@JsonIgnore
+	public String getCity() {
+		if(address == null) {
+			return "";
+		}
+		return address.getCity();
+	}
+
+	@JsonIgnore
+	public String getState() {
+		if(address == null) {
+			return "";
+		}
+		return address.getState();
+	}
+
+	@JsonIgnore
+	public String getZipCode() {
+		if(address == null) {
+			return "";
+		}
+		return address.getPostalCode();
+	}
+
+	@JsonIgnore
+	public String getCounty() {
+		if(address == null) {
+			return "";
+		}
+		return address.getCounty();
 	}
 
 	public String getTelephone() {

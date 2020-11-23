@@ -6,11 +6,13 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 
 @Entity
 @Immutable
@@ -35,6 +37,8 @@ public class TestEvent extends AuditedEntity {
 	@Column
 	@Type(type = "jsonb")
 	private Provider providerData;
+	@OneToOne(mappedBy = "testEvent")
+	private TestOrder order;
 
 	public TestEvent() {}
 
@@ -70,5 +74,9 @@ public class TestEvent extends AuditedEntity {
 
 	public Person getPatient() {
 		return patient;
+	}
+
+	public TestOrder getTestOrder() {
+		return order;
 	}
 }

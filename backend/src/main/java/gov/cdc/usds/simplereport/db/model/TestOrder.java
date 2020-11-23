@@ -77,7 +77,6 @@ public class TestOrder extends AuditedEntity {
 		return askOnEntrySurvey;
 	}
 
-
 	public TestResult getTestResult() {
 		return result;
 	}
