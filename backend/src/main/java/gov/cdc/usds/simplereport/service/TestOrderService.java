@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -61,6 +62,13 @@ public class TestOrderService {
     LocalDate symptomOnsetDate,
     Boolean noSymptoms
   ) {
+	// Check if there is an existing queue entry for the patient. If there is one, throw an exception.
+	// If there is more than one, we throw a different exception: handling that case "elegantly" does not
+	// seem worth extra code given that it should never happen (and will result in an exception either way)
+    Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
+    if (existingOrder.isPresent()) {
+    	throw new IllegalArgumentException("Cannot create multiple queue entries for the same patient");
+    }
     TestOrder newOrder = new TestOrder(patient, _os.getCurrentOrganization());
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(
@@ -113,5 +121,9 @@ public class TestOrderService {
     TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
     order.cancelOrder();
     _repo.save(order);
+  }
+
+  public int cancelAll() {
+	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
   }
 }

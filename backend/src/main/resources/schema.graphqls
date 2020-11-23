@@ -154,6 +154,7 @@ type Mutation {
     noSymptoms: Boolean
   ): String
   removePatientFromQueue(patientId: String!): String
+  clearQueue: Int
   updateTimeOfTestQuestions(
     patientId: String!
     pregnancy: String
