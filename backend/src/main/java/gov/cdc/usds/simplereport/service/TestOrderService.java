@@ -62,9 +62,9 @@ public class TestOrderService {
     LocalDate symptomOnsetDate,
     Boolean noSymptoms
   ) {
-	// Check if there is an existing queue entry for the patient. If there is one, throw an exception.
-	// If there is more than one, we throw a different exception: handling that case "elegantly" does not
-	// seem worth extra code given that it should never happen (and will result in an exception either way)
+    // Check if there is an existing queue entry for the patient. If there is one, throw an exception.
+    // If there is more than one, we throw a different exception: handling that case "elegantly" does not
+    // seem worth extra code given that it should never happen (and will result in an exception either way)
     Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
     	throw new IllegalArgumentException("Cannot create multiple queue entries for the same patient");
