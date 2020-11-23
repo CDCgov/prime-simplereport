@@ -32,6 +32,7 @@ dependencies {
 	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
 	implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
 	implementation 'org.json:json:20201115'
+	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
 //	Okta dependencies
 	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
