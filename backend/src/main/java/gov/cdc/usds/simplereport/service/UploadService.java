@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -44,6 +46,8 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"));
+            List<String> race = new ArrayList<String>();
+            race.add(row.get("Race"));
             _ps.addPatient(row.get("ID"),
                     row.get("FirstName"),
                     row.get("MiddleName"),
@@ -59,7 +63,7 @@ public class UploadService {
                     row.get("PhoneNumber"),
                     row.get("typeOfHealthcareProfessional"),
                     row.get("Email"),
-                    row.get("Race"),
+                    race,
                     row.get("Gender"),
                     row.get("Ethnicity"),
                     Boolean.parseBoolean(row.get("residentCongregateSetting")),

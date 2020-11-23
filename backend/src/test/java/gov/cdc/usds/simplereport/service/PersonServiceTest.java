@@ -33,9 +33,9 @@ public class PersonServiceTest {
 	@Test
 	public void roundTrip() {
 		_service.addPatient("FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Hicksville", "NY",
-			"11801", "(888) GET-BENT", null, null, "Nassau", "1600M", null, null, false, false);
+			"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false);
 		_service.addPatient("BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main",null, "Hicksville", "NY",
-				"11801", "(888) GET-BENT", null, null, "Nassau", "1600M", null, null, false, false);
+				"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false);
 		List<Person> all = _service.getPatients();
 		assertEquals(2, all.size());
 	}
