@@ -34,7 +34,7 @@ public class TestEvent extends AuditedEntity {
 	private Person patientData;
 	@Column
 	@Type(type = "jsonb")
-	private Provider providerData; 
+	private Provider providerData;
 
 	public TestEvent() {}
 

@@ -10,13 +10,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
@@ -29,12 +34,23 @@ public class TestOrderService {
   private DeviceTypeService _dts;
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
+  private TestEventRepository _terepo;
+  private PersonRepository _prepo;
 
-  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo, PatientAnswersRepository parepo) {
+  public TestOrderService(
+    OrganizationService os,
+    DeviceTypeService dts,
+    TestOrderRepository repo,
+    PatientAnswersRepository parepo,
+    TestEventRepository terepo,
+    PersonRepository prepo
+  ) {
     _os = os;
     _dts = dts;
     _repo = repo;
     _parepo = parepo;
+    _terepo = terepo;
+    _prepo = prepo;
 }
 
 	public List<TestOrder> getQueue() {
@@ -46,9 +62,23 @@ public class TestOrderService {
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
+    DeviceType deviceType = _dts.getDeviceType(deviceID);
+    Organization org = _os.getCurrentOrganization();
+    UUID actualPatientId = UUID.fromString(patientId);
+    Person person = _prepo.findByIDAndOrganization(actualPatientId, org);
+
+    TestEvent testEvent = new TestEvent(
+      result,
+      deviceType,
+      person,
+      org
+    );
+    _terepo.save(testEvent);
+
+    TestOrder order = _repo.fetchQueueItemByIDForOrganization(org, actualPatientId);
     order.setDeviceType(_dts.getDeviceType(deviceID));
     order.setResult(result);
+    order.setTestEvent(testEvent);
     _repo.save(order);
   }
 
