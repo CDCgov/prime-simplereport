@@ -29,12 +29,6 @@ x-ref-data:
         constraints:
           nullable: false
 databaseChangeLog:
-  # This is a placeholder to make the thing parse, but also useful if we decide to use
-  # Spring Session JPA at some point.
-  - property:
-      name: attribute_bytes_type
-      value: BYTEA
-      dbms: postgresql
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -53,7 +47,7 @@ databaseChangeLog:
   - changeSet:
       id: initial-schema
       author: bwarfield@cdc.gov
-      comment: The database schema required for the initial prototype deployment of the Simple Report API.
+      comment: The database schema required for the initial deployment of the Simple Report API.
       changes:
         - createTable:
             tableName: api_user
