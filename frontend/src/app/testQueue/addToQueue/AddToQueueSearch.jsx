@@ -137,7 +137,17 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         showNotification(toast, alert);
         refetchQueue();
       },
-      (err) => console.error(err)
+      (err) => {
+        console.error(err, err.stack);
+        let alert = (
+          <Alert
+            type="error"
+            title="Problem saving data"
+            body={err.toString()}
+          />
+        );
+        showNotification(toast, alert);
+      }
     );
   };
 

@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import gov.cdc.usds.simplereport.api.model.SimpleTestGraphQLError;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +68,7 @@ public class TestOrderService {
     // seem worth extra code given that it should never happen (and will result in an exception either way)
     Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
-    	throw new IllegalArgumentException("Cannot create multiple queue entries for the same patient");
+    	throw new SimpleTestGraphQLError("Cannot create multiple queue entries for the same patient");
     }
     TestOrder newOrder = new TestOrder(patient, _os.getCurrentOrganization());
 
