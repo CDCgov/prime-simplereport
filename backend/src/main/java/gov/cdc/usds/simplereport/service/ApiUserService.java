@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +27,8 @@ public class ApiUserService {
 		_supplier = supplier;
 	}
 
-	public void whaat() {
-		OidcUser me = (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		LOG.warn("Hello {} {} ({})", me.getAttribute("given_name"), me.getAttribute("family_name"), me.getAttribute("email"));
-	}
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ApiUser getCurrentUser() {
-		whaat();
 		IdentityAttributes userIdentity = _supplier.get();
 		Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
 		if (found.isPresent()) {
