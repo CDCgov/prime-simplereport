@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 //import { gql, useQuery, useMutation } from "@apollo/client";
 import { gql, useMutation } from "@apollo/client";
-
+import { toast } from "react-toastify";
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
@@ -14,8 +14,9 @@ import Checkboxes from "../commonComponents/Checkboxes";
 import { Prompt } from "react-router-dom";
 import moment from "moment";
 import Dropdown from "../commonComponents/Dropdown";
-import { displayFullName } from "../utils";
+import { displayFullName, showNotification } from "../utils";
 import "./EditPatient.scss";
+import Alert from "../commonComponents/Alert";
 
 const ADD_PATIENT = gql`
   mutation(
@@ -173,13 +174,49 @@ const PatientForm = (props) => {
           ...variables,
         },
       }).then(
-        () => console.log("success!!!"),
-        (error) => console.error(error)
+        () =>
+          showNotification(
+            toast,
+            <Alert
+              type="success"
+              title={`${PATIENT_TERM_CAP} Record Saved`}
+              body="Information record has been updated."
+            />
+          ),
+        (error) => {
+          console.error(error);
+          showNotification(
+            toast,
+            <Alert
+              type="error"
+              title={`${PATIENT_TERM_CAP} Data Error`}
+              body="Please check for missing data or typos."
+            />
+          );
+        }
       );
     } else {
       addPatient({ variables }).then(
-        () => console.log("success!!!"),
-        (error) => console.error(error)
+        () =>
+          showNotification(
+            toast,
+            <Alert
+              type="success"
+              title={`${PATIENT_TERM_CAP} Record Created`}
+              body="New information record has been created."
+            />
+          ),
+        (error) => {
+          console.error(error);
+          showNotification(
+            toast,
+            <Alert
+              type="error"
+              title={`${PATIENT_TERM_CAP} Data Error`}
+              body="Please check for missing data or typos."
+            />
+          );
+        }
       );
     }
   };
