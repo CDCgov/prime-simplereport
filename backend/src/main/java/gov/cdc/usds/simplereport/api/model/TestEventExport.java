@@ -340,7 +340,7 @@ public class TestEventExport {
 		//     display: SARS coronavirus 2 ORF1ab region [Presence] in Respiratory specimen by NAA with probe detection
 		//   - code: 95209-3
 		//     display: SARS coronavirus+SARS coronavirus 2 Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		return ""; // TODO: what is this
+		return "";
 	}
 
 	@JsonProperty("Specimen_source_site_code")
@@ -384,7 +384,7 @@ public class TestEventExport {
 
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
-		return testEvent.getDeviceType().getInternalId().toString(); // TODO: seems that we are missing the INOIC(?) code
+		return testEvent.getDeviceType().getInternalId().toString();
 	}
 
 	@JsonProperty("Test_date")
