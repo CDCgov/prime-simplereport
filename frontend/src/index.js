@@ -1,4 +1,3 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -9,10 +8,35 @@ import "./styles/App.css";
 import { store, persistor } from "./app/store";
 import { PersistGate } from "redux-persist/integration/react";
 
-const cache = new InMemoryCache({});
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  ApolloLink,
+  InMemoryCache,
+  concat,
+} from "@apollo/client";
+
+let bearerToken = null;
+if (window.location.hash) {
+  bearerToken = window.location.hash.slice(1);
+}
+
+const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      "Access-Control-Request-Headers": "Authorization",
+      Authorization: `Bearer ${bearerToken}`,
+    },
+  });
+  return forward(operation);
+});
+
 const client = new ApolloClient({
-  cache,
-  uri: process.env.REACT_APP_BACKEND_URL,
+  cache: new InMemoryCache(),
+  link: concat(authMiddleware, httpLink),
 });
 
 ReactDOM.render(
