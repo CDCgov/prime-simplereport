@@ -8,7 +8,8 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@EnableJpaAuditing // this will move to a separate configuration object when we create user audit trails
+@EnableJpaAuditing // this should live on AuditingConfig, but then we have to rewire tests:
+                   // https://github.com/spring-projects/spring-boot/issues/13337
 public class SimpleReportApplication {
 
     public static void main(String[] args) {

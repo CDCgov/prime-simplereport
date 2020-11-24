@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.service;
 
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -23,6 +23,7 @@ public class ApiUserService {
 		_apiUserRepo = apiUserRepo;
 	}
 
+	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public ApiUser getCurrentUser() {
 		Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(FAKE_USER_EMAIL);
 		if (found.isPresent()) {
