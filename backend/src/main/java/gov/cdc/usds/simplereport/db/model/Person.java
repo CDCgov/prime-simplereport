@@ -14,6 +14,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 
 @Entity
@@ -22,13 +25,9 @@ public class Person extends EternalEntity {
 	@Column
 	private String lookupId;
 	@Column(nullable = false)
-	private String firstName;
-	@Column
-	private String middleName;
-	@Column(nullable = false)
-	private String lastName;
-	@Column
-	private String suffix;
+	@Embedded
+	@JsonUnwrapped
+	private PersonName nameInfo;
 	@Column
 	private LocalDate birthDate;
 	@Embedded
@@ -63,10 +62,7 @@ public class Person extends EternalEntity {
 
 	public Person(String firstName, String middleName, String lastName, String suffix, Organization org) {
 		this.organization = org;
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
-		this.suffix = suffix;
+		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 	}
 
 	public List<TestOrder> getTestOrders() {
@@ -92,9 +88,7 @@ public class Person extends EternalEntity {
 		Boolean employedInHealthcare
 	) {
 		this.lookupId = lookupId;
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
+		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.birthDate = birthDate;
 		this.telephone = telephone;
 		this.address = address;
@@ -106,7 +100,6 @@ public class Person extends EternalEntity {
 		this.gender = gender;
 		this.residentCongregateSetting = residentCongregateSetting;
 		this.employedInHealthcare = employedInHealthcare;
-		this.suffix = suffix;
 	}
 
 	public void updatePatient(
@@ -114,6 +107,7 @@ public class Person extends EternalEntity {
 		String firstName,
 		String middleName,
 		String lastName,
+		String suffix,
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
@@ -126,9 +120,10 @@ public class Person extends EternalEntity {
 		Boolean employedInHealthcare
 	) {
 		this.lookupId = lookupId;
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
+		this.nameInfo.setFirstName(firstName);
+		this.nameInfo.setMiddleName(middleName);
+		this.nameInfo.setLastName(lastName);
+		this.nameInfo.setSuffix(suffix);
 		this.birthDate = birthDate;
 		this.telephone = telephone;
 		this.address = address;
@@ -144,18 +139,23 @@ public class Person extends EternalEntity {
 	public String getLookupId() {
 		return lookupId;
 	}
+
 	public String getFirstName() {
-		return firstName;
+		return nameInfo.getFirstName();
 	}
+
 	public String getMiddleName() {
-		return middleName;
+		return nameInfo.getMiddleName();
 	}
+
 	public String getLastName() {
-		return lastName;
+		return nameInfo.getLastName();
 	}
+
 	public String getSuffix() {
-		return suffix;
+		return nameInfo.getSuffix();
 	}
+
 	public LocalDate getBirthDate() {
 		return birthDate;
 	}

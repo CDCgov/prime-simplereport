@@ -1,18 +1,19 @@
 package gov.cdc.usds.simplereport.api.model;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
-
-import java.util.UUID;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 public class User {
 
 	private String id;
-	private Person person;
+	private Organization org;
+	private PersonName nameInfo;
 
-	public User(UUID id, Person person) {
+	public User(ApiUser currentUser, Organization currentOrg) {
 		super();
-		this.id = id.toString();
-		this.person = person;
+		this.id = currentUser.getInternalId().toString();
+		this.org = currentOrg;
+		this.nameInfo = currentUser.getNameInfo();
 	}
 
 	public String getId() {
@@ -20,22 +21,22 @@ public class User {
 	}
 
 	public Organization getOrganization() {
-		return person.getOrganization();
+		return org;
 	}
 
 	public String getFirstName() {
-		return person.getFirstName();
+		return nameInfo.getFirstName();
 	}
 
 	public String getMiddleName() {
-		return person.getMiddleName();
+		return nameInfo.getMiddleName();
 	}
 
 	public String getLastName() {
-		return person.getLastName();
+		return nameInfo.getLastName();
 	}
 
 	public String getSuffix() {
-		return person.getSuffix();
+		return nameInfo.getSuffix();
 	}
 }

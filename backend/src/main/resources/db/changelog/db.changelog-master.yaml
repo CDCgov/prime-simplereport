@@ -22,6 +22,22 @@ x-ref-data:
         remarks: The timestamp for the most recent update of this entity.
         constraints:
           nullable: false
+    - column: &created_by_column
+        name: created_by
+        type: *idtype
+        remarks: The user who created this entity.
+        constraints:
+          nullable: false
+          foreignKeyName: fk__anyentity__created_by # normally we make these unique, but that's a lot of boilerpate
+          references: api_user
+    - column: &updated_by_column
+        name: updated_by
+        type: *idtype
+        remarks: The user who most recently updated this entity.
+        constraints:
+          nullable: false
+          references: api_user
+          foreignKeyName: fk__anyentity__updated_by
     - column: &soft_delete_column
         name: is_deleted
         type: boolean
@@ -29,12 +45,6 @@ x-ref-data:
         constraints:
           nullable: false
 databaseChangeLog:
-  # This is a placeholder to make the thing parse, but also useful if we decide to use
-  # Spring Session JPA at some point.
-  - property:
-      name: attribute_bytes_type
-      value: BYTEA
-      dbms: postgresql
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -53,7 +63,7 @@ databaseChangeLog:
   - changeSet:
       id: initial-schema
       author: bwarfield@cdc.gov
-      comment: The database schema required for the initial prototype deployment of the Simple Report API.
+      comment: The database schema required for the initial deployment of the Simple Report API.
       changes:
         - createTable:
             tableName: api_user
@@ -70,19 +80,29 @@ databaseChangeLog:
                     unique: true
                     nullable: false
               - column:
-                  name: person_id
-                  type: *idtype
-                  remarks: A foreign key to the Person table, where we can find any other details we know about this user.
-                  constraints:
-                    unique: true
-                    nullable: false
-                    # what no foreign key? Right, that table doesn't exist yet.
-              - column:
                   name: last_seen
                   type: DATETIME
                   remarks: The last time this user connected to the API.
                   constraints:
                     nullable: false
+              - column:
+                  name: first_name
+                  remarks: The user's given name, if any (to be derived from authentication claims).
+                  type: *string
+              - column:
+                  name: middle_name
+                  remarks: The user's middle name, if any (to be derived from authentication claims).
+                  type: *string
+              - column:
+                  name: last_name
+                  remarks: The user's family name or only name (to be derived from authentication claims).
+                  type: *string
+                  constraints:
+                    nullable: false
+              - column:
+                  name: suffix
+                  remarks: The generational or positional designation appended to the user's name.
+                  type: *string
         - createTable:
             tableName: device_type
             remarks: Testing devices that may be present.
@@ -90,7 +110,9 @@ databaseChangeLog:
               - column: *pk_column
               # is there an external ID? I think so?
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: name
@@ -114,7 +136,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: name
@@ -158,7 +182,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: facility_name
@@ -215,7 +241,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: organization_id
@@ -241,7 +269,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: suffix
-                  remarks: generational or positional designations appended to a persons name
+                  remarks: The generational or positional designations appended to the person's name.
                   type: *string
               - column:
                   name: race
@@ -305,18 +333,14 @@ databaseChangeLog:
                   name: resident_congregate_setting
                   remarks: Does the person live in a congregate setting?
                   type: boolean
-        - addForeignKeyConstraint: # have to add this after the fact because of the (eventual) circular relationship
-            constraintName: fk__api_user__person
-            baseTableName: api_user
-            baseColumnNames: person_id
-            referencedTableName: person
-            referencedColumnNames: internal_id
         - createTable:
             tableName: patient_answers
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: ask_on_entry
                   type: jsonb
@@ -326,7 +350,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
@@ -368,7 +394,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
