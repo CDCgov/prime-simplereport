@@ -27,7 +27,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void createAndFindSomething() {
-		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 		Organization saved = _repo.save(new Organization("My House", "12345", null, mccoy));
 		assertNotNull(saved);
 		assertNotNull(saved.getInternalId());
@@ -40,7 +40,7 @@ public class OrganizationRepositoryTest extends BaseRepositoryTest {
 	public void smokeTestDeviceOperations() {
 		Set<DeviceType> configuredDevices = new HashSet<>();
 		DeviceType bill = new DeviceType("Bill", "Weasleys", "1");
-		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 		configuredDevices.add(_devices.save(bill));
 		configuredDevices.add(_devices.save(new DeviceType("Percy", "Weasleys", "2")));
 		Organization saved = _repo.save(new Organization("My Office", "650", null, mccoy, configuredDevices));

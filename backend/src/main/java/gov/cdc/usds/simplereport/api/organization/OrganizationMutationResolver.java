@@ -24,7 +24,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
 
     public void updateOrganization(String testingFacilityName,
                                    String cliaNumber,
-                                   String orderingProviderName,
+                                   String orderingProviderFirstName,
+                                   String orderingProviderMiddleName,
+                                   String orderingProviderLastName,
+                                   String orderingProviderSuffix,
                                    String orderingProviderNPI,
                                    String orderingProviderStreet,
                                    String orderingProviderStreetTwo,
@@ -54,7 +57,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _os.updateOrganization(
           testingFacilityName,
           cliaNumber,
-          orderingProviderName,
+          orderingProviderFirstName,
+          orderingProviderMiddleName,
+          orderingProviderLastName,
+          orderingProviderSuffix,
           orderingProviderNPI,
           orderingProviderStreet,
           orderingProviderStreetTwo,

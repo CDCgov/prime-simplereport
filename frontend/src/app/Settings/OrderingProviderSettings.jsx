@@ -13,7 +13,10 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
   };
 
   let {
-    orderingProviderName,
+    orderingProviderFirstName,
+    orderingProviderMiddleName,
+    orderingProviderLastName,
+    orderingProviderSuffix,
     orderingProviderNPI,
     orderingProviderStreet,
     orderingProviderStreetTwo,
@@ -37,10 +40,34 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
             <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
-                  label={"Name"}
-                  value={orderingProviderName || ""}
+                  label={"First Name"}
+                  value={orderingProviderFirstName || ""}
                   onChange={onInputChange}
-                  name={"orderingProviderName"}
+                  name={"orderingProviderFirstName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Middle Name"}
+                  value={orderingProviderMiddleName || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderMiddleName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Last Name"}
+                  value={orderingProviderLastName || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderLastName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Suffix"}
+                  value={orderingProviderSuffix || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderSuffix"}
                 />
               </div>
               <div className="tablet:grid-col">
@@ -51,6 +78,8 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderNPI"}
                 />
               </div>
+            </div>
+            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Street 1"}
