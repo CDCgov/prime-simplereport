@@ -8,7 +8,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class PersonName {
 
-	@Column(nullable = false)
+	@Column
 	private String firstName;
 	@Column
 	private String middleName;

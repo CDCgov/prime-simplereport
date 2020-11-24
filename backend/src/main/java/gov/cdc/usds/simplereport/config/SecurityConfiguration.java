@@ -78,6 +78,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
 				String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
 				String email = me.getAttribute(OktaAttributes.EMAIL);
+				if (lastName == null) {
+					lastName = email;
+				}
 				LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
 				return new IdentityAttributes(email, firstName, null, lastName, null);
 			} else if (principal instanceof Jwt) {
@@ -86,6 +89,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				String email = token.getSubject();
 				String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
 				String lastName = token.getClaim(OktaAttributes.LAST_NAME);
+				if (lastName == null) {
+					lastName = email;
+				}
 				LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
 				return new IdentityAttributes(email, firstName, null, lastName, null);
 			}
