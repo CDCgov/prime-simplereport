@@ -4,6 +4,11 @@ provider "azurerm" {
   skip_provider_registration = true
 }
 
+provider "okta" {
+  org_name = "prime-eval"
+  base_url = "okta.com"
+}
+
 locals {
   management_tags = {
     prime-app = "simplereport"
@@ -97,4 +102,10 @@ resource "azurerm_key_vault_access_policy" "self" {
     "delete",
     "recover",
   ]
+}
+
+// Okta configuration
+
+module "okta" {
+  source = "../services/okta-global"
 }

@@ -2,6 +2,28 @@
 
 ## Operations that only need to be performed once
 
+### Authentication
+
+#### Azure
+
+Azure auth is really simple and only requires installing Azure CLI and logging in.
+
+```bash
+brew install azure-cli
+az login
+```
+
+#### Okta
+
+Okta API tokens are assigned at the environment level, and not on a per user basis.
+You can create one for yourself [here](https://prime-eval-admin.okta.com/admin/access/api/tokens).
+
+```bash
+export OKTA_API_TOKEN={Okta API token}
+```
+
+### General steps
+
 The initial Terraform and environment bootstrap creates a couple of resource which are shared across the various resource groups and environments.
 
 0. Create storage account in Azure
@@ -13,7 +35,7 @@ terraform import azurerm_storage_container.state_container https://srterraform.b
 terraform apply
 ```
 
-### Operations performed once per environment
+## Operations performed once per environment
 
 First, we need to deploy the persistent services (DBs, etc) which should not be re-created on each deploy
 ```bash
