@@ -37,9 +37,3 @@ variable "master_password_rotated" {
   type        = string
   default     = "2020-11-23T00:00:00"
 }
-
-variable "inbound_subnets" {
-  description = "(Optional) List of subnet IDs to allow to connect to the database"
-  type = map(string)
-  default = {}
-}

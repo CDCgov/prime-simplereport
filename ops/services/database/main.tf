@@ -16,7 +16,7 @@ resource "azurerm_key_vault_secret" "db_password" {
 
 resource "random_password" "random_db_password" {
   length = 30
-  special = true
+  special = false
   override_special = "!#$%&*()-_=+[]{}<>:?"
 
   # Rotated when the master_password_rotated value changes
@@ -61,16 +61,6 @@ resource "azurerm_postgresql_database" "simple_report" {
 //  start_ip_address = "0.0.0.0"
 //  end_ip_address = "0.0.0.0"
 //}
-
-resource "azurerm_postgresql_virtual_network_rule" "inbound" {
-  for_each = var.inbound_subnets
-  name = "inbound-${each.key}-subnet"
-  resource_group_name = var.rg_name
-  server_name = azurerm_postgresql_server.db.name
-  subnet_id = each.value
-  ignore_missing_vnet_service_endpoint = true
-}
-
 
 resource "azurerm_monitor_diagnostic_setting" "backend-db" {
   name = "simple-report-${var.env}-db-diag"

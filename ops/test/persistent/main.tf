@@ -36,16 +36,6 @@ resource "azurerm_virtual_network" "vn" {
   tags = local.management_tags
 }
 
-resource "azurerm_subnet" "db" {
-  name = "db-subnet"
-  resource_group_name = data.azurerm_resource_group.rg.name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes = [
-    "10.1.252.0/24"]
-  service_endpoints = ["Microsoft.Sql"]
-}
-
-
 module "db" {
   source = "../../services/database"
   env = "test"
@@ -54,7 +44,4 @@ module "db" {
   rg_location = data.azurerm_resource_group.rg.location
   rg_name = data.azurerm_resource_group.rg.name
   tags = local.management_tags
-  inbound_subnets = {
-    "db": azurerm_subnet.db.id
-  }
 }
