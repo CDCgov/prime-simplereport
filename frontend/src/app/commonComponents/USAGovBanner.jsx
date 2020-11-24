@@ -76,12 +76,6 @@ export default class USAGovBanner extends React.Component {
                   className="usa-banner__header-flag"
                   src={usdsLogo}
                   alt="USDS logo"
-                  onClick={() => {
-                    if (window.confirm("Reset Demo Data?")) {
-                      localStorage.clear();
-                      window.location.reload(false);
-                    }
-                  }}
                 />
                 <img
                   className="usa-banner__header-flag"

@@ -12,12 +12,6 @@ class Footer extends React.Component {
                 className="usa-footer__logo-img"
                 src={usdsLogo}
                 alt="USDS logo"
-                onClick={() => {
-                  if (window.confirm("Reset Demo Data?")) {
-                    localStorage.clear();
-                    window.location.reload(false);
-                  }
-                }}
               />
             </div>
           </div>
