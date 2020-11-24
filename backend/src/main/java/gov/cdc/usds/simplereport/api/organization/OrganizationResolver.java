@@ -21,8 +21,10 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
 
     private ApiUserService _userService;
     private DeviceTypeService _deviceService;
+	private OrganizationService _organizationService;
 
     public OrganizationResolver(OrganizationService os, ApiUserService users, DeviceTypeService devices) {
+        _organizationService = os;
         _userService = users;
         _deviceService = devices;
     }
@@ -31,9 +33,6 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
 
         List<DeviceType> currentDevices = _deviceService.fetchDeviceTypes();
         List<String> currentDeviceNames = currentDevices.stream().map(d->d.getName()).collect(Collectors.toList());
-        for (int i = 0; i < currentDevices.size(); i++) {
-            currentDeviceNames.add(currentDevices.get(i).getName());
-        }
         if (!currentDeviceNames.contains("Abbott IDNow")) {
             _deviceService.createDeviceType("Abbott IDNow", "ID Now", "Abbott");
         }
@@ -49,11 +48,12 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
         if (!currentDeviceNames.contains("LumiraDX")) {
             _deviceService.createDeviceType("LumiraDX", "LumiraDX", "LumiraDX");
         }
-        return _userService.getCurrentUser().getPerson().getOrganization();
+        return _organizationService.getCurrentOrganization();
     }
 
     public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
-		return new User(currentUser.getInternalId(), currentUser.getPerson());
+		Organization currentOrg = _organizationService.getCurrentOrganization();
+		return new User(currentUser, currentOrg);
 	}
 }
