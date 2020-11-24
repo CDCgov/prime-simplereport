@@ -8,9 +8,14 @@ data "azurerm_resource_group" "rg" {
   name = "prime-simple-report-prod"
 }
 
+data "azurerm_key_vault" "kv" {
+  name = "simplereport"
+  resource_group_name = data.azurerm_resource_group.rg.name
+}
+
 data "azurerm_key_vault_secret" "simplereport-db-development-password" {
   name = "simplereport"
-  vault_uri = "https://simplereport.vault.azure.net/"
+  key_vault_id = data.azurerm_key_vault.kv.id
 }
 
 data "azurerm_log_analytics_workspace" "pdi" {
@@ -214,7 +219,7 @@ resource "azurerm_container_group" "backend" {
 
   container {
     cpu = 2
-    image = "nickrobisonusds/pdi-backend:latest"
+    image = "nickrobisonusds/sr-backend:0605f1c"
     memory = 2
     name = "pdi-backend"
     ports {
@@ -223,7 +228,7 @@ resource "azurerm_container_group" "backend" {
     }
     environment_variables = {
       "SPRING_DATASOURCE_URL": "jdbc:postgresql://${data.azurerm_postgresql_server.db.fqdn}:5432/simple_report?user=simple_report_app@${data.azurerm_postgresql_server.db.name}"
-      "SPRING_DATASOURCE_PASSWORD": ${data.azurerm_key_vault_secret.simplereport-db-development-password.value}
+      "SPRING_DATASOURCE_PASSWORD": data.azurerm_key_vault_secret.simplereport-db-development-password.value
       "SPRING_PROFILES_ACTIVE": "dev"
     }
   }
