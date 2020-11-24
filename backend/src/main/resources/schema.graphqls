@@ -34,7 +34,9 @@ type Organization {
   testingFacilityName: String
   cliaNumber: String
   orderingProviderFirstName: String
+  orderingProviderMiddleName: String
   orderingProviderLastName: String
+  orderingProviderSuffix: String
   orderingProviderNPI: String
   orderingProviderStreet: String
   orderingProviderStreetTwo: String
@@ -87,7 +89,9 @@ type Mutation {
     testingFacilityName: String!
     cliaNumber: String
     orderingProviderFirstName: String!
+    orderingProviderMiddleName: String
     orderingProviderLastName: String!
+    orderingProviderSuffix: String
     orderingProviderNPI: String!
     orderingProviderStreet: String
     orderingProviderStreetTwo: String

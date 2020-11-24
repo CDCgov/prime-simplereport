@@ -11,8 +11,12 @@ public class Provider extends EternalEntity {
 
 	@Column(nullable = false)
 	private String firstName;
+	@Column
+	private String middleName;
 	@Column(nullable = false)
 	private String lastName;
+	@Column
+	private String suffix;
 	@Column(nullable = false)
 	private String providerId;
 	@Embedded
@@ -22,9 +26,11 @@ public class Provider extends EternalEntity {
 
 	protected Provider() { /* for hibernate */ }
 
-	public Provider(String firstName, String lastName, String providerId, StreetAddress address, String telephone) {
+	public Provider(String firstName, String middleName, String lastName, String suffix, String providerId, StreetAddress address, String telephone) {
 		this.firstName = firstName;
+		this.middleName = middleName;
 		this.lastName = lastName;
+		this.suffix = suffix;
 		this.providerId = providerId;
 		this.address = address;
 		this.telephone = telephone;
@@ -38,6 +44,14 @@ public class Provider extends EternalEntity {
 		this.firstName = firstName;
 	}
 
+	public String getMiddleName() {
+		return middleName;
+	}
+
+	public void setMiddleName(String middleName) {
+		this.middleName = middleName;
+	}
+
 	public String getLastName() {
 		return lastName;
 	}
@@ -45,6 +59,15 @@ public class Provider extends EternalEntity {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+
+	public String getSuffix() {
+		return suffix;
+	}
+
+	public void setSuffix(String suffix) {
+		this.suffix = suffix;
+	}
+
 
 	public String getProviderId() {
 		return providerId;

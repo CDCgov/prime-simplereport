@@ -14,7 +14,9 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
 
   let {
     orderingProviderFirstName,
+    orderingProviderMiddleName,
     orderingProviderLastName,
+    orderingProviderSuffix,
     orderingProviderNPI,
     orderingProviderStreet,
     orderingProviderStreetTwo,
@@ -46,10 +48,26 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
               </div>
               <div className="tablet:grid-col">
                 <TextInput
+                  label={"Middle Name"}
+                  value={orderingProviderMiddleName || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderMiddleName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
                   label={"Last Name"}
                   value={orderingProviderLastName || ""}
                   onChange={onInputChange}
                   name={"orderingProviderLastName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Suffix"}
+                  value={orderingProviderSuffix || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderSuffix"}
                 />
               </div>
               <div className="tablet:grid-col">
@@ -60,6 +78,8 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderNPI"}
                 />
               </div>
+            </div>
+            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"Street 1"}
@@ -76,8 +96,6 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderStreetTwo"}
                 />
               </div>
-            </div>
-            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"City"}
@@ -86,6 +104,8 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderCity"}
                 />
               </div>
+            </div>
+            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"County"}

@@ -142,14 +142,22 @@ databaseChangeLog:
               - column: *soft_delete_column
               - column:
                   name: first_name
-                  remarks: The provider's given name
+                  remarks: The provider's given name, if any.
+                  type: *string
+              - column:
+                  name: middle_name
+                  remarks: The provider's middle name, if any.
                   type: *string
               - column:
                   name: last_name
-                  remarks: The provider's family name
+                  remarks: The provider's family name or only name.
                   type: *string
                   constraints:
                     nullable: false
+              - column:
+                  name: suffix
+                  remarks: generational or positional designations appended to the provider's name
+                  type: *string
               - column:
                   name: provider_id
                   remarks: The external ID (NPI) for this provider.

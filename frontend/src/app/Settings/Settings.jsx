@@ -19,7 +19,9 @@ const GET_SETTINGS_QUERY = gql`
       testingFacilityName
       orderingProviderNPI
       orderingProviderFirstName
+      orderingProviderMiddleName
       orderingProviderLastName
+      orderingProviderSuffix
       orderingProviderStreet
       orderingProviderStreetTwo
       orderingProviderCity
@@ -42,7 +44,9 @@ const SET_SETTINGS_MUTATION = gql`
     $testingFacilityName: String!
     $cliaNumber: String
     $orderingProviderFirstName: String!
+    $orderingProviderMiddleName: String!
     $orderingProviderLastName: String!
+    $orderingProviderSuffix: String!
     $orderingProviderNPI: String!
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
@@ -58,7 +62,9 @@ const SET_SETTINGS_MUTATION = gql`
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       orderingProviderFirstName: $orderingProviderFirstName
+      orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
+      orderingProviderSuffix: $orderingProviderSuffix
       orderingProviderNPI: $orderingProviderNPI
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
