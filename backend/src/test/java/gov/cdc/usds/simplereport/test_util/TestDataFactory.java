@@ -30,7 +30,7 @@ public class TestDataFactory {
 	public Organization createValidOrg() {
 		DeviceType dev = _deviceRepo.save(new DeviceType("Acme SuperFine", "Acme", "SFN"));
 		StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
-		Provider doc = _providerRepo.save(new Provider("Doctor Doom", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
+		Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
 		return _orgRepo.save(new Organization("The Mall", "MALLRAT", dev, doc));
 	}
 

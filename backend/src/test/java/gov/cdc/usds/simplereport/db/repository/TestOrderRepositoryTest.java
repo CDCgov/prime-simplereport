@@ -30,7 +30,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void runChanges() {
-		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 
 		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", null, mccoy));
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", null, mccoy));
@@ -48,7 +48,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testLifeCycle() {
-		Provider mccoy = _providers.save(new Provider("Doc", "NCC1701", null, "(1) (111) 2222222"));
+		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", "", "", null, "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));

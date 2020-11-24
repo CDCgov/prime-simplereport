@@ -24,8 +24,8 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void doPersonOperations() {
-		Provider goodDoc = _providerRepo.save(new Provider("Madam Pomfrey", "YAY", null, ""));
-		Provider badDoc = _providerRepo.save(new Provider("Gilderoy Lockhart", "UHOH", null, ""));
+		Provider goodDoc = _providerRepo.save(new Provider("Madam", "", "Pomfrey", "", "YAY", null, ""));
+		Provider badDoc = _providerRepo.save(new Provider("Gilderoy", "", "Lockhart", "", "UHOH", null, ""));
 		Organization org = _orgRepo.save(new Organization("Here", "there", null, goodDoc));
 		Organization other = _orgRepo.save(new Organization("There", "where?", null, badDoc));
 
