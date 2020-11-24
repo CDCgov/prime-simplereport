@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
@@ -25,6 +26,7 @@ public class Person extends EternalEntity {
 	private String lookupId;
 	@Column(nullable = false)
 	@Embedded
+	@JsonUnwrapped
 	private PersonName nameInfo;
 	@Column
 	private LocalDate birthDate;

@@ -28,7 +28,7 @@ public abstract class AuditedEntity {
 	@GeneratedValue(generator = "UUID4")
 	private UUID internalId;
 
-	@Column
+	@Column(updatable = false)
 	@CreatedDate
 	private Date createdAt;
 
