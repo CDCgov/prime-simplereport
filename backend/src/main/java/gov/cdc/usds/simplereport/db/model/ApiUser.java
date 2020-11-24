@@ -8,15 +8,22 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 /**
  * The bare minimum required to link an authenticated identity to actions and data
  * elsewhere in the schema.
+ * 
+ * Since we can't use JPA auditing here, we use Hibernate {@link CreationTimestamp} and
+ * {@link UpdateTimestamp}, and feel kind of weird about it.
  */
 @Entity
 @DynamicUpdate
@@ -27,8 +34,12 @@ public class ApiUser {
 	@GeneratedValue(generator = "UUID4")
 	private UUID internalId;
 	@Column(updatable = false)
+	@Temporal(TemporalType.TIMESTAMP)
+	@CreationTimestamp
 	private Date createdAt;
 	@Column
+	@Temporal(TemporalType.TIMESTAMP)
+	@UpdateTimestamp
 	private Date updatedAt;
 	@Column(nullable = false, updatable = false)
 	@NaturalId
@@ -42,10 +53,7 @@ public class ApiUser {
 	public ApiUser(String email, PersonName name) {
 		loginEmail = email;
 		nameInfo = name;
-		Date now = new Date();
-		lastSeen = now;
-		createdAt = now;
-		updatedAt = now;
+		lastSeen = new Date();
 	}
 
 	public UUID getInternalId() {
