@@ -8,12 +8,14 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import gov.cdc.usds.simplereport.config.AuditingConfig;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ActiveProfiles("dev")
-@Import(TestDataFactory.class)
+@Import({TestDataFactory.class, AuditingConfig.class, ApiUserService.class})
 public abstract class BaseRepositoryTest {
 
 	@Autowired

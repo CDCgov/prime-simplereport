@@ -22,6 +22,22 @@ x-ref-data:
         remarks: The timestamp for the most recent update of this entity.
         constraints:
           nullable: false
+    - column: &created_by_column
+        name: created_by
+        type: *idtype
+        remarks: The user who created this entity.
+        constraints:
+          nullable: false
+          foreignKeyName: fk__anyentity__created_by # normally we make these unique, but that's a lot of boilerpate
+          references: api_user
+    - column: &updated_by_column
+        name: updated_by
+        type: *idtype
+        remarks: The user who most recently updated this entity.
+        constraints:
+          nullable: false
+          references: api_user
+          foreignKeyName: fk__anyentity__updated_by
     - column: &soft_delete_column
         name: is_deleted
         type: boolean
@@ -94,7 +110,9 @@ databaseChangeLog:
               - column: *pk_column
               # is there an external ID? I think so?
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: name
@@ -118,7 +136,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: name
@@ -162,7 +182,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: facility_name
@@ -219,7 +241,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column: *soft_delete_column
               - column:
                   name: organization_id
@@ -314,7 +338,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: ask_on_entry
                   type: jsonb
@@ -324,7 +350,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
@@ -366,7 +394,9 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *created_by_column
               - column: *updated_at_column
+              - column: *updated_by_column
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
