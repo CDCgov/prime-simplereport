@@ -294,12 +294,12 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_provider_last_name")
 	public String getOrderingProviderLastName() {
-		return provider.getLastName();
+		return provider.getNameInfo().getLastName();
 	}
 
 	@JsonProperty("Ordering_provider_first_name")
 	public String getOrderingProviderFirstName() {
-		return provider.getFirstName();
+		return provider.getNameInfo().getFirstName();
 	}
 
 	@JsonProperty("Ordering_provider_street")

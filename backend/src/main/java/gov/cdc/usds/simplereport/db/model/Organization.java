@@ -133,28 +133,28 @@ public class Organization extends EternalEntity {
 		if(orderingProvider == null) {
 			return "";
 		}
-		return orderingProvider.getFirstName();
+		return orderingProvider.getNameInfo().getFirstName();
 	}
 
 	public String orderingProviderMiddleName() {
 		if(orderingProvider == null) {
 			return "";
 		}
-		return orderingProvider.getMiddleName();
+		return orderingProvider.getNameInfo().getMiddleName();
 	}
 
 	public String orderingProviderLastName() {
 		if(orderingProvider == null) {
 			return "";
 		}
-		return orderingProvider.getLastName();
+		return orderingProvider.getNameInfo().getLastName();
 	}
 
 	public String orderingProviderSuffix() {
 		if(orderingProvider == null) {
 			return "";
 		}
-		return orderingProvider.getSuffix();
+		return orderingProvider.getNameInfo().getSuffix();
 	}
 
 	public String orderingProviderNPI() {

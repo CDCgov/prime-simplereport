@@ -44,9 +44,9 @@ const SET_SETTINGS_MUTATION = gql`
     $testingFacilityName: String!
     $cliaNumber: String
     $orderingProviderFirstName: String!
-    $orderingProviderMiddleName: String!
+    $orderingProviderMiddleName: String
     $orderingProviderLastName: String!
-    $orderingProviderSuffix: String!
+    $orderingProviderSuffix: String
     $orderingProviderNPI: String!
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String

@@ -61,10 +61,10 @@ public class OrganizationService {
 		org.addDefaultDeviceType(defaultDeviceType);
 
 		Provider p = org.getOrderingProvider();
-		p.setFirstName(orderingProviderFirstName);
-		p.setMiddleName(orderingProviderMiddleName);
-		p.setLastName(orderingProviderLastName);
-		p.setSuffix(orderingProviderSuffix);
+		p.getNameInfo().setFirstName(orderingProviderFirstName);
+		p.getNameInfo().setMiddleName(orderingProviderMiddleName);
+		p.getNameInfo().setLastName(orderingProviderLastName);
+		p.getNameInfo().setSuffix(orderingProviderSuffix);
 		p.setProviderId(orderingProviderNPI);
 		p.setTelephone(orderingProviderTelephone);
 

@@ -5,18 +5,16 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 @Entity
 public class Provider extends EternalEntity {
 
-	@Column(nullable = false)
-	private String firstName;
-	@Column
-	private String middleName;
-	@Column(nullable = false)
-	private String lastName;
-	@Column
-	private String suffix;
+	@Embedded
+	@JsonUnwrapped
+	private PersonName nameInfo;
 	@Column(nullable = false)
 	private String providerId;
 	@Embedded
@@ -27,47 +25,15 @@ public class Provider extends EternalEntity {
 	protected Provider() { /* for hibernate */ }
 
 	public Provider(String firstName, String middleName, String lastName, String suffix, String providerId, StreetAddress address, String telephone) {
-		this.firstName = firstName;
-		this.middleName = middleName;
-		this.lastName = lastName;
-		this.suffix = suffix;
+		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.providerId = providerId;
 		this.address = address;
 		this.telephone = telephone;
 	}
 
-	public String getFirstName() {
-		return firstName;
+	public PersonName getNameInfo() {
+		return nameInfo;
 	}
-
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
-	public String getLastName() {
-		return lastName;
-	}
-
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
-	public String getSuffix() {
-		return suffix;
-	}
-
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
-
 
 	public String getProviderId() {
 		return providerId;
