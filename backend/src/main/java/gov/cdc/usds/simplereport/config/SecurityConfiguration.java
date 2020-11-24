@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -70,12 +71,25 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	@Bean
 	public IdentitySupplier getRealIdentity() {
 		return () -> {
-			OidcUser me = (OidcUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
-			String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
-			String email = me.getAttribute(OktaAttributes.EMAIL);
-			LOG.debug("Hello {} {} ({})", firstName, lastName, email);
-			return new IdentityAttributes(email, firstName, null, lastName, null);
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if (principal instanceof OidcUser) {
+				OidcUser me = (OidcUser) principal;
+				LOG.debug("OIDC user found with attributes {}", me.getAttributes());
+				String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
+				String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
+				String email = me.getAttribute(OktaAttributes.EMAIL);
+				LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
+				return new IdentityAttributes(email, firstName, null, lastName, null);
+			} else if (principal instanceof Jwt) {
+				Jwt token = (Jwt) principal;
+				LOG.debug("JWT user found with claims {}", token.getClaims());
+				String email = token.getSubject();
+				String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
+				String lastName = token.getClaim(OktaAttributes.LAST_NAME);
+				LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
+				return new IdentityAttributes(email, firstName, null, lastName, null);
+			}
+			throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass());
 		};
 	}
 }
