@@ -11,7 +11,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 #### 2. Front-end prerequisites
 
-- version of node
+- [nvm](https://github.com/nvm-sh/nvm) 
 - (optional) probably want to install react and redux developer tools extensions
 
 ## Backend
@@ -41,8 +41,10 @@ docker-compose up --build
 
 ## Frontend
 
-1. go to `frontend` and run `npm install`
-2. `npm run start` and go to `localhost:3000`.
+1. go to `frontend`
+1. run `nvm use`
+1. run `npm install`
+2. run `npm run start` and go to `localhost:3000`.
 
 - note: at least right now, you would need the backend and database running
 
