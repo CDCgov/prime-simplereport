@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 //import { gql, useQuery, useMutation } from "@apollo/client";
 import { gql, useMutation } from "@apollo/client";
-
+import { toast } from "react-toastify";
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
@@ -14,8 +14,9 @@ import Checkboxes from "../commonComponents/Checkboxes";
 import { Prompt } from "react-router-dom";
 import moment from "moment";
 import Dropdown from "../commonComponents/Dropdown";
-import { displayFullName } from "../utils";
+import { displayFullName, showNotification } from "../utils";
 import "./EditPatient.scss";
+import Alert from "../commonComponents/Alert";
 
 const ADD_PATIENT = gql`
   mutation(
@@ -182,6 +183,14 @@ const PatientForm = (props) => {
         (error) => console.error(error)
       );
     }
+    showNotification(
+      toast,
+      <Alert
+        type="success"
+        title="Patient Saved"
+        body="Patient information has been saved."
+      />
+    );
   };
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
