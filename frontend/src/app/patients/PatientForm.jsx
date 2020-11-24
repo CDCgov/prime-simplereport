@@ -174,23 +174,51 @@ const PatientForm = (props) => {
           ...variables,
         },
       }).then(
-        () => console.log("success!!!"),
-        (error) => console.error(error)
+        () =>
+          showNotification(
+            toast,
+            <Alert
+              type="success"
+              title={`${PATIENT_TERM_CAP} Record Saved`}
+              body="Information record has been updated."
+            />
+          ),
+        (error) => {
+          console.error(error);
+          showNotification(
+            toast,
+            <Alert
+              type="error"
+              title={`${PATIENT_TERM_CAP} Data Error`}
+              body="Please check for missing data or typos."
+            />
+          );
+        }
       );
     } else {
       addPatient({ variables }).then(
-        () => console.log("success!!!"),
-        (error) => console.error(error)
+        () =>
+          showNotification(
+            toast,
+            <Alert
+              type="success"
+              title={`${PATIENT_TERM_CAP} Record Created`}
+              body="New information record has been created."
+            />
+          ),
+        (error) => {
+          console.error(error);
+          showNotification(
+            toast,
+            <Alert
+              type="error"
+              title={`${PATIENT_TERM_CAP} Data Error`}
+              body="Please check for missing data or typos."
+            />
+          );
+        }
       );
     }
-    showNotification(
-      toast,
-      <Alert
-        type="success"
-        title="Patient Saved"
-        body="Patient information has been saved."
-      />
-    );
   };
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
