@@ -1,5 +1,5 @@
 resource "okta_app_oauth" "app" {
-  label = "simple-report-${var.env}"
+  label = "Simple Report (${var.env})"
   type                       = "web"
   grant_types                = ["authorization_code"]
   redirect_uris              = [
@@ -19,4 +19,14 @@ resource "okta_app_group_assignment" "users" {
   count = length(var.user_groups)
   app_id = okta_app_oauth.app.id
   group_id = element(var.user_groups, count.index)
+}
+
+// Link the CDC/USDS users to the application
+data "okta_group" "cdc_users" {
+  name = "Prime Team Members"
+}
+
+resource "okta_app_group_assignment" "prime_users" {
+  app_id = okta_app_oauth.app.id
+  group_id = data.okta_group.cdc_users.id
 }
