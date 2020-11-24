@@ -13,7 +13,8 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
   };
 
   let {
-    orderingProviderName,
+    orderingProviderFirstName,
+    orderingProviderLastName,
     orderingProviderNPI,
     orderingProviderStreet,
     orderingProviderStreetTwo,
@@ -37,10 +38,18 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
             <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
-                  label={"Name"}
-                  value={orderingProviderName || ""}
+                  label={"First Name"}
+                  value={orderingProviderFirstName || ""}
                   onChange={onInputChange}
-                  name={"orderingProviderName"}
+                  name={"orderingProviderFirstName"}
+                />
+              </div>
+              <div className="tablet:grid-col">
+                <TextInput
+                  label={"Last Name"}
+                  value={orderingProviderLastName || ""}
+                  onChange={onInputChange}
+                  name={"orderingProviderLastName"}
                 />
               </div>
               <div className="tablet:grid-col">
@@ -67,6 +76,8 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderStreetTwo"}
                 />
               </div>
+            </div>
+            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"City"}
@@ -75,8 +86,6 @@ const OrderingProviderSettings = ({ orgSettings, updateOrgSettings }) => {
                   name={"orderingProviderCity"}
                 />
               </div>
-            </div>
-            <div className="grid-row grid-gap">
               <div className="tablet:grid-col">
                 <TextInput
                   label={"County"}

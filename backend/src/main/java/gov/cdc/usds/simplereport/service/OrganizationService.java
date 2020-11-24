@@ -32,7 +32,7 @@ public class OrganizationService {
 		if (maybe.isPresent()) {
 			return maybe.get();
 		} else {
-			Provider p = _providerRepo.save(new Provider("Doctor Dread", "XXXXX", null, "(202) 555-4321"));
+			Provider p = _providerRepo.save(new Provider("Doctor", "Dread", "XXXXX", null, "(202) 555-4321"));
 			return _repo.save(new Organization("This Place", FAKE_ORG_ID, null, p));
 		}
 	}
@@ -40,7 +40,8 @@ public class OrganizationService {
 	public Organization updateOrganization(
 		String testingFacilityName,
 		String cliaNumber,
-		String orderingProviderName,
+		String orderingProviderFirstName,
+		String orderingProviderLastName,
 		String orderingProviderNPI,
 		String orderingProviderStreet,
 		String orderingProviderStreetTwo,
@@ -58,7 +59,8 @@ public class OrganizationService {
 		org.addDefaultDeviceType(defaultDeviceType);
 
 		Provider p = org.getOrderingProvider();
-		p.setName(orderingProviderName);
+		p.setFirstName(orderingProviderFirstName);
+		p.setLastName(orderingProviderLastName);
 		p.setProviderId(orderingProviderNPI);
 		p.setTelephone(orderingProviderTelephone);
 

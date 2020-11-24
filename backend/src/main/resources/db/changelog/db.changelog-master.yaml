@@ -141,8 +141,12 @@ databaseChangeLog:
               - column: *updated_by_column
               - column: *soft_delete_column
               - column:
-                  name: name
-                  remarks: The provider's full name.
+                  name: first_name
+                  remarks: The provider's given name
+                  type: *string
+              - column:
+                  name: last_name
+                  remarks: The provider's family name
                   type: *string
                   constraints:
                     nullable: false

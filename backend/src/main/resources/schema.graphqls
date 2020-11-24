@@ -33,7 +33,8 @@ type Organization {
   internalId: ID
   testingFacilityName: String
   cliaNumber: String
-  orderingProviderName: String
+  orderingProviderFirstName: String
+  orderingProviderLastName: String
   orderingProviderNPI: String
   orderingProviderStreet: String
   orderingProviderStreetTwo: String
@@ -85,7 +86,8 @@ type Mutation {
   updateOrganization(
     testingFacilityName: String!
     cliaNumber: String
-    orderingProviderName: String!
+    orderingProviderFirstName: String!
+    orderingProviderLastName: String!
     orderingProviderNPI: String!
     orderingProviderStreet: String
     orderingProviderStreetTwo: String

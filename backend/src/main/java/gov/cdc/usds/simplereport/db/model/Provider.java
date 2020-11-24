@@ -10,7 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 public class Provider extends EternalEntity {
 
 	@Column(nullable = false)
-	private String name;
+	private String firstName;
+	@Column(nullable = false)
+	private String lastName;
 	@Column(nullable = false)
 	private String providerId;
 	@Embedded
@@ -20,19 +22,28 @@ public class Provider extends EternalEntity {
 
 	protected Provider() { /* for hibernate */ }
 
-	public Provider(String name, String providerId, StreetAddress address, String telephone) {
-		this.name = name;
+	public Provider(String firstName, String lastName, String providerId, StreetAddress address, String telephone) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.providerId = providerId;
 		this.address = address;
 		this.telephone = telephone;
 	}
 
-	public String getName() {
-		return name;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 	public String getProviderId() {

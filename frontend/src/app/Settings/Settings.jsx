@@ -18,7 +18,8 @@ const GET_SETTINGS_QUERY = gql`
       cliaNumber
       testingFacilityName
       orderingProviderNPI
-      orderingProviderName
+      orderingProviderFirstName
+      orderingProviderLastName
       orderingProviderStreet
       orderingProviderStreetTwo
       orderingProviderCity
@@ -40,7 +41,8 @@ const SET_SETTINGS_MUTATION = gql`
   mutation(
     $testingFacilityName: String!
     $cliaNumber: String
-    $orderingProviderName: String!
+    $orderingProviderFirstName: String!
+    $orderingProviderLastName: String!
     $orderingProviderNPI: String!
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
@@ -55,7 +57,8 @@ const SET_SETTINGS_MUTATION = gql`
     updateOrganization(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
-      orderingProviderName: $orderingProviderName
+      orderingProviderFirstName: $orderingProviderFirstName
+      orderingProviderLastName: $orderingProviderLastName
       orderingProviderNPI: $orderingProviderNPI
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
@@ -121,7 +124,8 @@ const Settings = () => {
       variables: {
         testingFacilityName: orgSettings.testingFacilityName,
         cliaNumber: orgSettings.cliaNumber,
-        orderingProviderName: orgSettings.orderingProviderName,
+        orderingProviderFirstName: orgSettings.orderingProviderFirstName,
+        orderingProviderLastName: orgSettings.orderingProviderLastName,
         orderingProviderNPI: orgSettings.orderingProviderNPI,
         orderingProviderStreet: orgSettings.orderingProviderStreet,
         orderingProviderStreetTwo: orgSettings.orderingProviderStreetTwo,

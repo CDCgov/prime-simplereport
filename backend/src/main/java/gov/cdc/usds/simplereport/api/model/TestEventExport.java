@@ -294,14 +294,12 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_provider_last_name")
 	public String getOrderingProviderLastName() {
-		// TODO: we only collect name
-		return provider.getName();
+		return provider.getLastName();
 	}
 
 	@JsonProperty("Ordering_provider_first_name")
 	public String getOrderingProviderFirstName() {
-		// TODO: we only collect name
-		return provider.getName();
+		return provider.getFirstName();
 	}
 
 	@JsonProperty("Ordering_provider_street")
