@@ -3,6 +3,12 @@ provider "azurerm" {
   features {}
   skip_provider_registration = true
 }
+
+provider "okta" {
+  org_name = "prime-eval"
+  base_url = "okta.com"
+}
+
 locals {
   management_tags = {
     prime-app = "simplereport"
@@ -59,4 +65,11 @@ module "frontend" {
   rg_location = data.azurerm_resource_group.rg.location
   rg_name = data.azurerm_resource_group.rg.name
   tags = local.management_tags
+}
+
+
+// Okta application
+module "okta" {
+  source = "../services/okta-app"
+  env = local.env
 }
