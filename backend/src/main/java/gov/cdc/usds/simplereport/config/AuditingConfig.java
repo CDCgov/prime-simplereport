@@ -17,14 +17,12 @@ import gov.cdc.usds.simplereport.service.ApiUserService;
 @EnableJpaAuditing
 public class AuditingConfig {
 
-	public static final String ID_PROVIDER = "currentUserProvider";
-
 	private static final Logger LOG = LoggerFactory.getLogger(AuditingConfig.class);
 
 	@Autowired
 	private ApiUserService _userService;
 
-	@Bean(ID_PROVIDER)
+	@Bean
 	public AuditorAware<ApiUser> getCurrentUserProvider() {
 		return () -> {
 			LOG.debug("Fetching current user for audit");
