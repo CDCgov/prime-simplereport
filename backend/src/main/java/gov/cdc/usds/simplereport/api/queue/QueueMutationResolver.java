@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class QueueMutationResolver implements GraphQLMutationResolver  {
-    private static DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final TestOrderService _tos;
     private final PersonService _ps;
@@ -48,8 +48,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         String symptomOnset,
         boolean noSymptoms
     ) throws JSONException {
-      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
-      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, this.dateTimeFormatter);
+      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, DATE_FORMATTER);
+      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, DATE_FORMATTER);
 
       Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
       JSONObject symptomsJSONObject = new JSONObject(symptoms);
@@ -92,8 +92,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       String symptomOnset,
       boolean noSymptoms
     ) {
-      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, this.dateTimeFormatter);
-      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, this.dateTimeFormatter);
+      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, DATE_FORMATTER);
+      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, DATE_FORMATTER);
 
       Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
       JSONObject symptomsJSONObject = new JSONObject(symptoms);
