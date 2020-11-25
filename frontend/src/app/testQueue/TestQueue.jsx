@@ -59,7 +59,9 @@ const queueQuery = gql`
 `;
 
 const TestQueue = () => {
-  const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, { fetchPolicy: "no-cache"});
+  const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
+    fetchPolicy: "no-cache",
+  });
 
   if (error) {
     return <p>Error in loading patients</p>;

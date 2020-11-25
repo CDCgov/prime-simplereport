@@ -42,7 +42,8 @@ const raceArrayToObject = (raceArray) => {
 
 const EditPatient = (props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
-    variables: { id: props.patientId || "" }, fetchPolicy: "no-cache"
+    variables: { id: props.patientId || "" },
+    fetchPolicy: "no-cache",
   });
 
   if (loading) {
