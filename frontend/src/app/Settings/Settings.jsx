@@ -149,7 +149,7 @@ const Settings = () => {
         <Alert
           type={"success"}
           title={"Updated Organization"}
-          body={"The settings for the organization has been updated"}
+          body={"The settings for the organization have been updated"}
         />
       );
       showNotification(toast, alert);
