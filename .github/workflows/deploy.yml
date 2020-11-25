@@ -9,9 +9,8 @@ on:
     branches: # automatically deploy the "sandbox" branch on every push
       - sandbox
       - main
-# commented out by Pete 11/25 because it just fails every day
-#   schedule:
-#    - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
+   schedule:
+    - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
