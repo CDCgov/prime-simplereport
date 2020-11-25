@@ -16,6 +16,7 @@ import {
   InMemoryCache,
   concat,
 } from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
 
 if (window.location.hash) {
   const params = new URLSearchParams(window.location.hash.slice(1));
@@ -37,9 +38,18 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
+const logoutLink = onError(({ networkError }) => {
+  console.log(networkError);
+  if (networkError && process.env.REACT_APP_OKTA_URL) {
+    console.error("network error", networkError);
+    console.log("redirecting to", process.env.REACT_APP_OKTA_URL);
+    window.location.replace(process.env.REACT_APP_OKTA_URL);
+  }
+});
+
 const client = new ApolloClient({
   cache: new InMemoryCache(),
-  link: concat(authMiddleware, httpLink),
+  link: logoutLink.concat(concat(authMiddleware, httpLink)),
 });
 
 ReactDOM.render(
