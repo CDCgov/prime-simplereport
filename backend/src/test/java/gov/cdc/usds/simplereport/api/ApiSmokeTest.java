@@ -41,7 +41,7 @@ public class ApiSmokeTest {
 		_personService.addPatient("BAZ", "Baz", null, "Jesek", null, 
 				LocalDate.of(2403, 12, 3),
 				"Someplace", "Nice", "Capitol", "Escobar", "12345-6678",
-				"(12) 2345", "visitor", "baz@dendarii.net", "Vorkosigan", null, null, "M", false, false);
+				"(12) 2345", "visitor", "baz@dendarii.net", "Vorkosigan", null, null, "M", false, false, null);
 		postMultipart = template.postForResource("person-query");
 		assertTrue(postMultipart.isOk());
 		jsonResponse = postMultipart.readTree();

@@ -49,6 +49,8 @@ public class Person extends EternalEntity {
 	private String role;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
+	@Column
+	private String facilityRole;
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id")
 	@JsonIgnore // don't descend this model graph when serializing for TestEvent
@@ -85,7 +87,8 @@ public class Person extends EternalEntity {
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
-		Boolean employedInHealthcare
+		Boolean employedInHealthcare,
+		String facilityRole
 	) {
 		this.lookupId = lookupId;
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -100,6 +103,7 @@ public class Person extends EternalEntity {
 		this.gender = gender;
 		this.residentCongregateSetting = residentCongregateSetting;
 		this.employedInHealthcare = employedInHealthcare;
+		this.facilityRole = facilityRole;
 	}
 
 	public void updatePatient(

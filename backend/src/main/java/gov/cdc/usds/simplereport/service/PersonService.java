@@ -1,15 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.UUID;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
 
 
 /**
@@ -56,7 +55,8 @@ public class PersonService {
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
-		Boolean employedInHealthcare
+		Boolean employedInHealthcare,
+		String facilityRole
 	) {
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person newPatient = new Person(
@@ -75,7 +75,8 @@ public class PersonService {
 			ethnicity,
 			gender,
 			residentCongregateSetting,
-			employedInHealthcare
+			employedInHealthcare,
+            facilityRole
 		);
 		_repo.save(newPatient);
 		return newPatient.getInternalId().toString();

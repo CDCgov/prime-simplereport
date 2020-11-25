@@ -65,7 +65,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             ethnicity,
             gender,
             residentCongregateSetting,
-            employedInHealthcare
+            employedInHealthcare,
+  null
         );
     }
 

@@ -27,9 +27,9 @@ public class PersonServiceTest extends BaseRepositoryTest {
 	@Test
 	public void roundTrip() {
 		_service.addPatient("FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Hicksville", "NY",
-			"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false);
+			"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false, "Patient");
 		_service.addPatient("BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main",null, "Hicksville", "NY",
-				"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false);
+				"11801", "(888) GET-BENT", null, null, "Nassau", null, null, null, false, false, null);
 		List<Person> all = _service.getPatients();
 		assertEquals(2, all.size());
 	}

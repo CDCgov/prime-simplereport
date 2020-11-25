@@ -67,7 +67,8 @@ public class UploadService {
                     row.get("Gender"),
                     row.get("Ethnicity"),
                     Boolean.parseBoolean(row.get("residentCongregateSetting")),
-                    Boolean.parseBoolean(row.get("employedInHealthcare")));
+                    Boolean.parseBoolean(row.get("employedInHealthcare")),
+                    row.get("Role"));
         }
     }
 
@@ -94,6 +95,7 @@ public class UploadService {
                 .addColumn("typeOfHealthcareProfessional", CsvSchema.ColumnType.STRING)
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.BOOLEAN)
                 .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
+                .addColumn("Role", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
     }

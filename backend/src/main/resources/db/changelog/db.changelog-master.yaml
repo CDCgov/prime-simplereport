@@ -465,3 +465,16 @@ databaseChangeLog:
                     foreignKeyName: fk__test_order__test_event
                     references: test_event
                     uniqueKeyName: uk__test_order__test_event
+  - changeSet:
+      id: add-facility-role
+      author: nicholas.a.robison@omb.eop.gov
+      comment: Add Facility Role column to Person table
+      changes:
+        - addColumn:
+            tableName: person
+            remarks: Add optional facility role
+            columns:
+              - column:
+                  name: facility_role
+                  type: *string
+
