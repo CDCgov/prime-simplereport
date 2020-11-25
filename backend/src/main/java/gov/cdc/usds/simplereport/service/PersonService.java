@@ -59,7 +59,14 @@ public class PersonService {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
-		final PersonRole personRole = PersonRole.valueOf(role.toUpperCase());
+		final PersonRole personRole;
+
+		if (role == null || role == "") {
+			personRole = PersonRole.UNKNOWN;
+		} else {
+			personRole = PersonRole.valueOf(role.toUpperCase());
+		}
+
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person newPatient = new Person(
 			_os.getCurrentOrganization(),
