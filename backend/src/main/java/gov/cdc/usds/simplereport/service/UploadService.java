@@ -46,7 +46,7 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"));
-            List<String> race = new ArrayList<String>();
+            List<String> race = new ArrayList<>();
             race.add(row.get("Race"));
             _ps.addPatient(row.get("ID"),
                     row.get("FirstName"),
@@ -61,7 +61,7 @@ public class UploadService {
                     row.get("ZipCode"),
                     row.get("County"),
                     row.get("PhoneNumber"),
-                    row.get("typeOfHealthcareProfessional"),
+                    row.get("Role"),
                     row.get("Email"),
                     race,
                     row.get("Gender"),
@@ -91,9 +91,9 @@ public class UploadService {
                 .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
                 .addColumn("Email", CsvSchema.ColumnType.STRING)
                 .addColumn("employedInHealthcare", CsvSchema.ColumnType.BOOLEAN)
-                .addColumn("typeOfHealthcareProfessional", CsvSchema.ColumnType.STRING)
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.BOOLEAN)
                 .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
+                .addColumn("Role", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
     }
