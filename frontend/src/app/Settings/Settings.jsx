@@ -85,7 +85,7 @@ const Settings = () => {
     loading: isLoadingSettings,
     error: errorFetchingSettings,
     refetch: refetchSettings,
-  } = useQuery(GET_SETTINGS_QUERY);
+  } = useQuery(GET_SETTINGS_QUERY, { fetchPolicy: "no-cache" });
 
   const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
 

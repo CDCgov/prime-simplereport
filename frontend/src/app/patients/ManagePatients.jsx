@@ -32,7 +32,9 @@ const patientQuery = gql`
 `;
 
 const ManagePatients = () => {
-  const { data, loading, error } = useQuery(patientQuery);
+  const { data, loading, error } = useQuery(patientQuery, {
+    fetchPolicy: "no-cache",
+  });
   const [isCSVModalOpen, updateIsCSVModalOpen] = useState(false);
 
   const openCSVModal = () => {
