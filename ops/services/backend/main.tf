@@ -22,6 +22,16 @@ data "azurerm_key_vault_secret" "db_password" {
   name = "simple-report-${var.env}-db-password"
 }
 
+data "azurerm_key_vault_secret" "okta_client_id" {
+  key_vault_id = var.key_vault_id
+  name = "okta-${var.env}-client-id"
+}
+
+data "azurerm_key_vault_secret" "okta_client_secret" {
+  key_vault_id = var.key_vault_id
+  name = "okta-${var.env}-client-secret"
+}
+
 // Container network
 
 resource "azurerm_subnet" "containers" {
@@ -76,10 +86,12 @@ resource "azurerm_container_group" "backend" {
     }
     secure_environment_variables = {
       "SPRING_DATASOURCE_URL": "jdbc:postgresql://${var.db_dns_name}:5432/simple_report?user=${var.db_username}@${var.db_server_name}&password=${data.azurerm_key_vault_secret.db_password.value}&sslmode=require",
+      "OKTA_OAUTH2_CLIENT_ID": data.azurerm_key_vault_secret.okta_client_id.value,
+      "OKTA_OAUTH2_CLIENT_SECRET": data.azurerm_key_vault_secret.okta_client_secret.value,
     }
     environment_variables = {
-      "SPRING_PROFILES_ACTIVE": "dev",
       "SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA": "public",
+      "OKTA_OAUTH2_ISSUER": "https://hhs-prime.okta.com/oauth2/default",
     }
   }
 
@@ -211,4 +223,18 @@ resource "azurerm_monitor_diagnostic_setting" "backend-awg" {
       }
     }
   }
+}
+
+// Setup DNS for backend Gateway
+data "azurerm_dns_zone" "sr" {
+  resource_group_name = "prime-simple-report-prod"
+  name = "simplereport.org"
+}
+
+resource "azurerm_dns_a_record" "backend" {
+  name = "api.${var.env}"
+  resource_group_name = "prime-simple-report-prod"
+  ttl = 300
+  zone_name = data.azurerm_dns_zone.sr.name
+  records = [azurerm_public_ip.backend.ip_address]
 }
