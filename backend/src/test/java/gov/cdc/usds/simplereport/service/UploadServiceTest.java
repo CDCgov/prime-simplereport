@@ -43,10 +43,10 @@ class UploadServiceTest extends BaseRepositoryTest {
             this._service.processPersonCSV(inputStream);
         }
 
-        final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "N\\A");
+        final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "");
         final List<Person> patients = this._ps.getPatients();
         assertAll(() -> assertEquals(1, patients.size()),
-                () -> assertEquals("Doe", patients.get(0).getFirstName()),
+                () -> assertEquals("Tim", patients.get(0).getFirstName()),
                 () -> assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
     }
 
