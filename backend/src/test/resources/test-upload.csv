@@ -1,2 +1,2 @@
-ID,LastName,FirstName,MiddleName,Suffix,Race,DOB  ,Gender,Ethnicity,Street    ,Street2,City ,County,State,ZipCode,PhoneNumber,Email,employedInHealthcare,typeOfHealthcareProfessional,residentCongregateSetting,ResidencyType
-1        ,"Doe"          ,"John"          ,"J"              ,""           ,"White"    ,"1990-01-01","Male"       ,"White"         ,"123 Main Street",""            ,"Washington","N\A"        ,"DC"        ,"20008"       ,"555-555-5555"    ,""          ,false               ,""                          ,true                       ,""
+ID,LastName,FirstName,MiddleName,Suffix,Race,DOB,Gender,Ethnicity,Street    ,Street2,City ,County,State,ZipCode,PhoneNumber,Email,employedInHealthcare,residentCongregateSetting,ResidencyType,Role
+,Best,Tim,,,White,5/11/1933,Male,Not Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,foo@bar.com,Yes,No,,Staff
