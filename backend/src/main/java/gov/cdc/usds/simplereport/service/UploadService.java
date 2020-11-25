@@ -9,10 +9,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -20,10 +23,21 @@ import java.util.List;
 @Service
 @Transactional
 public class UploadService {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     private static final CsvSchema PERSON_SCHEMA = personSchema();
 
     private final PersonService _ps;
+
+	private Map<String, String> ethnicityMap = new HashMap<String, String>() {{
+		put("Hispanic or Latino", "hispanic");
+		put("Not Hispanic", "not_hispanic");
+	}};
+
+	private Map<String, Boolean> yesNoMap = new HashMap<String, Boolean>() {{
+		put("Yes", true);
+		put("No", false);
+	}};
 
     public UploadService(PersonService ps) {
         this._ps = ps;
@@ -45,9 +59,10 @@ public class UploadService {
         while (valueIterator.hasNext()) {
             final Map<String, String> row = valueIterator.next();
 
-            final LocalDate patientDOB = LocalDate.parse(row.get("DOB"));
+            final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
             List<String> race = new ArrayList<>();
-            race.add(row.get("Race"));
+            race.add(row.get("Race").toLowerCase());
+
             _ps.addPatient(row.get("ID"),
                     row.get("FirstName"),
                     row.get("MiddleName"),
@@ -60,23 +75,23 @@ public class UploadService {
                     row.get("State"),
                     row.get("ZipCode"),
                     row.get("PhoneNumber"),
-                    row.get("Role"),
+                    row.get("Role").toUpperCase(),
                     row.get("Email"),
                     row.get("County"),
                     race,
-                    row.get("Gender"),
-                    row.get("Ethnicity"),
-                    Boolean.parseBoolean(row.get("residentCongregateSetting")),
-                    Boolean.parseBoolean(row.get("employedInHealthcare")));
+                    ethnicityMap.get(row.get("Ethnicity")),
+                    row.get("Gender").toLowerCase(),
+                    yesNoMap.get(row.get("residentCongregateSetting")),
+                    yesNoMap.get(row.get("employedInHealthcare")));
         }
     }
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
                 .addColumn("ID", CsvSchema.ColumnType.STRING)
+                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("FirstName", CsvSchema.ColumnType.STRING)
                 .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
-                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
                 .addColumn("Race", CsvSchema.ColumnType.STRING)
                 .addColumn("DOB", CsvSchema.ColumnType.STRING)
@@ -90,8 +105,8 @@ public class UploadService {
                 .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
                 .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
                 .addColumn("Email", CsvSchema.ColumnType.STRING)
-                .addColumn("employedInHealthcare", CsvSchema.ColumnType.BOOLEAN)
-                .addColumn("residentCongregateSetting", CsvSchema.ColumnType.BOOLEAN)
+                .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
+                .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
                 .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
                 .addColumn("Role", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
