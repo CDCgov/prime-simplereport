@@ -50,7 +50,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
 `;
 
 const AddToQueueSearchBox = ({ refetchQueue }) => {
-  const { data, loading, error } = useQuery(QUERY_PATIENT);
+  const { data, loading, error } = useQuery(QUERY_PATIENT, { fetchPolicy: "no-cache"});
   if (loading) {
     console.log("loading patient data for search");
   }
