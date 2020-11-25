@@ -21,8 +21,8 @@ public class DeviceTypeServiceTest extends BaseRepositoryTest {
 	@Test
 	public void insertAndFindAndDeleteAndSoForth() {
 		DeviceTypeService _service = new DeviceTypeService(_repo);
-		DeviceType devA = _service.createDeviceType("A", "B", "C");
-		DeviceType devB = _service.createDeviceType("D", "E", "F");
+		DeviceType devA = _service.createDeviceType("A", "B", "C", "DUMMY");
+		DeviceType devB = _service.createDeviceType("D", "E", "F", "DUMMY");
 		assertNotNull(devA);
 		assertNotNull(devB);
 		assertNotEquals(devA.getInternalId(), devB.getInternalId());

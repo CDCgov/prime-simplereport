@@ -38,7 +38,7 @@ public class DeviceTypeService {
 	}
 
 	@Transactional(readOnly = false)
-	public DeviceType createDeviceType(String name, String model, String manufacturer) {
-		return _repo.save(new DeviceType(name, manufacturer, model));
+	public DeviceType createDeviceType(String name, String model, String manufacturer, String loincCode) {
+		return _repo.save(new DeviceType(name, manufacturer, model, loincCode));
 	}
 }
