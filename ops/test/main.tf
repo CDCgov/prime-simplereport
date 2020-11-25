@@ -4,11 +4,6 @@ provider "azurerm" {
   skip_provider_registration = true
 }
 
-provider "okta" {
-  org_name = "prime-eval"
-  base_url = "okta.com"
-}
-
 locals {
   management_tags = {
     prime-app = "simplereport"
@@ -43,7 +38,7 @@ data "azurerm_postgresql_server" "db" {
 
 module "backend" {
   source = "../services/backend"
-  container_id = "nickrobisonusds/sr-backend:0605f1c"
+  container_id = "nickrobisonusds/sr-backend:${var.docker_tag}"
   db_dns_name = data.azurerm_postgresql_server.db.fqdn
   db_server_name = data.azurerm_postgresql_server.db.name
   db_name = "simple_report"
@@ -65,11 +60,4 @@ module "frontend" {
   rg_location = data.azurerm_resource_group.rg.location
   rg_name = data.azurerm_resource_group.rg.name
   tags = local.management_tags
-}
-
-
-// Okta application
-module "okta" {
-  source = "../services/okta-app"
-  env = local.env
 }
