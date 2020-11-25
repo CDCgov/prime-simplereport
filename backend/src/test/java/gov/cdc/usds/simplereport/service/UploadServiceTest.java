@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -31,8 +30,8 @@ class UploadServiceTest extends BaseRepositoryTest {
     private final PersonService _ps;
     private final UploadService _service;
 
-    public UploadServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired ProviderRepository providerRepo, @Autowired PersonRepository repo) {
-        OrganizationService os = new OrganizationService(orgRepo, providerRepo);
+    public UploadServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
+        OrganizationService os = new OrganizationService(orgRepo, initService);
         this._ps = new PersonService(os, repo);
         this._service = new UploadService(_ps);
     }

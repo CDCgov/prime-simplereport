@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import org.hibernate.annotations.Type;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -42,6 +43,7 @@ public class StreetAddress {
     /**
      * Convenience constructor for situations where we have a two-line address already
      */
+    @ConstructorBinding
     public StreetAddress(String street1, String street2, String city, String state, String postalCode, String county) {
         this(null, city, state, postalCode, county);
         if (street1 != null && !street1.isEmpty()) {
