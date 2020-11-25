@@ -17,9 +17,12 @@ import {
   concat,
 } from "@apollo/client";
 
-let bearerToken = null;
 if (window.location.hash) {
-  bearerToken = window.location.hash.slice(1);
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const bearerToken = params.get("access_token");
+  if (bearerToken) {
+    localStorage.setItem("access_token", bearerToken);
+  }
 }
 
 const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
@@ -28,7 +31,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
       "Access-Control-Request-Headers": "Authorization",
-      Authorization: `Bearer ${bearerToken}`,
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
   });
   return forward(operation);
