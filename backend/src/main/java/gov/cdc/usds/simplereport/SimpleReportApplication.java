@@ -4,10 +4,14 @@ import javax.servlet.Filter;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
+import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+
 @SpringBootApplication
+@EnableConfigurationProperties(InitialSetupProperties.class)
 public class SimpleReportApplication {
 
     public static void main(String[] args) {

@@ -12,15 +12,14 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PersonServiceTest extends BaseRepositoryTest {
 
 	private PersonService _service;
 
-	public PersonServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired ProviderRepository providerRepo, @Autowired PersonRepository repo) {
-		OrganizationService os= new OrganizationService(orgRepo, providerRepo);
+	public PersonServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
+		OrganizationService os= new OrganizationService(orgRepo, initService);
 		_service = new PersonService(os, repo);
 	}
 

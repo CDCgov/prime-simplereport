@@ -11,29 +11,27 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
 @Service
 @Transactional(readOnly=false)
 public class OrganizationService {
 
 	private OrganizationRepository _repo;
-	private ProviderRepository _providerRepo;
+	private OrganizationInitializingService _initService;
 
-	public static final String FAKE_ORG_ID = "123";
-
-	public OrganizationService(OrganizationRepository repo, ProviderRepository providers) {
+	public OrganizationService(OrganizationRepository repo,
+			OrganizationInitializingService initService) {
 		_repo = repo;
-		_providerRepo = providers;
+		_initService = initService;
 	}
 
 	public Organization getCurrentOrganization() {
-		Optional<Organization> maybe = _repo.findByExternalId(FAKE_ORG_ID);
+    	_initService.initAll();
+		Optional<Organization> maybe = _repo.findByExternalId(_initService.getDefaultOrganizationId());
 		if (maybe.isPresent()) {
 			return maybe.get();
 		} else {
-			Provider p = _providerRepo.save(new Provider("John", "H", "Watson", "Dr", "XXXXX", null, "(202) 555-4321"));
-			return _repo.save(new Organization("This Place", FAKE_ORG_ID, "11111", null, p));
+			throw new RuntimeException("Default organization not found: serious troubles");
 		}
 	}
 
