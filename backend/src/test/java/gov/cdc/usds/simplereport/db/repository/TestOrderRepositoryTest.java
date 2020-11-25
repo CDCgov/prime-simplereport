@@ -32,8 +32,8 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void runChanges() {
 		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 
-		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", null, mccoy));
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", null, mccoy));
+		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", "55555", null, mccoy));
+		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "66666", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", "", "", null, "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
 		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);
@@ -49,7 +49,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testLifeCycle() {
 		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", null, mccoy));
+		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "77777", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", "", "", null, "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
 		flush();

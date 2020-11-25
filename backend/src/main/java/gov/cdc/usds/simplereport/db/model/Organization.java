@@ -27,6 +27,10 @@ public class Organization extends EternalEntity {
 	@NaturalId
 	private String externalId;
 
+	@Column(nullable=false)
+	@NaturalId
+	private String cliaNumber;
+
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "default_device_type")
 	private DeviceType defaultDeviceType;
@@ -45,14 +49,15 @@ public class Organization extends EternalEntity {
 
 	protected Organization() { /* for hibernate */ }
 
-	public Organization(String facilityName, String externalId) {
+	public Organization(String facilityName, String externalId, String cliaNumber) {
 		this();
 		this.facilityName = facilityName;
 		this.externalId = externalId;
+		this.cliaNumber = cliaNumber;
 	}
 
-	public Organization(String facilityName, String externalId, DeviceType defaultDeviceType, Provider orderingProvider) {
-		this(facilityName, externalId);
+	public Organization(String facilityName, String externalId, String cliaNumber, DeviceType defaultDeviceType, Provider orderingProvider) {
+		this(facilityName, externalId, cliaNumber);
 		this.defaultDeviceType = defaultDeviceType;
 		if (defaultDeviceType != null) {
 			this.configuredDevices.add(defaultDeviceType);
@@ -63,10 +68,11 @@ public class Organization extends EternalEntity {
 	public Organization(
 			String facilityName,
 			String externalId,
+			String cliaNumber,
 			DeviceType defaultDeviceType,
 			Provider orderingProvider,
 			Collection<DeviceType> configuredDevices) {
-		this(facilityName, externalId, defaultDeviceType, orderingProvider);
+		this(facilityName, externalId, cliaNumber, defaultDeviceType, orderingProvider);
 		this.configuredDevices.addAll(configuredDevices);
 	}
 
@@ -82,8 +88,8 @@ public class Organization extends EternalEntity {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
-		this.externalId = externalId;
+	public void setCliaNumber(String cliaNumber) {
+		this.cliaNumber = cliaNumber;
 	}
 
 	public DeviceType getDefaultDeviceType() {
@@ -122,7 +128,7 @@ public class Organization extends EternalEntity {
 	}
 
 	public String getCliaNumber() {
-		return this.externalId;
+		return this.cliaNumber;
 	}
 
 	public Provider getOrderingProvider() {
@@ -236,5 +242,4 @@ public class Organization extends EternalEntity {
 		}
 		return orderingProvider.getTelephone();
 	}
-
 }

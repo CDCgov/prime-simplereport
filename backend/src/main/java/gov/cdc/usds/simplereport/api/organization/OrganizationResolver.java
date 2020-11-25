@@ -33,20 +33,21 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
 
         List<DeviceType> currentDevices = _deviceService.fetchDeviceTypes();
         List<String> currentDeviceNames = currentDevices.stream().map(d->d.getName()).collect(Collectors.toList());
+        String sharedLoinc = "94558-4"; // sigh
         if (!currentDeviceNames.contains("Abbott IDNow")) {
-            _deviceService.createDeviceType("Abbott IDNow", "ID Now", "Abbott");
+            _deviceService.createDeviceType("Abbott IDNow", "ID Now", "Abbott", sharedLoinc);
         }
         if (!currentDeviceNames.contains("Abbott BinaxNow")) {
-            _deviceService.createDeviceType("Abbott BinaxNow", "BinaxNOW COVID-10 Ag Card", "Abbott");
+            _deviceService.createDeviceType("Abbott BinaxNow", "BinaxNOW COVID-10 Ag Card", "Abbott", sharedLoinc);
         }
         if (!currentDeviceNames.contains("Quidel Sofia 2")) {
-            _deviceService.createDeviceType("Quidel Sofia 2", "Sofia 2 SARS Antigen FIA", "Quidel");
+            _deviceService.createDeviceType("Quidel Sofia 2", "Sofia 2 SARS Antigen FIA", "Quidel", sharedLoinc);
         }
         if (!currentDeviceNames.contains("BD Veritor")) {
-            _deviceService.createDeviceType("BD Veritor", "BD Veritor System for Rapid Detection of SARS-CoV-2*", "Becton, Dickinson and Company (BD)");
+            _deviceService.createDeviceType("BD Veritor", "BD Veritor System for Rapid Detection of SARS-CoV-2*", "Becton, Dickinson and Company (BD)", sharedLoinc);
         }
         if (!currentDeviceNames.contains("LumiraDX")) {
-            _deviceService.createDeviceType("LumiraDX", "LumiraDX", "LumiraDX");
+            _deviceService.createDeviceType("LumiraDX", "LumiraDX", "LumiraDX", sharedLoinc);
         }
         return _organizationService.getCurrentOrganization();
     }

@@ -217,8 +217,7 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_ID")
 	public String getTestingLabID() {
-		// CLIA number
-		return org.getExternalId();
+		return org.getCliaNumber();
 	}
 
 	@JsonProperty("Testing_lab_state")

@@ -33,7 +33,7 @@ public class OrganizationService {
 			return maybe.get();
 		} else {
 			Provider p = _providerRepo.save(new Provider("John", "H", "Watson", "Dr", "XXXXX", null, "(202) 555-4321"));
-			return _repo.save(new Organization("This Place", FAKE_ORG_ID, null, p));
+			return _repo.save(new Organization("This Place", FAKE_ORG_ID, "11111", null, p));
 		}
 	}
 
@@ -57,7 +57,7 @@ public class OrganizationService {
 	) {
 		Organization org = this.getCurrentOrganization();
 		org.setFacilityName(testingFacilityName);
-		org.setExternalId(cliaNumber);
+		org.setCliaNumber(cliaNumber);
 		org.addDefaultDeviceType(defaultDeviceType);
 
 		Provider p = org.getOrderingProvider();
