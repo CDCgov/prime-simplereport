@@ -16,7 +16,7 @@ import java.util.Objects;
 public class StreetAddress {
 
     @Type(type = "list-array")
-    @Column(columnDefinition = "text ARRAY") // needed by auto-ddl validation, just for the array type
+    @Column
     private List<String> street = new ArrayList<>();
     @Column
     private String city;

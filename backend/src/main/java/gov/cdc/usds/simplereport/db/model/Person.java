@@ -35,7 +35,7 @@ public class Person extends EternalEntity {
 	@Column
 	private String gender;
 	@Type(type = "list-array")
-	@Column(columnDefinition = "text[]") // needed by auto-ddl validation, just for the array type
+	@Column
 	private List<String> race = new ArrayList<>();
 	@Column
 	private String ethnicity;
