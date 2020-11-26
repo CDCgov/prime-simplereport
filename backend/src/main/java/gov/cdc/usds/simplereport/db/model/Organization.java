@@ -193,6 +193,9 @@ public class Organization extends EternalEntity {
 		if(orderingProvider.getAddress().getStreet() == null) {
 			return "";
 		}
+		if(orderingProvider.getAddress().getStreet().size() < 2) {
+			return "";
+		}
 		return orderingProvider.getAddress().getStreet().get(1);
 	}
 
