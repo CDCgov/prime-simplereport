@@ -1,7 +1,7 @@
 FROM gradle:6.6.1-jdk11-hotspot AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon 
+RUN gradle build --no-daemon -x test
 
 FROM openjdk:11-jre-slim
 EXPOSE 8080
