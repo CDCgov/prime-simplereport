@@ -55,3 +55,26 @@ module "frontend" {
   rg_name = data.azurerm_resource_group.rg.name
   tags = local.management_tags
 }
+
+
+// Setup DNS for backend Gateway
+data "azurerm_dns_zone" "sr" {
+  resource_group_name = "prime-simple-report-prod"
+  name = "simplereport.org"
+}
+
+resource "azurerm_dns_a_record" "backend" {
+  name = "api.${var.env}"
+  resource_group_name = "prime-simple-report-prod"
+  ttl = 300
+  zone_name = data.azurerm_dns_zone.sr.name
+  records = [module.backend.gateway_ip]
+}
+
+resource "azurerm_dns_cname_record" "frontend" {
+  name = var.env
+  resource_group_name = "prime-simple-report-prod"
+  ttl = 300
+  zone_name = data.azurerm_dns_zone.sr.name
+  record = module.frontend.blob_ip_address
+}

@@ -225,16 +225,3 @@ resource "azurerm_monitor_diagnostic_setting" "backend-awg" {
   }
 }
 
-// Setup DNS for backend Gateway
-data "azurerm_dns_zone" "sr" {
-  resource_group_name = "prime-simple-report-prod"
-  name = "simplereport.org"
-}
-
-resource "azurerm_dns_a_record" "backend" {
-  name = "api.${var.env}"
-  resource_group_name = "prime-simple-report-prod"
-  ttl = 300
-  zone_name = data.azurerm_dns_zone.sr.name
-  records = [azurerm_public_ip.backend.ip_address]
-}
