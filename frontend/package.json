@@ -54,6 +54,7 @@
     "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
     "deploy-azure-dev": "REACT_APP_BACKEND_URL=https://dev.simplereport.org/dev/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdev --destination-path '/app'",
     "deploy-azure-beta": "REACT_APP_BACKEND_URL=https://simplereport.cdc.gov/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app'",
+    "deploy-azure-test": "REACT_APP_BACKEND_URL=https://api.test.simplerport.org PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestfrontend --destination-path '/app'",
     "deploy-azure-demo": "REACT_APP_BACKEND_URL=https://demo.simplereport.org/demo/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdemo --destination-path '/app'"
   },
   "eslintConfig": {

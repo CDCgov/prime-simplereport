@@ -9,7 +9,14 @@ provider "okta" {
   base_url = "okta.com"
 }
 
+locals {
+  management_tags = {
+    prime-app = "simplereport"
+    environment = "prod"
+  }
+}
+
 module "all" {
   source = "../../services/all-persistent"
-  env = "test"
+  env = local.management_tags.environment
 }

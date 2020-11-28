@@ -4,7 +4,7 @@ locals {
     "http://localhost:9090",
     "http://localhost:3000",
     "https://simple-report.app.cloud.gov/",
-    "https://prime-data-input-sandbox-backend.app.cloud.gov/"
+    "https://prime-data-input-sandbox-backend.app.cloud.gov/",
   ]
 }
 
@@ -16,7 +16,7 @@ resource "okta_app_oauth" "app" {
     "authorization_code",
     "implicit"]
   redirect_uris = concat(local.dev_urls, [
-    "https://${var.env}.simplereport.org/app"])
+    "https://${var.env}.simplereport.org/app", "https://simplereport.cdc.gov/app"])
   response_types = [
     "code",
     "id_token",
