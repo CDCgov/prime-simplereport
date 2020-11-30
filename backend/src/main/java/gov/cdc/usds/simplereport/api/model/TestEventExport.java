@@ -378,7 +378,7 @@ public class TestEventExport {
     //   display: Whole blood sample
     // - code: 122555007
     //   display: Venous blood specimen
-		return ""; // "871810001", "697989009", or "258500001"
+		return "697989009";
 	}
 
 	@JsonProperty("Instrument_ID")
