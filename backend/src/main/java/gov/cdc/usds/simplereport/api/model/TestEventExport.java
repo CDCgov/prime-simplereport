@@ -37,14 +37,12 @@ public class TestEventExport {
 	private Map<String, String> genderMap = Map.of(
 		"male", "M",
 		"female", "F",
-		"other", "O",
-		null, "UNK"
+		"other", "O"
 	);
 
 	private Map<String, String> ethnicityMap = Map.of(
 		"hispanic", "H",
-		"not_hispanic", "N",
-		null, "U"
+		"not_hispanic", "N"
 	);
 
 	private Map<TestResult, String> testResultMap = Map.of(
@@ -65,6 +63,9 @@ public class TestEventExport {
 	}
 
 	private String arrayToString(List<String> value) {
+		if (value == null) {
+			return "";
+		}
 		if (value.size() < 1) {
 			return "";
 		}
@@ -116,11 +117,17 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
-		return genderMap.get(patient.getGender());
+		if (patient.getGender() == null) {
+			return "UNK";
+		}
+		return patient.getGender();
 	}
 
 	@JsonProperty("Patient_ethnicity")
 	public String getPatientEthnicity() {
+		if (patient.getEthnicity() == null) {
+			return "U";
+		}
 		return ethnicityMap.get(patient.getEthnicity());
 	}
 
