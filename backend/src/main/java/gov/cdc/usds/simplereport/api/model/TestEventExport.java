@@ -160,12 +160,12 @@ public class TestEventExport {
 		return patient.getTelephone();
 	}
 
-	@JsonProperty("Patient_lookupId")
+	@JsonProperty("Patient_lookup_ID")
 	public String getPatientLookupId() {
 		return patient.getLookupId();
 	}
 
-	@JsonProperty("Patient_Id")
+	@JsonProperty("Patient_ID")
 	public String getPatientId() {
 		return patient.getInternalId().toString();
 	}
@@ -215,7 +215,7 @@ public class TestEventExport {
 		return org.getFacilityName();
 	}
 
-	@JsonProperty("Testing_lab_ID")
+	@JsonProperty("Testing_lab_CLIA")
 	public String getTestingLabID() {
 		return org.getCliaNumber();
 	}
