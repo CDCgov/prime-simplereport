@@ -7,8 +7,9 @@ module "okta" {
 locals {
   management_tags = {
     prime-app = "simplereport"
-    environment = "test"
+    environment = var.env
   }
+  management_rg = "prime-simple-report-test"
 }
 
 data "azurerm_resource_group" "rg" {
@@ -22,12 +23,12 @@ data "azurerm_key_vault" "kv" {
 
 data "azurerm_log_analytics_workspace" "law" {
   name = "simple-report-log-workspace-global"
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = local.management_rg
 }
 
 // Create the virtual network and the persistent subnets
 resource "azurerm_virtual_network" "vn" {
-  name = "simple-report-test-network"
+  name = "simple-report-${var.env}-network"
   resource_group_name = data.azurerm_resource_group.rg.name
   location = data.azurerm_resource_group.rg.location
   address_space = [
@@ -38,7 +39,7 @@ resource "azurerm_virtual_network" "vn" {
 
 module "db" {
   source = "../../services/database"
-  env = "test"
+  env = var.env
   key_vault_id = data.azurerm_key_vault.kv.id
   log_workspace_id = data.azurerm_log_analytics_workspace.law.id
   rg_location = data.azurerm_resource_group.rg.location
