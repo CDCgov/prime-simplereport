@@ -318,28 +318,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordered_test_code")
 	public String getOrderedTestCode() {
-		// 	- name: covid-19/order
-		// system: LOINC
-		// reference: Incomplete - Supports BD Veritor, Quidell Sofia, and Abbott ID Now
-		// referenceUrl: https://www.cdc.gov/csels/dls/documents/livd_test_code_mapping/LIVD-SARS-CoV-2-2020-10-21.xlsx
-		// values:
-		//   - code: 94563-4
-		//     display: SARS coronavirus 2 IgG Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94500-6
-		//     display: SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94558-4
-		//     display: SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		//   - code: 94534-5
-		//     display: SARS coronavirus 2 RdRp gene [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94564-2
-		//     display: SARS-CoV-2 (COVID-19) IgM Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94531-1
-		//     display: SARS coronavirus 2 RNA panel - Respiratory specimen by NAA with probe detection
-		//   - code: 94559-2
-		//     display: SARS coronavirus 2 ORF1ab region [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 95209-3
-		//     display: SARS coronavirus+SARS coronavirus 2 Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		return "";
+		return testEvent.getDeviceType().getLoincCode();
 	}
 
 	@JsonProperty("Specimen_source_site_code")
@@ -349,36 +328,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		// values:
-    // - code: 258500001
-    //   display: Nasopharyngeal swab
-    // - code: 871810001
-    //   display: Mid-turbinate nasal swab
-    // - code: 697989009
-    //   display: Anterior nares swab
-    // - code: 258411007
-    //   display: Nasopharyngeal aspirate
-    // - code: 429931000124105
-    //   display: Nasal aspirate
-    // - code: 258529004
-    //   display: Throat swab
-    // - code: 119334006
-    //   display: Sputum specimen
-    // - code: 119342007
-    //   display: Saliva specimen
-    // - code: 258607008
-    //   display: Bronchoalveolar lavage fluid sample
-    // - code: 119364003
-    //   display: Serum specimen
-    // - code: 119361006
-    //   display: Plasma specimen
-    // - code: 440500007
-    //   display: Dried blood spot specimen
-    // - code: 258580003
-    //   display: Whole blood sample
-    // - code: 122555007
-    //   display: Venous blood specimen
-		return "697989009";
+		return "697989009"; // Anterior nares swab
 	}
 
 	@JsonProperty("Instrument_ID")
