@@ -3,6 +3,7 @@ locals {
     prime-app = "simplereport"
     environment = var.env
   }
+  management_rg = "prime-simple-report-test"
 }
 
 
@@ -12,12 +13,12 @@ data "azurerm_resource_group" "rg" {
 
 data "azurerm_key_vault" "kv" {
   name = "simple-report-global"
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = local.management_rg
 }
 
 data "azurerm_log_analytics_workspace" "law" {
   name = "simple-report-log-workspace-global"
-  resource_group_name = data.azurerm_resource_group.rg.name
+  resource_group_name = local.management_rg
 }
 
 data "azurerm_virtual_network" "vn" {
