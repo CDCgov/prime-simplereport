@@ -344,7 +344,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "Forearm";
+		return "Nasal";
 	}
 
 	@JsonProperty("Specimen_type_code")
