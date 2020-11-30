@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import gov.cdc.usds.simplereport.config.AuditingConfig;
-import gov.cdc.usds.simplereport.config.DevSecurityConfiguration;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -21,7 +20,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 public class SliceTestConfiguration {
 
 	@Bean
-	public IdentitySupplier dummyIdentityProvider() {
-		return new DevSecurityConfiguration().getDummyIdentity();
+	public IdentitySupplier dummyIdentityProvider(InitialSetupProperties props) {
+		return props::getDefaultUser;
 	}
 }

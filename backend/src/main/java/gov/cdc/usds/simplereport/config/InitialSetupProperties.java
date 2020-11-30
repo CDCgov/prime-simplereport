@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
 @ConstructorBinding
@@ -20,13 +21,15 @@ public class InitialSetupProperties {
 	private ConfigProvider provider;
 	private List<? extends ConfigDeviceType> deviceTypes;
 	private List<String> configuredDeviceTypes;
+	private IdentityAttributes defaultUser;
 
 	public InitialSetupProperties(ConfigOrganization organization, ConfigProvider provider,
-			List<ConfigDeviceType> deviceTypes, List<String> configuredDeviceTypes) {
+			List<ConfigDeviceType> deviceTypes, List<String> configuredDeviceTypes, IdentityAttributes defaultUser) {
 		this.organization = organization;
 		this.provider = provider;
 		this.deviceTypes = deviceTypes;
 		this.configuredDeviceTypes = configuredDeviceTypes;
+		this.defaultUser = defaultUser;
 	}
 
 	public List<String> getConfiguredDeviceTypeNames() {
@@ -43,6 +46,10 @@ public class InitialSetupProperties {
 
 	public List<? extends DeviceType> getDeviceTypes() {
 		return deviceTypes.stream().map(ConfigDeviceType::getReal).collect(Collectors.toList());
+	}
+
+	public IdentityAttributes getDefaultUser() {
+		return defaultUser;
 	}
 
 	private static final class ConfigOrganization extends Organization {
