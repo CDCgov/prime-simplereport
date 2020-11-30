@@ -1,21 +1,20 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Organization;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Date;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 public class TestEventExport {
 
@@ -35,24 +34,24 @@ public class TestEventExport {
 	}
 
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-	private Map<String, String> genderMap = new HashMap<String, String>() {{
-		put("male", "M");
-		put("female", "F");
-		put("other", "O");
-		put(null, "UNK");
-	}};
+	private Map<String, String> genderMap = Map.of(
+		"male", "M",
+		"female", "F",
+		"other", "O",
+		null, "UNK"
+	);
 
-	private Map<String, String> ethnicityMap = new HashMap<String, String>() {{
-		put("hispanic", "H");
-		put("not_hispanic", "N");
-		put(null, "U");
-	}};
+	private Map<String, String> ethnicityMap = Map.of(
+		"hispanic", "H",
+		"not_hispanic", "N",
+		null, "U"
+	);
 
-	private Map<TestResult, String> testResultMap = new HashMap<TestResult, String>() {{
-		put(TestResult.POSITIVE, "260373001");
-		put(TestResult.NEGATIVE, "260415000");
-		put(TestResult.UNDETERMINED, "419984006");
-	}};
+	private Map<TestResult, String> testResultMap = Map.of(
+		TestResult.POSITIVE, "260373001",
+		TestResult.NEGATIVE, "260415000",
+		TestResult.UNDETERMINED, "419984006"
+	);
 
 
 	private String boolToYesNoUnk(Boolean value) {

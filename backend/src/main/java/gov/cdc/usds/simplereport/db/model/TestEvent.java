@@ -12,7 +12,6 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 
 @Entity
 @Immutable

@@ -14,8 +14,6 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -29,15 +27,15 @@ public class UploadService {
 
     private final PersonService _ps;
 
-	private Map<String, String> ethnicityMap = new HashMap<String, String>() {{
-		put("Hispanic or Latino", "hispanic");
-		put("Not Hispanic", "not_hispanic");
-	}};
+	private Map<String, String> ethnicityMap = Map.of(
+		"Hispanic or Latino", "hispanic",
+		"Not Hispanic", "not_hispanic"
+	);
 
-	private Map<String, Boolean> yesNoMap = new HashMap<String, Boolean>() {{
-		put("Yes", true);
-		put("No", false);
-	}};
+	private Map<String, Boolean> yesNoMap = Map.of(
+		"Yes", true,
+		"No", false
+	);
 
     public UploadService(PersonService ps) {
         this._ps = ps;
