@@ -476,3 +476,17 @@ databaseChangeLog:
                     foreignKeyName: fk__test_order__test_event
                     references: test_event
                     uniqueKeyName: uk__test_order__test_event
+  - changeSet:
+      id: enforce-queue-uniqueness
+      author: bwarfield@cdc.gov
+      comment: Enforce uniqueness guarantees for patients in the queue.
+      changes:
+        - sql:
+            remarks: Create a unique index on organization and patient, but only for PENDING orders.
+            sql: |
+              CREATE UNIQUE INDEX uk__test_order__organization_person_pending
+              ON ${database.defaultSchemaName}.test_order (organization_id, patient_id)
+              WHERE order_status = 'PENDING'
+      rollback:
+        sql: |
+          DROP INDEX ${database.defaultSchemaName}.uk__test_order__organization_person_pending;

@@ -1,11 +1,18 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.persistence.PersistenceException;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,6 +22,7 @@ import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
@@ -28,6 +36,8 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	private ProviderRepository _providers;
 	@Autowired
 	private TestEventRepository _events;
+	@Autowired
+	private TestDataFactory _dataFactory;
 
 	@Test
 	public void runChanges() {
@@ -59,4 +69,61 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		_repo.save(order);
 		flush();
 	}
+
+	@Test
+	public void createOrder_duplicatesFound_error() {
+		Organization org = _dataFactory.createValidOrg();
+		Person patient0 = _dataFactory.createMinimalPerson(org);
+		TestOrder order1 = new TestOrder(patient0, org);
+		_repo.save(order1);
+		flush();
+		TestOrder order2 = new TestOrder(patient0, org);
+		PersistenceException caught = assertThrows(PersistenceException.class, ()->{ _repo.save(order2); flush();});
+		assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
+	}
+
+	@Test
+	public void createOrder_duplicateCanceled_ok() {
+		Organization org = _dataFactory.createValidOrg();
+		Person patient0 = _dataFactory.createMinimalPerson(org);
+		TestOrder order1 = new TestOrder(patient0, org);
+		_repo.save(order1);
+		flush();
+		order1.cancelOrder();
+		_repo.save(order1);
+		flush();
+		TestOrder order2 = new TestOrder(patient0, org);
+		order2 = _repo.save(order2);
+		flush();
+		assertNotNull(order2.getInternalId());
+		assertNotNull(order1.getInternalId());
+		assertNotEquals(order1.getInternalId(), order2.getInternalId());
+		List<TestOrder> queue = _repo.fetchQueueForOrganization(org);
+		assertEquals(1, queue.size());
+		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
+	}
+
+	@Test
+	public void createOrder_duplicateSubmitted_ok() {
+		Organization org = _dataFactory.createValidOrg();
+		Person patient0 = _dataFactory.createMinimalPerson(org);
+		TestOrder order1 = new TestOrder(patient0, org);
+		_repo.save(order1);
+		flush();
+		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, org.getDefaultDeviceType(), patient0, org));
+		order1.setTestEvent(didit);
+		order1.setResult(didit.getResult());
+		_repo.save(order1);
+		flush();
+		TestOrder order2 = new TestOrder(patient0, org);
+		order2 = _repo.save(order2);
+		flush();
+		assertNotNull(order2.getInternalId());
+		assertNotNull(order1.getInternalId());
+		assertNotEquals(order1.getInternalId(), order2.getInternalId());
+		List<TestOrder> queue = _repo.fetchQueueForOrganization(org);
+		assertEquals(1, queue.size());
+		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
+	}
+
 }
