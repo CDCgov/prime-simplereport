@@ -476,7 +476,7 @@ const PatientForm = (props) => {
             <tbody>
               {patient.testResults.map((r, i) => (
                 <tr key={i}>
-                  <td>{moment(r.dateTested).format("MMM DD YYYY")}</td>
+                  <td>{moment(r.dateTested).format("lll")}</td>
                   <td>{r.result}</td>
                 </tr>
               ))}

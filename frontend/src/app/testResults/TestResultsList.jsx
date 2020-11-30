@@ -59,7 +59,7 @@ const TestResultsList = () => {
             {displayFullName(firstName, middleName, lastName)}
           </th>
           <td>{lookupId}</td>
-          <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
+          <td>{moment(result.dateTested).format("lll")}</td>
           <td>{result.result}</td>
           <td>{result.deviceType.name}</td>
         </tr>

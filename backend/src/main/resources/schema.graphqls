@@ -1,4 +1,6 @@
-# Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+# java.util.Date implementation
+scalar Date
+
 type DeviceType {
   internalId: ID
   name: String
@@ -64,7 +66,7 @@ type TestOrder {
   priorTestResult: String
   deviceType: DeviceType
   result: String
-  dateTested: String
+  dateTested: Date
 }
 
 type User {
