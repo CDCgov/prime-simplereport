@@ -17,23 +17,17 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
+
 @SuppressWarnings("checkstyle:MagicNumber")
-public class ApiSmokeTest {
+public class ApiSmokeTest extends BaseApiTest {
 
 	@Autowired
 	private PersonService _personService;
-	@Autowired
-	private DbTruncator _truncator;
-
-	@Autowired
-	private GraphQLTestTemplate template;
 	
 	@Test
 	public void smoketestPatientList() throws IOException {
-		_truncator.truncateAll();
-		GraphQLResponse postMultipart = template.postForResource("person-query");
+		truncateDb();
+		GraphQLResponse postMultipart = _template.postForResource("person-query");
 		assertTrue(postMultipart.isOk());
 		JsonNode jsonResponse = postMultipart.readTree();
 		assertTrue(jsonResponse.get("data").get("patients").isEmpty());
@@ -42,10 +36,10 @@ public class ApiSmokeTest {
 				LocalDate.of(2403, 12, 3),
 				"Someplace", "Nice", "Capitol", "Escobar", "12345-6678",
 				"(12) 2345", "visitor", "baz@dendarii.net", "Vorkosigan", null, null, "M", false, false);
-		postMultipart = template.postForResource("person-query");
+		postMultipart = _template.postForResource("person-query");
 		assertTrue(postMultipart.isOk());
 		jsonResponse = postMultipart.readTree();
 		assertTrue(jsonResponse.get("data").get("patients").has(0));
-		_truncator.truncateAll();
+		truncateDb();
 	}
 }
