@@ -108,7 +108,6 @@ databaseChangeLog:
             remarks: Testing devices that may be present.
             columns:
               - column: *pk_column
-              # is there an external ID? I think so?
               - column: *created_at_column
               - column: *created_by_column
               - column: *updated_at_column
@@ -122,6 +121,12 @@ databaseChangeLog:
                     nullable: false
                     unique: true
                     uniqueConstraintName: uk__device_type
+              - column:
+                  name: loinc_code
+                  type: *string
+                  remarks: The LOINC code for this device, for reporting purposes (sadly, not unique)
+                  constraints:
+                    nullable: false
               - column:
                   name: manufacturer
                   remarks: The manufacturer of the device.
@@ -214,6 +219,12 @@ databaseChangeLog:
                     nullable: false
                     unique: true
                     uniqueConstraintName: uk__facility__organization_id
+              - column:
+                  name: clia_number
+                  type: *string # irony
+                  remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
+                  constraints:
+                    nullable: false
               - column:
                   name: default_device_type
                   remarks: The default device type (if any) for tests at this facility.
@@ -465,3 +476,17 @@ databaseChangeLog:
                     foreignKeyName: fk__test_order__test_event
                     references: test_event
                     uniqueKeyName: uk__test_order__test_event
+  - changeSet:
+      id: enforce-queue-uniqueness
+      author: bwarfield@cdc.gov
+      comment: Enforce uniqueness guarantees for patients in the queue.
+      changes:
+        - sql:
+            remarks: Create a unique index on organization and patient, but only for PENDING orders.
+            sql: |
+              CREATE UNIQUE INDEX uk__test_order__organization_person_pending
+              ON ${database.defaultSchemaName}.test_order (organization_id, patient_id)
+              WHERE order_status = 'PENDING'
+      rollback:
+        sql: |
+          DROP INDEX ${database.defaultSchemaName}.uk__test_order__organization_person_pending;

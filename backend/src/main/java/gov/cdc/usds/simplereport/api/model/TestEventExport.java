@@ -1,21 +1,20 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Organization;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Date;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 public class TestEventExport {
 
@@ -35,24 +34,22 @@ public class TestEventExport {
 	}
 
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-	private Map<String, String> genderMap = new HashMap<String, String>() {{
-		put("male", "M");
-		put("female", "F");
-		put("other", "O");
-		put(null, "UNK");
-	}};
+	private Map<String, String> genderMap = Map.of(
+		"male", "M",
+		"female", "F",
+		"other", "O"
+	);
 
-	private Map<String, String> ethnicityMap = new HashMap<String, String>() {{
-		put("hispanic", "H");
-		put("not_hispanic", "N");
-		put(null, "U");
-	}};
+	private Map<String, String> ethnicityMap = Map.of(
+		"hispanic", "H",
+		"not_hispanic", "N"
+	);
 
-	private Map<TestResult, String> testResultMap = new HashMap<TestResult, String>() {{
-		put(TestResult.POSITIVE, "260373001");
-		put(TestResult.NEGATIVE, "260415000");
-		put(TestResult.UNDETERMINED, "419984006");
-	}};
+	private Map<TestResult, String> testResultMap = Map.of(
+		TestResult.POSITIVE, "260373001",
+		TestResult.NEGATIVE, "260415000",
+		TestResult.UNDETERMINED, "419984006"
+	);
 
 
 	private String boolToYesNoUnk(Boolean value) {
@@ -66,6 +63,9 @@ public class TestEventExport {
 	}
 
 	private String arrayToString(List<String> value) {
+		if (value == null) {
+			return "";
+		}
 		if (value.size() < 1) {
 			return "";
 		}
@@ -117,11 +117,17 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
-		return genderMap.get(patient.getGender());
+		if (patient.getGender() == null) {
+			return "UNK";
+		}
+		return patient.getGender();
 	}
 
 	@JsonProperty("Patient_ethnicity")
 	public String getPatientEthnicity() {
+		if (patient.getEthnicity() == null) {
+			return "U";
+		}
 		return ethnicityMap.get(patient.getEthnicity());
 	}
 
@@ -160,12 +166,12 @@ public class TestEventExport {
 		return patient.getTelephone();
 	}
 
-	@JsonProperty("Patient_lookupId")
+	@JsonProperty("Patient_lookup_ID")
 	public String getPatientLookupId() {
 		return patient.getLookupId();
 	}
 
-	@JsonProperty("Patient_Id")
+	@JsonProperty("Patient_ID")
 	public String getPatientId() {
 		return patient.getInternalId().toString();
 	}
@@ -215,10 +221,9 @@ public class TestEventExport {
 		return org.getFacilityName();
 	}
 
-	@JsonProperty("Testing_lab_ID")
+	@JsonProperty("Testing_lab_CLIA")
 	public String getTestingLabID() {
-		// CLIA number
-		return org.getExternalId();
+		return org.getCliaNumber();
 	}
 
 	@JsonProperty("Testing_lab_state")
@@ -319,67 +324,17 @@ public class TestEventExport {
 
 	@JsonProperty("Ordered_test_code")
 	public String getOrderedTestCode() {
-		// 	- name: covid-19/order
-		// system: LOINC
-		// reference: Incomplete - Supports BD Veritor, Quidell Sofia, and Abbott ID Now
-		// referenceUrl: https://www.cdc.gov/csels/dls/documents/livd_test_code_mapping/LIVD-SARS-CoV-2-2020-10-21.xlsx
-		// values:
-		//   - code: 94563-4
-		//     display: SARS coronavirus 2 IgG Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94500-6
-		//     display: SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94558-4
-		//     display: SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		//   - code: 94534-5
-		//     display: SARS coronavirus 2 RdRp gene [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94564-2
-		//     display: SARS-CoV-2 (COVID-19) IgM Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94531-1
-		//     display: SARS coronavirus 2 RNA panel - Respiratory specimen by NAA with probe detection
-		//   - code: 94559-2
-		//     display: SARS coronavirus 2 ORF1ab region [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 95209-3
-		//     display: SARS coronavirus+SARS coronavirus 2 Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		return "";
+		return testEvent.getDeviceType().getLoincCode();
 	}
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "Forearm";
+		return "Nasal";
 	}
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		// values:
-    // - code: 258500001
-    //   display: Nasopharyngeal swab
-    // - code: 871810001
-    //   display: Mid-turbinate nasal swab
-    // - code: 697989009
-    //   display: Anterior nares swab
-    // - code: 258411007
-    //   display: Nasopharyngeal aspirate
-    // - code: 429931000124105
-    //   display: Nasal aspirate
-    // - code: 258529004
-    //   display: Throat swab
-    // - code: 119334006
-    //   display: Sputum specimen
-    // - code: 119342007
-    //   display: Saliva specimen
-    // - code: 258607008
-    //   display: Bronchoalveolar lavage fluid sample
-    // - code: 119364003
-    //   display: Serum specimen
-    // - code: 119361006
-    //   display: Plasma specimen
-    // - code: 440500007
-    //   display: Dried blood spot specimen
-    // - code: 258580003
-    //   display: Whole blood sample
-    // - code: 122555007
-    //   display: Venous blood specimen
-		return ""; // "871810001", "697989009", or "258500001"
+		return "697989009"; // Anterior nares swab
 	}
 
 	@JsonProperty("Instrument_ID")

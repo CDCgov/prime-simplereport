@@ -5,7 +5,7 @@ provider "azurerm" {
 }
 
 provider "okta" {
-  org_name = "prime-eval"
+  org_name = "hhs-prime"
   base_url = "okta.com"
 }
 
@@ -91,6 +91,15 @@ resource "azurerm_key_vault_access_policy" "self" {
     "get",
     "list",
     "set",
+    "delete",
+    "recover",
+  ]
+
+  certificate_permissions = [
+    "get",
+    "list",
+    "import",
+    "create",
     "delete",
     "recover",
   ]

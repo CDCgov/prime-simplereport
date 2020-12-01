@@ -22,7 +22,7 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
     data: allDevices,
     loading: isLoadingAllDevices,
     //error: errorFetchingAllDevices,
-  } = useQuery(getAllDevices);
+  } = useQuery(getAllDevices, { fetchPolicy: "no-cache" });
 
   let isLoading =
     Object.keys(deviceSettings).length === 0 || isLoadingAllDevices;

@@ -22,7 +22,28 @@ graphql:
     schema-location-pattern: "**/*.graphqls"
 okta:
   oauth2:
-    issuer: https://prime-eval.okta.com/oauth2/default
+    issuer: https://hhs-prime.okta.com/oauth2/default
     client-id: ${clientID:FAKE}
     client-secret: ${clientSecret:FAKE}
-
+simple-report-initialization:
+  device-types:
+    - name: Abbott IDNow
+      manufacturer: Abbott
+      model: ID Now
+      loinc-code: "94558-4"
+    - name: Abbott BinaxNow
+      manufacturer: Abbott
+      model: BinaxNow
+      loinc-code: "94558-4"
+    - name: Quidel Sofia 2
+      manufacturer: Quidel
+      model: Sofia 2 SARS Antigen FIA
+      loinc-code: "94558-4"
+    - name: BD Veritor
+      manufacturer: Becton, Dickinson and Company (BD)
+      model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
+      loinc-code: "94558-4"
+    - name: LumiraDX
+      manufacturer: LumiraDX
+      model: LumiraDX
+      loinc-code: "94558-4"

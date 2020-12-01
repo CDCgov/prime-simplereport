@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import org.hibernate.annotations.Type;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -16,7 +17,7 @@ import java.util.Objects;
 public class StreetAddress {
 
     @Type(type = "list-array")
-    @Column(columnDefinition = "text ARRAY") // needed by auto-ddl validation, just for the array type
+    @Column
     private List<String> street = new ArrayList<>();
     @Column
     private String city;
@@ -42,6 +43,7 @@ public class StreetAddress {
     /**
      * Convenience constructor for situations where we have a two-line address already
      */
+    @ConstructorBinding
     public StreetAddress(String street1, String street2, String city, String state, String postalCode, String county) {
         this(null, city, state, postalCode, county);
         if (street1 != null && !street1.isEmpty()) {

@@ -9,21 +9,24 @@ import javax.persistence.Entity;
 @Entity
 public class DeviceType extends EternalEntity {
 
-	public DeviceType(String name, String manufacturer, String model) {
-		super();
-		this.name = name;
-		this.manufacturer = manufacturer;
-		this.model = model;
-	}
-
 	@Column(nullable = false)
 	private String name;
+	@Column(nullable = false)
+	private String loincCode;
 	@Column(nullable = false)
 	private String manufacturer;
 	@Column(nullable = false)
 	private String model;
 
 	protected DeviceType() { /* no-op for hibernate */ }
+
+	public DeviceType(String name, String manufacturer, String model, String loincCode) {
+		super();
+		this.name = name;
+		this.manufacturer = manufacturer;
+		this.model = model;
+		this.loincCode = loincCode;
+	}
 
 	public String getName() {
 		return name;
@@ -35,5 +38,9 @@ public class DeviceType extends EternalEntity {
 
 	public String getModel() {
 		return model;
+	}
+
+	public String getLoincCode() {
+		return loincCode;
 	}
 }

@@ -1,4 +1,3 @@
-import { ApolloClient, ApolloProvider, InMemoryCache } from "@apollo/client";
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
@@ -9,10 +8,48 @@ import "./styles/App.css";
 import { store, persistor } from "./app/store";
 import { PersistGate } from "redux-persist/integration/react";
 
-const cache = new InMemoryCache({});
+import {
+  ApolloClient,
+  ApolloProvider,
+  HttpLink,
+  ApolloLink,
+  InMemoryCache,
+  concat,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+
+if (window.location.hash) {
+  const params = new URLSearchParams(window.location.hash.slice(1));
+  const bearerToken = params.get("access_token");
+  if (bearerToken) {
+    localStorage.setItem("access_token", bearerToken);
+  }
+}
+
+const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
+
+const authMiddleware = new ApolloLink((operation, forward) => {
+  operation.setContext({
+    headers: {
+      "Access-Control-Request-Headers": "Authorization",
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+    },
+  });
+  return forward(operation);
+});
+
+const logoutLink = onError(({ networkError }) => {
+  console.log(networkError);
+  if (networkError && process.env.REACT_APP_OKTA_URL) {
+    console.error("network error", networkError);
+    console.log("redirecting to", process.env.REACT_APP_OKTA_URL);
+    window.location.replace(process.env.REACT_APP_OKTA_URL);
+  }
+});
+
 const client = new ApolloClient({
-  cache,
-  uri: process.env.REACT_APP_BACKEND_URL,
+  cache: new InMemoryCache(),
+  link: logoutLink.concat(concat(authMiddleware, httpLink)),
 });
 
 ReactDOM.render(

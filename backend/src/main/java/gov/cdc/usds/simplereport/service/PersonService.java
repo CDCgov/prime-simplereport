@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +59,14 @@ public class PersonService {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
+		final PersonRole personRole;
+
+		if (role == null || role == "") {
+			personRole = PersonRole.UNKNOWN;
+		} else {
+			personRole = PersonRole.valueOf(role.toUpperCase());
+		}
+
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person newPatient = new Person(
 			_os.getCurrentOrganization(),
@@ -69,7 +78,7 @@ public class PersonService {
 			birthDate,
 			patientAddress,
 			telephone,
-			role,
+			personRole,
 			email,
 			race,
 			ethnicity,
@@ -104,6 +113,7 @@ public class PersonService {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
+		final PersonRole personRole = PersonRole.valueOf(role);
 		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
 		Person patientToUpdate = this.getPatient(patientId);
 		patientToUpdate.updatePatient(
@@ -115,7 +125,7 @@ public class PersonService {
 			birthDate,
 			patientAddress,
 			telephone,
-			role,
+			personRole,
 			email,
 			race,
 			ethnicity,

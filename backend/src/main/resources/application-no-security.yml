@@ -1,0 +1,5 @@
+simple-report-initialization.default-user:
+  username: bob@example.com
+  first-name: Bobbity
+  middle-name: Bob
+  last-name: Bobberoo

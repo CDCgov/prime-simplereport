@@ -1,18 +1,23 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Simple Report
 
-# RUNNING THE APP LOCALLY
+https://simplereport.cdc.gov/
 
-## Prereqs
+## Table of Contents
 
-#### 1. Install Docker and docker-compose
+- [Setup](#setup)
+- [Backend](#backend)
+  - [Setup](#backend-Setup)
+  - [Restart & Clean](#restart-&-clean)
+  - [API Testing](#api-testing)
+- [Frontend](#frontend)
+  - [Setup](#frontend-Setup)
+- [Deploy](#Deploy)
 
-- You can install docker hub directly: https://hub.docker.com/. This is the preferred solution and should come with docker-compose
-- alternatively, you can install docker and run it as a daemon: `brew install docker`.
+## Setup
 
-#### 2. Front-end prerequisites
-
-- [nvm](https://github.com/nvm-sh/nvm) 
-- (optional) probably want to install react and redux developer tools extensions
+1. Install Docker and docker-compose
+   - You can install docker hub directly: https://hub.docker.com/. This is the preferred solution and should come with docker-compose
+   - Alternatively, you can install docker and run it as a daemon: `brew install docker`.
 
 ## Backend
 
@@ -23,31 +28,54 @@ There are two major pieces:
 
 To run the service, you needs a DB and a connection to Okta for it to work. Locally, you can disable authentication, but you still need the database running locally.
 
-Starting from a fresh:
+### Backend-Setup
 
-1. go to `backend` and use `docker-compose up --build`
-2. locally, update your environment variable: `export SPRING_PROFILES_ACTIVE=dev`. This disables authentication
-3. to verify, go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
+Running with docker:
 
-Sometimes if the binding changes, you would need to tear down the containers, volumes, images and rebuild. You can run the following commands for this:
+1. `cd backend`
+1. Run `docker-compose up --build`
+1. view site at http://localhost:8080
 
-```
-docker-compose down
-docker system prune
-docker images prune
-docker volumes prune
-docker-compose up --build
-```
+Running spring app locally and db in docker
+
+1. `cd backend`
+1. Run `docker-compose up db`
+1. Run `gradle bootRun --args='--spring.profiles.active=dev'`
+1. view site at http://localhost:8080
+
+## Restart & Clean
+
+When there are DB schema changes the backend may throw and error and fail to start.
+
+Restarting the docker way:
+
+1. run `cd backend`
+1. Bring down the service by running `docker-compose down`
+1. Wipe the db by running `docker system prune && docker images prune && docker volumes prune`
+1. Restart the service `docker-compose up --build`
+
+Restarting the SQL way:
+
+1. run `db-setup/nuke-db.sh`
+2. restart the spring app `gradle bootRun --args='--spring.profiles.active=dev'`
+
+## API Testing
+
+Go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
 
 ## Frontend
 
-1. go to `frontend`
-1. run `nvm use`
-1. run `npm install`
-2. run `npm run start` and go to `localhost:3000`.
+The frontend is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
 
-- note: at least right now, you would need the backend and database running
+### Frontend-Setup
+
+1. Install [nvm](https://github.com/nvm-sh/nvm)
+1. (optional) Install react developer tools extensions
+1. `cd frontend && nvm use && npm install`
+1. `npm run start`
+1. view site at http://localhost:3000
+   - Note: frontend need the backend to be running to work
 
 ## Deploy
 
-TODO
+See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md

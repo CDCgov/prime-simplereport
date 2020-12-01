@@ -22,8 +22,7 @@ resource "okta_auth_server_claim" "sr_user" {
   name = "org"
   value = "appuser.pdi_org"
   scopes = [
-    okta_auth_server_scope.sr.name,
-    "pdi"]
+    okta_auth_server_scope.sr.name]
 }
 
 resource "okta_auth_server_claim" "sr_org" {
@@ -32,8 +31,7 @@ resource "okta_auth_server_claim" "sr_org" {
   name = "access"
   value = "appuser.pdi_user"
   scopes = [
-    okta_auth_server_scope.sr.name,
-    "pdi"]
+    okta_auth_server_scope.sr.name]
 }
 
 resource "okta_auth_server_claim" "family_name" {
@@ -41,9 +39,6 @@ resource "okta_auth_server_claim" "family_name" {
   claim_type = "RESOURCE"
   name = "family_name"
   value = "user.lastName"
-  scopes = [
-    okta_auth_server_scope.sr.name,
-    "pdi"]
 }
 
 resource "okta_auth_server_claim" "given_name" {
@@ -51,9 +46,6 @@ resource "okta_auth_server_claim" "given_name" {
   claim_type = "RESOURCE"
   name = "given_name"
   value = "user.firstName"
-  scopes = [
-    okta_auth_server_scope.sr.name,
-    "pdi"]
 }
 
 resource "okta_auth_server_claim" "groups" {
@@ -64,8 +56,7 @@ resource "okta_auth_server_claim" "groups" {
   group_filter_type = "REGEX"
   value = ".*"
   scopes = [
-    okta_auth_server_scope.sr.name,
-    "pdi"]
+    okta_auth_server_scope.sr.name]
 }
 
 // Create the CDC/USDS user groups

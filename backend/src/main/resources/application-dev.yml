@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security
+  profiles.include: no-security,local
   liquibase:
     user: simple_report_migrations
     password: migrations456
@@ -8,3 +8,30 @@ spring:
       hibernate:
         show_sql: true
         default_schema: simple_report
+logging:
+  level:
+      # NOTE: add any of the below in application-local.yml to turn on something interesting
+      #       (the first two are hibernate SQL query logging, which is pretty verbose, and hibernate
+      #       input and output value logging, which is *incredibly* verbose).
+      # org.hibernate.SQL: DEBUG
+      # org.hibernate.type: TRACE
+      # org.springframework.data.rest=DEBUG
+      gov.cdc.usds: DEBUG
+simple-report-initialization:
+  organization:
+    facility-name: Dis Organization
+    external-id: DIS_ORG
+    clia-number: "000111222-3"
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      zip-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2

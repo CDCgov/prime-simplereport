@@ -16,7 +16,7 @@ export const dateToString = (date) => {
       : "";
   const year = date.year.length === 4 ? date.year : "";
   if (month.length === 2 && day.length === 2 && year.length === 4) {
-    return `${day}/${month}/${year}`;
+    return `${month}/${day}/${year}`;
   }
   console.error("Invalid date", date);
   return null;

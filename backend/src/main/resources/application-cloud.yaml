@@ -1,5 +1,4 @@
 spring:
-  profiles.include: no-security
   jpa:
     properties:
       hibernate:

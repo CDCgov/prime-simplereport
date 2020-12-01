@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import org.springframework.boot.context.properties.ConstructorBinding;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 /**
@@ -9,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 public class IdentityAttributes extends PersonName {
 	private String username;
 
+	@ConstructorBinding
 	public IdentityAttributes(String username, String firstName, String middleName, String lastName, String suffix) {
 		super(firstName, middleName, lastName, suffix);
 		this.username = username;

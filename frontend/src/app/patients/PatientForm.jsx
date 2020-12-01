@@ -285,10 +285,10 @@ const PatientForm = (props) => {
             selectedValue={patient.role}
             onChange={onChange}
             options={[
-              { label: "Staff", value: "staff" },
-              { label: "Resident", value: "resident" },
-              { label: "Student", value: "student" },
-              { label: "Visitor", value: "visitor" },
+              { label: "Staff", value: "STAFF" },
+              { label: "Resident", value: "RESIDENT" },
+              { label: "Student", value: "STUDENT" },
+              { label: "Visitor", value: "VISITOR" },
             ]}
           />
         </div>

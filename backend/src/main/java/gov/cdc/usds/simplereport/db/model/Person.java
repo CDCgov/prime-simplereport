@@ -1,22 +1,22 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import org.hibernate.annotations.Type;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -35,7 +35,7 @@ public class Person extends EternalEntity {
 	@Column
 	private String gender;
 	@Type(type = "list-array")
-	@Column(columnDefinition = "text[]") // needed by auto-ddl validation, just for the array type
+	@Column
 	private List<String> race = new ArrayList<>();
 	@Column
 	private String ethnicity;
@@ -45,8 +45,9 @@ public class Person extends EternalEntity {
 	private String email;
 	@Column(nullable = false)
 	private boolean employedInHealthcare;
-	@Column
-	private String role;
+	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
+	private PersonRole role;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
 	@ManyToOne(optional = false)
@@ -63,6 +64,7 @@ public class Person extends EternalEntity {
 	public Person(String firstName, String middleName, String lastName, String suffix, Organization org) {
 		this.organization = org;
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
+		this.role = PersonRole.STAFF;
 	}
 
 	public List<TestOrder> getTestOrders() {
@@ -79,7 +81,7 @@ public class Person extends EternalEntity {
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
-		String role,
+		PersonRole role,
 		String email,
 		List<String> race,
 		String ethnicity,
@@ -111,7 +113,7 @@ public class Person extends EternalEntity {
 		LocalDate birthDate,
 		StreetAddress address,
 		String telephone,
-		String role,
+		PersonRole role,
 		String email,
 		List<String> race,
 		String ethnicity,
@@ -244,7 +246,7 @@ public class Person extends EternalEntity {
 		return testOrders;
 	}
 
-	public String getRole() {
+	public PersonRole getRole() {
 		return role;
 	}
 }
