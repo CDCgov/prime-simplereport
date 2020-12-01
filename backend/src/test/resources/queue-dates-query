@@ -1,0 +1,10 @@
+ query {
+    queue {
+      patient {
+        internalId
+        birthDate
+      }
+      symptomOnset
+      priorTestDate
+    }
+}

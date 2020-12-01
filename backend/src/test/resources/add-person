@@ -1,0 +1,31 @@
+mutation createPersonEntry(
+    $lookupId: String,
+    $firstName: String!, # this is technically optional on the back end...
+    $lastName: String!,
+    $birthDate: String!,
+    $street: String = "Top Floor",
+    $streetTwo: String,
+    $city: String = "Winterfell",
+    $state: String = "The North",
+    $zipCode: String = "00000",
+    $telephone: String = "(900)-GOT-STUBBLE",
+    $role: String = "visitor",
+    $flagCongregate: Boolean = true,
+    $flagHealthcare: Boolean = false,
+    ){
+  addPatient(
+    lookupId: $lookupId
+    firstName: $firstName
+    lastName: $lastName
+    birthDate: $birthDate
+    street: $street
+    streetTwo: $streetTwo
+    city: $city
+    state: $state
+    zipCode: $zipCode
+    telephone: $telephone
+    role: $role
+    residentCongregateSetting: $flagCongregate
+    employedInHealthcare: $flagHealthcare
+  )
+}

@@ -1,4 +1,4 @@
 { 
 patients {
-  firstName lastName
+  firstName lastName birthDate
 }}

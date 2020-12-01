@@ -1,25 +1,26 @@
 package gov.cdc.usds.simplereport.api.queue;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import org.json.JSONObject;
-import org.json.JSONException;
-import java.util.Iterator;
+import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.service.PersonService; 
-import gov.cdc.usds.simplereport.service.TestOrderService; 
-import graphql.kickstart.tools.GraphQLMutationResolver;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
+import graphql.kickstart.tools.GraphQLMutationResolver;
+
 /**
- * Created by nickrobison on 11/17/20
+ * Mutations for creating and updating test queue entries.
  */
 @Component
 public class QueueMutationResolver implements GraphQLMutationResolver  {
-    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final TestOrderService _tos;
     private final PersonService _ps;
@@ -48,8 +49,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         String symptomOnset,
         boolean noSymptoms
     ) throws JSONException {
-      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, DATE_FORMATTER);
-      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, DATE_FORMATTER);
+      LocalDate localPriorTestDate = parseUserDate(priorTestDate);
+      LocalDate localSymptomOnset =  parseUserDate(symptomOnset);
 
       Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
       JSONObject symptomsJSONObject = new JSONObject(symptoms);
@@ -92,8 +93,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       String symptomOnset,
       boolean noSymptoms
     ) {
-      LocalDate localPriorTestDate = (priorTestDate == null) ? null : LocalDate.parse(priorTestDate, DATE_FORMATTER);
-      LocalDate localSymptomOnset = (symptomOnset == null) ? null : LocalDate.parse(symptomOnset, DATE_FORMATTER);
+      LocalDate localPriorTestDate = parseUserDate(priorTestDate);
+      LocalDate localSymptomOnset =  parseUserDate(symptomOnset);
 
       Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
       JSONObject symptomsJSONObject = new JSONObject(symptoms);
