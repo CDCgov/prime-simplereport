@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -51,6 +52,16 @@ public class TestEventExport {
 		TestResult.UNDETERMINED, "419984006"
 	);
 
+	private Map<String, String> raceMap = Map.of(
+		"native", "1002-5",
+		"asian", "2028-9",
+		"black", "2054-5",
+		"pacific", "2076-8",
+		"white", "2106-3",
+		"other", "2131-1", // not currently in our app
+		"unknown", "UNK",
+		"refused", "ASKU" // Asked, but unknown
+	);
 
 	private String boolToYesNoUnk(Boolean value) {
 		if (value == null) {
@@ -69,7 +80,9 @@ public class TestEventExport {
 		if (value.size() < 1) {
 			return "";
 		}
-		return String.join(",", value);
+		return String.join(",", value.stream()
+		.map(v -> raceMap.get(v))
+		.collect(Collectors.toList()));
 	}
 
 	private String dateToHealthCareString(LocalDate value) {
@@ -120,7 +133,7 @@ public class TestEventExport {
 		if (patient.getGender() == null) {
 			return "UNK";
 		}
-		return patient.getGender();
+		return genderMap.get(patient.getGender());
 	}
 
 	@JsonProperty("Patient_ethnicity")
@@ -136,7 +149,7 @@ public class TestEventExport {
 		return patient.getStreet();
 	}
 
-	@JsonProperty("Patient_street2")
+	@JsonProperty("Patient_street_2")
 	public String getPatientStreetTwo() {
 		return patient.getStreetTwo();
 	}
@@ -198,7 +211,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return testEvent.getCreatedAt().toString();
+		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -236,7 +249,7 @@ public class TestEventExport {
 		return provider.getStreet();
 	}
 
-	@JsonProperty("Testing_lab_street2")
+	@JsonProperty("Testing_lab_street_2")
 	public String getTestingLabStreetTwo() {
 		return provider.getStreetTwo();
 	}
@@ -329,7 +342,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "Nasal";
+		return "71836000";
 	}
 
 	@JsonProperty("Specimen_type_code")
@@ -340,6 +353,11 @@ public class TestEventExport {
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
 		return testEvent.getDeviceType().getInternalId().toString();
+	}
+
+	@JsonProperty("Device_ID")
+	public String getDeviceID() {
+		return testEvent.getDeviceType().getModel();
 	}
 
 	@JsonProperty("Test_date")
