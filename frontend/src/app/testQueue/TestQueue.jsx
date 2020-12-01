@@ -1,6 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import { testResultPropType } from "../propTypes";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import { parseDate } from "./AoEForm/dateUtils";
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
@@ -59,9 +63,15 @@ const queueQuery = gql`
 `;
 
 const TestQueue = () => {
+  const appInsights = useAppInsightsContext();
+  const trackFetchQueue = useTrackEvent(appInsights, "Fetch Queue");
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
   });
+
+  useEffect(() => {
+    trackFetchQueue({ param: "dummy param 2" }); // this works!
+  }, []);
 
   if (error) {
     return <p>Error in loading patients</p>;
