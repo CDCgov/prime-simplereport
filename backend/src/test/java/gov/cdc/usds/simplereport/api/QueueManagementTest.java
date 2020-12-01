@@ -2,6 +2,9 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.IOException;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,19 +46,52 @@ public class QueueManagementTest extends BaseApiTest {
 	public void enqueueOnePatient() throws Exception {
 		Person p = _dataFactory.createFullPerson(_org);
 		String personId = p.getInternalId().toString();
-		ObjectNode variables = JsonNodeFactory.instance.objectNode().put("id", personId);
-		GraphQLResponse addQuery = _template.perform("add-to-queue", variables);
-		assertTrue(addQuery.readTree().path("errors").isMissingNode(), "Response should have no errors section");
+		ObjectNode variables = JsonNodeFactory.instance.objectNode()
+				.put("id", personId)
+				.put("previousTestDate", "05/15/2020")
+				.put("symptomOnsetDate", "11/30/2020")
+				;
+		performEnqueueMutation(variables);
 		GraphQLResponse queueResponse = _template.postForResource("queue-query");
 		assertTrue(queueResponse.isOk());
 		ArrayNode queueData = (ArrayNode) queueResponse.readTree().get("data").get("queue");
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
-		String symptomOnset = queueEntry.get("symptomOnset").asText(); // "11/30/2020"
+		String symptomOnset = queueEntry.get("symptomOnset").asText();
 		String priorTest = queueEntry.get("priorTestDate").asText();
 		assertEquals("2020-11-30", symptomOnset);
-		assertEquals("2020-05-15", priorTest); // "05/15/2020"
+		assertEquals("2020-05-15", priorTest);
 		// this assertion is kind of extra, should be on a patient management test instead
 		assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
 	}
+
+	@Test
+	public void enqueueOnePatientIsoDate() throws Exception {
+		Person p = _dataFactory.createFullPerson(_org);
+		String personId = p.getInternalId().toString();
+		ObjectNode variables = JsonNodeFactory.instance.objectNode()
+				.put("id", personId)
+				.put("previousTestDate", "2020-05-15")
+				.put("symptomOnsetDate", "2020-11-30")
+				;
+		performEnqueueMutation(variables);
+		GraphQLResponse queueResponse = _template.postForResource("queue-query");
+		assertTrue(queueResponse.isOk());
+		ArrayNode queueData = (ArrayNode) queueResponse.readTree().get("data").get("queue");
+		assertEquals(1, queueData.size());
+		JsonNode queueEntry = queueData.get(0);
+		String symptomOnset = queueEntry.get("symptomOnset").asText();
+		String priorTest = queueEntry.get("priorTestDate").asText();
+		assertEquals("2020-11-30", symptomOnset);
+		assertEquals("2020-05-15", priorTest);
+	}
+
+	private void performEnqueueMutation(ObjectNode variables) throws IOException {
+		GraphQLResponse addQuery = _template.perform("add-to-queue", variables);
+		JsonNode errorNode = addQuery.readTree().path("errors");
+		if(!errorNode.isMissingNode()) {
+			fail(errorNode.toString());
+		}
+	}
+
 }

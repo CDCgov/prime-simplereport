@@ -1,10 +1,10 @@
-mutation enqueueById($id: String!) {
+mutation enqueueById($id: String!, $previousTestDate: String!, $symptomOnsetDate: String!) {
     addPatientToQueue(
       patientId: $id,
       pregnancy: "no",
       symptoms:"{}",
       firstTest: false,
-      priorTestDate:"05/15/2020",
-      symptomOnset:"11/30/2020"
+      priorTestDate: $previousTestDate,
+      symptomOnset: $symptomOnsetDate
     )
   }
