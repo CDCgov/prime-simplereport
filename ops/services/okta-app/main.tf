@@ -5,7 +5,7 @@ locals {
     "http://localhost:3000",
     "https://simple-report.app.cloud.gov/",
     "https://prime-data-input-sandbox-backend.app.cloud.gov/",
-    "https://staging.simplereport.org"
+    "https://staging.simplereport.org/app"
   ]
 }
 
