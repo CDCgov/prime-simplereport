@@ -17,6 +17,8 @@ import {
   concat,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
+import { showError } from "./app/utils";
+import { toast } from "react-toastify";
 
 if (window.location.hash) {
   const params = new URLSearchParams(window.location.hash.slice(1));
@@ -38,12 +40,21 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
-const logoutLink = onError(({ networkError }) => {
-  console.log(networkError);
+const logoutLink = onError(({ networkError, graphQLErrors }) => {
   if (networkError && process.env.REACT_APP_OKTA_URL) {
     console.error("network error", networkError);
     console.log("redirecting to", process.env.REACT_APP_OKTA_URL);
     window.location.replace(process.env.REACT_APP_OKTA_URL);
+  }
+  if (graphQLErrors) {
+    const messages = graphQLErrors.map(({ message, locations, path }) => {
+      console.error(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      );
+      return message;
+    });
+    showError(toast, messages.join(" "));
+    console.error("graphql error", graphQLErrors);
   }
 });
 
