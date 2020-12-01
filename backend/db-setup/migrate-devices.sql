@@ -3,7 +3,7 @@ SET loinc_code = '94534-5'
 WHERE name='Abbott IDNow';
 
 UPDATE simple_report.device_type 
-SET model = ' BinaxNOW COVID-19 Ag Card'
+SET model = 'BinaxNOW COVID-19 Ag Card'
 WHERE name='Abbott BinaxNow';
 
 UPDATE simple_report.device_type
