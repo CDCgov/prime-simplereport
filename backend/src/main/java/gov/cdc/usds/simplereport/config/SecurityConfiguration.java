@@ -37,9 +37,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     public interface OktaAttributes {
-        public static final String EMAIL = "email";
-        public static final String FIRST_NAME = "given_name";
-        public static final String LAST_NAME = "family_name";
+        String EMAIL = "email";
+        String FIRST_NAME = "given_name";
+        String LAST_NAME = "family_name";
     }
 
     @Override
@@ -48,6 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+				.antMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
