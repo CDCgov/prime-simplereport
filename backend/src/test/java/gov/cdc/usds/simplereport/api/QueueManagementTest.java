@@ -24,6 +24,8 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class QueueManagementTest extends BaseApiTest {
 
+	private static final String QUERY = "queue-dates-query";
+
 	@Autowired
 	private TestDataFactory _dataFactory;
 	@Autowired
@@ -52,7 +54,7 @@ public class QueueManagementTest extends BaseApiTest {
 				.put("symptomOnsetDate", "11/30/2020")
 				;
 		performEnqueueMutation(variables);
-		ArrayNode queueData = (ArrayNode) runQuery("queue-query").get("queue");
+		ArrayNode queueData = (ArrayNode) runQuery(QUERY).get("queue");
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
@@ -73,7 +75,7 @@ public class QueueManagementTest extends BaseApiTest {
 				.put("symptomOnsetDate", "2020-11-30")
 				;
 		performEnqueueMutation(variables);
-		ArrayNode queueData = (ArrayNode) runQuery("queue-query").get("queue");
+		ArrayNode queueData = (ArrayNode) runQuery(QUERY).get("queue");
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
