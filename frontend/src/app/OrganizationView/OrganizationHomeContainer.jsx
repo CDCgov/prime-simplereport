@@ -6,6 +6,8 @@ import {
   useLocation,
   useRouteMatch,
 } from "react-router-dom";
+import { AppInsightsErrorBoundary } from "@microsoft/applicationinsights-react-js";
+import { reactPlugin } from "../AppInsights";
 
 import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
@@ -24,7 +26,14 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/queue`}
           render={() => {
-            return <TestQueue />;
+            return (
+              <AppInsightsErrorBoundary
+                onError={(a) => <p> There was an error with the queue </p>} // this is rendered if the child (TestQueue) throws an error
+                appInsights={reactPlugin}
+              >
+                <TestQueue />
+              </AppInsightsErrorBoundary>
+            );
           }}
         />
         <Route

@@ -70,11 +70,16 @@ const TestQueue = () => {
   });
 
   useEffect(() => {
-    trackFetchQueue({ param: "dummy param 2" }); // this works!
-  }, []);
+    trackFetchQueue({ dummyParam: "dummyValue" }); // this works!
+  }, [trackFetchQueue]);
 
   if (error) {
-    return <p>Error in loading patients</p>;
+    // TODO: would be better to use the hooks, but we need to add an event listener
+    // trackFetchQueueError({error: error})
+    appInsights.trackEvent({
+      name: "Fetch Queue Error",
+    });
+    return error;
   }
   if (loading) {
     return <p>Loading patients...</p>;
