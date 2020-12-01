@@ -52,9 +52,7 @@ public class QueueManagementTest extends BaseApiTest {
 				.put("symptomOnsetDate", "11/30/2020")
 				;
 		performEnqueueMutation(variables);
-		GraphQLResponse queueResponse = _template.postForResource("queue-query");
-		assertTrue(queueResponse.isOk());
-		ArrayNode queueData = (ArrayNode) queueResponse.readTree().get("data").get("queue");
+		ArrayNode queueData = (ArrayNode) runQuery("queue-query").get("queue");
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
@@ -75,9 +73,7 @@ public class QueueManagementTest extends BaseApiTest {
 				.put("symptomOnsetDate", "2020-11-30")
 				;
 		performEnqueueMutation(variables);
-		GraphQLResponse queueResponse = _template.postForResource("queue-query");
-		assertTrue(queueResponse.isOk());
-		ArrayNode queueData = (ArrayNode) queueResponse.readTree().get("data").get("queue");
+		ArrayNode queueData = (ArrayNode) runQuery("queue-query").get("queue");
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
@@ -87,11 +83,7 @@ public class QueueManagementTest extends BaseApiTest {
 	}
 
 	private void performEnqueueMutation(ObjectNode variables) throws IOException {
-		GraphQLResponse addQuery = _template.perform("add-to-queue", variables);
-		JsonNode errorNode = addQuery.readTree().path("errors");
-		if(!errorNode.isMissingNode()) {
-			fail(errorNode.toString());
-		}
+		assertGraphQLSuccess(_template.perform("add-to-queue", variables));
 	}
 
 }
