@@ -231,7 +231,7 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_name")
 	public String getTestingLabName() {
-		return org.getFacilityName();
+		return getOrderingFacilityName();
 	}
 
 	@JsonProperty("Testing_lab_CLIA")
@@ -241,43 +241,43 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_state")
 	public String getTestingLabState() {
-		return provider.getState();
+		return getOrderingFacilityState();
 	}
 
 	@JsonProperty("Testing_lab_street")
 	public String getTestingLabStreet() {
-		return provider.getStreet();
+		return getOrderingFacilityStreet();
 	}
 
 	@JsonProperty("Testing_lab_street_2")
 	public String getTestingLabStreetTwo() {
-		return provider.getStreetTwo();
+		return getOrderingFacilityStreetTwo();
 	}
 
 	@JsonProperty("Testing_lab_zip_code")
 	public String getTestingLabZipCode() {
-		return provider.getZipCode();
+		return getOrderingFacilityZipCode();
 
 	}
 
 	@JsonProperty("Testing_lab_phone_number")
 	public String getTestingLabPhoneNumber() {
-		return provider.getTelephone();
+		return getOrderingFacilityPhoneNumber();
 	}
 
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
-		return provider.getCity();
+		return getOrderingFacilityCity();
 	}
 
 	@JsonProperty("Ordering_facility_city")
 	public String getOrderingFacilityCity() {
-		return this.getTestingLabCity();
+		return "Tucson";
 	}
 
 	@JsonProperty("Ordering_facility_county")
 	public String getOrderingFacilityCounty() {
-		return provider.getCounty();
+		return "Pima";
 	}
 
 	@JsonProperty("Ordering_facility_name")
@@ -287,27 +287,27 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return "5202475313";
 	}
 
 	@JsonProperty("Ordering_facility_state")
 	public String getOrderingFacilityState() {
-		return this.getTestingLabState();
+		return "AZ";
 	}
 
 	@JsonProperty("Ordering_facility_street")
 	public String getOrderingFacilityStreet() {
-		return this.getTestingLabStreet();
+		return "2797 N Cerrada de Beto";
 	}
 
 	@JsonProperty("Ordering_facility_street_2")
-	public String getOrderingFacilityStreet_2() {
-		return this.getTestingLabStreetTwo();
+	public String getOrderingFacilityStreetTwo() {
+		return "";
 	}
 
 	@JsonProperty("Ordering_facility_zip_code")
 	public String getOrderingFacilityZipCode() {
-		return this.getTestingLabZipCode();
+		return "85745";
 	}
 
 	@JsonProperty("Ordering_provider_last_name")
