@@ -12,8 +12,6 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by nickrobison on 11/21/20

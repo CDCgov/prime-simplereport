@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.patient;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
