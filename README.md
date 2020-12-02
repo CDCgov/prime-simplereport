@@ -43,6 +43,13 @@ Running spring app locally and db in docker
 1. Run `gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
+Running spring app locally and db in docker on port 5433
+
+1. `cd backend`
+1. Run ` docker-compose --env-file .env.development up db`
+1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
+1. view site at http://localhost:8080
+
 ## Restart & Clean
 
 When there are DB schema changes the backend may throw and error and fail to start.
