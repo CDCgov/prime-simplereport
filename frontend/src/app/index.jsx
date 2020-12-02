@@ -41,7 +41,7 @@ const App = () => {
         <ToastContainer
           autoClose={5000}
           closeButton={false}
-          limit={1}
+          limit={2}
           position="bottom-center"
           hideProgressBar={true}
         />
