@@ -72,7 +72,7 @@ const SET_SETTINGS_MUTATION = gql`
       orderingProviderLastName: $orderingProviderLastName
       orderingProviderSuffix: $orderingProviderSuffix
       orderingProviderNPI: $orderingProviderNPI
-      orderingProvsiderStreet: $orderingProviderStreet
+      orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
       orderingProviderCounty: $orderingProviderCounty
