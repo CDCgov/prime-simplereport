@@ -74,9 +74,6 @@ const TestQueue = () => {
   });
 
   if (error) {
-    appInsights.trackEvent({
-      name: "Failed Fetching Queue",
-    });
     return error;
   }
   if (loading) {

@@ -68,7 +68,14 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/settings`}
           render={() => {
-            return <Settings />;
+            return (
+              <AppInsightsErrorBoundary
+                onError={() => <p> There was an error with settings </p>}
+                appInsights={reactPlugin}
+              >
+                <Settings />
+              </AppInsightsErrorBoundary>
+            );
           }}
         />
         <Route path={`${match.path}/`}>
