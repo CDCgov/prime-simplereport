@@ -30,6 +30,14 @@ To run the service, you needs a DB and a connection to Okta for it to work. Loca
 
 ### Backend-Setup
 
+If Java isn't installed on a Mac you can get it from `brew`:
+
+```sh
+brew tap adoptopenjdk/openjdk
+brew cask install adoptopenjdk8
+brew install gradle
+```
+
 Running with docker:
 
 1. `cd backend`
