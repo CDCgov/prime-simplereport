@@ -285,7 +285,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_name")
 	public String getOrderingFacilityName() {
-		return org.getTestingFacilityName();
+		return org.getFacilityName();
 	}
 
 	@JsonProperty("Ordering_facility_phone_number")
