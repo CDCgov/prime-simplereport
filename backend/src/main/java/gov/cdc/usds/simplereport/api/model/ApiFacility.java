@@ -18,5 +18,33 @@ public class ApiFacility {
 
 	public String getCliaNumber() {
 		return org.getCliaNumber();
+  }
+  
+  public String getStreet() {
+		return "2797 N Cerrada de Beto";
+	}
+
+	public String getStreetTwo() {
+		return "";
+	}
+
+	public String getCity() {
+		return "Tucson";
+	}
+
+	public String getCounty() {
+    return "Pima";
+	}
+
+	public String getState() {
+		return "AZ";
+	}
+
+	public String getZipCode() {
+		return "85745";
+	}
+
+	public String getPhone() {
+		return "5202475313";
 	}
 }

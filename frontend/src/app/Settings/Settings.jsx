@@ -15,20 +15,31 @@ const GET_SETTINGS_QUERY = gql`
   {
     organization {
       internalId
-      cliaNumber
-      testingFacilityName
-      orderingProviderNPI
-      orderingProviderFirstName
-      orderingProviderMiddleName
-      orderingProviderLastName
-      orderingProviderSuffix
-      orderingProviderStreet
-      orderingProviderStreetTwo
-      orderingProviderCity
-      orderingProviderZipCode
-      orderingProviderCounty
-      orderingProviderState
-      orderingProviderPhone
+      testingFacility {
+        cliaNumber
+        name
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        phone
+      }
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        suffix
+        NPI
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        phone
+      }
       defaultDeviceType {
         internalId
       }

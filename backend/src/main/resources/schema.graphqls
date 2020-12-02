@@ -35,6 +35,13 @@ type Patient {
 type Facility {
   name: String
   cliaNumber: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  phone: String
 }
 type Provider {
   firstName: String
