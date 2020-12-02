@@ -370,7 +370,7 @@ const PatientForm = (props) => {
       </Fieldset>
       <Fieldset legend="Demographics">
         <div>
-        <RadioGroup
+          <RadioGroup
             legend="Race"
             displayLegend
             name="race"

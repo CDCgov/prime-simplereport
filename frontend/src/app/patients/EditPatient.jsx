@@ -34,7 +34,6 @@ const GET_PATIENT = gql`
   }
 `;
 
-
 const EditPatient = (props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
@@ -47,22 +46,15 @@ const EditPatient = (props) => {
   if (error) {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
-  const birthDate = data.patient.birthDate
-    ? `${data.patient.birthDate.split("-")[1]}/${
-        data.patient.birthDate.split("-")[2]
-      }/${data.patient.birthDate.split("-")[0]}`
-    : data.patient.birthDate;
 
   const residentCongregateSetting = data.patient.residentCongregateSetting
     ? "YES"
     : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
-
   return (
     <PatientForm
       patient={{
         ...data.patient,
-        birthDate,
         residentCongregateSetting,
         employedInHealthcare,
       }}
