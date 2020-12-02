@@ -260,7 +260,11 @@ public class TestEventExport {
 	@JsonProperty("Testing_lab_zip_code")
 	public String getTestingLabZipCode() {
 		return getOrderingFacilityZipCode();
+	}
 
+	@JsonProperty("Testing_lab_county")
+	public String getTestingLabCounty() {
+		return getOrderingFacilityCounty();
 	}
 
 	@JsonProperty("Testing_lab_phone_number")
