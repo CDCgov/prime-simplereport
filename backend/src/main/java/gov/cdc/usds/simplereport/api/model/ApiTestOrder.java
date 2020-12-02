@@ -80,6 +80,9 @@ public class ApiTestOrder {
 	}
 
 	public String getResult() {
+		if (order.getTestResult() == null) {
+			return "";
+		}
 		return order.getTestResult().toString();
 	}
 
