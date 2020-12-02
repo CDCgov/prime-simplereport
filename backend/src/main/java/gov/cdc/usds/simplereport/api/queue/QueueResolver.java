@@ -1,27 +1,32 @@
 package gov.cdc.usds.simplereport.api.queue;
 
+import java.util.List;
+import java.util.stream.Collectors;
 
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
-import gov.cdc.usds.simplereport.service.TestOrderService; 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
-/**
- * Created by nickrobison on 11/15/20
- */
+import gov.cdc.usds.simplereport.api.model.TestResult;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.service.TestOrderService; 
+
+
 @Component
 public class QueueResolver implements GraphQLQueryResolver {
 
-  @Autowired
-  private TestOrderService tos;
+	@Autowired
+	private TestOrderService tos;
 
-  public List<TestOrder> getQueue() {
-    return tos.getQueue();
-  }
+	public List<TestOrder> getQueue() {
+		return tos.getQueue();
+	}
 
-  public List<TestOrder> getTestResults() {
-    return tos.getTestResults();
-  }
+	public List<TestResult> getTestResults() {
+		return tos.getTestResults().stream()
+			.map(r -> new TestResult(r.getTestEvent()))
+			.collect(Collectors.toList());
+	}
 }
+
+
