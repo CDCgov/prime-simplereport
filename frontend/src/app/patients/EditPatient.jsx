@@ -34,7 +34,6 @@ const GET_PATIENT = gql`
   }
 `;
 
-
 const EditPatient = (props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },

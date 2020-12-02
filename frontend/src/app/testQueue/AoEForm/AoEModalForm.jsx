@@ -172,7 +172,6 @@ const AoEModalForm = ({
         initialSymptoms[val] = loadedSymptoms[val] === "true" || false;
       } else {
         initialSymptoms[val] = loadedSymptoms[val];
-
       }
     });
   } else {
@@ -182,15 +181,12 @@ const AoEModalForm = ({
     });
   }
 
-
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useState(loadState.symptomOnset);
 
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useState(
-    loadState.priorTestDate
-  );
+  const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState(
     loadState.priorTestResult

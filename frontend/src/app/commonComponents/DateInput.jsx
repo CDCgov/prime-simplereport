@@ -13,7 +13,7 @@ const DateInput = ({
   addClass,
   min,
   max,
-  disabled
+  disabled,
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
