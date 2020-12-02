@@ -58,9 +58,6 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-            List<String> race = new ArrayList<>();
-            race.add(row.get("Race").toLowerCase());
-
             _ps.addPatient(row.get("ID"),
                     row.get("FirstName"),
                     row.get("MiddleName"),
@@ -76,7 +73,7 @@ public class UploadService {
                     row.get("Role").toUpperCase(),
                     row.get("Email"),
                     row.get("County"),
-                    race,
+                    row.get("Race").toLowerCase(),
                     ethnicityMap.get(row.get("Ethnicity")),
                     row.get("Gender").toLowerCase(),
                     yesNoMap.get(row.get("residentCongregateSetting")),

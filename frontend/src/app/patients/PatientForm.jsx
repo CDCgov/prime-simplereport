@@ -34,7 +34,7 @@ const ADD_PATIENT = gql`
     $role: String
     $email: String
     $county: String
-    $race: [String]
+    $race: String
     $ethnicity: String
     $gender: String
     $residentCongregateSetting: Boolean!
@@ -81,7 +81,7 @@ const UPDATE_PATIENT = gql`
     $role: String
     $email: String
     $county: String
-    $race: [String]
+    $race: String
     $ethnicity: String
     $gender: String
     $residentCongregateSetting: Boolean!
@@ -161,7 +161,7 @@ const PatientForm = (props) => {
       role: patient.role,
       email: patient.email,
       county: patient.county,
-      race: patient.race ? Object.keys(patient.race) : null,
+      race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
       residentCongregateSetting: patient.residentCongregateSetting === "YES",
@@ -371,12 +371,11 @@ const PatientForm = (props) => {
       </Fieldset>
       <Fieldset legend="Demographics">
         <div>
-          <Checkboxes
+        <RadioGroup
             legend="Race"
             displayLegend
             name="race"
-            checkedValues={patient.race}
-            checkboxes={[
+            buttons={[
               {
                 value: "native",
                 label: "American Indian or Alaskan Native",
@@ -406,6 +405,7 @@ const PatientForm = (props) => {
                 label: "Refused to Answer",
               },
             ]}
+            selectedRadio={patient.race}
             onChange={onChange}
           />
         </div>
