@@ -325,7 +325,22 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_provider_street")
 	public String getOrderingProviderStreet() {
-		return this.getTestingLabStreet();
+		return provider.getStreet();
+	}
+
+	@JsonProperty("Ordering_provider_street_2")
+	public String getOrderingProviderStreetTwo() {
+		return provider.getStreetTwo();
+	}
+
+	@JsonProperty("Ordering_provider_city")
+	public String getOrderingProviderCity() {
+		return provider.getCity();
+	}
+
+	@JsonProperty("Ordering_provider_state")
+	public String getOrderingProviderState() {
+		return provider.getState();
 	}
 
 	@JsonProperty("Ordering_provider_zip_code")
@@ -333,9 +348,14 @@ public class TestEventExport {
 		return this.getTestingLabZipCode();
 	}
 
+	@JsonProperty("Ordering_provider_county")
+	public String getOrderingProviderCounty() {
+		return provider.getCounty();
+	}
+
 	@JsonProperty("Ordering_provider_phone_number")
 	public String getOrderingProviderPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return provider.getTelephone();
 	}
 
 	@JsonProperty("Ordered_test_code")
