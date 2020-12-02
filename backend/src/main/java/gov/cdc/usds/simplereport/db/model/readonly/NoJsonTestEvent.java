@@ -17,8 +17,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.NoJsonTestOrder;
 
 @Entity
 @Table(name = "test_event")
@@ -39,7 +39,7 @@ public class NoJsonTestEvent extends AuditedEntity {
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
 	@OneToOne(mappedBy = "testEvent")
-	private TestOrder order;
+	private NoJsonTestOrder order;
 
 	protected NoJsonTestEvent() { /* no-op */ }
 
@@ -59,7 +59,7 @@ public class NoJsonTestEvent extends AuditedEntity {
 		return deviceType;
 	}
 
-	public TestOrder getTestOrder() {
+	public NoJsonTestOrder getTestOrder() {
 		return order;
 	}
 
