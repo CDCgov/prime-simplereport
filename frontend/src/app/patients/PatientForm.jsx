@@ -294,7 +294,8 @@ const PatientForm = (props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Date of Birth (MM/dd/yyyy)"
+            type="date"
+            label="Date of Birth (mm/dd/yyyy)"
             name="birthDate"
             value={patient.birthDate}
             onChange={onChange}
