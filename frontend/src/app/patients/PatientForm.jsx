@@ -10,7 +10,6 @@ import {
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
-import Checkboxes from "../commonComponents/Checkboxes";
 import { Prompt } from "react-router-dom";
 import moment from "moment";
 import Dropdown from "../commonComponents/Dropdown";
