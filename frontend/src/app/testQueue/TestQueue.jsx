@@ -65,19 +65,17 @@ const queueQuery = gql`
 const TestQueue = () => {
   const appInsights = useAppInsightsContext();
   const trackFetchQueue = useTrackEvent(appInsights, "Fetch Queue");
+  useEffect(() => {
+    trackFetchQueue();
+  }, [trackFetchQueue]);
+
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
   });
 
-  useEffect(() => {
-    trackFetchQueue({ dummyParam: "dummyValue" }); // this works!
-  }, [trackFetchQueue]);
-
   if (error) {
-    // TODO: would be better to use the hooks, but we need to add an event listener
-    // trackFetchQueueError({error: error})
     appInsights.trackEvent({
-      name: "Fetch Queue Error",
+      name: "Failed Fetching Queue",
     });
     return error;
   }

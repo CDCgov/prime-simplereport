@@ -1,6 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useEffect } from "react";
 import moment from "moment";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
@@ -27,6 +31,16 @@ const testResultQuery = gql`
 `;
 
 const TestResultsList = () => {
+  const appInsights = useAppInsightsContext();
+  const trackFetchTestResults = useTrackEvent(
+    appInsights,
+    "Fetch Test Results"
+  );
+
+  useEffect(() => {
+    trackFetchTestResults();
+  }, [trackFetchTestResults]);
+
   const { data, loading, error } = useQuery(testResultQuery, {
     fetchPolicy: "no-cache",
   });
@@ -35,12 +49,10 @@ const TestResultsList = () => {
     return <p>Loading</p>;
   }
   if (error) {
-    console.error(error);
-    return (
-      <div>
-        <h3>There was an error:</h3>
-      </div>
-    );
+    appInsights.trackEvent({
+      name: "Failed Fetching Tests Results",
+    });
+    return error;
   }
 
   const testResultRows = (testResults) => {

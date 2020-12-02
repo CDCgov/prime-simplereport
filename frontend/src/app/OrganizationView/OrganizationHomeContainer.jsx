@@ -28,7 +28,7 @@ const OrganizationHomeContainer = () => {
           render={() => {
             return (
               <AppInsightsErrorBoundary
-                onError={(a) => <p> There was an error with the queue </p>} // this is rendered if the child (TestQueue) throws an error
+                onError={() => <p> There was an error with the queue </p>}
                 appInsights={reactPlugin}
               >
                 <TestQueue />
@@ -39,7 +39,14 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/results`}
           render={() => {
-            return <TestResultsList />;
+            return (
+              <AppInsightsErrorBoundary
+                onError={() => <p> There was an error with test results </p>}
+                appInsights={reactPlugin}
+              >
+                <TestResultsList />
+              </AppInsightsErrorBoundary>
+            );
           }}
         />
         <Route
