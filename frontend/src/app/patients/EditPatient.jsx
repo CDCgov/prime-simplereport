@@ -34,11 +34,6 @@ const GET_PATIENT = gql`
   }
 `;
 
-const raceArrayToObject = (raceArray) => {
-  const raceObject = {};
-  raceArray.forEach((key) => (raceObject[key] = true));
-  return raceObject;
-};
 
 const EditPatient = (props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
@@ -63,10 +58,6 @@ const EditPatient = (props) => {
     : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
 
-  const race = data.patient.race
-    ? raceArrayToObject(data.patient.race)
-    : data.patient.race;
-
   return (
     <PatientForm
       patient={{
@@ -74,7 +65,6 @@ const EditPatient = (props) => {
         birthDate,
         residentCongregateSetting,
         employedInHealthcare,
-        race,
       }}
       patientId={props.patientId}
     />

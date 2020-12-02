@@ -120,7 +120,10 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_race")
 	public String getPatientRace() {
-		return arrayToString(patient.getRace());
+		if (patient.getRace() == null) {
+			return "UNK";
+		}
+		return raceMap.get(patient.getRace());
 	}
 
 	@JsonProperty("Patient_DOB")
