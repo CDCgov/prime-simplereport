@@ -2,15 +2,11 @@ package gov.cdc.usds.simplereport.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
-import com.graphql.spring.boot.test.GraphQLTestTemplate;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.InputStream;
@@ -23,28 +19,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Created by nickrobison on 11/21/20
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
 @AutoConfigureMockMvc
-class CSVUploadTest {
+class CSVUploadTest extends BaseApiTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private GraphQLTestTemplate template;
-
-    @Autowired
-    private DbTruncator _truncator;
-
     @BeforeEach
     void setup() {
-        _truncator.truncateAll();
+        truncateDb();
     }
 
     @AfterEach
     void cleanup() {
-        _truncator.truncateAll();
+        truncateDb();
     }
 
     @Test
@@ -59,7 +47,7 @@ class CSVUploadTest {
                     .andReturn();
         }
 
-        final GraphQLResponse postMultipart = template.postForResource("person-query");
+        final GraphQLResponse postMultipart = _template.postForResource("person-query");
         assertTrue(postMultipart.isOk());
         final JsonNode jsonResponse = postMultipart.readTree();
         assertTrue(jsonResponse.get("data").get("patients").has(0));

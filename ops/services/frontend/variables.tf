@@ -13,6 +13,12 @@ variable "rg_location" {
   type = string
 }
 
+variable "domain_name" {
+  description = "Domain name of application"
+  default = "simplereport.org"
+  type = string
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type = map(string)

@@ -1,21 +1,21 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.Organization;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Date;
-import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.Map;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 public class TestEventExport {
 
@@ -35,25 +35,33 @@ public class TestEventExport {
 	}
 
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
-	private Map<String, String> genderMap = new HashMap<String, String>() {{
-		put("male", "M");
-		put("female", "F");
-		put("other", "O");
-		put(null, "UNK");
-	}};
+	private Map<String, String> genderMap = Map.of(
+		"male", "M",
+		"female", "F",
+		"other", "O"
+	);
 
-	private Map<String, String> ethnicityMap = new HashMap<String, String>() {{
-		put("hispanic", "H");
-		put("not_hispanic", "N");
-		put(null, "U");
-	}};
+	private Map<String, String> ethnicityMap = Map.of(
+		"hispanic", "H",
+		"not_hispanic", "N"
+	);
 
-	private Map<TestResult, String> testResultMap = new HashMap<TestResult, String>() {{
-		put(TestResult.POSITIVE, "260373001");
-		put(TestResult.NEGATIVE, "260415000");
-		put(TestResult.UNDETERMINED, "419984006");
-	}};
+	private Map<TestResult, String> testResultMap = Map.of(
+		TestResult.POSITIVE, "260373001",
+		TestResult.NEGATIVE, "260415000",
+		TestResult.UNDETERMINED, "419984006"
+	);
 
+	private Map<String, String> raceMap = Map.of(
+		"native", "1002-5",
+		"asian", "2028-9",
+		"black", "2054-5",
+		"pacific", "2076-8",
+		"white", "2106-3",
+		"other", "2131-1", // not currently in our app
+		"unknown", "UNK",
+		"refused", "ASKU" // Asked, but unknown
+	);
 
 	private String boolToYesNoUnk(Boolean value) {
 		if (value == null) {
@@ -66,10 +74,15 @@ public class TestEventExport {
 	}
 
 	private String arrayToString(List<String> value) {
+		if (value == null) {
+			return "";
+		}
 		if (value.size() < 1) {
 			return "";
 		}
-		return String.join(",", value);
+		return String.join(",", value.stream()
+		.map(v -> raceMap.get(v))
+		.collect(Collectors.toList()));
 	}
 
 	private String dateToHealthCareString(LocalDate value) {
@@ -117,11 +130,17 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
+		if (patient.getGender() == null) {
+			return "UNK";
+		}
 		return genderMap.get(patient.getGender());
 	}
 
 	@JsonProperty("Patient_ethnicity")
 	public String getPatientEthnicity() {
+		if (patient.getEthnicity() == null) {
+			return "U";
+		}
 		return ethnicityMap.get(patient.getEthnicity());
 	}
 
@@ -130,7 +149,7 @@ public class TestEventExport {
 		return patient.getStreet();
 	}
 
-	@JsonProperty("Patient_street2")
+	@JsonProperty("Patient_street_2")
 	public String getPatientStreetTwo() {
 		return patient.getStreetTwo();
 	}
@@ -160,12 +179,12 @@ public class TestEventExport {
 		return patient.getTelephone();
 	}
 
-	@JsonProperty("Patient_lookupId")
+	@JsonProperty("Patient_lookup_ID")
 	public String getPatientLookupId() {
 		return patient.getLookupId();
 	}
 
-	@JsonProperty("Patient_Id")
+	@JsonProperty("Patient_ID")
 	public String getPatientId() {
 		return patient.getInternalId().toString();
 	}
@@ -192,7 +211,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return testEvent.getCreatedAt().toString();
+		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -212,53 +231,53 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_name")
 	public String getTestingLabName() {
-		return org.getFacilityName();
+		return getOrderingFacilityName();
 	}
 
-	@JsonProperty("Testing_lab_ID")
+	@JsonProperty("Testing_lab_CLIA")
 	public String getTestingLabID() {
 		return org.getCliaNumber();
 	}
 
 	@JsonProperty("Testing_lab_state")
 	public String getTestingLabState() {
-		return provider.getState();
+		return getOrderingFacilityState();
 	}
 
 	@JsonProperty("Testing_lab_street")
 	public String getTestingLabStreet() {
-		return provider.getStreet();
+		return getOrderingFacilityStreet();
 	}
 
-	@JsonProperty("Testing_lab_street2")
+	@JsonProperty("Testing_lab_street_2")
 	public String getTestingLabStreetTwo() {
-		return provider.getStreetTwo();
+		return getOrderingFacilityStreetTwo();
 	}
 
 	@JsonProperty("Testing_lab_zip_code")
 	public String getTestingLabZipCode() {
-		return provider.getZipCode();
+		return getOrderingFacilityZipCode();
 
 	}
 
 	@JsonProperty("Testing_lab_phone_number")
 	public String getTestingLabPhoneNumber() {
-		return provider.getTelephone();
+		return getOrderingFacilityPhoneNumber();
 	}
 
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
-		return provider.getCity();
+		return getOrderingFacilityCity();
 	}
 
 	@JsonProperty("Ordering_facility_city")
 	public String getOrderingFacilityCity() {
-		return this.getTestingLabCity();
+		return "Tucson";
 	}
 
 	@JsonProperty("Ordering_facility_county")
 	public String getOrderingFacilityCounty() {
-		return provider.getCounty();
+		return "Pima";
 	}
 
 	@JsonProperty("Ordering_facility_name")
@@ -268,27 +287,27 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return "5202475313";
 	}
 
 	@JsonProperty("Ordering_facility_state")
 	public String getOrderingFacilityState() {
-		return this.getTestingLabState();
+		return "AZ";
 	}
 
 	@JsonProperty("Ordering_facility_street")
 	public String getOrderingFacilityStreet() {
-		return this.getTestingLabStreet();
+		return "2797 N Cerrada de Beto";
 	}
 
 	@JsonProperty("Ordering_facility_street_2")
-	public String getOrderingFacilityStreet_2() {
-		return this.getTestingLabStreetTwo();
+	public String getOrderingFacilityStreetTwo() {
+		return "";
 	}
 
 	@JsonProperty("Ordering_facility_zip_code")
 	public String getOrderingFacilityZipCode() {
-		return this.getTestingLabZipCode();
+		return "85745";
 	}
 
 	@JsonProperty("Ordering_provider_last_name")
@@ -318,72 +337,27 @@ public class TestEventExport {
 
 	@JsonProperty("Ordered_test_code")
 	public String getOrderedTestCode() {
-		// 	- name: covid-19/order
-		// system: LOINC
-		// reference: Incomplete - Supports BD Veritor, Quidell Sofia, and Abbott ID Now
-		// referenceUrl: https://www.cdc.gov/csels/dls/documents/livd_test_code_mapping/LIVD-SARS-CoV-2-2020-10-21.xlsx
-		// values:
-		//   - code: 94563-4
-		//     display: SARS coronavirus 2 IgG Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94500-6
-		//     display: SARS coronavirus 2 RNA [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94558-4
-		//     display: SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		//   - code: 94534-5
-		//     display: SARS coronavirus 2 RdRp gene [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 94564-2
-		//     display: SARS-CoV-2 (COVID-19) IgM Ab [Presence] in Serum or Plasma by Immunoassay
-		//   - code: 94531-1
-		//     display: SARS coronavirus 2 RNA panel - Respiratory specimen by NAA with probe detection
-		//   - code: 94559-2
-		//     display: SARS coronavirus 2 ORF1ab region [Presence] in Respiratory specimen by NAA with probe detection
-		//   - code: 95209-3
-		//     display: SARS coronavirus+SARS coronavirus 2 Ag [Presence] in Respiratory specimen by Rapid immunoassay
-		return "";
+		return testEvent.getDeviceType().getLoincCode();
 	}
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "Forearm";
+		return "71836000";
 	}
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		// values:
-    // - code: 258500001
-    //   display: Nasopharyngeal swab
-    // - code: 871810001
-    //   display: Mid-turbinate nasal swab
-    // - code: 697989009
-    //   display: Anterior nares swab
-    // - code: 258411007
-    //   display: Nasopharyngeal aspirate
-    // - code: 429931000124105
-    //   display: Nasal aspirate
-    // - code: 258529004
-    //   display: Throat swab
-    // - code: 119334006
-    //   display: Sputum specimen
-    // - code: 119342007
-    //   display: Saliva specimen
-    // - code: 258607008
-    //   display: Bronchoalveolar lavage fluid sample
-    // - code: 119364003
-    //   display: Serum specimen
-    // - code: 119361006
-    //   display: Plasma specimen
-    // - code: 440500007
-    //   display: Dried blood spot specimen
-    // - code: 258580003
-    //   display: Whole blood sample
-    // - code: 122555007
-    //   display: Venous blood specimen
-		return ""; // "871810001", "697989009", or "258500001"
+		return "697989009"; // Anterior nares swab
 	}
 
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
 		return testEvent.getDeviceType().getInternalId().toString();
+	}
+
+	@JsonProperty("Device_ID")
+	public String getDeviceID() {
+		return testEvent.getDeviceType().getModel();
 	}
 
 	@JsonProperty("Test_date")
