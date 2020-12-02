@@ -5,6 +5,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
+import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -37,9 +39,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
     public interface OktaAttributes {
-        String EMAIL = "email";
-        String FIRST_NAME = "given_name";
-        String LAST_NAME = "family_name";
+        public static String EMAIL = "email";
+		public static String FIRST_NAME = "given_name";
+		public static String LAST_NAME = "family_name";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.antMatchers(HttpMethod.GET, "/actuator/health").permitAll()
+				.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
