@@ -24,7 +24,7 @@ public class QueueResolver implements GraphQLQueryResolver {
 
 	public List<TestResult> getTestResults() {
 		return tos.getTestResults().stream()
-			.map(r -> new TestResult(r.getTestEvent()))
+			.map(TestResult::new)
 			.collect(Collectors.toList());
 	}
 }

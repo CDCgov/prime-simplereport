@@ -13,19 +13,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 public class TestEventExport {
 
-	private TestEvent testEvent;
+	private NoJsonTestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Organization org;
 
-	public TestEventExport(TestEvent testEvent) {
+	public TestEventExport(NoJsonTestEvent testEvent) {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();

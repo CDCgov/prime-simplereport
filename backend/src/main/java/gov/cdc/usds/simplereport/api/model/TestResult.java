@@ -8,17 +8,17 @@ import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 
 public class TestResult {
 
-	private TestEvent event;
+	private NoJsonTestEvent event;
 	private AskOnEntrySurvey survey;
 
-	public TestResult(TestEvent event) {
+	public TestResult(NoJsonTestEvent event) {
 		super();
 		this.event = event;
 		this.survey = event.getTestOrder().getAskOnEntrySurvey().getSurvey();
