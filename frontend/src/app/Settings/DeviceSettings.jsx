@@ -54,7 +54,7 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
   }
 
   if (error) {
-    return error;
+    throw error;
   }
 
   const onDeviceChange = (e) => {

@@ -9,6 +9,9 @@ const appInsights = new ApplicationInsights({
   config: {
     instrumentationKey: process.env.REACT_APP_APPINSIGHTS_KEY,
     extensions: [reactPlugin],
+    loggingLevelConsole: 2,
+    disableFetchTracking: false,
+    loggingLevelTelemetry: 2,
     maxBatchInterval: 0,
     extensionConfig: {
       [reactPlugin.identifier]: { history: browserHistory },

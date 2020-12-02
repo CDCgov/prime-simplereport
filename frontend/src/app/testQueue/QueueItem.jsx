@@ -3,11 +3,14 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
-
 import Modal from "react-modal";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
+
 import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
-
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
@@ -96,6 +99,20 @@ const QueueItem = ({
   defaultDevice,
   refetchQueue,
 }) => {
+  const appInsights = useAppInsightsContext();
+  const trackRemovePatientFromQueue = useTrackEvent(
+    appInsights,
+    "Remove Patient From Queue"
+  );
+  const trackSubmitTestResult = useTrackEvent(
+    appInsights,
+    "Submit Test Result"
+  );
+  const trackUpdateAoEResponse = useTrackEvent(
+    appInsights,
+    "Update AoE Response"
+  );
+
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -127,6 +144,7 @@ const QueueItem = ({
   const onTestResultSubmit = (e) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      trackSubmitTestResult();
       submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -147,6 +165,7 @@ const QueueItem = ({
   };
 
   const removeFromQueue = (patientId) => {
+    trackRemovePatientFromQueue();
     removePatientFromQueue({
       variables: {
         patientId,
@@ -176,6 +195,7 @@ const QueueItem = ({
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
+    trackUpdateAoEResponse();
     updateAoe({
       variables: {
         patientId: patient.internalId,

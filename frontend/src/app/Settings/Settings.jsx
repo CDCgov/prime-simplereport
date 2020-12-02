@@ -3,7 +3,6 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
-import { AppInsightsErrorBoundary } from "@microsoft/applicationinsights-react-js";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -15,7 +14,6 @@ import DeviceSettings from "./DeviceSettings";
 import OrderingProviderSettings from "./OrderingProviderSettings";
 import OrganizationSettings from "./OrganizationSettings";
 import { showNotification } from "../utils";
-import { reactPlugin } from "../AppInsights";
 
 const GET_SETTINGS_QUERY = gql`
   {
@@ -27,7 +25,7 @@ const GET_SETTINGS_QUERY = gql`
       orderingProviderFirstName
       orderingProviderMiddleName
       orderingProviderLastName
-      orderingProviderSuffix
+      orderingProviderSuffixs
       orderingProviderStreet
       orderingProviderStreetTwo
       orderingProviderCity
@@ -88,10 +86,6 @@ const SET_SETTINGS_MUTATION = gql`
 const Settings = () => {
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(appInsights, "Save Settings");
-  const trackFetchSettings = useTrackEvent(appInsights, "Fetching Settings");
-  useEffect(() => {
-    trackFetchSettings();
-  }, [trackFetchSettings]);
 
   const {
     data: settings,
@@ -139,7 +133,8 @@ const Settings = () => {
   }, [settings]);
 
   const onSaveSettings = () => {
-    let variables = {
+    trackSaveSettings();
+    setSettings({
       variables: {
         testingFacilityName: orgSettings.testingFacilityName,
         cliaNumber: orgSettings.cliaNumber,
@@ -156,9 +151,7 @@ const Settings = () => {
         devices: Object.values(deviceSettings.supportedDevices),
         defaultDevice: deviceSettings.defaultDeviceId,
       },
-    };
-    trackSaveSettings({ data: variables });
-    setSettings(variables)
+    })
       .then((d) => {
         let alert = (
           <Alert
@@ -209,15 +202,10 @@ const Settings = () => {
         orgSettings={orgSettings}
         updateOrgSettings={updateOrgSettingsHandler}
       />
-      <AppInsightsErrorBoundary
-        onError={() => <p> There was an error with device settings </p>}
-        appInsights={reactPlugin}
-      >
-        <DeviceSettings
-          deviceSettings={deviceSettings}
-          updateDeviceSettings={updateDeviceSettingsHandler}
-        />
-      </AppInsightsErrorBoundary>
+      <DeviceSettings
+        deviceSettings={deviceSettings}
+        updateDeviceSettings={updateDeviceSettingsHandler}
+      />
     </main>
   );
 };

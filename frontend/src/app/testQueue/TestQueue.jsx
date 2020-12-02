@@ -1,14 +1,10 @@
-import { gql, useQuery } from "@apollo/client";
-import React, { useEffect } from "react";
+import React from "react";
 import { testResultPropType } from "../propTypes";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+import { gql, useQuery } from "@apollo/client";
 
-import { parseDate } from "./AoEForm/dateUtils";
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
+import { parseDate } from "./AoEForm/dateUtils";
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -63,18 +59,12 @@ const queueQuery = gql`
 `;
 
 const TestQueue = () => {
-  const appInsights = useAppInsightsContext();
-  const trackFetchQueue = useTrackEvent(appInsights, "Fetch Queue");
-  useEffect(() => {
-    trackFetchQueue();
-  }, [trackFetchQueue]);
-
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
   });
 
   if (error) {
-    return error;
+    throw error;
   }
   if (loading) {
     return <p>Loading patients...</p>;

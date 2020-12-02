@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { gql, useQuery, useMutation } from "@apollo/client";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
+
 import Alert from "../../commonComponents/Alert";
 import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
@@ -50,19 +55,26 @@ const ADD_PATIENT_TO_QUEUE = gql`
 `;
 
 const AddToQueueSearchBox = ({ refetchQueue }) => {
+  const appInsights = useAppInsightsContext();
+  const trackAddPatientToQueue = useTrackEvent(
+    appInsights,
+    "Add Patient to Queue"
+  );
+
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
   });
-  if (loading) {
-    console.log("loading patient data for search");
-  }
-  if (error) {
-    console.error("Error loading patient data for search");
-  }
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
-
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
+
+  if (loading) {
+    return <p> Loading patient data... </p>;
+  }
+  if (error) {
+    throw error;
+  }
+
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const getSuggestionsFromQueryString = (queryString) => {
@@ -116,6 +128,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   ) => {
     updateSuggestions([]);
     setQueryString("");
+    trackAddPatientToQueue();
     addPatientToQueue({
       variables: {
         patientId: patient.internalId,

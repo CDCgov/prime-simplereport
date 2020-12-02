@@ -6,8 +6,6 @@ import {
   useLocation,
   useRouteMatch,
 } from "react-router-dom";
-import { AppInsightsErrorBoundary } from "@microsoft/applicationinsights-react-js";
-import { reactPlugin } from "../AppInsights";
 
 import TestResultsList from "../testResults/TestResultsList";
 import TestQueue from "../testQueue/TestQueue";
@@ -26,27 +24,13 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/queue`}
           render={() => {
-            return (
-              <AppInsightsErrorBoundary
-                onError={() => <p> There was an error with the queue </p>}
-                appInsights={reactPlugin}
-              >
-                <TestQueue />
-              </AppInsightsErrorBoundary>
-            );
+            return <TestQueue />;
           }}
         />
         <Route
           path={`${match.path}/results`}
           render={() => {
-            return (
-              <AppInsightsErrorBoundary
-                onError={() => <p> There was an error with test results </p>}
-                appInsights={reactPlugin}
-              >
-                <TestResultsList />
-              </AppInsightsErrorBoundary>
-            );
+            return <TestResultsList />;
           }}
         />
         <Route
@@ -68,14 +52,7 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/settings`}
           render={() => {
-            return (
-              <AppInsightsErrorBoundary
-                onError={() => <p> There was an error with settings </p>}
-                appInsights={reactPlugin}
-              >
-                <Settings />
-              </AppInsightsErrorBoundary>
-            );
+            return <Settings />;
           }}
         />
         <Route path={`${match.path}/`}>
