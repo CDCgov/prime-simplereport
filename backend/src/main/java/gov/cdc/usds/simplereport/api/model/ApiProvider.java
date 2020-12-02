@@ -2,57 +2,38 @@ package gov.cdc.usds.simplereport.api.model;
 
 import java.util.List;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Provider;
 
 public class ApiProvider {
 
 	private Provider orderingProvider;
 
-	public ApiOrganization(Provider orderingProvider) {
+	public ApiProvider(Provider orderingProvider) {
 		super();
 		this.orderingProvider = orderingProvider;
 	}
 
-	public String orderingProviderFirstName() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getFirstName() {
 		return orderingProvider.getNameInfo().getFirstName();
 	}
 
-	public String orderingProviderMiddleName() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getMiddleName() {
 		return orderingProvider.getNameInfo().getMiddleName();
 	}
 
-	public String orderingProviderLastName() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getLastName() {
 		return orderingProvider.getNameInfo().getLastName();
 	}
 
-	public String orderingProviderSuffix() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getSuffix() {
 		return orderingProvider.getNameInfo().getSuffix();
 	}
 
-	public String orderingProviderNPI() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getNPI() {
 		return orderingProvider.getProviderId();
 	}
 
-	public String orderingProviderStreet() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getStreet() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
@@ -62,10 +43,7 @@ public class ApiProvider {
 		return orderingProvider.getAddress().getStreet().get(0);
 	}
 
-	public String orderingProviderStreetTwo() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getStreetTwo() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
@@ -78,50 +56,35 @@ public class ApiProvider {
 		return orderingProvider.getAddress().getStreet().get(1);
 	}
 
-	public String orderingProviderCity() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getCity() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
 		return orderingProvider.getAddress().getCity();
 	}
 
-	public String orderingProviderCounty() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getCounty() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
 		return orderingProvider.getAddress().getCounty();
 	}
 
-	public String orderingProviderState() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getState() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
 		return orderingProvider.getAddress().getState();
 	}
 
-	public String orderingProviderZipCode() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getZipCode() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
 		return orderingProvider.getAddress().getPostalCode();
 	}
 
-	public String orderingProviderPhone() {
-		if(orderingProvider == null) {
-			return "";
-		}
+	public String getPhone() {
 		return orderingProvider.getTelephone();
 	}
 }
