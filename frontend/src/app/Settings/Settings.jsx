@@ -72,7 +72,7 @@ const SET_SETTINGS_MUTATION = gql`
       orderingProviderLastName: $orderingProviderLastName
       orderingProviderSuffix: $orderingProviderSuffix
       orderingProviderNPI: $orderingProviderNPI
-      orderingProviderStreet: $orderingProviderStreet
+      orderingProvsiderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
       orderingProviderCounty: $orderingProviderCounty
@@ -157,18 +157,28 @@ const Settings = () => {
         defaultDevice: deviceSettings.defaultDeviceId,
       },
     };
-    setSettings(variables).then((d) => {
-      trackSaveSettings({ data: variables });
-      let alert = (
-        <Alert
-          type={"success"}
-          title={"Updated Organization"}
-          body={"The settings for the organization have been updated"}
-        />
-      );
-      showNotification(toast, alert);
-      refetchSettings(); // this does nothing
-    });
+    trackSaveSettings({ data: variables });
+    setSettings(variables)
+      .then((d) => {
+        let alert = (
+          <Alert
+            type={"success"}
+            title={"Updated Organization"}
+            body={"The settings for the organization have been updated"}
+          />
+        );
+        showNotification(toast, alert);
+        refetchSettings(); // this does nothing
+      })
+      .catch((error) => {
+        // TODO: this doesn't cause the component to render an error, so the error boundary around `Settings` isn't triggered.
+        // Resorting to manual tracking of exceptions, which fails to track the error message in the current implementation
+        appInsights.trackException({
+          name: "Failed Saving Settings",
+          error: error,
+        });
+        // TODO: failing to update settings fails silently. There should at least be a notification
+      });
   };
 
   if (isLoadingSettings) {
