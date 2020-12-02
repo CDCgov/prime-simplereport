@@ -21,6 +21,8 @@ import {
   faTimesCircle,
   faCircle,
   faCog,
+  faSignOutAlt,
+  faWindowClose,
 } from "@fortawesome/free-solid-svg-icons";
 
 library.add(
@@ -43,5 +45,7 @@ library.add(
   faArrowLeft,
   faTimesCircle,
   faCircle,
-  faCog
+  faCog,
+  faSignOutAlt,
+  faWindowClose
 );
