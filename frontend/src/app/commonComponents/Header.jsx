@@ -155,7 +155,7 @@ const Header = ({ organizationId }) => {
                 <li className="usa-sidenav__item">{facilityName}</li>
                 <li className="usa-sidenav__item">
                   <Button
-                    label=" Switch users"
+                    label=" Log out"
                     secondaryInverse
                     big
                     icon="sign-out-alt"
@@ -226,7 +226,7 @@ const Header = ({ organizationId }) => {
                   <li className="usa-sidenav__item">{facilityName}</li>
                   <li className="usa-sidenav__item">
                     <Button
-                      label={" Switch users"}
+                      label={" Log out"}
                       secondaryInverse
                       big
                       icon="sign-out-alt"
