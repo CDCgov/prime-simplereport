@@ -213,12 +213,17 @@
 
 .prime-sidenav_inset {
   padding: 0 0 13px 23px;
+  color: black;
   li {
     padding: 13px 7px 7px 0;
+    text-align: right;
   }
   button {
     background-color: color($theme-color-secondary-dark);
     color: white;
+    font-weight: bolder;
+  }
+  .span-full-name {
     font-weight: bolder;
   }
 }

@@ -6,10 +6,12 @@ import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { gql, useQuery } from "@apollo/client";
 import Button from "./Button";
+import { getStaffColor } from "../utils";
 
 const WHOAMI_QUERY = gql`
   {
     whoami {
+      id
       firstName
       middleName
       lastName
@@ -30,6 +32,7 @@ const Header = ({ organizationId }) => {
   const [staffInitials, setStaffInitials] = useState("");
   const [staffName, setStaffName] = useState("");
   const [facilityName, setFacilityName] = useState("");
+  const [staffIconColor, setStaffIconColor] = useState("");
   useEffect(() => {
     if (!whoamidata || !whoamidata.whoami) return;
     const whoami = whoamidata.whoami;
@@ -41,7 +44,8 @@ const Header = ({ organizationId }) => {
     setStaffInitials(`${ch1}${ch2}${ch3}`);
 
     setFacilityName(whoami.organization.testingFacilityName);
-  }, [whoamidata]);
+    setStaffIconColor(getStaffColor(whoami.id));
+  }, [staffIconColor, whoamidata]);
 
   const formatFullName = (whoami) => {
     // this trick will not include spaces if middlename is blank.
@@ -124,16 +128,30 @@ const Header = ({ organizationId }) => {
               </NavLink>
             </li>
 
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <span className="fa-layers fa-fw">
-                <FontAwesomeIcon icon={"user"} />
+            <li
+              className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden"
+              style={{
+                backgroundColor: staffIconColor,
+                color: "white",
+              }}
+            >
+              <FontAwesomeIcon
+                icon={"user"}
+                size="2x"
+                style={{
+                  fill: "white",
+                }}
+              />
+              <span className={"prime-username-icon-span"}>
+                {staffInitials}
               </span>
-              <span>{staffInitials}</span>
             </li>
 
             <li className="usa-nav__primary-item usa-sidenav prime-staff-infobox-sidemenu prime-settings-hidden">
               <ul className="usa-sidenav__sublist prime-sidenav_inset">
-                <li className="usa-sidenav__item">{staffName}</li>
+                <li className="usa-sidenav__item span-full-name">
+                  {staffName}
+                </li>
                 <li className="usa-sidenav__item">{facilityName}</li>
                 <li className="usa-sidenav__item">
                   <Button
@@ -164,7 +182,13 @@ const Header = ({ organizationId }) => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
+            <li
+              className="usa-nav__primary-item"
+              style={{
+                backgroundColor: staffIconColor,
+                color: "white",
+              }}
+            >
               <NavLink
                 to={`#`}
                 isActive={() => false}
@@ -173,11 +197,18 @@ const Header = ({ organizationId }) => {
                   setUserDetailsVisible(!staffDetailsVisible);
                 }}
                 activeClassName="active-nav-item"
-                activeStyle={{
+                style={{
+                  backgroundColor: staffIconColor,
                   color: "white",
                 }}
               >
-                <FontAwesomeIcon icon={"user"} size="2x" />
+                <FontAwesomeIcon
+                  icon={"user"}
+                  size="2x"
+                  style={{
+                    fill: "white",
+                  }}
+                />
                 <span className={"prime-username-icon-span"}>
                   {staffInitials}
                 </span>
@@ -189,7 +220,9 @@ const Header = ({ organizationId }) => {
                 })}
               >
                 <ul className="usa-sidenav__sublist prime-sidenav_inset">
-                  <li className="usa-sidenav__item">{staffName}</li>
+                  <li className="usa-sidenav__item span-full-name">
+                    {staffName}
+                  </li>
                   <li className="usa-sidenav__item">{facilityName}</li>
                   <li className="usa-sidenav__item">
                     <Button
