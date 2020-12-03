@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
@@ -101,8 +101,14 @@ const SettingsContainer = () => {
   } = useQuery<SettingsData, {}>(GET_SETTINGS_QUERY, {
     fetchPolicy: "no-cache",
   });
+  const appInsights = useAppInsightsContext();
   const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
-  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings");
+  const trackSaveSettings = useTrackEvent(
+    appInsights,
+    "Save Settings",
+    null,
+    false
+  );
   const [mutationError, updateMutationError] = useState(null);
 
   if (isLoadingSettings) {
@@ -120,7 +126,7 @@ const SettingsContainer = () => {
   }
 
   const onSaveSettings = (org: Organization) => {
-    trackSaveSettings();
+    trackSaveSettings(null);
     setSettings({
       variables: {
         testingFacilityName: org.testingFacility.name,
