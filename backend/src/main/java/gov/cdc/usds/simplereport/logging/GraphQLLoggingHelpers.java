@@ -75,11 +75,12 @@ public class GraphQLLoggingHelpers {
 
                 if (t != null) {
                     LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
+                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.toMillis());
                 } else if (!result.getErrors().isEmpty()) {
                     result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
-                    LOG.info("Graphql execution failed in {}ms", queryDuration.toMillis());
+                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.toMillis());
                 } else {
-                    LOG.info("GraphQL execution completed in {}ms", queryDuration.toMillis());
+                    LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.toMillis());
                 }
                 // Clear the MDC context
                 MDC.remove(GRAPHQL_QUERY_MDC_KEY);
