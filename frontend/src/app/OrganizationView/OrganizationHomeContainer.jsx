@@ -12,7 +12,7 @@ import TestQueue from "../testQueue/TestQueue";
 import ManagePatients from "../patients/ManagePatients";
 import EditPatient from "../patients/EditPatient";
 import AddPatient from "../patients/AddPatient";
-import Settings from "../Settings/Settings";
+import SettingsContainer from "../Settings/SettingsContainer";
 
 const OrganizationHomeContainer = () => {
   let match = useRouteMatch();
@@ -52,7 +52,7 @@ const OrganizationHomeContainer = () => {
         <Route
           path={`${match.path}/settings`}
           render={() => {
-            return <Settings />;
+            return <SettingsContainer />;
           }}
         />
         <Route path={`${match.path}/`}>
