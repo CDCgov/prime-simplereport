@@ -7,14 +7,13 @@ interface Address {
   zipCode: string;
 }
 
-interface Facility extends Address{
+interface Facility extends Address {
   cliaNumber: string;
   name: string;
   phone: string;
 }
 
-
-interface Provider extends Address{
+interface Provider extends Address {
   firstName: string;
   middleName: string;
   lastName: string;
@@ -27,27 +26,27 @@ interface Organization {
   internalId: string;
   testingFacility: Facility;
   orderingProvider: Provider;
-  deviceTypes: string[]
-  defaultDevice: string
+  deviceTypes: string[];
+  defaultDevice: string;
 }
 
 interface FlatOrganization {
-  testingFacilityName: string
-  cliaNumber: string
-  orderingProviderFirstName: string
-  orderingProviderMiddleName: string
-  orderingProviderLastName: string
-  orderingProviderSuffix: string
-  orderingProviderNPI: string
-  orderingProviderStreet: string
-  orderingProviderStreetTwo: string
-  orderingProviderCity: string
-  orderingProviderCounty: string
-  orderingProviderState: string
-  orderingProviderZipCode: string
-  orderingProviderPhone: string
-  deviceTypes: string[]
-  defaultDevice: string
+  testingFacilityName: string;
+  cliaNumber: string;
+  orderingProviderFirstName: string;
+  orderingProviderMiddleName: string;
+  orderingProviderLastName: string;
+  orderingProviderSuffix: string;
+  orderingProviderNPI: string;
+  orderingProviderStreet: string;
+  orderingProviderStreetTwo: string;
+  orderingProviderCity: string;
+  orderingProviderCounty: string;
+  orderingProviderState: string;
+  orderingProviderZipCode: string;
+  orderingProviderPhone: string;
+  deviceTypes: string[];
+  defaultDevice: string;
 }
 
 interface DeviceType {

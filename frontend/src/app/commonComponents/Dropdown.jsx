@@ -9,7 +9,7 @@ const Dropdown = ({
   name,
   onChange,
   disabled,
-  addClass="",
+  addClass = "",
   defaultOption, // value of the default option
   selectedValue,
 }) => {
