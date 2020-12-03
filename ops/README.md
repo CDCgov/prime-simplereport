@@ -15,7 +15,7 @@ az login
 
 #### Okta
 
-[Okta API tokens0](https://developer.okta.com/docs/guides/create-an-api-token/create-the-token/) are assigned at the environment level, and not on a per user basis.
+[Okta API tokens](https://developer.okta.com/docs/guides/create-an-api-token/create-the-token/) are assigned at the environment level, and not on a per user basis.
 You can create one for yourself [here](https://prime-eval-admin.okta.com/admin/access/api/tokens).
 
 ```bash
