@@ -11,6 +11,7 @@ const appInsights = new ApplicationInsights({
     extensions: [reactPlugin],
     loggingLevelConsole: 2,
     disableFetchTracking: false,
+    enableAutoRouteTracking: true,
     loggingLevelTelemetry: 2,
     maxBatchInterval: 0,
     extensionConfig: {
