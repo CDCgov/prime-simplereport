@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.patient;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.time.LocalDate;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -38,7 +37,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         String role,
         String email,
         String county,
-        List<String> race,
+        String race,
         String ethnicity,
         String gender,
         Boolean residentCongregateSetting,
@@ -86,7 +85,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       String role,
       String email,
       String county,
-      List<String> race,
+      String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,

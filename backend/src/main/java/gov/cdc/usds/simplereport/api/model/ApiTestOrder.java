@@ -6,32 +6,32 @@ import java.time.LocalDate;
 
 import org.json.JSONObject;
 
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 
-public class TestResult {
+public class ApiTestOrder {
 
-	private NoJsonTestEvent event;
+	private TestOrder order;
 	private AskOnEntrySurvey survey;
 
-	public TestResult(NoJsonTestEvent event) {
+	public ApiTestOrder(TestOrder order) {
 		super();
-		this.event = event;
-		this.survey = event.getTestOrder().getAskOnEntrySurvey().getSurvey();
+		this.order = order;
+		this.survey = order.getAskOnEntrySurvey().getSurvey();
 	}
 
 	public String getInternalId() {
-		return event.getInternalId().toString();
+		return order.getInternalId().toString();
 	}
 
 	public ApiOrganization getOrganization() {
-		return new ApiOrganization(event.getOrganization());
+		return new ApiOrganization(order.getOrganization());
 	}
 
 	public Date getDateAdded() {
-		return event.getTestOrder().getCreatedAt();
+		return order.getCreatedAt();
 	}
 
 	public String getPregnancy() {
@@ -55,45 +55,38 @@ public class TestResult {
 		return survey.getSymptomOnsetDate();
 	}
 
-
 	public Boolean getFirstTest() {
 		return survey.getFirstTest();
 	}
-
 
 	public LocalDate getPriorTestDate() {
 		return survey.getPriorTestDate();
 	}
 
-
 	public String getPriorTestType() {
 		return survey.getPriorTestType();
 	}
-
 
 	public String getPriorTestResult() {
 		return survey.getPriorTestResult() == null ? "" : survey.getPriorTestResult().toString();
 	}
 
-
 	public DeviceType getDeviceType() {
-		return event.getDeviceType();
+		return order.getDeviceType();
 	}
-
 
 	public Patient getPatient() {
-		return new Patient(event.getPatient());
+		return new Patient(order.getPatient());
 	}
-
 
 	public String getResult() {
-		return event.getResult().toString();
+		if (order.getTestResult() == null) {
+			return "";
+		}
+		return order.getTestResult().toString();
 	}
 
-
-	public Date getDateTested() {
-		return event.getCreatedAt();
+	public LocalDate getDateTested() {
+		return order.getDateTested();
 	}
-
-
 }

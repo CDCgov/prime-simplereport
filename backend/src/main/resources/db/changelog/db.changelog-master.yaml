@@ -490,3 +490,19 @@ databaseChangeLog:
       rollback:
         sql: |
           DROP INDEX ${database.defaultSchemaName}.uk__test_order__organization_person_pending;
+  - changeSet:
+      id: single-race-select
+      author: tbest@cdc.gov
+      comment: Allow a single race selection because of HL7 only allows a single race
+      changes:
+        - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.person
+              ALTER COLUMN race TYPE text
+              USING race[1];
+      rollback:
+        - sql:
+            sql: |
+              ALTER TABLE ${database.defaultSchemaName}.person
+              ALTER COLUMN race TYPE text[]
+              USING ARRAY[race];
