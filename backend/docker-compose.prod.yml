@@ -1,0 +1,35 @@
+version: "3.2"
+services:
+  db:
+    image: postgres:12-alpine
+    ports:
+      - "${SR_DB_PORT:-5432}:${SR_DB_PORT:-5432}"
+    environment:
+      POSTGRES_PASSWORD: admin_password_for_local_dev_is_not_very_secure
+    volumes:
+      # Create/use a named volume so that the database is not wiped if we recreate the container
+      - type: volume
+        source: simple-report-dev-db-data
+        target: /var/lib/postgresql/data
+      # Mount init scripts for first-run user/schema creation
+      - type: bind
+        source: ./db-setup/create-db.sh
+        target: /docker-entrypoint-initdb.d/01-user-db-creation.sh
+      - type: bind
+        source: ./db-setup/reset-db.sql
+        target: /usr/local/lib/reset-db.sql
+    command: -p ${SR_DB_PORT:-5432}
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    image: simple-report-api-build
+    environment:
+      SPRING_PROFILES_ACTIVE: dev,db-dockerized
+      SPRING_LIQUIBASE_ENABLED: "true"
+      SPRING_DATASOURCE_URL: "jdbc: postgresql://db:5432/simple_report"
+    ports:
+      # map SR_API_PORT on localhost to the API server in the container
+      - "${SR_API_PORT:-8080}:8080"
+volumes:
+  simple-report-dev-db-data:
