@@ -1,9 +1,19 @@
 import React from "react";
-import PropTypes from "prop-types";
 import classnames from "classnames";
 import useUniqueId from "../commonComponents/useUniqueIds";
 
-const TextInput = ({
+interface Props {
+  value: string | undefined;
+  label?: string;
+  name?: string;
+  placeholder?: string;
+  onChange: (value: string) => void;
+  type?: "text";
+  addClass?: string;
+  disabled?: boolean;
+}
+
+const TextInput: React.FC<Props> = ({
   value = "",
   label,
   name,
@@ -11,6 +21,7 @@ const TextInput = ({
   onChange,
   type = "text",
   addClass = "",
+  disabled,
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
@@ -19,6 +30,10 @@ const TextInput = ({
       {label}
     </label>
   ) : null;
+
+  const onChangeHandler = (e: React.FormEvent<HTMLInputElement>) => {
+    onChange((e.target as HTMLInputElement).value);
+  };
 
   return (
     <div className={classnames("prime-text-input", addClass)}>
@@ -29,20 +44,13 @@ const TextInput = ({
         id={newId}
         name={name}
         type={type}
-        onChange={onChange}
+        onChange={onChangeHandler}
         placeholder={placeholder}
         value={value ?? ""}
+        disabled={disabled}
       />
     </div>
   );
-};
-
-TextInput.propTypes = {
-  value: PropTypes.string,
-  label: PropTypes.string,
-  name: PropTypes.string,
-  placeholder: PropTypes.string,
-  onChange: PropTypes.func,
 };
 
 export default TextInput;
