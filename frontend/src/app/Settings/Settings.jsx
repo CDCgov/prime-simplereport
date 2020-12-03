@@ -25,7 +25,7 @@ const GET_SETTINGS_QUERY = gql`
       orderingProviderFirstName
       orderingProviderMiddleName
       orderingProviderLastName
-      orderingProviderSuffixs
+      orderingProviderSuffix
       orderingProviderStreet
       orderingProviderStreetTwo
       orderingProviderCity
@@ -64,7 +64,7 @@ const SET_SETTINGS_MUTATION = gql`
   ) {
     updateOrganization(
       testingFacilityName: $testingFacilityName
-      cliaNumber: $cliaNumber
+      cliaNumbers: $cliaNumber
       orderingProviderFirstName: $orderingProviderFirstName
       orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
@@ -95,6 +95,7 @@ const Settings = () => {
   } = useQuery(GET_SETTINGS_QUERY, { fetchPolicy: "no-cache" });
 
   const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
+  const [mutationError, updateMutationError] = useState(null);
 
   const [deviceSettings, updateDeviceSettings] = useState({});
   const [orgSettings, updateOrgSettings] = useState({});
@@ -164,13 +165,14 @@ const Settings = () => {
         refetchSettings(); // this does nothing
       })
       .catch((error) => {
-        // TODO: this doesn't cause the component to render an error, so the error boundary around `Settings` isn't triggered.
-        // Resorting to manual tracking of exceptions, which fails to track the error message in the current implementation
-        appInsights.trackException({
-          name: "Failed Saving Settings",
-          error: error,
-        });
-        // TODO: failing to update settings fails silently. There should at least be a notification
+        // Tracking option 1: have the component return an error, which would be detected by the error boundary
+        updateMutationError(error);
+
+        // Tracking option 2: manually track the exception, and then handle the error more gracefully via an alert or something
+        // appInsights.trackException({
+        //   name: "Failed Saving Settings",
+        //   error: error,
+        // });
       });
   };
 
@@ -179,6 +181,10 @@ const Settings = () => {
   }
   if (errorFetchingSettings) {
     return errorFetchingSettings;
+  }
+
+  if (mutationError) {
+    throw mutationError;
   }
 
   return (

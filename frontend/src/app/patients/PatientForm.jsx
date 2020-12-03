@@ -193,7 +193,9 @@ const PatientForm = (props) => {
             />
           ),
         (error) => {
-          console.error(error);
+          appInsights.trackException(error);
+
+          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
           showNotification(
             toast,
             <Alert
@@ -217,7 +219,9 @@ const PatientForm = (props) => {
             />
           ),
         (error) => {
-          console.error(error);
+          appInsights.trackException(error);
+
+          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
           showNotification(
             toast,
             <Alert

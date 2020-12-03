@@ -6,7 +6,6 @@ export default class PrimeErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
 
   componentDidCatch(error, info) {
-    console.log("info:", info);
     this.setState({ hasError: true, error });
     appInsights.trackException({
       error: error,

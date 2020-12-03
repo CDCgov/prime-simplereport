@@ -113,6 +113,7 @@ const QueueItem = ({
     "Update AoE Response"
   );
 
+  const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -129,6 +130,10 @@ const QueueItem = ({
     false
   );
   let forceSubmit = false;
+
+  if (mutationError) {
+    throw mutationError;
+  }
 
   const testResultsSubmitted = () => {
     let { type, title, body } = {
@@ -153,7 +158,9 @@ const QueueItem = ({
         },
       }).then(
         (_response) => testResultsSubmitted(),
-        (error) => console.error("error submitting test results", error)
+        (error) => {
+          updateMutationError(error);
+        }
       );
     } else {
       updateIsConfirmationModalOpen(true);
@@ -172,7 +179,9 @@ const QueueItem = ({
       },
     }).then(
       (_response) => refetchQueue(),
-      (error) => console.error("error removing patient from queue", error)
+      (error) => {
+        updateMutationError(error);
+      }
     );
   };
 
@@ -212,7 +221,9 @@ const QueueItem = ({
       (_response) => {
         refetchQueue();
       },
-      (error) => console.error("error saving aoe", error)
+      (error) => {
+        updateMutationError(error);
+      }
     );
   };
 

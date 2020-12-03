@@ -64,6 +64,8 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
   });
+
+  const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
@@ -73,6 +75,9 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   }
   if (error) {
     throw error;
+  }
+  if (mutationError) {
+    throw mutationError;
   }
 
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
@@ -141,8 +146,8 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         priorTestType,
         priorTestResult,
       },
-    }).then(
-      (res) => {
+    })
+      .then((res) => {
         let { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
             patient
@@ -151,9 +156,10 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
-      },
-      (err) => console.error(err)
-    );
+      })
+      .catch((error) => {
+        updateMutationError(error);
+      });
   };
 
   return (
