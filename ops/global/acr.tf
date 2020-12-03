@@ -3,6 +3,7 @@ resource "azurerm_container_registry" "sr" {
   name                = "simplereportacr"
   resource_group_name = data.azurerm_resource_group.rg.name
   sku                 = "Standard"
+  admin_enabled       = true
 
   tags = local.management_tags
 }
