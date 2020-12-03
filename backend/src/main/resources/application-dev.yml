@@ -7,15 +7,16 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        format_sql: false # override this in application-local.yaml to get pretty-printed SQL all the time
         default_schema: simple_report
 logging:
   level:
       # NOTE: add any of the below in application-local.yml to turn on something interesting
-      #       (the first two are hibernate SQL query logging, which is pretty verbose, and hibernate
-      #       input and output value logging, which is *incredibly* verbose).
+      # Hibernate SQL query logging: basically the same as show_sql, above, but through slf4j
       # org.hibernate.SQL: DEBUG
+      # Hibernate input and output value logging: SUPER VERBOSE
       # org.hibernate.type: TRACE
-      # org.springframework.data.rest=DEBUG
+      # Always have our own debug logging turned on in dev environments:
       gov.cdc.usds: DEBUG
 simple-report-initialization:
   organization:
