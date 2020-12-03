@@ -11,7 +11,7 @@ spring:
         default_schema: simple_report
 logging:
   level:
-      # NOTE: add any of the below in application-local.yml to turn on something interesting
+      # NOTE: add any of the below in application-local.yaml to turn on something interesting
       # Hibernate SQL query logging: basically the same as show_sql, above, but through slf4j
       # org.hibernate.SQL: DEBUG
       # Hibernate input and output value logging: SUPER VERBOSE
