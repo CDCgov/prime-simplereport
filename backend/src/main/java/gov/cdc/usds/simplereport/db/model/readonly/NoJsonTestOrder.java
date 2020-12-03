@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.db.model;
+package gov.cdc.usds.simplereport.db.model.readonly;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -14,14 +14,20 @@ import javax.persistence.OneToOne;
 import javax.persistence.FetchType;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
+import gov.cdc.usds.simplereport.db.model.AuditedEntity;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 @Entity
+@Immutable
 @Table(name = "test_order")
 public class NoJsonTestOrder extends AuditedEntity {
 
@@ -53,15 +59,6 @@ public class NoJsonTestOrder extends AuditedEntity {
 
 	protected NoJsonTestOrder() { /* for hibernate */ }
 
-	public NoJsonTestOrder(Person patient, Organization organization, OrderStatus orderStatus, TestResult result) {
-		this.patient = patient;
-		this.organization = organization;
-		this.orderStatus = orderStatus;
-		this.result = result;
-	}
-	public NoJsonTestOrder(Person patient, Organization org) {
-		this(patient, org, OrderStatus.PENDING, null);
-	}
 	public Person getPatient() {
 		return patient;
 	}
@@ -70,10 +67,6 @@ public class NoJsonTestOrder extends AuditedEntity {
 	}
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
-	}
-
-	public void setAskOnEntrySurvey(PatientAnswers askOnEntrySurvey) {
-		this.askOnEntrySurvey = askOnEntrySurvey;
 	}
 
 	public PatientAnswers getAskOnEntrySurvey() {
@@ -96,21 +89,8 @@ public class NoJsonTestOrder extends AuditedEntity {
 		return deviceType;
 	}
 
-	public void setResult(TestResult finalResult) {
-		result = finalResult;
-		dateTested = LocalDate.now();
-		orderStatus = OrderStatus.COMPLETED;
-	}
-
-	public void cancelOrder() {
-		orderStatus = OrderStatus.CANCELED;
-	}
-
 	public NoJsonTestEvent getTestEvent() {
 		return testEvent;
-	}
-	public void setTestEvent(NoJsonTestEvent testEvent) {
-		this.testEvent = testEvent;
 	}
 
 	public String getPregnancy() {
@@ -149,9 +129,5 @@ public class NoJsonTestOrder extends AuditedEntity {
 
 	public Boolean getNoSymptoms() {
 		return askOnEntrySurvey.getSurvey().getNoSymptoms();
-	}
-
-	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
 	}
 }

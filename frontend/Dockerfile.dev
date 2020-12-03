@@ -1,6 +1,7 @@
 # Dockerfile for local development
-
 FROM node:alpine
+
+RUN apk add g++ make python
 
 # create directory on container
 WORKDIR /frontend/app 
