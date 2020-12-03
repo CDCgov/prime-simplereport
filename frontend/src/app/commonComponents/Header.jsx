@@ -25,7 +25,7 @@ const WHOAMI_QUERY = gql`
 
 const Header = ({ organizationId }) => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const [staffDetailsVisible, setUserDetailsVisible] = useState(false);
+  const [staffDetailsVisible, setStaffDetailsVisible] = useState(false);
   const { data: whoamidata } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
@@ -83,12 +83,13 @@ const Header = ({ organizationId }) => {
             "is-visible": menuVisible,
           })}
         >
-          <span
+          <button
             className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
             onClick={() => setMenuVisible(false)}
+            title={"close menu"}
           >
             <FontAwesomeIcon icon={"window-close"} />
-          </span>
+          </button>
 
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
@@ -194,7 +195,7 @@ const Header = ({ organizationId }) => {
                 isActive={() => false}
                 onClick={(e) => {
                   e.preventDefault();
-                  setUserDetailsVisible(!staffDetailsVisible);
+                  setStaffDetailsVisible(!staffDetailsVisible);
                 }}
                 activeClassName="active-nav-item"
                 style={{
@@ -234,12 +235,13 @@ const Header = ({ organizationId }) => {
                     />
                   </li>
                 </ul>
-                <span
+                <button
                   className="fa-layers fa-fw fa-2x prime-close-button-popup"
-                  onClick={() => setUserDetailsVisible(false)}
+                  onClick={() => setStaffDetailsVisible(false)}
+                  title={"close user details"}
                 >
                   <FontAwesomeIcon icon={"window-close"} />
-                </span>
+                </button>
               </div>
             </li>
             <li className="usa-nav__primary-item">
