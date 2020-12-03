@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { gql, useQuery } from "@apollo/client";
 import Button from "./Button";
 import { getStaffColor } from "../utils";
+import { v4 as uuidv4 } from "uuid";
 
 const WHOAMI_QUERY = gql`
   {
@@ -17,7 +18,9 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       organization {
-        testingFacilityName
+        testingFacility {
+          name
+        }
       }
     }
   }
@@ -57,9 +60,11 @@ const Header = ({ organizationId }) => {
   };
 
   const logout = () => {
-    // todo: do logout here. maybe https://developer.okta.com/docs/guides/sign-users-out/react/sign-out-of-your-app/
-    debugger;
-    alert("OKTA logout here");
+    const id_token = whoamidata.whoami.id;
+    const state = uuidv4();
+    window.location.replace(
+      `https://hhs-prime.okta.com/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
+    );
   };
   return (
     <header className="usa-header usa-header--basic">
