@@ -12,9 +12,8 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
-import gov.cdc.usds.simplereport.db.model.AuditedEntity;
+import gov.cdc.usds.simplereport.db.model.BaseTestInfo;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -22,18 +21,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 @Entity
 @Table(name = "test_event")
 @Immutable
-public class NoJsonTestEvent extends AuditedEntity {
+public class NoJsonTestEvent extends BaseTestInfo {
 
 	@Column
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id")
-	private Organization organization;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
-	private Person patient;
 	@ManyToOne
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
@@ -44,14 +37,6 @@ public class NoJsonTestEvent extends AuditedEntity {
 
 	public TestResult getResult() {
 		return result;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public Person getPatient() {
-		return patient;
 	}
 
 	public DeviceType getDeviceType() {

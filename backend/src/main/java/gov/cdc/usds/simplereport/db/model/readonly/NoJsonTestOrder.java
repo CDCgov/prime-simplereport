@@ -18,25 +18,17 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
-import gov.cdc.usds.simplereport.db.model.AuditedEntity;
+import gov.cdc.usds.simplereport.db.model.BaseTestInfo;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 @Entity
 @Immutable
 @Table(name = "test_order")
-public class NoJsonTestOrder extends AuditedEntity {
+public class NoJsonTestOrder extends BaseTestInfo {
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
-	private Person patient;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id")
-	private Organization organization;
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
@@ -59,12 +51,6 @@ public class NoJsonTestOrder extends AuditedEntity {
 
 	protected NoJsonTestOrder() { /* for hibernate */ }
 
-	public Person getPatient() {
-		return patient;
-	}
-	public Organization getOrganization() {
-		return organization;
-	}
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}

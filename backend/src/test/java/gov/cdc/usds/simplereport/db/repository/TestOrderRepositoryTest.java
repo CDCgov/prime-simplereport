@@ -16,6 +16,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -46,7 +47,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", "55555", null, mccoy));
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "66666", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
+		TestOrder order = _repo.save(new TestOrder(hoya));
 		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);
 		assertEquals(0, queue.size());
 		queue = _repo.fetchQueueForOrganization(gtown);
@@ -60,11 +61,12 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testLifeCycle() {
 		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
+		DeviceType device = _dataFactory.getGenericDevice();
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "77777", null, mccoy));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		TestOrder order = _repo.save(new TestOrder(hoya, gtown));
+		TestOrder order = _repo.save(new TestOrder(hoya));
 		flush();
-		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, null, hoya, gtown));
+		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, gtown));
 		order.setTestEvent(ev);
 		_repo.save(order);
 		flush();
@@ -74,10 +76,10 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void createOrder_duplicatesFound_error() {
 		Organization org = _dataFactory.createValidOrg();
 		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0, org);
+		TestOrder order1 = new TestOrder(patient0);
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0, org);
+		TestOrder order2 = new TestOrder(patient0);
 		PersistenceException caught = assertThrows(PersistenceException.class, ()->{ _repo.save(order2); flush();});
 		assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
 	}
@@ -86,13 +88,13 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void createOrder_duplicateCanceled_ok() {
 		Organization org = _dataFactory.createValidOrg();
 		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0, org);
+		TestOrder order1 = new TestOrder(patient0);
 		_repo.save(order1);
 		flush();
 		order1.cancelOrder();
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0, org);
+		TestOrder order2 = new TestOrder(patient0);
 		order2 = _repo.save(order2);
 		flush();
 		assertNotNull(order2.getInternalId());
@@ -107,7 +109,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void createOrder_duplicateSubmitted_ok() {
 		Organization org = _dataFactory.createValidOrg();
 		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0, org);
+		TestOrder order1 = new TestOrder(patient0);
 		_repo.save(order1);
 		flush();
 		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, org.getDefaultDeviceType(), patient0, org));
@@ -115,7 +117,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		order1.setResult(didit.getResult());
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0, org);
+		TestOrder order2 = new TestOrder(patient0);
 		order2 = _repo.save(order2);
 		flush();
 		assertNotNull(order2.getInternalId());

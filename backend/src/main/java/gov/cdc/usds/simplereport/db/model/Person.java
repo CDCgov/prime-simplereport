@@ -11,14 +11,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
 
 @Entity
-public class Person extends EternalEntity {
+public class Person extends OrganizationScopedEternalEntity {
 
 	@Column
 	private String lookupId;
@@ -47,10 +46,6 @@ public class Person extends EternalEntity {
 	private PersonRole role;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id")
-	@JsonIgnore // don't descend this model graph when serializing for TestEvent
-	private Organization organization;
 	@OneToMany()
 	@JoinColumn(name = "patient_id")
 	@JsonIgnore // dear Lord do not attempt to serialize this
@@ -59,7 +54,7 @@ public class Person extends EternalEntity {
 	protected Person() { /* for hibernate */ }
 
 	public Person(String firstName, String middleName, String lastName, String suffix, Organization org) {
-		this.organization = org;
+		super(org);
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.role = PersonRole.STAFF;
 	}
@@ -86,12 +81,12 @@ public class Person extends EternalEntity {
 		Boolean residentCongregateSetting,
 		Boolean employedInHealthcare
 	) {
+		super(organization);
 		this.lookupId = lookupId;
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.birthDate = birthDate;
 		this.telephone = telephone;
 		this.address = address;
-		this.organization = organization;
 		this.role = role;
 		this.email = email;
 		this.race = race;
@@ -186,10 +181,6 @@ public class Person extends EternalEntity {
 	public Boolean getEmployedInHealthcare() {
 		return employedInHealthcare;
 	}
-	public Organization getOrganization() {
-		return organization;
-	}
-
 	@JsonIgnore
 	public String getStreet() {
 		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {

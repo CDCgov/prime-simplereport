@@ -15,19 +15,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 @Entity
 @Immutable
-public class TestEvent extends AuditedEntity {
+public class TestEvent extends BaseTestInfo {
 
-	@Column
+	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id")
-	private Organization organization;
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "patient_id")
-	private Person patient;
-	@ManyToOne
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
 	@Column
@@ -42,13 +36,12 @@ public class TestEvent extends AuditedEntity {
 	public TestEvent() {}
 
 	public TestEvent(TestResult result, DeviceType deviceType, Person patient, Organization org) {
+		super(patient);
 		this.result = result;
 		this.deviceType = deviceType;
 		// store a link, and *also* store the object as JSON
-		this.patient = patient;
 		this.patientData = patient;
-		this.organization = org;
-		this.providerData = org.getOrderingProvider();
+		this.providerData = patient.getOrganization().getOrderingProvider();
 	}
 
 	public TestResult getResult() {
@@ -65,14 +58,6 @@ public class TestEvent extends AuditedEntity {
 
 	public Provider getProviderData() {
 		return providerData;
-	}
-
-	public Organization getOrganization() {
-		return organization;
-	}
-
-	public Person getPatient() {
-		return patient;
 	}
 
 	public TestOrder getTestOrder() {
