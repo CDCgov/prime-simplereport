@@ -9,8 +9,8 @@ const TextInput = ({
   name,
   placeholder,
   onChange,
-  type,
-  addClass,
+  type = "text",
+  addClass = "",
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
@@ -28,7 +28,7 @@ const TextInput = ({
         className="usa-input"
         id={newId}
         name={name}
-        type={type || "text"}
+        type={type}
         onChange={onChange}
         placeholder={placeholder}
         value={value ?? ""}

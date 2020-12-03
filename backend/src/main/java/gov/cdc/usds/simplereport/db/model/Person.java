@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -15,7 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,9 +32,8 @@ public class Person extends EternalEntity {
 	private StreetAddress address;
 	@Column
 	private String gender;
-	@Type(type = "list-array")
 	@Column
-	private List<String> race = new ArrayList<>();
+	private String race;
 	@Column
 	private String ethnicity;
 	@Column
@@ -83,7 +80,7 @@ public class Person extends EternalEntity {
 		String telephone,
 		PersonRole role,
 		String email,
-		List<String> race,
+		String race,
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
@@ -115,7 +112,7 @@ public class Person extends EternalEntity {
 		String telephone,
 		PersonRole role,
 		String email,
-		List<String> race,
+		String race,
 		String ethnicity,
 		String gender,
 		Boolean residentCongregateSetting,
@@ -171,7 +168,7 @@ public class Person extends EternalEntity {
 	public String getEmail() {
 		return email;
 	}
-	public List<String> getRace() {
+	public String getRace() {
 		return race;
 	}
 

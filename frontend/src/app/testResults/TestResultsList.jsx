@@ -47,55 +47,57 @@ const TestResultsList = () => {
     if (testResults.length === 0) {
       return;
     }
-    return testResults.map((result) => {
-      // TODO: patientId is the lookup id. This needs to be renamed
-      const { firstName, middleName, lastName, lookupId } = {
-        ...result.patient,
-      };
-
-      return (
-        <tr key={result.internalId}>
-          <th scope="row">
-            {displayFullName(firstName, middleName, lastName)}
-          </th>
-          <td>{lookupId}</td>
-          <td>{moment(result.dateTested).format("MMM DD YYYY")}</td>
-          <td>{result.result}</td>
-          <td>{result.deviceType.name}</td>
-        </tr>
-      );
-    });
+    const byDateTested = (a, b) => {
+      // ISO string dates sort nicely
+      if (a.dateTested === b.dateTested) return 0;
+      if (a.dateTested < b.dateTested) return 1;
+      return -1;
+    };
+    // `sort` mutates the array, so make a copy
+    return [...testResults].sort(byDateTested).map((r) => (
+      <tr key={r.internalId}>
+        <th scope="row">
+          {displayFullName(
+            r.patient.firstName,
+            r.patient.middleName,
+            r.patient.lastName
+          )}
+        </th>
+        <td>{r.patient.lookupId}</td>
+        <td>{moment(r.dateTested).format("lll")}</td>
+        <td>{r.result}</td>
+        <td>{r.deviceType.name}</td>
+      </tr>
+    ));
   };
 
   let rows = testResultRows(data.testResults);
   return (
-    <React.Fragment>
-      <main className="prime-home">
-        <div className="grid-container">
-          <div className="grid-row">
-            <div className="prime-container usa-card__container">
-              <div className="usa-card__header">
-                <h2> Test Results </h2>
-              </div>
-              <div className="usa-card__body">
-                <table className="usa-table usa-table--borderless width-full">
-                  <thead>
-                    <tr>
-                      <th scope="col">{PATIENT_TERM_CAP} Name</th>
-                      <th scope="col">Unique ID</th>
-                      <th scope="col">Date of Test</th>
-                      <th scope="col">Result</th>
-                      <th scope="col">Device</th>
-                    </tr>
-                  </thead>
-                  <tbody>{rows}</tbody>
-                </table>
-              </div>
+    <main className="prime-home">
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container usa-card__container">
+            <div className="usa-card__header">
+              <h2> Test Results </h2>
+            </div>
+            <div className="usa-card__body">
+              <table className="usa-table usa-table--borderless width-full">
+                <thead>
+                  <tr>
+                    <th scope="col">{PATIENT_TERM_CAP} Name</th>
+                    <th scope="col">Unique ID</th>
+                    <th scope="col">Date of Test</th>
+                    <th scope="col">Result</th>
+                    <th scope="col">Device</th>
+                  </tr>
+                </thead>
+                <tbody>{rows}</tbody>
+              </table>
             </div>
           </div>
         </div>
-      </main>
-    </React.Fragment>
+      </div>
+    </main>
   );
 };
 
