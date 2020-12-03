@@ -20,22 +20,13 @@ export const areAnswersComplete = (answerDict) => {
     }
     if (answerDict.symptomOnset) {
       const onsetDate = answerDict.symptomOnset;
-      if (
-        onsetDate.year === "" ||
-        onsetDate.month === "" ||
-        onsetDate.day === ""
-      ) {
+      if (!onsetDate) {
         return false;
       }
     }
   }
   if (!answerDict.firstTest) {
-    if (
-      !answerDict.priorTestDate ||
-      answerDict.priorTestDate.year === "" ||
-      answerDict.priorTestDate.month === "" ||
-      answerDict.priorTestDate.day === ""
-    ) {
+    if (!answerDict.priorTestDate) {
       return false;
     }
     if (!answerDict.priorTestType || !answerDict.priorTestResult) {

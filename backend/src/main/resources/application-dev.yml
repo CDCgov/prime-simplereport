@@ -7,16 +7,17 @@ spring:
     properties:
       hibernate:
         show_sql: true
+        format_sql: true
         default_schema: simple_report
 logging:
   level:
-      # NOTE: add any of the below in application-local.yml to turn on something interesting
-      #       (the first two are hibernate SQL query logging, which is pretty verbose, and hibernate
-      #       input and output value logging, which is *incredibly* verbose).
-      # org.hibernate.SQL: DEBUG
-      # org.hibernate.type: TRACE
-      # org.springframework.data.rest=DEBUG
-      gov.cdc.usds: DEBUG
+    # NOTE: add any of the below in application-local.yml to turn on something interesting
+    #       (the first two are hibernate SQL query logging, which is pretty verbose, and hibernate
+    #       input and output value logging, which is *incredibly* verbose).
+    # org.hibernate.SQL: DEBUG
+    # org.hibernate.type: TRACE
+    # org.springframework.data.rest=DEBUG
+    gov.cdc.usds: DEBUG
 simple-report-initialization:
   organization:
     facility-name: Dis Organization

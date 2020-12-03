@@ -45,7 +45,7 @@ public class TestDataFactory {
 			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(1899, 5, 10),
 			new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
 			PersonRole.RESIDENT, null,
-			Collections.singletonList("W"), null, "M", false, false
+			"W", null, "M", false, false
 		);
 		return _personRepo.save(p);
 	}

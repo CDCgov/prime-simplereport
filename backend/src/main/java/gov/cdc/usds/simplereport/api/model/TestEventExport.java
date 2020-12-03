@@ -13,19 +13,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 public class TestEventExport {
 
-	private TestEvent testEvent;
+	private NoJsonTestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Organization org;
 
-	public TestEventExport(TestEvent testEvent) {
+	public TestEventExport(NoJsonTestEvent testEvent) {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
@@ -120,7 +120,10 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_race")
 	public String getPatientRace() {
-		return arrayToString(patient.getRace());
+		if (patient.getRace() == null) {
+			return "UNK";
+		}
+		return raceMap.get(patient.getRace());
 	}
 
 	@JsonProperty("Patient_DOB")
@@ -257,7 +260,11 @@ public class TestEventExport {
 	@JsonProperty("Testing_lab_zip_code")
 	public String getTestingLabZipCode() {
 		return getOrderingFacilityZipCode();
+	}
 
+	@JsonProperty("Testing_lab_county")
+	public String getTestingLabCounty() {
+		return getOrderingFacilityCounty();
 	}
 
 	@JsonProperty("Testing_lab_phone_number")
@@ -282,7 +289,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_name")
 	public String getOrderingFacilityName() {
-		return org.getTestingFacilityName();
+		return org.getFacilityName();
 	}
 
 	@JsonProperty("Ordering_facility_phone_number")
@@ -322,7 +329,22 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_provider_street")
 	public String getOrderingProviderStreet() {
-		return this.getTestingLabStreet();
+		return provider.getStreet();
+	}
+
+	@JsonProperty("Ordering_provider_street_2")
+	public String getOrderingProviderStreetTwo() {
+		return provider.getStreetTwo();
+	}
+
+	@JsonProperty("Ordering_provider_city")
+	public String getOrderingProviderCity() {
+		return provider.getCity();
+	}
+
+	@JsonProperty("Ordering_provider_state")
+	public String getOrderingProviderState() {
+		return provider.getState();
 	}
 
 	@JsonProperty("Ordering_provider_zip_code")
@@ -330,9 +352,14 @@ public class TestEventExport {
 		return this.getTestingLabZipCode();
 	}
 
+	@JsonProperty("Ordering_provider_county")
+	public String getOrderingProviderCounty() {
+		return provider.getCounty();
+	}
+
 	@JsonProperty("Ordering_provider_phone_number")
 	public String getOrderingProviderPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return provider.getTelephone();
 	}
 
 	@JsonProperty("Ordered_test_code")

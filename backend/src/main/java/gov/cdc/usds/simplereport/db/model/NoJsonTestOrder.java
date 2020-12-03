@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -11,15 +12,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.FetchType;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 @Entity
-public class TestOrder extends AuditedEntity {
+@Table(name = "test_order")
+public class NoJsonTestOrder extends AuditedEntity {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id")
@@ -45,17 +49,17 @@ public class TestOrder extends AuditedEntity {
 	private TestResult result;
 	@OneToOne(optional = true)
 	@JoinColumn(name="test_event_id")
-	private TestEvent testEvent;
+	private NoJsonTestEvent testEvent;
 
-	protected TestOrder() { /* for hibernate */ }
+	protected NoJsonTestOrder() { /* for hibernate */ }
 
-	public TestOrder(Person patient, Organization organization, OrderStatus orderStatus, TestResult result) {
+	public NoJsonTestOrder(Person patient, Organization organization, OrderStatus orderStatus, TestResult result) {
 		this.patient = patient;
 		this.organization = organization;
 		this.orderStatus = orderStatus;
 		this.result = result;
 	}
-	public TestOrder(Person patient, Organization org) {
+	public NoJsonTestOrder(Person patient, Organization org) {
 		this(patient, org, OrderStatus.PENDING, null);
 	}
 	public Person getPatient() {
@@ -80,6 +84,10 @@ public class TestOrder extends AuditedEntity {
 		return result;
 	}
 
+	public Date getDateAdded() {
+		return getCreatedAt();
+	}
+
 	public LocalDate getDateTested() {
 		return dateTested;
 	}
@@ -98,10 +106,10 @@ public class TestOrder extends AuditedEntity {
 		orderStatus = OrderStatus.CANCELED;
 	}
 
-	public TestEvent getTestEvent() {
+	public NoJsonTestEvent getTestEvent() {
 		return testEvent;
 	}
-	public void setTestEvent(TestEvent testEvent) {
+	public void setTestEvent(NoJsonTestEvent testEvent) {
 		this.testEvent = testEvent;
 	}
 

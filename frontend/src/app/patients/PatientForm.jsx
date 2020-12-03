@@ -16,7 +16,6 @@ import {
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
-import Checkboxes from "../commonComponents/Checkboxes";
 import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName, showNotification } from "../utils";
 import "./EditPatient.scss";
@@ -38,7 +37,7 @@ const ADD_PATIENT = gql`
     $role: String
     $email: String
     $county: String
-    $race: [String]
+    $race: String
     $ethnicity: String
     $gender: String
     $residentCongregateSetting: Boolean!
@@ -85,7 +84,7 @@ const UPDATE_PATIENT = gql`
     $role: String
     $email: String
     $county: String
-    $race: [String]
+    $race: String
     $ethnicity: String
     $gender: String
     $residentCongregateSetting: Boolean!
@@ -169,7 +168,7 @@ const PatientForm = (props) => {
       role: patient.role,
       email: patient.email,
       county: patient.county,
-      race: patient.race ? Object.keys(patient.race) : null,
+      race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
       residentCongregateSetting: patient.residentCongregateSetting === "YES",
@@ -308,7 +307,8 @@ const PatientForm = (props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Date of Birth (MM/dd/yyyy)"
+            type="date"
+            label="Date of Birth (mm/dd/yyyy)"
             name="birthDate"
             value={patient.birthDate}
             onChange={onChange}
@@ -384,12 +384,11 @@ const PatientForm = (props) => {
       </Fieldset>
       <Fieldset legend="Demographics">
         <div>
-          <Checkboxes
+          <RadioGroup
             legend="Race"
             displayLegend
             name="race"
-            checkedValues={patient.race}
-            checkboxes={[
+            buttons={[
               {
                 value: "native",
                 label: "American Indian or Alaskan Native",
@@ -419,6 +418,7 @@ const PatientForm = (props) => {
                 label: "Refused to Answer",
               },
             ]}
+            selectedRadio={patient.race}
             onChange={onChange}
           />
         </div>
@@ -490,7 +490,7 @@ const PatientForm = (props) => {
             <tbody>
               {patient.testResults.map((r, i) => (
                 <tr key={i}>
-                  <td>{moment(r.dateTested).format("MMM DD YYYY")}</td>
+                  <td>{moment(r.dateTested).format("lll")}</td>
                   <td>{r.result}</td>
                 </tr>
               ))}
