@@ -41,17 +41,13 @@ public class GraphQLLoggingHelpers {
         final Field field = (Field) selection;
         final String fieldName = field.getName();
 
-        if (!field.getArguments().isEmpty()) {
-            LOG.info("Selecting {} with arguments: {}", fieldName, field.getArguments());
-        }
-
         final SelectionSet selections = field.getSelectionSet();
         if (selections == null) {
             final String formattedFieldName;
             if (parentName.isBlank()) {
                 formattedFieldName = fieldName;
             } else {
-                formattedFieldName = String.format("%s:%s", parentName, fieldName);
+                formattedFieldName = String.format("%s.%s", parentName, fieldName);
             }
             return Stream.of(formattedFieldName);
         }
