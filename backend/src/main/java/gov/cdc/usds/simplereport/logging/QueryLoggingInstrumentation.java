@@ -4,7 +4,6 @@ import graphql.ExecutionResult;
 import graphql.execution.ExecutionId;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
-import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.language.Field;
@@ -24,12 +23,11 @@ import java.util.stream.Collectors;
 public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryLoggingInstrumentation.class);
-    private static final String GRAPHQL_QUERY = "graphql-query";
 
     @Override
     public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {
 
-        // Let's try to pull out some interesting things
+        // Descend through the GraphQL query and pull out the field names and variables from the operation definitions
         final Set<String> fieldSet = parameters
                 .getDocument()
                 .getDefinitions()
@@ -50,30 +48,11 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
         final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
 
         // Add the execution ID to the sfl4j MDC
-        MDC.put(GRAPHQL_QUERY, executionId.toString());
+        MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId.toString());
 
         if (LOG.isInfoEnabled() && parameters.getVariables() != null && !parameters.getVariables().isEmpty()) {
             LOG.info("GraphQL variables: {}", parameters.getVariables());
         }
-
-        return new SimpleInstrumentationContext<>() {
-            @Override
-            public void onCompleted(ExecutionResult result, Throwable t) {
-                if (LOG.isInfoEnabled()) {
-                    final long queryEnd = System.currentTimeMillis();
-
-                    if (t != null) {
-                        LOG.info("GraphQL execution failed: {}", t.getMessage(), t);
-                    } else if (!result.getErrors().isEmpty()) {
-                        result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
-                        LOG.info("Graphql execution failed in {}ms", queryEnd - queryStart);
-                    } else {
-                        LOG.info("GraphQL execution completed in {}ms", queryEnd - queryStart);
-                    }
-                }
-                // Clear the MDC context
-                MDC.remove(GRAPHQL_QUERY);
-            }
-        };
+        return GraphQLLoggingHelpers.createInstrumentationContext(queryStart);
     }
 }
