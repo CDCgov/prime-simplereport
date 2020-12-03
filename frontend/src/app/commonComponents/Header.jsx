@@ -7,6 +7,7 @@ import classNames from "classnames";
 import { gql, useQuery } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
 import Anchor from "./Anchor";
+import useComponentVisible from "./ComponentVisible";
 
 const WHOAMI_QUERY = gql`
   {
@@ -25,7 +26,11 @@ const WHOAMI_QUERY = gql`
 
 const Header = ({ organizationId }) => {
   const [menuVisible, setMenuVisible] = useState(false);
-  const [staffDetailsVisible, setStaffDetailsVisible] = useState(false);
+  const {
+    ref: staffDefailsRef,
+    isComponentVisible: staffDetailsVisible,
+    setIsComponentVisible: setStaffDetailsVisible,
+  } = useComponentVisible(false);
   const { data: whoamidata } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
@@ -180,6 +185,7 @@ const Header = ({ organizationId }) => {
                 />
               </NavLink>
               <div
+                ref={staffDefailsRef}
                 aria-label="Primary navigation"
                 className={classNames("usa-nav", "prime-staff-infobox", {
                   "is-prime-staff-infobox-visible": staffDetailsVisible,
