@@ -6,7 +6,6 @@ import java.time.LocalDate;
 
 import org.json.JSONObject;
 
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;

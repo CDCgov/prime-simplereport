@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.List;
-
 import gov.cdc.usds.simplereport.db.model.Provider;
 
 public class ApiProvider {
