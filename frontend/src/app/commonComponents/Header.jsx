@@ -5,9 +5,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { gql, useQuery } from "@apollo/client";
-import Button from "./Button";
-import { getStaffColor } from "../utils";
 import { v4 as uuidv4 } from "uuid";
+import Anchor from "./Anchor";
 
 const WHOAMI_QUERY = gql`
   {
@@ -18,9 +17,7 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       organization {
-        testingFacility {
-          name
-        }
+        testingFacilityName
       }
     }
   }
@@ -32,23 +29,14 @@ const Header = ({ organizationId }) => {
   const { data: whoamidata } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const [staffInitials, setStaffInitials] = useState("");
   const [staffName, setStaffName] = useState("");
   const [facilityName, setFacilityName] = useState("");
-  const [staffIconColor, setStaffIconColor] = useState("");
   useEffect(() => {
     if (!whoamidata || !whoamidata.whoami) return;
     const whoami = whoamidata.whoami;
     setStaffName(formatFullName(whoami));
-
-    const ch1 = whoami.firstName ? whoami.firstName.charAt(0) : "";
-    const ch2 = whoami.middleName ? whoami.middleName.charAt(0) : "";
-    const ch3 = whoami.lastName ? whoami.lastName.charAt(0) : "";
-    setStaffInitials(`${ch1}${ch2}${ch3}`);
-
     setFacilityName(whoami.organization.testingFacilityName);
-    setStaffIconColor(getStaffColor(whoami.id));
-  }, [staffIconColor, whoamidata]);
+  }, [whoamidata]);
 
   const formatFullName = (whoami) => {
     // this trick will not include spaces if middlename is blank.
@@ -134,13 +122,7 @@ const Header = ({ organizationId }) => {
               </NavLink>
             </li>
 
-            <li
-              className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden"
-              style={{
-                backgroundColor: staffIconColor,
-                color: "white",
-              }}
-            >
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user"}
                 size="2x"
@@ -148,9 +130,6 @@ const Header = ({ organizationId }) => {
                   fill: "white",
                 }}
               />
-              <span className={"prime-username-icon-span"}>
-                {staffInitials}
-              </span>
             </li>
 
             <li className="usa-nav__primary-item usa-sidenav prime-staff-infobox-sidemenu prime-settings-hidden">
@@ -160,13 +139,7 @@ const Header = ({ organizationId }) => {
                 </li>
                 <li className="usa-sidenav__item">{facilityName}</li>
                 <li className="usa-sidenav__item">
-                  <Button
-                    label=" Log out"
-                    secondaryInverse
-                    big
-                    icon="sign-out-alt"
-                    onClick={() => logout()}
-                  />
+                  <Anchor text="Log out" onClick={() => logout()} />
                 </li>
               </ul>
             </li>
@@ -188,13 +161,7 @@ const Header = ({ organizationId }) => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
-            <li
-              className="usa-nav__primary-item"
-              style={{
-                backgroundColor: staffIconColor,
-                color: "white",
-              }}
-            >
+            <li className="usa-nav__primary-item">
               <NavLink
                 to={`#`}
                 isActive={() => false}
@@ -203,10 +170,6 @@ const Header = ({ organizationId }) => {
                   setStaffDetailsVisible(!staffDetailsVisible);
                 }}
                 activeClassName="active-nav-item"
-                style={{
-                  backgroundColor: staffIconColor,
-                  color: "white",
-                }}
               >
                 <FontAwesomeIcon
                   icon={"user"}
@@ -215,9 +178,6 @@ const Header = ({ organizationId }) => {
                     fill: "white",
                   }}
                 />
-                <span className={"prime-username-icon-span"}>
-                  {staffInitials}
-                </span>
               </NavLink>
               <div
                 aria-label="Primary navigation"
@@ -225,28 +185,15 @@ const Header = ({ organizationId }) => {
                   "is-prime-staff-infobox-visible": staffDetailsVisible,
                 })}
               >
-                <ul className="usa-sidenav__sublist prime-sidenav_inset">
+                <ul className="usa-sidenav__sublist">
                   <li className="usa-sidenav__item span-full-name">
                     {staffName}
                   </li>
                   <li className="usa-sidenav__item">{facilityName}</li>
                   <li className="usa-sidenav__item">
-                    <Button
-                      label={" Log out"}
-                      secondaryInverse
-                      big
-                      icon="sign-out-alt"
-                      onClick={() => logout()}
-                    />
+                    <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
                 </ul>
-                <button
-                  className="fa-layers fa-fw fa-2x prime-close-button-popup"
-                  onClick={() => setStaffDetailsVisible(false)}
-                  title={"close user details"}
-                >
-                  <FontAwesomeIcon icon={"window-close"} />
-                </button>
               </div>
             </li>
             <li className="usa-nav__primary-item">

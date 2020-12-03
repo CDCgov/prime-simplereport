@@ -216,16 +216,12 @@
   color: black;
   li {
     padding: 13px 7px 7px 0;
-    text-align: right;
+    text-align: left;
   }
-  button {
-    background-color: color($theme-color-secondary-dark);
-    color: white;
-    font-weight: bolder;
-  }
-  .span-full-name {
-    font-weight: bolder;
-  }
+}
+
+.span-full-name {
+  font-weight: bolder;
 }
 
 .prime-staff-infobox {
@@ -236,26 +232,12 @@
   background-color: white; /* seems like this should be a theme */
   z-index: 10;
   visibility: hidden;
-  button {
-    background-color: color($theme-color-secondary-dark);
-    color: white;
-    font-weight: bolder;
-  }
   ul {
     padding: 23px;
   }
   li {
     border-top-color: transparent;
     padding: 7px;
-  }
-  .prime-close-button-popup {
-    top: 0;
-    right: 0;
-    display: block;
-    position: absolute;
-    z-index: 100;
-    cursor: pointer;
-    color: black;
   }
 }
 
