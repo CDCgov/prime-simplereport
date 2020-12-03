@@ -4,7 +4,6 @@ import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
-import { parseDate } from "./AoEForm/dateUtils";
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
