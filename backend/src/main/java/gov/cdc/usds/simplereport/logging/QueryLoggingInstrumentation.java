@@ -49,10 +49,6 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
         // Add the execution ID to the sfl4j MDC
         MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId.toString());
-
-        if (LOG.isInfoEnabled() && parameters.getVariables() != null && !parameters.getVariables().isEmpty()) {
-            LOG.info("GraphQL variables: {}", parameters.getVariables());
-        }
         return GraphQLLoggingHelpers.createInstrumentationContext(queryStart);
     }
 }
