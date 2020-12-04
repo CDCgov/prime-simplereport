@@ -44,7 +44,7 @@ public abstract class AuditedEntity {
 	@CreatedBy
 	@Immutable // not sure this is needed. Not sure it works if it is. :-(
 	@ManyToOne(optional = false)
-	@JoinColumn(name="created_by")
+	@JoinColumn(name="created_by", updatable = false)
 	private ApiUser createdBy;
 
 	@LastModifiedBy

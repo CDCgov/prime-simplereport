@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 @Component
 public class TestDataFactory {
 
+	private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
 	@Autowired
 	private OrganizationRepository _orgRepo;
 	@Autowired
@@ -30,7 +31,7 @@ public class TestDataFactory {
 	private DeviceTypeRepository _deviceRepo;
 
 	public Organization createValidOrg() {
-		DeviceType dev = _deviceRepo.save(new DeviceType("Acme SuperFine", "Acme", "SFN", "54321-BOOM"));
+		DeviceType dev = getGenericDevice();
 		StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
 		Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
 		return _orgRepo.save(new Organization("The Mall", "MALLRAT", "123456", dev, doc));
@@ -48,5 +49,10 @@ public class TestDataFactory {
 			"W", null, "M", false, false
 		);
 		return _personRepo.save(p);
+	}
+
+	public DeviceType getGenericDevice() {
+		return _deviceRepo.findAll().stream().filter(d->d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
+			.orElseGet(()->_deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM")));
 	}
 }
