@@ -11,5 +11,5 @@ provider "okta" {
 
 module "all" {
   source = "../../services/all-persistent"
-  env = "dev"
+  env    = "dev"
 }
