@@ -3,6 +3,10 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "react-toastify";
 import { useEffect } from "react";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
@@ -60,7 +64,7 @@ const SET_SETTINGS_MUTATION = gql`
   ) {
     updateOrganization(
       testingFacilityName: $testingFacilityName
-      cliaNumber: $cliaNumber
+      cliaNumbers: $cliaNumber
       orderingProviderFirstName: $orderingProviderFirstName
       orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
@@ -80,6 +84,9 @@ const SET_SETTINGS_MUTATION = gql`
 `;
 
 const Settings = () => {
+  const appInsights = useAppInsightsContext();
+  const trackSaveSettings = useTrackEvent(appInsights, "Save Settings");
+
   const {
     data: settings,
     loading: isLoadingSettings,
@@ -88,6 +95,7 @@ const Settings = () => {
   } = useQuery(GET_SETTINGS_QUERY, { fetchPolicy: "no-cache" });
 
   const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
+  const [mutationError, updateMutationError] = useState(null);
 
   const [deviceSettings, updateDeviceSettings] = useState({});
   const [orgSettings, updateOrgSettings] = useState({});
@@ -126,6 +134,7 @@ const Settings = () => {
   }, [settings]);
 
   const onSaveSettings = () => {
+    trackSaveSettings();
     setSettings({
       variables: {
         testingFacilityName: orgSettings.testingFacilityName,
@@ -145,25 +154,39 @@ const Settings = () => {
         devices: Object.values(deviceSettings.supportedDevices),
         defaultDevice: deviceSettings.defaultDeviceId,
       },
-    }).then((d) => {
-      console.log("success!", d); // TODO: should return an id
-      let alert = (
-        <Alert
-          type={"success"}
-          title={"Updated Organization"}
-          body={"The settings for the organization have been updated"}
-        />
-      );
-      showNotification(toast, alert);
-      refetchSettings(); // this does nothing
-    });
+    })
+      .then((d) => {
+        let alert = (
+          <Alert
+            type={"success"}
+            title={"Updated Organization"}
+            body={"The settings for the organization have been updated"}
+          />
+        );
+        showNotification(toast, alert);
+        refetchSettings(); // this does nothing
+      })
+      .catch((error) => {
+        // Tracking option 1: have the component return an error, which would be detected by the error boundary
+        updateMutationError(error);
+
+        // Tracking option 2: manually track the exception, and then handle the error more gracefully via an alert or something
+        // appInsights.trackException({
+        //   name: "Failed Saving Settings",
+        //   error: error,
+        // });
+      });
   };
 
   if (isLoadingSettings) {
     return <p> Loading... </p>;
   }
   if (errorFetchingSettings) {
-    return <p> There was an error </p>;
+    return errorFetchingSettings;
+  }
+
+  if (mutationError) {
+    throw mutationError;
   }
 
   return (

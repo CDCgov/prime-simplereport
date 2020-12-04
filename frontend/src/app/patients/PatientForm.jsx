@@ -1,7 +1,13 @@
 import React, { useState } from "react";
-//import { gql, useQuery, useMutation } from "@apollo/client";
 import { gql, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
+import moment from "moment";
+import { Prompt } from "react-router-dom";
+
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
@@ -10,8 +16,6 @@ import {
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
-import { Prompt } from "react-router-dom";
-import moment from "moment";
 import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName, showNotification } from "../utils";
 import "./EditPatient.scss";
@@ -121,6 +125,10 @@ const Fieldset = (props) => (
 );
 
 const PatientForm = (props) => {
+  const appInsights = useAppInsightsContext();
+  const trackAddPatient = useTrackEvent(appInsights, "Add Patient");
+  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient");
+
   const [addPatient] = useMutation(ADD_PATIENT);
   const [updatePatient] = useMutation(UPDATE_PATIENT);
   const [formChanged, setFormChanged] = useState(false);
@@ -167,6 +175,7 @@ const PatientForm = (props) => {
       employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.patientId) {
+      trackUpdatePatient();
       updatePatient({
         variables: {
           patientId: props.patientId,
@@ -183,7 +192,9 @@ const PatientForm = (props) => {
             />
           ),
         (error) => {
-          console.error(error);
+          appInsights.trackException(error);
+
+          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
           showNotification(
             toast,
             <Alert
@@ -195,6 +206,7 @@ const PatientForm = (props) => {
         }
       );
     } else {
+      trackAddPatient();
       addPatient({ variables }).then(
         () =>
           showNotification(
@@ -206,7 +218,9 @@ const PatientForm = (props) => {
             />
           ),
         (error) => {
-          console.error(error);
+          appInsights.trackException(error);
+
+          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
           showNotification(
             toast,
             <Alert

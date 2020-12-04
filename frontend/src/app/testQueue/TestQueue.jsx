@@ -1,6 +1,6 @@
-import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { testResultPropType } from "../propTypes";
+import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
@@ -63,7 +63,7 @@ const TestQueue = () => {
   });
 
   if (error) {
-    return <p>Error in loading patients</p>;
+    throw error;
   }
   if (loading) {
     return <p>Loading patients...</p>;

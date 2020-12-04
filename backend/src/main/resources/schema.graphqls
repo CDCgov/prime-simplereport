@@ -32,22 +32,35 @@ type Patient {
   employedInHealthcare: Boolean
   testResults: [TestOrder]
 }
+type Facility {
+  name: String
+  cliaNumber: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  phone: String
+}
+type Provider {
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+  NPI: String
+  street: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  zipCode: String
+  phone: String
+}
 type Organization {
   internalId: ID
-  testingFacilityName: String
-  cliaNumber: String
-  orderingProviderFirstName: String
-  orderingProviderMiddleName: String
-  orderingProviderLastName: String
-  orderingProviderSuffix: String
-  orderingProviderNPI: String
-  orderingProviderStreet: String
-  orderingProviderStreetTwo: String
-  orderingProviderCity: String
-  orderingProviderCounty: String
-  orderingProviderState: String
-  orderingProviderZipCode: String
-  orderingProviderPhone: String
+  testingFacility: Facility
+  orderingProvider: Provider
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
 }

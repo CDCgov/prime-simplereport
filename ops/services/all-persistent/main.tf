@@ -1,9 +1,3 @@
-// Okta application
-module "okta" {
-  source = "../../services/okta-app"
-  env    = var.env
-}
-
 locals {
   management_tags = {
     prime-app   = "simplereport"
@@ -21,11 +15,6 @@ data "azurerm_key_vault" "kv" {
   resource_group_name = var.management_rg
 }
 
-data "azurerm_log_analytics_workspace" "law" {
-  name                = "simple-report-log-workspace-global"
-  resource_group_name = local.management_rg
-}
-
 // Create the virtual network and the persistent subnets
 resource "azurerm_virtual_network" "vn" {
   name                = "simple-report-${var.env}-network"
@@ -37,14 +26,29 @@ resource "azurerm_virtual_network" "vn" {
   tags = local.management_tags
 }
 
+module "monitoring" {
+  source        = "../../services/monitoring"
+  env           = var.env
+  management_rg = var.management_rg
+  rg_location   = data.azurerm_resource_group.rg.location
+  rg_name       = data.azurerm_resource_group.rg.name
+  tags          = {}
+}
+
 module "db" {
   source           = "../../services/database"
   env              = var.env
   key_vault_id     = data.azurerm_key_vault.kv.id
-  log_workspace_id = data.azurerm_log_analytics_workspace.law.id
+  log_workspace_id = module.monitoring.log_analytics_workspace_id
   rg_location      = data.azurerm_resource_group.rg.location
   rg_name          = data.azurerm_resource_group.rg.name
   tags             = local.management_tags
+}
+
+// Okta application
+module "okta" {
+  source = "../../services/okta-app"
+  env    = var.env
 }
 
 // Create the Okta secrets

@@ -16,10 +16,12 @@ import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestOrder;
 
 public class TestEventExport {
 
 	private NoJsonTestEvent testEvent;
+	private NoJsonTestOrder testOrder;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
@@ -192,6 +194,14 @@ public class TestEventExport {
 		return patient.getInternalId().toString();
 	}
 
+	@JsonProperty("Patient_role")
+	public String getPatientRole() {
+		if (patient.getRole() == null) {
+			return "";
+		}
+		return patient.getRole().toString();
+	}
+
 	@JsonProperty("Employed_in_healthcare")
 	public String getPatientEmployedInHealthcare() {
 		return boolToYesNoUnk(patient.getEmployedInHealthcare());
@@ -230,6 +240,11 @@ public class TestEventExport {
 	@JsonProperty("Symptomatic_for_disease")
 	public String getSymptomaticForDisease() {
 		return boolToYesNoUnk(!survey.getNoSymptoms());
+	}
+
+	@JsonProperty("Illness_onset_date")
+	public String getSymptomOnsetDate() {
+		return dateToHealthCareString(survey.getSymptomOnsetDate());
 	}
 
 	@JsonProperty("Testing_lab_name")
@@ -395,5 +410,11 @@ public class TestEventExport {
 	@JsonProperty("Date_result_released")
 	public String getDateResultReleased() {
 		return dateToHealthCareString(LocalDate.now());
+	}
+
+	@JsonProperty("Order_test_date")
+	public String getOrderTestDate() {
+		// order_test_date = test_date for antigen testing
+		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
 	}
 }
