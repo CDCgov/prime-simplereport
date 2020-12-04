@@ -30,6 +30,14 @@ To run the service, you needs a DB and a connection to Okta for it to work. Loca
 
 ### Backend-Setup
 
+If Java isn't installed on a Mac you can get it from `brew`:
+
+```sh
+brew tap adoptopenjdk/openjdk
+brew cask install adoptopenjdk8
+brew install gradle
+```
+
 Running with docker:
 
 1. `cd backend`
@@ -41,6 +49,13 @@ Running spring app locally and db in docker
 1. `cd backend`
 1. Run `docker-compose up db`
 1. Run `gradle bootRun --args='--spring.profiles.active=dev'`
+1. view site at http://localhost:8080
+
+Running spring app locally and db in docker on port 5433
+
+1. `cd backend`
+1. Run ` docker-compose --env-file .env.development up db`
+1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
 ## Restart & Clean

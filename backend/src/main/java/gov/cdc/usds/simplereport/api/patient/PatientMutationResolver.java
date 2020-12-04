@@ -1,20 +1,19 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
+
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
+
+import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-import org.springframework.stereotype.Component;
 
 /**
- * Created by nickrobison on 11/17/20
+ * Mutations for creating and updating patient records.
  */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver  {
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
     private final PersonService _ps;
   
@@ -38,13 +37,13 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         String role,
         String email,
         String county,
-        List<String> race,
+        String race,
         String ethnicity,
         String gender,
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, DATE_FORMATTER);
+      LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.addPatient(
             lookupId,
             firstName,
@@ -86,13 +85,13 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       String role,
       String email,
       String county,
-      List<String> race,
+      String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare
   ) {
-      LocalDate localBirthDateDate = (birthDate == null) ? null : LocalDate.parse(birthDate, DATE_FORMATTER);
+      LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.updatePatient(
           patientId,
           lookupId,

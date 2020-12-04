@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import java.time.LocalDate;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -36,5 +38,15 @@ public class TestDataFactory {
 
 	public Person createMinimalPerson(Organization org) {
 		return _personRepo.save(new Person("John", "Brown", "Boddie", "Jr.", org));
+	}
+
+	public Person createFullPerson(Organization org) {
+		Person p = new Person(
+			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(1899, 5, 10),
+			new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
+			PersonRole.RESIDENT, null,
+			"W", null, "M", false, false
+		);
+		return _personRepo.save(p);
 	}
 }

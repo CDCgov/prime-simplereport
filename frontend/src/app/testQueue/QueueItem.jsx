@@ -3,11 +3,14 @@ import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 import { gql, useMutation } from "@apollo/client";
-
 import Modal from "react-modal";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
+
 import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
-
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents//Dropdown";
@@ -96,6 +99,21 @@ const QueueItem = ({
   defaultDevice,
   refetchQueue,
 }) => {
+  const appInsights = useAppInsightsContext();
+  const trackRemovePatientFromQueue = useTrackEvent(
+    appInsights,
+    "Remove Patient From Queue"
+  );
+  const trackSubmitTestResult = useTrackEvent(
+    appInsights,
+    "Submit Test Result"
+  );
+  const trackUpdateAoEResponse = useTrackEvent(
+    appInsights,
+    "Update AoE Response"
+  );
+
+  const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
@@ -113,6 +131,10 @@ const QueueItem = ({
   );
   let forceSubmit = false;
 
+  if (mutationError) {
+    throw mutationError;
+  }
+
   const testResultsSubmitted = () => {
     let { type, title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
@@ -127,6 +149,7 @@ const QueueItem = ({
   const onTestResultSubmit = (e) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      trackSubmitTestResult();
       submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -135,7 +158,9 @@ const QueueItem = ({
         },
       }).then(
         (_response) => testResultsSubmitted(),
-        (error) => console.error("error submitting test results", error)
+        (error) => {
+          updateMutationError(error);
+        }
       );
     } else {
       updateIsConfirmationModalOpen(true);
@@ -147,13 +172,16 @@ const QueueItem = ({
   };
 
   const removeFromQueue = (patientId) => {
+    trackRemovePatientFromQueue();
     removePatientFromQueue({
       variables: {
         patientId,
       },
     }).then(
       (_response) => refetchQueue(),
-      (error) => console.error("error removing patient from queue", error)
+      (error) => {
+        updateMutationError(error);
+      }
     );
   };
 
@@ -176,6 +204,7 @@ const QueueItem = ({
 
   const saveAoeCallback = (answers) => {
     setAoeAnswers(answers);
+    trackUpdateAoEResponse();
     updateAoe({
       variables: {
         patientId: patient.internalId,
@@ -192,7 +221,9 @@ const QueueItem = ({
       (_response) => {
         refetchQueue();
       },
-      (error) => console.error("error saving aoe", error)
+      (error) => {
+        updateMutationError(error);
+      }
     );
   };
 

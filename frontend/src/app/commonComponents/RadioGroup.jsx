@@ -12,7 +12,7 @@ const RadioGroup = ({
   selectedRadio, // for checkboxes that only support one checked item, use this. Otherwise, add a `checked: Boolean` property to each button in the buttons prop
   type,
   legend,
-  displayLegend,
+  displayLegend = false,
 }) => {
   // Note: list Affirmations before negations: Yes before No.
   const radioGroupItems = buttons.map((button) => {

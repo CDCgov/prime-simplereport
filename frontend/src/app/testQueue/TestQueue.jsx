@@ -1,8 +1,7 @@
-import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { testResultPropType } from "../propTypes";
+import { gql, useQuery } from "@apollo/client";
 
-import { parseDate } from "./AoEForm/dateUtils";
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 
@@ -64,7 +63,7 @@ const TestQueue = () => {
   });
 
   if (error) {
-    return <p>Error in loading patients</p>;
+    throw error;
   }
   if (loading) {
     return <p>Loading patients...</p>;
@@ -97,12 +96,12 @@ const TestQueue = () => {
               patient={patient}
               askOnEntry={{
                 pregnancy,
-                dateAdded: parseDate(dateAdded),
+                dateAdded: dateAdded,
                 noSymptoms,
                 symptoms,
-                symptomOnset: parseDate(symptomOnset),
+                symptomOnset: symptomOnset,
                 firstTest,
-                priorTestDate: parseDate(priorTestDate),
+                priorTestDate: priorTestDate,
                 priorTestType,
                 priorTestResult,
               }}

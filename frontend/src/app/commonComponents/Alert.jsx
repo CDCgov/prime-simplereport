@@ -52,6 +52,7 @@ Alert.propTypes = {
   title: PropTypes.string.isRequired,
   body: PropTypes.node.isRequired,
   role: PropTypes.oneOf([ROLE_ALERT, ROLE_ALERTDIALOG]),
+  children: PropTypes.any,
 };
 
 export default Alert;

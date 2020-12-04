@@ -18,7 +18,9 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.NoJsonTestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -36,6 +38,7 @@ public class TestOrderService {
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
   private PersonRepository _prepo;
+  private NoJsonTestEventRepository _noJsonEventRepo;
 
   public TestOrderService(
     OrganizationService os,
@@ -43,6 +46,7 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
+    NoJsonTestEventRepository njterepo,
     PersonRepository prepo
   ) {
     _os = os;
@@ -51,14 +55,15 @@ public class TestOrderService {
     _parepo = parepo;
     _terepo = terepo;
     _prepo = prepo;
+    _noJsonEventRepo = njterepo;
 }
 
 	public List<TestOrder> getQueue() {
 		return _repo.fetchQueueForOrganization(_os.getCurrentOrganization());
 	}
 
-  public List<TestOrder> getTestResults() {
-		return _repo.fetchPastResultsForOrganization(_os.getCurrentOrganization());
+  public List<NoJsonTestEvent> getTestResults() {
+	  return _noJsonEventRepo.findAllByOrganization(_os.getCurrentOrganization());
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {

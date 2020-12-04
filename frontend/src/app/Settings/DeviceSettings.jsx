@@ -1,8 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { gql, useQuery } from "@apollo/client";
 import PropTypes from "prop-types";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import Button from "../commonComponents/Button";
 import Dropdown from "../commonComponents//Dropdown";
@@ -18,10 +22,17 @@ const getAllDevices = gql`
 `;
 
 const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
+  const appInsights = useAppInsightsContext();
+  const trackFetchDeviceSettings = useTrackEvent(appInsights, "Fetch Devices");
+
+  useEffect(() => {
+    trackFetchDeviceSettings();
+  }, [trackFetchDeviceSettings]);
+
   const {
     data: allDevices,
     loading: isLoadingAllDevices,
-    //error: errorFetchingAllDevices,
+    error,
   } = useQuery(getAllDevices, { fetchPolicy: "no-cache" });
 
   let isLoading =
@@ -40,6 +51,10 @@ const DeviceSettings = ({ deviceSettings, updateDeviceSettings }) => {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    throw error;
   }
 
   const onDeviceChange = (e) => {

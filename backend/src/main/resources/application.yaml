@@ -20,6 +20,10 @@ graphql:
     corsEnabled: true
   tools:
     schema-location-pattern: "**/*.graphqls"
+  datetime:
+    scalars:
+      Date:
+        format: yyyy-MM-dd'T'HH:MM:ss'Z'
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
@@ -30,20 +34,23 @@ simple-report-initialization:
     - name: Abbott IDNow
       manufacturer: Abbott
       model: ID Now
-      loinc-code: "94558-4"
+      loinc-code: "94534-5"
     - name: Abbott BinaxNow
       manufacturer: Abbott
-      model: BinaxNow
+      model: BinaxNOW COVID-19 Ag Card
       loinc-code: "94558-4"
     - name: Quidel Sofia 2
       manufacturer: Quidel
       model: Sofia 2 SARS Antigen FIA
-      loinc-code: "94558-4"
+      loinc-code: "95209-3"
     - name: BD Veritor
       manufacturer: Becton, Dickinson and Company (BD)
       model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
       loinc-code: "94558-4"
     - name: LumiraDX
-      manufacturer: LumiraDX
-      model: LumiraDX
-      loinc-code: "94558-4"
+      manufacturer: LumiraDx UK Ltd.
+      model: LumiraDx SARS-CoV-2 Ag Test*
+      loinc-code: "95209-3"
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

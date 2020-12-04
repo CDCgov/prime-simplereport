@@ -6,25 +6,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 public class TestEventExport {
 
-	private TestEvent testEvent;
+	private NoJsonTestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Organization org;
 
-	public TestEventExport(TestEvent testEvent) {
+	public TestEventExport(NoJsonTestEvent testEvent) {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
@@ -51,6 +52,16 @@ public class TestEventExport {
 		TestResult.UNDETERMINED, "419984006"
 	);
 
+	private Map<String, String> raceMap = Map.of(
+		"native", "1002-5",
+		"asian", "2028-9",
+		"black", "2054-5",
+		"pacific", "2076-8",
+		"white", "2106-3",
+		"other", "2131-1", // not currently in our app
+		"unknown", "UNK",
+		"refused", "ASKU" // Asked, but unknown
+	);
 
 	private String boolToYesNoUnk(Boolean value) {
 		if (value == null) {
@@ -69,7 +80,9 @@ public class TestEventExport {
 		if (value.size() < 1) {
 			return "";
 		}
-		return String.join(",", value);
+		return String.join(",", value.stream()
+		.map(v -> raceMap.get(v))
+		.collect(Collectors.toList()));
 	}
 
 	private String dateToHealthCareString(LocalDate value) {
@@ -107,7 +120,10 @@ public class TestEventExport {
 
 	@JsonProperty("Patient_race")
 	public String getPatientRace() {
-		return arrayToString(patient.getRace());
+		if (patient.getRace() == null) {
+			return "UNK";
+		}
+		return raceMap.get(patient.getRace());
 	}
 
 	@JsonProperty("Patient_DOB")
@@ -120,7 +136,7 @@ public class TestEventExport {
 		if (patient.getGender() == null) {
 			return "UNK";
 		}
-		return patient.getGender();
+		return genderMap.get(patient.getGender());
 	}
 
 	@JsonProperty("Patient_ethnicity")
@@ -136,7 +152,7 @@ public class TestEventExport {
 		return patient.getStreet();
 	}
 
-	@JsonProperty("Patient_street2")
+	@JsonProperty("Patient_street_2")
 	public String getPatientStreetTwo() {
 		return patient.getStreetTwo();
 	}
@@ -198,7 +214,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return testEvent.getCreatedAt().toString();
+		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -218,7 +234,7 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_name")
 	public String getTestingLabName() {
-		return org.getFacilityName();
+		return getOrderingFacilityName();
 	}
 
 	@JsonProperty("Testing_lab_CLIA")
@@ -228,73 +244,77 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_state")
 	public String getTestingLabState() {
-		return provider.getState();
+		return getOrderingFacilityState();
 	}
 
 	@JsonProperty("Testing_lab_street")
 	public String getTestingLabStreet() {
-		return provider.getStreet();
+		return getOrderingFacilityStreet();
 	}
 
-	@JsonProperty("Testing_lab_street2")
+	@JsonProperty("Testing_lab_street_2")
 	public String getTestingLabStreetTwo() {
-		return provider.getStreetTwo();
+		return getOrderingFacilityStreetTwo();
 	}
 
 	@JsonProperty("Testing_lab_zip_code")
 	public String getTestingLabZipCode() {
-		return provider.getZipCode();
+		return getOrderingFacilityZipCode();
+	}
 
+	@JsonProperty("Testing_lab_county")
+	public String getTestingLabCounty() {
+		return getOrderingFacilityCounty();
 	}
 
 	@JsonProperty("Testing_lab_phone_number")
 	public String getTestingLabPhoneNumber() {
-		return provider.getTelephone();
+		return getOrderingFacilityPhoneNumber();
 	}
 
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
-		return provider.getCity();
+		return getOrderingFacilityCity();
 	}
 
 	@JsonProperty("Ordering_facility_city")
 	public String getOrderingFacilityCity() {
-		return this.getTestingLabCity();
+		return "Tucson";
 	}
 
 	@JsonProperty("Ordering_facility_county")
 	public String getOrderingFacilityCounty() {
-		return provider.getCounty();
+		return "Pima";
 	}
 
 	@JsonProperty("Ordering_facility_name")
 	public String getOrderingFacilityName() {
-		return org.getTestingFacilityName();
+		return org.getFacilityName();
 	}
 
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return "5202475313";
 	}
 
 	@JsonProperty("Ordering_facility_state")
 	public String getOrderingFacilityState() {
-		return this.getTestingLabState();
+		return "AZ";
 	}
 
 	@JsonProperty("Ordering_facility_street")
 	public String getOrderingFacilityStreet() {
-		return this.getTestingLabStreet();
+		return "2797 N Cerrada de Beto";
 	}
 
 	@JsonProperty("Ordering_facility_street_2")
-	public String getOrderingFacilityStreet_2() {
-		return this.getTestingLabStreetTwo();
+	public String getOrderingFacilityStreetTwo() {
+		return "";
 	}
 
 	@JsonProperty("Ordering_facility_zip_code")
 	public String getOrderingFacilityZipCode() {
-		return this.getTestingLabZipCode();
+		return "85745";
 	}
 
 	@JsonProperty("Ordering_provider_last_name")
@@ -309,7 +329,22 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_provider_street")
 	public String getOrderingProviderStreet() {
-		return this.getTestingLabStreet();
+		return provider.getStreet();
+	}
+
+	@JsonProperty("Ordering_provider_street_2")
+	public String getOrderingProviderStreetTwo() {
+		return provider.getStreetTwo();
+	}
+
+	@JsonProperty("Ordering_provider_city")
+	public String getOrderingProviderCity() {
+		return provider.getCity();
+	}
+
+	@JsonProperty("Ordering_provider_state")
+	public String getOrderingProviderState() {
+		return provider.getState();
 	}
 
 	@JsonProperty("Ordering_provider_zip_code")
@@ -317,9 +352,14 @@ public class TestEventExport {
 		return this.getTestingLabZipCode();
 	}
 
+	@JsonProperty("Ordering_provider_county")
+	public String getOrderingProviderCounty() {
+		return provider.getCounty();
+	}
+
 	@JsonProperty("Ordering_provider_phone_number")
 	public String getOrderingProviderPhoneNumber() {
-		return this.getTestingLabPhoneNumber();
+		return provider.getTelephone();
 	}
 
 	@JsonProperty("Ordered_test_code")
@@ -329,7 +369,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "Nasal";
+		return "71836000";
 	}
 
 	@JsonProperty("Specimen_type_code")
@@ -340,6 +380,11 @@ public class TestEventExport {
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
 		return testEvent.getDeviceType().getInternalId().toString();
+	}
+
+	@JsonProperty("Device_ID")
+	public String getDeviceID() {
+		return testEvent.getDeviceType().getModel();
 	}
 
 	@JsonProperty("Test_date")

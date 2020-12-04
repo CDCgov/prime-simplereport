@@ -1,6 +1,5 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { DateField } from "@cmsgov/design-system";
 import CMSDialog from "../../commonComponents/CMSDialog";
 
 import "@cmsgov/design-system/dist/css/index.css";
@@ -14,99 +13,8 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
-import { dateToString } from "./dateUtils";
 import { COVID_RESULTS } from "../../constants";
-
-const ManagedDateField = ({
-  name,
-  label,
-  managedDate = { month: "", day: "", year: "" },
-  setManagedDate,
-  maxAllowedDate,
-  minAllowedDate,
-  ...additionalProps
-}) => {
-  const [yearInvalid, setYearInvalid] = useState(false);
-  const [monthInvalid, setMonthInvalid] = useState(false);
-  const [dayInvalid, setDayInvalid] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const setAll = (isInvalid, message = "") => {
-    setYearInvalid(isInvalid);
-    setMonthInvalid(isInvalid);
-    setDayInvalid(isInvalid);
-    setErrorMessage(message);
-  };
-
-  const findTimestamp = (dateString) => {
-    if (dateString === undefined) {
-      return;
-    }
-    if (dateString === "now") {
-      return Date.now(); // this has a time zone problem, of course...
-    }
-    return Date.parse(dateString);
-  };
-  const maxAllowedTimestamp = findTimestamp(maxAllowedDate);
-  const minAllowedTimestamp = findTimestamp(minAllowedDate);
-
-  const onComponentBlur = (evt) => {
-    if (!managedDate.year && !managedDate.month && !managedDate.day) {
-      setAll(false);
-      return;
-    }
-    if (!managedDate.year || managedDate.year.length < 4) {
-      setErrorMessage("Please enter a four-digit year");
-      setYearInvalid(true);
-      return;
-    }
-    const managedTimestamp = Date.parse(
-      `${managedDate.year}-${managedDate.month}-${managedDate.day}`
-    );
-    if (isNaN(managedTimestamp)) {
-      setAll(true, "Please enter a valid date");
-    } else if (
-      maxAllowedTimestamp !== undefined &&
-      managedTimestamp > maxAllowedTimestamp
-    ) {
-      setAll(
-        true,
-        "Please enter a date in  " +
-          (maxAllowedDate === "now" ? "the past" : "the allowed date range")
-      );
-    } else if (
-      minAllowedTimestamp !== undefined &&
-      managedTimestamp < minAllowedTimestamp
-    ) {
-      setAll(
-        true,
-        "Please enter a date in  " +
-          (minAllowedDate === "now" ? "the future" : "the allowed date range")
-      );
-    } else {
-      setAll(false);
-    }
-  };
-
-  return (
-    <DateField
-      name={name}
-      label={label}
-      onChange={(_, newDate) => {
-        setManagedDate(newDate);
-      }}
-      monthValue={managedDate.month}
-      dayValue={managedDate.day}
-      yearValue={managedDate.year}
-      onComponentBlur={onComponentBlur}
-      errorMessage={errorMessage}
-      yearInvalid={yearInvalid}
-      monthInvalid={monthInvalid}
-      dayInvalid={dayInvalid}
-      {...additionalProps}
-    />
-  );
-};
+import DateInput from "../../commonComponents/DateInput";
 
 // building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
@@ -138,12 +46,12 @@ const SymptomInputs = ({
         onChange={symptomChange}
         buttons={choiceList}
       />
-      <ManagedDateField
-        name="symptom_onset"
+      <DateInput
         label="Date of symptom onset"
-        managedDate={onsetDate}
-        setManagedDate={setOnsetDate}
-        maxAllowedDate="now"
+        name="symptom_onset"
+        value={onsetDate}
+        onChange={setOnsetDate}
+        max={new Date().toISOString().split("T")[0]}
       />
     </React.Fragment>
   );
@@ -207,14 +115,14 @@ const PriorTestInputs = ({
       />
       {isFirstTest ? null : (
         <>
-          <ManagedDateField
-            name="prior_test_date"
+          <DateInput
             label="Date of most recent prior test?"
-            managedDate={priorTestDate}
-            setManagedDate={setPriorTestDate}
+            name="prior_test_date"
+            value={priorTestDate}
+            onChange={setPriorTestDate}
             disabled={disableDetails}
-            maxAllowedDate="now"
-            minAllowedDate="2020-02-01"
+            max={new Date().toISOString().split("T")[0]}
+            min="2020-02-01"
           />
           <Dropdown
             options={testTypeConfig}
@@ -260,7 +168,11 @@ const AoEModalForm = ({
 
     symptomConfig.forEach((opt) => {
       const val = opt.value;
-      initialSymptoms[val] = loadedSymptoms[val] === "true" || false;
+      if (typeof loadedSymptoms[val] === "string") {
+        initialSymptoms[val] = loadedSymptoms[val] === "true" || false;
+      } else {
+        initialSymptoms[val] = loadedSymptoms[val];
+      }
     });
   } else {
     symptomConfig.forEach((opt) => {
@@ -269,17 +181,12 @@ const AoEModalForm = ({
     });
   }
 
-  const useDateState = (preLoaded) =>
-    useState(preLoaded || { month: "", day: "", year: "" });
-
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
-  const [onsetDate, setOnsetDate] = useDateState(loadState.symptomOnset);
+  const [onsetDate, setOnsetDate] = useState(loadState.symptomOnset);
 
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
-  const [priorTestDate, setPriorTestDate] = useDateState(
-    loadState.priorTestDate
-  );
+  const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState(
     loadState.priorTestResult
@@ -306,7 +213,7 @@ const AoEModalForm = ({
         }
       : {
           firstTest: false,
-          priorTestDate: dateToString(priorTestDate),
+          priorTestDate: priorTestDate,
           priorTestType: priorTestType,
           priorTestResult: priorTestResult,
         };
@@ -314,7 +221,7 @@ const AoEModalForm = ({
     saveCallback({
       noSymptoms,
       symptoms: JSON.stringify(saveSymptoms),
-      symptomOnset: dateToString(onsetDate),
+      symptomOnset: onsetDate,
       ...priorTest,
       pregnancy: pregnancyResponse,
     });
