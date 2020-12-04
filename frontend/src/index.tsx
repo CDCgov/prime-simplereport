@@ -27,9 +27,9 @@ if (window.location.hash) {
     localStorage.setItem("access_token", bearerToken);
   }
   // We need to store the ID token in order for logout to work correctly.
-  const idToken = params.get("id_token")
+  const idToken = params.get("id_token");
   if (idToken) {
-    localStorage.setItem("id_token", idToken)
+    localStorage.setItem("id_token", idToken);
   }
 }
 
