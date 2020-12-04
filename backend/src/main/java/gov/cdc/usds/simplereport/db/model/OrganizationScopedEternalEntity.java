@@ -7,7 +7,8 @@ import javax.persistence.MappedSuperclass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @MappedSuperclass
-public class OrganizationScopedEternalEntity extends EternalEntity {
+public class OrganizationScopedEternalEntity extends EternalEntity
+		implements OrganizationScoped {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "organization_id", updatable = false)
@@ -22,6 +23,7 @@ public class OrganizationScopedEternalEntity extends EternalEntity {
 		organization = org;
 	}
 
+	@Override
 	public Organization getOrganization() {
 		return organization;
 	}

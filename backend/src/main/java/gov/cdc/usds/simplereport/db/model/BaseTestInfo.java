@@ -12,7 +12,8 @@ import org.hibernate.annotations.Type;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 @MappedSuperclass
-public abstract class BaseTestInfo extends AuditedEntity {
+public abstract class BaseTestInfo extends AuditedEntity
+		implements OrganizationScoped {
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name = "patient_id", updatable = false)
@@ -51,6 +52,7 @@ public abstract class BaseTestInfo extends AuditedEntity {
 		return patient;
 	}
 
+	@Override
 	public Organization getOrganization() {
 		return organization;
 	}
