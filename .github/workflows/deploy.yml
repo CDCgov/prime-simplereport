@@ -43,7 +43,7 @@ jobs:
           path: |
             ~/.npm
             ./frontend/node_modules
-          key: npm-build-${{env.NODE_VERSION}-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
+          key: npm-build-${{env.NODE_VERSION}}-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
       - name: Node setup
         working-directory: ./frontend
         run: npm install
