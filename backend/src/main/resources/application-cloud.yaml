@@ -1,4 +1,5 @@
 spring:
+  profiles.include: no-security
   jpa:
     properties:
       hibernate:
@@ -6,7 +7,23 @@ spring:
 graphql.servlet.cors:
   allowed-origins:
     - http://localhost:3000
-    - https://prime-data-input-client.app.cloud.gov
-    - https://prime-data-input-sandbox.app.cloud.gov
-    - https://simple-report.app.cloud.gov
+    - https://simple-report-qa.app.cloud.gov
     - https://simple-report-sandbox.app.cloud.gov
+simple-report-initialization:
+  organization:
+    facility-name: Dis Organization
+    external-id: DIS_ORG
+    clia-number: "000111222-3"
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      zip-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2

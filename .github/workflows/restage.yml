@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy-to:
-        description: Which instance should we restage ("client" or "sandbox" or "sandbox-backend")?
+        description: Which instance should we restage ("qa" or "sandbox" or "qa-api")?
         default: sandbox
 jobs:
   restage:
@@ -16,5 +16,5 @@ jobs:
           org: ${{secrets.CLOUD_GOV_ORG}}
           user: ${{secrets.SERVICE_USER}}
           password: ${{secrets.SERVICE_PASSWORD}}
-          application: prime-data-input-${{github.event.inputs.deploy-to}}
+          application: simple-report-${{github.event.inputs.deploy-to}}
           command: restage
