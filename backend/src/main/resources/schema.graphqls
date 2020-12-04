@@ -33,6 +33,7 @@ type Patient {
   testResults: [TestOrder]
 }
 type Facility {
+  id: ID
   name: String
   cliaNumber: String
   street: String
@@ -42,6 +43,8 @@ type Facility {
   state: String
   zipCode: String
   phone: String
+  deviceTypes: [DeviceType]
+  defaultDeviceType: DeviceType
 }
 type Provider {
   firstName: String
@@ -59,10 +62,9 @@ type Provider {
 }
 type Organization {
   internalId: ID
-  testingFacility: Facility
+  name: String
+  testingFacility: [Facility]
   orderingProvider: Provider
-  deviceTypes: [DeviceType]
-  defaultDeviceType: DeviceType
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {

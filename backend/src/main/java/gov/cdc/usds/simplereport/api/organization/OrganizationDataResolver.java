@@ -25,8 +25,8 @@ public class OrganizationDataResolver implements GraphQLResolver<ApiOrganization
 	@Autowired
 	private OrganizationService _orgService;
 
-	public ApiFacility getTestingFacility(ApiOrganization o) {
-		return new ApiFacility(getCurrentFacility());
+	public List<ApiFacility> getTestingFacility(ApiOrganization o) {
+		return o.getTestingFacility();
 	}
 
 	public ApiProvider getOrderingProvider(ApiOrganization o) {

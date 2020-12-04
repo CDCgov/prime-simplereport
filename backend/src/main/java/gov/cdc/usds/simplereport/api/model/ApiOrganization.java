@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import gov.cdc.usds.simplereport.db.model.Organization;
 
 public class ApiOrganization {
@@ -10,8 +13,17 @@ public class ApiOrganization {
 		this.org = org;
 	}
 
+	public String getName() {
+		return "Via Elegante";
+	}
+
 	public String getInternalId() {
 		return org.getInternalId().toString();
 	}
 
+	public List<ApiFacility> getTestingFacility() {
+		return org.getTestingFacility().stream()
+		.map(f -> new ApiFacility(f))
+		.collect(Collectors.toList());
+	}
 }
