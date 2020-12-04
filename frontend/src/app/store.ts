@@ -1,8 +1,4 @@
-import thunk from "redux-thunk";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
-// import hardSet from "redux-persist/lib/stateReconciler/hardSet";
-import { createStore, combineReducers, applyMiddleware, compose } from "redux";
-import { persistStore, persistReducer } from "redux-persist";
+import { createStore } from "redux";
 
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 
@@ -22,6 +18,7 @@ const initialState = {
     suffix: "",
   },
 };
+
 const reducers = (state = initialState, action: any) => {
   switch (action.type) {
     case SET_INITIAL_STATE:
@@ -41,29 +38,11 @@ export const setInitialState = (initialState: any) => {
   };
 };
 
-const rootReducer = combineReducers(reducers);
-
-const persistConfig = {
-  key: "reduxStoreRoot", // key used in localstorage to reference the persisted redux store
-  storage, // the storage to use
-  // stateReconciler: hardSet,
-  // whitelist: ["patients"],
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
-
 const configureStore = () => {
   return createStore(
-    persistedReducer,
-    initialState as any,
-    compose(
-      applyMiddleware(thunk),
-      ((window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ &&
-        (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__()) ||
-        compose
-    )
+    reducers,
+    initialState,
   );
 };
 
 export const store = configureStore();
-export const persistor = persistStore(store);

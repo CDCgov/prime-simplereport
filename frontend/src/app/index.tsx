@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
@@ -11,7 +11,7 @@ import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
-// import { setInitialState } from "./store";
+import { setInitialState } from "./store";
 import TestResultsList from "./testResults/TestResultsList";
 import TestQueue from "./testQueue/TestQueue";
 import ManagePatients from "./patients/ManagePatients";
@@ -42,26 +42,25 @@ const Results = TestResultsList as any;
 const Settings = SettingsContainer as any;
 
 const App = () => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
   useEffect(() => {
     if (!data) return;
-    // dispatch(
-    //   setInitialState({
-    //     facilities: data.whoami.organization.testingFacility,
-    //     facility: data.whoami.organization.testingFacility[0],
-    //     user: {
-    //       id: data.whoami.id,
-    //       firstName: data.whoami.firstName,
-    //       middleName: data.whoami.middleName,
-    //       lastName: data.whoami.lastName,
-    //       suffix: data.whoami.suffix,
-    //     },
-    //   })
-    // );
-    // eslint-disable-next-line
+    dispatch(
+      setInitialState({
+        facilities: data.whoami.organization.testingFacility,
+        facility: data.whoami.organization.testingFacility[0],
+        user: {
+          id: data.whoami.id,
+          firstName: data.whoami.firstName,
+          middleName: data.whoami.middleName,
+          lastName: data.whoami.lastName,
+          suffix: data.whoami.suffix,
+        },
+      })
+    );
   }, [data]);
 
   if (loading) {
@@ -136,4 +135,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default connect()(App);

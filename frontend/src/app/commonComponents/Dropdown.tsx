@@ -17,6 +17,7 @@ interface Props {
   disabled?: boolean;
   defaultOption?: string;
   addClass?: string;
+  includeUndefiend?: boolean;
 }
 
 const Dropdown: React.FC<Props> = ({
@@ -28,6 +29,7 @@ const Dropdown: React.FC<Props> = ({
   addClass = "",
   defaultOption, // value of the default option
   selectedValue,
+  includeUndefiend,
 }) => {
   const [selectId] = useUniqueIds("dropdown", 1);
 
@@ -44,7 +46,9 @@ const Dropdown: React.FC<Props> = ({
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
       >
-        <option value={undefined}>- Select -</option>
+        {includeUndefiend ? (
+          <option value={undefined}>- Select -</option>
+        ) : null}
         {options.map(({ value, label, disabled }, i) => (
           <option key={value + i} value={value} disabled={disabled}>
             {label}

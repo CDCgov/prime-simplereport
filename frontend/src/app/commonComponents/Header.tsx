@@ -11,16 +11,11 @@ import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
 
 const Header = () => {
-  const facilities: any = [];
-  const facility: any = {};
-  const user: any = {};
-  // const facilities = useSelector(
-  //   (state) => (state as any).global.facilities as Facility[]
-  // );
-  // const facility = useSelector(
-  //   (state) => (state as any).global.facility as Facility
-  // );
-  // const user = useSelector((state) => (state as any).global.facility as User);
+  const facilities = useSelector(
+    (state) => (state as any).facilities as Facility[]
+  );
+  const facility = useSelector((state) => (state as any).facility as Facility);
+  const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
