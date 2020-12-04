@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { gql, useQuery, useMutation } from "@apollo/client";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
+
 import Alert from "../../commonComponents/Alert";
 import SearchInput from "./SearchInput";
 import SearchResults from "./SearchResults";
@@ -50,19 +55,31 @@ const ADD_PATIENT_TO_QUEUE = gql`
 `;
 
 const AddToQueueSearchBox = ({ refetchQueue }) => {
+  const appInsights = useAppInsightsContext();
+  const trackAddPatientToQueue = useTrackEvent(
+    appInsights,
+    "Add Patient to Queue"
+  );
+
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
   });
-  if (loading) {
-    console.log("loading patient data for search");
-  }
-  if (error) {
-    console.error("Error loading patient data for search");
-  }
-  const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
 
+  const [mutationError, updateMutationError] = useState(null);
+  const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
+
+  if (loading) {
+    return <p> Loading patient data... </p>;
+  }
+  if (error) {
+    throw error;
+  }
+  if (mutationError) {
+    throw mutationError;
+  }
+
   let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   const getSuggestionsFromQueryString = (queryString) => {
@@ -116,6 +133,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   ) => {
     updateSuggestions([]);
     setQueryString("");
+    trackAddPatientToQueue();
     addPatientToQueue({
       variables: {
         patientId: patient.internalId,
@@ -128,8 +146,8 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         priorTestType,
         priorTestResult,
       },
-    }).then(
-      (res) => {
+    })
+      .then((res) => {
         let { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
             patient
@@ -138,9 +156,10 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
-      },
-      (err) => console.error(err)
-    );
+      })
+      .catch((error) => {
+        updateMutationError(error);
+      });
   };
 
   return (

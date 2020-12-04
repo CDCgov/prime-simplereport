@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
@@ -97,13 +101,24 @@ const SettingsContainer = () => {
   } = useQuery<SettingsData, {}>(GET_SETTINGS_QUERY, {
     fetchPolicy: "no-cache",
   });
+  const appInsights = useAppInsightsContext();
   const [setSettings] = useMutation(SET_SETTINGS_MUTATION);
+  const trackSaveSettings = useTrackEvent(
+    appInsights,
+    "Save Settings",
+    null,
+    false
+  );
+  const [mutationError, updateMutationError] = useState(null);
 
   if (isLoadingSettings) {
     return <p> Loading... </p>;
   }
   if (errorFetchingSettings) {
-    return <p> There was an error </p>;
+    return errorFetchingSettings;
+  }
+  if (mutationError) {
+    throw mutationError;
   }
 
   if (settings === undefined) {
@@ -111,6 +126,7 @@ const SettingsContainer = () => {
   }
 
   const onSaveSettings = (org: Organization) => {
+    trackSaveSettings(null);
     setSettings({
       variables: {
         testingFacilityName: org.testingFacility.name,
@@ -130,18 +146,20 @@ const SettingsContainer = () => {
         devices: org.deviceTypes,
         defaultDevice: org.defaultDevice,
       },
-    }).then((d) => {
-      console.log("success!", d); // TODO: should return an id
-      let alert = (
-        <Alert
-          type={"success"}
-          title={"Updated Organization"}
-          body={"The settings for the organization have been updated"}
-          role={"success"}
-        />
-      );
-      showNotification(toast, alert);
-    });
+    })
+      .then((d) => {
+        console.log("success!", d); // TODO: should return an id
+        let alert = (
+          <Alert
+            type={"success"}
+            title={"Updated Organization"}
+            body={"The settings for the organization have been updated"}
+            role={"success"}
+          />
+        );
+        showNotification(toast, alert);
+      })
+      .catch((error) => updateMutationError(error));
   };
 
   let deviceTypes = Object.values(settings.organization.deviceTypes).map(
