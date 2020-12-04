@@ -63,4 +63,11 @@ public class ApiFacility {
 	public DeviceType getDefaultDeviceType() {
 		return facility.getDefaultDeviceType();
 	}
+
+	public ApiProvider getOrderingProvider() {
+		if (org.getOrderingProvider() == null) {
+			return null;
+		}
+		return new ApiProvider(org.getOrderingProvider());
+	}
 }

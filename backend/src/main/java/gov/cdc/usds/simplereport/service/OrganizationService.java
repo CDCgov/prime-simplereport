@@ -44,7 +44,7 @@ public class OrganizationService {
 		return _facilityRepo.findFirstByOrganizationOrderByCreatedAt(org)
 			.orElseThrow();
 	}
-	public Organization updateOrganization(
+	public Organization updateFacility(
 		String testingFacilityName,
 		String cliaNumber,
 		String orderingProviderFirstName,
@@ -103,4 +103,11 @@ public class OrganizationService {
 		return _repo.save(org);
 
 	}
+
+	public Organization updateOrganization(String name) {
+		Organization org = this.getCurrentOrganization();
+		org.setOrganizationName(name);
+		return _repo.save(org);
+	}
+
 }
