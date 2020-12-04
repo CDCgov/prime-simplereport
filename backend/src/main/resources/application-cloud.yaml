@@ -1,3 +1,14 @@
+spring:
+  profiles.include: no-security
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report
+graphql.servlet.cors:
+  allowed-origins:
+    - http://localhost:3000
+    - https://simple-report-qa.app.cloud.gov
+    - https://simple-report-sandbox.app.cloud.gov
 simple-report-initialization:
   organization:
     facility-name: Dis Organization
