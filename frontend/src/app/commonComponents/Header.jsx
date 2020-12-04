@@ -55,10 +55,14 @@ const Header = ({ organizationId }) => {
   };
 
   const logout = () => {
-    const id_token = whoamidata.whoami.id;
+    // Fetch the id_token from local storage
+    const id_token = localStorage.getItem("id_token");
     const state = uuidv4();
+    // Remove auth data from local_storage
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("id_token");
     window.location.replace(
-      `https://hhs-prime.okta.com/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
+      `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
     );
   };
   return (
@@ -145,7 +149,7 @@ const Header = ({ organizationId }) => {
                   {staffName}
                 </li>
                 <li className="usa-sidenav__item">{facilityName}</li>
-                <li className="usa-sidenav__item" style={{ display: "none" }}>
+                <li className="usa-sidenav__item">
                   <Anchor text="Log out" onClick={() => logout()} />
                 </li>
               </ul>
@@ -198,7 +202,7 @@ const Header = ({ organizationId }) => {
                     {staffName}
                   </li>
                   <li className="usa-sidenav__item">{facilityName}</li>
-                  <li className="usa-sidenav__item" style={{ display: "none" }}>
+                  <li className="usa-sidenav__item">
                     <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
                 </ul>
