@@ -31,8 +31,6 @@ public class NoJsonTestOrder extends BaseTestInfo {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
-	@Column
-	private LocalDate dateTested;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
@@ -57,10 +55,6 @@ public class NoJsonTestOrder extends BaseTestInfo {
 
 	public Date getDateAdded() {
 		return getCreatedAt();
-	}
-
-	public LocalDate getDateTested() {
-		return dateTested;
 	}
 
 	public NoJsonTestEvent getTestEvent() {
