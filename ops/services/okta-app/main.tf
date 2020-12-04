@@ -23,6 +23,9 @@ resource "okta_app_oauth" "app" {
     "id_token",
     "token"]
   login_uri = "https://prime-data-input-sandbox-backend.app.cloud.gov/"
+  post_logout_redirect_uris = [
+    "https://simplereport.cdc.gov"
+  ]
 
   lifecycle {
     ignore_changes = [
