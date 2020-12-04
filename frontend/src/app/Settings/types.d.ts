@@ -14,6 +14,7 @@ interface Facility extends Address {
   phone: string;
   deviceTypes: string[];
   defaultDevice: string;
+  orderingProvider: Provider;
 }
 
 interface Provider extends Address {
@@ -29,7 +30,6 @@ interface Organization {
   name: string;
   internalId: string;
   testingFacility: Facility[];
-  orderingProvider: Provider;
 }
 
 interface FlatOrganization {
@@ -80,22 +80,22 @@ interface SettingsData {
             internalId: string;
           }
         ];
+        orderingProvider: {
+          firstName: string;
+          middleName: string;
+          lastName: string;
+          suffix: string;
+          NPI: string;
+          street: string;
+          streetTwo: string;
+          city: string;
+          county: string;
+          state: string;
+          zipCode: string;
+          phone: string;
+        };
       }
     ];
-    orderingProvider: {
-      firstName: string;
-      middleName: string;
-      lastName: string;
-      suffix: string;
-      NPI: string;
-      street: string;
-      streetTwo: string;
-      city: string;
-      county: string;
-      state: string;
-      zipCode: string;
-      phone: string;
-    };
   };
   deviceType: [
     {

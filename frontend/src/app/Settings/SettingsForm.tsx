@@ -30,10 +30,10 @@ const Settings: React.FC<Props> = (props) => {
   };
 
   const updateProvider = (orderingProvider: Provider) => {
-    updateOrgSettingsHandler({
-      ...organization,
-      orderingProvider,
-    });
+    // updateOrgSettingsHandler({
+    //   ...organization,
+    //   orderingProvider,
+    // });
   };
 
   const updateDeviceTypes = (deviceTypes: string[]) => {
@@ -72,10 +72,10 @@ const Settings: React.FC<Props> = (props) => {
         facility={organization.testingFacility[0]}
         updateFacility={updateFacility}
       />
-      <OrderingProviderSettings
+      {/* <OrderingProviderSettings
         provider={organization.orderingProvider}
         updateProvider={updateProvider}
-      />
+      /> */}
       <DeviceTypes
         deviceTypes={organization.testingFacility[0].deviceTypes}
         defaultDevice={organization.testingFacility[0].defaultDevice}

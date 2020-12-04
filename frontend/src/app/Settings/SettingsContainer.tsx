@@ -99,7 +99,7 @@ const SettingsContainer: any = () => {
     data: settings,
     loading: isLoadingSettings,
     error: errorFetchingSettings,
-  } = useQuery<SettingsData, {}>(GET_SETTINGS_QUERY, {
+  } = useQuery<any, {}>(GET_SETTINGS_QUERY, {
     fetchPolicy: "no-cache",
   });
   const appInsights = useAppInsightsContext();
@@ -132,18 +132,18 @@ const SettingsContainer: any = () => {
       variables: {
         testingFacilityName: org.testingFacility[0].name,
         cliaNumber: org.testingFacility[0].cliaNumber,
-        orderingProviderFirstName: org.orderingProvider.firstName,
-        orderingProviderMiddleName: org.orderingProvider.middleName,
-        orderingProviderLastName: org.orderingProvider.lastName,
-        orderingProviderSuffix: org.orderingProvider.suffix,
-        orderingProviderNPI: org.orderingProvider.NPI,
-        orderingProviderStreet: org.orderingProvider.street,
-        orderingProviderStreetTwo: org.orderingProvider.streetTwo,
-        orderingProviderCity: org.orderingProvider.city,
-        orderingProviderCounty: org.orderingProvider.county,
-        orderingProviderState: org.orderingProvider.state,
-        orderingProviderZipCode: org.orderingProvider.zipCode,
-        orderingProviderPhone: org.orderingProvider.phone,
+        // orderingProviderFirstName: org.orderingProvider.firstName,
+        // orderingProviderMiddleName: org.orderingProvider.middleName,
+        // orderingProviderLastName: org.orderingProvider.lastName,
+        // orderingProviderSuffix: org.orderingProvider.suffix,
+        // orderingProviderNPI: org.orderingProvider.NPI,
+        // orderingProviderStreet: org.orderingProvider.street,
+        // orderingProviderStreetTwo: org.orderingProvider.streetTwo,
+        // orderingProviderCity: org.orderingProvider.city,
+        // orderingProviderCounty: org.orderingProvider.county,
+        // orderingProviderState: org.orderingProvider.state,
+        // orderingProviderZipCode: org.orderingProvider.zipCode,
+        // orderingProviderPhone: org.orderingProvider.phone,
         devices: org.testingFacility[0].deviceTypes,
         defaultDevice: org.testingFacility[0].defaultDevice,
       },
@@ -163,9 +163,9 @@ const SettingsContainer: any = () => {
       .catch((error) => updateMutationError(error));
   };
 
-  let deviceTypes = Object.values(
-    settings.organization.testingFacility[0].deviceTypes
-  ).map((d) => d.internalId);
+  // let deviceTypes = Object.values(
+  //   settings.organization.testingFacility[0].deviceTypes
+  // ).map((d) => d.internalId);
   return (
     <p>NEED to update this</p>
     // <Settings

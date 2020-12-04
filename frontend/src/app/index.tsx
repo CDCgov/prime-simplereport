@@ -18,6 +18,7 @@ import ManagePatients from "./patients/ManagePatients";
 import EditPatient from "./patients/EditPatient";
 import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
+import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 
 const WHOAMI_QUERY = gql`
   {
@@ -40,6 +41,17 @@ const WHOAMI_QUERY = gql`
 
 // typescript doesn't like that these components throw errors
 const Results = TestResultsList as any;
+
+const SettingsRoutes = ({ match }: any) => (
+  <div>
+    {/* note the addition of the exact property here */}
+    <Route exact path={match.url} component={ManageOrganizationContainer} />
+    <Route
+      path={match.url + "/facilities"}
+      component={ManageFacilitiesContainer}
+    />
+  </div>
+);
 
 const App = () => {
   const dispatch = useDispatch();
@@ -117,12 +129,9 @@ const App = () => {
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route
-                  path={`/settings`}
-                  render={() => {
-                    return <ManageOrganizationContainer />;
-                  }}
-                />
+                <div className="nav-content">
+                  <Route path="/settings" component={SettingsRoutes} />
+                </div>
               </Switch>
             </Router>
             <ToastContainer
