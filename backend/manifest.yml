@@ -1,5 +1,5 @@
 applications:
-- name: prime-data-input-sandbox-backend
+- name: simple-report-qa-api
   path: ./build/libs/simple-report-0.0.1-SNAPSHOT.jar
   disk_quota: 1G
   instances: 1

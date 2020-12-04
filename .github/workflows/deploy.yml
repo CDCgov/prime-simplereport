@@ -1,13 +1,13 @@
 name: Deploy Client Application
 
 env:
-  DEMO_CF_APP: "prime-data-input-client" # the app name if we are deploying 'main'
-  SANDBOX_CF_APP: "prime-data-input-sandbox" # the app name if we are deploying any other branch
+  DEMO_CF_APP: "simple-report-qa" # the app name if we are deploying 'main'
+  SANDBOX_CF_APP: "simple-report-sandbox" # the app name if we are deploying any other branch
   NODE_VERSION: 14
 on:
   workflow_dispatch: # run when somebody pushes the button (on whatever branch they choose)
   push:
-    branches: # automatically deploy the "sandbox" branch on every push
+    branches: # automatically deploy the "sandbox" and "main" branches to their respective envs
       - sandbox
       - main
   schedule:
@@ -24,7 +24,7 @@ jobs:
           if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
             echo We are deploying to the DEMO environment
             app=$DEMO_CF_APP
-            title="SimpleReport"
+            title="SimpleReportQA"
           else
             echo We are deploying to the SANDBOX environment
             app=$SANDBOX_CF_APP
