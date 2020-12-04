@@ -23,7 +23,7 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:c2514f6"
+  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:c2514f6" # hardcoding this until automated deploy of images are in place
 
   app_settings = {
     "DOCKER_REGISTRY_SERVER_PASSWORD"                = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
