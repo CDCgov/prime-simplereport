@@ -7,3 +7,5 @@ applications:
   stack: cflinuxfs3
   services:
     - prime-simplereport-db
+  env:
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+ }}'
