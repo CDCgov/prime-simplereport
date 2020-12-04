@@ -7,10 +7,10 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
-import javax.persistence.FetchType;
 
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
@@ -24,19 +24,12 @@ public class TestOrder extends BaseTestInfo {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
-	@ManyToOne(optional = true)
-	@JoinColumn(name = "device_type_id")
-	private DeviceType deviceType;
 	@Column
 	private LocalDate dateTested;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
-	@Column(nullable = true)
-	@Type(type = "pg_enum")
-	@Enumerated(EnumType.STRING)
-	private TestResult result;
 	@OneToOne(optional = true)
 	@JoinColumn(name="test_event_id")
 	private TestEvent testEvent;
@@ -46,7 +39,6 @@ public class TestOrder extends BaseTestInfo {
 	public TestOrder(Person patient) {
 		super(patient);
 		this.orderStatus = OrderStatus.PENDING;
-		this.result = null;
 	}
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
@@ -60,20 +52,16 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey;
 	}
 
-	public TestResult getTestResult() {
-		return result;
-	}
-
 	public LocalDate getDateTested() {
 		return dateTested;
 	}
 
-	public DeviceType getDeviceType() {
-		return deviceType;
+	public TestResult getTestResult() {
+		return getResult();
 	}
 
 	public void setResult(TestResult finalResult) {
-		result = finalResult;
+		super.setTestResult(finalResult);
 		dateTested = LocalDate.now();
 		orderStatus = OrderStatus.COMPLETED;
 	}
@@ -128,6 +116,6 @@ public class TestOrder extends BaseTestInfo {
 	}
 
 	public void setDeviceType(DeviceType deviceType) {
-		this.deviceType = deviceType;
+		super.setDeviceType(deviceType);
 	}
 }
