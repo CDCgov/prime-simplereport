@@ -42,6 +42,7 @@ const queueQuery = gql`
         firstName
         middleName
         lastName
+        gender
       }
     }
     organization {

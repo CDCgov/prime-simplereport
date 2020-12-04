@@ -3,16 +3,10 @@ import PropTypes from "prop-types";
 
 import RadioGroup from "../commonComponents//RadioGroup";
 import Button from "../commonComponents//Button";
-import Anchor from "../commonComponents/Anchor";
-import { COVID_RESULTS } from "../constants";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
 import { v4 as uuidv4 } from "uuid";
 
-const TestResultInputForm = ({
-  testResultValue,
-  onSubmit,
-  onChange,
-  onClearClick,
-}) => {
+const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
   const testResultForm = (
     <React.Fragment>
       <RadioGroup
@@ -20,17 +14,15 @@ const TestResultInputForm = ({
         buttons={[
           {
             value: COVID_RESULTS.POSITIVE,
-            label: "Positive (+)",
-            failure: true,
+            label: `${TEST_RESULT_DESCRIPTIONS.POSITIVE} (+)`,
           },
           {
             value: COVID_RESULTS.NEGATIVE,
-            label: "Negative (-)",
-            success: true,
+            label: `${TEST_RESULT_DESCRIPTIONS.NEGATIVE} (-)`,
           },
           {
             value: COVID_RESULTS.INCONCLUSIVE,
-            label: "Inconclusive",
+            label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
           },
         ]}
         name={`covid-test-result-${uuidv4()}`}
@@ -44,7 +36,6 @@ const TestResultInputForm = ({
           outline
           label="Submit"
         />
-        <Anchor onClick={onClearClick} text="Clear" />
       </div>
     </React.Fragment>
   );
