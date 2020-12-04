@@ -7,6 +7,7 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 import moment from "moment";
 import { Prompt } from "react-router-dom";
+import { Redirect } from "react-router";
 
 import {
   PATIENT_TERM_PLURAL_CAP,
@@ -17,7 +18,7 @@ import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Dropdown from "../commonComponents/Dropdown";
-import { displayFullName, showNotification } from "../utils";
+import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 
@@ -133,6 +134,7 @@ const PatientForm = (props) => {
   const [updatePatient] = useMutation(UPDATE_PATIENT);
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
+  const [submitted, setSubmitted] = useState(false);
 
   const onChange = (e) => {
     let value = e.target.value;
@@ -182,7 +184,7 @@ const PatientForm = (props) => {
           ...variables,
         },
       }).then(
-        () =>
+        () => {
           showNotification(
             toast,
             <Alert
@@ -190,25 +192,22 @@ const PatientForm = (props) => {
               title={`${PATIENT_TERM_CAP} Record Saved`}
               body="Information record has been updated."
             />
-          ),
+          );
+          setSubmitted(true);
+        },
         (error) => {
           appInsights.trackException(error);
-
-          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
-          showNotification(
+          showError(
             toast,
-            <Alert
-              type="error"
-              title={`${PATIENT_TERM_CAP} Data Error`}
-              body="Please check for missing data or typos."
-            />
+            `${PATIENT_TERM_CAP} Data Error`,
+            "Please check for missing data or typos."
           );
         }
       );
     } else {
       trackAddPatient();
       addPatient({ variables }).then(
-        () =>
+        () => {
           showNotification(
             toast,
             <Alert
@@ -216,23 +215,24 @@ const PatientForm = (props) => {
               title={`${PATIENT_TERM_CAP} Record Created`}
               body="New information record has been created."
             />
-          ),
+          );
+          setSubmitted(true);
+        },
         (error) => {
           appInsights.trackException(error);
-
-          // TODO: this assumes user error and doesn't account for network errors or malformed mutations.
-          showNotification(
+          showError(
             toast,
-            <Alert
-              type="error"
-              title={`${PATIENT_TERM_CAP} Data Error`}
-              body="Please check for missing data or typos."
-            />
+            `${PATIENT_TERM_CAP} Data Error`,
+            "Please check for missing data or typos."
           );
         }
       );
     }
   };
+  // after the submit was success, redirect back to the List page
+  if (submitted) {
+    return <Redirect to="/organization/123/patients" />;
+  }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
