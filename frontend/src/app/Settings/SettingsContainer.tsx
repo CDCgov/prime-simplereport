@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useQuery, useMutation, ApolloError } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
@@ -25,6 +25,12 @@ const GET_SETTINGS_QUERY = gql`
         state
         zipCode
         phone
+        defaultDeviceType {
+          internalId
+        }
+        deviceTypes {
+          internalId
+        }
       }
       orderingProvider {
         firstName
@@ -39,12 +45,6 @@ const GET_SETTINGS_QUERY = gql`
         state
         zipCode
         phone
-      }
-      defaultDeviceType {
-        internalId
-      }
-      deviceTypes {
-        internalId
       }
     }
     deviceType {
@@ -94,7 +94,7 @@ const SET_SETTINGS_MUTATION = gql`
   }
 `;
 
-const SettingsContainer = () => {
+const SettingsContainer: any = () => {
   const {
     data: settings,
     loading: isLoadingSettings,
@@ -130,8 +130,8 @@ const SettingsContainer = () => {
     trackSaveSettings(null);
     setSettings({
       variables: {
-        testingFacilityName: org.testingFacility.name,
-        cliaNumber: org.testingFacility.cliaNumber,
+        testingFacilityName: org.testingFacility[0].name,
+        cliaNumber: org.testingFacility[0].cliaNumber,
         orderingProviderFirstName: org.orderingProvider.firstName,
         orderingProviderMiddleName: org.orderingProvider.middleName,
         orderingProviderLastName: org.orderingProvider.lastName,
@@ -144,8 +144,8 @@ const SettingsContainer = () => {
         orderingProviderState: org.orderingProvider.state,
         orderingProviderZipCode: org.orderingProvider.zipCode,
         orderingProviderPhone: org.orderingProvider.phone,
-        devices: org.deviceTypes,
-        defaultDevice: org.defaultDevice,
+        devices: org.testingFacility[0].deviceTypes,
+        defaultDevice: org.testingFacility[0].defaultDevice,
       },
     })
       .then((d) => {
@@ -163,23 +163,28 @@ const SettingsContainer = () => {
       .catch((error) => updateMutationError(error));
   };
 
-  let deviceTypes = Object.values(settings.organization.deviceTypes).map(
-    (d) => d.internalId
-  );
+  let deviceTypes = Object.values(
+    settings.organization.testingFacility[0].deviceTypes
+  ).map((d) => d.internalId);
   return (
-    <Settings
-      organization={{
-        internalId: settings.organization.internalId,
-        testingFacility: settings.organization.testingFacility,
-        orderingProvider: settings.organization.orderingProvider,
-        deviceTypes: deviceTypes,
-        defaultDevice: settings.organization.defaultDeviceType
-          ? settings.organization.defaultDeviceType.internalId
-          : "",
-      }}
-      deviceOptions={settings.deviceType}
-      saveSettings={onSaveSettings}
-    />
+    <p>NEED to update this</p>
+    // <Settings
+    //   organization={{
+    //     internalId: settings.organization.internalId,
+    //     testingFacility: {
+    //       ...settings.organization.testingFacility,
+    //       deviceTypes: deviceTypes,
+    //       defaultDevice: settings.organization.testingFacility[0]
+    //         .defaultDeviceType
+    //         ? settings.organization.testingFacility[0].defaultDeviceType
+    //             .internalId
+    //         : "",
+    //     },
+    //     orderingProvider: settings.organization.orderingProvider,
+    //   }}
+    //   deviceOptions={settings.deviceType}
+    //   saveSettings={onSaveSettings}
+    // />
   );
 };
 

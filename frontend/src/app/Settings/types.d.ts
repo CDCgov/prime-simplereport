@@ -12,6 +12,8 @@ interface Facility extends Address {
   cliaNumber: string;
   name: string;
   phone: string;
+  deviceTypes: string[];
+  defaultDevice: string;
 }
 
 interface Provider extends Address {
@@ -24,11 +26,10 @@ interface Provider extends Address {
 }
 
 interface Organization {
+  name: string;
   internalId: string;
-  testingFacility: Facility;
+  testingFacility: Facility[];
   orderingProvider: Provider;
-  deviceTypes: string[];
-  defaultDevice: string;
 }
 
 interface FlatOrganization {
@@ -58,7 +59,8 @@ interface DeviceType {
 interface SettingsData {
   organization: {
     internalId: string;
-    testingFacility: {
+    name: string;
+    testingFacility: [{
       id: string;
       cliaNumber: string;
       name: string;
@@ -69,7 +71,15 @@ interface SettingsData {
       state: string;
       zipCode: string;
       phone: string;
-    };
+      defaultDeviceType: {
+        internalId: string;
+      };
+      deviceTypes: [
+        {
+          internalId: string;
+        }
+      ];
+    }];
     orderingProvider: {
       firstName: string;
       middleName: string;
@@ -84,14 +94,7 @@ interface SettingsData {
       zipCode: string;
       phone: string;
     };
-    defaultDeviceType: {
-      internalId: string;
-    };
-    deviceTypes: [
-      {
-        internalId: string;
-      }
-    ];
+
   };
   deviceType: [
     {

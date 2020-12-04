@@ -10,9 +10,14 @@ import { reactPlugin } from "./AppInsights";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
-import OrganizationHomeContainer from "./OrganizationView/OrganizationHomeContainer";
 import LoginView from "./LoginView";
-import { setInitialState } from "./store";
+// import { setInitialState } from "./store";
+import TestResultsList from "./testResults/TestResultsList";
+import TestQueue from "./testQueue/TestQueue";
+import ManagePatients from "./patients/ManagePatients";
+import EditPatient from "./patients/EditPatient";
+import AddPatient from "./patients/AddPatient";
+import SettingsContainer from "./Settings/SettingsContainer";
 
 const WHOAMI_QUERY = gql`
   {
@@ -31,6 +36,10 @@ const WHOAMI_QUERY = gql`
     }
   }
 `;
+
+// typescript doesn't like that these components throw errors
+const Results = TestResultsList as any;
+const Settings = SettingsContainer as any;
 
 const App = () => {
   // const dispatch = useDispatch();
@@ -80,7 +89,37 @@ const App = () => {
               <Header />
               <Switch>
                 <Route path="/login" component={LoginView} />
-                <Route path="/" component={OrganizationHomeContainer} />
+                <Route
+                  path="/queue"
+                  render={() => {
+                    return <TestQueue />;
+                  }}
+                />
+                <Route
+                  path="/results"
+                  render={() => {
+                    return <Results />;
+                  }}
+                />
+                <Route
+                  path={`/patients`}
+                  render={() => {
+                    return <ManagePatients />;
+                  }}
+                />
+                <Route
+                  path={`/patient/:patientId`}
+                  render={({ match }) => (
+                    <EditPatient patientId={match.params.patientId} />
+                  )}
+                />
+                <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                <Route
+                  path={`/settings`}
+                  render={() => {
+                    return <Settings />;
+                  }}
+                />
               </Switch>
             </Router>
             <ToastContainer

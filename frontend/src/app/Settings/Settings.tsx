@@ -23,10 +23,10 @@ const Settings: React.FC<Props> = (props) => {
   };
 
   const updateFacility = (testingFacility: Facility) => {
-    updateOrgSettingsHandler({
-      ...organization,
-      testingFacility,
-    });
+    // updateOrgSettingsHandler({
+    //   ...organization,
+    //   testingFacility[0],
+    // });
   };
 
   const updateProvider = (orderingProvider: Provider) => {
@@ -37,17 +37,23 @@ const Settings: React.FC<Props> = (props) => {
   };
 
   const updateDeviceTypes = (deviceTypes: string[]) => {
-    updateOrgSettingsHandler({
-      ...organization,
-      deviceTypes,
-    });
+    // updateOrgSettingsHandler({
+    //   ...organization,
+    //   testingFacility: {
+    //     ...organization.testingFacility[0],
+    //     deviceTypes,
+    //   },
+    // });
   };
 
   const updateDefaultDevice = (defaultDevice: string) => {
-    updateOrgSettingsHandler({
-      ...organization,
-      defaultDevice,
-    });
+    // updateOrgSettingsHandler({
+    //   ...organization,
+    //   testingFacility: {
+    //     ...organization.testingFacility[0],
+    //     defaultDevice,
+    //   },
+    // });
   };
   return (
     <main className="prime-home">
@@ -63,7 +69,7 @@ const Settings: React.FC<Props> = (props) => {
         </div>
       </div>
       <FacilityInformation
-        facility={organization.testingFacility}
+        facility={organization.testingFacility[0]}
         updateFacility={updateFacility}
       />
       <OrderingProviderSettings
@@ -71,8 +77,8 @@ const Settings: React.FC<Props> = (props) => {
         updateProvider={updateProvider}
       />
       <DeviceTypes
-        deviceTypes={organization.deviceTypes}
-        defaultDevice={organization.defaultDevice}
+        deviceTypes={organization.testingFacility[0].deviceTypes}
+        defaultDevice={organization.testingFacility[0].defaultDevice}
         updateDeviceTypes={updateDeviceTypes}
         updateDefaultDevice={updateDefaultDevice}
         deviceOptions={props.deviceOptions}
