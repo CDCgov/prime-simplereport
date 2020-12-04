@@ -145,7 +145,7 @@ const Header = ({ organizationId }) => {
                   {staffName}
                 </li>
                 <li className="usa-sidenav__item">{facilityName}</li>
-                <li className="usa-sidenav__item">
+                <li className="usa-sidenav__item" style={{display: "none"}}>
                   <Anchor text="Log out" onClick={() => logout()} />
                 </li>
               </ul>
@@ -198,7 +198,7 @@ const Header = ({ organizationId }) => {
                     {staffName}
                   </li>
                   <li className="usa-sidenav__item">{facilityName}</li>
-                  <li className="usa-sidenav__item">
+                  <li className="usa-sidenav__item" style={{display: "none"}}>
                     <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
                 </ul>
