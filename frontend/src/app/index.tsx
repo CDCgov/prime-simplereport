@@ -17,7 +17,7 @@ import TestQueue from "./testQueue/TestQueue";
 import ManagePatients from "./patients/ManagePatients";
 import EditPatient from "./patients/EditPatient";
 import AddPatient from "./patients/AddPatient";
-import Settings from "./Settings/Settings";
+import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 
 const WHOAMI_QUERY = gql`
   {
@@ -64,6 +64,7 @@ const App = () => {
         },
       })
     );
+    // eslint-disable-next-line
   }, [data]);
 
   if (loading) {
@@ -119,7 +120,7 @@ const App = () => {
                 <Route
                   path={`/settings`}
                   render={() => {
-                    return <Settings />;
+                    return <ManageOrganizationContainer />;
                   }}
                 />
               </Switch>

@@ -6,6 +6,29 @@
 .prime-container {
   width: 100%;
   margin-bottom: 1.5rem;
+  .usa-card__header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    h2 {
+      margin: 0;
+    }
+  }
+  .usa-card__header > :last-child,
+  .usa-card__body > :last-child {
+    &.usa-button {
+      padding: 12px 20px;
+      margin-right: 0;
+    }
+  }
+  .usa-card__body {
+    .prime-text-input {
+      width: 100%;
+      margin-left: 0;
+      padding: 0;
+    }
+  }
 }
 
 .prime-ul {
@@ -178,12 +201,26 @@
   outline: 3px solid #00a91c;
 }
 
+.prime-secondary-nav {
+  margin: 0 8px;
+}
+
 .prime-nav.usa-nav__secondary-links {
   display: flex;
   position: relative;
   float: none;
+  margin-bottom: 0px;
+
   a {
-    color: #070707;
+    color: #333;
+    padding-bottom: 5px;
+    &.active,
+    &:hover {
+      color: #000;
+      text-decoration: none;
+      font-weight: 700;
+      border-bottom: 4px solid #0d60a0;
+    }
   }
 }
 
