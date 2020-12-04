@@ -18,7 +18,9 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       organization {
-        testingFacilityName
+        testingFacility {
+          name
+        }
       }
     }
   }
@@ -40,7 +42,7 @@ const Header = ({ organizationId }) => {
     if (!whoamidata || !whoamidata.whoami) return;
     const whoami = whoamidata.whoami;
     setStaffName(formatFullName(whoami));
-    setFacilityName(whoami.organization.testingFacilityName);
+    setFacilityName(whoami.organization.testingFacility.name);
   }, [whoamidata]);
 
   const formatFullName = (whoami) => {
