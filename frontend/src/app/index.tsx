@@ -17,7 +17,7 @@ import TestQueue from "./testQueue/TestQueue";
 import ManagePatients from "./patients/ManagePatients";
 import EditPatient from "./patients/EditPatient";
 import AddPatient from "./patients/AddPatient";
-import SettingsContainer from "./Settings/SettingsContainer";
+import Settings from "./Settings/Settings";
 
 const WHOAMI_QUERY = gql`
   {
@@ -28,6 +28,7 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       organization {
+        name
         testingFacility {
           id
           name
@@ -39,7 +40,6 @@ const WHOAMI_QUERY = gql`
 
 // typescript doesn't like that these components throw errors
 const Results = TestResultsList as any;
-const Settings = SettingsContainer as any;
 
 const App = () => {
   const dispatch = useDispatch();
@@ -50,6 +50,9 @@ const App = () => {
     if (!data) return;
     dispatch(
       setInitialState({
+        organization: {
+          name: data.whoami.organization.name,
+        },
         facilities: data.whoami.organization.testingFacility,
         facility: data.whoami.organization.testingFacility[0],
         user: {

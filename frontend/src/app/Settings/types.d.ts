@@ -60,26 +60,28 @@ interface SettingsData {
   organization: {
     internalId: string;
     name: string;
-    testingFacility: [{
-      id: string;
-      cliaNumber: string;
-      name: string;
-      street: string;
-      streetTwo: string;
-      city: string;
-      county: string;
-      state: string;
-      zipCode: string;
-      phone: string;
-      defaultDeviceType: {
-        internalId: string;
-      };
-      deviceTypes: [
-        {
+    testingFacility: [
+      {
+        id: string;
+        cliaNumber: string;
+        name: string;
+        street: string;
+        streetTwo: string;
+        city: string;
+        county: string;
+        state: string;
+        zipCode: string;
+        phone: string;
+        defaultDeviceType: {
           internalId: string;
-        }
-      ];
-    }];
+        };
+        deviceTypes: [
+          {
+            internalId: string;
+          }
+        ];
+      }
+    ];
     orderingProvider: {
       firstName: string;
       middleName: string;
@@ -94,7 +96,6 @@ interface SettingsData {
       zipCode: string;
       phone: string;
     };
-
   };
   deviceType: [
     {

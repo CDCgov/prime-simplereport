@@ -35,9 +35,12 @@ const Dropdown: React.FC<Props> = ({
 
   return (
     <div className={classnames("prime-dropdown", addClass)}>
-      <label className="usa-label" htmlFor={selectId}>
-        {label}
-      </label>
+      {label ? (
+        <label className="usa-label" htmlFor={selectId}>
+          {label}
+        </label>
+      ) : null}
+
       <select
         className="usa-select"
         name={name}

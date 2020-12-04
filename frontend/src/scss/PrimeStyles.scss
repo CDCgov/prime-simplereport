@@ -178,7 +178,28 @@
   outline: 3px solid #00a91c;
 }
 
+.prime-nav.usa-nav__secondary-links {
+  display: flex;
+  position: relative;
+  float: none;
+  a {
+    color: #070707;
+  }
+}
+
+.prime-facility-select {
+  margin: 0 0 16px 0;
+  width: 100%;
+}
+
 //navbar customizations
+.prime-nav-link {
+  white-space: nowrap;
+  height: 100%;
+  display: flex !important;
+  align-items: center;
+}
+
 @media (min-width: 64em) {
   .usa-nav__primary > .usa-nav__primary-item > a {
     padding: 1.5rem;
@@ -222,6 +243,11 @@
 
 .span-full-name {
   font-weight: bolder;
+}
+
+.prime-organization-name {
+  margin-top: 2px;
+  font-size: 0.9rem;
 }
 
 .prime-staff-infobox {

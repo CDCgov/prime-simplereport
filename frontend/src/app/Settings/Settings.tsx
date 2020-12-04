@@ -1,89 +1,39 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link, NavLink } from "react-router-dom";
 
-import Button from "../commonComponents/Button";
-import DeviceTypes from "./DeviceTypes";
-import OrderingProviderSettings from "./OrderingProvider";
-import FacilityInformation from "./FacilityInformation";
-
-interface Props {
-  organization: Organization;
-  deviceOptions: DeviceType[];
-  saveSettings: (organization: Organization) => void;
-}
-
-const Settings: React.FC<Props> = (props) => {
-  const [organization, updateOrganization] = useState<Organization>(
-    props.organization
-  );
-  const [formChanged, updateFormChanged] = useState<boolean>(false);
-
-  const updateOrgSettingsHandler = (data: Organization) => {
-    updateOrganization(data);
-    updateFormChanged(true);
-  };
-
-  const updateFacility = (testingFacility: Facility) => {
-    // updateOrgSettingsHandler({
-    //   ...organization,
-    //   testingFacility[0],
-    // });
-  };
-
-  const updateProvider = (orderingProvider: Provider) => {
-    updateOrgSettingsHandler({
-      ...organization,
-      orderingProvider,
-    });
-  };
-
-  const updateDeviceTypes = (deviceTypes: string[]) => {
-    // updateOrgSettingsHandler({
-    //   ...organization,
-    //   testingFacility: {
-    //     ...organization.testingFacility[0],
-    //     deviceTypes,
-    //   },
-    // });
-  };
-
-  const updateDefaultDevice = (defaultDevice: string) => {
-    // updateOrgSettingsHandler({
-    //   ...organization,
-    //   testingFacility: {
-    //     ...organization.testingFacility[0],
-    //     defaultDevice,
-    //   },
-    // });
-  };
+const Settings = () => {
   return (
     <main className="prime-home">
       <div className="grid-container">
-        <div className="grid-row">
-          <h2>Global Settings</h2>
-          <Button
-            type="button"
-            onClick={() => props.saveSettings(organization)}
-            label="Save Settings"
-            disabled={!formChanged}
-          />
-        </div>
+        <nav aria-label="Secondary navigation">
+          <ul className="usa-nav__secondary-links prime-nav">
+            <li className="usa-nav__secondary-item">
+              <a href="" className="usa-current">
+                Current page
+              </a>
+            </li>
+            <li className="usa-nav__secondary-item">
+              <a href="">Parent link</a>
+            </li>
+            <li className="usa-nav__secondary-item">
+              <a href="">Parent link</a>
+            </li>
+          </ul>
+        </nav>
       </div>
-      <FacilityInformation
-        facility={organization.testingFacility[0]}
-        updateFacility={updateFacility}
-      />
-      <OrderingProviderSettings
-        provider={organization.orderingProvider}
-        updateProvider={updateProvider}
-      />
-      <DeviceTypes
-        deviceTypes={organization.testingFacility[0].deviceTypes}
-        defaultDevice={organization.testingFacility[0].defaultDevice}
-        updateDeviceTypes={updateDeviceTypes}
-        updateDefaultDevice={updateDefaultDevice}
-        deviceOptions={props.deviceOptions}
-      />
     </main>
+    // <header className="usa-header usa-header--basic">
+    //   <li className="usa-nav__primary-item">
+    //     <NavLink
+    //       to={`/settings`}
+    //       onClick={() => setMenuVisible(false)}
+    //       activeClassName="active-nav-item"
+    //       activeStyle={{
+    //         color: "white",
+    //       }}
+    //     ></NavLink>
+    //   </li>
+    // </header>
   );
 };
 

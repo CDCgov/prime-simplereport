@@ -11,6 +11,9 @@ import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
 
 const Header = () => {
+  const organization = useSelector(
+    (state) => (state as any).organization as Organization
+  );
   const facilities = useSelector(
     (state) => (state as any).facilities as Facility[]
   );
@@ -50,6 +53,7 @@ const Header = () => {
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
               <Link to="/">{process.env.REACT_APP_TITLE}</Link>
+              <div className="prime-organization-name">{organization.name}</div>
             </em>
           </div>
           <button
@@ -59,6 +63,17 @@ const Header = () => {
             Menu
           </button>
         </div>
+
+        <div className="prime-facility-select">
+          <Dropdown
+            selectedValue={facility.id}
+            onChange={() => undefined}
+            options={facilities.map((f: Facility) => {
+              return { label: f.name, value: f.id };
+            })}
+          />
+        </div>
+
         <nav
           aria-label="Primary navigation"
           className={classNames("usa-nav", "prime-nav", {
@@ -74,11 +89,12 @@ const Header = () => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
                 to={`/queue`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -86,11 +102,12 @@ const Header = () => {
                 Test Queue
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
                 to={`/results`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -98,11 +115,12 @@ const Header = () => {
                 Results
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
                 to={`/patients`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -110,7 +128,6 @@ const Header = () => {
                 {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
-
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user"}
@@ -149,14 +166,46 @@ const Header = () => {
         </nav>
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
-          <Dropdown
-            selectedValue={facility.id}
-            onChange={() => undefined}
-            options={facilities.map((f: Facility) => {
-              return { label: f.name, value: f.id };
-            })}
-          />
           <ul className="usa-nav__primary usa-accordion">
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/queue`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                Test Queue
+              </NavLink>
+            </li>
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/results`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                Results
+              </NavLink>
+            </li>
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/patients`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                {PATIENT_TERM_PLURAL_CAP}
+              </NavLink>
+            </li>
             <li className="usa-nav__primary-item">
               <NavLink
                 to={`#`}
@@ -210,9 +259,6 @@ const Header = () => {
       </div>
     </header>
   );
-};
-Header.propTypes = {
-  organizationId: PropTypes.string,
 };
 
 export default Header;

@@ -5,6 +5,9 @@ const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
 const initialState = {
+  organization: {
+    name: "",
+  },
   facilities: [],
   facility: {
     id: "",
@@ -39,10 +42,7 @@ export const setInitialState = (initialState: any) => {
 };
 
 const configureStore = () => {
-  return createStore(
-    reducers,
-    initialState,
-  );
+  return createStore(reducers, initialState);
 };
 
 export const store = configureStore();

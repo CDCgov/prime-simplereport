@@ -8,7 +8,7 @@ import {
 
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
-import Settings from "./Settings";
+import Settings from "./SettingsForm";
 
 const GET_SETTINGS_QUERY = gql`
   {
