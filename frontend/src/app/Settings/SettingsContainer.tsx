@@ -15,6 +15,7 @@ const GET_SETTINGS_QUERY = gql`
     organization {
       internalId
       testingFacility {
+        id
         cliaNumber
         name
         street

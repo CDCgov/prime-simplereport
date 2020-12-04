@@ -1,9 +1,25 @@
 import React from "react";
-import PropTypes from "prop-types";
-import useUniqueIds from "../commonComponents/useUniqueIds";
+import useUniqueIds from "./useUniqueIds";
 import classnames from "classnames";
 
-const Dropdown = ({
+interface Option {
+  label: string;
+  value: string;
+  disabled?: boolean;
+}
+
+interface Props {
+  options: Option[];
+  label?: string;
+  name?: string;
+  onChange: (e: React.FormEvent<HTMLSelectElement>) => void;
+  selectedValue: string;
+  disabled?: boolean;
+  defaultOption?: string;
+  addClass?: string;
+}
+
+const Dropdown: React.FC<Props> = ({
   options,
   label,
   name,
@@ -28,7 +44,7 @@ const Dropdown = ({
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
       >
-        <option value={null}>- Select -</option>
+        <option value={undefined}>- Select -</option>
         {options.map(({ value, label, disabled }, i) => (
           <option key={value + i} value={value} disabled={disabled}>
             {label}
@@ -37,21 +53,6 @@ const Dropdown = ({
       </select>
     </div>
   );
-};
-
-Dropdown.propTypes = {
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      label: PropTypes.string,
-      value: PropTypes.string,
-    })
-  ),
-  label: PropTypes.string,
-  name: PropTypes.string,
-  onChange: PropTypes.func,
-  selectedValue: PropTypes.string,
-  disabled: PropTypes.bool,
-  defaultOption: PropTypes.bool,
 };
 
 export default Dropdown;

@@ -8,6 +8,7 @@ interface Address {
 }
 
 interface Facility extends Address {
+  id: string;
   cliaNumber: string;
   name: string;
   phone: string;
@@ -58,6 +59,7 @@ interface SettingsData {
   organization: {
     internalId: string;
     testingFacility: {
+      id: string;
       cliaNumber: string;
       name: string;
       street: string;

@@ -59,7 +59,9 @@ const DeviceTypes: React.FC<Props> = ({
             <Dropdown
               options={dropdownOptions}
               selectedValue={deviceId}
-              onChange={onDeviceChange}
+              onChange={(e) =>
+                onDeviceChange(deviceId, (e.target as HTMLSelectElement).value)
+              }
             />
           </td>
           <td>
