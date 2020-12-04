@@ -1,6 +1,7 @@
 locals {
   is_prod = var.env == "prod"
-//  app_url = local.is_prod ? "simplereport.cdc.gov" : "${var.env}.simplereport.cdc.gov"
+  // This is commented out until we actually have production deployments. Right now, it's just set to test that simplereport.cdc.gov is running.
+  //  app_url = local.is_prod ? "simplereport.cdc.gov" : "${var.env}.simplereport.cdc.gov"
   app_url = "simplereport.cdc.gov"
 }
 
@@ -10,6 +11,7 @@ data "azurerm_log_analytics_workspace" "law" {
 }
 
 resource "azurerm_application_insights" "app_insights" {
+  // App Insights doesn't have an option for frontend application types. So I picked NodeJS as it seemed the safest default.
   application_type = "Node.JS"
   location = var.rg_location
   resource_group_name = var.rg_name
