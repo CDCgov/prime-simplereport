@@ -4,26 +4,24 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
-import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.NoJsonTestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
-import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
@@ -33,11 +31,11 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 @Transactional(readOnly = false)
 public class TestOrderService {
   private OrganizationService _os;
+  private PersonService _ps;
   private DeviceTypeService _dts;
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
-  private PersonRepository _prepo;
   private NoJsonTestEventRepository _noJsonEventRepo;
 
   public TestOrderService(
@@ -47,14 +45,14 @@ public class TestOrderService {
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
     NoJsonTestEventRepository njterepo,
-    PersonRepository prepo
+    PersonService ps
   ) {
     _os = os;
+    _ps = ps;
     _dts = dts;
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
-    _prepo = prepo;
     _noJsonEventRepo = njterepo;
 }
 
@@ -69,8 +67,7 @@ public class TestOrderService {
   public void addTestResult(String deviceID, TestResult result, String patientId) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
-    UUID actualPatientId = UUID.fromString(patientId);
-    Person person = _prepo.findByIDAndOrganization(actualPatientId, org);
+    Person person = _ps.getPatient(patientId, org);
 
     TestEvent testEvent = new TestEvent(
       result,
@@ -80,7 +77,8 @@ public class TestOrderService {
     );
     _terepo.save(testEvent);
 
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(org, actualPatientId);
+    TestOrder order = _repo.fetchQueueItem(org, person)
+		.orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(_dts.getDeviceType(deviceID));
     order.setResult(result);
     order.setTestEvent(testEvent);
@@ -134,7 +132,7 @@ public class TestOrderService {
     LocalDate symptomOnsetDate,
     Boolean noSymptoms
   ) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
+    TestOrder order = retrieveTestOrder(patientId);
 
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
@@ -148,18 +146,26 @@ public class TestOrderService {
     survey.setPriorTestResult(priorTestResult);
     answers.setSurvey(survey);
     _parepo.save(answers);
-    order.setAskOnEntrySurvey(answers);
-    _repo.save(order);
   }
 
 
   public void removePatientFromQueue(String patientId) {
-    TestOrder order = _repo.fetchQueueItemByIDForOrganization(_os.getCurrentOrganization(), UUID.fromString(patientId));
+    TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _repo.save(order);
   }
 
+  public TestOrder retrieveTestOrder(String patientId) {
+	Organization org = _os.getCurrentOrganization();
+	Person patient = _ps.getPatient(patientId, org);
+	return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
+  }
+
   public int cancelAll() {
 	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
+  }
+
+  private static IllegalGraphqlArgumentException noSuchOrderFound() {
+	return new IllegalGraphqlArgumentException("No active test order was found for that patient");
   }
 }

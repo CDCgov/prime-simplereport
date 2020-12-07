@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -16,5 +17,5 @@ public interface PersonRepository extends EternalEntityRepository<Person> {
     public List<Person> findAllByOrganization(Organization org);
 
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
-    public Person findByIDAndOrganization(UUID id, Organization org);
+    public Optional<Person> findByIDAndOrganization(UUID id, Organization org);
 }

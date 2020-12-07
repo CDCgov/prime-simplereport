@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,8 +33,10 @@ public class OrganizationFacilityTest extends BaseApiTest {
 		assertEquals("000111222-3", facNode.get("cliaNumber").asText());
 		assertEquals("2797 N Cerrada de Beto", facNode.get("street").asText()); // oh my
 		ArrayNode typeList = (ArrayNode) orgNode.get("deviceTypes");
-		assertEquals("Quidel Sofia 2", typeList.get(0).get("name").asText()); // hope this is deterministic...
-		assertEquals("LumiraDX", typeList.get(1).get("name").asText());
+		Set<String> deviceNames = new HashSet<>();
+		typeList.iterator().forEachRemaining(t->deviceNames.add(t.get("name").asText()));
+		assertTrue(deviceNames.contains("Quidel Sofia 2"), "should find Quidel Sofia 2 in " + typeList.toString());
+		assertTrue(deviceNames.contains("LumiraDX"), "should find LumiraDX in " + typeList.toString());
 
 	}
 
