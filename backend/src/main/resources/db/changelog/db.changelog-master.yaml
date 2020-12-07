@@ -598,14 +598,16 @@ databaseChangeLog:
             sql: |
               INSERT INTO ${database.defaultSchemaName}.facility (
                 internal_id,
-                created_at, created_by, updated_at, updated_by,
+                organization_id,
+                created_at, created_by, updated_at, updated_by, is_deleted,
                 facility_name, clia_number,
                 ordering_provider_id,
                 default_device_type_id
               )
               SELECT
                 gen_random_uuid(),
-                created_at, created_by, updated_at, updated_by,
+                internal_id,
+                created_at, created_by, updated_at, updated_by, is_deleted,
                 facility_name, clia_number,
                 ordering_provider_id,
                 default_device_type
@@ -653,9 +655,11 @@ databaseChangeLog:
                   remarks: The facility where this test took place.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
                   constraints:
-                    nullable: false
                     foreignKeyName: fk__test_event__facility
                     referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: facility_id
         - addColumn:
             tableName: test_order
             columns:
@@ -666,9 +670,11 @@ databaseChangeLog:
                   remarks: The facility where this test was ordered.
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
                   constraints:
-                    nullable: false
                     foreignKeyName: fk__test_order__facility
                     referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: facility_id
         - addColumn:
             tableName: facility_device_type
             columns:
@@ -678,9 +684,11 @@ databaseChangeLog:
                   type: *idtype
                   valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
                   constraints:
-                    nullable: false
                     foreignKeyName: fk__facility_device_type__facility
                     referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: facility_device_type
+            columnName: facility_id
         - dropColumn:
             tableName: facility_device_type
             columnName: organization_id
