@@ -26,10 +26,6 @@ public class TestResult {
 		return event.getInternalId().toString();
 	}
 
-	public ApiOrganization getOrganization() {
-		return new ApiOrganization(event.getOrganization());
-	}
-
 	public Date getDateAdded() {
 		return event.getTestOrder().getCreatedAt();
 	}

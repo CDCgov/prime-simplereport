@@ -26,10 +26,6 @@ public class ApiTestOrder {
 		return order.getInternalId().toString();
 	}
 
-	public ApiOrganization getOrganization() {
-		return new ApiOrganization(order.getOrganization());
-	}
-
 	public Date getDateAdded() {
 		return order.getCreatedAt();
 	}
