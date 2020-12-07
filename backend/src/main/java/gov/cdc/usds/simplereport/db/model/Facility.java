@@ -16,6 +16,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+
 @Entity
 public class Facility extends OrganizationScopedEternalEntity {
 

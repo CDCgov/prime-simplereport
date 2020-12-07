@@ -10,8 +10,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
