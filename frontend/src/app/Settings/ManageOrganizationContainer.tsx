@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch, connect } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
@@ -9,6 +10,7 @@ import {
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
 import ManageOrganization from "./ManageOrganization";
+import { updateOrganization } from "../store";
 
 interface Data {
   organization: {
@@ -25,7 +27,7 @@ const GET_ORGANIZATION = gql`
 `;
 
 const SET_ORGANIZATION = gql`
-  mutation($name: String) {
+  mutation($name: String!) {
     updateOrganization(name: $name)
   }
 `;
@@ -34,6 +36,7 @@ const ManageOrganizationContainer: any = () => {
   const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
     fetchPolicy: "no-cache",
   });
+  const dispatch = useDispatch();
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(
@@ -61,7 +64,6 @@ const ManageOrganizationContainer: any = () => {
         name,
       },
     }).then((d) => {
-      console.log("success!", d); // TODO: should return an id
       let alert = (
         <Alert
           type={"success"}
@@ -71,10 +73,11 @@ const ManageOrganizationContainer: any = () => {
         />
       );
       showNotification(toast, alert);
+      dispatch(updateOrganization({ name }));
     });
   };
 
   return <ManageOrganization name={data.organization.name} onSave={onSave} />;
 };
 
-export default ManageOrganizationContainer;
+export default connect()(ManageOrganizationContainer);

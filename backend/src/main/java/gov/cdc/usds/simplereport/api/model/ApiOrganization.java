@@ -15,7 +15,7 @@ public class ApiOrganization {
 	}
 
 	public String getName() {
-		return "Via Elegante";
+		return org.getOrganizationName();
 	}
 
 	public String getInternalId() {

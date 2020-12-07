@@ -40,7 +40,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
                 label={"Organization Name"}
                 value={name}
                 onChange={setName}
-                disabled={true}
               />
             </div>
           </div>

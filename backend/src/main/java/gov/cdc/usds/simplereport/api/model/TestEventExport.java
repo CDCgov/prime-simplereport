@@ -293,7 +293,7 @@ public class TestEventExport {
 
 	@JsonProperty("Organization_name")
 	public String getOrganizationName() {
-		return "Via Elegante";
+		return facility.getOrganization().getOrganizationName();
 	}
 
 	@JsonProperty("Ordering_facility_phone_number")
