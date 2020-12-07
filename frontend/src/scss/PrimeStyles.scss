@@ -213,13 +213,12 @@
   margin-bottom: 0px;
 
   a {
-    color: #333;
+    color: #555;
     padding-bottom: 5px;
     &.active,
     &:hover {
       color: #000;
       text-decoration: none;
-      font-weight: 700;
       border-bottom: 4px solid #0d60a0;
     }
   }
