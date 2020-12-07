@@ -5,4 +5,4 @@ variable "resource_group_location" {}
 variable "tags" {}
 
 variable "subnet_id" {}
-
+variable "bastion_connect_password" {}

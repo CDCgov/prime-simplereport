@@ -1,20 +1,20 @@
-resource "azurerm_network_interface" "psql_connect" {
+resource "azurerm_network_interface" "vm_network" {
   name                = var.name
   location            = var.resource_group_location
   resource_group_name = var.resource_group_name
 
   ip_configuration {
-    name                          = "psql-connect"
+    name                          = var.name
     subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
-resource "azurerm_virtual_machine" "psql_connect" {
-  name                  = "psql-connect"
+resource "azurerm_virtual_machine" "vm" {
+  name                  = var.name
   location              = var.resource_group_location
   resource_group_name   = var.resource_group_name
-  network_interface_ids = [azurerm_network_interface.psql_connect.id]
+  network_interface_ids = [azurerm_network_interface.vm_network.id]
   vm_size               = "Standard_A1_v2"
 
   delete_os_disk_on_termination    = true
@@ -28,21 +28,21 @@ resource "azurerm_virtual_machine" "psql_connect" {
   }
 
   storage_os_disk {
-    name              = "psql-connect"
+    name              = var.name
     caching           = "ReadWrite"
     create_option     = "FromImage"
     managed_disk_type = "Standard_LRS"
   }
 
   os_profile {
-    computer_name  = "psql-connect"
-    admin_username = "psql-connect"
-    admin_password = data.azurerm_key_vault_secret.psql_connect_password_dev.value
+    computer_name  = var.name
+    admin_username = var.name
+    admin_password = var.bastion_connect_password
   }
 
   os_profile_linux_config {
     disable_password_authentication = false
   }
 
-  tags = local.management_tags
+  tags = var.tags
 }
