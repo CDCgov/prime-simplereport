@@ -64,9 +64,9 @@ public class ApiFacility {
 	}
 
 	public ApiProvider getOrderingProvider() {
-		if (org.getOrderingProvider() == null) {
+		if (facility.getOrderingProvider() == null) {
 			return null;
 		}
-		return new ApiProvider(org.getOrderingProvider());
+		return new ApiProvider(facility.getOrderingProvider());
 	}
 }
