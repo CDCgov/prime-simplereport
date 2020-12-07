@@ -1,0 +1,17 @@
+{
+  whoami {
+    id
+    firstName
+    middleName
+    lastName
+    suffix
+    organization {
+      testingFacility {
+        name
+        __typename
+      }
+      __typename
+    }
+    __typename
+  }
+}

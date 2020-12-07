@@ -1,0 +1,46 @@
+{
+  organization {
+    internalId
+    testingFacility {
+      cliaNumber
+      name
+      street
+      streetTwo
+      city
+      county
+      state
+      zipCode
+      phone
+      __typename
+    }
+    orderingProvider {
+      firstName
+      middleName
+      lastName
+      suffix
+      NPI
+      street
+      streetTwo
+      city
+      county
+      state
+      zipCode
+      phone
+      __typename
+    }
+    defaultDeviceType {
+      internalId
+      __typename
+    }
+    deviceTypes {
+      internalId
+      __typename
+    }
+    __typename
+  }
+  deviceType {
+    internalId
+    name
+    __typename
+  }
+}
