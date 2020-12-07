@@ -6,16 +6,16 @@ locals {
 }
 
 data "azurerm_log_analytics_workspace" "law" {
-  name = "simple-report-log-workspace-global"
+  name                = "simple-report-log-workspace-global"
   resource_group_name = var.management_rg
 }
 
 resource "azurerm_application_insights" "app_insights" {
   // App Insights doesn't have an option for frontend application types. So I picked NodeJS as it seemed the safest default.
-  application_type = "Node.JS"
-  location = var.rg_location
+  application_type    = "Node.JS"
+  location            = var.rg_location
   resource_group_name = var.rg_name
-  name = "prime-simple-report-${var.env}-client"
+  name                = "prime-simple-report-${var.env}-client"
 
   tags = var.tags
 }
@@ -23,14 +23,14 @@ resource "azurerm_application_insights" "app_insights" {
 // Setup website monitoring
 
 resource "azurerm_application_insights_web_test" "web_test" {
-  name = "prime-simple-report-${var.env}-web-test"
-  location = var.rg_location
-  resource_group_name = var.rg_name
+  name                    = "prime-simple-report-${var.env}-web-test"
+  location                = var.rg_location
+  resource_group_name     = var.rg_name
   application_insights_id = azurerm_application_insights.app_insights.id
   geo_locations = [
     "us-tx-sn1-azr",
-    "us-il-ch1-azr"]
-  kind = "ping"
+  "us-il-ch1-azr"]
+  kind        = "ping"
   description = "Verify website is publically available"
 
   configuration = <<XML

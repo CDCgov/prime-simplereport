@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report
+graphql.servlet.cors:
+  allowed-origins:
+    - http://localhost:3000
+    - https://simple-report-api-dev.azurewebsites.net
