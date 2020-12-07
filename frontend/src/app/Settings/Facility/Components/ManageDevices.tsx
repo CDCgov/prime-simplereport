@@ -2,9 +2,9 @@ import React from "react";
 import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from "../commonComponents/Button";
-import Dropdown from "../commonComponents/Dropdown";
-import RadioGroup from "../commonComponents/RadioGroup";
+import Button from "../../../commonComponents/Button";
+import Dropdown from "../../../commonComponents/Dropdown";
+import RadioGroup from "../../../commonComponents/RadioGroup";
 
 interface Props {
   deviceTypes: string[];
@@ -14,7 +14,7 @@ interface Props {
   deviceOptions: DeviceType[];
 }
 
-const DeviceTypes: React.FC<Props> = ({
+const ManageDevices: React.FC<Props> = ({
   deviceTypes,
   defaultDevice,
   updateDeviceTypes,
@@ -59,12 +59,14 @@ const DeviceTypes: React.FC<Props> = ({
             <Dropdown
               options={dropdownOptions}
               selectedValue={deviceId}
-              onChange={onDeviceChange}
+              onChange={(e) =>
+                onDeviceChange(deviceId, (e.target as HTMLSelectElement).value)
+              }
             />
           </td>
           <td>
             <RadioGroup
-              type="radio"
+              type="checkbox"
               onChange={() => updateDefaultDevice(deviceId)}
               buttons={[
                 {
@@ -90,7 +92,10 @@ const DeviceTypes: React.FC<Props> = ({
       return <p> There are currently no devices </p>;
     }
     return (
-      <table className="usa-table usa-table--borderless">
+      <table
+        className="usa-table usa-table--borderless"
+        style={{ width: "100%" }}
+      >
         <thead>
           <tr>
             <th scope="col">Device Type</th>
@@ -104,27 +109,23 @@ const DeviceTypes: React.FC<Props> = ({
   };
 
   return (
-    <div className="grid-container">
-      <div className="grid-row">
-        <div className="prime-container usa-card__container">
-          <div className="usa-card__header">
-            <h3> Manage Devices </h3>
-          </div>
-          <div className="usa-card__body">{renderDevicesTable()}</div>
-          <div className="usa-card__footer">
-            <Button
-              onClick={onAddDevice}
-              type="submit"
-              outline
-              label="Add Another Device"
-              icon="plus"
-              disabled={_getRemainingDeviceOptions().length === 0}
-            />
-          </div>
-        </div>
+    <div className="prime-container usa-card__container">
+      <div className="usa-card__header">
+        <h3> Manage Devices </h3>
+      </div>
+      <div className="usa-card__body">{renderDevicesTable()}</div>
+      <div className="usa-card__footer">
+        <Button
+          onClick={onAddDevice}
+          type="submit"
+          outline
+          label="Add Device"
+          icon="plus"
+          disabled={_getRemainingDeviceOptions().length === 0}
+        />
       </div>
     </div>
   );
 };
 
-export default DeviceTypes;
+export default ManageDevices;

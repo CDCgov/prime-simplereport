@@ -1,49 +1,72 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.util.List;
+import java.util.UUID;
+
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 
 public class ApiFacility {
 
-	private Facility org;
+	private Facility facility;
 
 	public ApiFacility(Facility wrapped) {
 		super();
-		this.org = wrapped;
+		this.facility = wrapped;
+	}
+
+	public UUID getId() {
+		return facility.getInternalId();
 	}
 
 	public String getName() {
-		return org.getFacilityName();
+		return facility.getFacilityName();
 	}
 
 	public String getCliaNumber() {
-		return org.getCliaNumber();
+		return facility.getCliaNumber();
     }
   
     public String getStreet() {
-		return org.getAddress().getStreetOne();
+		return facility.getAddress().getStreetOne();
 	}
 
 	public String getStreetTwo() {
-		return org.getAddress().getStreetTwo();
+		return facility.getAddress().getStreetTwo();
 	}
 
 	public String getCity() {
-		return org.getAddress().getCity();
+		return facility.getAddress().getCity();
 	}
 
 	public String getCounty() {
-    return org.getAddress().getCounty();
+    return facility.getAddress().getCounty();
 	}
 
 	public String getState() {
-		return org.getAddress().getState();
+		return facility.getAddress().getState();
 	}
 
 	public String getZipCode() {
-		return org.getAddress().getPostalCode();
+		return facility.getAddress().getPostalCode();
 	}
 
 	public String getPhone() {
-		return org.getTelephone();
+		return facility.getTelephone();
+	}
+
+	public List<DeviceType> getDeviceTypes() {
+		return facility.getDeviceTypes();
+	}
+
+	public DeviceType getDefaultDeviceType() {
+		return facility.getDefaultDeviceType();
+	}
+
+	public ApiProvider getOrderingProvider() {
+		if (facility.getOrderingProvider() == null) {
+			return null;
+		}
+		return new ApiProvider(facility.getOrderingProvider());
 	}
 }

@@ -1,56 +1,36 @@
-import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
-import { gql, useQuery } from "@apollo/client";
 import { v4 as uuidv4 } from "uuid";
 import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
+import Dropdown from "./Dropdown";
+import { useSelector } from "react-redux";
 
-const WHOAMI_QUERY = gql`
-  {
-    whoami {
-      id
-      firstName
-      middleName
-      lastName
-      suffix
-      organization {
-        testingFacility {
-          name
-        }
-      }
-    }
-  }
-`;
-
-const Header = ({ organizationId }) => {
+const Header = () => {
+  const organization = useSelector(
+    (state) => (state as any).organization as Organization
+  );
+  const facilities = useSelector(
+    (state) => (state as any).facilities as Facility[]
+  );
+  const facility = useSelector((state) => (state as any).facility as Facility);
+  const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
     isComponentVisible: staffDetailsVisible,
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
-  const { data: whoamidata } = useQuery(WHOAMI_QUERY, {
-    fetchPolicy: "no-cache",
-  });
-  const [staffName, setStaffName] = useState("");
-  const [facilityName, setFacilityName] = useState("");
-  useEffect(() => {
-    if (!whoamidata || !whoamidata.whoami) return;
-    const whoami = whoamidata.whoami;
-    setStaffName(formatFullName(whoami));
-    setFacilityName(whoami.organization.testingFacility.name);
-  }, [whoamidata]);
 
-  const formatFullName = (whoami) => {
+  const formatFullName = (user: User) => {
     // this trick will not include spaces if middlename is blank.
-    let result = whoami.firstName;
-    result += whoami.middleName ? ` ${whoami.middleName}` : "";
-    result += whoami.lastName ? ` ${whoami.lastName}` : "";
-    result += whoami.suffix ? `, ${whoami.suffix}` : "";
+    let result = user.firstName;
+    result += user.middleName ? ` ${user.middleName}` : "";
+    result += user.lastName ? ` ${user.lastName}` : "";
+    result += user.suffix ? `, ${user.suffix}` : "";
     return result;
   };
 
@@ -72,6 +52,7 @@ const Header = ({ organizationId }) => {
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
               <Link to="/">{process.env.REACT_APP_TITLE}</Link>
+              <div className="prime-organization-name">{organization.name}</div>
             </em>
           </div>
           <button
@@ -81,6 +62,17 @@ const Header = ({ organizationId }) => {
             Menu
           </button>
         </div>
+
+        <div className="prime-facility-select">
+          <Dropdown
+            selectedValue={facility.id}
+            onChange={() => undefined}
+            options={facilities.map((f: Facility) => {
+              return { label: f.name, value: f.id };
+            })}
+          />
+        </div>
+
         <nav
           aria-label="Primary navigation"
           className={classNames("usa-nav", "prime-nav", {
@@ -96,11 +88,12 @@ const Header = ({ organizationId }) => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/organization/${organizationId}/queue`}
+                to={`/queue`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -108,11 +101,12 @@ const Header = ({ organizationId }) => {
                 Test Queue
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/organization/${organizationId}/results`}
+                to={`/results`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -120,11 +114,12 @@ const Header = ({ organizationId }) => {
                 Results
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/organization/${organizationId}/patients`}
+                to={`/patients`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
+                className="prime-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -132,7 +127,6 @@ const Header = ({ organizationId }) => {
                 {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
-
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user"}
@@ -146,9 +140,9 @@ const Header = ({ organizationId }) => {
             <li className="usa-nav__primary-item usa-sidenav prime-staff-infobox-sidemenu prime-settings-hidden">
               <ul className="usa-sidenav__sublist prime-sidenav_inset">
                 <li className="usa-sidenav__item span-full-name">
-                  {staffName}
+                  {formatFullName(user)}
                 </li>
-                <li className="usa-sidenav__item">{facilityName}</li>
+                <li className="usa-sidenav__item">{facility.name}</li>
                 <li className="usa-sidenav__item">
                   <Anchor text="Log out" onClick={() => logout()} />
                 </li>
@@ -157,7 +151,7 @@ const Header = ({ organizationId }) => {
 
             <li className="usa-nav__primary-item prime-settings-hidden">
               <NavLink
-                to={`/organization/${organizationId}/settings`}
+                to={`/settings`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
@@ -172,6 +166,45 @@ const Header = ({ organizationId }) => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/queue`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                Test Queue
+              </NavLink>
+            </li>
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/results`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                Results
+              </NavLink>
+            </li>
+            <li className="usa-nav__primary-item">
+              <NavLink
+                to={`/patients`}
+                onClick={() => setMenuVisible(false)}
+                activeClassName="active-nav-item"
+                className="prime-nav-link"
+                activeStyle={{
+                  color: "white",
+                }}
+              >
+                {PATIENT_TERM_PLURAL_CAP}
+              </NavLink>
+            </li>
             <li className="usa-nav__primary-item">
               <NavLink
                 to={`#`}
@@ -199,9 +232,9 @@ const Header = ({ organizationId }) => {
               >
                 <ul className="usa-sidenav__sublist">
                   <li className="usa-sidenav__item span-full-name">
-                    {staffName}
+                    {formatFullName(user)}
                   </li>
-                  <li className="usa-sidenav__item">{facilityName}</li>
+                  <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
                     <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
@@ -210,7 +243,7 @@ const Header = ({ organizationId }) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/organization/${organizationId}/settings`}
+                to={`/settings`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
@@ -225,9 +258,6 @@ const Header = ({ organizationId }) => {
       </div>
     </header>
   );
-};
-Header.propTypes = {
-  organizationId: PropTypes.string,
 };
 
 export default Header;

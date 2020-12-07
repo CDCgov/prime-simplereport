@@ -33,6 +33,7 @@ type Patient {
   testResults: [TestOrder]
 }
 type Facility {
+  id: ID
   name: String
   cliaNumber: String
   street: String
@@ -42,6 +43,9 @@ type Facility {
   state: String
   zipCode: String
   phone: String
+  deviceTypes: [DeviceType]
+  defaultDeviceType: DeviceType
+  orderingProvider: Provider
 }
 type Provider {
   firstName: String
@@ -59,10 +63,8 @@ type Provider {
 }
 type Organization {
   internalId: ID
-  testingFacility: Facility
-  orderingProvider: Provider
-  deviceTypes: [DeviceType]
-  defaultDeviceType: DeviceType
+  name: String
+  testingFacility: [Facility]
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
@@ -117,9 +119,16 @@ type Query {
   whoami: User!
 }
 type Mutation {
-  updateOrganization(
+  updateFacility(
     testingFacilityName: String!
     cliaNumber: String
+    street: String
+    streetTwo: String
+    city: String
+    county: String
+    state: String
+    zipCode: String!
+    phone: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
@@ -135,6 +144,7 @@ type Mutation {
     deviceTypes: [String]!
     defaultDevice: String!
   ): String
+  updateOrganization(name: String!): String
   addPatient(
     lookupId: String
     firstName: String!

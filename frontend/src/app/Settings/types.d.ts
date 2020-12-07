@@ -8,9 +8,13 @@ interface Address {
 }
 
 interface Facility extends Address {
+  id: string;
   cliaNumber: string;
   name: string;
   phone: string;
+  deviceTypes: string[];
+  defaultDevice: string;
+  orderingProvider: Provider;
 }
 
 interface Provider extends Address {
@@ -23,11 +27,9 @@ interface Provider extends Address {
 }
 
 interface Organization {
+  name: string;
   internalId: string;
-  testingFacility: Facility;
-  orderingProvider: Provider;
-  deviceTypes: string[];
-  defaultDevice: string;
+  testingFacility: Facility[];
 }
 
 interface FlatOrganization {
@@ -57,37 +59,90 @@ interface DeviceType {
 interface SettingsData {
   organization: {
     internalId: string;
-    testingFacility: {
-      cliaNumber: string;
-      name: string;
-      street: string;
-      streetTwo: string;
-      city: string;
-      county: string;
-      state: string;
-      zipCode: string;
-      phone: string;
-    };
-    orderingProvider: {
-      firstName: string;
-      middleName: string;
-      lastName: string;
-      suffix: string;
-      NPI: string;
-      street: string;
-      streetTwo: string;
-      city: string;
-      county: string;
-      state: string;
-      zipCode: string;
-      phone: string;
-    };
-    defaultDeviceType: {
-      internalId: string;
-    };
-    deviceTypes: [
+    name: string;
+    testingFacility: [
       {
-        internalId: string;
+        id: string;
+        cliaNumber: string;
+        name: string;
+        street: string;
+        streetTwo: string;
+        city: string;
+        county: string;
+        state: string;
+        zipCode: string;
+        phone: string;
+        defaultDeviceType: {
+          internalId: string;
+        };
+        deviceTypes: [
+          {
+            internalId: string;
+          }
+        ];
+        orderingProvider: {
+          firstName: string;
+          middleName: string;
+          lastName: string;
+          suffix: string;
+          NPI: string;
+          street: string;
+          streetTwo: string;
+          city: string;
+          county: string;
+          state: string;
+          zipCode: string;
+          phone: string;
+        };
+      }
+    ];
+  };
+  deviceType: [
+    {
+      internalId: string;
+      name: string;
+    }
+  ];
+}
+
+interface FacilityData {
+  organization: {
+    internalId: string;
+    name: string;
+    testingFacility: [
+      {
+        id: string;
+        cliaNumber: string;
+        name: string;
+        street: string;
+        streetTwo: string;
+        city: string;
+        county: string;
+        state: string;
+        zipCode: string;
+        phone: string;
+        defaultDeviceType: {
+          internalId: string;
+        };
+        deviceTypes: [
+          {
+            internalId: string;
+          }
+        ];
+        orderingProvider: {
+          firstName: string;
+          middleName: string;
+          lastName: string;
+          suffix: string;
+          NPI: string;
+          street: string;
+          streetTwo: string;
+          city: string;
+          county: string;
+          state: string;
+          zipCode: string;
+          phone: string;
+        };
       }
     ];
   };

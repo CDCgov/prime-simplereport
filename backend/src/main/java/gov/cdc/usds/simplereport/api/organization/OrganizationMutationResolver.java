@@ -22,8 +22,15 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _dts = dts;
     }
 
-    public void updateOrganization(String testingFacilityName,
+    public void updateFacility(String testingFacilityName,
                                    String cliaNumber,
+                                   String street,
+                                   String streetTwo,
+                                   String city,
+                                   String county,
+                                   String state,
+                                   String zipCode,
+                                   String phone,
                                    String orderingProviderFirstName,
                                    String orderingProviderMiddleName,
                                    String orderingProviderLastName,
@@ -54,9 +61,16 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           }
           devices.add(d);
         }
-        _os.updateOrganization(
+        _os.updateFacility(
           testingFacilityName,
           cliaNumber,
+          street,
+          streetTwo,
+          city,
+          county,
+          state,
+          zipCode,
+          phone,
           orderingProviderFirstName,
           orderingProviderMiddleName,
           orderingProviderLastName,
@@ -72,6 +86,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           devices,
           defaultDeviceType
         );
+    }
+
+    public void updateOrganization(String name) {
+        _os.updateOrganization(name);
     }
 }
 

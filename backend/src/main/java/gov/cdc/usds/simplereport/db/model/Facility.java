@@ -140,7 +140,6 @@ public class Facility extends OrganizationScopedEternalEntity {
 		return address;
 	}
 
-
 	public void setAddress(StreetAddress address) {
 		this.address = address;
 	}
