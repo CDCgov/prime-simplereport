@@ -47,6 +47,13 @@ public class OrganizationService {
 	public Organization updateFacility(
 		String testingFacilityName,
 		String cliaNumber,
+		String street,
+		String streetTwo,
+		String city,
+		String county,
+		String state,
+		String zipCode,
+		String phone,
 		String orderingProviderFirstName,
 		String orderingProviderMiddleName,
 		String orderingProviderLastName,
@@ -66,7 +73,21 @@ public class OrganizationService {
 		Facility facility = getDefaultFacility(org);
 		facility.setFacilityName(testingFacilityName);
 		facility.setCliaNumber(cliaNumber);
+		facility.setTelephone(phone);
 		facility.addDefaultDeviceType(defaultDeviceType);
+		StreetAddress af = facility.getAddress() == null ? new StreetAddress(
+			street,
+			streetTwo,
+			city,
+			county,
+			state,
+			zipCode
+		 ) : facility.getAddress();
+		 af.setStreet(street, streetTwo);
+		 af.setCity(city);
+		 af.setCounty(county);
+		 af.setState(state);
+		 af.setPostalCode(zipCode);
 
 		Provider p = facility.getOrderingProvider();
 		p.getNameInfo().setFirstName(orderingProviderFirstName);

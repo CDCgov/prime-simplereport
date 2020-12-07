@@ -1,4 +1,6 @@
 import React from "react";
+import { stateCodes } from "../../../../config/constants";
+import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/ManagedTextInput";
 
 interface Props {
@@ -6,7 +8,7 @@ interface Props {
   updateFacility: (facility: Facility) => void;
 }
 
-const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
+const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
   const onChange = (field: keyof Facility, value: string) => {
     updateFacility({ ...facility, [field]: value });
   };
@@ -34,7 +36,6 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Phone Number"}
             value={facility.phone || ""}
             onChange={(v) => onChange("phone", v)}
-            disabled
           />
         </div>
       </div>
@@ -44,7 +45,6 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Street 1"}
             value={facility.street || ""}
             onChange={(v) => onChange("street", v)}
-            disabled
           />
         </div>
       </div>
@@ -54,7 +54,6 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Street 2"}
             value={facility.streetTwo || ""}
             onChange={(v) => onChange("streetTwo", v)}
-            disabled
           />
         </div>
       </div>
@@ -64,7 +63,6 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"City"}
             value={facility.city || ""}
             onChange={(v) => onChange("city", v)}
-            disabled
           />
         </div>
         <div className="tablet:grid-col">
@@ -72,7 +70,6 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"County"}
             value={facility.county || ""}
             onChange={(v) => onChange("county", v)}
-            disabled
           />
         </div>
         <div className="tablet:grid-col">
@@ -80,15 +77,18 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Zip Code"}
             value={facility.zipCode || ""}
             onChange={(v) => onChange("zipCode", v)}
-            disabled
           />
         </div>
         <div className="tablet:grid-col">
-          <TextInput
-            label={"State"}
-            value={facility.state || ""}
-            onChange={(v) => onChange("state", v)}
-            disabled
+          <Dropdown
+            label="State"
+            name="state"
+            selectedValue={facility.state}
+            options={stateCodes.map((c) => ({ label: c, value: c }))}
+            addClass="prime-state"
+            onChange={(e) =>
+              onChange("state", (e.target as HTMLSelectElement).value)
+            }
           />
         </div>
       </div>
@@ -96,4 +96,4 @@ const FaciltiyInformation: React.FC<Props> = ({ facility, updateFacility }) => {
   );
 };
 
-export default FaciltiyInformation;
+export default FacilityInformation;

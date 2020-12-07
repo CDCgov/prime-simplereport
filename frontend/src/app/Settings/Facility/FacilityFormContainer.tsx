@@ -58,6 +58,13 @@ const SET_FACILITY_MUTATION = gql`
   mutation(
     $testingFacilityName: String!
     $cliaNumber: String
+    $street: String
+    $streetTwo: String
+    $city: String
+    $county: String
+    $state: String
+    $zipCode: String!
+    $phone: String
     $orderingProviderFirstName: String!
     $orderingProviderMiddleName: String
     $orderingProviderLastName: String!
@@ -76,6 +83,13 @@ const SET_FACILITY_MUTATION = gql`
     updateFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      county: $county
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
       orderingProviderFirstName: $orderingProviderFirstName
       orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
@@ -132,6 +146,13 @@ const FacilityFormContainer: any = (props: Props) => {
       variables: {
         testingFacilityName: facility.name,
         cliaNumber: facility.cliaNumber,
+        street: facility.street,
+        streetTwo: facility.streetTwo,
+        city: facility.city,
+        county: facility.county,
+        state: facility.state,
+        zipCode: facility.zipCode,
+        phone: facility.phone,
         orderingProviderFirstName: provider.firstName,
         orderingProviderMiddleName: provider.middleName,
         orderingProviderLastName: provider.lastName,
