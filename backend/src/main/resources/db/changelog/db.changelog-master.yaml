@@ -590,8 +590,8 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT count(1) > 0 FROM ${database.defaultSchemaName}.organization;
-            expectedResult: true
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
+            expectedResult: 1
       changes:
         - sql:
             comment: Populate the facilities table from the organization table
