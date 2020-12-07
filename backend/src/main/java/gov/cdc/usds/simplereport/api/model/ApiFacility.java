@@ -1,13 +1,14 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Facility;
 
 public class ApiFacility {
-	private Organization org;
 
-	public ApiFacility(Organization org) {
+	private Facility org;
+
+	public ApiFacility(Facility wrapped) {
 		super();
-		this.org = org;
+		this.org = wrapped;
 	}
 
 	public String getName() {
@@ -16,33 +17,33 @@ public class ApiFacility {
 
 	public String getCliaNumber() {
 		return org.getCliaNumber();
-  }
+    }
   
-  public String getStreet() {
-		return "2797 N Cerrada de Beto";
+    public String getStreet() {
+		return org.getAddress().getStreetOne();
 	}
 
 	public String getStreetTwo() {
-		return "";
+		return org.getAddress().getStreetTwo();
 	}
 
 	public String getCity() {
-		return "Tucson";
+		return org.getAddress().getCity();
 	}
 
 	public String getCounty() {
-    return "Pima";
+    return org.getAddress().getCounty();
 	}
 
 	public String getState() {
-		return "AZ";
+		return org.getAddress().getState();
 	}
 
 	public String getZipCode() {
-		return "85745";
+		return org.getAddress().getPostalCode();
 	}
 
 	public String getPhone() {
-		return "5202475313";
+		return org.getTelephone();
 	}
 }

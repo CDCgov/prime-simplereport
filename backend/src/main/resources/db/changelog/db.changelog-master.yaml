@@ -194,7 +194,7 @@ databaseChangeLog:
                   remarks: The provider's contact phone number.
                   type: *string
         - createTable:
-            tableName: organization # may contain facility information as well, until/unless we split
+            tableName: organization
             remarks: A site where testing occurs, and also the main user grouping entity.
             columns:
               - column: *pk_column
@@ -506,3 +506,198 @@ databaseChangeLog:
               ALTER TABLE ${database.defaultSchemaName}.person
               ALTER COLUMN race TYPE text[]
               USING ARRAY[race];
+  - changeSet:
+      id: add-facility-table
+      author: bwarfield@cdc.gov
+      comment: Introduce the facility table, which takes over much of the data in the organization table
+      changes:
+        - createTable:
+            tableName: facility
+            remarks: A site where testing occurs (may be called "site" in user-facing language).
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: organization_id
+                  remarks: Foreign key to the organization that this facility belongs to.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility__organization
+                    references: organization
+              - column:
+                  name: facility_name
+                  type: *string
+                  remarks: The human-readable name for this facility.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: clia_number
+                  type: *string # irony
+                  remarks: The CLIA number for the facility that is ordering (and presumably also conducting) the tests.
+              - column:
+                  name: default_device_type_id
+                  remarks: The default device type (if any) for tests at this facility.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__facility__default_device_type
+                    references: device_type
+              - column:
+                  name: ordering_provider_id
+                  type: *idtype
+                  remarks: The healthcare provider who orders tests at this facility.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility__ordering_provider
+                    references: provider
+              - column:
+                  name: street
+                  remarks: The street portion of the facility address.
+                  type: "text[]"
+              - column:
+                  name: city
+                  remarks: The city of the facility address.
+                  type: *string
+              - column:
+                  name: county
+                  remarks: The county (NOT THE COUNTRY) of the facility address, if applicable.
+                  type: *string
+              - column:
+                  name: state
+                  remarks: The state or province of the facility address.
+                  type: *string
+              - column:
+                  name: postal_code
+                  remarks: The zip/postal code of the facility address.
+                  type: *string
+              - column:
+                  name: telephone
+                  remarks: The facility's contact phone number.
+                  type: *string
+        - addUniqueConstraint:
+            tableName: facility
+            constraintName: uk__facility__organization_facility_name
+            columnNames: organization_id, facility_name
+  - changeSet:
+      id: populate-facility-table
+      author: bwarfield@cdc.gov
+      comment: Populate facilities table based on existing organizations.
+      preConditions:
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT count(1) > 0 FROM ${database.defaultSchemaName}.organization;
+            expectedResult: true
+      changes:
+        - sql:
+            comment: Populate the facilities table from the organization table
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.facility (
+                internal_id,
+                organization_id,
+                created_at, created_by, updated_at, updated_by, is_deleted,
+                facility_name, clia_number,
+                ordering_provider_id,
+                default_device_type_id
+              )
+              SELECT
+                gen_random_uuid(),
+                internal_id,
+                created_at, created_by, updated_at, updated_by, is_deleted,
+                facility_name, clia_number,
+                ordering_provider_id,
+                default_device_type
+              FROM ${database.defaultSchemaName}.organization;
+  - changeSet:
+      id: add-facility-relationships
+      author: bwarfield@cdc.gov
+      comment: Add relationships and otherwise modify other tables in the schema to reflect the existence of facilities.
+      # we may want a check constraint on patient.facility (and arguably
+      # test_order.facility and test_event.facility as well) to make sure that
+      # the facility belongs to the correct organization
+      changes:
+        - dropConstraint:
+            tableName: organization
+            constraintName: uk__facility__name
+        - renameColumn:
+            tableName: organization
+            oldColumnName: facility_name
+            newColumnName: organization_name
+            remarks: The human-readable name for this organization.
+        - addUniqueConstraint:
+            tableName: organization
+            constraintName: uk__organization__organization_name
+            columnNames: organization_name
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: facility_id
+                  afterColumn: organization_id
+                  type: *idtype
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  remarks: The facility where this person is expected to be tested (null if they will be tested at multiple sites)
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__person__facility
+                    referencedTableName: facility
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: facility_id
+                  afterColumn: organization_id
+                  type: *idtype
+                  remarks: The facility where this test took place.
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  constraints:
+                    foreignKeyName: fk__test_event__facility
+                    referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: facility_id
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: facility_id
+                  afterColumn: organization_id
+                  type: *idtype
+                  remarks: The facility where this test was ordered.
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  constraints:
+                    foreignKeyName: fk__test_order__facility
+                    referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: facility_id
+        - addColumn:
+            tableName: facility_device_type
+            columns:
+              - column:
+                  name: facility_id
+                  afterColumn: organization_id
+                  type: *idtype
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  constraints:
+                    foreignKeyName: fk__facility_device_type__facility
+                    referencedTableName: facility
+        - addNotNullConstraint:
+            tableName: facility_device_type
+            columnName: facility_id
+        - dropColumn:
+            tableName: facility_device_type
+            columnName: organization_id
+        - dropColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: clia_number
+              - column:
+                  name: default_device_type
+              - column:
+                  name: ordering_provider_id

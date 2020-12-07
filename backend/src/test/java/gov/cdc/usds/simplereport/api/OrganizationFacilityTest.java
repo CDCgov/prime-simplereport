@@ -29,7 +29,7 @@ public class OrganizationFacilityTest extends BaseApiTest {
 		ObjectNode orgNode = (ObjectNode) resp.get("organization");
 		JsonNode facNode = orgNode.path("testingFacility");
 		assertTrue(facNode.isObject(), "facility should be an object in response");
-		assertEquals("Dis Organization", facNode.get("name").asText());
+		assertEquals("Injection Site", facNode.get("name").asText());
 		assertEquals("000111222-3", facNode.get("cliaNumber").asText());
 		assertEquals("2797 N Cerrada de Beto", facNode.get("street").asText()); // oh my
 		ArrayNode typeList = (ArrayNode) orgNode.get("deviceTypes");
@@ -46,7 +46,7 @@ public class OrganizationFacilityTest extends BaseApiTest {
 		ObjectNode who = (ObjectNode) resp.get("whoami");
 		assertEquals("Bobbity", who.get("firstName").asText());
 		ObjectNode facNode = (ObjectNode) who.get("organization").get("testingFacility");
-		assertEquals("Dis Organization", facNode.get("name").asText());
+		assertEquals("Injection Site", facNode.get("name").asText());
 	}
 
 	@Test

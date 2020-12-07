@@ -24,6 +24,10 @@ public abstract class BaseTestInfo extends AuditedEntity
 	private Organization organization;
 
 	@ManyToOne(optional = false)
+	@JoinColumn(name = "facility_id", updatable = false)
+	private Facility facility;
+
+	@ManyToOne(optional = false)
 	@JoinColumn(name = "device_type_id")
 	private DeviceType deviceType;
 
@@ -36,16 +40,17 @@ public abstract class BaseTestInfo extends AuditedEntity
 		super();
 	}
 
-	public BaseTestInfo(Person patient, Organization organization, DeviceType deviceType, TestResult result) {
+	public BaseTestInfo(Person patient, Facility facility, DeviceType deviceType, TestResult result) {
 		super();
 		this.patient = patient;
-		this.organization = organization;
+		this.facility = facility;
+		this.organization = facility.getOrganization();
 		this.deviceType = deviceType;
 		this.result = result;
 	}
 
-	protected BaseTestInfo(Person patient) {
-		this(patient, patient.getOrganization(), patient.getOrganization().getDefaultDeviceType(), null);
+	protected BaseTestInfo(Person patient, Facility facility) {
+		this(patient, facility, facility.getDefaultDeviceType(), null);
 	}
 
 	public Person getPatient() {
@@ -55,6 +60,10 @@ public abstract class BaseTestInfo extends AuditedEntity
 	@Override
 	public Organization getOrganization() {
 		return organization;
+	}
+
+	public Facility getFacility() {
+		return facility;
 	}
 
 	public DeviceType getDeviceType() {

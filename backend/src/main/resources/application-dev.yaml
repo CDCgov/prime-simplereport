@@ -20,9 +20,13 @@ logging:
     gov.cdc.usds: DEBUG
 simple-report-initialization:
   organization:
-    facility-name: Dis Organization
+    org-name: Dis Organization
     external-id: DIS_ORG
+  facility:
+    facility-name: Injection Site
     clia-number: "000111222-3"
+    address:
+      street-1: 2797 N Cerrada de Beto
   provider:
     first-name: Fred
     last-name: Flintstone

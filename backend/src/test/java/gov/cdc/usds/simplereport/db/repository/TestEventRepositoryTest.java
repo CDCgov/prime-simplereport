@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -23,9 +24,10 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void testFindByPatient() {
 		Organization org = _dataFactory.createValidOrg();
+		Facility place = _dataFactory.createValidFacility(org);
 		Person patient = _dataFactory.createMinimalPerson(org);
-		_repo.save(new TestEvent(TestResult.POSITIVE, org.getDefaultDeviceType(), patient, org));
-		_repo.save(new TestEvent(TestResult.UNDETERMINED, org.getDefaultDeviceType(), patient, org));
+		_repo.save(new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place));
+		_repo.save(new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place));
 		flush();
 		List<TestEvent> found = _repo.findAllByPatient(patient);
 		assertEquals(2, found.size());

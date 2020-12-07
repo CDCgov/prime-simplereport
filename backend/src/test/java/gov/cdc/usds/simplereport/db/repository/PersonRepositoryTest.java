@@ -5,14 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.List;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
 public class PersonRepositoryTest extends BaseRepositoryTest {
 
@@ -20,15 +19,11 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
 	private PersonRepository _repo;
 	@Autowired
 	private OrganizationRepository _orgRepo;
-	@Autowired
-	private ProviderRepository _providerRepo;
 
 	@Test
 	public void doPersonOperations() {
-		Provider goodDoc = _providerRepo.save(new Provider("Madam", "", "Pomfrey", "", "YAY", null, ""));
-		Provider badDoc = _providerRepo.save(new Provider("Gilderoy", "", "Lockhart", "", "UHOH", null, ""));
-		Organization org = _orgRepo.save(new Organization("Here", "there", "stranger", null, goodDoc));
-		Organization other = _orgRepo.save(new Organization("There", "where?", "WOLF",  null, badDoc));
+		Organization org = _orgRepo.save(new Organization("Here", "there"));
+		Organization other = _orgRepo.save(new Organization("There", "where?"));
 
 		StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
 		_repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(),  addy, "(123) 456-7890", PersonRole.VISITOR, "", null, "", "", false, false));

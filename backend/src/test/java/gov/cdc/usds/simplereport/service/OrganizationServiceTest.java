@@ -9,13 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 
 public class OrganizationServiceTest extends BaseRepositoryTest {
 
 	private OrganizationService _service;
 	
-	public OrganizationServiceTest(@Autowired OrganizationRepository repo, @Autowired OrganizationInitializingService initService) {
-		_service = new OrganizationService(repo, initService);
+	public OrganizationServiceTest(@Autowired OrganizationRepository repo, @Autowired FacilityRepository facilityRepo,
+			@Autowired OrganizationInitializingService initService) {
+		_service = new OrganizationService(repo, facilityRepo, initService);
 	}
 
 	@Test
