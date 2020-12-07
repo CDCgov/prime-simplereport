@@ -8,6 +8,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -33,8 +35,13 @@ public class PersonService {
 
 
 	public Person getPatient(String id) {
+		return getPatient(id, _os.getCurrentOrganization());
+	}
+
+	public Person getPatient(String id, Organization org) {
 		UUID actualId = UUID.fromString(id);
-		return _repo.findByIDAndOrganization(actualId,_os.getCurrentOrganization());
+		return _repo.findByIDAndOrganization(actualId, org)
+			.orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
 	}
 
 	public String addPatient(

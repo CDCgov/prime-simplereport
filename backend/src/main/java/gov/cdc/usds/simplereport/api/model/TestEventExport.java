@@ -307,6 +307,11 @@ public class TestEventExport {
 		return org.getFacilityName();
 	}
 
+	@JsonProperty("Organization_name")
+	public String getOrganizationName() {
+		return "Via Elegante";
+	}
+
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
 		return "5202475313";
