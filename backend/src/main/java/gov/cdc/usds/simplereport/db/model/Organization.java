@@ -29,7 +29,7 @@ public class Organization extends EternalEntity {
 		return organizationName;
 	}
 
-	public void setOrganizatioName(String newName) {
+	public void setOrganizationName(String newName) {
 		organizationName = newName;
 	}
 
