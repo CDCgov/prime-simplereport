@@ -164,9 +164,14 @@ const Header = () => {
           </ul>
         </nav>
 
+        {/* This is the side nav menu section */}
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
+            <li
+              className={classNames("usa-nav__primary-item", {
+                "active-nav-item": staffDetailsVisible,
+              })}
+            >
               <NavLink
                 to={`/queue`}
                 onClick={() => setMenuVisible(false)}
@@ -219,7 +224,7 @@ const Header = () => {
                   icon={"user"}
                   size="2x"
                   style={{
-                    fill: "white",
+                    color: staffDetailsVisible ? "white" : "",
                   }}
                 />
               </NavLink>
@@ -236,7 +241,11 @@ const Header = () => {
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
-                    <Anchor text={" Log out"} onClick={() => logout()} />
+                    <Anchor
+                      className="prime-force-link-in-nav"
+                      text={" Log out 2"}
+                      onClick={() => logout()}
+                    />
                   </li>
                 </ul>
               </div>
