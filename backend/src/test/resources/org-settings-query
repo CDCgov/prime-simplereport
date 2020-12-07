@@ -11,33 +11,32 @@
       state
       zipCode
       phone
+      orderingProvider {
+        firstName
+        middleName
+        lastName
+        suffix
+        NPI
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        phone
+        __typename
+      }
+      defaultDeviceType {
+        internalId
+        name
+        __typename
+      }
+      deviceTypes {
+        internalId
+        name
+        __typename
+      }
       __typename
     }
-    orderingProvider {
-      firstName
-      middleName
-      lastName
-      suffix
-      NPI
-      street
-      streetTwo
-      city
-      county
-      state
-      zipCode
-      phone
-      __typename
-    }
-    defaultDeviceType {
-      internalId
-      name
-      __typename
-    }
-    deviceTypes {
-      internalId
-      name
-      __typename
-    }
-    __typename
   }
 }

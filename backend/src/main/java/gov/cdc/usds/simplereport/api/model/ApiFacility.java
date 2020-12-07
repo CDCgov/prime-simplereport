@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
 
 public class ApiFacility {
 
