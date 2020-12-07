@@ -32,6 +32,6 @@ public class NoJsonTestEvent extends BaseTestInfo {
 	}
 
 	public Provider getProviderData() {
-		return getOrganization().getOrderingProvider();
+		return getFacility().getOrderingProvider(); // this could actually be gotten from JSON
 	}
 }

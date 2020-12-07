@@ -11,6 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
@@ -19,6 +20,9 @@ import java.util.List;
 @Entity
 public class Person extends OrganizationScopedEternalEntity {
 
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "facility_id")
+	private Facility facility;
 	@Column
 	private String lookupId;
 	@Column(nullable = false)
@@ -57,10 +61,6 @@ public class Person extends OrganizationScopedEternalEntity {
 		super(org);
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.role = PersonRole.STAFF;
-	}
-
-	public List<TestOrder> getTestOrders() {
-		return testOrders;
 	}
 
 	public Person(
@@ -130,6 +130,10 @@ public class Person extends OrganizationScopedEternalEntity {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
+	public Facility getFacility() {
+		return facility;
+	}
+
 	public String getLookupId() {
 		return lookupId;
 	}
@@ -183,18 +187,12 @@ public class Person extends OrganizationScopedEternalEntity {
 	}
 	@JsonIgnore
 	public String getStreet() {
-		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
-			return "";
-		}
-		return address.getStreet().get(0);
+		return address == null ? "" : address.getStreetOne();
 	}
 
 	@JsonIgnore
 	public String getStreetTwo() {
-		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
-			return "";
-		}
-		return address.getStreet().get(1);
+		return address == null ? "" : address.getStreetTwo();
 	}
 
 	@JsonIgnore

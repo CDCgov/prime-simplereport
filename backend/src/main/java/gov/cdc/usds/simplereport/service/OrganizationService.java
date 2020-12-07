@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 
 @Service
@@ -18,10 +20,13 @@ public class OrganizationService {
 
 	private OrganizationRepository _repo;
 	private OrganizationInitializingService _initService;
+	private FacilityRepository _facilityRepo;
 
 	public OrganizationService(OrganizationRepository repo,
+			FacilityRepository facilityRepo,
 			OrganizationInitializingService initService) {
 		_repo = repo;
+		_facilityRepo = facilityRepo;
 		_initService = initService;
 	}
 
@@ -35,6 +40,10 @@ public class OrganizationService {
 		}
 	}
 
+	public Facility getDefaultFacility(Organization org) {
+		return _facilityRepo.findFirstByOrganizationOrderByCreatedAt(org)
+			.orElseThrow();
+	}
 	public Organization updateOrganization(
 		String testingFacilityName,
 		String cliaNumber,
@@ -54,11 +63,12 @@ public class OrganizationService {
 		DeviceType defaultDeviceType
 	) {
 		Organization org = this.getCurrentOrganization();
-		org.setFacilityName(testingFacilityName);
-		org.setCliaNumber(cliaNumber);
-		org.addDefaultDeviceType(defaultDeviceType);
+		Facility facility = getDefaultFacility(org);
+		facility.setFacilityName(testingFacilityName);
+		facility.setCliaNumber(cliaNumber);
+		facility.addDefaultDeviceType(defaultDeviceType);
 
-		Provider p = org.getOrderingProvider();
+		Provider p = facility.getOrderingProvider();
 		p.getNameInfo().setFirstName(orderingProviderFirstName);
 		p.getNameInfo().setMiddleName(orderingProviderMiddleName);
 		p.getNameInfo().setLastName(orderingProviderLastName);
@@ -81,15 +91,15 @@ public class OrganizationService {
 		a.setPostalCode(orderingProviderZipCode);
 
 		// remove all existing devices
-		for(DeviceType d : org.getDeviceTypes()) {
-			org.removeDeviceType(d);
+		for(DeviceType d : facility.getDeviceTypes()) {
+			facility.removeDeviceType(d);
 		}
 
 		// add new devices
 		for(DeviceType d : devices) {
-			org.addDeviceType(d);
+			facility.addDeviceType(d);
 		}
-		org.setDefaultDeviceType(defaultDeviceType);
+		facility.setDefaultDeviceType(defaultDeviceType);
 		return _repo.save(org);
 
 	}

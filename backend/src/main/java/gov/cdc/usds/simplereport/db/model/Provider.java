@@ -4,6 +4,8 @@ import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 
+import org.springframework.boot.context.properties.ConstructorBinding;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
@@ -24,6 +26,7 @@ public class Provider extends EternalEntity {
 
 	protected Provider() { /* for hibernate */ }
 
+	@ConstructorBinding
 	public Provider(String firstName, String middleName, String lastName, String suffix, String providerId, StreetAddress address, String telephone) {
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.providerId = providerId;
@@ -53,18 +56,12 @@ public class Provider extends EternalEntity {
 
 	@JsonIgnore
 	public String getStreet() {
-		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
-			return "";
-		}
-		return address.getStreet().get(0);
+		return address == null ? "" : address.getStreetOne();
 	}
 
 	@JsonIgnore
 	public String getStreetTwo() {
-		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
-			return "";
-		}
-		return address.getStreet().get(1);
+		return address == null ? "" : address.getStreetTwo();
 	}
 
 	@JsonIgnore

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -68,19 +69,15 @@ public class TestOrderService {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
-
-    TestEvent testEvent = new TestEvent(
-      result,
-      deviceType,
-      person,
-      org
-    );
-    _terepo.save(testEvent);
-
     TestOrder order = _repo.fetchQueueItem(org, person)
 		.orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceType(_dts.getDeviceType(deviceID));
+    order.setDeviceType(deviceType);
     order.setResult(result);
+
+    
+    TestEvent testEvent = new TestEvent(order);
+    _terepo.save(testEvent);
+
     order.setTestEvent(testEvent);
     _repo.save(order);
   }
@@ -103,7 +100,8 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    TestOrder newOrder = new TestOrder(patient);
+    Facility testFacility = _os.getDefaultFacility(_os.getCurrentOrganization());
+    TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(
       pregnancy,

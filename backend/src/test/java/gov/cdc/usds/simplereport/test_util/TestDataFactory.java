@@ -3,16 +3,19 @@ package gov.cdc.usds.simplereport.test_util;
 import java.time.LocalDate;
 import java.util.Collections;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
@@ -24,6 +27,8 @@ public class TestDataFactory {
 	@Autowired
 	private OrganizationRepository _orgRepo;
 	@Autowired
+	private FacilityRepository _facilityRepo;
+	@Autowired
 	private PersonRepository _personRepo;
 	@Autowired
 	private ProviderRepository _providerRepo;
@@ -31,10 +36,19 @@ public class TestDataFactory {
 	private DeviceTypeRepository _deviceRepo;
 
 	public Organization createValidOrg() {
+		return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
+	}
+
+	public Facility createValidFacility(Organization org) {
 		DeviceType dev = getGenericDevice();
 		StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
 		Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
-		return _orgRepo.save(new Organization("The Mall", "MALLRAT", "123456", dev, doc));
+		Facility facility = new Facility(org, "Test Site Alpha", "123456", doc);
+		facility.setAddress(addy);
+		facility.setDefaultDeviceType(dev);
+		Facility save = _facilityRepo.save(facility);
+		LoggerFactory.getLogger("DERPDERPDERP").warn("Facility looks like {}", save);
+		return save;
 	}
 
 	public Person createMinimalPerson(Organization org) {

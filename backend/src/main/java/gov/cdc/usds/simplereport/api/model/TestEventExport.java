@@ -4,28 +4,24 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestOrder;
 
 public class TestEventExport {
 
 	private NoJsonTestEvent testEvent;
-	private NoJsonTestOrder testOrder;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
-	private Organization org;
+	private Facility facility;
 
 	public TestEventExport(NoJsonTestEvent testEvent) {
 		super();
@@ -33,7 +29,7 @@ public class TestEventExport {
 		this.patient = testEvent.getPatientData();
 		this.survey = testEvent.getTestOrder().getAskOnEntrySurvey().getSurvey();
 		this.provider = testEvent.getProviderData();
-		this.org = testEvent.getOrganization();
+		this.facility = testEvent.getFacility();
 	}
 
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
@@ -73,18 +69,6 @@ public class TestEventExport {
 		} else {
 			return "N";
 		}
-	}
-
-	private String arrayToString(List<String> value) {
-		if (value == null) {
-			return "";
-		}
-		if (value.size() < 1) {
-			return "";
-		}
-		return String.join(",", value.stream()
-		.map(v -> raceMap.get(v))
-		.collect(Collectors.toList()));
 	}
 
 	private String dateToHealthCareString(LocalDate value) {
@@ -254,7 +238,7 @@ public class TestEventExport {
 
 	@JsonProperty("Testing_lab_CLIA")
 	public String getTestingLabID() {
-		return org.getCliaNumber();
+		return facility.getCliaNumber();
 	}
 
 	@JsonProperty("Testing_lab_state")
@@ -304,32 +288,32 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_name")
 	public String getOrderingFacilityName() {
-		return org.getFacilityName();
+		return facility.getFacilityName();
 	}
 
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
-		return "5202475313";
+		return facility.getTelephone();
 	}
 
 	@JsonProperty("Ordering_facility_state")
 	public String getOrderingFacilityState() {
-		return "AZ";
+		return facility.getAddress().getState();
 	}
 
 	@JsonProperty("Ordering_facility_street")
 	public String getOrderingFacilityStreet() {
-		return "2797 N Cerrada de Beto";
+		return facility.getAddress().getStreetOne();
 	}
 
 	@JsonProperty("Ordering_facility_street_2")
 	public String getOrderingFacilityStreetTwo() {
-		return "";
+		return facility.getAddress().getStreetTwo();
 	}
 
 	@JsonProperty("Ordering_facility_zip_code")
 	public String getOrderingFacilityZipCode() {
-		return "85745";
+		return facility.getAddress().getPostalCode();
 	}
 
 	@JsonProperty("Ordering_provider_last_name")

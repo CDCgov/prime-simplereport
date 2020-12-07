@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.db.model;
 import org.hibernate.annotations.Type;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.util.ArrayList;
@@ -56,6 +58,16 @@ public class StreetAddress {
 
     public List<String> getStreet() {
         return Collections.unmodifiableList(street);
+    }
+
+    @JsonIgnore
+    public String getStreetOne() { // if we're gonna do this, let's do it in one place
+        return street == null || street.isEmpty() ? "" : street.get(0);
+    }
+
+    @JsonIgnore
+    public String getStreetTwo() { // vide supra
+        return street == null || street.size() < 2 ? "" : street.get(1);
     }
 
     public void setStreet(String street1, String street2) {
