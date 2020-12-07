@@ -193,7 +193,7 @@ const Header = ({ organizationId }) => {
               <div
                 ref={staffDefailsRef}
                 aria-label="Primary navigation"
-                className={classNames("usa-nav", "prime-staff-infobox", {
+                className={classNames("shadow-3", "prime-staff-infobox", {
                   "is-prime-staff-infobox-visible": staffDetailsVisible,
                 })}
               >
