@@ -1,12 +1,13 @@
 name: Deploy Client Application
 
 env:
-  DEMO_CF_APP: "prime-data-input-client" # the app name if we are deploying 'main'
-  SANDBOX_CF_APP: "prime-data-input-sandbox" # the app name if we are deploying any other branch
+  DEMO_CF_APP: "simple-report-qa" # the app name if we are deploying 'main'
+  SANDBOX_CF_APP: "simple-report-sandbox" # the app name if we are deploying any other branch
+  NODE_VERSION: 14
 on:
   workflow_dispatch: # run when somebody pushes the button (on whatever branch they choose)
   push:
-    branches: # automatically deploy the "sandbox" branch on every push
+    branches: # automatically deploy the "sandbox" and "main" branches to their respective envs
       - sandbox
       - main
   schedule:
@@ -23,7 +24,7 @@ jobs:
           if  [[ "$GITHUB_REF" == "refs/heads/main" ]] ; then
             echo We are deploying to the DEMO environment
             app=$DEMO_CF_APP
-            title="SimpleReport"
+            title="SimpleReportQA"
           else
             echo We are deploying to the SANDBOX environment
             app=$SANDBOX_CF_APP
@@ -32,17 +33,17 @@ jobs:
           fi
           echo >> $GITHUB_ENV "CF_APPLICATION=$app"
           echo >> $GITHUB_ENV "REACT_APP_TITLE=$title"
-      - name: Use Node.js 12
+      - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ~/.npm
             ./frontend/node_modules
-          key: npm-build-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
+          key: npm-build-${{env.NODE_VERSION}}-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
       - name: Node setup
         working-directory: ./frontend
         run: npm install

@@ -1,5 +1,5 @@
 # Dockerfile for local development
-FROM node:alpine
+FROM node:14-alpine
 
 RUN apk add g++ make python
 

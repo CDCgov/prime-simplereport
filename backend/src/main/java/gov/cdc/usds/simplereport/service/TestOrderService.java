@@ -105,7 +105,7 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    TestOrder newOrder = new TestOrder(patient, _os.getCurrentOrganization());
+    TestOrder newOrder = new TestOrder(patient);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(
       pregnancy,

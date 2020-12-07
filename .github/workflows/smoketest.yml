@@ -14,61 +14,73 @@ defaults:
     working-directory: frontend
 jobs:
   smoketest:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14]
+        os: [ubuntu-18.04, ubuntu-20.04]
+    runs-on: ${{matrix.os}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js 12
+      - name: Use Node.js ${{matrix.node}}
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{matrix.node}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ~/.npm
             ./frontend/node_modules
-          key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
       - name: Node setup
         run: npm install
       - name: Test
         run: npm run-script test
   linter:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14]
+        os: [ubuntu-18.04, ubuntu-20.04]
+    runs-on: ${{matrix.os}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js 12
+      - name: Use Node.js ${{matrix.node}}
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{matrix.node}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ~/.npm
             ./frontend/node_modules
-          key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
       - name: Node setup
         run: npm install
       - name: Lint
         run: npm run-script lint
   build-test:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [12, 14]
+        os: [ubuntu-18.04, ubuntu-20.04]
+    runs-on: ${{matrix.os}}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js 12
+      - name: Use Node.js ${{matrix.node}}
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: ${{matrix.node}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ~/.npm
             ./frontend/node_modules
-          key: npm-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
       - name: Node setup
         run: npm install
       - name: Build release

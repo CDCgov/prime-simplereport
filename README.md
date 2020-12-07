@@ -84,9 +84,9 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 
 ### Frontend-Setup
 
-1. Install node
+1. Install [nvm](https://github.com/nvm-sh/nvm)
 1. (optional) Install react developer tools extensions
-1. `cd frontend && npm install`
+1. `cd frontend && nvm use && npm install`
 1. `npm run start`
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
