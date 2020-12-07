@@ -28,7 +28,6 @@ public class Organization extends EternalEntity {
 	private String externalId;
 
 	@Column(nullable=false)
-	@NaturalId
 	private String cliaNumber;
 
 	@ManyToOne(optional = true)
