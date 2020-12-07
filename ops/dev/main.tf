@@ -6,6 +6,14 @@ locals {
   }
 }
 
+# VMs subnet
+resource "azurerm_subnet" "vms" {
+  name                 = "${var.env}-vms"
+  resource_group_name  = data.azurerm_resource_group.rg.name
+  virtual_network_name = data.azurerm_virtual_network.dev.name
+  address_prefixes     = ["10.1.252.0/24"]
+}
+
 module "all" {
   source     = "../services/all-ephemeral"
   docker_tag = var.docker_tag
@@ -47,6 +55,19 @@ module "bastion" {
 
   virtual_network_name = "simple-report-dev-network"
   subnet_cidr          = ["10.1.253.0/27"]
+
+  tags = local.management_tags
+}
+
+module "psql_connect" {
+  source                  = "../services/basic_vm"
+  name                    = "psql-connect"
+  env                     = var.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+
+  subnet_id                = azurerm_subnet.vms.id
+  bastion_connect_password = data.azurerm_key_vault_secret.psql_connect_password_dev.value
 
   tags = local.management_tags
 }

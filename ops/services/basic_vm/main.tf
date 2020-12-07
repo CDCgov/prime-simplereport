@@ -1,26 +1,19 @@
-resource "azurerm_subnet" "vms" {
-  name                 = "${var.env}-vms"
-  resource_group_name  = data.azurerm_resource_group.rg.name
-  virtual_network_name = data.azurerm_virtual_network.dev.name
-  address_prefixes     = ["10.1.252.0/24"]
-}
-
 resource "azurerm_network_interface" "psql_connect" {
-  name                = "psql-connect"
-  location            = data.azurerm_resource_group.rg.location
-  resource_group_name = data.azurerm_resource_group.rg.name
+  name                = var.name
+  location            = var.resource_group_location
+  resource_group_name = var.resource_group_name
 
   ip_configuration {
     name                          = "psql-connect"
-    subnet_id                     = azurerm_subnet.vms.id
+    subnet_id                     = var.subnet_id
     private_ip_address_allocation = "Dynamic"
   }
 }
 
 resource "azurerm_virtual_machine" "psql_connect" {
   name                  = "psql-connect"
-  location              = data.azurerm_resource_group.rg.location
-  resource_group_name   = data.azurerm_resource_group.rg.name
+  location              = var.resource_group_location
+  resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.psql_connect.id]
   vm_size               = "Standard_A1_v2"
 
