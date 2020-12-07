@@ -24,6 +24,6 @@ public class OrganizationServiceTest extends BaseRepositoryTest {
 	public void findit() {
 		Organization org = _service.getCurrentOrganization();
 		assertNotNull(org);
-		assertEquals("DIS_ORG", org.getExternalId());
+		assertEquals("FACILITY_ALPHA", org.getExternalId());
 	}
 }

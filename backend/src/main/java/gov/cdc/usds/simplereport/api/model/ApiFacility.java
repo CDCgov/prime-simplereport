@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
