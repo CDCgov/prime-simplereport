@@ -210,7 +210,7 @@ const Header = ({ organizationId }) => {
                   <li className="usa-sidenav__item">
                     <Anchor
                       className="prime-force-link-in-nav"
-                      text={" Log out 2"}
+                      text={" Log out"}
                       onClick={() => logout()}
                     />
                   </li>
