@@ -32,6 +32,8 @@ module "simple_report_api" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:c2514f6" # hardcoding this until automated deploy of images are in place
+  key_vault_id     = data.azurerm_key_vault.sr_global.id
+  tenant_id        = data.azurerm_client_config.current.tenant_id
 
   app_settings = {
     "DOCKER_REGISTRY_SERVER_PASSWORD"                = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
@@ -41,7 +43,11 @@ module "simple_report_api" {
     "WEBSITES_PORT"                                  = "8080"
     SPRING_PROFILES_ACTIVE                           = "azure-dev"
     SPRING_LIQUIBASE_ENABLED                         = "true"
-    SPRING_DATASOURCE_URL                            = data.azurerm_key_vault_secret.sr_dev_db_jdbc.value
+    SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA   = "public"
+    SPRING_DATASOURCE_URL                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"
+    OKTA_OAUTH2_CLIENT_ID                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_id.id})"
+    OKTA_OAUTH2_CLIENT_SECRET                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
+    OKTA_OAUTH2_ISSUER                               = "https://hhs-prime.okta.com/oauth2/default"
   }
 }
 

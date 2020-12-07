@@ -11,6 +11,10 @@ variable "app_settings" {
   default = {}
 }
 
+# Secret Access
+variable "key_vault_id" {}
+variable "tenant_id" {}
+
 # https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
 variable "instance_tier" {
   default = "Basic"

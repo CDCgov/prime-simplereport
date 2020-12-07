@@ -26,4 +26,33 @@ resource "azurerm_app_service" "service" {
   }
 
   app_settings = var.app_settings
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  logs {
+    http_logs {
+      file_system {
+        retention_in_days = 7
+        retention_in_mb   = 30
+      }
+    }
+  }
+
+}
+
+resource "azurerm_key_vault_access_policy" "app_secret_access" {
+  key_vault_id = var.key_vault_id
+  object_id    = azurerm_app_service.service.identity[0].principal_id
+  tenant_id    = var.tenant_id
+
+  key_permissions = [
+    "get",
+    "list",
+  ]
+  secret_permissions = [
+    "get",
+    "list",
+  ]
 }
