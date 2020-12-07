@@ -586,12 +586,12 @@ databaseChangeLog:
       id: populate-facility-table
       author: bwarfield@cdc.gov
       comment: Populate facilities table based on existing organizations.
-      preconditions:
+      preConditions:
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
         - sqlCheck:
-          sql:  SELECT count(1) > 0 FROM ${database.defaultSchemaName}.organization;
-          expectedResult: true
-          onSqlOutput: FAIL
-          onFail: MARK_RAN
+            sql:  SELECT count(1) > 0 FROM ${database.defaultSchemaName}.organization;
+            expectedResult: true
       changes:
         - sql:
             comment: Populate the facilities table from the organization table
