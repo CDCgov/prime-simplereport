@@ -104,3 +104,52 @@ interface SettingsData {
     }
   ];
 }
+
+interface FacilityData {
+  organization: {
+    internalId: string;
+    name: string;
+    testingFacility: [
+      {
+        id: string;
+        cliaNumber: string;
+        name: string;
+        street: string;
+        streetTwo: string;
+        city: string;
+        county: string;
+        state: string;
+        zipCode: string;
+        phone: string;
+        defaultDeviceType: {
+          internalId: string;
+        };
+        deviceTypes: [
+          {
+            internalId: string;
+          }
+        ];
+        orderingProvider: {
+          firstName: string;
+          middleName: string;
+          lastName: string;
+          suffix: string;
+          NPI: string;
+          street: string;
+          streetTwo: string;
+          city: string;
+          county: string;
+          state: string;
+          zipCode: string;
+          phone: string;
+        };
+      }
+    ];
+  };
+  deviceType: [
+    {
+      internalId: string;
+      name: string;
+    }
+  ];
+}

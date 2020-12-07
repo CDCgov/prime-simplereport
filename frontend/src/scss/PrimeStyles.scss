@@ -23,7 +23,8 @@
     }
   }
   .usa-card__body {
-    .prime-text-input {
+    .prime-text-input,
+    .prime-dropdown {
       width: 100%;
       margin-left: 0;
       padding: 0;
@@ -340,4 +341,16 @@
 
 .Toastify__toast {
   padding: 3px;
+}
+
+.usa-table--borderless th:first-child {
+  padding: 0.5rem 1rem;
+}
+
+.usa-select,
+.usa-range,
+.usa-input,
+.usa-textarea,
+.usa-combo-box__input {
+  max-width: none;
 }

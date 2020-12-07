@@ -38,10 +38,6 @@ const GET_SETTINGS_QUERY = gql`
         }
       }
     }
-    deviceType {
-      internalId
-      name
-    }
   }
 `;
 

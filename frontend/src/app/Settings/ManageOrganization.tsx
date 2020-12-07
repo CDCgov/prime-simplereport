@@ -24,7 +24,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
     <main className="prime-home">
       <div className="grid-container">
         <Nav />
-        <div className="grid-row">
+        <div className="grid-row position-relative">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2>Manage Organization</h2>

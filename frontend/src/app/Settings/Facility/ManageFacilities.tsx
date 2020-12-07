@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { NavLink } from "react-router-dom";
 
 import Button from "../../commonComponents/Button";
 import Nav from "../Nav";
@@ -25,11 +26,26 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
               />
             </div>
             <div className="usa-card__body">
-              {facilities.map((f) => (
-                <p>
-                  {f.name} {f.cliaNumber}
-                </p>
-              ))}
+              <table className="usa-table usa-table--borderless width-full">
+                <thead>
+                  <tr>
+                    <th scope="col">Facility Name</th>
+                    <th scope="col">CLIA Number</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {facilities.map((facility) => (
+                    <tr key={facility.id}>
+                      <td>
+                        <NavLink to={`/settings/facility/${facility.id}`}>
+                          {facility.name}
+                        </NavLink>
+                      </td>
+                      <td>{facility.cliaNumber}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>

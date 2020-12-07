@@ -3,7 +3,12 @@ import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
 
@@ -19,6 +24,7 @@ import EditPatient from "./patients/EditPatient";
 import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
+import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 
 const WHOAMI_QUERY = gql`
   {
@@ -43,14 +49,20 @@ const WHOAMI_QUERY = gql`
 const Results = TestResultsList as any;
 
 const SettingsRoutes = ({ match }: any) => (
-  <div>
+  <>
     {/* note the addition of the exact property here */}
     <Route exact path={match.url} component={ManageOrganizationContainer} />
     <Route
       path={match.url + "/facilities"}
       component={ManageFacilitiesContainer}
     />
-  </div>
+    <Route
+      path={match.url + "/facility/:facilityId"}
+      render={({ match }) => (
+        <FacilityFormContainer facilityId={match.params.facilityId} />
+      )}
+    />
+  </>
 );
 
 const App = () => {
@@ -110,6 +122,10 @@ const App = () => {
                     return <TestQueue />;
                   }}
                 />
+                <Route exact path="/">
+                  <Redirect to="/queue" />
+                </Route>
+
                 <Route
                   path="/results"
                   render={() => {
@@ -129,9 +145,7 @@ const App = () => {
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <div className="nav-content">
-                  <Route path="/settings" component={SettingsRoutes} />
-                </div>
+                <Route path="/settings" component={SettingsRoutes} />
               </Switch>
             </Router>
             <ToastContainer
