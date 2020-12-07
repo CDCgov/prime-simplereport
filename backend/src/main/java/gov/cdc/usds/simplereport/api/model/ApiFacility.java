@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.util.List;
+import java.util.UUID;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -15,8 +16,8 @@ public class ApiFacility {
 		this.facility = wrapped;
 	}
 
-	public String getId() {
-		return facility.getInternalId().toString();
+	public UUID getId() {
+		return facility.getInternalId();
 	}
 
 	public String getName() {

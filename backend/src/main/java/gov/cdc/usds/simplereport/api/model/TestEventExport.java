@@ -278,12 +278,12 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_city")
 	public String getOrderingFacilityCity() {
-		return "Tucson";
+		return facility.getAddress().getCity();
 	}
 
 	@JsonProperty("Ordering_facility_county")
 	public String getOrderingFacilityCounty() {
-		return "Pima";
+		return facility.getAddress().getCounty();
 	}
 
 	@JsonProperty("Ordering_facility_name")
