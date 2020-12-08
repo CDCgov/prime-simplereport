@@ -1,6 +1,7 @@
 import React from "react";
 import { testResultPropType } from "../propTypes";
 import { gql, useQuery } from "@apollo/client";
+import { useSelector } from "react-redux";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
@@ -63,6 +64,7 @@ const TestQueue = () => {
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
   });
+  const activeFacilityId = useSelector((state) => state.facility.id);
 
   if (error) {
     throw error;
@@ -71,9 +73,14 @@ const TestQueue = () => {
     return <p>Loading patients...</p>;
   }
 
+  const facility = data.organization.testingFacility.find(
+    (f) => f.id === activeFacilityId
+  );
+  if (!facility) {
+    return <p>Facility not found</p>;
+  }
   let shouldRenderQueue =
-    data.queue.length > 0 &&
-    data.organization.testingFacility[0].deviceTypes.length > 0;
+    data.queue.length > 0 && facility.deviceTypes.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
       ? patientQueue.map(
@@ -110,10 +117,8 @@ const TestQueue = () => {
               }}
               selectedDeviceId={device ? device.internalId : null}
               selectedTestResult={testResult}
-              devices={data.organization.testingFacility[0].deviceTypes}
-              defaultDevice={
-                data.organization.testingFacility[0].defaultDeviceType
-              }
+              devices={facility.deviceTypes}
+              defaultDevice={facility.defaultDeviceType}
               refetchQueue={refetchQueue}
             />
           )

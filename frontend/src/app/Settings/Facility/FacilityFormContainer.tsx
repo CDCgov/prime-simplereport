@@ -54,7 +54,63 @@ const GET_FACILITY_QUERY = gql`
   }
 `;
 
-const SET_FACILITY_MUTATION = gql`
+const UPDATE_FACILITY_MUTATION = gql`
+  mutation(
+    $facilityId: String!
+    $testingFacilityName: String!
+    $cliaNumber: String
+    $street: String
+    $streetTwo: String
+    $city: String
+    $county: String
+    $state: String
+    $zipCode: String!
+    $phone: String
+    $orderingProviderFirstName: String!
+    $orderingProviderMiddleName: String
+    $orderingProviderLastName: String!
+    $orderingProviderSuffix: String
+    $orderingProviderNPI: String!
+    $orderingProviderStreet: String
+    $orderingProviderStreetTwo: String
+    $orderingProviderCity: String
+    $orderingProviderCounty: String
+    $orderingProviderState: String
+    $orderingProviderZipCode: String!
+    $orderingProviderPhone: String
+    $devices: [String]!
+    $defaultDevice: String!
+  ) {
+    updateFacility(
+      facilityId: $facilityId
+      testingFacilityName: $testingFacilityName
+      cliaNumber: $cliaNumber
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      county: $county
+      state: $state
+      zipCode: $zipCode
+      phone: $phone
+      orderingProviderFirstName: $orderingProviderFirstName
+      orderingProviderMiddleName: $orderingProviderMiddleName
+      orderingProviderLastName: $orderingProviderLastName
+      orderingProviderSuffix: $orderingProviderSuffix
+      orderingProviderNPI: $orderingProviderNPI
+      orderingProviderStreet: $orderingProviderStreet
+      orderingProviderStreetTwo: $orderingProviderStreetTwo
+      orderingProviderCity: $orderingProviderCity
+      orderingProviderCounty: $orderingProviderCounty
+      orderingProviderState: $orderingProviderState
+      orderingProviderZipCode: $orderingProviderZipCode
+      orderingProviderPhone: $orderingProviderPhone
+      deviceTypes: $devices
+      defaultDevice: $defaultDevice
+    )
+  }
+`;
+
+const ADD_FACILITY_MUTATION = gql`
   mutation(
     $testingFacilityName: String!
     $cliaNumber: String
@@ -120,7 +176,8 @@ const FacilityFormContainer: any = (props: Props) => {
     }
   );
   const appInsights = useAppInsightsContext();
-  const [setSettings] = useMutation(SET_FACILITY_MUTATION);
+  const [updateFacility] = useMutation(UPDATE_FACILITY_MUTATION);
+  const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
   const trackSaveSettings = useTrackEvent(
     appInsights,
     "Save Settings",
@@ -142,8 +199,10 @@ const FacilityFormContainer: any = (props: Props) => {
   const saveFacility = (facility: Facility) => {
     trackSaveSettings(null);
     const provider = facility.orderingProvider;
-    setSettings({
+    const saveFacility = props.facilityId ? updateFacility : addFacility;
+    saveFacility({
       variables: {
+        facilityId: props.facilityId,
         testingFacilityName: facility.name,
         cliaNumber: facility.cliaNumber,
         street: facility.street,
@@ -181,20 +240,56 @@ const FacilityFormContainer: any = (props: Props) => {
     });
   };
 
-  let deviceTypes = Object.values(
-    data.organization.testingFacility[0].deviceTypes
-  ).map((d) => d.internalId);
+  const getFacilityData = (): Facility => {
+    const facility = data.organization.testingFacility.find(
+      (f) => f.id === props.facilityId
+    );
+    if (facility) {
+      let deviceTypes = Object.values(facility.deviceTypes).map(
+        (d) => d.internalId
+      );
+      return {
+        ...facility,
+        deviceTypes: deviceTypes,
+        defaultDevice: facility.defaultDeviceType
+          ? facility.defaultDeviceType.internalId
+          : "",
+      };
+    }
+    const defaultDevice = data.deviceType[0].internalId;
+    return {
+      id: "",
+      name: "",
+      cliaNumber: "",
+      street: "",
+      streetTwo: "",
+      city: "",
+      county: "",
+      state: "",
+      zipCode: "",
+      phone: "",
+      orderingProvider: {
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        suffix: "",
+        NPI: "",
+        street: "",
+        streetTwo: "",
+        city: "",
+        county: "",
+        state: "",
+        zipCode: "",
+        phone: "",
+      },
+      deviceTypes: [defaultDevice],
+      defaultDevice,
+    };
+  };
+
   return (
     <FacilityForm
-      facility={{
-        ...((data.organization.testingFacility.find(
-          (f) => f.id === props.facilityId
-        ) as any) as Facility),
-        deviceTypes: deviceTypes,
-        defaultDevice: data.organization.testingFacility[0].defaultDeviceType
-          ? data.organization.testingFacility[0].defaultDeviceType.internalId
-          : "",
-      }}
+      facility={getFacilityData()}
       deviceOptions={data.deviceType}
       saveFacility={saveFacility}
     />
