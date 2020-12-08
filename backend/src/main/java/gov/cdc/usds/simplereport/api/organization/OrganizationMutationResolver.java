@@ -1,12 +1,15 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by nickrobison on 11/17/20
@@ -22,7 +25,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _dts = dts;
     }
 
-    public void updateFacility(String testingFacilityName,
+    public void updateFacility(String facilityId,
+                                   String testingFacilityName,
                                    String cliaNumber,
                                    String street,
                                    String streetTwo,
@@ -62,6 +66,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           devices.add(d);
         }
         _os.updateFacility(
+          UUID.fromString(facilityId),
           testingFacilityName,
           cliaNumber,
           street,
