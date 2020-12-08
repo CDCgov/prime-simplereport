@@ -2,6 +2,12 @@ name: Deploy Azure Resources
 
 on: push
 
+env:
+  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+
 defaults:
   run:
     working-directory: ./backend
@@ -20,11 +26,8 @@ jobs:
         uses: docker/setup-buildx-action@v1
       - name: install AZ
         run: sudo apt-get install azure-cli
+      - name: login to ACR
+        run: az acr login
       - name: Build and push Docker images
-        env:
-          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-          ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
         run: |
           ./build_and_push.sh

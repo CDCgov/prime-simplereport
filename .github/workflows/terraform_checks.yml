@@ -1,7 +1,11 @@
 ---
 name: Infra Checks
 
-on: pull_request
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "ops/**"
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
@@ -27,11 +31,11 @@ jobs:
         working-directory: ${{ github.workspace }}/ops
         run: |
           cd dev && terraform init
-          cd global && terraform init
+          cd ../global && terraform init
 
       - name: Terraform Validate
         id: validate
         working-directory: ${{ github.workspace }}/ops
         run: |
           cd dev && terraform validate -no-color
-          cd global && terraform validate -no-color
+          cd ../global && terraform validate -no-color
