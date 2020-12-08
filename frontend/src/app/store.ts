@@ -36,7 +36,7 @@ const reducers = (state = initialState, action: any) => {
         organization: {
           ...state.organization,
           ...action.payload,
-        }
+        },
       };
     default:
       return state;
