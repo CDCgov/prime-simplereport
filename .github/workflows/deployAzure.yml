@@ -19,7 +19,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
       - name: install AZ
-        run: apt-get install azure-cli
+        run: sudo apt-get install azure-cli
       - name: Build and push Docker images
         run: |
           ./build_and_push.sh
