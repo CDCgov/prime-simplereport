@@ -57,12 +57,14 @@ public class TestOrderService {
     _facilityRepo = frepo;
 }
 
-	public List<TestOrder> getQueue() {
-		return _repo.fetchQueueForOrganization(_os.getCurrentOrganization());
-	}
+  public List<TestOrder> getQueue(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+    return _repo.fetchQueue(fac.getOrganization(), fac);
+  }
 
-  public List<TestEvent> getTestResults() {
-	  return _terepo.findAllByOrganization(_os.getCurrentOrganization());
+  public List<TestEvent> getTestResults(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+    return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {

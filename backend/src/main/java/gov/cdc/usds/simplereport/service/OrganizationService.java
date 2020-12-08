@@ -60,6 +60,14 @@ public class OrganizationService {
 		return _facilityRepo.findByOrganizationOrderByCreatedAt(org);
 	}
 
+	@Transactional(readOnly=true)
+	public Facility getFacilityInCurrentOrg(String facilityId) {
+		Organization org = getCurrentOrganization();
+		return _facilityRepo.findByOrganizationAndInternalId(org, UUID.fromString(facilityId))
+				.orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
+	}
+
+	@Transactional(readOnly=true)
 	public Organization updateFacility(
 		UUID facilityId,
 		String testingFacilityName,
@@ -151,7 +159,7 @@ public class OrganizationService {
 	}
 
 	public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone,
-			DeviceTypeHolder deviceTypes, 
+			DeviceTypeHolder deviceTypes,
 			PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
 		Provider orderingProvider = _providerRepo.save(
 				new Provider(providerName, providerNPI, providerAddress, providerTelephone));
@@ -162,5 +170,4 @@ public class OrganizationService {
 			deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
 		return _facilityRepo.save(facility);
 	}
-
 }
