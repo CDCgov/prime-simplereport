@@ -114,8 +114,8 @@ type Query {
   patients: [Patient]
   patient(id: String!): Patient
   organization: Organization
-  queue: [TestOrder]
-  testResults: [TestResult]
+  queue(facilityId: String!): [TestOrder]
+  testResults(facilityId: String!): [TestResult]
   whoami: User!
 }
 type Mutation {
