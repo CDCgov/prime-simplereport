@@ -7,13 +7,17 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
 @Transactional(readOnly=false)
@@ -22,6 +26,7 @@ public class OrganizationService {
 	private OrganizationRepository _repo;
 	private OrganizationInitializingService _initService;
 	private FacilityRepository _facilityRepo;
+	private ProviderRepository _providerRepo;
 
 	public OrganizationService(OrganizationRepository repo,
 			FacilityRepository facilityRepo,
@@ -31,6 +36,7 @@ public class OrganizationService {
 		_initService = initService;
 	}
 
+	@Transactional(readOnly=true)
 	public Organization getCurrentOrganization() {
     	_initService.initAll();
 		Optional<Organization> maybe = _repo.findByExternalId(_initService.getDefaultOrganizationId());
@@ -41,9 +47,19 @@ public class OrganizationService {
 		}
 	}
 
+	@Transactional(readOnly=true)
+	public void assertFacilityNameAvailable(String testingFacilityName) {
+		Organization org = this.getCurrentOrganization();
+		_facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
+			.ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
+		;
+	}
+
+	@Transactional(readOnly=true)
 	public List<Facility> getFacilities(Organization org) {
 		return _facilityRepo.findByOrganizationOrderByCreatedAt(org);
 	}
+
 	public Organization updateFacility(
 		UUID facilityId,
 		String testingFacilityName,
@@ -132,6 +148,19 @@ public class OrganizationService {
 		Organization org = this.getCurrentOrganization();
 		org.setOrganizationName(name);
 		return _repo.save(org);
+	}
+
+	public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone,
+			DeviceTypeHolder deviceTypes, 
+			PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
+		Provider orderingProvider = _providerRepo.save(
+				new Provider(providerName, providerNPI, providerAddress, providerTelephone));
+		Facility facility = new Facility(getCurrentOrganization(),
+			testingFacilityName, cliaNumber,
+			facilityAddress, phone,
+			orderingProvider,
+			deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
+		return _facilityRepo.save(facility);
 	}
 
 }

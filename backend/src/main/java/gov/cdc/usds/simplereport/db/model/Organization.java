@@ -1,11 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.ConstructorBinding;

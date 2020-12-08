@@ -7,9 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.api.model.ApiProvider;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLResolver;
@@ -26,17 +23,12 @@ public class OrganizationDataResolver implements GraphQLResolver<Organization> {
 	private OrganizationService _orgService;
 
 	public List<ApiFacility> getTestingFacility(Organization o) {
-		return getCurrentFacility().stream()
+		return _orgService.getFacilities(o).stream()
 			.map(f -> new ApiFacility(f))
 			.collect(Collectors.toList());
 	}
 
-	private List<Facility> getCurrentFacility() {
-		Organization org = _orgService.getCurrentOrganization();
-		return _orgService.getFacilities(org);
-	}
-
-	private String getName(Organization o) {
+	public String getName(Organization o) {
 		return o.getOrganizationName();
 	}
 }
