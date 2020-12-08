@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Breadcrumbs = (props) => {
   const crumbs = props.crumbs || [{}];
@@ -9,9 +10,9 @@ const Breadcrumbs = (props) => {
       <ol className="usa-breadcrumb__list">
         {crumbs.slice(0, -1).map((crumb) => (
           <li key={crumb.text} className="usa-breadcrumb__list-item">
-            <a href={crumb.link} className="usa-breadcrumb__link">
+            <Link to={crumb.link} className="usa-breadcrumb__link">
               <span>{crumb.text}</span>
-            </a>
+            </Link>
           </li>
         ))}
         <li
