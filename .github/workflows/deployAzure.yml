@@ -27,7 +27,7 @@ jobs:
       - name: install AZ
         run: sudo apt-get install azure-cli
       - name: login to ACR
-        run: az acr login
+        run: az acr login --name simplereportacr
       - name: Build and push Docker images
         run: |
           ./build_and_push.sh
