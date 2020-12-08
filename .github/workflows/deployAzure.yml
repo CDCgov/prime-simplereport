@@ -1,6 +1,12 @@
 name: Deploy Azure Resources
 
-on: push
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
@@ -14,9 +20,6 @@ defaults:
 jobs:
   build-image:
     runs-on: ubuntu-latest
-    if: contains('
-      refs/heads/ci_cd
-      ', github.ref)
     steps:
       - uses: actions/checkout@v2
       - name: Set up QEMU

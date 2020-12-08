@@ -1,9 +1,21 @@
-spring:
-  jpa:
-    properties:
-      hibernate:
-        default_schema: simple_report
 graphql.servlet.cors:
   allowed-origins:
-    - http://localhost:3000
     - https://simple-report-api-dev.azurewebsites.net
+simple-report-initialization:
+  organization:
+    facility-name: Dis Organization
+    external-id: DIS_ORG
+    clia-number: "000111222-3"
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      zip-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2
