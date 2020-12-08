@@ -1,12 +1,6 @@
 name: Deploy Azure Resources
 
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - "backend/**"
+on: push
 
 defaults:
   run:
