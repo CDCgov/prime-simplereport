@@ -88,6 +88,7 @@ public class OrganizationService {
 		 af.setCounty(county);
 		 af.setState(state);
 		 af.setPostalCode(zipCode);
+		facility.setAddress(af);
 
 		Provider p = facility.getOrderingProvider();
 		p.getNameInfo().setFirstName(orderingProviderFirstName);
@@ -110,6 +111,7 @@ public class OrganizationService {
 		a.setCounty(orderingProviderCounty);
 		a.setState(orderingProviderState);
 		a.setPostalCode(orderingProviderZipCode);
+		p.setAddress(a);
 
 		// remove all existing devices
 		for(DeviceType d : facility.getDeviceTypes()) {
