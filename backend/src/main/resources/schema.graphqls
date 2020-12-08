@@ -120,6 +120,7 @@ type Query {
 }
 type Mutation {
   updateFacility(
+    facilityId: String!
     testingFacilityName: String!
     cliaNumber: String
     street: String
@@ -192,6 +193,7 @@ type Mutation {
   ): String
   addTestResult(deviceId: String!, result: String!, patientId: String!): String
   addPatientToQueue(
+    facilityId: String!
     patientId: String!
     pregnancy: String
     symptoms: String

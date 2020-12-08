@@ -20,10 +20,6 @@ public class Organization extends EternalEntity {
 	@NaturalId
 	private String externalId;
 
-	@OneToMany()
-	@JoinColumn(name = "organization_id")
-	private List<Facility> facilities;
-
 	protected Organization() { /* for hibernate */ }
 
 	@ConstructorBinding
@@ -43,9 +39,5 @@ public class Organization extends EternalEntity {
 
 	public String getExternalId() {
 		return externalId;
-	}
-
-	public List<Facility> getTestingFacility() {
-		return facilities;
 	}
 }

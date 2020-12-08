@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,11 +41,11 @@ public class OrganizationService {
 		}
 	}
 
-	public Facility getDefaultFacility(Organization org) {
-		return _facilityRepo.findFirstByOrganizationOrderByCreatedAt(org)
-			.orElseThrow();
+	public List<Facility> getFacilities(Organization org) {
+		return _facilityRepo.findByOrganizationOrderByCreatedAt(org);
 	}
 	public Organization updateFacility(
+		UUID facilityId,
 		String testingFacilityName,
 		String cliaNumber,
 		String street,
@@ -70,7 +71,7 @@ public class OrganizationService {
 		DeviceType defaultDeviceType
 	) {
 		Organization org = this.getCurrentOrganization();
-		Facility facility = getDefaultFacility(org);
+		Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
 		facility.setFacilityName(testingFacilityName);
 		facility.setCliaNumber(cliaNumber);
 		facility.setTelephone(phone);
