@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 import javax.persistence.Column;
@@ -17,12 +20,22 @@ import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
-
+/**
+ * The person record (generally, a patient getting a test).
+ *
+ * ATTENTION PLEASE: if you ever add a field to this object, you must decide if it
+ * should be saved forever as part of a {@link TestEvent}, and annotate it with
+ * {@link JsonIgnore} if not.
+ *
+ * EVEN MORE ATTENTION PLEASE: if you ever change the <b>type</b> of any non-ignored field
+ * of this object, you will likely break many things, so do not do that.
+ */
 @Entity
 public class Person extends OrganizationScopedEternalEntity {
 
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "facility_id")
+	@JsonIgnore // do not serialize to TestEvents
 	private Facility facility;
 	@Column
 	private String lookupId;
@@ -37,6 +50,7 @@ public class Person extends OrganizationScopedEternalEntity {
 	@Column
 	private String gender;
 	@Column
+	@JsonDeserialize(converter =  RaceArrayConverter.class)
 	private String race;
 	@Column
 	private String ethnicity;
@@ -133,6 +147,10 @@ public class Person extends OrganizationScopedEternalEntity {
 
 	public Facility getFacility() {
 		return facility;
+	}
+
+	public void setFacility(Facility f) {
+		facility = f;
 	}
 
 	public String getLookupId() {

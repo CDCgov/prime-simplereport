@@ -11,19 +11,19 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 public class TestEventExport {
 
-	private NoJsonTestEvent testEvent;
+	private TestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Facility facility;
 
-	public TestEventExport(NoJsonTestEvent testEvent) {
+	public TestEventExport(TestEvent testEvent) {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
