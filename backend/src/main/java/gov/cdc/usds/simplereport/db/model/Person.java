@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 import javax.persistence.Column;
@@ -37,6 +40,7 @@ public class Person extends OrganizationScopedEternalEntity {
 	@Column
 	private String gender;
 	@Column
+	@JsonDeserialize(converter =  RaceArrayConverter.class)
 	private String race;
 	@Column
 	private String ethnicity;
