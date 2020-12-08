@@ -20,8 +20,8 @@ const emptyQueueMessage = (
 );
 
 const queueQuery = gql`
-  {
-    queue {
+  query Queue($facilityId: String!) {
+    queue(facilityId: $facilityId) {
       pregnancy
       dateAdded
       symptoms
