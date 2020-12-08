@@ -1,0 +1,31 @@
+name: Deploy Azure Resources
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/**"
+
+defaults:
+  run:
+    working-directory: ./backend
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    if: contains('
+      refs/heads/ci_cd
+      ', github.ref)
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: install AZ
+        run: apt-get install azure-cli
+      - name: Build and push Docker images
+        run: |
+          ./build_and_push.sh

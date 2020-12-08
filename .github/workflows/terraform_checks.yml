@@ -3,9 +3,10 @@ name: Infra Checks
 
 on: pull_request
 env:
-  AWS_ACCESS_KEY_ID: ${{ secrets.TERRAFORM_AWS_ACCESS_KEY }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.TERRAFORM_AWS_SECRET_KEY }}
-  AWS_DEFAULT_REGION: us-east-2
+  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
 
 jobs:
   plan:
@@ -16,45 +17,22 @@ jobs:
 
       - name: Terraform fmt
         id: fmt
-        working-directory: ${{ github.workspace }}/infra/terraform/dev
-        run: terraform fmt -check
+        working-directory: ${{ github.workspace }}/ops
+        run: |
+          terraform fmt -check dev
+          terraform fmt -check global
+          terraform fmt -check test
 
       - name: Terraform Init
         id: init
-        working-directory: ${{ github.workspace }}/infra/terraform/dev
-        run: terraform init
+        working-directory: ${{ github.workspace }}/ops
+        run: |
+          cd dev && terraform init
+          cd global && terraform init
+          cd test && terraform init
 
       - name: Terraform Validate
         id: validate
-        working-directory: ${{ github.workspace }}/infra/terraform/dev
-        run: terraform validate -no-color
-
-      - name: Terraform Plan
-        id: plan
-        working-directory: ${{ github.workspace }}/infra/terraform/dev
-        run: terraform plan -no-color
-
-      - uses: actions/github-script@0.9.0
-        env:
-          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-            #### Terraform Validation 🤖${{ steps.validate.outputs.stdout }}
-            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`${process.env.PLAN}\`\`\`
-
-            </details>
-
-            *Pusher: @${{ github.actor }}, Working Directory: \`${{ github.workspace }}/infra/terraform/dev\`*`;
-
-            github.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: output
-            })
+        working-directory: ${{ github.workspace }}/ops
+        run: |
+          cd dev && terraform validate -no-color
