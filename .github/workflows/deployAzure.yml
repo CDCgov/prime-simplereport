@@ -21,5 +21,10 @@ jobs:
       - name: install AZ
         run: sudo apt-get install azure-cli
       - name: Build and push Docker images
+        env:
+          ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+          ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
         run: |
           ./build_and_push.sh
