@@ -8,7 +8,7 @@ locals {
     "https://staging.simplereport.org/app"
   ]
   is_prod = var.env == "prod"
-  app_url = local.is_prod ? "https://simplereport.cdc.gov/app" : "https://${var.env}.simplereport.cdc.gov"
+  app_url = local.is_prod ? "https://simplereport.cdc.gov/app" : "https://${var.env}.simplereport.org/app"
 }
 
 
