@@ -12,8 +12,8 @@ import {
 } from "../../config/constants";
 
 const patientQuery = gql`
-  {
-    patients {
+  query Patient($facilityId: String!) {
+    patients(facilityId: $facilityId) {
       internalId
       lookupId
       firstName
@@ -24,13 +24,20 @@ const patientQuery = gql`
   }
 `;
 
-const ManagePatients = () => {
+interface Props {
+  activeFacilityId: string;
+}
+
+const ManagePatients = ({ activeFacilityId }: Props) => {
   const { data, loading, error } = useQuery(patientQuery, {
     fetchPolicy: "no-cache",
+    variables: {
+      facilityId: activeFacilityId,
+    },
   });
 
-  const patientRows = (patients) => {
-    return patients.map((patient) => (
+  const patientRows = (patients: any) => {
+    return patients.map((patient: any) => (
       <tr key={patient.internalId}>
         <th scope="row">
           <NavLink to={`patient/${patient.internalId}`}>

@@ -34,7 +34,12 @@ const GET_PATIENT = gql`
   }
 `;
 
-const EditPatient = (props) => {
+interface Props {
+  facilityId: string;
+  patientId: string;
+}
+
+const EditPatient = (props: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",

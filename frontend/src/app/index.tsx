@@ -19,8 +19,8 @@ import LoginView from "./LoginView";
 import { setInitialState } from "./store";
 import TestResultsListContainer from "./testResults/TestResultsListContainer";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
-import ManagePatients from "./patients/ManagePatients";
-import EditPatient from "./patients/EditPatient";
+import ManagePatientsContainer from "./patients/ManagePatientsContainer";
+import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
@@ -138,13 +138,13 @@ const App = () => {
                 <Route
                   path={`/patients`}
                   render={() => {
-                    return <ManagePatients />;
+                    return <ManagePatientsContainer />;
                   }}
                 />
                 <Route
                   path={`/patient/:patientId`}
                   render={({ match }) => (
-                    <EditPatient patientId={match.params.patientId} />
+                    <EditPatientContainer patientId={match.params.patientId} />
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
