@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import TextInput from "../commonComponents/ManagedTextInput";
 import Button from "../commonComponents/Button";
+import RequiredMessage from "../commonComponents/RequiredMessage";
 import Nav from "./Nav";
 
 interface Props {
@@ -36,10 +37,12 @@ const ManageOrganization: React.FC<Props> = (props) => {
               />
             </div>
             <div className="usa-card__body">
+              <RequiredMessage />
               <TextInput
                 label={"Organization Name"}
                 value={name}
                 onChange={setName}
+                required
               />
             </div>
           </div>

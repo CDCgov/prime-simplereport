@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
+import RequiredMessage from "../../commonComponents/RequiredMessage";
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
@@ -72,6 +73,7 @@ const FacilityForm: React.FC<Props> = (props) => {
               </div>
             </div>
             <div className="usa-card__body">
+              <RequiredMessage />
               <FacilityInformation
                 facility={facility}
                 updateFacility={updateFacility}

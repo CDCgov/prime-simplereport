@@ -24,6 +24,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               label={"First Name"}
               value={provider.firstName || ""}
               onChange={(v) => onChange("firstName", v)}
+              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -38,6 +39,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               label={"Last Name"}
               value={provider.lastName || ""}
               onChange={(v) => onChange("lastName", v)}
+              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -54,6 +56,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               label={"NPI"}
               value={provider.NPI || ""}
               onChange={(v) => onChange("NPI", v)}
+              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -102,6 +105,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               label={"Zip Code"}
               value={provider.zipCode || ""}
               onChange={(v) => onChange("zipCode", v)}
+              required
             />
           </div>
           <div className="tablet:grid-col">

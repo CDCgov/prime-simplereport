@@ -2,6 +2,8 @@ import React from "react";
 import useUniqueIds from "./useUniqueIds";
 import classnames from "classnames";
 
+import Required from "../commonComponents/Required";
+
 interface Option {
   label: string;
   value: string;
@@ -17,7 +19,8 @@ interface Props {
   disabled?: boolean;
   defaultOption?: string;
   addClass?: string;
-  includeUndefiend?: boolean;
+  includeUndefined?: boolean;
+  required?: boolean;
 }
 
 const Dropdown: React.FC<Props> = ({
@@ -29,7 +32,8 @@ const Dropdown: React.FC<Props> = ({
   addClass = "",
   defaultOption, // value of the default option
   selectedValue,
-  includeUndefiend,
+  includeUndefined,
+  required,
 }) => {
   const [selectId] = useUniqueIds("dropdown", 1);
 
@@ -38,6 +42,12 @@ const Dropdown: React.FC<Props> = ({
       {label ? (
         <label className="usa-label" htmlFor={selectId}>
           {label}
+          {required ? (
+            <span>
+              {" "}
+              <Required />
+            </span>
+          ) : null}
         </label>
       ) : null}
 
@@ -49,7 +59,7 @@ const Dropdown: React.FC<Props> = ({
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
       >
-        {includeUndefiend ? (
+        {includeUndefined ? (
           <option value={undefined}>- Select -</option>
         ) : null}
         {options.map(({ value, label, disabled }, i) => (

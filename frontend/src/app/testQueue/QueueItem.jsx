@@ -231,10 +231,6 @@ const QueueItem = ({
     label: device.name,
     value: device.internalId,
   }));
-  options.unshift({
-    label: "Select Device",
-    value: null,
-  });
 
   const patientFullName = displayFullName(
     patient.firstName,

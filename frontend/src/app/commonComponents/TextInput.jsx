@@ -1,7 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import classnames from "classnames";
+
 import useUniqueId from "../commonComponents/useUniqueIds";
+import Required from "../commonComponents/Required";
 
 const TextInput = ({
   value = "",
@@ -11,12 +13,19 @@ const TextInput = ({
   onChange,
   type = "text",
   addClass = "",
+  required = false,
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
   const labelElem = label ? (
     <label className="usa-label" htmlFor={newId}>
       {label}
+      {required ? (
+        <span>
+          {" "}
+          <Required />
+        </span>
+      ) : null}
     </label>
   ) : null;
 
