@@ -18,24 +18,11 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 
-/**
- * Created by nickrobison on 11/21/20
- */
-class UploadServiceTest extends BaseRepositoryTest {
+class UploadServiceTest extends BaseServiceTest<UploadService> {
 
-    private final PersonService _ps;
-    private final UploadService _service;
-
-    public UploadServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired FacilityRepository facilityRepo, @Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
-        OrganizationService os = new OrganizationService(orgRepo, facilityRepo, initService);
-        this._ps = new PersonService(os, repo);
-        this._service = new UploadService(_ps);
-    }
+    @Autowired
+    private PersonService _ps;
 
     @Test
     void testInsert() throws IOException {

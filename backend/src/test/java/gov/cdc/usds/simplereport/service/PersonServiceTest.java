@@ -6,24 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.repository	.BaseRepositoryTest;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
-import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
-import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseRepositoryTest {
-
-	private PersonService _service;
-
-	public PersonServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired FacilityRepository facilityRepo,
-			@Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
-		OrganizationService os= new OrganizationService(orgRepo, facilityRepo, initService);
-		_service = new PersonService(os, repo);
-	}
+public class PersonServiceTest extends BaseServiceTest<PersonService> {
 
 	@Test
 	public void roundTrip() {
