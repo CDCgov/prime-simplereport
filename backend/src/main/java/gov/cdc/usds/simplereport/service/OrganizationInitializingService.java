@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
@@ -33,6 +35,8 @@ public class OrganizationInitializingService {
 	private ProviderRepository _providerRepo;
 	@Autowired
 	private DeviceTypeRepository _deviceTypeRepo;
+	@Autowired
+	private FacilityRepository _facilityRepo;
 
 	public void initAll() {
 		Organization emptyOrg = _props.getOrganization();
@@ -41,7 +45,7 @@ public class OrganizationInitializingService {
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
-		 Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
+		Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
 				Collectors.toMap(d->d.getName(), d->d));
 		for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
@@ -55,10 +59,11 @@ public class OrganizationInitializingService {
 				.map(name->byName.get(name))
 				.collect(Collectors.toList());
 		DeviceType defaultDeviceType = configured.get(0);
-		LOG.info("Creating organization {} with {} devices configured", emptyOrg.getFacilityName(), configured.size());
-		Organization realOrg = new Organization(emptyOrg.getFacilityName(), emptyOrg.getExternalId(),
-				emptyOrg.getCliaNumber(), defaultDeviceType, savedProvider, configured);
-		_orgRepo.save(realOrg);
+		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
+		Organization realOrg = _orgRepo.save(emptyOrg);
+		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
+		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
+		_facilityRepo.save(defaultFacility);
 	}
 
 	public String getDefaultOrganizationId() {

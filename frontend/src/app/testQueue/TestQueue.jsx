@@ -42,16 +42,19 @@ const queueQuery = gql`
         firstName
         middleName
         lastName
+        gender
       }
     }
     organization {
-      deviceTypes {
-        internalId
-        name
-      }
-      defaultDeviceType {
-        internalId
-        name
+      testingFacility {
+        deviceTypes {
+          internalId
+          name
+        }
+        defaultDeviceType {
+          internalId
+          name
+        }
       }
     }
   }
@@ -70,7 +73,8 @@ const TestQueue = () => {
   }
 
   let shouldRenderQueue =
-    data.queue.length > 0 && data.organization.deviceTypes.length > 0;
+    data.queue.length > 0 &&
+    data.organization.testingFacility[0].deviceTypes.length > 0;
   const createQueueItems = (patientQueue) =>
     shouldRenderQueue
       ? patientQueue.map(
@@ -107,8 +111,10 @@ const TestQueue = () => {
               }}
               selectedDeviceId={device ? device.internalId : null}
               selectedTestResult={testResult}
-              devices={data.organization.deviceTypes}
-              defaultDevice={data.organization.defaultDeviceType}
+              devices={data.organization.testingFacility[0].deviceTypes}
+              defaultDevice={
+                data.organization.testingFacility[0].defaultDeviceType
+              }
               refetchQueue={refetchQueue}
             />
           )

@@ -6,6 +6,30 @@
 .prime-container {
   width: 100%;
   margin-bottom: 1.5rem;
+  .usa-card__header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    h2 {
+      margin: 0;
+    }
+  }
+  .usa-card__header > :last-child,
+  .usa-card__body > :last-child {
+    &.usa-button {
+      padding: 12px 20px;
+      margin-right: 0;
+    }
+  }
+  .usa-card__body {
+    .prime-text-input,
+    .prime-dropdown {
+      width: 100%;
+      margin-left: 0;
+      padding: 0;
+    }
+  }
 }
 
 .prime-ul {
@@ -69,6 +93,13 @@
 
 .prime-test-name {
   border-bottom: 1px solid color($theme-color-prime-gray-light);
+}
+
+.prime-previous-test-display {
+  font-size: 90%;
+  margin-left: 0.5em;
+  border-left: 4px solid #ccc;
+  padding-left: 0.5em;
 }
 
 // things that look like links but aren't links
@@ -139,12 +170,10 @@
   list-style-type: none;
   margin-top: 0;
   padding: 0;
-  text-align: center;
 }
 .prime-radio--horizontal__container {
   position: relative;
   display: list-item;
-  width: 45%;
   max-width: 5rem;
   float: left;
   margin: 0;
@@ -178,7 +207,41 @@
   outline: 3px solid #00a91c;
 }
 
+.prime-secondary-nav {
+  margin: 0 8px;
+}
+
+.prime-nav.usa-nav__secondary-links {
+  display: flex;
+  position: relative;
+  float: none;
+  margin-bottom: 0px;
+
+  a {
+    color: #555;
+    padding-bottom: 5px;
+    &.active,
+    &:hover {
+      color: #000;
+      text-decoration: none;
+      border-bottom: 4px solid #0d60a0;
+    }
+  }
+}
+
+.prime-facility-select {
+  margin: 0 0 16px 0;
+  width: 100%;
+}
+
 //navbar customizations
+.prime-nav-link {
+  white-space: nowrap;
+  height: 100%;
+  display: flex !important;
+  align-items: center;
+}
+
 @media (min-width: 64em) {
   .usa-nav__primary > .usa-nav__primary-item > a {
     padding: 1.5rem;
@@ -222,6 +285,11 @@
 
 .span-full-name {
   font-weight: bolder;
+}
+
+.prime-organization-name {
+  margin-top: 2px;
+  font-size: 0.9rem;
 }
 
 .prime-staff-infobox {
@@ -277,4 +345,16 @@
 
 .Toastify__toast {
   padding: 3px;
+}
+
+.usa-table--borderless th:first-child {
+  padding: 0.5rem 1rem;
+}
+
+.usa-select,
+.usa-range,
+.usa-input,
+.usa-textarea,
+.usa-combo-box__input {
+  max-width: none;
 }

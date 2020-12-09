@@ -36,8 +36,8 @@ public class TestOrder extends BaseTestInfo {
 
 	protected TestOrder() { /* for hibernate */ }
 
-	public TestOrder(Person patient) {
-		super(patient);
+	public TestOrder(Person patient, Facility facility) {
+		super(patient, facility);
 		this.orderStatus = OrderStatus.PENDING;
 	}
 	public OrderStatus getOrderStatus() {

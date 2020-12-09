@@ -1,18 +1,5 @@
-mutation doUpdate($newDevice: String!) {
+mutation {
   updateOrganization(
-    testingFacilityName: "Dis Function"
-    cliaNumber: "54321"
-    orderingProviderFirstName: "John"
-    orderingProviderMiddleName: "The"
-    orderingProviderLastName: "Doctor"
-    orderingProviderNPI: "ABCDE"
-    orderingProviderStreet: "111 Massachusetts Avenue"
-    orderingProviderCity: "Washington"
-    orderingProviderCounty: "N/A"
-    orderingProviderState: "DC"
-    orderingProviderZipCode: "20001"
-    deviceTypes: [$newDevice]
-    defaultDevice: $newDevice
+    name: "dis organization"
   )
-    
 }

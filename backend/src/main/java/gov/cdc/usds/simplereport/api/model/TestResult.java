@@ -7,16 +7,16 @@ import java.time.LocalDate;
 import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
 
 
 public class TestResult {
 
-	private NoJsonTestEvent event;
+	private TestEvent event;
 	private AskOnEntrySurvey survey;
 
-	public TestResult(NoJsonTestEvent event) {
+	public TestResult(TestEvent event) {
 		super();
 		this.event = event;
 		this.survey = event.getTestOrder().getAskOnEntrySurvey().getSurvey();
@@ -24,10 +24,6 @@ public class TestResult {
 
 	public String getInternalId() {
 		return event.getInternalId().toString();
-	}
-
-	public ApiOrganization getOrganization() {
-		return new ApiOrganization(event.getOrganization());
 	}
 
 	public Date getDateAdded() {

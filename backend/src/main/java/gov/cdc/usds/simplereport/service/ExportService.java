@@ -11,8 +11,8 @@ import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
-import gov.cdc.usds.simplereport.db.repository.NoJsonTestEventRepository;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -21,17 +21,17 @@ import gov.cdc.usds.simplereport.db.repository.NoJsonTestEventRepository;
 @Transactional
 public class ExportService {
 
-    private final NoJsonTestEventRepository _ts;
+    private final TestEventRepository _ts;
     private OrganizationService _os;
 
 
-    public ExportService(NoJsonTestEventRepository ts, OrganizationService os) {
+    public ExportService(TestEventRepository ts, OrganizationService os) {
         this._ts = ts;
         this._os = os;
     }
 
     public String CreateTestEventCSV() throws IOException {
-      List<NoJsonTestEvent> events = _ts.findAllByOrganization(_os.getCurrentOrganization());
+      List<TestEvent> events = _ts.findAllByOrganization(_os.getCurrentOrganization());
       List<TestEventExport> eventsToExport = new ArrayList<>();
       events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
       CsvMapper mapper = new CsvMapper();

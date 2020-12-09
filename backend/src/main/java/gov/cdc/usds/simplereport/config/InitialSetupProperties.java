@@ -7,10 +7,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
-import gov.cdc.usds.simplereport.db.model.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
@@ -18,18 +19,28 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 public class InitialSetupProperties {
 
 	private Organization organization;
-	private ConfigProvider provider;
-	private List<? extends ConfigDeviceType> deviceTypes;
+	private Provider provider;
+	private List<? extends DeviceType> deviceTypes;
 	private List<String> configuredDeviceTypes;
 	private IdentityAttributes defaultUser;
+	private ConfigFacility facility;
 
-	public InitialSetupProperties(ConfigOrganization organization, ConfigProvider provider,
-			List<ConfigDeviceType> deviceTypes, List<String> configuredDeviceTypes, IdentityAttributes defaultUser) {
+	public InitialSetupProperties(Organization organization,
+			ConfigFacility facility,
+			Provider provider,
+			List<DeviceType> deviceTypes,
+			List<String> configuredDeviceTypes,
+			IdentityAttributes defaultUser) {
 		this.organization = organization;
 		this.provider = provider;
 		this.deviceTypes = deviceTypes;
 		this.configuredDeviceTypes = configuredDeviceTypes;
 		this.defaultUser = defaultUser;
+		this.facility = facility;
+	}
+
+	public ConfigFacility getFacility() {
+		return facility;
 	}
 
 	public List<String> getConfiguredDeviceTypeNames() {
@@ -37,47 +48,57 @@ public class InitialSetupProperties {
 	}
 
 	public Organization getOrganization() {
-		return organization;
+		return new Organization(organization.getOrganizationName(), organization.getExternalId());
 	}
 
 	public Provider getProvider() {
-		return provider.getRealProvider();
+		PersonName n = provider.getNameInfo();
+		return new Provider(n.getFirstName(), n.getMiddleName(), n.getLastName(), n.getSuffix(),
+			provider.getProviderId(), provider.getAddress(), provider.getTelephone());
 	}
 
 	public List<? extends DeviceType> getDeviceTypes() {
-		return deviceTypes.stream().map(ConfigDeviceType::getReal).collect(Collectors.toList());
+		return deviceTypes.stream()
+			.map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode()))
+			.collect(Collectors.toList())
+			;
 	}
 
 	public IdentityAttributes getDefaultUser() {
 		return defaultUser;
 	}
 
-	private static final class ConfigOrganization extends Organization {
-		@ConstructorBinding
-		public ConfigOrganization(String facilityName, String externalId, String cliaNumber) {
-			super(facilityName, externalId, cliaNumber);
+	public static final class ConfigFacility {
+		private String name;
+		private String cliaNumber;
+		private StreetAddress address;
+		private String telephone;
+		public ConfigFacility(String facilityName, String cliaNumber, StreetAddress address, String telephone) {
+			super();
+			this.name = facilityName;
+			this.cliaNumber = cliaNumber;
+			this.address = address;
+			this.telephone = telephone;
 		}
-	}
-	public static final class ConfigProvider extends Provider {
-		@ConstructorBinding
-		public ConfigProvider(String firstName, String middleName, String lastName, String suffix, String providerId,
-				StreetAddress address, String telephone) {
-			super(firstName, middleName, lastName, suffix, providerId, address, telephone);
-		}
-		public Provider getRealProvider() {
-			PersonName nm = getNameInfo();
-			return new Provider(nm.getFirstName(), nm.getMiddleName(), nm.getLastName(), nm.getSuffix(),
-				getProviderId(), getAddress(), getTelephone());
-		}
-	}
 
-	private static final class ConfigDeviceType extends DeviceType {
-		@ConstructorBinding
-		public ConfigDeviceType(String name, String manufacturer, String model, String loincCode) {
-			super(name, manufacturer, model, loincCode);
+		public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType, List<DeviceType> configured) {
+			Facility f = new Facility(org, name, cliaNumber, p, defaultDeviceType, configured);
+			f.setAddress(address);
+			f.setTelephone(telephone);
+			return f;
 		}
-		public DeviceType getReal() {
-			return new DeviceType(getName(), getManufacturer(), getModel(), getLoincCode());
+
+		public String getName() {
+			return name;
+		}
+		public String getCliaNumber() {
+			return cliaNumber;
+		}
+		public StreetAddress getAddress() {
+			return address;
+		}
+		public String getTelephone() {
+			return telephone;
 		}
 	}
 }

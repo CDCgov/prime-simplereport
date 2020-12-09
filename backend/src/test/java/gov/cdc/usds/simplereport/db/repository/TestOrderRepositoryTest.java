@@ -17,9 +17,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -34,20 +34,17 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	@Autowired
 	private OrganizationRepository _orgRepo;
 	@Autowired
-	private ProviderRepository _providers;
-	@Autowired
 	private TestEventRepository _events;
 	@Autowired
 	private TestDataFactory _dataFactory;
 
 	@Test
 	public void runChanges() {
-		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
-		DeviceType dt = _dataFactory.getGenericDevice();
-		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", "55555", dt, mccoy));
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "66666", dt, mccoy));
+		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
+		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+		Facility site = _dataFactory.createValidFacility(gtown);
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		TestOrder order = _repo.save(new TestOrder(hoya));
+		TestOrder order = _repo.save(new TestOrder(hoya, site));
 		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);
 		assertEquals(0, queue.size());
 		queue = _repo.fetchQueueForOrganization(gtown);
@@ -60,13 +57,13 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
 	@Test
 	public void testLifeCycle() {
-		Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
 		DeviceType device = _dataFactory.getGenericDevice();
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", "77777", device, mccoy));
+		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		TestOrder order = _repo.save(new TestOrder(hoya));
+		Facility site = _dataFactory.createValidFacility(gtown);
+		TestOrder order = _repo.save(new TestOrder(hoya, site));
 		flush();
-		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, gtown));
+		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site));
 		order.setTestEvent(ev);
 		_repo.save(order);
 		flush();
@@ -76,10 +73,11 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void createOrder_duplicatesFound_error() {
 		Organization org = _dataFactory.createValidOrg();
 		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0);
+		Facility site = _dataFactory.createValidFacility(org);
+		TestOrder order1 = new TestOrder(patient0, site);
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0);
+		TestOrder order2 = new TestOrder(patient0, site);
 		PersistenceException caught = assertThrows(PersistenceException.class, ()->{ _repo.save(order2); flush();});
 		assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
 	}
@@ -87,14 +85,15 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	@Test
 	public void createOrder_duplicateCanceled_ok() {
 		Organization org = _dataFactory.createValidOrg();
-		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0);
+		Person patient0 = _dataFactory.createMinimalPerson(org); 
+		Facility site = _dataFactory.createValidFacility(org);
+		TestOrder order1 = new TestOrder(patient0, site);
 		_repo.save(order1);
 		flush();
 		order1.cancelOrder();
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0);
+		TestOrder order2 = new TestOrder(patient0, site);
 		order2 = _repo.save(order2);
 		flush();
 		assertNotNull(order2.getInternalId());
@@ -109,15 +108,16 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 	public void createOrder_duplicateSubmitted_ok() {
 		Organization org = _dataFactory.createValidOrg();
 		Person patient0 = _dataFactory.createMinimalPerson(org);
-		TestOrder order1 = new TestOrder(patient0);
+		Facility site = _dataFactory.createValidFacility(org);
+		TestOrder order1 = new TestOrder(patient0, site);
 		_repo.save(order1);
 		flush();
-		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, org.getDefaultDeviceType(), patient0, org));
+		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site));
 		order1.setTestEvent(didit);
 		order1.setResult(didit.getResult());
 		_repo.save(order1);
 		flush();
-		TestOrder order2 = new TestOrder(patient0);
+		TestOrder order2 = new TestOrder(patient0, site);
 		order2 = _repo.save(order2);
 		flush();
 		assertNotNull(order2.getInternalId());

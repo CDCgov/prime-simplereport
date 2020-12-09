@@ -1,48 +1,75 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.db.model.Organization;
+import java.util.List;
+import java.util.UUID;
+
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 public class ApiFacility {
-	private Organization org;
 
-	public ApiFacility(Organization org) {
+	private Facility facility;
+	private StreetAddress address;
+
+	public ApiFacility(Facility wrapped) {
 		super();
-		this.org = org;
+		this.facility = wrapped;
+		this.address = facility.getAddress();
+	}
+
+	public UUID getId() {
+		return facility.getInternalId();
 	}
 
 	public String getName() {
-		return org.getFacilityName();
+		return facility.getFacilityName();
 	}
 
 	public String getCliaNumber() {
-		return org.getCliaNumber();
-  }
-  
-  public String getStreet() {
-		return "2797 N Cerrada de Beto";
+		return facility.getCliaNumber();
+	}
+
+		public String getStreet() {
+		return address == null ? "" : address.getStreetOne();
 	}
 
 	public String getStreetTwo() {
-		return "";
+		return address == null ? "" : address.getStreetTwo();
 	}
 
 	public String getCity() {
-		return "Tucson";
+		return address == null ? "" : address.getCity();
 	}
 
 	public String getCounty() {
-    return "Pima";
+    return address == null ? "" : address.getCounty();
 	}
 
 	public String getState() {
-		return "AZ";
+		return address == null ? "" : address.getState();
 	}
 
 	public String getZipCode() {
-		return "85745";
+		return address == null ? "" : address.getPostalCode();
 	}
 
 	public String getPhone() {
-		return "5202475313";
+		return facility.getTelephone();
+	}
+
+	public List<DeviceType> getDeviceTypes() {
+		return facility.getDeviceTypes();
+	}
+
+	public DeviceType getDefaultDeviceType() {
+		return facility.getDefaultDeviceType();
+	}
+
+	public ApiProvider getOrderingProvider() {
+		if (facility.getOrderingProvider() == null) {
+			return null;
+		}
+		return new ApiProvider(facility.getOrderingProvider());
 	}
 }

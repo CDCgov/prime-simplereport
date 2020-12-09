@@ -1,8 +1,9 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Organization;
 
 public class ApiOrganization {
@@ -13,26 +14,20 @@ public class ApiOrganization {
 		this.org = org;
 	}
 
+	public String getName() {
+		return org.getOrganizationName();
+	}
+
 	public String getInternalId() {
 		return org.getInternalId().toString();
 	}
 
-	public ApiFacility getTestingFacility() {
-		return new ApiFacility(org);
-	}
-
-	public ApiProvider getOrderingProvider() {
-		if (org.getOrderingProvider() == null) {
-			return null;
+	public List<ApiFacility> getTestingFacility() {
+		if (org.getTestingFacility() == null) {
+			return Collections.emptyList();
 		}
-		return new ApiProvider(org.getOrderingProvider());
-	}
-
-	public List<DeviceType> getDeviceTypes() {
-		return org.getDeviceTypes();
-	}
-
-	public DeviceType getDefaultDeviceType() {
-		return org.getDefaultDeviceType();
+		return org.getTestingFacility().stream()
+		.map(f -> new ApiFacility(f))
+		.collect(Collectors.toList());
 	}
 }

@@ -26,11 +26,15 @@ public class TestEvent extends BaseTestInfo {
 
 	public TestEvent() {}
 
-	public TestEvent(TestResult result, DeviceType deviceType, Person patient, Organization org) {
-		super(patient, org, deviceType, result);
+	public TestEvent(TestResult result, DeviceType deviceType, Person patient, Facility facility) {
+		super(patient, facility, deviceType, result);
 		// store a link, and *also* store the object as JSON
 		this.patientData = getPatient();
-		this.providerData = getOrganization().getOrderingProvider();
+		this.providerData = getFacility().getOrderingProvider();
+	}
+
+	public TestEvent(TestOrder order) {
+		this(order.getResult(), order.getDeviceType(), order.getPatient(), order.getFacility());
 	}
 
 	public Person getPatientData() {

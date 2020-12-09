@@ -231,7 +231,7 @@ const PatientForm = (props) => {
   };
   // after the submit was success, redirect back to the List page
   if (submitted) {
-    return <Redirect to="/organization/123/patients" />;
+    return <Redirect to="/patients" />;
   }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (

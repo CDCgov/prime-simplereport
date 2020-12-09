@@ -17,8 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 
@@ -30,8 +31,8 @@ class UploadServiceTest extends BaseRepositoryTest {
     private final PersonService _ps;
     private final UploadService _service;
 
-    public UploadServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
-        OrganizationService os = new OrganizationService(orgRepo, initService);
+    public UploadServiceTest(@Autowired OrganizationRepository orgRepo, @Autowired FacilityRepository facilityRepo, @Autowired OrganizationInitializingService initService, @Autowired PersonRepository repo) {
+        OrganizationService os = new OrganizationService(orgRepo, facilityRepo, initService);
         this._ps = new PersonService(os, repo);
         this._service = new UploadService(_ps);
     }

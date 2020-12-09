@@ -2,8 +2,12 @@ package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -11,14 +15,28 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.List;
 
-
+/**
+ * The person record (generally, a patient getting a test).
+ *
+ * ATTENTION PLEASE: if you ever add a field to this object, you must decide if it
+ * should be saved forever as part of a {@link TestEvent}, and annotate it with
+ * {@link JsonIgnore} if not.
+ *
+ * EVEN MORE ATTENTION PLEASE: if you ever change the <b>type</b> of any non-ignored field
+ * of this object, you will likely break many things, so do not do that.
+ */
 @Entity
 public class Person extends OrganizationScopedEternalEntity {
 
+	@ManyToOne(optional = true)
+	@JoinColumn(name = "facility_id")
+	@JsonIgnore // do not serialize to TestEvents
+	private Facility facility;
 	@Column
 	private String lookupId;
 	@Column(nullable = false)
@@ -32,6 +50,7 @@ public class Person extends OrganizationScopedEternalEntity {
 	@Column
 	private String gender;
 	@Column
+	@JsonDeserialize(converter =  RaceArrayConverter.class)
 	private String race;
 	@Column
 	private String ethnicity;
@@ -57,10 +76,6 @@ public class Person extends OrganizationScopedEternalEntity {
 		super(org);
 		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
 		this.role = PersonRole.STAFF;
-	}
-
-	public List<TestOrder> getTestOrders() {
-		return testOrders;
 	}
 
 	public Person(
@@ -130,6 +145,14 @@ public class Person extends OrganizationScopedEternalEntity {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
+	public Facility getFacility() {
+		return facility;
+	}
+
+	public void setFacility(Facility f) {
+		facility = f;
+	}
+
 	public String getLookupId() {
 		return lookupId;
 	}
@@ -183,18 +206,12 @@ public class Person extends OrganizationScopedEternalEntity {
 	}
 	@JsonIgnore
 	public String getStreet() {
-		if(address == null || address.getStreet() == null || address.getStreet().isEmpty()) {
-			return "";
-		}
-		return address.getStreet().get(0);
+		return address == null ? "" : address.getStreetOne();
 	}
 
 	@JsonIgnore
 	public String getStreetTwo() {
-		if(address == null || address.getStreet() == null || address.getStreet().size() < 2) {
-			return "";
-		}
-		return address.getStreet().get(1);
+		return address == null ? "" : address.getStreetTwo();
 	}
 
 	@JsonIgnore

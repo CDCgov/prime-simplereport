@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -17,8 +18,6 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.readonly.NoJsonTestEvent;
-import gov.cdc.usds.simplereport.db.repository.NoJsonTestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -36,7 +35,6 @@ public class TestOrderService {
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
-  private NoJsonTestEventRepository _noJsonEventRepo;
 
   public TestOrderService(
     OrganizationService os,
@@ -44,7 +42,6 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
-    NoJsonTestEventRepository njterepo,
     PersonService ps
   ) {
     _os = os;
@@ -53,34 +50,29 @@ public class TestOrderService {
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
-    _noJsonEventRepo = njterepo;
 }
 
 	public List<TestOrder> getQueue() {
 		return _repo.fetchQueueForOrganization(_os.getCurrentOrganization());
 	}
 
-  public List<NoJsonTestEvent> getTestResults() {
-	  return _noJsonEventRepo.findAllByOrganization(_os.getCurrentOrganization());
+  public List<TestEvent> getTestResults() {
+	  return _terepo.findAllByOrganization(_os.getCurrentOrganization());
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
-
-    TestEvent testEvent = new TestEvent(
-      result,
-      deviceType,
-      person,
-      org
-    );
-    _terepo.save(testEvent);
-
     TestOrder order = _repo.fetchQueueItem(org, person)
 		.orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceType(_dts.getDeviceType(deviceID));
+    order.setDeviceType(deviceType);
     order.setResult(result);
+
+    
+    TestEvent testEvent = new TestEvent(order);
+    _terepo.save(testEvent);
+
     order.setTestEvent(testEvent);
     _repo.save(order);
   }
@@ -103,7 +95,8 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    TestOrder newOrder = new TestOrder(patient);
+    Facility testFacility = _os.getDefaultFacility(_os.getCurrentOrganization());
+    TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(
       pregnancy,
