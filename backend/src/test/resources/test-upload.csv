@@ -1,2 +1,2 @@
-ID,LastName,FirstName,MiddleName,Suffix,Race,DOB,Gender,Ethnicity,Street    ,Street2,City ,County,State,ZipCode,PhoneNumber,Email,employedInHealthcare,residentCongregateSetting,ResidencyType,Role
-,Best,Tim,,,White,5/11/1933,Male,Not Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,foo@bar.com,Yes,No,,Staff
+facilityId,ID,LastName,FirstName,MiddleName,Suffix,Race,DOB,Gender,Ethnicity,Street    ,Street2,City ,County,State,ZipCode,PhoneNumber,Email,employedInHealthcare,residentCongregateSetting,ResidencyType,Role
+1d4f3760-301b-4bb7-abd1-bb37ae6fa0db,,Best,Tim,,,White,5/11/1933,Male,Not Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,foo@bar.com,Yes,No,,Staff

@@ -57,7 +57,9 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-            _ps.addPatient(UUID.fromString(""), row.get("ID"),
+            _ps.addPatient(
+                    UUID.fromString(row.get("facilityId")),
+                    row.get("ID"),
                     row.get("FirstName"),
                     row.get("MiddleName"),
                     row.get("LastName"),
@@ -82,6 +84,7 @@ public class UploadService {
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
+                .addColumn("facilityId", CsvSchema.ColumnType.STRING)
                 .addColumn("ID", CsvSchema.ColumnType.STRING)
                 .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("FirstName", CsvSchema.ColumnType.STRING)
