@@ -22,6 +22,7 @@ import { patientPropType, devicePropType } from "../propTypes";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
+import { TestTimerWidget } from "./TestTimer";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation($patientId: String!) {
@@ -91,6 +92,7 @@ const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
 Modal.setAppElement("#root");
 
 const QueueItem = ({
+  internalId,
   patient,
   devices,
   askOnEntry,
@@ -262,6 +264,7 @@ const QueueItem = ({
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name usa-card__header">
               <h2>{patientFullName}</h2>
+              <TestTimerWidget id={internalId} />
             </div>
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
