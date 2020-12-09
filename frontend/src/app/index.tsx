@@ -17,8 +17,8 @@ import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
-import TestResultsList from "./testResults/TestResultsList";
-import TestQueue from "./testQueue/TestQueue";
+import TestResultsListContainer from "./testResults/TestResultsListContainer";
+import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatients from "./patients/ManagePatients";
 import EditPatient from "./patients/EditPatient";
 import AddPatient from "./patients/AddPatient";
@@ -44,9 +44,6 @@ const WHOAMI_QUERY = gql`
     }
   }
 `;
-
-// typescript doesn't like that these components throw errors
-const Results = TestResultsList as any;
 
 const SettingsRoutes = ({ match }: any) => (
   <>
@@ -119,7 +116,7 @@ const App = () => {
                 <Route
                   path="/queue"
                   render={() => {
-                    return <TestQueue />;
+                    return <TestQueueContainer />;
                   }}
                 />
                 <Route exact path="/">
@@ -129,7 +126,7 @@ const App = () => {
                 <Route
                   path="/results"
                   render={() => {
-                    return <Results />;
+                    return <TestResultsListContainer />;
                   }}
                 />
                 <Route

@@ -1,7 +1,5 @@
 import React from "react";
-import { testResultPropType } from "../propTypes";
 import { gql, useQuery } from "@apollo/client";
-import { useSelector } from "react-redux";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
@@ -49,6 +47,7 @@ const queueQuery = gql`
     }
     organization {
       testingFacility {
+        id
         deviceTypes {
           internalId
           name
@@ -62,11 +61,36 @@ const queueQuery = gql`
   }
 `;
 
-const TestQueue = () => {
+interface Props {
+  activeFacilityId: string;
+}
+
+interface QueueItem {
+  pregnancy: string;
+  dateAdded: string;
+  symptoms: string;
+  noSymptoms: string;
+  firstTest: string;
+  priorTestDate: string;
+  priorTestType: string;
+  priorTestResult: string;
+  device: {
+    internalId: string;
+  };
+  patient: {
+    internalId: string;
+  };
+  testResult: string;
+  symptomOnset: string;
+}
+
+const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
+    variables: {
+      facilityId: activeFacilityId,
+    },
   });
-  const activeFacilityId = useSelector((state) => state.facility.id);
 
   if (error) {
     throw error;
@@ -76,34 +100,31 @@ const TestQueue = () => {
   }
 
   const facility = data.organization.testingFacility.find(
-    (f) => f.id === activeFacilityId
+    (f: { id: string }) => f.id === activeFacilityId
   );
   if (!facility) {
     return <p>Facility not found</p>;
   }
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
-  const createQueueItems = (patientQueue) =>
+  const createQueueItems = (patientQueue: QueueItem[]) =>
     shouldRenderQueue
       ? patientQueue.map(
-          (
-            {
-              internalId,
-              pregnancy,
-              dateAdded,
-              symptoms,
-              noSymptoms,
-              firstTest,
-              priorTestDate,
-              priorTestType,
-              priorTestResult,
-              device,
-              patient,
-              testResult,
-              symptomOnset,
-            },
-            i
-          ) => (
+          ({
+            internalId,
+            pregnancy,
+            dateAdded,
+            symptoms,
+            noSymptoms,
+            firstTest,
+            priorTestDate,
+            priorTestType,
+            priorTestResult,
+            device,
+            patient,
+            testResult,
+            symptomOnset,
+          }) => (
             <QueueItem
               key={patient.internalId}
               internalId={internalId}
@@ -141,7 +162,4 @@ const TestQueue = () => {
   );
 };
 
-TestQueue.propTypes = {
-  testResults: testResultPropType,
-};
 export default TestQueue;

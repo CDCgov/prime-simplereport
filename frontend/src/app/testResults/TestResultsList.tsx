@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import moment from "moment";
 import {
   useAppInsightsContext,
@@ -31,19 +30,23 @@ export const testResultQuery = gql`
   }
 `;
 
-const TestResultsList = () => {
+interface Props {
+  activeFacilityId: string;
+}
+
+const TestResultsList: any = ({ activeFacilityId }: Props) => {
   const appInsights = useAppInsightsContext();
   const trackFetchTestResults = useTrackEvent(
     appInsights,
-    "Fetch Test Results"
+    "Fetch Test Results",
+    {}
   );
 
   useEffect(() => {
-    trackFetchTestResults();
+    trackFetchTestResults({});
   }, [trackFetchTestResults]);
-  const facilityId = useSelector((state) => state.facility.id);
   const { data, loading, error } = useQuery(testResultQuery, {
-    variables: { facilityId: facilityId },
+    variables: { facilityId: activeFacilityId },
     fetchPolicy: "no-cache",
   });
 
@@ -57,11 +60,11 @@ const TestResultsList = () => {
     return error;
   }
 
-  const testResultRows = (testResults) => {
+  const testResultRows = (testResults: any) => {
     if (testResults.length === 0) {
       return;
     }
-    const byDateTested = (a, b) => {
+    const byDateTested = (a: any, b: any) => {
       // ISO string dates sort nicely
       if (a.dateTested === b.dateTested) return 0;
       if (a.dateTested < b.dateTested) return 1;
