@@ -28,9 +28,10 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: npm install
-      - name: Build dependencies
+      - name: Build deploy artifact
         run: npm run build
-      - name: install AZ
-        run: sudo apt-get install azure-cli
-      - name: Build frontend app artifact
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy frontend app
         run: npm run deploy-azure-dev
