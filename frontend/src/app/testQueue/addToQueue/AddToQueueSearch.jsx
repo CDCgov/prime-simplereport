@@ -12,6 +12,7 @@ import SearchResults from "./SearchResults";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
 import { showNotification } from "../../utils";
 import { displayFullName } from "../../utils";
+import { useSelector } from "react-redux";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
@@ -31,6 +32,7 @@ const QUERY_PATIENT = gql`
 
 const ADD_PATIENT_TO_QUEUE = gql`
   mutation(
+    $facilityId: String!
     $patientId: String!
     $symptoms: String
     $symptomOnset: String
@@ -42,6 +44,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $noSymptoms: Boolean
   ) {
     addPatientToQueue(
+      facilityId: $facilityId
       patientId: $patientId
       pregnancy: $pregnancy
       noSymptoms: $noSymptoms
@@ -70,6 +73,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
+  const facility = useSelector((state) => state.facility);
 
   if (loading) {
     return <p> Loading patient data... </p>;
@@ -137,6 +141,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
     trackAddPatientToQueue();
     addPatientToQueue({
       variables: {
+        facilityId: facility.id,
         patientId: patient.internalId,
         noSymptoms,
         symptoms,

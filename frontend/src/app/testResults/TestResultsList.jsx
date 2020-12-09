@@ -1,5 +1,6 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import {
   useAppInsightsContext,
@@ -10,8 +11,8 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 
 export const testResultQuery = gql`
-  {
-    testResults {
+  query Results($facilityId: String!) {
+    testResults(facilityId: $facilityId) {
       internalId
       dateTested
       result
@@ -40,8 +41,9 @@ const TestResultsList = () => {
   useEffect(() => {
     trackFetchTestResults();
   }, [trackFetchTestResults]);
-
+  const facilityId = useSelector((state) => state.facility.id);
   const { data, loading, error } = useQuery(testResultQuery, {
+    variables: { facilityId: facilityId },
     fetchPolicy: "no-cache",
   });
 

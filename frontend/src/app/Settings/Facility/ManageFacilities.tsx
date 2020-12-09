@@ -1,7 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 
-import Button from "../../commonComponents/Button";
 import Nav from "../Nav";
 
 interface Props {
@@ -17,13 +16,12 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2>Manage Facilities</h2>
-              <Button
-                type="button"
-                onClick={() => undefined}
-                label="+ New Facility"
-                inverse={true}
-                disabled={true}
-              />
+              <NavLink
+                className="usa-button usa-button--inverse"
+                to="/settings/facility/"
+              >
+                + New Facility
+              </NavLink>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
