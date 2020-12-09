@@ -164,7 +164,6 @@ const Header = () => {
           </ul>
         </nav>
 
-        {/* This is the side nav menu section */}
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
