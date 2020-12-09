@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - ci_cd
-    paths:
-      - "frontend/**"
+#    paths:
+#      - "frontend/**"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
