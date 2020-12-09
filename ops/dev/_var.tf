@@ -7,7 +7,3 @@ variable "docker_tag" {
 variable "env" {
   default = "dev"
 }
-
-variable "application_name" {
-  default = "prime-simple-report"
-}
