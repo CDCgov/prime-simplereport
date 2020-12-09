@@ -1,4 +1,4 @@
-name: Deploy Azure Resources
+name: Deploy Frontend Azure Resources
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - ci_cd
 #    paths:
 #      - "frontend/**"
+#      - ".github/workflows/deployAzureFrontend.yml"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
@@ -27,7 +28,9 @@ jobs:
           node-version: "14"
       - name: Install dependencies
         run: npm install
-      - name: Build frontend app artifact
-        run: npm run deploy-azure-dev
+      - name: Build dependencies
+        run: npm run build
       - name: install AZ
         run: sudo apt-get install azure-cli
+      - name: Build frontend app artifact
+        run: npm run deploy-azure-dev
