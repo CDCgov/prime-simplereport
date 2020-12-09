@@ -96,8 +96,8 @@ const PriorTestInputs = ({
   mostRecentTest,
 }) => {
   const filledPriorTest =
-    (mostRecentTest.dateTested || "").split("T")[0] === priorTestDate &&
-    mostRecentTest.result === priorTestResult;
+    (mostRecentTest ? mostRecentTest.dateTested : "").split("T")[0] ===
+      priorTestDate && mostRecentTest.result === priorTestResult;
   const [mostRecentTestAnswer, setMostRecentTestAnswer] = useState(
     isFirstTest === undefined ? undefined : filledPriorTest ? "yes" : "no"
   );
@@ -117,6 +117,7 @@ const PriorTestInputs = ({
         name="prior_test_type"
         selectedValue={priorTestType}
         onChange={(e) => setPriorTestType(e.target.value)}
+        includeUndefined
       />
       <Dropdown
         options={[
@@ -136,6 +137,7 @@ const PriorTestInputs = ({
         label="Result of Prior Test"
         name="prior_test_result"
         selectedValue={priorTestResult}
+        includeUndefined
         onChange={(e) => setPriorTestResult(e.target.value)}
       />
     </>
@@ -205,7 +207,9 @@ const PriorTestInputs = ({
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        selectedRadio={String(isFirstTest)}
+        selectedRadio={
+          isFirstTest === true ? "yes" : isFirstTest === false ? "no" : ""
+        }
         onChange={(e) => {
           setIsFirstTest(e.target.value === "yes");
         }}
@@ -302,7 +306,7 @@ const AoEModalForm = ({
           firstTest: false,
           priorTestDate: priorTestDate,
           priorTestType: priorTestType,
-          priorTestResult: priorTestResult,
+          priorTestResult: priorTestResult ? priorTestResult : null,
         };
 
     saveCallback({
