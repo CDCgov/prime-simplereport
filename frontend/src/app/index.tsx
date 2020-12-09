@@ -59,6 +59,12 @@ const SettingsRoutes = ({ match }: any) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
     />
+    <Route
+      path={match.url + "/add-facility/"}
+      render={({ match }) => (
+        <FacilityFormContainer facilityId={match.params.facilityId} />
+      )}
+    />
   </>
 );
 

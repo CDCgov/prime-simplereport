@@ -30,14 +30,16 @@ public class OrganizationService {
 
 	public OrganizationService(OrganizationRepository repo,
 			FacilityRepository facilityRepo,
-			OrganizationInitializingService initService) {
+			OrganizationInitializingService initService,
+			ProviderRepository providerRepo) {
 		_repo = repo;
 		_facilityRepo = facilityRepo;
 		_initService = initService;
+		_providerRepo = providerRepo;
 	}
 
 	public Organization getCurrentOrganization() {
-    	_initService.initAll();
+		_initService.initAll();
 		Optional<Organization> maybe = _repo.findByExternalId(_initService.getDefaultOrganizationId());
 		if (maybe.isPresent()) {
 			return maybe.get();
@@ -65,8 +67,7 @@ public class OrganizationService {
 				.orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
 	}
 
-	@Transactional(readOnly=true)
-	public Organization updateFacility(
+	public Facility updateFacility(
 		UUID facilityId,
 		String testingFacilityName,
 		String cliaNumber,
@@ -146,8 +147,7 @@ public class OrganizationService {
 			facility.addDeviceType(d);
 		}
 		facility.setDefaultDeviceType(defaultDeviceType);
-		return _repo.save(org);
-
+		return _facilityRepo.save(facility);
 	}
 
 	public Organization updateOrganization(String name) {

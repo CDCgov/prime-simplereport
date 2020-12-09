@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 public interface FacilityRepository extends EternalEntityRepository<Facility> {
 
 	public Optional<Facility> findByOrganizationAndInternalId(Organization org, UUID id);
+	public Optional<Facility> findByOrganizationInternalIdAndInternalId(UUID orgId, UUID id);
 	public Optional<Facility> findByOrganizationAndFacilityName(Organization org, String facilityName);
 
 	public List<Facility> findByOrganizationOrderByCreatedAt(Organization org);

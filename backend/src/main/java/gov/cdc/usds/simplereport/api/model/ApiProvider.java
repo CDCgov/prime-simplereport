@@ -38,6 +38,9 @@ public class ApiProvider {
 		if(orderingProvider.getAddress().getStreet() == null) {
 			return "";
 		}
+		if(orderingProvider.getAddress().getStreet().size() < 1) {
+			return "";
+		}
 		return orderingProvider.getAddress().getStreet().get(0);
 	}
 

@@ -136,7 +136,7 @@ const ADD_FACILITY_MUTATION = gql`
     $devices: [String]!
     $defaultDevice: String!
   ) {
-    updateFacility(
+    addFacility(
       testingFacilityName: $testingFacilityName
       cliaNumber: $cliaNumber
       street: $street
