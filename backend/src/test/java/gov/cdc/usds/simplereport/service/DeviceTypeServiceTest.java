@@ -10,17 +10,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 
-public class DeviceTypeServiceTest extends BaseRepositoryTest {
+public class DeviceTypeServiceTest extends BaseServiceTest {
 
 	@Autowired
-	private DeviceTypeRepository _repo;
+	private DeviceTypeService _service;
 
 	@Test
 	public void insertAndFindAndDeleteAndSoForth() {
-		DeviceTypeService _service = new DeviceTypeService(_repo);
 		DeviceType devA = _service.createDeviceType("A", "B", "C", "DUMMY");
 		DeviceType devB = _service.createDeviceType("D", "E", "F", "DUMMY");
 		assertNotNull(devA);
