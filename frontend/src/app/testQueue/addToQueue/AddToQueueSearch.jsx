@@ -66,7 +66,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId }) => {
 
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: {facilityId}
+    variables: { facilityId },
   });
 
   const [mutationError, updateMutationError] = useState(null);

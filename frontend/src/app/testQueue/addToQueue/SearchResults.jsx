@@ -30,7 +30,12 @@ const AddToQueueButton = ({ patient, onAddToQueue, facilityId }) => {
   );
 };
 
-const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue, facilityId }) => {
+const SearchResults = ({
+  suggestions,
+  shouldDisplay,
+  onAddToQueue,
+  facilityId,
+}) => {
   if (!shouldDisplay) {
     return null;
   }
@@ -51,7 +56,11 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue, facilityId })
         <td>{suggestion.birthDate}</td>
         <td>{suggestion.lookupId}</td>
         <td>
-          <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} facilityId={facilityId} />
+          <AddToQueueButton
+            patient={suggestion}
+            onAddToQueue={onAddToQueue}
+            facilityId={facilityId}
+          />
         </td>
       </tr>
     ));

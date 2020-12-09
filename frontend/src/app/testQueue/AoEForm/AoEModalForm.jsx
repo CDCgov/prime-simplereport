@@ -268,7 +268,7 @@ const AoEModalForm = ({
   // TODO: only get most recent test from the backend
   const { data, loading, error } = useQuery(testResultQuery, {
     fetchPolicy: "no-cache",
-    variables: {facilityId}
+    variables: { facilityId },
   });
   if (loading) return null;
   if (error) throw error;

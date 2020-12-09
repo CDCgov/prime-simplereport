@@ -102,7 +102,6 @@ const QueueItem = ({
   defaultDevice,
   refetchQueue,
   facilityId,
-
 }) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
