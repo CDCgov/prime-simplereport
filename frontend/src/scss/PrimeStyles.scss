@@ -95,6 +95,13 @@
   border-bottom: 1px solid color($theme-color-prime-gray-light);
 }
 
+.prime-previous-test-display {
+  font-size: 90%;
+  margin-left: 0.5em;
+  border-left: 4px solid #ccc;
+  padding-left: 0.5em;
+}
+
 // things that look like links but aren't links
 
 .prime-link {
@@ -163,12 +170,10 @@
   list-style-type: none;
   margin-top: 0;
   padding: 0;
-  text-align: center;
 }
 .prime-radio--horizontal__container {
   position: relative;
   display: list-item;
-  width: 45%;
   max-width: 5rem;
   float: left;
   margin: 0;

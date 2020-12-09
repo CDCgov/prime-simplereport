@@ -24,6 +24,7 @@ const QUERY_PATIENT = gql`
       lastName
       middleName
       birthDate
+      gender
     }
   }
 `;

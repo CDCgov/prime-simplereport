@@ -13,8 +13,16 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
-import { COVID_RESULTS } from "../../constants";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import DateInput from "../../commonComponents/DateInput";
+import { testResultQuery } from "../../testResults/TestResultsList";
+import { useQuery } from "@apollo/client";
+import moment from "moment";
+
+// Get the value associate with a button label
+// TODO: move to utility?
+const findValueForLabel = (label, list) =>
+  (list.filter((item) => item.label === label)[0] || {}).value;
 
 // building blocks that *probably* don't want to be exportable components
 const SymptomInputs = ({
@@ -51,6 +59,7 @@ const SymptomInputs = ({
         name="symptom_onset"
         value={onsetDate}
         onChange={setOnsetDate}
+        min="2020-02-01"
         max={new Date().toISOString().split("T")[0]}
       />
     </React.Fragment>
@@ -64,7 +73,6 @@ const SymptomInputs = ({
         legend="Are you experiencing any of the following symptoms?"
         displayLegend
         onChange={(evt) => {
-          console.log("new value:", evt.currentTarget.checked);
           setNoSymptoms(evt.currentTarget.checked);
         }}
         buttons={[{ value: "hasNoSymptoms", label: "No Symptoms" }]}
@@ -85,68 +93,128 @@ const PriorTestInputs = ({
   setPriorTestResult,
   priorTestType,
   setPriorTestType,
+  mostRecentTest,
 }) => {
-  // disable inputs other than Yes/No if it is "Yes" or unset
-  const disableDetails = isFirstTest !== false;
+  const filledPriorTest =
+    (mostRecentTest.dateTested || "").split("T")[0] === priorTestDate &&
+    mostRecentTest.result === priorTestResult;
+  const [mostRecentTestAnswer, setMostRecentTestAnswer] = useState(
+    isFirstTest === undefined ? undefined : filledPriorTest ? "yes" : "no"
+  );
+  const previousTestEntry = (
+    <>
+      <DateInput
+        label="Date of Most Recent Test"
+        name="prior_test_date"
+        value={priorTestDate}
+        onChange={setPriorTestDate}
+        max={new Date().toISOString().split("T")[0]}
+        min="2020-02-01"
+      />
+      <Dropdown
+        options={testTypeConfig}
+        label="Type of Prior Test"
+        name="prior_test_type"
+        selectedValue={priorTestType}
+        onChange={(e) => setPriorTestType(e.target.value)}
+      />
+      <Dropdown
+        options={[
+          {
+            value: COVID_RESULTS.POSITIVE,
+            label: TEST_RESULT_DESCRIPTIONS.POSITIVE,
+          },
+          {
+            value: COVID_RESULTS.NEGATIVE,
+            label: TEST_RESULT_DESCRIPTIONS.NEGATIVE,
+          },
+          {
+            value: COVID_RESULTS.INCONCLUSIVE,
+            label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
+          },
+        ]}
+        label="Result of Prior Test"
+        name="prior_test_result"
+        selectedValue={priorTestResult}
+        onChange={(e) => setPriorTestResult(e.target.value)}
+      />
+    </>
+  );
 
-  let radioValue = isFirstTest
-    ? "yes"
-    : isFirstTest === false
-    ? "no"
-    : undefined;
+  // If mostRecentTest matches priorTest, offer to fill it
+  if (mostRecentTest) {
+    // Suggest a prior test
+    // TODO: ARIA/508 compliance
+    const legendIsh = (
+      <>
+        <div className="usa-legend">
+          <b>Was this your most recent COVID-19 test?</b>
+        </div>
+        <div className="usa-legend prime-previous-test-display">
+          <div>
+            <b>Date: </b>
+            {moment(mostRecentTest.dateTested).format("LLLL")}
+          </div>
+          <div>
+            <b>Type: </b> Antigen <b>Result: </b>
+            {mostRecentTest.result}
+          </div>
+        </div>
+      </>
+    );
+    return (
+      <>
+        {legendIsh}
+        <RadioGroup
+          buttons={[
+            { label: "Yes", value: "yes" },
+            { label: "No", value: "no" },
+          ]}
+          selectedRadio={mostRecentTestAnswer}
+          onChange={(e) => {
+            setIsFirstTest(false);
+            setMostRecentTestAnswer(e.target.value);
+            if (e.target.value === "yes") {
+              // Fill in last test info using this data
+              // TODO: update when test history has test type
+              setPriorTestType("2");
+              setPriorTestDate((mostRecentTest.dateTested || "").split("T")[0]);
+              setPriorTestResult(mostRecentTest?.result);
+            }
+          }}
+          legend="Was this your most recent COVID-19 test?"
+          name="most_recent_flag"
+          horizontal
+        />
+        {mostRecentTestAnswer === "no" && previousTestEntry}
+      </>
+    );
+  }
 
   return (
-    <React.Fragment>
+    <>
+      <div className="usa-legend">
+        <b>Is this your first COVID-19 test?</b>
+      </div>
+      <div className="usa-legend prime-previous-test-display">
+        SimpleReport did not find any previous test data
+      </div>
+
       <RadioGroup
         buttons={[
           { label: "Yes", value: "yes" },
           { label: "No", value: "no" },
         ]}
-        selectedRadio={radioValue}
+        selectedRadio={String(isFirstTest)}
         onChange={(e) => {
-          let value = e.target.value;
-          let isFirstTest = value === "yes" ? true : false;
-          setIsFirstTest(isFirstTest);
+          setIsFirstTest(e.target.value === "yes");
         }}
-        legend="First covid test?"
-        displayLegend
+        legend="Is this your first covid test?"
         name="prior_test_flag"
         horizontal
       />
-      {isFirstTest ? null : (
-        <>
-          <DateInput
-            label="Date of most recent prior test?"
-            name="prior_test_date"
-            value={priorTestDate}
-            onChange={setPriorTestDate}
-            disabled={disableDetails}
-            max={new Date().toISOString().split("T")[0]}
-            min="2020-02-01"
-          />
-          <Dropdown
-            options={testTypeConfig}
-            label="Type of prior test"
-            name="prior_test_type"
-            selectedValue={priorTestType}
-            onChange={(e) => setPriorTestType(e.target.value)}
-            disabled={disableDetails}
-          />
-          <Dropdown
-            options={[
-              { value: COVID_RESULTS.POSITIVE, label: "Positive" },
-              { value: COVID_RESULTS.NEGATIVE, label: "Negative" },
-              { value: COVID_RESULTS.INCONCLUSIVE, label: "Undetermined" },
-            ]}
-            label="Result of prior test"
-            name="prior_test_result"
-            selectedValue={priorTestResult}
-            onChange={(e) => setPriorTestResult(e.target.value)}
-            disabled={disableDetails}
-          />
-        </>
-      )}
-    </React.Fragment>
+      {isFirstTest === false && previousTestEntry}
+    </>
   );
 };
 
@@ -157,11 +225,10 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback = () => null,
 }) => {
-  const testConfig = getTestTypes();
-  const symptomConfig = getSymptomList();
-
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
+  const testConfig = getTestTypes();
+  const symptomConfig = getSymptomList();
   const initialSymptoms = {};
   if (loadState.symptoms) {
     const loadedSymptoms = JSON.parse(loadState.symptoms);
@@ -169,32 +236,52 @@ const AoEModalForm = ({
     symptomConfig.forEach((opt) => {
       const val = opt.value;
       if (typeof loadedSymptoms[val] === "string") {
-        initialSymptoms[val] = loadedSymptoms[val] === "true" || false;
+        initialSymptoms[val] = loadedSymptoms[val] === "true";
       } else {
         initialSymptoms[val] = loadedSymptoms[val];
       }
     });
   } else {
     symptomConfig.forEach((opt) => {
-      const val = opt.value;
-      initialSymptoms[val] = false;
+      initialSymptoms[opt.value] = false;
     });
   }
 
   const [noSymptoms, setNoSymptoms] = useState(loadState.noSymptoms || false);
   const [currentSymptoms, setSymptoms] = useState(initialSymptoms);
   const [onsetDate, setOnsetDate] = useState(loadState.symptomOnset);
-
   const [isFirstTest, setIsFirstTest] = useState(loadState.firstTest);
   const [priorTestDate, setPriorTestDate] = useState(loadState.priorTestDate);
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState(
     loadState.priorTestResult
   );
-
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
+
+  // TODO: only get most recent test from the backend
+  const { data, loading, error } = useQuery(testResultQuery, {
+    fetchPolicy: "no-cache",
+  });
+  if (loading) return null;
+  if (error) throw error;
+  const mostRecentFirst = (a, b) => {
+    const ma = moment(a.dateTested);
+    const mb = moment(b.dateTested);
+    if (ma && ma.isAfter(mb)) return -1;
+    if (ma && ma.isBefore(mb)) return 1;
+    return 0;
+  };
+  const mostRecentTest = data.testResults
+    .filter((r) => r.patient.internalId === patient.internalId)
+    .sort(mostRecentFirst)[0];
+
+  // Auto-answer pregnancy question for males
+  const pregnancyResponses = getPregnancyResponses();
+  if (patient.gender === "male" && !pregnancyResponse) {
+    setPregnancyResponse(findValueForLabel("No", pregnancyResponses));
+  }
 
   const saveAnswers = (evt) => {
     const saveSymptoms = { ...currentSymptoms };
@@ -234,16 +321,16 @@ const AoEModalForm = ({
       <Button label={saveButtonText} onClick={saveAnswers} />
     </div>
   );
-  const patientName = displayFullName(
-    patient.firstName,
-    patient.middleName,
-    patient.lastName
-  );
+
   return (
     <CMSDialog
       onExit={onClose}
       closeText="Cancel"
-      heading={patientName}
+      heading={displayFullName(
+        patient.firstName,
+        patient.middleName,
+        patient.lastName
+      )}
       getApplicationNode={() => {
         document.getElementById("#root");
       }}
@@ -272,18 +359,23 @@ const AoEModalForm = ({
         setPriorTestType={setPriorTestType}
         priorTestResult={priorTestResult}
         setPriorTestResult={setPriorTestResult}
+        mostRecentTest={mostRecentTest}
       />
 
-      <h2>Pregnancy</h2>
-      <RadioGroup
-        legend="Currently pregnant?"
-        displayLegend
-        name="pregnancy"
-        type="radio"
-        onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
-        buttons={getPregnancyResponses()}
-        selectedRadio={pregnancyResponse}
-      />
+      {patient.gender !== "male" && (
+        <>
+          <h2>Pregnancy</h2>
+          <RadioGroup
+            legend="Currently pregnant?"
+            displayLegend
+            name="pregnancy"
+            type="radio"
+            onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+            buttons={pregnancyResponses}
+            selectedRadio={pregnancyResponse}
+          />
+        </>
+      )}
     </CMSDialog>
   );
 };

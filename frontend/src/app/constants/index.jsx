@@ -9,3 +9,9 @@ export const TEST_RESULT_VALUES = {
   1: COVID_RESULTS.POSITIVE,
   2: COVID_RESULTS.INCONCLUSIVE,
 };
+
+export const TEST_RESULT_DESCRIPTIONS = {
+  NEGATIVE: "Negative",
+  POSITIVE: "Positive",
+  UNDETERMINED: "Inconclusive",
+};

@@ -9,7 +9,7 @@ import {
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 
-const testResultQuery = gql`
+export const testResultQuery = gql`
   {
     testResults {
       internalId
