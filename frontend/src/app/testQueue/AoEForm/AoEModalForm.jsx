@@ -306,7 +306,7 @@ const AoEModalForm = ({
           firstTest: false,
           priorTestDate: priorTestDate,
           priorTestType: priorTestType,
-          priorTestResult: priorTestResult,
+          priorTestResult: priorTestResult ? priorTestResult : null,
         };
 
     saveCallback({
