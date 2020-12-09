@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { v4 as uuidv4 } from "uuid";
 import classnames from "classnames";
 
+import Required from "../commonComponents/Required";
+
 const RadioGroup = ({
   onChange,
   buttons,
@@ -13,6 +15,7 @@ const RadioGroup = ({
   type,
   legend,
   displayLegend = false,
+  required = false,
 }) => {
   // Note: list Affirmations before negations: Yes before No.
   const radioGroupItems = buttons.map((button) => {
@@ -50,6 +53,12 @@ const RadioGroup = ({
     <fieldset className="usa-fieldset prime-radios">
       <legend className={displayLegend ? "usa-legend" : "usa-sr-only"}>
         {legend}
+        {required ? (
+          <span>
+            {" "}
+            <Required />
+          </span>
+        ) : null}
       </legend>
       <ul
         className={
