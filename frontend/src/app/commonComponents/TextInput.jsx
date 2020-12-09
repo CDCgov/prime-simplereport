@@ -13,13 +13,14 @@ const TextInput = ({
   onChange,
   type = "text",
   addClass = "",
-  required = false
+  required = false,
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
   const labelElem = label ? (
     <label className="usa-label" htmlFor={newId}>
-      {label}{required ? (
+      {label}
+      {required ? (
         <span>
           {" "}
           <Required />
