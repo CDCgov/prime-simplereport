@@ -64,6 +64,7 @@ const EditPatient = (props: Props) => {
         employedInHealthcare,
       }}
       patientId={props.patientId}
+      activeFacilityId={props.facilityId}
     />
   );
 };

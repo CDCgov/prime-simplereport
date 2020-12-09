@@ -25,6 +25,7 @@ import Alert from "../commonComponents/Alert";
 
 const ADD_PATIENT = gql`
   mutation(
+    $facilityId: String
     $lookupId: String
     $firstName: String!
     $middleName: String
@@ -46,6 +47,7 @@ const ADD_PATIENT = gql`
     $employedInHealthcare: Boolean!
   ) {
     addPatient(
+      facilityId: $facilityId
       lookupId: $lookupId
       firstName: $firstName
       middleName: $middleName
@@ -71,6 +73,7 @@ const ADD_PATIENT = gql`
 
 const UPDATE_PATIENT = gql`
   mutation(
+    $facilityId: String
     $patientId: String!
     $lookupId: String
     $firstName: String!
@@ -93,6 +96,7 @@ const UPDATE_PATIENT = gql`
     $employedInHealthcare: Boolean!
   ) {
     updatePatient(
+      facilityId: $facilityId
       patientId: $patientId
       lookupId: $lookupId
       firstName: $firstName
@@ -157,6 +161,7 @@ const PatientForm = (props) => {
   const savePatientData = () => {
     setFormChanged(false);
     const variables = {
+      facilityId: props.activeFacilityId,
       lookupId: patient.lookupId,
       firstName: patient.firstName,
       middleName: patient.middleName,
