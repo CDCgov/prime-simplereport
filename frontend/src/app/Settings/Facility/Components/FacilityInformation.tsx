@@ -22,6 +22,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Testing Facility Name"}
             value={facility.name || ""}
             onChange={(v) => onChange("name", v)}
+            required
           />
         </div>
         <div className="tablet:grid-col">
@@ -77,6 +78,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label={"Zip Code"}
             value={facility.zipCode || ""}
             onChange={(v) => onChange("zipCode", v)}
+            required
           />
         </div>
         <div className="tablet:grid-col">

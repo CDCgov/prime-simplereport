@@ -17,6 +17,7 @@ import {
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
+import RequiredMessage from "../commonComponents/RequiredMessage";
 import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
@@ -253,9 +254,12 @@ const PatientForm = (props) => {
         ]}
       />
       <div className="prime-edit-patient-heading">
-        <h2>
-          {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
-        </h2>
+        <div>
+          <h2>
+            {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
+          </h2>
+          <RequiredMessage/>
+        </div>
         <button
           className="usa-button prime-save-patient-changes"
           disabled={!formChanged}
@@ -271,6 +275,7 @@ const PatientForm = (props) => {
             name="firstName"
             value={patient.firstName}
             onChange={onChange}
+            required
           />
           <TextInput
             label="Middle Name (optional)"
@@ -283,6 +288,7 @@ const PatientForm = (props) => {
             name="lastName"
             value={patient.lastName}
             onChange={onChange}
+            required
           />
         </div>
         <div className="prime-form-line">
@@ -312,6 +318,7 @@ const PatientForm = (props) => {
             name="birthDate"
             value={patient.birthDate}
             onChange={onChange}
+            required
           />
         </div>
       </Fieldset>
@@ -323,6 +330,7 @@ const PatientForm = (props) => {
             value={patient.telephone}
             addClass="prime-phone"
             onChange={onChange}
+            required
           />
           <TextInput
             label="Email Address"
@@ -339,6 +347,7 @@ const PatientForm = (props) => {
             value={patient.street}
             addClass="prime-street-address"
             onChange={onChange}
+            required
           />
         </div>
         <div className="prime-form-line">
@@ -372,6 +381,7 @@ const PatientForm = (props) => {
             options={stateCodes.map((c) => ({ label: c, value: c }))}
             addClass="prime-state"
             onChange={onChange}
+            required
           />
           <TextInput
             label="Zip"
@@ -379,6 +389,7 @@ const PatientForm = (props) => {
             value={patient.zipCode}
             addClass="prime-zip"
             onChange={onChange}
+            required
           />
         </div>
       </Fieldset>
@@ -462,6 +473,7 @@ const PatientForm = (props) => {
             ]}
             selectedRadio={patient.residentCongregateSetting}
             onChange={onChange}
+            required
           />
         </div>
         <div>
@@ -475,6 +487,7 @@ const PatientForm = (props) => {
             ]}
             selectedRadio={patient.employedInHealthcare}
             onChange={onChange}
+            required
           />
         </div>
       </Fieldset>

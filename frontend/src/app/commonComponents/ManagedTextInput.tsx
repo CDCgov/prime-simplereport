@@ -1,6 +1,8 @@
 import React from "react";
 import classnames from "classnames";
+
 import useUniqueId from "../commonComponents/useUniqueIds";
+import Required from "../commonComponents/Required";
 
 interface Props {
   value: string | undefined;
@@ -11,6 +13,7 @@ interface Props {
   type?: "text";
   addClass?: string;
   disabled?: boolean;
+  required?: boolean;
 }
 
 const TextInput: React.FC<Props> = ({
@@ -22,12 +25,19 @@ const TextInput: React.FC<Props> = ({
   type = "text",
   addClass = "",
   disabled,
+  required,
 }) => {
   let [newId] = useUniqueId("textinput", 1);
 
   const labelElem = label ? (
     <label className="usa-label" htmlFor={newId}>
       {label}
+      {required ? (
+        <span>
+          {" "}
+          <Required />
+        </span>
+      ) : null}
     </label>
   ) : null;
 
