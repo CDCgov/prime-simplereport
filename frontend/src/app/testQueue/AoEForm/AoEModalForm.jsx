@@ -226,6 +226,7 @@ const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
   patient,
+  facilityId,
   loadState = {},
   saveCallback = () => null,
 }) => {
@@ -267,6 +268,7 @@ const AoEModalForm = ({
   // TODO: only get most recent test from the backend
   const { data, loading, error } = useQuery(testResultQuery, {
     fetchPolicy: "no-cache",
+    variables: {facilityId}
   });
   if (loading) return null;
   if (error) throw error;

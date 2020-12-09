@@ -145,6 +145,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               devices={facility.deviceTypes}
               defaultDevice={facility.defaultDeviceType}
               refetchQueue={refetchQueue}
+              facilityId={activeFacilityId}
             />
           )
         )
@@ -154,7 +155,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <AddToQueueSearch refetchQueue={refetchQueue} />
+          <AddToQueueSearch
+            refetchQueue={refetchQueue}
+            facilityId={activeFacilityId}
+          />
         </div>
         {createQueueItems(data.queue)}
       </div>

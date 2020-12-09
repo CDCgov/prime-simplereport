@@ -12,13 +12,12 @@ import SearchResults from "./SearchResults";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
 import { showNotification } from "../../utils";
 import { displayFullName } from "../../utils";
-import { useSelector } from "react-redux";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const QUERY_PATIENT = gql`
-  {
-    patients {
+  query Patient($facilityId: String!) {
+    patients(facilityId: $facilityId) {
       internalId
       lookupId
       firstName
@@ -58,7 +57,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
-const AddToQueueSearchBox = ({ refetchQueue }) => {
+const AddToQueueSearchBox = ({ refetchQueue, facilityId }) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
     appInsights,
@@ -67,13 +66,13 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
 
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
+    variables: {facilityId}
   });
 
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
-  const facility = useSelector((state) => state.facility);
 
   if (loading) {
     return <p> Loading patient data... </p>;
@@ -141,7 +140,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
     trackAddPatientToQueue();
     addPatientToQueue({
       variables: {
-        facilityId: facility.id,
+        facilityId: facilityId,
         patientId: patient.internalId,
         noSymptoms,
         symptoms,
@@ -180,6 +179,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         suggestions={suggestions}
         shouldDisplay={shouldShowSuggestions}
         onAddToQueue={onAddToQueue}
+        facilityId={facilityId}
       />
     </React.Fragment>
   );

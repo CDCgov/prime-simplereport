@@ -6,7 +6,7 @@ import Anchor from "../../commonComponents/Anchor";
 import AoeModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 
-const AddToQueueButton = ({ patient, onAddToQueue }) => {
+const AddToQueueButton = ({ patient, onAddToQueue, facilityId }) => {
   const [aoeDialogActive, setAoEDialogActive] = useState(false);
   if (patient.isInQueue) {
     return "Already in queue";
@@ -23,13 +23,14 @@ const AddToQueueButton = ({ patient, onAddToQueue }) => {
           patient={patient}
           onClose={() => setAoEDialogActive(false)}
           saveCallback={saveHandler}
+          facilityId={facilityId}
         />
       )}
     </React.Fragment>
   );
 };
 
-const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
+const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue, facilityId }) => {
   if (!shouldDisplay) {
     return null;
   }
@@ -50,7 +51,7 @@ const SearchResults = ({ suggestions, shouldDisplay, onAddToQueue }) => {
         <td>{suggestion.birthDate}</td>
         <td>{suggestion.lookupId}</td>
         <td>
-          <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} />
+          <AddToQueueButton patient={suggestion} onAddToQueue={onAddToQueue} facilityId={facilityId} />
         </td>
       </tr>
     ));
