@@ -169,7 +169,7 @@ const Header = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li
               className={classNames("usa-nav__primary-item", {
-                "active-nav-item": staffDetailsVisible,
+                "active-nav-item": menuVisible,
               })}
             >
               <NavLink
@@ -212,8 +212,8 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`#`}
-                isActive={() => false}
+                to={""}
+                isActive={() => staffDetailsVisible}
                 onClick={(e) => {
                   e.preventDefault();
                   setStaffDetailsVisible(!staffDetailsVisible);
@@ -241,11 +241,7 @@ const Header = () => {
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
-                    <Anchor
-                      className="prime-force-link-in-nav"
-                      text={" Log out"}
-                      onClick={() => logout()}
-                    />
+                    <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
                 </ul>
               </div>
