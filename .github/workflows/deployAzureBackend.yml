@@ -7,7 +7,6 @@ on:
       - main
     paths:
       - "backend/**"
-      - ".github/workflows/deployAzureBackend.yml"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}

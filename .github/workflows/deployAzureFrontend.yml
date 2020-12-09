@@ -4,10 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - ci_cd
-#    paths:
-#      - "frontend/**"
-#      - ".github/workflows/deployAzureFrontend.yml"
+      - main
+    paths:
+      - "frontend/**"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
@@ -19,7 +18,7 @@ defaults:
     working-directory: ./frontend
 
 jobs:
-  build-image:
+  build-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

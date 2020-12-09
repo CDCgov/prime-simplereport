@@ -13,7 +13,7 @@ env:
   ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
 
 jobs:
-  plan:
+  validation_and_formatting:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
