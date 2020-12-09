@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -29,29 +30,26 @@ public class QueueManagementTest extends BaseApiTest {
 	private OrganizationService _orgService;
 
 	private Organization _org;
+	private Facility _site;
 
 	@BeforeEach
 	public void init() {
 		truncateDb();
 		_org = _orgService.getCurrentOrganization();
-	}
-
-	@AfterEach
-	public void cleanup() {
-		truncateDb();
+		_site = _orgService.getFacilities(_org).get(0);
 	}
 
 	@Test
 	public void enqueueOnePatient() throws Exception {
 		Person p = _dataFactory.createFullPerson(_org);
 		String personId = p.getInternalId().toString();
-		ObjectNode variables = JsonNodeFactory.instance.objectNode()
+		ObjectNode variables = getFacilityScopedArguments()
 				.put("id", personId)
 				.put("previousTestDate", "05/15/2020")
 				.put("symptomOnsetDate", "11/30/2020")
 				;
 		performEnqueueMutation(variables);
-		ArrayNode queueData = (ArrayNode) runQuery(QUERY).get("queue");
+		ArrayNode queueData = fetchQueue();
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
@@ -66,19 +64,28 @@ public class QueueManagementTest extends BaseApiTest {
 	public void enqueueOnePatientIsoDate() throws Exception {
 		Person p = _dataFactory.createFullPerson(_org);
 		String personId = p.getInternalId().toString();
-		ObjectNode variables = JsonNodeFactory.instance.objectNode()
+		ObjectNode variables = getFacilityScopedArguments()
 				.put("id", personId)
 				.put("previousTestDate", "2020-05-15")
 				.put("symptomOnsetDate", "2020-11-30")
 				;
 		performEnqueueMutation(variables);
-		ArrayNode queueData = (ArrayNode) runQuery(QUERY).get("queue");
+		ArrayNode queueData = fetchQueue();
 		assertEquals(1, queueData.size());
 		JsonNode queueEntry = queueData.get(0);
 		String symptomOnset = queueEntry.get("symptomOnset").asText();
 		String priorTest = queueEntry.get("priorTestDate").asText();
 		assertEquals("2020-11-30", symptomOnset);
 		assertEquals("2020-05-15", priorTest);
+	}
+
+	private ObjectNode getFacilityScopedArguments() {
+		return JsonNodeFactory.instance.objectNode()
+			.put("facilityId", _site.getInternalId().toString());
+	}
+
+	private ArrayNode fetchQueue() {
+		return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
 	}
 
 	private void performEnqueueMutation(ObjectNode variables) throws IOException {
