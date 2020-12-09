@@ -164,6 +164,7 @@ const Header = () => {
           </ul>
         </nav>
 
+        {/* This is the side nav menu section */}
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
@@ -208,7 +209,7 @@ const Header = () => {
             <li className="usa-nav__primary-item">
               <NavLink
                 to={`#`}
-                isActive={() => false}
+                isActive={() => staffDetailsVisible}
                 onClick={(e) => {
                   e.preventDefault();
                   setStaffDetailsVisible(!staffDetailsVisible);
@@ -219,14 +220,14 @@ const Header = () => {
                   icon={"user"}
                   size="2x"
                   style={{
-                    fill: "white",
+                    color: staffDetailsVisible ? "white" : "",
                   }}
                 />
               </NavLink>
               <div
                 ref={staffDefailsRef}
                 aria-label="Primary navigation"
-                className={classNames("usa-nav", "prime-staff-infobox", {
+                className={classNames("shadow-3", "prime-staff-infobox", {
                   "is-prime-staff-infobox-visible": staffDetailsVisible,
                 })}
               >
