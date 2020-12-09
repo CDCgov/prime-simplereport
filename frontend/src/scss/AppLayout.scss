@@ -61,10 +61,10 @@ main {
 .prime-form-line {
   display: flex;
   flex-flow: row wrap;
-}
-.prime-text-input,
-.prime-dropdown {
-  margin-left: 2em;
+
+  > * {
+    margin-left: 2em;
+  }
 }
 .prime-radios,
 .prime-checkboxes {
