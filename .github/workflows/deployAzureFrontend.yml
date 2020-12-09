@@ -30,4 +30,4 @@ jobs:
       - name: Build frontend app artifact
         run: npm run deploy-azure-dev
       - name: install AZ
-          run: sudo apt-get install azure-cli
+        run: sudo apt-get install azure-cli
