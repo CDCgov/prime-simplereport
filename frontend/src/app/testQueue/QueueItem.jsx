@@ -23,6 +23,7 @@ import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { TestTimerWidget } from "./TestTimer";
+import moment from "moment";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation($patientId: String!) {
@@ -275,7 +276,10 @@ const QueueItem = ({
                   <LabeledText text={patient.telephone} label="Phone Number" />
                 </li>
                 <li className="prime-li">
-                  <LabeledText text={patient.birthDate} label="Date of Birth" />
+                  <LabeledText
+                    text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                    label="Date of Birth"
+                  />
                 </li>
                 <li className="prime-li">
                   <Anchor
