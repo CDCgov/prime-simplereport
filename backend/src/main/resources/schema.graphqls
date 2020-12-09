@@ -111,7 +111,7 @@ type User {
 
 type Query {
   deviceType: [DeviceType]
-  patients: [Patient]
+  patients(facilityId: String): [Patient]
   patient(id: String!): Patient
   organization: Organization
   queue(facilityId: String!): [TestOrder]
@@ -172,6 +172,7 @@ type Mutation {
   ): String
   updateOrganization(name: String!): String
   addPatient(
+    facilityId: String
     lookupId: String
     firstName: String!
     middleName: String
@@ -194,6 +195,7 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   updatePatient(
+    facilityId: String
     patientId: String!
     lookupId: String
     firstName: String!

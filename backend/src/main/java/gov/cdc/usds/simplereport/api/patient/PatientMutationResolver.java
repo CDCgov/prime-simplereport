@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.patient;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void addPatient(
+        String facilityId,
         String lookupId,
         String firstName,
         String middleName,
@@ -45,6 +47,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     ) {
       LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.addPatient(
+            UUID.fromString(facilityId),
             lookupId,
             firstName,
             middleName,
@@ -69,6 +72,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void updatePatient(
+      String facilityId,
       String patientId,
       String lookupId,
       String firstName,
@@ -93,6 +97,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
   ) {
       LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.updatePatient(
+          UUID.fromString(facilityId),
           patientId,
           lookupId,
           firstName,

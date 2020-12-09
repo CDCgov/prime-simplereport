@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -56,7 +57,7 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-            _ps.addPatient(row.get("ID"),
+            _ps.addPatient(UUID.fromString(""), row.get("ID"),
                     row.get("FirstName"),
                     row.get("MiddleName"),
                     row.get("LastName"),
