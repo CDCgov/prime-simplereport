@@ -6,15 +6,11 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseServiceTest {
-
-	@Autowired
-	private PersonService _service;
+public class PersonServiceTest extends BaseServiceTest<PersonService> {
 
 	@Test
 	public void roundTrip() {

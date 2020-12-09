@@ -19,12 +19,10 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
-class UploadServiceTest extends BaseServiceTest {
+class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Autowired
     private PersonService _ps;
-    @Autowired
-    private UploadService _service;
 
     @Test
     void testInsert() throws IOException {

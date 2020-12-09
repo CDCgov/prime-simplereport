@@ -21,10 +21,12 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 @SpringBootTest(properties = "spring.main.web-application-type=NONE")
 @ActiveProfiles("dev")
 @Import(SliceTestConfiguration.class)
-public class BaseServiceTest {
+public class BaseServiceTest<T> {
 
 	@Autowired
 	private DbTruncator _truncator;
+	@Autowired
+	protected T _service;
 
 	@BeforeEach
 	public void clearDb() {

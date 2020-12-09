@@ -7,14 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 
-public class DeviceTypeServiceTest extends BaseServiceTest {
-
-	@Autowired
-	private DeviceTypeService _service;
+public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
 	@Test
 	public void insertAndFindAndDeleteAndSoForth() {

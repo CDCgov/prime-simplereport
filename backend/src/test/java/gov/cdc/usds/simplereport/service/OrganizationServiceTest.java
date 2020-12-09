@@ -4,14 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 
-public class OrganizationServiceTest extends BaseServiceTest {
-
-	@Autowired
-	private OrganizationService _service;
+public class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 	
 	@Test
 	public void findit() {
