@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -33,6 +34,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Configuration
 @Profile("!" + DevSecurityConfiguration.PROFILE) // Activate this profile to disable security
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";

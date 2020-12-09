@@ -7,20 +7,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 
-public class DeviceTypeServiceTest extends BaseRepositoryTest {
-
-	@Autowired
-	private DeviceTypeRepository _repo;
+public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
 	@Test
 	public void insertAndFindAndDeleteAndSoForth() {
-		DeviceTypeService _service = new DeviceTypeService(_repo);
 		DeviceType devA = _service.createDeviceType("A", "B", "C", "DUMMY");
 		DeviceType devB = _service.createDeviceType("D", "E", "F", "DUMMY");
 		assertNotNull(devA);
