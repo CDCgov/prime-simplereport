@@ -25,7 +25,7 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:2a824f6" # hardcoding this until automated deploy of images are in place
+  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:7022210" # hardcoding this until automated deploy of images are in place
   key_vault_id     = data.azurerm_key_vault.sr_global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
 
