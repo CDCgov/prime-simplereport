@@ -47,7 +47,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     ) {
       LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.addPatient(
-            UUID.fromString(facilityId),
+            facilityId == null ? null : UUID.fromString(facilityId),
             lookupId,
             firstName,
             middleName,
@@ -97,7 +97,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
   ) {
       LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.updatePatient(
-          UUID.fromString(facilityId),
+          facilityId == null ? null : UUID.fromString(facilityId),
           patientId,
           lookupId,
           firstName,

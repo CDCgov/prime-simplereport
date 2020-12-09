@@ -21,7 +21,8 @@ public class PatientResolver implements GraphQLQueryResolver {
 	private PersonService ps;
 
 	public List<Patient> getPatients(String facilityId) {
-		return ps.getPatients(UUID.fromString(facilityId)).stream()
+
+		return ps.getPatients(facilityId == null ? null : UUID.fromString(facilityId)).stream()
 		.map(p -> new Patient(p))
 		.collect(Collectors.toList());
 	}
