@@ -36,7 +36,6 @@ public class OrganizationService {
 		_initService = initService;
 	}
 
-	@Transactional(readOnly=true)
 	public Organization getCurrentOrganization() {
     	_initService.initAll();
 		Optional<Organization> maybe = _repo.findByExternalId(_initService.getDefaultOrganizationId());
@@ -47,7 +46,6 @@ public class OrganizationService {
 		}
 	}
 
-	@Transactional(readOnly=true)
 	public void assertFacilityNameAvailable(String testingFacilityName) {
 		Organization org = this.getCurrentOrganization();
 		_facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
