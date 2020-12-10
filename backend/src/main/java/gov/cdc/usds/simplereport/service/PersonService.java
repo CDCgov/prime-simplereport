@@ -57,7 +57,7 @@ public class PersonService {
 			.orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
 	}
 
-	public String addPatient(
+	public Person addPatient(
 		UUID facilityId,
 		String lookupId,
 		String firstName,
@@ -113,11 +113,10 @@ public class PersonService {
 			newPatient.setFacility(facility);
 		}
 
-		_repo.save(newPatient);
-		return newPatient.getInternalId().toString();
+		return _repo.save(newPatient);
 	}
 
-	public String updatePatient(
+	public Person updatePatient(
 		UUID facilityId,
 		String patientId,
 		String lookupId,
@@ -166,7 +165,6 @@ public class PersonService {
 			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
 			patientToUpdate.setFacility(facility);
 		}
-		_repo.save(patientToUpdate);
-		return patientToUpdate.getInternalId().toString();
+		return _repo.save(patientToUpdate);
 	}
 }
