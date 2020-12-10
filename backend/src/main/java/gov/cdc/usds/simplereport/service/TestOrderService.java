@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -37,7 +36,6 @@ public class TestOrderService {
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
-  private FacilityRepository _facilityRepo;
 
   public TestOrderService(
     OrganizationService os,
@@ -45,8 +43,7 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
-    PersonService ps,
-    FacilityRepository frepo
+          PersonService ps
   ) {
     _os = os;
     _ps = ps;
@@ -54,7 +51,6 @@ public class TestOrderService {
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
-    _facilityRepo = frepo;
 }
 
   public List<TestOrder> getQueue(String facilityId) {
@@ -62,9 +58,15 @@ public class TestOrderService {
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
+  @Transactional(readOnly = true)
   public List<TestEvent> getTestResults(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
+  }
+
+  @Transactional(readOnly = true)
+  public List<TestEvent> getTestResults(Person patient) {
+      return _terepo.findAllByPatient(patient);
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
