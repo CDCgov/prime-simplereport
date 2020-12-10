@@ -4,10 +4,11 @@ variable "docker_tag" {
   default     = "1ba237a"
 }
 
-variable "env" {
-  default = "dev"
+variable "acr_image_tag" {
+  description = "Simple report Api ACR tag to deploy"
+  type        = string
 }
 
-variable "application_name" {
-  default = "prime-simple-report"
+variable "env" {
+  default = "dev"
 }

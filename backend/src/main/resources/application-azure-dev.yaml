@@ -1,9 +1,28 @@
-spring:
-  jpa:
-    properties:
-      hibernate:
-        default_schema: simple_report
 graphql.servlet.cors:
   allowed-origins:
-    - http://localhost:3000
     - https://simple-report-api-dev.azurewebsites.net
+    - https://simplereportdevapp.z13.web.core.windows.net
+    - https://simple-report-dev.azureedge.net
+    - http://dev.simplereport.org
+simple-report-initialization:
+  organization:
+    org-name: Dis Organization
+    external-id: DIS_ORG
+  facility:
+    facility-name: Injection Site
+    clia-number: "000111222-3"
+    address:
+      street-1: 2797 N Cerrada de Beto
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      zip-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2
