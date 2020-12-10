@@ -10,8 +10,8 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 
 export const testResultQuery = gql`
-  {
-    testResults {
+  query Results($facilityId: String!) {
+    testResults(facilityId: $facilityId) {
       internalId
       dateTested
       result
@@ -30,18 +30,23 @@ export const testResultQuery = gql`
   }
 `;
 
-const TestResultsList = () => {
+interface Props {
+  activeFacilityId: string;
+}
+
+const TestResultsList: any = ({ activeFacilityId }: Props) => {
   const appInsights = useAppInsightsContext();
   const trackFetchTestResults = useTrackEvent(
     appInsights,
-    "Fetch Test Results"
+    "Fetch Test Results",
+    {}
   );
 
   useEffect(() => {
-    trackFetchTestResults();
+    trackFetchTestResults({});
   }, [trackFetchTestResults]);
-
   const { data, loading, error } = useQuery(testResultQuery, {
+    variables: { facilityId: activeFacilityId },
     fetchPolicy: "no-cache",
   });
 
@@ -55,11 +60,11 @@ const TestResultsList = () => {
     return error;
   }
 
-  const testResultRows = (testResults) => {
+  const testResultRows = (testResults: any) => {
     if (testResults.length === 0) {
       return;
     }
-    const byDateTested = (a, b) => {
+    const byDateTested = (a: any, b: any) => {
       // ISO string dates sort nicely
       if (a.dateTested === b.dateTested) return 0;
       if (a.dateTested < b.dateTested) return 1;

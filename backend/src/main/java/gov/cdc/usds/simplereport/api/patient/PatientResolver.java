@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.patient;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,9 @@ public class PatientResolver implements GraphQLQueryResolver {
 	@Autowired
 	private PersonService ps;
 
-	public List<Patient> getPatients() {
-		return ps.getPatients().stream()
+	public List<Patient> getPatients(String facilityId) {
+
+		return ps.getPatients(facilityId == null ? null : UUID.fromString(facilityId)).stream()
 		.map(p -> new Patient(p))
 		.collect(Collectors.toList());
 	}

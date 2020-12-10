@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +40,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void addPatientToQueue(
+        String facilityID,
         String patientID,
         String pregnancy,
         String symptoms,
@@ -62,6 +64,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       }
 
       _tos.addPatientToQueue(
+        UUID.fromString(facilityID),
         _ps.getPatient(patientID),
         pregnancy,
         symptomsMap,

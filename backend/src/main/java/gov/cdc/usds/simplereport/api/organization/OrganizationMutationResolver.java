@@ -1,12 +1,18 @@
 package gov.cdc.usds.simplereport.api.organization;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import java.util.List;
+import java.util.UUID;
+
+import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
-import java.util.ArrayList;
-import java.util.List;
+
 
 /**
  * Created by nickrobison on 11/17/20
@@ -22,7 +28,44 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _dts = dts;
     }
 
-    public void updateFacility(String testingFacilityName,
+    public ApiFacility addFacility(
+            String testingFacilityName,
+            String cliaNumber,
+            String street,
+            String streetTwo,
+            String city,
+            String county,
+            String state,
+            String zipCode,
+            String phone,
+            String orderingProviderFirstName,
+            String orderingProviderMiddleName,
+            String orderingProviderLastName,
+            String orderingProviderSuffix,
+            String orderingProviderNPI,
+            String orderingProviderStreet,
+            String orderingProviderStreetTwo,
+            String orderingProviderCity,
+            String orderingProviderCounty,
+            String orderingProviderState,
+            String orderingProviderZipCode,
+            String orderingProviderTelephone,
+            List<String> deviceIds,
+            String defaultDeviceId
+                ) {
+        _os.assertFacilityNameAvailable(testingFacilityName);
+        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
+            orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
+        PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, phone, deviceTypes,
+            providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
+        return new ApiFacility(created);
+    }
+
+    public ApiFacility updateFacility(String facilityId,
+                                   String testingFacilityName,
                                    String cliaNumber,
                                    String street,
                                    String streetTwo,
@@ -45,23 +88,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderTelephone,
                                    List<String> deviceIds,
                                    String defaultDeviceId) throws Exception {
-        if (!deviceIds.contains(defaultDeviceId)) {
-          throw new Exception("deviceIds must include defaultDeviceId");
-        }
-        DeviceType defaultDeviceType = _dts.getDeviceType(defaultDeviceId);
-        if (defaultDeviceType == null) {
-          throw new Exception("default device does not exist");
-        }
-
-        List<DeviceType> devices = new ArrayList<>();
-        for(String id : deviceIds) {
-          DeviceType d = _dts.getDeviceType(id);
-          if(d==null) {
-            throw new Exception("device does not exist");
-          }
-          devices.add(d);
-        }
-        _os.updateFacility(
+        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        Facility facility = _os.updateFacility(
+          UUID.fromString(facilityId),
           testingFacilityName,
           cliaNumber,
           street,
@@ -83,9 +112,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           orderingProviderState,
           orderingProviderZipCode,
           orderingProviderTelephone,
-          devices,
-          defaultDeviceType
+          deviceTypes.getConfiguredDeviceTypes(),
+          deviceTypes.getDefaultDeviceType()
         );
+        return new ApiFacility(facility);
     }
 
     public void updateOrganization(String name) {

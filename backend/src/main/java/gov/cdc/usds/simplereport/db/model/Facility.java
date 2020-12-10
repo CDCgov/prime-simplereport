@@ -81,6 +81,16 @@ public class Facility extends OrganizationScopedEternalEntity {
 		this.configuredDevices.addAll(configuredDevices);
 	}
 
+	public Facility(Organization org, String facilityName, String cliaNumber,
+			StreetAddress facilityAddress, String phone,
+			Provider orderingProvider, 
+			DeviceType defaultDeviceType,
+			List<DeviceType> configuredDeviceTypes) {
+		this(org, facilityName, cliaNumber, orderingProvider, defaultDeviceType, configuredDeviceTypes);
+		this.address = facilityAddress;
+		this.telephone = phone;
+	}
+
 	public void setFacilityName(String facilityName) {
 		this.facilityName = facilityName;
 	}

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -35,6 +37,7 @@ public class TestOrderService {
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
+  private FacilityRepository _facilityRepo;
 
   public TestOrderService(
     OrganizationService os,
@@ -42,7 +45,8 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
-    PersonService ps
+    PersonService ps,
+    FacilityRepository frepo
   ) {
     _os = os;
     _ps = ps;
@@ -50,14 +54,17 @@ public class TestOrderService {
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
+    _facilityRepo = frepo;
 }
 
-	public List<TestOrder> getQueue() {
-		return _repo.fetchQueueForOrganization(_os.getCurrentOrganization());
-	}
+  public List<TestOrder> getQueue(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+    return _repo.fetchQueue(fac.getOrganization(), fac);
+  }
 
-  public List<TestEvent> getTestResults() {
-	  return _terepo.findAllByOrganization(_os.getCurrentOrganization());
+  public List<TestEvent> getTestResults(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+    return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
   }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
@@ -78,6 +85,7 @@ public class TestOrderService {
   }
 
   public void addPatientToQueue(
+    UUID facilityId,
     Person patient,
     String pregnancy,
     Map<String, Boolean> symptoms,
@@ -95,7 +103,7 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    Facility testFacility = _os.getDefaultFacility(_os.getCurrentOrganization());
+    Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(

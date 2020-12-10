@@ -111,15 +111,41 @@ type User {
 
 type Query {
   deviceType: [DeviceType]
-  patients: [Patient]
+  patients(facilityId: String): [Patient]
   patient(id: String!): Patient
   organization: Organization
-  queue: [TestOrder]
-  testResults: [TestResult]
+  queue(facilityId: String!): [TestOrder]
+  testResults(facilityId: String!): [TestResult]
   whoami: User!
 }
 type Mutation {
   updateFacility(
+    facilityId: String!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String
+    streetTwo: String
+    city: String
+    county: String
+    state: String
+    zipCode: String!
+    phone: String
+    orderingProviderFirstName: String!
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String!
+    orderingProviderSuffix: String
+    orderingProviderNPI: String!
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    orderingProviderState: String
+    orderingProviderZipCode: String!
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    defaultDevice: String!
+  ): String
+  addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String
@@ -146,6 +172,7 @@ type Mutation {
   ): String
   updateOrganization(name: String!): String
   addPatient(
+    facilityId: String
     lookupId: String
     firstName: String!
     middleName: String
@@ -168,6 +195,7 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   updatePatient(
+    facilityId: String
     patientId: String!
     lookupId: String
     firstName: String!
@@ -192,6 +220,7 @@ type Mutation {
   ): String
   addTestResult(deviceId: String!, result: String!, patientId: String!): String
   addPatientToQueue(
+    facilityId: String!
     patientId: String!
     pregnancy: String
     symptoms: String

@@ -101,6 +101,7 @@ const QueueItem = ({
   selectedTestResult,
   defaultDevice,
   refetchQueue,
+  facilityId,
 }) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -290,6 +291,7 @@ const QueueItem = ({
                       patient={patient}
                       loadState={aoeAnswers}
                       saveCallback={saveAoeCallback}
+                      facilityId={facilityId}
                     />
                   )}
                   <p>

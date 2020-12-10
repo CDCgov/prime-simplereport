@@ -16,8 +16,8 @@ import { displayFullName } from "../../utils";
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const QUERY_PATIENT = gql`
-  {
-    patients {
+  query Patient($facilityId: String!) {
+    patients(facilityId: $facilityId) {
       internalId
       lookupId
       firstName
@@ -31,6 +31,7 @@ const QUERY_PATIENT = gql`
 
 const ADD_PATIENT_TO_QUEUE = gql`
   mutation(
+    $facilityId: String!
     $patientId: String!
     $symptoms: String
     $symptomOnset: String
@@ -42,6 +43,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $noSymptoms: Boolean
   ) {
     addPatientToQueue(
+      facilityId: $facilityId
       patientId: $patientId
       pregnancy: $pregnancy
       noSymptoms: $noSymptoms
@@ -55,7 +57,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
-const AddToQueueSearchBox = ({ refetchQueue }) => {
+const AddToQueueSearchBox = ({ refetchQueue, facilityId }) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
     appInsights,
@@ -64,6 +66,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
 
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
+    variables: { facilityId },
   });
 
   const [mutationError, updateMutationError] = useState(null);
@@ -137,6 +140,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
     trackAddPatientToQueue();
     addPatientToQueue({
       variables: {
+        facilityId: facilityId,
         patientId: patient.internalId,
         noSymptoms,
         symptoms,
@@ -175,6 +179,7 @@ const AddToQueueSearchBox = ({ refetchQueue }) => {
         suggestions={suggestions}
         shouldDisplay={shouldShowSuggestions}
         onAddToQueue={onAddToQueue}
+        facilityId={facilityId}
       />
     </React.Fragment>
   );

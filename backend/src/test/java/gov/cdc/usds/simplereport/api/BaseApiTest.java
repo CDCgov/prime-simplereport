@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -31,6 +32,11 @@ public abstract class BaseApiTest {
 		_truncator.truncateAll();
 	}
 
+	@AfterEach
+	public void cleanup() {
+		truncateDb();
+	}
+
 	/** 
 	 * Run the query in the given resource file, check if the response has errors, and
 	 * return the {@code data} section of the response if not.
@@ -42,6 +48,18 @@ public abstract class BaseApiTest {
 	protected ObjectNode runQuery(String queryFileName) {
 		try {
 			GraphQLResponse response = _template.postForResource(queryFileName);
+			assertTrue(response.isOk(), "Servlet response should be OK");
+			JsonNode responseBody = response.readTree();
+			assertGraphQLSuccess(responseBody);
+			return (ObjectNode) responseBody.get("data");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
+		try {
+			GraphQLResponse response = _template.perform(queryFileName, variables);
 			assertTrue(response.isOk(), "Servlet response should be OK");
 			JsonNode responseBody = response.readTree();
 			assertGraphQLSuccess(responseBody);

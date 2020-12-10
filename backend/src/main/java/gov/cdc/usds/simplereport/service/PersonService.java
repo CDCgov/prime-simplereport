@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 
 
@@ -22,18 +24,28 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 @Service
 @Transactional(readOnly = false)
 public class PersonService {
-    private OrganizationService _os;
-    private PersonRepository _repo;
+		private OrganizationService _os;
+		private PersonRepository _repo;
+		private FacilityRepository _facilityRepo;
 
-    public PersonService(OrganizationService os, PersonRepository repo) {
-        _os = os;
-        _repo = repo;
-    }
+		public PersonService(
+			OrganizationService os,
+			PersonRepository repo,
+			FacilityRepository facilityRepo
+		) {
+			_os = os;
+				_repo = repo;
+				_facilityRepo = facilityRepo;
+		}
 
-    public List<Person> getPatients() {
-        return _repo.findAllByOrganization(_os.getCurrentOrganization());
-    }
-
+		public List<Person> getPatients(UUID facilityId) {
+			Organization org = _os.getCurrentOrganization();
+			if (facilityId == null) {
+				return _repo.findAllByOrganization(org);
+			}
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+			return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization());
+		}
 
 	public Person getPatient(String id) {
 		return getPatient(id, _os.getCurrentOrganization());
@@ -45,7 +57,8 @@ public class PersonService {
 			.orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
 	}
 
-	public String addPatient(
+	public Person addPatient(
+		UUID facilityId,
 		String lookupId,
 		String firstName,
 		String middleName,
@@ -94,11 +107,17 @@ public class PersonService {
 			residentCongregateSetting,
 			employedInHealthcare
 		);
-		_repo.save(newPatient);
-		return newPatient.getInternalId().toString();
+
+		if (newPatient.getRole() != PersonRole.STAFF) {
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+			newPatient.setFacility(facility);
+		}
+
+		return _repo.save(newPatient);
 	}
 
-	public String updatePatient(
+	public Person updatePatient(
+		UUID facilityId,
 		String patientId,
 		String lookupId,
 		String firstName,
@@ -141,7 +160,11 @@ public class PersonService {
 			residentCongregateSetting,
 			employedInHealthcare
 		);
-		_repo.save(patientToUpdate);
-		return patientToUpdate.getInternalId().toString();
+
+		if (patientToUpdate.getRole() != PersonRole.STAFF) {
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+			patientToUpdate.setFacility(facility);
+		}
+		return _repo.save(patientToUpdate);
 	}
 }

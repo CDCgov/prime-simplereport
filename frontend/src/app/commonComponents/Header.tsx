@@ -8,8 +8,11 @@ import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
+import { useDispatch, connect } from "react-redux";
+import { updateFacility } from "../store";
 
 const Header = () => {
+  const dispatch = useDispatch();
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -32,6 +35,11 @@ const Header = () => {
     result += user.lastName ? ` ${user.lastName}` : "";
     result += user.suffix ? `, ${user.suffix}` : "";
     return result;
+  };
+
+  const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
+    const id = (e.target as HTMLSelectElement).value;
+    dispatch(updateFacility(facilities.find((f) => f.id === id)));
   };
 
   const logout = () => {
@@ -66,7 +74,7 @@ const Header = () => {
         <div className="prime-facility-select">
           <Dropdown
             selectedValue={facility.id}
-            onChange={() => undefined}
+            onChange={onFacilitySelect}
             options={facilities.map((f: Facility) => {
               return { label: f.name, value: f.id };
             })}
@@ -260,4 +268,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default connect()(Header);
