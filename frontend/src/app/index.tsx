@@ -140,6 +140,7 @@ const App = () => {
                   render={() => {
                     return <TestQueueContainer />;
                   }}
+                  exact
                 />
                 <Route
                   path="/results"
