@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./frontend
+    working-directory: ./ops
 
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
