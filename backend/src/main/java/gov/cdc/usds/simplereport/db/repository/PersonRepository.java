@@ -22,6 +22,6 @@ public interface PersonRepository extends EternalEntityRepository<Person> {
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
     public Optional<Person> findByIDAndOrganization(UUID id, Organization org);
 
-    @Query("FROM #{#entityName} e WHERE (" + ORG_PERSON + " AND facility = null) OR ( " + ORG_PERSON + " AND facility = :fac)")
+    @Query(BASE_ENTITY + " where e.organization = :org and (e.facility is null OR e.facility = :fac)")
     public List<Person> findByFacilityAndOrganization(Facility fac, Organization org);
 }
