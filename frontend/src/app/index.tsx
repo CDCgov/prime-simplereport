@@ -75,13 +75,23 @@ const App = () => {
   });
   useEffect(() => {
     if (!data) return;
+
+    const getDefaultFacility = () => {
+      const tucsonMountains = data.whoami.organization.testingFacility.find(
+        (f: Facility) => f.name === "Tucson Mountains"
+      );
+      if (tucsonMountains) {
+        return tucsonMountains;
+      }
+      return data.whoami.organization.testingFacility[0];
+    };
     dispatch(
       setInitialState({
         organization: {
           name: data.whoami.organization.name,
         },
         facilities: data.whoami.organization.testingFacility,
-        facility: data.whoami.organization.testingFacility[0],
+        facility: getDefaultFacility(),
         user: {
           id: data.whoami.id,
           firstName: data.whoami.firstName,
