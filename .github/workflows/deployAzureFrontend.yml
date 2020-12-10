@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - ci_cd
-#    paths:
-#      - "frontend/**"
+      - main
+    paths:
+      - "frontend/**"
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}

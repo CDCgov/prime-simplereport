@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - ci_cd
-#    paths:
-#      - "backend/**"
+      - main
+    paths:
+      - "backend/**"
 
 defaults:
   run:
