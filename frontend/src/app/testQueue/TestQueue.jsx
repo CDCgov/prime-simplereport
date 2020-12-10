@@ -21,6 +21,7 @@ const emptyQueueMessage = (
 const queueQuery = gql`
   {
     queue {
+      internalId
       pregnancy
       dateAdded
       symptoms
@@ -80,6 +81,7 @@ const TestQueue = () => {
       ? patientQueue.map(
           (
             {
+              internalId,
               pregnancy,
               dateAdded,
               symptoms,
@@ -97,6 +99,7 @@ const TestQueue = () => {
           ) => (
             <QueueItem
               key={patient.internalId}
+              internalId={internalId}
               patient={patient}
               askOnEntry={{
                 pregnancy,

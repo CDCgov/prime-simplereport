@@ -22,6 +22,8 @@ import { patientPropType, devicePropType } from "../propTypes";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
+import { removeTimer, TestTimerWidget } from "./TestTimer";
+import moment from "moment";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation($patientId: String!) {
@@ -91,6 +93,7 @@ const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
 Modal.setAppElement("#root");
 
 const QueueItem = ({
+  internalId,
   patient,
   devices,
   askOnEntry,
@@ -144,6 +147,8 @@ const QueueItem = ({
     let alert = <Alert type={type} title={title} body={body} />;
     showNotification(toast, alert);
     refetchQueue();
+    // Stop/remove any running timer
+    removeTimer(internalId);
   };
 
   const onTestResultSubmit = (e) => {
@@ -258,6 +263,7 @@ const QueueItem = ({
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name usa-card__header">
               <h2>{patientFullName}</h2>
+              <TestTimerWidget id={internalId} />
             </div>
             <div className="grid-row usa-card__body">
               <ul className="prime-ul">
@@ -268,7 +274,10 @@ const QueueItem = ({
                   <LabeledText text={patient.telephone} label="Phone Number" />
                 </li>
                 <li className="prime-li">
-                  <LabeledText text={patient.birthDate} label="Date of Birth" />
+                  <LabeledText
+                    text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                    label="Date of Birth"
+                  />
                 </li>
                 <li className="prime-li">
                   <Anchor
