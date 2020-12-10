@@ -84,8 +84,8 @@ public class UploadService {
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
-                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("FirstName", CsvSchema.ColumnType.STRING)
+                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
                 .addColumn("Race", CsvSchema.ColumnType.STRING)
