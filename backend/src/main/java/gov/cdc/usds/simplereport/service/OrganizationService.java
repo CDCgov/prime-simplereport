@@ -94,7 +94,7 @@ public class OrganizationService {
 		DeviceType defaultDeviceType
 	) {
 		Organization org = this.getCurrentOrganization();
-		Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
+		Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid facility ID"));
 		facility.setFacilityName(testingFacilityName);
 		facility.setCliaNumber(cliaNumber);
 		facility.setTelephone(phone);
