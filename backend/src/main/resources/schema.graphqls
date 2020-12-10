@@ -1,5 +1,13 @@
 # java.util.Date implementation
-scalar Date
+scalar DateTime
+# java.time.LocalDate
+scalar LocalDate
+
+enum ResultValue {
+  POSITIVE
+  NEGATIVE
+  UNDETERMINED
+}
 
 type DeviceType {
   internalId: ID
@@ -30,7 +38,7 @@ type Patient {
   role: String
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
-  testResults: [TestOrder]
+  testResults: [PatientTestResult!]!
 }
 type Facility {
   id: ID
@@ -66,6 +74,13 @@ type Organization {
   name: String
   testingFacility: [Facility]
 }
+# When starting from the patient, take a more limited view
+type PatientTestResult {
+  internalId: ID
+  id: ID
+  dateTested: DateTime
+  result: ResultValue
+}
 # TestResult and TestOrder should have the same properties
 type TestOrder {
   internalId: ID
@@ -97,7 +112,7 @@ type TestResult {
   priorTestResult: String
   deviceType: DeviceType
   result: String
-  dateTested: Date
+  dateTested: DateTime
 }
 
 type User {
