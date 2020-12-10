@@ -38,4 +38,4 @@ jobs:
         run: terraform init
       - name: Azure deploy Api
         working-directory: ${{ github.workspace }}/ops/dev
-        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::8}" -target="module.simple_report_api.azurerm_app_service.service"
+        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
