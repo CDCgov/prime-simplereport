@@ -135,10 +135,12 @@ const App = () => {
                     return <TestQueueContainer />;
                   }}
                 />
-                <Route exact path="/">
-                  <Redirect to="/queue" />
-                </Route>
-
+                <Route
+                  path="/"
+                  render={() => {
+                    return <TestQueueContainer />;
+                  }}
+                />
                 <Route
                   path="/results"
                   render={() => {
