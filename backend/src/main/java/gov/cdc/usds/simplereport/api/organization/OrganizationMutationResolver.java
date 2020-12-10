@@ -64,7 +64,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         return new ApiFacility(created);
     }
 
-    public void updateFacility(String facilityId,
+    public ApiFacility updateFacility(String facilityId,
                                    String testingFacilityName,
                                    String cliaNumber,
                                    String street,
@@ -89,7 +89,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    List<String> deviceIds,
                                    String defaultDeviceId) throws Exception {
         DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
-        _os.updateFacility(
+        Facility facility = _os.updateFacility(
           UUID.fromString(facilityId),
           testingFacilityName,
           cliaNumber,
@@ -115,6 +115,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           deviceTypes.getConfiguredDeviceTypes(),
           deviceTypes.getDefaultDeviceType()
         );
+        return new ApiFacility(facility);
     }
 
     public void updateOrganization(String name) {
