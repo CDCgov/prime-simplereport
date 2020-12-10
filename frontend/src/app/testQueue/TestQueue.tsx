@@ -66,6 +66,7 @@ interface Props {
 }
 
 interface QueueItem {
+  internalId: string;
   pregnancy: string;
   dateAdded: string;
   symptoms: string;
