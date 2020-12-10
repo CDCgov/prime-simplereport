@@ -39,10 +39,10 @@ public class PersonService {
 		}
 
 		public List<Person> getPatients(UUID facilityId) {
-			if (facilityId == null) {
-				return _repo.findAllByOrganization(_os.getCurrentOrganization());
-			}
 			Organization org = _os.getCurrentOrganization();
+			if (facilityId == null) {
+				return _repo.findAllByOrganization(org);
+			}
 			Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
 			return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization());
 		}
