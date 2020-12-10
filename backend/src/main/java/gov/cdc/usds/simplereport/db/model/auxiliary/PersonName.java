@@ -63,10 +63,15 @@ public class PersonName {
 		if (obj instanceof PersonName) {
 			PersonName other = (PersonName) obj;
 			return Objects.equals(firstName, other.firstName)
-				&& Objects.equals(lastName, other.lastName)
-				&& Objects.equals(middleName, other.middleName)
-				&& Objects.equals(suffix, other.suffix);
+					&& Objects.equals(lastName, other.lastName)
+					&& Objects.equals(middleName, other.middleName)
+					&& Objects.equals(suffix, other.suffix);
 		}
 		return super.equals(obj);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(firstName, middleName, lastName, suffix);
 	}
 }
