@@ -15,4 +15,6 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public List<TestEvent> findAllByOrganizationAndFacility(Organization o, Facility f);
 
+    public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
+
 }
