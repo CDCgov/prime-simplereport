@@ -14,14 +14,12 @@ import java.util.UUID;
  */
 public interface PersonRepository extends EternalEntityRepository<Person> {
 
-	public static final String ORG_PERSON = " e.isDeleted = false AND organization = :org ";
-
     @Query(BASE_QUERY + " and organization = :org")
     public List<Person> findAllByOrganization(Organization org);
 
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
     public Optional<Person> findByIDAndOrganization(UUID id, Organization org);
 
-    @Query(BASE_ENTITY + " where e.organization = :org and (e.facility is null OR e.facility = :fac)")
+    @Query(BASE_QUERY + " where e.organization = :org and (e.facility is null OR e.facility = :fac)")
     public List<Person> findByFacilityAndOrganization(Facility fac, Organization org);
 }
