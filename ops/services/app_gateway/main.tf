@@ -28,20 +28,10 @@ resource "azurerm_application_gateway" "load_balancer" {
     subnet_id = var.subnet_id
   }
 
-  frontend_port {
-    name = "${var.name}-fe-port"
-    port = 80
-  }
-
-  frontend_ip_configuration {
-    name                 = "${var.name}-fe-ip-config"
-    public_ip_address_id = azurerm_public_ip.static_gateway.id
-  }
-
   # ------- Static -------------------------
   backend_address_pool {
     name  = local.static_backend_pool
-    fqdns = ["simple-report-dev.azureedge.net"]
+    fqdns = [var.cdn_hostname]
   }
 
   backend_http_settings {
@@ -54,23 +44,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     probe_name                          = "static"
   }
 
-  http_listener {
-    name                           = "${var.name}-static"
-    frontend_ip_configuration_name = "${var.name}-fe-ip-config"
-    frontend_port_name             = "${var.name}-fe-port"
-    //    host_name                      = "dev.simplereport.org"
-    protocol = "Http"
-  }
-
-  request_routing_rule {
-    name                       = "${var.name}-routing-static"
-    rule_type                  = "PathBasedRouting"
-    http_listener_name         = "${var.name}-static"
-    backend_address_pool_name  = local.static_backend_pool
-    backend_http_settings_name = local.static_backend_http_setting
-    url_path_map_name          = "${var.env}-urlmap"
-  }
-
+  # Need a custom health check for static sites as app gateway doesn't support it
   probe {
     name                                      = "static"
     interval                                  = 10
@@ -101,11 +75,38 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
+  # ------- Listeners & Routing -------------------------
+  frontend_port {
+    name = "${var.name}-fe-port"
+    port = 80
+  }
+
+  frontend_ip_configuration {
+    name                 = "${var.name}-fe-ip-config"
+    public_ip_address_id = azurerm_public_ip.static_gateway.id
+  }
+
+  http_listener {
+    name                           = "${var.name}-static"
+    frontend_ip_configuration_name = "${var.name}-fe-ip-config"
+    frontend_port_name             = "${var.name}-fe-port"
+    protocol                       = "Http"
+  }
+
+  request_routing_rule {
+    name                       = "${var.name}-routing-static"
+    rule_type                  = "PathBasedRouting"
+    http_listener_name         = "${var.name}-static"
+    backend_address_pool_name  = local.static_backend_pool
+    backend_http_settings_name = local.static_backend_http_setting
+    url_path_map_name          = "${var.env}-urlmap"
+  }
+
   url_path_map {
     name                               = "${var.env}-urlmap"
     default_backend_address_pool_name  = local.static_backend_pool
     default_backend_http_settings_name = local.static_backend_http_setting
-    default_rewrite_rule_set_name = "api"
+    default_rewrite_rule_set_name      = "api"
 
     path_rule {
       name                       = "api"
@@ -113,6 +114,13 @@ resource "azurerm_application_gateway" "load_balancer" {
       backend_address_pool_name  = "${var.name}-be-api"
       backend_http_settings_name = "${var.name}-be-api"
       rewrite_rule_set_name      = "api"
+    }
+
+    path_rule {
+      name                       = "react-static"
+      paths                      = ["/app/static/*"]
+      backend_address_pool_name  = "${var.name}-be-static"
+      backend_http_settings_name = "${var.name}-be-static"
     }
   }
 

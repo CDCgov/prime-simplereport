@@ -4,13 +4,19 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
-    paths:
-      - "backend/**"
+      - ci_cd
+#    paths:
+#      - "backend/**"
 
 defaults:
   run:
     working-directory: ./backend
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
 
 jobs:
   build-image:
@@ -26,3 +32,10 @@ jobs:
       - name: Build and push Docker images
         run: |
           ./build_and_push.sh
+      - uses: hashicorp/setup-terraform@v1
+      - name: Terraform Init
+        working-directory: ${{ github.workspace }}/ops/dev
+        run: terraform init
+      - name: Terraform Init
+        working-directory: ${{ github.workspace }}/ops/dev
+        run: terraform plan -var="acr_image_tag=${GITHUB_SHA::8}" -target="module.simple_report_api.azurerm_app_service.service"

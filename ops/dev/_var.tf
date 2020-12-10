@@ -4,6 +4,11 @@ variable "docker_tag" {
   default     = "1ba237a"
 }
 
+variable "acr_image_tag" {
+  description = "Simple report Api ACR tag to deploy"
+  type        = string
+}
+
 variable "env" {
   default = "dev"
 }

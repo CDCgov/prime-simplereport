@@ -25,7 +25,7 @@ module "simple_report_api" {
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
-  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:7022210" # hardcoding this until automated deploy of images are in place
+  docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.sr_global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
 
@@ -72,23 +72,6 @@ module "psql_connect" {
   tags = local.management_tags
 }
 
-# Manually added custom DNS
-module "app_gateway" {
-  source                  = "../services/app_gateway"
-  name                    = local.name
-  env                     = var.env
-  resource_group_location = data.azurerm_resource_group.rg.location
-  resource_group_name     = data.azurerm_resource_group.rg.name
-
-  subnet_id = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
-
-  fqdns = [
-    module.simple_report_api.app_hostname
-  ]
-
-  tags = local.management_tags
-}
-
 # Frontend React App
 resource "azurerm_storage_account" "app" {
   account_replication_type  = "GRS" # Cross-regional redundancy
@@ -114,8 +97,6 @@ resource "azurerm_cdn_profile" "cdn_profile" {
   tags                = local.management_tags
 }
 
-# Custom DNS for CDN was manually added due to provider speed of development
-# https://github.com/terraform-providers/terraform-provider-azurerm/issues/398
 resource "azurerm_cdn_endpoint" "cdn_endpoint" {
   name                          = "${local.name}-${var.env}"
   profile_name                  = azurerm_cdn_profile.cdn_profile.name
@@ -128,4 +109,23 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
     name      = "${local.name}-${var.env}-static"
     host_name = azurerm_storage_account.app.primary_web_host
   }
+}
+
+
+# Manually configured rules/rewrite sets
+module "app_gateway" {
+  source                  = "../services/app_gateway"
+  name                    = local.name
+  env                     = var.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+
+  cdn_hostname = azurerm_cdn_endpoint.cdn_endpoint.host_name
+  subnet_id    = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
+
+  fqdns = [
+    module.simple_report_api.app_hostname
+  ]
+
+  tags = local.management_tags
 }
