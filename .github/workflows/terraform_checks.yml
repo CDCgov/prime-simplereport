@@ -6,6 +6,11 @@ on:
   pull_request:
     paths:
       - "ops/**"
+
+defaults:
+  run:
+    working-directory: ./frontend
+
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
@@ -20,22 +25,16 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
 
       - name: Terraform fmt
-        id: fmt
-        working-directory: ${{ github.workspace }}/ops
         run: |
           terraform fmt -check dev
           terraform fmt -check global
 
       - name: Terraform Init
-        id: init
-        working-directory: ${{ github.workspace }}/ops
         run: |
           cd dev && terraform init
           cd ../global && terraform init
 
       - name: Terraform Validate
-        id: validate
-        working-directory: ${{ github.workspace }}/ops
         run: |
           cd dev && terraform validate -no-color
           cd ../global && terraform validate -no-color
