@@ -57,7 +57,7 @@ public class OrganizationService {
 
 	@Transactional(readOnly=true)
 	public List<Facility> getFacilities(Organization org) {
-		return _facilityRepo.findByOrganizationOrderByCreatedAt(org);
+		return _facilityRepo.findByOrganizationOrderByFacilityName(org);
 	}
 
 	@Transactional(readOnly=true)
