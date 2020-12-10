@@ -58,8 +58,8 @@ public class UploadService {
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
             _ps.addPatient(
-                    UUID.fromString(row.get("facilityId")),
-                    row.get("ID"),
+                    row.get("facilityId") == "" ? null : UUID.fromString(row.get("facilityId")),
+                    null,
                     row.get("FirstName"),
                     row.get("MiddleName"),
                     row.get("LastName"),
@@ -84,8 +84,6 @@ public class UploadService {
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
-                .addColumn("facilityId", CsvSchema.ColumnType.STRING)
-                .addColumn("ID", CsvSchema.ColumnType.STRING)
                 .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("FirstName", CsvSchema.ColumnType.STRING)
                 .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
@@ -101,11 +99,12 @@ public class UploadService {
                 .addColumn("State", CsvSchema.ColumnType.STRING)
                 .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
                 .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
-                .addColumn("Email", CsvSchema.ColumnType.STRING)
                 .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
-                .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
                 .addColumn("Role", CsvSchema.ColumnType.STRING)
+                .addColumn("Email", CsvSchema.ColumnType.STRING)
+                .addColumn("facilityId", CsvSchema.ColumnType.STRING)
+                .addColumn("Location", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
     }

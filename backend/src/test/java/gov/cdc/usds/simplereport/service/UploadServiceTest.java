@@ -51,7 +51,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     void testMalformedCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream("patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
             final RuntimeJsonMappingException e = assertThrows(RuntimeJsonMappingException.class, () -> this._service.processPersonCSV(bis), "CSV parsing should fail");
-            assertTrue(e.getMessage().contains("Not enough column values: expected 22, found 1"), "Should have correct error message");
+            assertTrue(e.getMessage().contains("Not enough column values: expected 21, found 1"), "Should have correct error message");
         }
     }
 }
