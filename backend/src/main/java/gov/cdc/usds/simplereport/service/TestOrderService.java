@@ -58,12 +58,12 @@ public class TestOrderService {
 }
 
   public List<TestOrder> getQueue(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
   public List<TestEvent> getTestResults(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
   }
 
@@ -103,11 +103,7 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    
-    Facility testFacility = _facilityRepo.findByOrganizationAndInternalId(
-      _os.getCurrentOrganization(),
-      facilityId
-    ).orElseThrow();
+    Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(

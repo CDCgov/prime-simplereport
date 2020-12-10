@@ -61,9 +61,9 @@ public class OrganizationService {
 	}
 
 	@Transactional(readOnly=true)
-	public Facility getFacilityInCurrentOrg(String facilityId) {
+	public Facility getFacilityInCurrentOrg(UUID facilityId) {
 		Organization org = getCurrentOrganization();
-		return _facilityRepo.findByOrganizationAndInternalId(org, UUID.fromString(facilityId))
+		return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
 				.orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
 	}
 
@@ -93,8 +93,7 @@ public class OrganizationService {
 		List<DeviceType> devices,
 		DeviceType defaultDeviceType
 	) {
-		Organization org = this.getCurrentOrganization();
-		Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid facility ID"));
+		Facility facility = this.getFacilityInCurrentOrg(facilityId);
 		facility.setFacilityName(testingFacilityName);
 		facility.setCliaNumber(cliaNumber);
 		facility.setTelephone(phone);

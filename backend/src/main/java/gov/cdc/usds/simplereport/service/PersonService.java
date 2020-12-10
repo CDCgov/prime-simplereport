@@ -43,7 +43,7 @@ public class PersonService {
 			if (facilityId == null) {
 				return _repo.findAllByOrganization(org);
 			}
-			Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
 			return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization());
 		}
 
@@ -109,8 +109,7 @@ public class PersonService {
 		);
 
 		if (newPatient.getRole() != PersonRole.STAFF) {
-			Organization org = _os.getCurrentOrganization();
-			Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
 			newPatient.setFacility(facility);
 		}
 
@@ -164,8 +163,7 @@ public class PersonService {
 		);
 
 		if (patientToUpdate.getRole() != PersonRole.STAFF) {
-			Organization org = _os.getCurrentOrganization();
-			Facility facility = _facilityRepo.findByOrganizationAndInternalId(org, facilityId).orElseThrow();
+			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
 			patientToUpdate.setFacility(facility);
 		}
 		_repo.save(patientToUpdate);
