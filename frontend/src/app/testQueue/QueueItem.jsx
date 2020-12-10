@@ -22,7 +22,7 @@ import { patientPropType, devicePropType } from "../propTypes";
 import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { TestTimerWidget } from "./TestTimer";
+import { removeTimer, TestTimerWidget } from "./TestTimer";
 import moment from "moment";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
@@ -147,6 +147,8 @@ const QueueItem = ({
     let alert = <Alert type={type} title={title} body={body} />;
     showNotification(toast, alert);
     refetchQueue();
+    // Stop/remove any running timer
+    removeTimer(internalId);
   };
 
   const onTestResultSubmit = (e) => {

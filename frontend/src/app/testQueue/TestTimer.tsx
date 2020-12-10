@@ -64,6 +64,12 @@ const addTimer = (id: TimerId): Timer => {
   timers.push(newTimer);
   return newTimer;
 };
+export const removeTimer = (id: TimerId) => {
+  const index = timers.findIndex((t) => t.id === id);
+  if (index >= 0) {
+    timers.splice(index, 1);
+  }
+};
 
 export const useTestTimer = (id: string) => {
   const [, setCount] = useState(0);
