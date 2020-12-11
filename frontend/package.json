@@ -50,7 +50,7 @@
     "build": "react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile",
     "lint": "npm-run-all -p lint:eslint lint:prettier",
-    "lint:eslint": "eslint --quiet --ext .js --ext .jsx --ext .tsx ./src",
+    "lint:eslint": "eslint --quiet --ext .js --ext .jsx --ext .ts --ext .tsx ./src",
     "lint:prettier": "prettier -c ./src",
     "test": "TZ='UTC' react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
