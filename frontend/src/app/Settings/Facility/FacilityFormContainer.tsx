@@ -230,10 +230,9 @@ const FacilityFormContainer: any = (props: Props) => {
     }).then(() => {
       let alert = (
         <Alert
-          type={"success"}
-          title={"Updated Organization"}
-          body={"The settings for the organization have been updated"}
-          role={"success"}
+          type="success"
+          title="Updated Organization"
+          body="The settings for the organization have been updated"
         />
       );
       showNotification(toast, alert);
