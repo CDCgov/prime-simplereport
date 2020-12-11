@@ -75,15 +75,15 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
-  # ------- Listeners & Routing -------------------------
-  frontend_port {
-    name = "${var.name}-fe-port"
-    port = 80
-  }
-
+  # ------- Listeners -------------------------
   frontend_ip_configuration {
     name                 = "${var.name}-fe-ip-config"
     public_ip_address_id = azurerm_public_ip.static_gateway.id
+  }
+
+  frontend_port {
+    name = "${var.name}-fe-port"
+    port = 80
   }
 
   http_listener {
@@ -93,6 +93,7 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                       = "Http"
   }
 
+  # ------- Routing Rules -------------------------
   request_routing_rule {
     name                       = "${var.name}-routing-static"
     rule_type                  = "PathBasedRouting"
