@@ -95,3 +95,28 @@ jobs:
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain
+  schema-check:
+    strategy:
+      matrix:
+        node: [14]
+        os: [ubuntu-20.04]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{matrix.node}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{matrix.node}}
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./frontend/node_modules
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+      - name: Node setup
+        working-directory: ./frontend
+        run: npm install
+      - name: Lint front-end code with eslint to check graphql queries
+        working-directory: ./frontend
+        run: npm run-script lint:eslint
