@@ -38,6 +38,7 @@ type Patient {
   role: String
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
+  lastTest: TestResult
   testResults: [PatientTestResult!]!
 }
 type Facility {
