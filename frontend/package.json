@@ -34,7 +34,7 @@
     "react-redux": "^7.2.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "4.0.1",
     "react-toastify": "^6.1.0",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
@@ -69,7 +69,12 @@
       "graphql"
     ],
     "rules": {
-      "graphql/template-strings": ["error", {"env": "apollo"}]
+      "graphql/template-strings": [
+        "error",
+        {
+          "env": "apollo"
+        }
+      ]
     }
   },
   "browserslist": {
