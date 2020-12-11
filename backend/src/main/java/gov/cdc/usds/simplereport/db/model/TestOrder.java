@@ -62,9 +62,12 @@ public class TestOrder extends BaseTestInfo {
 
 	public void setResult(TestResult finalResult) {
 		super.setTestResult(finalResult);
-		dateTested = LocalDate.now();
-		orderStatus = OrderStatus.COMPLETED;
 	}
+
+    public void markComplete() {
+        dateTested = LocalDate.now();
+        orderStatus = OrderStatus.COMPLETED;
+    }
 
 	public void cancelOrder() {
 		orderStatus = OrderStatus.CANCELED;

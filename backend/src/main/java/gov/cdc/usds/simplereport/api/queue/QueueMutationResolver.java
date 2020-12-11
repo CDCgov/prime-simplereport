@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -37,6 +38,14 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         TestResult.valueOf(result),
         patientID
       );
+    }
+
+    public ApiTestOrder editQueueItem(String id, String deviceId, String result) {
+        return new ApiTestOrder(_tos.editQueueItem(
+            id,
+            deviceId,
+            TestResult.valueOf(result)
+        ));
     }
 
     public void addPatientToQueue(

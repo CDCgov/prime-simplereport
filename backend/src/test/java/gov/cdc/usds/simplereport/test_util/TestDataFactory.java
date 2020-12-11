@@ -10,15 +10,20 @@ import org.springframework.stereotype.Component;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
 @Component
 public class TestDataFactory {
@@ -34,6 +39,10 @@ public class TestDataFactory {
 	private ProviderRepository _providerRepo;
 	@Autowired
 	private DeviceTypeRepository _deviceRepo;
+    @Autowired
+    private TestOrderRepository _testOrderRepo;
+    @Autowired
+    private PatientAnswersRepository _patientAnswerRepo;
 
 	public Organization createValidOrg() {
 		return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
@@ -64,6 +73,15 @@ public class TestDataFactory {
 		);
 		return _personRepo.save(p);
 	}
+
+    public TestOrder createTestOrder(Person p, Facility f) {
+        AskOnEntrySurvey survey = new AskOnEntrySurvey(null,Collections.emptyMap(),null,null,null,null,null,null);
+        PatientAnswers answers = new PatientAnswers(survey);
+        _patientAnswerRepo.save(answers);
+        TestOrder o = new TestOrder(p, f);
+        o.setAskOnEntrySurvey(answers);
+        return _testOrderRepo.save(o);
+    }
 
 	public DeviceType getGenericDevice() {
 		return _deviceRepo.findAll().stream().filter(d->d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()

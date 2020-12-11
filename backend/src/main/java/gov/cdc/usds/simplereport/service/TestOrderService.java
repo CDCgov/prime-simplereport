@@ -69,6 +69,28 @@ public class TestOrderService {
       return _terepo.findAllByPatient(patient);
   }
 
+    @Transactional(readOnly = true)
+    public TestOrder getTestOrder(String id) {
+        Organization org = _os.getCurrentOrganization();
+        return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+    }
+
+    public TestOrder editQueueItem(String id, String deviceId, TestResult result) {
+        Organization org = _os.getCurrentOrganization();
+        TestOrder order = this.getTestOrder(id);
+
+        if (deviceId != null) {
+            DeviceType deviceType = _dts.getDeviceType(deviceId);
+            order.setDeviceType(deviceType);
+        }
+
+        if (result != null) {
+            order.setResult(result);
+        }
+
+        return _repo.save(order);
+    }
+
   public void addTestResult(String deviceID, TestResult result, String patientId) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -77,8 +99,8 @@ public class TestOrderService {
 		.orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(deviceType);
     order.setResult(result);
+    order.markComplete();
 
-    
     TestEvent testEvent = new TestEvent(order);
     _terepo.save(testEvent);
 
@@ -86,7 +108,7 @@ public class TestOrderService {
     _repo.save(order);
   }
 
-  public void addPatientToQueue(
+  public TestOrder addPatientToQueue(
     UUID facilityId,
     Person patient,
     String pregnancy,
@@ -121,7 +143,7 @@ public class TestOrderService {
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    _repo.save(newOrder);
+    return _repo.save(newOrder);
   }
 
   public void updateTimeOfTestQuestions(

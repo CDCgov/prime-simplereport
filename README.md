@@ -9,6 +9,7 @@ https://simplereport.cdc.gov/
   - [Setup](#backend-Setup)
   - [Restart & Clean](#restart-&-clean)
   - [API Testing](#api-testing)
+  - [Tests](#tests)
 - [Frontend](#frontend)
   - [Setup](#frontend-Setup)
 - [Deploy](#Deploy)
@@ -77,6 +78,16 @@ Restarting the SQL way:
 ## API Testing
 
 Go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
+
+## Tests
+
+All the test can be run with `gradle test`
+
+Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
+
+```bash
+gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
+```
 
 ## Frontend
 
