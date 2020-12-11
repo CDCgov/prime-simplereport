@@ -11,7 +11,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public List<TestEvent> findAllByPatient(Person p);
 
-	public List<TestEvent> findAllByOrganization(Organization o);
+	public List<TestEvent> findAllByOrganizationOrderByCreatedAtDesc(Organization o);
 
 	public List<TestEvent> findAllByOrganizationAndFacility(Organization o, Facility f);
 
