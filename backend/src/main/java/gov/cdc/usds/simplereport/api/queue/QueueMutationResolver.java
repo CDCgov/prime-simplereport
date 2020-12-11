@@ -44,7 +44,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
         return new ApiTestOrder(_tos.editQueueItem(
             id,
             deviceId,
-            TestResult.valueOf(result)
+            result
         ));
     }
 

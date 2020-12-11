@@ -75,7 +75,7 @@ public class TestOrderService {
         return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
     }
 
-    public TestOrder editQueueItem(String id, String deviceId, TestResult result) {
+    public TestOrder editQueueItem(String id, String deviceId, String result) {
         Organization org = _os.getCurrentOrganization();
         TestOrder order = this.getTestOrder(id);
 
@@ -85,7 +85,7 @@ public class TestOrderService {
         }
 
         if (result != null) {
-            order.setResult(result);
+            order.setResult(TestResult.valueOf(result));
         }
 
         return _repo.save(order);

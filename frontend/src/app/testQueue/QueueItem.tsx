@@ -31,6 +31,30 @@ const REMOVE_PATIENT_FROM_QUEUE = gql`
   }
 `;
 
+const EDIT_QUEUE_ITEM = gql`
+  mutation($id: String!, $deviceId: String, $result: String) {
+    editQueueItem(id: $id, deviceId: $deviceId, result: $result) {
+      result
+      deviceType {
+        internalId
+      }
+    }
+  }
+`;
+
+interface EditQueueItemParams {
+  id: string;
+  deviceId?: string;
+  result?: string;
+}
+
+interface EditQueueItemResponse {
+  editQueueItem: {
+    result: string;
+    deviceType: { internalId: string };
+  };
+}
+
 const SUBMIT_TEST_RESULT = gql`
   mutation($patientId: String!, $deviceId: String!, $result: String!) {
     addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
@@ -127,6 +151,11 @@ interface QueueItemProps {
   facilityId: string;
 }
 
+interface updateQueueItemProps {
+  deviceId?: string;
+  result?: string;
+}
+
 const QueueItem: any = ({
   internalId,
   patient,
@@ -159,6 +188,10 @@ const QueueItem: any = ({
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
+  const [editQueueItem] = useMutation<
+    EditQueueItemResponse,
+    EditQueueItemParams
+  >(EDIT_QUEUE_ITEM);
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -211,8 +244,34 @@ const QueueItem: any = ({
     }
   };
 
+  const updateQueueItem = ({ deviceId, result }: updateQueueItemProps) => {
+    editQueueItem({
+      variables: {
+        id: internalId,
+        deviceId,
+        result,
+      },
+    }).then(
+      (response) => {
+        if (!response.data) {
+          throw Error("null response from update queue");
+        }
+        updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+        updateTestResultValue(response.data.editQueueItem.result);
+      },
+      (error) => {
+        updateMutationError(error);
+      }
+    );
+  };
+
   const onDeviceChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    updateDeviceId((e.target as HTMLSelectElement).value);
+    const deviceId = (e.target as HTMLSelectElement).value;
+    updateQueueItem({ deviceId });
+  };
+
+  const onTestResultChange = (result: string) => {
+    updateQueueItem({ result });
   };
 
   const removeFromQueue = (patientId: string) => {
@@ -355,7 +414,7 @@ const QueueItem: any = ({
             <TestResultInputForm
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
-              onChange={updateTestResultValue}
+              onChange={onTestResultChange}
             />
           </div>
         </div>
