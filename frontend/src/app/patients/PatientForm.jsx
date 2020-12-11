@@ -497,7 +497,7 @@ const PatientForm = (props) => {
         </div>
       </Fieldset>
       <Fieldset legend="Test History">
-        {patient.testResults && patient.testResults.length && (
+        {patient.testResults && patient.testResults.length !== 0 && (
           <table className="usa-table usa-table--borderless">
             <thead>
               <tr>
