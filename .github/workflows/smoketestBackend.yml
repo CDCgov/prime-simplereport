@@ -9,6 +9,10 @@ on:
       - "backend/**"
       - .github/workflows/smoketestBackend.yml
 
+env:
+  NODE_VERSION: 14
+  JAVA_VERSION: 11
+
 defaults:
   run:
     working-directory: backend
@@ -31,10 +35,10 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
         uses: actions/cache@v2
         with:
@@ -65,10 +69,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
         uses: actions/cache@v2
         with:
@@ -82,10 +86,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set up JDK 11
+      - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: ${{env.JAVA_VERSION}}
       - name: Cache Java Dependencies
         uses: actions/cache@v2
         with:
@@ -95,3 +99,24 @@ jobs:
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain
+  schema-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            ./frontend/node_modules
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+      - name: Node setup
+        working-directory: ./frontend
+        run: npm install
+      - name: Lint front-end code with eslint to check graphql queries
+        working-directory: ./frontend
+        run: npm run-script lint:eslint
