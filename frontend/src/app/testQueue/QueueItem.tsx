@@ -218,9 +218,6 @@ const QueueItem: any = ({
     };
     let alert = <Alert type={type} title={title} body={body} />;
     showNotification(toast, alert);
-    refetchQueue();
-    // Stop/remove any running timer
-    removeTimer(internalId);
   };
 
   const onTestResultSubmit = (e?: any) => {
@@ -233,12 +230,11 @@ const QueueItem: any = ({
           deviceId: deviceId,
           result: testResultValue,
         },
-      }).then(
-        (_response) => testResultsSubmitted(),
-        (error) => {
-          updateMutationError(error);
-        }
-      );
+      })
+        .then(testResultsSubmitted)
+        .then(refetchQueue)
+        .then(() => removeTimer(internalId))
+        .catch((error) => updateMutationError(error));
     } else {
       updateIsConfirmationModalOpen(true);
     }
@@ -280,12 +276,10 @@ const QueueItem: any = ({
       variables: {
         patientId,
       },
-    }).then(
-      (_response) => refetchQueue(),
-      (error) => {
-        updateMutationError(error);
-      }
-    );
+    })
+      .then(refetchQueue)
+      .then(() => removeTimer(internalId))
+      .catch((error) => updateMutationError(error));
   };
 
   const openAoeModal = () => {
