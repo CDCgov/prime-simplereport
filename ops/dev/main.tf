@@ -122,6 +122,7 @@ module "app_gateway" {
 
   cdn_hostname = azurerm_cdn_endpoint.cdn_endpoint.host_name
   subnet_id    = data.terraform_remote_state.persistent_dev.outputs.subnet_lbs_id
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 
   fqdns = [
     module.simple_report_api.app_hostname

@@ -32,3 +32,4 @@ variable "ip_addresses" {
   default = []
 }
 
+variable "key_vault_id" {}
