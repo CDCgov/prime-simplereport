@@ -43,3 +43,9 @@ data "azurerm_key_vault_secret" "okta_client_secret" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   name         = "okta-${var.env}-client-secret"
 }
+
+# logs
+data "azurerm_log_analytics_workspace" "log_analytics" {
+  name                = "simple-report-log-workspace-global"
+  resource_group_name = data.azurerm_resource_group.rg_global.name
+}
