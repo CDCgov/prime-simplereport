@@ -8,6 +8,7 @@ locals {
   http_listener                = "${var.name}-http"
   https_listener               = "${var.name}-https"
   frontend_config              = "${var.name}-config"
+  redirect_rule                = "${var.name}-redirect"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -162,11 +163,19 @@ resource "azurerm_application_gateway" "load_balancer" {
 
   # ------- Routing -------------------------
   request_routing_rule {
-    name                       = "${var.name}-dummy"
-    rule_type                  = "Basic"
-    http_listener_name         = "${var.name}-http"
-    backend_address_pool_name  = local.static_backend_pool
-    backend_http_settings_name = local.static_backend_http_setting
+    name                        = local.redirect_rule
+    rule_type                   = "Basic"
+    http_listener_name          = "${var.name}-http"
+    redirect_configuration_name = "${var.name}-redirect"
+  }
+
+  redirect_configuration {
+    name = local.redirect_rule
+
+    include_path         = true
+    include_query_string = true
+    redirect_type        = "Permanent"
+    target_listener_name = local.https_listener
   }
 
   request_routing_rule {
