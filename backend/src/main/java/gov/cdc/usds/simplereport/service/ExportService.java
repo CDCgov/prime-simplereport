@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,18 +23,13 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 public class ExportService {
 
     private final TestEventRepository _ts;
-    private OrganizationService _os;
 
-
-    public ExportService(TestEventRepository ts, OrganizationService os) {
+    public ExportService(TestEventRepository ts) {
         this._ts = ts;
-        this._os = os;
     }
 
     public String CreateTestEventCSV() throws IOException {
-        List<TestEvent> events = _ts.findAllByOrganizationOrderByCreatedAtDesc(
-            _os.getCurrentOrganization()
-        );
+        List<TestEvent> events = _ts.findAllByCreatedAtInstant(Instant.parse("2020-12-11T16:13:15.448000Z"));
         List<TestEventExport> eventsToExport = new ArrayList<>();
         events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
         CsvMapper mapper = new CsvMapper();
