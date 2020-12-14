@@ -30,5 +30,12 @@ services:
     ports:
       # map SR_API_PORT on localhost to the API server in the container
       - "${SR_API_PORT:-8080}:8080"
+  schemaspy:
+    build:
+      context: .
+      dockerfile: Dockerfile.schemaspy
+      network: host
+    ports:
+      - "8081:80"
 volumes:
   simple-report-dev-db-data:
