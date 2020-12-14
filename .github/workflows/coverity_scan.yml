@@ -43,4 +43,5 @@ jobs:
       - name: Build with cov-build
         run: |
           export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
+          pwd
           cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
