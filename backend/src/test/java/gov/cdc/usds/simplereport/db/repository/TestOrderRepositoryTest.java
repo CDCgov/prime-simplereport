@@ -43,17 +43,16 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
 		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
 		Facility site = _dataFactory.createValidFacility(gtown);
+        Facility otherSite = _dataFactory.createValidFacility(gwu);
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
 		TestOrder order = _repo.save(new TestOrder(hoya, site));
-		List<TestOrder> queue = _repo.fetchQueueForOrganization(gwu);
+        List<TestOrder> queue = _repo.fetchQueue(gwu, otherSite);
 		assertEquals(0, queue.size());
-		queue = _repo.fetchQueueForOrganization(gtown);
+        queue = _repo.fetchQueue(gtown, site);
 		assertEquals(1, queue.size());
-		order.setResult(TestResult.NEGATIVE);
-		order.markComplete();
-		_repo.save(order);
-		assertEquals(0, _repo.fetchQueueForOrganization(gtown).size());
-		assertEquals(1, _repo.fetchPastResultsForOrganization(gtown).size());
+        doTest(order, TestResult.NEGATIVE);
+        assertEquals(0, _repo.fetchQueue(gtown, site).size());
+        assertEquals(1, _repo.fetchPastResults(gtown, site).size());
 	}
 
 	@Test
@@ -100,7 +99,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(order2.getInternalId());
 		assertNotNull(order1.getInternalId());
 		assertNotEquals(order1.getInternalId(), order2.getInternalId());
-		List<TestOrder> queue = _repo.fetchQueueForOrganization(org);
+        List<TestOrder> queue = _repo.fetchQueue(org, site);
 		assertEquals(1, queue.size());
 		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
 	}
@@ -125,7 +124,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		assertNotNull(order2.getInternalId());
 		assertNotNull(order1.getInternalId());
 		assertNotEquals(order1.getInternalId(), order2.getInternalId());
-		List<TestOrder> queue = _repo.fetchQueueForOrganization(org);
+        List<TestOrder> queue = _repo.fetchQueue(org, site);
 		assertEquals(1, queue.size());
 		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
 	}

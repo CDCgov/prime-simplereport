@@ -25,10 +25,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
     public static final String ORDER_CREATION_ORDER = " order by q.createdAt ";
     public static final String RESULT_RECENT_ORDER = " order by q.testEvent.createdAt desc ";
 
-	@Query(BASE_ORG_QUERY + IS_PENDING)
-	@EntityGraph(attributePaths = "patient")
-	public List<TestOrder> fetchQueueForOrganization(Organization org);
-
     @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)
 	@EntityGraph(attributePaths = "patient")
 	public List<TestOrder> fetchQueue(Organization org, Facility facility);
@@ -39,10 +35,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
 
 	@Query(BASE_ORG_QUERY + IS_PENDING + " and q.id = :id")
 	public Optional<TestOrder> fetchQueueItemById(Organization org, UUID id);
-
-	@Query(BASE_ORG_QUERY + IS_COMPLETED)
-	@EntityGraph(attributePaths = "patient")
-	public List<TestOrder> fetchPastResultsForOrganization(Organization org);
 
     @Query(FACILITY_QUERY + IS_COMPLETED + RESULT_RECENT_ORDER)
 	@EntityGraph(attributePaths = "patient")
