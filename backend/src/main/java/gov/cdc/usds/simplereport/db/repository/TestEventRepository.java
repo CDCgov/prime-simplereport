@@ -18,6 +18,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
+	// todo: simple_report.simple_report.test_event should be replaced
 	@Query(value="SELECT * FROM simple_report.simple_report.test_event q WHERE q.created_at > ?1 ",
 			nativeQuery = true)
 	public List<TestEvent> findAllByCreatedAtInstant(Instant d);

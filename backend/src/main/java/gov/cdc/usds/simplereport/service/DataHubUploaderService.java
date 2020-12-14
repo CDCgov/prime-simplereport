@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -64,10 +65,10 @@ public class DataHubUploaderService {
         map.add("filename", filename);
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
-            HttpHeaders header = request.getHeaders();
-            header.add("client", "simple_report");
-            header.add("x-functions-key", apiKey);
-            header.add("content-type", "text/csv");
+            HttpHeaders headers = request.getHeaders();
+            headers.setContentType(new MediaType("text","csv"));
+            headers.add("x-functions-key", apiKey);
+            headers.add("client", "simple_report");
             return execution.execute(request, body);
         })).build();
 
@@ -87,7 +88,9 @@ public class DataHubUploaderService {
             err.printStackTrace();
             return "Err: create time not processed should be like '2020-01-01T16:13:15.448000Z'";
         } catch (NoResultException err) {
-          return "Err: no records matched after startupdateby='" + lastEndCreateOn + "'";
+            return "Err: no records matched after startupdateby='" + lastEndCreateOn + "'";
+        } catch (RestClientException err) {
+            return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
         } catch (IOException err) {
             return err.toString();
         }
