@@ -44,3 +44,15 @@ jobs:
           pushd backend/
           cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
           popd
+      - name: Submit the result to Coverity Scan
+        run: |
+          tar czvf sr.tgz cov-int
+          curl \
+            --form token=$TOKEN \
+            --form email=nicholas.a.robison@omb.eop.gov \
+            --form file=@sr.tgz \
+            --form version=trunk \
+            --form description="`git rev-parse --short HEAD`" \
+            https://scan.coverity.com/builds?project=CDCgov%2Fprime-data-input-client
+        env:
+          TOKEN: ${{ secrets.COVERITY_TOKEN }}
