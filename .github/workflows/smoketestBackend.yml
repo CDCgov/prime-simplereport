@@ -4,7 +4,8 @@ name: Smoke Test Back-end API
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
   push:
-    branches: "**"
+    branches:
+      - "**"
     paths:
       - "backend/**"
       - .github/workflows/smoketestBackend.yml
@@ -65,6 +66,11 @@ jobs:
           name: test-report
           path: backend/build/reports/tests/test
           retention-days: 7
+      - name: Sonar analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube --info
   build-jar:
     runs-on: ubuntu-latest
     steps:
