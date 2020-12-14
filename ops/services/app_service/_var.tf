@@ -10,6 +10,10 @@ variable "docker_image_uri" {}
 variable "app_settings" {
   default = {}
 }
+variable "https_only" {
+  type    = bool
+  default = false
+}
 
 # Secret Access
 variable "key_vault_id" {}

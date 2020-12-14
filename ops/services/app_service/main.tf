@@ -26,6 +26,7 @@ resource "azurerm_app_service" "service" {
   }
 
   app_settings = var.app_settings
+  https_only   = var.https_only
 
   identity {
     type = "SystemAssigned"

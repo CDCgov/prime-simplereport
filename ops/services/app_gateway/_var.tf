@@ -32,3 +32,9 @@ variable "ip_addresses" {
   default = []
 }
 
+variable "key_vault_id" {}
+
+variable "log_workspace_uri" {
+  description = "Full URI of log workspace to report to"
+  type        = string
+}

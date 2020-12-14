@@ -1,6 +1,14 @@
 locals {
-  static_backend_pool         = "${var.name}-${var.env}-be-static"
-  static_backend_http_setting = "${var.name}-${var.env}-be-static"
+  static_backend_pool          = "${var.name}-${var.env}-fe-static"
+  static_backend_http_setting  = "${var.name}-${var.env}-fe-static-http"
+  static_backend_https_setting = "${var.name}-${var.env}-fe-static-https"
+  api_backend_pool             = "${var.name}-${var.env}-be-api"
+  api_backend_http_setting     = "${var.name}-${var.env}-be-api-http"
+  api_backend_https_setting    = "${var.name}-${var.env}-be-api-https"
+  http_listener                = "${var.name}-http"
+  https_listener               = "${var.name}-https"
+  frontend_config              = "${var.name}-config"
+  redirect_rule                = "${var.name}-redirect"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -28,6 +36,11 @@ resource "azurerm_application_gateway" "load_balancer" {
     subnet_id = var.subnet_id
   }
 
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.gateway.id]
+  }
+
   # ------- Static -------------------------
   backend_address_pool {
     name  = local.static_backend_pool
@@ -41,12 +54,22 @@ resource "azurerm_application_gateway" "load_balancer" {
     protocol                            = "Http"
     request_timeout                     = 20
     pick_host_name_from_backend_address = true
-    probe_name                          = "static"
+    probe_name                          = "static-http"
+  }
+
+  backend_http_settings {
+    name                                = local.static_backend_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+    probe_name                          = "static-https"
   }
 
   # Need a custom health check for static sites as app gateway doesn't support it
   probe {
-    name                                      = "static"
+    name                                      = "static-http"
     interval                                  = 10
     path                                      = "/"
     pick_host_name_from_backend_http_settings = true
@@ -59,15 +82,29 @@ resource "azurerm_application_gateway" "load_balancer" {
     }
   }
 
+  probe {
+    name                                      = "static-https"
+    interval                                  = 10
+    path                                      = "/"
+    pick_host_name_from_backend_http_settings = true
+    protocol                                  = "Https"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      status_code = ["200-399"]
+    }
+  }
+
   # ------- Backend API App -------------------------
   backend_address_pool {
-    name         = "${var.name}-be-api"
+    name         = local.api_backend_pool
     fqdns        = var.fqdns
     ip_addresses = var.ip_addresses
   }
 
   backend_http_settings {
-    name                                = "${var.name}-be-api"
+    name                                = local.api_backend_http_setting
     cookie_based_affinity               = "Disabled"
     port                                = 80
     protocol                            = "Http"
@@ -75,52 +112,98 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
-  # ------- Listeners & Routing -------------------------
-  frontend_port {
-    name = "${var.name}-fe-port"
-    port = 80
+  backend_http_settings {
+    name                                = local.api_backend_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
   }
 
+  # ------- Listeners -------------------------
+
   frontend_ip_configuration {
-    name                 = "${var.name}-fe-ip-config"
+    name                 = local.frontend_config
     public_ip_address_id = azurerm_public_ip.static_gateway.id
   }
 
+  # --- HTTP Listener
+  frontend_port {
+    name = local.http_listener
+    port = 80
+  }
+
   http_listener {
-    name                           = "${var.name}-static"
-    frontend_ip_configuration_name = "${var.name}-fe-ip-config"
-    frontend_port_name             = "${var.name}-fe-port"
+    name                           = local.http_listener
+    frontend_ip_configuration_name = local.frontend_config
+    frontend_port_name             = local.http_listener
     protocol                       = "Http"
   }
 
+  # --- HTTPS Listener ---
+
+  frontend_port {
+    name = local.https_listener
+    port = 443
+  }
+
+  http_listener {
+    name                           = local.https_listener
+    frontend_ip_configuration_name = local.frontend_config
+    frontend_port_name             = local.https_listener
+    protocol                       = "Https"
+    ssl_certificate_name           = data.azurerm_key_vault_certificate.certificate.name
+  }
+
+  ssl_certificate {
+    name                = data.azurerm_key_vault_certificate.certificate.name
+    key_vault_secret_id = data.azurerm_key_vault_certificate.certificate.secret_id
+  }
+
+  # ------- Routing -------------------------
   request_routing_rule {
-    name                       = "${var.name}-routing-static"
+    name                        = local.redirect_rule
+    rule_type                   = "Basic"
+    http_listener_name          = "${var.name}-http"
+    redirect_configuration_name = "${var.name}-redirect"
+  }
+
+  redirect_configuration {
+    name = local.redirect_rule
+
+    include_path         = true
+    include_query_string = true
+    redirect_type        = "Permanent"
+    target_listener_name = local.https_listener
+  }
+
+  request_routing_rule {
+    name                       = "${var.name}-routing-https"
     rule_type                  = "PathBasedRouting"
-    http_listener_name         = "${var.name}-static"
+    http_listener_name         = local.https_listener
     backend_address_pool_name  = local.static_backend_pool
-    backend_http_settings_name = local.static_backend_http_setting
+    backend_http_settings_name = local.static_backend_https_setting
     url_path_map_name          = "${var.env}-urlmap"
   }
 
   url_path_map {
     name                               = "${var.env}-urlmap"
     default_backend_address_pool_name  = local.static_backend_pool
-    default_backend_http_settings_name = local.static_backend_http_setting
-    default_rewrite_rule_set_name      = "api"
+    default_backend_http_settings_name = local.static_backend_https_setting
 
     path_rule {
       name                       = "api"
       paths                      = ["/api/*", "/api"]
-      backend_address_pool_name  = "${var.name}-be-api"
-      backend_http_settings_name = "${var.name}-be-api"
-      rewrite_rule_set_name      = "api"
+      backend_address_pool_name  = local.api_backend_pool
+      backend_http_settings_name = local.api_backend_https_setting
     }
 
     path_rule {
       name                       = "react-static"
       paths                      = ["/app/static/*"]
-      backend_address_pool_name  = "${var.name}-be-static"
-      backend_http_settings_name = "${var.name}-be-static"
+      backend_address_pool_name  = local.static_backend_pool
+      backend_http_settings_name = local.static_backend_https_setting
     }
   }
 
@@ -130,17 +213,55 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   depends_on = [
-    azurerm_public_ip.static_gateway
+    azurerm_public_ip.static_gateway,
+    azurerm_key_vault_access_policy.gateway
   ]
 
   tags = var.tags
 
   # Azure doesn't not support rewrite rules efficiently so they must be manually built out
+  # Uncomment if you are creating for the first time
   lifecycle {
     ignore_changes = [
       request_routing_rule,
+      identity,
       rewrite_rule_set,
       url_path_map
     ]
+  }
+}
+
+// Gateway analytics
+resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
+  name                       = "${var.name}-${var.env}-gateway-logs-metrics"
+  target_resource_id         = azurerm_application_gateway.load_balancer.id
+  log_analytics_workspace_id = var.log_workspace_uri
+
+  dynamic "log" {
+    for_each = [
+      "ApplicationGatewayAccessLog",
+      "ApplicationGatewayPerformanceLog",
+      "ApplicationGatewayFirewallLog",
+    ]
+    content {
+      category = log.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
+  }
+
+  dynamic "metric" {
+    for_each = [
+      "AllMetrics",
+    ]
+    content {
+      category = metric.value
+
+      retention_policy {
+        enabled = false
+      }
+    }
   }
 }

@@ -1,3 +1,25 @@
+# external state
+data "terraform_remote_state" "persistent_dev" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "prime-simple-report-test"
+    storage_account_name = "usdssimplereportglobal"
+    container_name       = "sr-tfstate"
+    key                  = "dev/persistent-terraform.tfstate"
+  }
+}
+
+data "terraform_remote_state" "global" {
+  backend = "azurerm"
+  config = {
+    resource_group_name  = "prime-simple-report-test"
+    storage_account_name = "usdssimplereportglobal"
+    container_name       = "sr-tfstate"
+    key                  = "global/terraform.tfstate"
+  }
+}
+
+# Resource Groups
 data "azurerm_resource_group" "rg" {
   name = "${local.project}-${local.name}-${var.env}"
 }
@@ -42,4 +64,10 @@ data "azurerm_key_vault_secret" "okta_client_id" {
 data "azurerm_key_vault_secret" "okta_client_secret" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   name         = "okta-${var.env}-client-secret"
+}
+
+# logs
+data "azurerm_log_analytics_workspace" "log_analytics" {
+  name                = "simple-report-log-workspace-global"
+  resource_group_name = data.azurerm_resource_group.rg_global.name
 }

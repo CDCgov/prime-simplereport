@@ -1,3 +1,5 @@
+
+# Resource Groups
 data "azurerm_resource_group" "rg" {
   name = "${local.project}-${local.name}-${var.env}"
 }
