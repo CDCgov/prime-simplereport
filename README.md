@@ -100,6 +100,8 @@ docker-compose up db
 docker-compose up --build schemaspy
 ```
 
+visit http://localhost:8081
+
 ## Frontend
 
 The frontend is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
