@@ -13,13 +13,13 @@ import Alert from "../commonComponents/Alert";
 import { Button } from "@cmsgov/design-system";
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
-import Dropdown from "../commonComponents//Dropdown";
-import LabeledText from "../commonComponents//LabeledText";
+import Dropdown from "../commonComponents/Dropdown";
+import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import { ALERT_CONTENT } from "../testQueue/constants";
+import { ALERT_CONTENT } from "./constants";
 import { displayFullName } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import { QUEUE_NOTIFICATION_TYPES } from "../testQueue/constants";
+import { QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget } from "./TestTimer";
@@ -30,6 +30,30 @@ const REMOVE_PATIENT_FROM_QUEUE = gql`
     removePatientFromQueue(patientId: $patientId)
   }
 `;
+
+const EDIT_QUEUE_ITEM = gql`
+  mutation($id: String!, $deviceId: String, $result: String) {
+    editQueueItem(id: $id, deviceId: $deviceId, result: $result) {
+      result
+      deviceType {
+        internalId
+      }
+    }
+  }
+`;
+
+interface EditQueueItemParams {
+  id: string;
+  deviceId?: string;
+  result?: string;
+}
+
+interface EditQueueItemResponse {
+  editQueueItem: {
+    result: string;
+    deviceType: { internalId: string };
+  };
+}
 
 const SUBMIT_TEST_RESULT = gql`
   mutation($patientId: String!, $deviceId: String!, $result: String!) {
@@ -63,7 +87,17 @@ const UPDATE_AOE = gql`
   }
 `;
 
-const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
+interface AreYouSureProps {
+  patientName: string;
+  cancelHandler: () => void;
+  continueHandler: () => void;
+}
+
+const AreYouSure: React.FC<AreYouSureProps> = ({
+  patientName,
+  cancelHandler,
+  continueHandler,
+}) => (
   <Modal
     isOpen={true}
     style={{
@@ -92,7 +126,37 @@ const AreYouSure = ({ patientName, cancelHandler, continueHandler }) => (
 );
 Modal.setAppElement("#root");
 
-const QueueItem = ({
+interface QueueItemProps {
+  internalId: string;
+  patient: {
+    internalId: string;
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    lookupId: string;
+    telephone: string;
+    birthDate: string;
+  };
+  devices: {
+    name: string;
+    internalId: string;
+  }[];
+  askOnEntry: string;
+  selectedDeviceId: string;
+  selectedTestResult: string;
+  defaultDevice: {
+    internalId: string;
+  };
+  refetchQueue: () => void;
+  facilityId: string;
+}
+
+interface updateQueueItemProps {
+  deviceId?: string;
+  result?: string;
+}
+
+const QueueItem: any = ({
   internalId,
   patient,
   devices,
@@ -102,25 +166,32 @@ const QueueItem = ({
   defaultDevice,
   refetchQueue,
   facilityId,
-}) => {
+}: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
     appInsights,
-    "Remove Patient From Queue"
+    "Remove Patient From Queue",
+    {}
   );
   const trackSubmitTestResult = useTrackEvent(
     appInsights,
-    "Submit Test Result"
+    "Submit Test Result",
+    {}
   );
   const trackUpdateAoEResponse = useTrackEvent(
     appInsights,
-    "Update AoE Response"
+    "Update AoE Response",
+    {}
   );
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
   const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
+  const [editQueueItem] = useMutation<
+    EditQueueItemResponse,
+    EditQueueItemParams
+  >(EDIT_QUEUE_ITEM);
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
@@ -152,10 +223,10 @@ const QueueItem = ({
     removeTimer(internalId);
   };
 
-  const onTestResultSubmit = (e) => {
+  const onTestResultSubmit = (e?: any) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      trackSubmitTestResult();
+      trackSubmitTestResult({});
       submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -173,12 +244,38 @@ const QueueItem = ({
     }
   };
 
-  const onDeviceChange = (e) => {
-    updateDeviceId(e.target.value);
+  const updateQueueItem = ({ deviceId, result }: updateQueueItemProps) => {
+    editQueueItem({
+      variables: {
+        id: internalId,
+        deviceId,
+        result,
+      },
+    }).then(
+      (response) => {
+        if (!response.data) {
+          throw Error("null response from update queue");
+        }
+        updateDeviceId(response.data.editQueueItem.deviceType.internalId);
+        updateTestResultValue(response.data.editQueueItem.result);
+      },
+      (error) => {
+        updateMutationError(error);
+      }
+    );
   };
 
-  const removeFromQueue = (patientId) => {
-    trackRemovePatientFromQueue();
+  const onDeviceChange = (e: React.FormEvent<HTMLSelectElement>) => {
+    const deviceId = (e.target as HTMLSelectElement).value;
+    updateQueueItem({ deviceId });
+  };
+
+  const onTestResultChange = (result: string) => {
+    updateQueueItem({ result });
+  };
+
+  const removeFromQueue = (patientId: string) => {
+    trackRemovePatientFromQueue({});
     removePatientFromQueue({
       variables: {
         patientId,
@@ -191,15 +288,6 @@ const QueueItem = ({
     );
   };
 
-  const onTestResultChange = (newTestResultValue) => {
-    updateTestResultValue(newTestResultValue);
-  };
-
-  const onClearClick = (e) => {
-    e.preventDefault();
-    onTestResultChange(null);
-  };
-
   const openAoeModal = () => {
     updateIsAoeModalOpen(true);
   };
@@ -208,9 +296,9 @@ const QueueItem = ({
     updateIsAoeModalOpen(false);
   };
 
-  const saveAoeCallback = (answers) => {
+  const saveAoeCallback = (answers: any) => {
     setAoeAnswers(answers);
-    trackUpdateAoEResponse();
+    trackUpdateAoEResponse({});
     updateAoe({
       variables: {
         patientId: patient.internalId,
@@ -327,7 +415,6 @@ const QueueItem = ({
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
-              onClearClick={onClearClick}
             />
           </div>
         </div>

@@ -14,10 +14,14 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class QueueManagementTest extends BaseApiTest {
@@ -28,6 +32,8 @@ public class QueueManagementTest extends BaseApiTest {
 	private TestDataFactory _dataFactory;
 	@Autowired
 	private OrganizationService _orgService;
+    @Autowired
+    private TestOrderService _testOrderService;
 
 	private Organization _org;
 	private Facility _site;
@@ -59,6 +65,27 @@ public class QueueManagementTest extends BaseApiTest {
 		// this assertion is kind of extra, should be on a patient management test instead
 		assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
 	}
+
+
+    @Test
+    public void updateItemInQueue() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+		TestOrder o = _dataFactory.createTestOrder(p, _site);
+        String orderId = o.getInternalId().toString();
+        DeviceType d = _dataFactory.getGenericDevice();
+        String deviceId = d.getInternalId().toString();
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+                .put("id", orderId)
+                .put("deviceId", deviceId)
+                .put("result", TestResult.POSITIVE.toString());
+
+        performQueueUpdateMutation(variables);
+
+        TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
+        assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
+        assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
+        assertEquals(updatedTestOrder.getTestEvent(), null);
+    }
 
 	@Test
 	public void enqueueOnePatientIsoDate() throws Exception {
@@ -92,4 +119,7 @@ public class QueueManagementTest extends BaseApiTest {
 		assertGraphQLSuccess(_template.perform("add-to-queue", variables));
 	}
 
+    private void performQueueUpdateMutation(ObjectNode variables) throws IOException {
+        assertGraphQLSuccess(_template.perform("edit-queue-item", variables));
+    }
 }

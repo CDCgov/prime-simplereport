@@ -69,7 +69,12 @@
       "graphql"
     ],
     "rules": {
-      "graphql/template-strings": ["error", {"env": "apollo"}]
+      "graphql/template-strings": [
+        "error",
+        {
+          "env": "apollo"
+        }
+      ]
     }
   },
   "browserslist": {
@@ -90,10 +95,11 @@
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-modal": "^3.10.6",
     "@types/react-redux": "^7.1.11",
     "@types/uuid": "^8.3.0",
-    "mockdate": "^3.0.2",
     "eslint-plugin-graphql": "^4.0.0",
+    "mockdate": "^3.0.2",
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "2.2.0",

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Modifying;
@@ -33,6 +34,9 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
 	@Query(BASE_ORG_QUERY + IS_PENDING + " and q.patient = :patient")
 	@EntityGraph(attributePaths = "patient")
 	public Optional<TestOrder> fetchQueueItem(Organization org, Person patient);
+
+	@Query(BASE_ORG_QUERY + IS_PENDING + " and q.id = :id")
+	public Optional<TestOrder> fetchQueueItemById(Organization org, UUID id);
 
 	@Query(BASE_ORG_QUERY + IS_COMPLETED)
 	@EntityGraph(attributePaths = "patient")

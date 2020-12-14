@@ -106,7 +106,7 @@ export const useTestTimer = (id: string) => {
   };
 };
 
-export const TestTimerWidget = (props: { id: string }): React.ReactNode => {
+export const TestTimerWidget = (props: { id: string }) => {
   const { running, countdown, elapsed, reset, start } = useTestTimer(props.id);
   const mmss = (t: number) => {
     const mins = Math.floor(Math.abs(t) / 60);
