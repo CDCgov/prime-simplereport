@@ -31,8 +31,6 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-build-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Change to backend dir
-        run: cd backend
       - name: Download Coverity Build Tool
         run: |
           wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=$TOKEN&project=CDCgov/prime-data-input-client" -O cov-analysis-linux64.tar.gz
@@ -43,5 +41,6 @@ jobs:
       - name: Build with cov-build
         run: |
           export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-          pwd
+          pushd
           cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
+          popd
