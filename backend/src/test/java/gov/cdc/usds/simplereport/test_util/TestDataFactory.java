@@ -61,8 +61,13 @@ public class TestDataFactory {
 	}
 
 	public Person createMinimalPerson(Organization org) {
-		return _personRepo.save(new Person("John", "Brown", "Boddie", "Jr.", org));
+        return createMinimalPerson(org, "John", "Brown", "Boddie", "Jr.");
 	}
+
+    public Person createMinimalPerson(Organization org, String firstName, String middleName, String lastName,
+            String suffix) {
+        return _personRepo.save(new Person(firstName, middleName, lastName, suffix, org));
+    }
 
 	public Person createFullPerson(Organization org) {
 		Person p = new Person(

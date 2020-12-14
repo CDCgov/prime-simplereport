@@ -76,7 +76,6 @@ public class TestOrderService {
     }
 
     public TestOrder editQueueItem(String id, String deviceId, String result) {
-        Organization org = _os.getCurrentOrganization();
         TestOrder order = this.getTestOrder(id);
 
         if (deviceId != null) {

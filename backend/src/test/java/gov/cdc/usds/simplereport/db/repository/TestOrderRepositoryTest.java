@@ -130,4 +130,67 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
 	}
 
+    @Test
+    public void fetchQueue_multipleEntries_sortedFifo() {
+        Organization org = _dataFactory.createValidOrg();
+        Person adam = _dataFactory.createMinimalPerson(org, "Adam", "A.", "Astaire", "Jr.");
+        Person brad = _dataFactory.createMinimalPerson(org, "Bradley", "B.", "Bones", null);
+        Person charlie = _dataFactory.createMinimalPerson(org, "Charles", "C.", "Crankypants", "3rd");
+        Facility facility = _dataFactory.createValidFacility(org);
+        _repo.save(new TestOrder(charlie, facility));
+        pause();
+        _repo.save(new TestOrder(adam, facility));
+        pause();
+        _repo.save(new TestOrder(brad, facility));
+        List<TestOrder> orders = _repo.fetchQueue(org, facility);
+        assertEquals("Charles", orders.get(0).getPatient().getFirstName());
+        assertEquals("Adam", orders.get(1).getPatient().getFirstName());
+        assertEquals("Bradley", orders.get(2).getPatient().getFirstName());
+    }
+
+    @Test
+    public void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
+        Organization org = _dataFactory.createValidOrg();
+        Person adam = _dataFactory.createMinimalPerson(org, "Adam", "A.", "Astaire", "Jr.");
+        Person brad = _dataFactory.createMinimalPerson(org, "Bradley", "B.", "Bones", null);
+        Person charlie = _dataFactory.createMinimalPerson(org, "Charles", "C.", "Crankypants", "3rd");
+        Facility facility = _dataFactory.createValidFacility(org);
+
+        TestOrder charlieOrder = _repo.save(new TestOrder(charlie, facility));
+        pause();
+        TestOrder adamOrder = _repo.save(new TestOrder(adam, facility));
+        pause();
+        TestOrder bradleyOrder = _repo.save(new TestOrder(brad, facility));
+
+        List<TestOrder> results = _repo.fetchPastResults(org, facility);
+        assertEquals(0, results.size());
+
+        doTest(bradleyOrder, TestResult.NEGATIVE);
+        pause();
+        doTest(charlieOrder, TestResult.POSITIVE);
+        pause();
+        doTest(adamOrder, TestResult.UNDETERMINED);
+
+        results = _repo.fetchPastResults(org, facility);
+        assertEquals(3, results.size());
+        assertEquals("Adam", results.get(0).getPatient().getFirstName());
+        assertEquals("Charles", results.get(1).getPatient().getFirstName());
+        assertEquals("Bradley", results.get(2).getPatient().getFirstName());
+    }
+
+    private void doTest(TestOrder order, TestResult result) {
+        order.setResult(result);
+        TestEvent event = _events.save(new TestEvent(order));
+        order.setTestEvent(event);
+        order.markComplete();
+        _repo.save(order);
+    }
+
+    private static void pause() {
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
