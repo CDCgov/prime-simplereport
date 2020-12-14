@@ -75,7 +75,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         DeviceType devA = _deviceTypeService.createDeviceType("A", "B", "C", "DUMMY");
 
         _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
-            TestResult.POSITIVE);
+            TestResult.POSITIVE.toString());
 
         List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
         assertEquals(1, queue.size());
