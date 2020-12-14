@@ -50,6 +50,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		queue = _repo.fetchQueueForOrganization(gtown);
 		assertEquals(1, queue.size());
 		order.setResult(TestResult.NEGATIVE);
+		order.markComplete();
 		_repo.save(order);
 		assertEquals(0, _repo.fetchQueueForOrganization(gtown).size());
 		assertEquals(1, _repo.fetchPastResultsForOrganization(gtown).size());
@@ -115,6 +116,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site));
 		order1.setTestEvent(didit);
 		order1.setResult(didit.getResult());
+		order1.markComplete();
 		_repo.save(order1);
 		flush();
 		TestOrder order2 = new TestOrder(patient0, site);

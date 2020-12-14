@@ -44,6 +44,7 @@ const queueQuery = gql`
         lastName
         gender
       }
+      result
     }
     organization {
       testingFacility {
@@ -75,13 +76,13 @@ interface QueueItem {
   priorTestDate: string;
   priorTestType: string;
   priorTestResult: string;
-  device: {
+  deviceType: {
     internalId: string;
   };
   patient: {
     internalId: string;
   };
-  testResult: string;
+  result: string;
   symptomOnset: string;
 }
 
@@ -121,9 +122,9 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             priorTestDate,
             priorTestType,
             priorTestResult,
-            device,
+            deviceType,
             patient,
-            testResult,
+            result,
             symptomOnset,
           }) => (
             <QueueItem
@@ -141,8 +142,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 priorTestType,
                 priorTestResult,
               }}
-              selectedDeviceId={device ? device.internalId : null}
-              selectedTestResult={testResult}
+              selectedDeviceId={deviceType ? deviceType.internalId : null}
+              selectedTestResult={result}
               devices={facility.deviceTypes}
               defaultDevice={facility.defaultDeviceType}
               refetchQueue={refetchQueue}

@@ -235,6 +235,7 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   addTestResult(deviceId: String!, result: String!, patientId: String!): String
+  editQueueItem(id: String!, deviceId: String, result: String): TestOrder
   addPatientToQueue(
     facilityId: String!
     patientId: String!

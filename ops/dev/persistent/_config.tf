@@ -7,13 +7,26 @@ terraform {
   }
 }
 
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~>2.0"
+    }
+    okta = {
+      source = "oktadeveloper/okta"
+    }
+  }
+  required_version = ">= 0.13"
+}
+
+
 provider "azurerm" {
-  version = "~>2.0"
   features {}
   skip_provider_registration = true
 }
 
 provider "okta" {
-  org_name  = "hhs-prime"
-  base_url  = "okta.com"
+  org_name = "hhs-prime"
+  base_url = "okta.com"
 }

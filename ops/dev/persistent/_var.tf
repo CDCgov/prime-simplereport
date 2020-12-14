@@ -4,5 +4,5 @@ variable "env" {
 
 locals {
   project = "prime"
-  name = "simple-report"
+  name    = "simple-report"
 }

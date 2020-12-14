@@ -9,6 +9,7 @@ https://simplereport.cdc.gov/
   - [Setup](#backend-Setup)
   - [Restart & Clean](#restart-&-clean)
   - [API Testing](#api-testing)
+  - [Tests](#tests)
 - [Frontend](#frontend)
   - [Setup](#frontend-Setup)
 - [Deploy](#Deploy)
@@ -78,6 +79,16 @@ Restarting the SQL way:
 
 Go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
 
+## Tests
+
+All the test can be run with `gradle test`
+
+Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
+
+```bash
+gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
+```
+
 ## Frontend
 
 The frontend is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
@@ -86,8 +97,8 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 
 1. Install [nvm](https://github.com/nvm-sh/nvm)
 1. (optional) Install react developer tools extensions
-1. `cd frontend && nvm use && npm install`
-1. `npm run start`
+1. `cd frontend && nvm use && yarn install`
+1. `yarn start`
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
