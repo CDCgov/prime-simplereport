@@ -1,8 +1,7 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import CMSDialog from "../../commonComponents/CMSDialog";
+import Modal from "react-modal";
 
-import "@cmsgov/design-system/dist/css/index.css";
 import { useState } from "react";
 import {
   getSymptomList,
@@ -222,8 +221,10 @@ const PriorTestInputs = ({
   );
 };
 
+Modal.setAppElement("#root");
+
 const AoEModalForm = ({
-  saveButtonText = "Save",
+  saveButtonText = "Continue",
   onClose,
   patient,
   facilityId,
@@ -321,28 +322,33 @@ const AoEModalForm = ({
     onClose();
   };
 
-  const actionButtons = (
-    <div style={{ float: "right" }}>
-      <Anchor text="Cancel" onClick={onClose} />
-      <Button label={saveButtonText} onClick={saveAnswers} />
-    </div>
-  );
-
   return (
-    <CMSDialog
-      onExit={onClose}
-      closeText="Cancel"
-      heading={displayFullName(
-        patient.firstName,
-        patient.middleName,
-        patient.lastName
-      )}
-      getApplicationNode={() => {
-        document.getElementById("#root");
+    <Modal
+      isOpen={true}
+      style={{
+        content: {
+          inset: "3em auto auto auto",
+          overflow: "auto",
+          maxHeight: "90vw",
+          width: "50%",
+          minWidth: "20em",
+          marginRight: "50%",
+          transform: "translate(50%, 0)",
+        },
       }}
-      actions={actionButtons}
-      actionsInHeader={true}
+      overlayClassName="prime-modal-overlay"
+      contentLabel="Time of Test Questions"
     >
+      <div style={{ float: "right" }}>
+        <Button label={saveButtonText} onClick={saveAnswers} />
+      </div>
+      <h2>
+        {displayFullName(
+          patient.firstName,
+          patient.middleName,
+          patient.lastName
+        )}
+      </h2>
       <h2>Symptoms</h2>
       <SymptomInputs
         noSymptoms={noSymptoms}
@@ -382,7 +388,10 @@ const AoEModalForm = ({
           />
         </>
       )}
-    </CMSDialog>
+      <div style={{ float: "right" }}>
+        <Button label={saveButtonText} onClick={saveAnswers} />
+      </div>
+    </Modal>
   );
 };
 
