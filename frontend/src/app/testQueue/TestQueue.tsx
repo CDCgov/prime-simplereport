@@ -66,7 +66,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItem {
+interface QueueItemData {
   internalId: string;
   pregnancy: string;
   dateAdded: string;
@@ -109,7 +109,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
-  const createQueueItems = (patientQueue: QueueItem[]) =>
+  const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
           ({
