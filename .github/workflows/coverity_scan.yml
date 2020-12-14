@@ -10,6 +10,10 @@ on:
   schedule:
     - cron: '0 18 * * *' # Daily at 18:00 UTC
 
+defaults:
+  run:
+    working-directory: ./backend
+
 jobs:
   latest:
     runs-on: ubuntu-latest
@@ -19,7 +23,7 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies
-        run: pushd frontend/ && yarn install && popd
+        run: pushd ../frontend/ && yarn install && popd
       - name: Set up JDK 11
         uses: actions/setup-java@v1
         with:
@@ -41,9 +45,7 @@ jobs:
       - name: Build with cov-build
         run: |
           export PATH=`pwd`/cov-analysis-linux64/bin:$PATH
-          pushd backend/
           cov-build --dir cov-int --fs-capture-search ../frontend ./gradlew clean assemble
-          popd
       - name: Submit the result to Coverity Scan
         run: |
           tar czvf sr.tgz cov-int
