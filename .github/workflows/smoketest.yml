@@ -30,13 +30,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.npm
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
-        run: npm install
+        run: yarn
       - name: Test
-        run: npm run-script test
+        run: yarn test
   linter:
     strategy:
       matrix:
@@ -54,13 +53,12 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.npm
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
-        run: npm install
+        run: yarn
       - name: Lint
-        run: npm run-script lint
+        run: yarn lint
   build-test:
     strategy:
       matrix:
@@ -78,10 +76,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.npm
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/package-lock.json', 'frontend/package.json') }}
-      - name: Node setup
-        run: npm install
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Install dependencies
+        run: yarn
       - name: Build release
-        run: npm run-script build
+        run: yarn build
