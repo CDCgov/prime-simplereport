@@ -26,11 +26,11 @@ jobs:
         with:
           node-version: "14"
       - name: Install dependencies
-        run: npm install
+        run: yarn install
       - name: Build deploy artifact
-        run: npm run build
+        run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: npm run deploy-azure-dev
+        run: yarn run deploy-azure-dev

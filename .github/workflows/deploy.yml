@@ -41,15 +41,14 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.npm
             ./frontend/node_modules
-          key: npm-build-${{env.NODE_VERSION}}-${{ hashFiles('client/package-lock.json', 'client/package.json') }}
-      - name: Node setup
+          key: npm-build-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Install Dependencies
         working-directory: ./frontend
-        run: npm install
+        run: yarn
       - name: Application build
         working-directory: ./frontend
-        run: npm run-script build
+        run: yarn build
       - name: Deploy
         uses: usds/cloud-gov-cli@master
         with:
