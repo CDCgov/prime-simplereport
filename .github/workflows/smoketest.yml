@@ -16,7 +16,7 @@ jobs:
   smoketest:
     strategy:
       matrix:
-        node: [12, 14]
+        node: [14]
         os: [ubuntu-18.04, ubuntu-20.04]
     runs-on: ${{matrix.os}}
     steps:
@@ -39,7 +39,7 @@ jobs:
   linter:
     strategy:
       matrix:
-        node: [12, 14]
+        node: [14]
         os: [ubuntu-18.04, ubuntu-20.04]
     runs-on: ${{matrix.os}}
     steps:
@@ -62,7 +62,7 @@ jobs:
   build-test:
     strategy:
       matrix:
-        node: [12, 14]
+        node: [14]
         os: [ubuntu-18.04, ubuntu-20.04]
     runs-on: ${{matrix.os}}
     steps:
