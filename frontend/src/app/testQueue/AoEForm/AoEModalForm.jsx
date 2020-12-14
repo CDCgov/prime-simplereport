@@ -10,13 +10,13 @@ import {
 } from "./constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
-import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import DateInput from "../../commonComponents/DateInput";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
+import "./AoEModalForm.scss";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -164,7 +164,7 @@ const PriorTestInputs = ({
       </>
     );
     return (
-      <>
+      <div className="sr-section">
         {legendIsh}
         <RadioGroup
           buttons={[
@@ -188,7 +188,7 @@ const PriorTestInputs = ({
           horizontal
         />
         {mostRecentTestAnswer === "no" && previousTestEntry}
-      </>
+      </div>
     );
   }
 
@@ -224,7 +224,7 @@ const PriorTestInputs = ({
 Modal.setAppElement("#root");
 
 const AoEModalForm = ({
-  saveButtonText = "Continue",
+  saveButtonText = "Save",
   onClose,
   patient,
   facilityId,
@@ -322,6 +322,13 @@ const AoEModalForm = ({
     onClose();
   };
 
+  const buttonGroup = (
+    <div className="sr-time-of-test-buttons" style={{ float: "right" }}>
+      <Button unstyled label="Cancel" onClick={onClose} />
+      <Button label={saveButtonText} onClick={saveAnswers} />
+    </div>
+  );
+
   return (
     <Modal
       isOpen={true}
@@ -339,9 +346,7 @@ const AoEModalForm = ({
       overlayClassName="prime-modal-overlay"
       contentLabel="Time of Test Questions"
     >
-      <div style={{ float: "right" }}>
-        <Button label={saveButtonText} onClick={saveAnswers} />
-      </div>
+      {buttonGroup}
       <h2>
         {displayFullName(
           patient.firstName,
@@ -360,7 +365,7 @@ const AoEModalForm = ({
         onsetDate={onsetDate}
       />
 
-      <h2>Past Tests</h2>
+      <h2>Test History</h2>
       <PriorTestInputs
         testTypeConfig={testConfig}
         priorTestDate={priorTestDate}
@@ -388,9 +393,7 @@ const AoEModalForm = ({
           />
         </>
       )}
-      <div style={{ float: "right" }}>
-        <Button label={saveButtonText} onClick={saveAnswers} />
-      </div>
+      <div className="sr-time-of-test-footer">{buttonGroup}</div>
     </Modal>
   );
 };

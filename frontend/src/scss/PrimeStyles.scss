@@ -57,6 +57,7 @@
 
 .prime-search-input {
   margin: 0 0 0.5em 0.6em;
+  min-width: 22em;
 }
 
 // header
@@ -134,6 +135,17 @@
 .prime-test-result-submit {
   margin-left: 1em;
   margin-bottom: 1em;
+}
+
+// General group of related items on a form
+.sr-section {
+  border: 1px solid #ccc;
+  padding: 1em;
+
+  > h3 {
+    font-size: 2rem;
+    color: $theme-color-primary;
+  }
 }
 
 //test queue search

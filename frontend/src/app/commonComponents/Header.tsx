@@ -106,7 +106,7 @@ const Header = () => {
                   color: "white",
                 }}
               >
-                Test Queue
+                Conduct Test
               </NavLink>
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
@@ -184,7 +184,7 @@ const Header = () => {
                   color: "white",
                 }}
               >
-                Test Queue
+                Conduct Test
               </NavLink>
             </li>
             <li className="usa-nav__primary-item">

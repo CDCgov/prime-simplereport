@@ -9,8 +9,7 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no people in the queue. Search for people above to add them
-          to the queue.
+          There are no tests running. Search for a person to start their test{" "}
         </p>
       </div>
     </div>

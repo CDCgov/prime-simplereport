@@ -16,10 +16,10 @@ const AddToQueueButton = ({ patient, onAddToQueue, facilityId }) => {
   };
   return (
     <React.Fragment>
-      <Anchor onClick={() => setAoEDialogActive(true)} text="Add to Queue" />
+      <Anchor onClick={() => setAoEDialogActive(true)} text="Begin Test" />
       {aoeDialogActive && (
         <AoeModalForm
-          saveButtonText="Add to Queue"
+          saveButtonText="Continue"
           patient={patient}
           onClose={() => setAoEDialogActive(false)}
           saveCallback={saveHandler}
