@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -29,9 +30,10 @@ import java.util.List;
 @Service
 @Transactional
 public class DataHubUploaderService {
-    // TODO: move this into config based on dev vs prod
-    static final String DUMMY_UPLOAD_URL = "https://prime-data-hub-test.azurefd.net/api/reports";
+    @Value("${simple-report.data-hub.uploadurl}")
+    private String DATAHUB_UPLOAD_URL;
     static final int MAX_ROWS_ALLOWED_PER_BATCH = 999;
+    static final String API_VERSION = "2";
     private static final Logger LOG = LoggerFactory.getLogger(RaceArrayConverter.class);
 
     private final TestEventRepository _repo;
@@ -87,10 +89,11 @@ public class DataHubUploaderService {
             headers.setContentType(new MediaType("text", "csv"));
             headers.add("x-functions-key", apiKey);
             headers.add("client", "simple_report");
+            headers.add("x-api-version", API_VERSION);
             return execution.execute(request, body);
         })).build();
 
-        _uploadResultId = restTemplate.postForObject(DUMMY_UPLOAD_URL, contentsAsResource, String.class);
+        _uploadResultId = restTemplate.postForObject(DATAHUB_UPLOAD_URL, contentsAsResource, String.class);
     }
 
     public String creatTestCVSForDataHub(String lastEndCreateOn) {
@@ -104,7 +107,7 @@ public class DataHubUploaderService {
         }
     }
 
-    // TODO: Think through this transaction. In theory, this operation will have it's own table to
+    // todo: Think through this transaction. In theory, this operation will have it's own table to
     // track and log uploads.
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
