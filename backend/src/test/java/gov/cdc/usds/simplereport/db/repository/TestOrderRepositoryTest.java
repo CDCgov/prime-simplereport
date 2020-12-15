@@ -62,8 +62,10 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
 		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
 		Facility site = _dataFactory.createValidFacility(gtown);
 		TestOrder order = _repo.save(new TestOrder(hoya, site));
+		assertNotNull(order);
 		flush();
 		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site));
+		assertNotNull(ev);
 		order.setTestEvent(ev);
 		_repo.save(order);
 		flush();
