@@ -4,7 +4,8 @@ name: Smoke Test Back-end API
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
   push:
-    branches: "**"
+    branches:
+      - "**"
     paths:
       - "backend/**"
       - .github/workflows/smoketestBackend.yml
@@ -12,6 +13,7 @@ on:
 env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
+  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
 
 defaults:
   run:
@@ -35,6 +37,8 @@ jobs:
           - 5432:5432
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
       - name: Set up JDK ${{env.JAVA_VERSION}}
         uses: actions/setup-java@v1
         with:
@@ -57,7 +61,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
-        run: ./gradlew test
+        run: ./gradlew jacocoTestReport
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
         if: failure()
@@ -65,6 +69,11 @@ jobs:
           name: test-report
           path: backend/build/reports/tests/test
           retention-days: 7
+      - name: Sonar analysis
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
   build-jar:
     runs-on: ubuntu-latest
     steps:
