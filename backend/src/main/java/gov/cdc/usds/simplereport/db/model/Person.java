@@ -105,7 +105,14 @@ public class Person extends OrganizationScopedEternalEntity {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
-	public void updatePatient(
+    public Person(PersonName names, Organization org, Facility fac) {
+        super(org);
+        this.facility = fac;
+        this.nameInfo = names;
+        this.role = PersonRole.STAFF;
+    }
+
+    public void updatePatient(
 		String lookupId,
 		String firstName,
 		String middleName,
@@ -151,7 +158,11 @@ public class Person extends OrganizationScopedEternalEntity {
 		return lookupId;
 	}
 
-	public String getFirstName() {
+    public PersonName getNameInfo() {
+        return nameInfo;
+    }
+
+    public String getFirstName() {
 		return nameInfo.getFirstName();
 	}
 

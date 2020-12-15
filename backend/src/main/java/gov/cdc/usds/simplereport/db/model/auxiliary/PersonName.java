@@ -74,4 +74,31 @@ public class PersonName {
 	public int hashCode() {
 		return Objects.hash(firstName, middleName, lastName, suffix);
 	}
+
+    @Override
+    public String toString() {
+        StringBuilder b = new StringBuilder();
+        if (firstName != null) {
+            b.append(firstName);
+        }
+        if (middleName != null) {
+            if (b.length() > 0) {
+                b.append(' ');
+            }
+            b.append(middleName);
+        }
+        if (lastName != null) {
+            if (b.length() > 0) {
+                b.append(' ');
+            }
+            b.append(lastName);
+        }
+        if (suffix != null) {
+            if (b.length() > 0) {
+                b.append(", ");
+            }
+            b.append(suffix);
+        }
+        return b.toString();
+    }
 }
