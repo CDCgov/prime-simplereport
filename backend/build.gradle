@@ -64,6 +64,7 @@ jacocoTestReport {
 	reports {
 		xml.enabled = true
 	}
+	dependsOn test // tests are required to run before generating the report
 }
 
 sonarqube {
@@ -71,6 +72,6 @@ sonarqube {
 		property "sonar.projectKey", "CDCgov_prime-data-input-client"
 		property "sonar.organization", "cdcgov"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.sources", "src/main/java,../frontend/src"
+		property "sonar.sources", "backend/src/main/java,frontend/src"
 	}
 }

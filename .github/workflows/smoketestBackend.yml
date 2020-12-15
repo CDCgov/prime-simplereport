@@ -59,7 +59,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
-        run: ./gradlew test
+        run: ./gradlew jacocoTestReport
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
         if: failure()
