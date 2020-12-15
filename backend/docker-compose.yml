@@ -24,7 +24,6 @@ services:
   api:
     build:
       context: .
-      dockerfile: Dockerfile.prod
     image: simple-report-api-build
     command: bootRun
     environment:
