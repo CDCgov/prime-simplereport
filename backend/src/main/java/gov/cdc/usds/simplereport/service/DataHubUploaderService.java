@@ -115,9 +115,6 @@ public class DataHubUploaderService {
             return err.toString();
         } catch (NoResultException err) {
             return "No matching results for the given startupdateby + '" + lastEndCreateOn + "'";
-        } catch (Exception err) {
-            LOG.error(err.toString());
-            return "Err: startupdateby='" + lastEndCreateOn + "' Error='" + err.toString() + "'";
         }
     }
 }

@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import java.time.Instant;
 import java.util.List;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
