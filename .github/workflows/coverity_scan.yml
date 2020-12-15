@@ -43,7 +43,7 @@ jobs:
           key: gradle-build-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Download Coverity Build Tool
         run: |
-          wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=${{ secrets.COVERITY_TOKEN }}&project=CDCgov/prime-data-input-client" -O cov-analysis-linux64.tar.gz
+          wget -q https://scan.coverity.com/download/java/linux64 --post-data "token=${{ secrets.COVERITY_TOKEN }}&project=CDCgov/prime-simplereport" -O cov-analysis-linux64.tar.gz
           mkdir cov-analysis-linux64
           tar xzf cov-analysis-linux64.tar.gz --strip 1 -C cov-analysis-linux64
       - name: Build with cov-build
@@ -59,4 +59,4 @@ jobs:
             --form file=@sr.tgz \
             --form version=${{ env.GITHUB_REF }} \
             --form description="`git rev-parse --short HEAD`" \
-            https://scan.coverity.com/builds?project=CDCgov%2Fprime-data-input-client
+            https://scan.coverity.com/builds?project=CDCgov%2Fprime-simplereport
