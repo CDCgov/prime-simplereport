@@ -73,6 +73,6 @@ data "azurerm_log_analytics_workspace" "log_analytics" {
 }
 
 data "azurerm_application_insights" "app_insights" {
-  name = "prime-simple-report-${var.env}-client"
+  name                = "prime-simple-report-${var.env}-insights"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
