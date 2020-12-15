@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import moment from "moment";
 
 import { displayFullName } from "../utils";
+import Button from "../commonComponents/Button";
 
 // this can't be the best way to handle this?
 import {
@@ -85,23 +86,14 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> Add New {PATIENT_TERM_CAP}</h2>
-            </div>
-            <div className="usa-card__body">
-              <div style={{ display: "inline-block" }}>
-                <NavLink className="usa-button" to={"add-patient"}>
-                  New {PATIENT_TERM_CAP}
-                </NavLink>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container usa-card__container">
-            <div className="usa-card__header">
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
+              <NavLink to={"add-patient"}>
+                <Button
+                  outline
+                  icon={"plus"}
+                  label={` New ${PATIENT_TERM_CAP}`}
+                />
+              </NavLink>
             </div>
             <div className="usa-card__body">
               {error ? (
