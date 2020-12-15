@@ -83,7 +83,7 @@ public class PersonService {
 	) {
 		final PersonRole personRole;
 
-		if (role == null || role == "") {
+		if (role == null || "".equals(role)) {
 			personRole = PersonRole.UNKNOWN;
 		} else {
 			personRole = PersonRole.valueOf(role.toUpperCase());

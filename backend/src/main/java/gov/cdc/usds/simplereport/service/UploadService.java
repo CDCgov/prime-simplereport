@@ -23,6 +23,7 @@ public class UploadService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     private static final CsvSchema PERSON_SCHEMA = personSchema();
+    private static final String FACILITY_ID = "facilityId";
 
     private final PersonService _ps;
 
@@ -58,7 +59,7 @@ public class UploadService {
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
             _ps.addPatient(
-                    row.get("facilityId") == "" ? null : UUID.fromString(row.get("facilityId")),
+                    row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
                     null,
                     row.get("FirstName"),
                     row.get("MiddleName"),
@@ -103,7 +104,7 @@ public class UploadService {
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
                 .addColumn("Role", CsvSchema.ColumnType.STRING)
                 .addColumn("Email", CsvSchema.ColumnType.STRING)
-                .addColumn("facilityId", CsvSchema.ColumnType.STRING)
+                .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
                 .addColumn("Location", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
