@@ -65,5 +65,6 @@ sonarqube {
 		property "sonar.projectKey", "CDCgov_prime-data-input-client"
 		property "sonar.organization", "cdcgov"
 		property "sonar.host.url", "https://sonarcloud.io"
+		property "sonar.sources", "src/main/java,../frontend/src"
 	}
 }
