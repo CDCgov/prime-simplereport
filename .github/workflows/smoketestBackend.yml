@@ -13,7 +13,7 @@ on:
 env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
-  PROJECT_ROOT: ${{ env.GITHUB_WORKSPACE }} # Stashing this value here, as it gets overriden by one of the steps
+  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
 
 defaults:
   run:
