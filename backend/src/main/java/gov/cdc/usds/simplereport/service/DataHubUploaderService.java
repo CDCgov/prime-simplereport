@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
@@ -21,7 +22,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
-import java.time.Instant;
+import java.nio.charset.StandardCharsets;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,25 +31,43 @@ import java.util.List;
 @Transactional
 public class DataHubUploaderService {
     static final String DUMMY_UPLOAD_URL = "https://prime-data-hub-test.azurefd.net/api/reports";
+    static final int MAX_ROWS_ALLOWED_PER_BATCH = 999;
     private static final Logger LOG = LoggerFactory.getLogger(RaceArrayConverter.class);
 
     private final TestEventRepository _repo;
     private byte[] _fileContents;
+    private String _nextTimestamp;
+    private String _warnMessage;
 
     public DataHubUploaderService(TestEventRepository _repo) {
         this._repo = _repo;
+        this._nextTimestamp = "";
+        this._warnMessage = "";
     }
 
     private void _createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
-        List<TestEvent> events = _repo.findAllByCreatedAtInstant(Instant.parse(lastEndCreateOn));
+        // Instant i = Instant.parse(lastEndCreateOn);
+        List<TestEvent> events = _repo.findAllByCreatedAtInstant(lastEndCreateOn);
         if (events.size() == 0) {
             throw new NoResultException();
+        } else if (events.size() >= MAX_ROWS_ALLOWED_PER_BATCH) {
+            this._warnMessage += "More rows were found than can be uploaded in a single batch. Needs to be more than once.";
         }
+        // timestamp of highest matched entry, used for the next query.
+        this._nextTimestamp = events.get(0).getCreatedAt().toInstant().toString();
+
         List<TestEventExport> eventsToExport = new ArrayList<>();
         events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
+
         CsvMapper mapper = new CsvMapper();
-        CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader();
-        this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport).getBytes();
+        mapper.enable(CsvGenerator.Feature.STRICT_CHECK_FOR_QUOTING)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
+                .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS);
+        // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but you'd be wrong,
+        // we have to return `""` withNullValue to not put `,,,` in the csv
+        CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader().withNullValue("\"\"");
+        String csvcontent = mapper.writer(schema).writeValueAsString(eventsToExport);
+        this._fileContents = csvcontent.getBytes(StandardCharsets.UTF_8);
     }
 
     private String _uploadCSVDocument(final String apiKey, final String filename) throws IOException, RestClientException {
@@ -60,9 +79,9 @@ public class DataHubUploaderService {
         };
 
         MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        map.add("file", contentsAsResource);
         map.add("name", filename);
         map.add("filename", filename);
+        map.add("file", contentsAsResource);
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
             HttpHeaders headers = request.getHeaders();
@@ -79,20 +98,25 @@ public class DataHubUploaderService {
     }
 
     @Transactional(readOnly = false)
-    public String uploadTestEventCVSToDataHub(final String apiKey, final String lastEndCreateOn) {
+    public String uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
         String result;
         try {
+            if (lastEndCreateOn.length() == 0) {
+                // testing only, just query everything
+                lastEndCreateOn = "2020-01-01T00:00:00.00Z";
+                LOG.info("Empty startupdateby so using 2020-01-01");
+            }
             this._createTestEventCSV(lastEndCreateOn);
-            return this._uploadCSVDocument( apiKey, "test");
-        } catch (DateTimeParseException err) {
-            err.printStackTrace();
-            return "Err: create time not processed should be like '2020-01-01T16:13:15.448000Z'";
-        } catch (NoResultException err) {
-            return "Err: no records matched after startupdateby='" + lastEndCreateOn + "'";
+            result = this._uploadCSVDocument( apiKey, "test.csv");
+            // todo: formulate the result here.
+            return this._nextTimestamp;
         } catch (RestClientException err) {
             return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
         } catch (IOException err) {
             return err.toString();
+        } catch (Exception err) {
+            LOG.error(err.toString());
+            return "Err: no records matched after startupdateby='" + lastEndCreateOn + "'";
         }
     }
 }

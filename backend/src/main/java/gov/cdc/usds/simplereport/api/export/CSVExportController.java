@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @RestController
 @RequestMapping(value = "/export")
-@Validated 
+@Validated
 public class CSVExportController {
 
     private final ExportService _es;
@@ -39,7 +39,7 @@ public class CSVExportController {
       String headerKey = "Content-Disposition";
       String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
       response.setHeader(headerKey, headerValue);
-      response.getWriter().print(_es.CreateTestEventCSV());
+      response.getWriter().print(_es.CreateTestEventCSV("2020-01-01T0:00:00.00Z"));
       return ResponseEntity.accepted().build();
     }
 }

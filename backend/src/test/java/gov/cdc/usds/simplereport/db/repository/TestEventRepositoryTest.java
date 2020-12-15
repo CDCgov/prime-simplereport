@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -47,7 +46,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
         assertEquals(second.getResult(), TestResult.UNDETERMINED);
 
-        List<TestEvent> found2 = _repo.findAllByCreatedAtInstant(Instant.parse("2020-01-01T16:13:15.448000Z"));
+        List<TestEvent> found2 = _repo.findAllByCreatedAtInstant("2020-01-01T16:13:15.448000Z");
         // assertNotEquals(2, found2.size());
     }
 }
