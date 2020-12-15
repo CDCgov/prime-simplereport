@@ -24,6 +24,7 @@ services:
   api:
     build:
       context: .
+      dockerfile: Dockerfile.prod
     image: simple-report-api-build
     command: bootRun
     environment:
@@ -34,6 +35,8 @@ services:
       - "${SR_API_PORT:-8080}:8080"
     networks:
       - dev-net
+    depends_on:
+      - db
   schemaspy:
     build:
       context: .
@@ -45,6 +48,9 @@ services:
       HOST: dev-net
     networks:
       - dev-net
+    depends_on:
+    - db
+    - api
 volumes:
   simple-report-dev-db-data:
 networks:
