@@ -336,7 +336,7 @@ const AoEModalForm = ({
         content: {
           inset: "3em auto auto auto",
           overflow: "auto",
-          maxHeight: "90vw",
+          maxHeight: "90vh",
           width: "50%",
           minWidth: "20em",
           marginRight: "50%",
