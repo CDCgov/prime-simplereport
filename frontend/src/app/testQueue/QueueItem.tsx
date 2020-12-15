@@ -10,7 +10,6 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../commonComponents/Alert";
-import { Button } from "@cmsgov/design-system";
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
@@ -24,6 +23,7 @@ import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget } from "./TestTimer";
 import moment from "moment";
+import Button from "../commonComponents/Button";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation($patientId: String!) {
@@ -105,6 +105,8 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
         top: "50%",
         left: "50%",
         width: "40%",
+        minWidth: "20em",
+        maxHeight: "14em",
         marginRight: "-50%",
         transform: "translate(-50%, -50%)",
       },
@@ -117,10 +119,8 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
       completed. Do you want to submit results anyway?
     </p>
     <div className="prime-modal-buttons">
-      <Button onClick={cancelHandler} variation="transparent">
-        No, go back
-      </Button>
-      <Button onClick={continueHandler}>Submit Anyway</Button>
+      <Button onClick={cancelHandler} unstyled label="No, go back" />
+      <Button onClick={continueHandler} label="Submit Anyway" />
     </div>
   </Modal>
 );
@@ -369,6 +369,7 @@ const QueueItem: any = ({
                   />
                   {isAoeModalOpen && (
                     <AoeModalForm
+                      saveButtonText="Save"
                       onClose={closeAoeModal}
                       patient={patient}
                       loadState={aoeAnswers}
