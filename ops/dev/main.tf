@@ -8,12 +8,6 @@ locals {
   }
 }
 
-module "all" {
-  source     = "../services/all-ephemeral"
-  docker_tag = var.docker_tag
-  env        = var.env
-}
-
 module "simple_report_api" {
   source = "../services/app_service"
   name   = "${local.name}-api"
