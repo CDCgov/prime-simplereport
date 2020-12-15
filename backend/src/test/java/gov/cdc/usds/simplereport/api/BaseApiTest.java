@@ -22,73 +22,74 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 @ActiveProfiles("dev")
 public abstract class BaseApiTest {
 
-	@Autowired
-	private DbTruncator _truncator;
+    @Autowired
+    private DbTruncator _truncator;
 
-	@Autowired
-	protected GraphQLTestTemplate _template; // screw delegation
+    @Autowired
+    protected GraphQLTestTemplate _template; // screw delegation
 
-	protected void truncateDb() {
-		_truncator.truncateAll();
-	}
+    protected void truncateDb() {
+        _truncator.truncateAll();
+    }
 
-	@AfterEach
-	public void cleanup() {
-		truncateDb();
-	}
+    @AfterEach
+    public void cleanup() {
+        truncateDb();
+    }
 
-	/** 
-	 * Run the query in the given resource file, check if the response has errors, and
-	 * return the {@code data} section of the response if not.
-	 * @param queryFileName
-	 * @return the "data" key from the server response.
-	 * @throws AssertionFailedError if the response has errors
-	 * @throws RuntimeException for unexpected errors
-	 */
-	protected ObjectNode runQuery(String queryFileName) {
-		try {
-			GraphQLResponse response = _template.postForResource(queryFileName);
-			assertTrue(response.isOk(), "Servlet response should be OK");
-			JsonNode responseBody = response.readTree();
-			assertGraphQLSuccess(responseBody);
-			return (ObjectNode) responseBody.get("data");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * Run the query in the given resource file, check if the response has
+     * errors, and return the {@code data} section of the response if not.
+     * 
+     * @param queryFileName
+     * @return the "data" key from the server response.
+     * @throws AssertionFailedError if the response has errors
+     * @throws RuntimeException     for unexpected errors
+     */
+    protected ObjectNode runQuery(String queryFileName) {
+        try {
+            GraphQLResponse response = _template.postForResource(queryFileName);
+            assertTrue(response.isOk(), "Servlet response should be OK");
+            JsonNode responseBody = response.readTree();
+            assertGraphQLSuccess(responseBody);
+            return (ObjectNode) responseBody.get("data");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
-		try {
-			GraphQLResponse response = _template.perform(queryFileName, variables);
-			assertTrue(response.isOk(), "Servlet response should be OK");
-			JsonNode responseBody = response.readTree();
-			assertGraphQLSuccess(responseBody);
-			return (ObjectNode) responseBody.get("data");
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
+        try {
+            GraphQLResponse response = _template.perform(queryFileName, variables);
+            assertTrue(response.isOk(), "Servlet response should be OK");
+            JsonNode responseBody = response.readTree();
+            assertGraphQLSuccess(responseBody);
+            return (ObjectNode) responseBody.get("data");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * Check if the given response has an {@code errors} section, and if so, fail
-	 * the test using the errors section as a failure message. 
-	 */
-	protected static void assertGraphQLSuccess(GraphQLResponse resp) {
-		try {
-			assertGraphQLSuccess(resp.readTree());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
+    /**
+     * Check if the given response has an {@code errors} section, and if so,
+     * fail the test using the errors section as a failure message.
+     */
+    protected static void assertGraphQLSuccess(GraphQLResponse resp) {
+        try {
+            assertGraphQLSuccess(resp.readTree());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	/**
-	 * Check if the given response body has an {@code errors} section, and if so, fail
-	 * the test using the errors section as a failure message. 
-	 */
-	protected static void assertGraphQLSuccess(JsonNode responseBody) {
-		JsonNode errorNode = responseBody.path("errors");
-		if(!errorNode.isMissingNode()) {
-			fail(errorNode.toString());
-		}
-	}
+    /**
+     * Check if the given response body has an {@code errors} section, and if
+     * so, fail the test using the errors section as a failure message.
+     */
+    protected static void assertGraphQLSuccess(JsonNode responseBody) {
+        JsonNode errorNode = responseBody.path("errors");
+        if (!errorNode.isMissingNode()) {
+            fail(errorNode.toString());
+        }
+    }
 }

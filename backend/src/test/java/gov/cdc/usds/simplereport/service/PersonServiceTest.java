@@ -33,14 +33,16 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     private Facility _site2;
 
     @Test
-	public void roundTrip() {
-		_service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Hicksville", "NY",
-			"11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
-		_service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main",null, "Hicksville", "NY",
-				"11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
-		List<Person> all = _service.getPatients(null);
-		assertEquals(2, all.size());
-	}
+    public void roundTrip() {
+        _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
+                "Apartment 3", "Hicksville", "NY",
+                "11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
+        _service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main", null,
+                "Hicksville", "NY",
+                "11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
+        List<Person> all = _service.getPatients(null);
+        assertEquals(2, all.size());
+    }
 
     @Test
     public void getPatients_noFacility_allFetchedAndSorted() {

@@ -28,44 +28,45 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 @Component
 public class TestDataFactory {
 
-	private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
-	@Autowired
-	private OrganizationRepository _orgRepo;
-	@Autowired
-	private FacilityRepository _facilityRepo;
-	@Autowired
-	private PersonRepository _personRepo;
-	@Autowired
-	private ProviderRepository _providerRepo;
-	@Autowired
-	private DeviceTypeRepository _deviceRepo;
+    private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
+    @Autowired
+    private OrganizationRepository _orgRepo;
+    @Autowired
+    private FacilityRepository _facilityRepo;
+    @Autowired
+    private PersonRepository _personRepo;
+    @Autowired
+    private ProviderRepository _providerRepo;
+    @Autowired
+    private DeviceTypeRepository _deviceRepo;
     @Autowired
     private TestOrderRepository _testOrderRepo;
     @Autowired
     private PatientAnswersRepository _patientAnswerRepo;
 
-	public Organization createValidOrg() {
-		return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
-	}
+    public Organization createValidOrg() {
+        return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
+    }
 
-	public Facility createValidFacility(Organization org) {
+    public Facility createValidFacility(Organization org) {
         return createValidFacility(org, "Injection Site");
     }
 
     public Facility createValidFacility(Organization org, String facilityName) {
-		DeviceType dev = getGenericDevice();
-		StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
-		Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
+        DeviceType dev = getGenericDevice();
+        StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
+        Provider doc = _providerRepo
+                .save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC"));
         Facility facility = new Facility(org, facilityName, "123456", doc);
-		facility.setAddress(addy);
-		facility.setDefaultDeviceType(dev);
-		Facility save = _facilityRepo.save(facility);
-		return save;
-	}
+        facility.setAddress(addy);
+        facility.setDefaultDeviceType(dev);
+        Facility save = _facilityRepo.save(facility);
+        return save;
+    }
 
-	public Person createMinimalPerson(Organization org) {
+    public Person createMinimalPerson(Organization org) {
         return createMinimalPerson(org, "John", "Brown", "Boddie", "Jr.");
-	}
+    }
 
     public Person createMinimalPerson(Organization org, String firstName, String middleName, String lastName,
             String suffix) {
@@ -79,21 +80,22 @@ public class TestDataFactory {
     }
 
     public Person createFullPerson(Organization org) {
-		// consts are to keep style check happy othewise it complains about "magic numbers"
-		final int BIRTH_YEAR = 1899;
-		final int BIRTH_MONTH = 5;
-		final int BIRTH_DAY = 10;
-		Person p = new Person(
-			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
-			new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
-			PersonRole.RESIDENT, null,
-			"W", null, "M", false, false
-		);
-		return _personRepo.save(p);
-	}
+        // consts are to keep style check happy othewise it complains about
+        // "magic numbers"
+        final int BIRTH_YEAR = 1899;
+        final int BIRTH_MONTH = 5;
+        final int BIRTH_DAY = 10;
+        Person p = new Person(
+                org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
+                new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
+                PersonRole.RESIDENT, null,
+                "W", null, "M", false, false);
+        return _personRepo.save(p);
+    }
 
     public TestOrder createTestOrder(Person p, Facility f) {
-        AskOnEntrySurvey survey = new AskOnEntrySurvey(null,Collections.emptyMap(),null,null,null,null,null,null);
+        AskOnEntrySurvey survey = new AskOnEntrySurvey(null, Collections.emptyMap(), null, null, null, null, null,
+                null);
         PatientAnswers answers = new PatientAnswers(survey);
         _patientAnswerRepo.save(answers);
         TestOrder o = new TestOrder(p, f);
@@ -101,8 +103,8 @@ public class TestDataFactory {
         return _testOrderRepo.save(o);
     }
 
-	public DeviceType getGenericDevice() {
-		return _deviceRepo.findAll().stream().filter(d->d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
-			.orElseGet(()->_deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM")));
-	}
+    public DeviceType getGenericDevice() {
+        return _deviceRepo.findAll().stream().filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
+                .orElseGet(() -> _deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM")));
+    }
 }

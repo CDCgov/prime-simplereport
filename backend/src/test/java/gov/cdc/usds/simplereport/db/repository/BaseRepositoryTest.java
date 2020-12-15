@@ -16,10 +16,10 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 @Import(SliceTestConfiguration.class)
 public abstract class BaseRepositoryTest {
 
-	@Autowired
-	private TestEntityManager _manager;
+    @Autowired
+    private TestEntityManager _manager;
 
-	protected void flush() {
-		_manager.flush();
-	}
+    protected void flush() {
+        _manager.flush();
+    }
 }
