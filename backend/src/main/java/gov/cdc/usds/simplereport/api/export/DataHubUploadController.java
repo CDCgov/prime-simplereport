@@ -1,10 +1,15 @@
 package gov.cdc.usds.simplereport.api.export;
 
 import gov.cdc.usds.simplereport.service.DataHubUploaderService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -20,11 +25,25 @@ public class DataHubUploadController {
     public DataHubUploadController(DataHubUploaderService us) {
         this._hubuploadservice = us;
     }
+
     @GetMapping(value = "/uploadTestEvent")
     public String uploadTestEventCSVToDataHub(@RequestParam String apikey,
                                               @RequestParam(defaultValue = "") String startupdateby
     ) throws IOException {
-        String result = _hubuploadservice.uploadTestEventCVSToDataHub(apikey, startupdateby);
-        return result;
+        return _hubuploadservice.uploadTestEventCVSToDataHub(apikey, startupdateby);
+    }
+
+    @GetMapping(value = "/testEvent", produces = {"text/csv"})
+    public ResponseEntity<?> exportTestEventCSV(HttpServletResponse response,
+                                                @RequestParam(defaultValue = "") String startupdateby) throws IOException {
+        response.setContentType("text/csv");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+        String currentDateTime = dateFormatter.format(new Date());
+
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
+        response.setHeader(headerKey, headerValue);
+        response.getWriter().print(_hubuploadservice.creatTestCVSForDataHub(startupdateby));
+        return ResponseEntity.accepted().build();
     }
 }

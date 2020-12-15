@@ -34,7 +34,7 @@ public class DataHubUploaderService {
     private static final Logger LOG = LoggerFactory.getLogger(RaceArrayConverter.class);
 
     private final TestEventRepository _repo;
-    private byte[] _fileContents;
+    private String _fileContents;
     private String _nextTimestamp;
     private String _warnMessage;
     private String _uploadResultId;
@@ -49,7 +49,11 @@ public class DataHubUploaderService {
     }
 
     private void _createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
-        // Instant i = Instant.parse(lastEndCreateOn);
+        if (lastEndCreateOn.length() == 0) {
+            // testing only, just query everything
+            lastEndCreateOn = "2020-01-01T00:00:00.00Z";
+            LOG.info("Empty startupdateby so using 2020-01-01");
+        }
         List<TestEvent> events = _repo.findAllByCreatedAtInstant(lastEndCreateOn);
         if (events.size() == 0) {
             throw new NoResultException();
@@ -71,16 +75,15 @@ public class DataHubUploaderService {
         // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but you'd be wrong,
         // we have to return `""` withNullValue to not put `,,,` in the csv
         CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader().withNullValue("\"\"");
-        String csvcontent = mapper.writer(schema).writeValueAsString(eventsToExport);
-        this._fileContents = csvcontent.getBytes(StandardCharsets.UTF_8);
+        this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
     }
 
     private void _uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
-        ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents);
+        ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents.getBytes(StandardCharsets.UTF_8));
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
             HttpHeaders headers = request.getHeaders();
-            headers.setContentType(new MediaType("text","csv"));
+            headers.setContentType(new MediaType("text", "csv"));
             headers.add("x-functions-key", apiKey);
             headers.add("client", "simple_report");
             return execution.execute(request, body);
@@ -89,25 +92,30 @@ public class DataHubUploaderService {
         _uploadResultId = restTemplate.postForObject(DUMMY_UPLOAD_URL, contentsAsResource, String.class);
     }
 
+    public String creatTestCVSForDataHub(String lastEndCreateOn) {
+        try {
+            this._createTestEventCSV(lastEndCreateOn);
+            return this._fileContents;
+        } catch (IOException err) {
+            return err.toString();
+        } catch (NoResultException err) {
+            return "No matching results for the given startupdateby + '" + lastEndCreateOn + "'";
+        }
+    }
+
     @Transactional(readOnly = false)
     public String uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
-        String result;
         try {
-            if (lastEndCreateOn.length() == 0) {
-                // testing only, just query everything
-                lastEndCreateOn = "2020-01-01T00:00:00.00Z";
-                LOG.info("Empty startupdateby so using 2020-01-01");
-            }
             this._createTestEventCSV(lastEndCreateOn);
             this._uploadCSVDocument(apiKey);
 
             // todo: must be a better way to do this
             return String.format("{result:ok,\n" +
-                    "  lastTimestamp:\"%s\",\n" +
-                    "  rowsSent:%d,\n" +
-                    "  uploadResultId:%s,\n" +
-                    "  warnMessage:\"%s\"\n" +
-                    "}",
+                            "  lastTimestamp:\"%s\",\n" +
+                            "  rowsSent:%d,\n" +
+                            "  uploadResultId:%s,\n" +
+                            "  warnMessage:\"%s\"\n" +
+                            "}",
                     this._nextTimestamp, this._rowCount, this._uploadResultId, this._warnMessage);
         } catch (RestClientException err) {
             return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
