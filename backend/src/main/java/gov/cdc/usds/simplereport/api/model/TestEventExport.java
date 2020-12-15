@@ -39,6 +39,7 @@ public class TestEventExport {
 		"other", "O",
 		"ambiguous", "A",
 		"unknown", "U",
+		"unk", "U",
 		"notapplicable", "N"
 	);
 
@@ -123,7 +124,7 @@ public class TestEventExport {
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
 		if (patient.getGender() == null) {
-			return "UNK";
+			return "U";
 		}
 		return genderMap.get(patient.getGender());
 	}

@@ -70,18 +70,8 @@ public class DataHubUploaderService {
         this._fileContents = csvcontent.getBytes(StandardCharsets.UTF_8);
     }
 
-    private String _uploadCSVDocument(final String apiKey, final String filename) throws IOException, RestClientException {
-        ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents) {
-            @Override
-            public String getFilename() {
-                return filename;
-            }
-        };
-
-        MultiValueMap<String, Object> map = new LinkedMultiValueMap<String, Object>();
-        map.add("name", filename);
-        map.add("filename", filename);
-        map.add("file", contentsAsResource);
+    private String _uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
+        ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents);
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
             HttpHeaders headers = request.getHeaders();
@@ -91,7 +81,7 @@ public class DataHubUploaderService {
             return execution.execute(request, body);
         })).build();
 
-        String result = restTemplate.postForObject(DUMMY_UPLOAD_URL, map, String.class);
+        String result = restTemplate.postForObject(DUMMY_UPLOAD_URL, contentsAsResource, String.class);
         LOG.info("Post file result '{}'", result);
 
         return result;
@@ -107,7 +97,7 @@ public class DataHubUploaderService {
                 LOG.info("Empty startupdateby so using 2020-01-01");
             }
             this._createTestEventCSV(lastEndCreateOn);
-            result = this._uploadCSVDocument( apiKey, "test.csv");
+            result = this._uploadCSVDocument(apiKey);
             // todo: formulate the result here.
             return this._nextTimestamp;
         } catch (RestClientException err) {
