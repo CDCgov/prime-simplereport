@@ -9,8 +9,8 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("dev") // :-(
 public class SimpleReportApplicationTests {
 
-	@Test
-	public void contextLoads() {
-		// no-op
-	}
+    @Test
+    public void contextLoads() {
+        // no-op
+    }
 }

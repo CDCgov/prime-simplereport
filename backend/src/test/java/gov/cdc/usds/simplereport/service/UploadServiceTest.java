@@ -27,7 +27,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     @Test
     void testInsert() throws IOException {
         // Read the test CSV file
-        try (InputStream inputStream = UploadServiceTest.class.getClassLoader().getResourceAsStream("test-upload.csv")) {
+        try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
+                .getResourceAsStream("test-upload.csv")) {
             this._service.processPersonCSV(inputStream);
         }
 
@@ -40,8 +41,10 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Test
     void testNotCSV() throws IOException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
-            final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis), "Should fail to parse");
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(
+                "this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
+            final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+                    () -> this._service.processPersonCSV(bis), "Should fail to parse");
             assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
             assertEquals(0, this._ps.getPatients(null).size(), "Should not have any patients");
         }
@@ -49,9 +52,12 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Test
     void testMalformedCSV() throws IOException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream("patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
-            final RuntimeJsonMappingException e = assertThrows(RuntimeJsonMappingException.class, () -> this._service.processPersonCSV(bis), "CSV parsing should fail");
-            assertTrue(e.getMessage().contains("Not enough column values: expected 21, found 1"), "Should have correct error message");
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(
+                "patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
+            final RuntimeJsonMappingException e = assertThrows(RuntimeJsonMappingException.class,
+                    () -> this._service.processPersonCSV(bis), "CSV parsing should fail");
+            assertTrue(e.getMessage().contains("Not enough column values: expected 21, found 1"),
+                    "Should have correct error message");
         }
     }
 }

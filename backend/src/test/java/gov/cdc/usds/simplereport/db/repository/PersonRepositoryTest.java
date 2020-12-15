@@ -15,22 +15,23 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 public class PersonRepositoryTest extends BaseRepositoryTest {
 
-	@Autowired
-	private PersonRepository _repo;
-	@Autowired
-	private OrganizationRepository _orgRepo;
+    @Autowired
+    private PersonRepository _repo;
+    @Autowired
+    private OrganizationRepository _orgRepo;
 
-	@Test
-	public void doPersonOperations() {
-		Organization org = _orgRepo.save(new Organization("Here", "there"));
-		Organization other = _orgRepo.save(new Organization("There", "where?"));
+    @Test
+    public void doPersonOperations() {
+        Organization org = _orgRepo.save(new Organization("Here", "there"));
+        Organization other = _orgRepo.save(new Organization("There", "where?"));
 
-		StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
-		_repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(),  addy, "(123) 456-7890", PersonRole.VISITOR, "", null, "", "", false, false));
-		List<Person> found = _repo.findAllByOrganization(org, null);
-		assertEquals(1, found.size());
-		assertEquals("Joe", found.get(0).getFirstName());
-		found = _repo.findAllByOrganization(other, null);
-		assertEquals(0, found.size());
-	}
+        StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
+        _repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(), addy, "(123) 456-7890",
+                PersonRole.VISITOR, "", null, "", "", false, false));
+        List<Person> found = _repo.findAllByOrganization(org, null);
+        assertEquals(1, found.size());
+        assertEquals("Joe", found.get(0).getFirstName());
+        found = _repo.findAllByOrganization(other, null);
+        assertEquals(0, found.size());
+    }
 }

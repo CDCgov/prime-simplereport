@@ -26,51 +26,50 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class QueueManagementTest extends BaseApiTest {
 
-	private static final String QUERY = "queue-dates-query";
+    private static final String QUERY = "queue-dates-query";
 
-	@Autowired
-	private TestDataFactory _dataFactory;
-	@Autowired
-	private OrganizationService _orgService;
+    @Autowired
+    private TestDataFactory _dataFactory;
+    @Autowired
+    private OrganizationService _orgService;
     @Autowired
     private TestOrderService _testOrderService;
 
-	private Organization _org;
-	private Facility _site;
+    private Organization _org;
+    private Facility _site;
 
-	@BeforeEach
-	public void init() {
-		truncateDb();
-		_org = _orgService.getCurrentOrganization();
-		_site = _orgService.getFacilities(_org).get(0);
-	}
+    @BeforeEach
+    public void init() {
+        truncateDb();
+        _org = _orgService.getCurrentOrganization();
+        _site = _orgService.getFacilities(_org).get(0);
+    }
 
-	@Test
-	public void enqueueOnePatient() throws Exception {
-		Person p = _dataFactory.createFullPerson(_org);
-		String personId = p.getInternalId().toString();
-		ObjectNode variables = getFacilityScopedArguments()
-				.put("id", personId)
-				.put("previousTestDate", "05/15/2020")
-				.put("symptomOnsetDate", "11/30/2020")
-				;
-		performEnqueueMutation(variables);
-		ArrayNode queueData = fetchQueue();
-		assertEquals(1, queueData.size());
-		JsonNode queueEntry = queueData.get(0);
-		String symptomOnset = queueEntry.get("symptomOnset").asText();
-		String priorTest = queueEntry.get("priorTestDate").asText();
-		assertEquals("2020-11-30", symptomOnset);
-		assertEquals("2020-05-15", priorTest);
-		// this assertion is kind of extra, should be on a patient management test instead
-		assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
-	}
-
+    @Test
+    public void enqueueOnePatient() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        String personId = p.getInternalId().toString();
+        ObjectNode variables = getFacilityScopedArguments()
+                .put("id", personId)
+                .put("previousTestDate", "05/15/2020")
+                .put("symptomOnsetDate", "11/30/2020");
+        performEnqueueMutation(variables);
+        ArrayNode queueData = fetchQueue();
+        assertEquals(1, queueData.size());
+        JsonNode queueEntry = queueData.get(0);
+        String symptomOnset = queueEntry.get("symptomOnset").asText();
+        String priorTest = queueEntry.get("priorTestDate").asText();
+        assertEquals("2020-11-30", symptomOnset);
+        assertEquals("2020-05-15", priorTest);
+        // this assertion is kind of extra, should be on a patient management
+        // test instead
+        assertEquals("1899-05-10", queueEntry.get("patient").get("birthDate").asText());
+    }
 
     @Test
     public void updateItemInQueue() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
-		TestOrder o = _dataFactory.createTestOrder(p, _site);
+        TestOrder o = _dataFactory.createTestOrder(p, _site);
         String orderId = o.getInternalId().toString();
         DeviceType d = _dataFactory.getGenericDevice();
         String deviceId = d.getInternalId().toString();
@@ -87,37 +86,36 @@ public class QueueManagementTest extends BaseApiTest {
         assertEquals(updatedTestOrder.getTestEvent(), null);
     }
 
-	@Test
-	public void enqueueOnePatientIsoDate() throws Exception {
-		Person p = _dataFactory.createFullPerson(_org);
-		String personId = p.getInternalId().toString();
-		ObjectNode variables = getFacilityScopedArguments()
-				.put("id", personId)
-				.put("previousTestDate", "2020-05-15")
-				.put("symptomOnsetDate", "2020-11-30")
-				;
-		performEnqueueMutation(variables);
-		ArrayNode queueData = fetchQueue();
-		assertEquals(1, queueData.size());
-		JsonNode queueEntry = queueData.get(0);
-		String symptomOnset = queueEntry.get("symptomOnset").asText();
-		String priorTest = queueEntry.get("priorTestDate").asText();
-		assertEquals("2020-11-30", symptomOnset);
-		assertEquals("2020-05-15", priorTest);
-	}
+    @Test
+    public void enqueueOnePatientIsoDate() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        String personId = p.getInternalId().toString();
+        ObjectNode variables = getFacilityScopedArguments()
+                .put("id", personId)
+                .put("previousTestDate", "2020-05-15")
+                .put("symptomOnsetDate", "2020-11-30");
+        performEnqueueMutation(variables);
+        ArrayNode queueData = fetchQueue();
+        assertEquals(1, queueData.size());
+        JsonNode queueEntry = queueData.get(0);
+        String symptomOnset = queueEntry.get("symptomOnset").asText();
+        String priorTest = queueEntry.get("priorTestDate").asText();
+        assertEquals("2020-11-30", symptomOnset);
+        assertEquals("2020-05-15", priorTest);
+    }
 
-	private ObjectNode getFacilityScopedArguments() {
-		return JsonNodeFactory.instance.objectNode()
-			.put("facilityId", _site.getInternalId().toString());
-	}
+    private ObjectNode getFacilityScopedArguments() {
+        return JsonNodeFactory.instance.objectNode()
+                .put("facilityId", _site.getInternalId().toString());
+    }
 
-	private ArrayNode fetchQueue() {
-		return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
-	}
+    private ArrayNode fetchQueue() {
+        return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
+    }
 
-	private void performEnqueueMutation(ObjectNode variables) throws IOException {
-		assertGraphQLSuccess(_template.perform("add-to-queue", variables));
-	}
+    private void performEnqueueMutation(ObjectNode variables) throws IOException {
+        assertGraphQLSuccess(_template.perform("add-to-queue", variables));
+    }
 
     private void performQueueUpdateMutation(ObjectNode variables) throws IOException {
         assertGraphQLSuccess(_template.perform("edit-queue-item", variables));

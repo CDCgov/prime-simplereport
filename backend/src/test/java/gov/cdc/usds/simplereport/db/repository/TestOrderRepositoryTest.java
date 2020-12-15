@@ -27,109 +27,114 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
-	@Autowired
-	private TestOrderRepository _repo;
-	@Autowired
-	private PersonRepository _personRepo;
-	@Autowired
-	private OrganizationRepository _orgRepo;
-	@Autowired
-	private TestEventRepository _events;
-	@Autowired
-	private TestDataFactory _dataFactory;
+    @Autowired
+    private TestOrderRepository _repo;
+    @Autowired
+    private PersonRepository _personRepo;
+    @Autowired
+    private OrganizationRepository _orgRepo;
+    @Autowired
+    private TestEventRepository _events;
+    @Autowired
+    private TestDataFactory _dataFactory;
 
-	@Test
-	public void runChanges() {
-		Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
-		Facility site = _dataFactory.createValidFacility(gtown);
+    @Test
+    public void runChanges() {
+        Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
+        Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+        Facility site = _dataFactory.createValidFacility(gtown);
         Facility otherSite = _dataFactory.createValidFacility(gwu);
-		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		TestOrder order = _repo.save(new TestOrder(hoya, site));
+        Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null,
+                "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
+        TestOrder order = _repo.save(new TestOrder(hoya, site));
         List<TestOrder> queue = _repo.fetchQueue(gwu, otherSite);
-		assertEquals(0, queue.size());
+        assertEquals(0, queue.size());
         queue = _repo.fetchQueue(gtown, site);
-		assertEquals(1, queue.size());
+        assertEquals(1, queue.size());
         doTest(order, TestResult.NEGATIVE);
         assertEquals(0, _repo.fetchQueue(gtown, site).size());
         assertEquals(1, _repo.fetchPastResults(gtown, site).size());
-	}
+    }
 
-	@Test
-	public void testLifeCycle() {
-		DeviceType device = _dataFactory.getGenericDevice();
-		Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
-		Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null, "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
-		Facility site = _dataFactory.createValidFacility(gtown);
-		TestOrder order = _repo.save(new TestOrder(hoya, site));
-		assertNotNull(order);
-		flush();
-		TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site));
-		assertNotNull(ev);
-		order.setTestEvent(ev);
-		_repo.save(order);
-		flush();
-	}
+    @Test
+    public void testLifeCycle() {
+        DeviceType device = _dataFactory.getGenericDevice();
+        Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+        Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null,
+                "(123) 456-7890", PersonRole.RESIDENT, "", null, "", "", false, false));
+        Facility site = _dataFactory.createValidFacility(gtown);
+        TestOrder order = _repo.save(new TestOrder(hoya, site));
+        assertNotNull(order);
+        flush();
+        TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site));
+        assertNotNull(ev);
+        order.setTestEvent(ev);
+        _repo.save(order);
+        flush();
+    }
 
-	@Test
-	public void createOrder_duplicatesFound_error() {
-		Organization org = _dataFactory.createValidOrg();
-		Person patient0 = _dataFactory.createMinimalPerson(org);
-		Facility site = _dataFactory.createValidFacility(org);
-		TestOrder order1 = new TestOrder(patient0, site);
-		_repo.save(order1);
-		flush();
-		TestOrder order2 = new TestOrder(patient0, site);
-		PersistenceException caught = assertThrows(PersistenceException.class, ()->{ _repo.save(order2); flush();});
-		assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
-	}
+    @Test
+    public void createOrder_duplicatesFound_error() {
+        Organization org = _dataFactory.createValidOrg();
+        Person patient0 = _dataFactory.createMinimalPerson(org);
+        Facility site = _dataFactory.createValidFacility(org);
+        TestOrder order1 = new TestOrder(patient0, site);
+        _repo.save(order1);
+        flush();
+        TestOrder order2 = new TestOrder(patient0, site);
+        PersistenceException caught = assertThrows(PersistenceException.class, () -> {
+            _repo.save(order2);
+            flush();
+        });
+        assertEquals(ConstraintViolationException.class, caught.getCause().getClass());
+    }
 
-	@Test
-	public void createOrder_duplicateCanceled_ok() {
-		Organization org = _dataFactory.createValidOrg();
-		Person patient0 = _dataFactory.createMinimalPerson(org); 
-		Facility site = _dataFactory.createValidFacility(org);
-		TestOrder order1 = new TestOrder(patient0, site);
-		_repo.save(order1);
-		flush();
-		order1.cancelOrder();
-		_repo.save(order1);
-		flush();
-		TestOrder order2 = new TestOrder(patient0, site);
-		order2 = _repo.save(order2);
-		flush();
-		assertNotNull(order2.getInternalId());
-		assertNotNull(order1.getInternalId());
-		assertNotEquals(order1.getInternalId(), order2.getInternalId());
+    @Test
+    public void createOrder_duplicateCanceled_ok() {
+        Organization org = _dataFactory.createValidOrg();
+        Person patient0 = _dataFactory.createMinimalPerson(org);
+        Facility site = _dataFactory.createValidFacility(org);
+        TestOrder order1 = new TestOrder(patient0, site);
+        _repo.save(order1);
+        flush();
+        order1.cancelOrder();
+        _repo.save(order1);
+        flush();
+        TestOrder order2 = new TestOrder(patient0, site);
+        order2 = _repo.save(order2);
+        flush();
+        assertNotNull(order2.getInternalId());
+        assertNotNull(order1.getInternalId());
+        assertNotEquals(order1.getInternalId(), order2.getInternalId());
         List<TestOrder> queue = _repo.fetchQueue(org, site);
-		assertEquals(1, queue.size());
-		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
-	}
+        assertEquals(1, queue.size());
+        assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
+    }
 
-	@Test
-	public void createOrder_duplicateSubmitted_ok() {
-		Organization org = _dataFactory.createValidOrg();
-		Person patient0 = _dataFactory.createMinimalPerson(org);
-		Facility site = _dataFactory.createValidFacility(org);
-		TestOrder order1 = new TestOrder(patient0, site);
-		_repo.save(order1);
-		flush();
-		TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site));
-		order1.setTestEvent(didit);
-		order1.setResult(didit.getResult());
-		order1.markComplete();
-		_repo.save(order1);
-		flush();
-		TestOrder order2 = new TestOrder(patient0, site);
-		order2 = _repo.save(order2);
-		flush();
-		assertNotNull(order2.getInternalId());
-		assertNotNull(order1.getInternalId());
-		assertNotEquals(order1.getInternalId(), order2.getInternalId());
+    @Test
+    public void createOrder_duplicateSubmitted_ok() {
+        Organization org = _dataFactory.createValidOrg();
+        Person patient0 = _dataFactory.createMinimalPerson(org);
+        Facility site = _dataFactory.createValidFacility(org);
+        TestOrder order1 = new TestOrder(patient0, site);
+        _repo.save(order1);
+        flush();
+        TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site));
+        order1.setTestEvent(didit);
+        order1.setResult(didit.getResult());
+        order1.markComplete();
+        _repo.save(order1);
+        flush();
+        TestOrder order2 = new TestOrder(patient0, site);
+        order2 = _repo.save(order2);
+        flush();
+        assertNotNull(order2.getInternalId());
+        assertNotNull(order1.getInternalId());
+        assertNotEquals(order1.getInternalId(), order2.getInternalId());
         List<TestOrder> queue = _repo.fetchQueue(org, site);
-		assertEquals(1, queue.size());
-		assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
-	}
+        assertEquals(1, queue.size());
+        assertEquals(order2.getInternalId(), queue.get(0).getInternalId());
+    }
 
     @Test
     public void fetchQueue_multipleEntries_sortedFifo() {
