@@ -72,6 +72,7 @@ sonarqube {
 		property "sonar.projectKey", "CDCgov_prime-data-input-client"
 		property "sonar.organization", "cdcgov"
 		property "sonar.host.url", "https://sonarcloud.io"
+		// In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
 		property "sonar.sources", "backend/src/main/java,frontend/src"
 	}
 }
