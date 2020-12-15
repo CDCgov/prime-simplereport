@@ -38,11 +38,15 @@ public class DataHubUploaderService {
     private byte[] _fileContents;
     private String _nextTimestamp;
     private String _warnMessage;
+    private String _uploadResultId;
+    private int _rowCount;
 
     public DataHubUploaderService(TestEventRepository _repo) {
         this._repo = _repo;
         this._nextTimestamp = "";
         this._warnMessage = "";
+        this._uploadResultId = "";
+        this._rowCount = 0;
     }
 
     private void _createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
@@ -55,6 +59,7 @@ public class DataHubUploaderService {
         }
         // timestamp of highest matched entry, used for the next query.
         this._nextTimestamp = events.get(0).getCreatedAt().toInstant().toString();
+        this._rowCount = events.size();
 
         List<TestEventExport> eventsToExport = new ArrayList<>();
         events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
@@ -70,7 +75,7 @@ public class DataHubUploaderService {
         this._fileContents = csvcontent.getBytes(StandardCharsets.UTF_8);
     }
 
-    private String _uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
+    private void _uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
         ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents);
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
@@ -81,10 +86,7 @@ public class DataHubUploaderService {
             return execution.execute(request, body);
         })).build();
 
-        String result = restTemplate.postForObject(DUMMY_UPLOAD_URL, contentsAsResource, String.class);
-        LOG.info("Post file result '{}'", result);
-
-        return result;
+        _uploadResultId = restTemplate.postForObject(DUMMY_UPLOAD_URL, contentsAsResource, String.class);
     }
 
     @Transactional(readOnly = false)
@@ -97,16 +99,23 @@ public class DataHubUploaderService {
                 LOG.info("Empty startupdateby so using 2020-01-01");
             }
             this._createTestEventCSV(lastEndCreateOn);
-            result = this._uploadCSVDocument(apiKey);
-            // todo: formulate the result here.
-            return this._nextTimestamp;
+            this._uploadCSVDocument(apiKey);
+
+            // todo: must be a better way to do this
+            return String.format("{result:ok,\n" +
+                    "  lastTimestamp:\"%s\",\n" +
+                    "  rowsSent:%d,\n" +
+                    "  uploadResultId:%s,\n" +
+                    "  warnMessage:\"%s\"\n" +
+                    "}",
+                    this._nextTimestamp, this._rowCount, this._uploadResultId, this._warnMessage);
         } catch (RestClientException err) {
             return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
         } catch (IOException err) {
             return err.toString();
         } catch (Exception err) {
             LOG.error(err.toString());
-            return "Err: no records matched after startupdateby='" + lastEndCreateOn + "'";
+            return "Err: startupdateby='" + lastEndCreateOn + "' Error='" + err.toString() + "'";
         }
     }
 }
