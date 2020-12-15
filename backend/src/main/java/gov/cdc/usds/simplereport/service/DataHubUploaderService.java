@@ -29,6 +29,7 @@ import java.util.List;
 @Service
 @Transactional
 public class DataHubUploaderService {
+    // TODO: move this into config based on dev vs prod
     static final String DUMMY_UPLOAD_URL = "https://prime-data-hub-test.azurefd.net/api/reports";
     static final int MAX_ROWS_ALLOWED_PER_BATCH = 999;
     private static final Logger LOG = LoggerFactory.getLogger(RaceArrayConverter.class);
@@ -103,7 +104,11 @@ public class DataHubUploaderService {
         }
     }
 
-    @Transactional(readOnly = false)
+    // TODO: Think through this transaction. In theory, this operation will have it's own table to
+    // track and log uploads.
+    // There is also the risk of the top action running multiple times concurrently.
+    // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
+    @Transactional(readOnly = true)
     public String uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
             this._createTestEventCSV(lastEndCreateOn);
