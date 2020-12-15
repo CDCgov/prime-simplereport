@@ -17,12 +17,14 @@ const Button = ({
   secondaryDisabled,
   label,
   outline,
+  unstyled = false,
   addClass,
 }) => {
   let classNames = classnames(
     {
       "usa-button": true,
       "usa-button-big": big,
+      "usa-button--unstyled": unstyled,
       "usa-button--secondary": secondary,
       "usa-button--secondary-inverse": secondaryInverse,
       "use-button--inverse": inverse,

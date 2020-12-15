@@ -9,8 +9,7 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no people in the queue. Search for people above to add them
-          to the queue.
+          There are no tests running. Search for a person to start their test{" "}
         </p>
       </div>
     </div>
@@ -66,7 +65,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItem {
+interface QueueItemData {
   internalId: string;
   pregnancy: string;
   dateAdded: string;
@@ -109,7 +108,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
-  const createQueueItems = (patientQueue: QueueItem[]) =>
+  const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
           ({

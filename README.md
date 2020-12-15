@@ -10,6 +10,7 @@ https://simplereport.cdc.gov/
   - [Restart & Clean](#restart-&-clean)
   - [API Testing](#api-testing)
   - [Tests](#tests)
+  - [SchemaSpy](#SchemaSpy)
 - [Frontend](#frontend)
   - [Setup](#frontend-Setup)
 - [Deploy](#Deploy)
@@ -88,6 +89,18 @@ Running a single test with a full stacktrace can be accomplished by supping the 
 ```bash
 gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
 ```
+
+## SchemaSpy
+
+http://schemaspy.org/
+
+```bash
+cd backend
+docker-compose up db
+docker-compose up --build schemaspy
+```
+
+visit http://localhost:8081
 
 ## Frontend
 

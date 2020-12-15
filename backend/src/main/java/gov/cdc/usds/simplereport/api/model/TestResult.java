@@ -77,9 +77,9 @@ public class TestResult {
 	}
 
 
-	public Patient getPatient() {
-		return new Patient(event.getPatient());
-	}
+    public Patient getPatient() {
+        return new Patient(event.getPatientData());
+    }
 
 
 	public String getResult() {
