@@ -13,6 +13,7 @@ on:
 env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
+  PROJECT_ROOT: ${{ env.GITHUB_WORKSPACE }} # Stashing this value here, as it gets overriden by one of the steps
 
 defaults:
   run:
@@ -70,7 +71,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.GITHUB_WORKSPACE }} --info
+        run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
   build-jar:
     runs-on: ubuntu-latest
     steps:
