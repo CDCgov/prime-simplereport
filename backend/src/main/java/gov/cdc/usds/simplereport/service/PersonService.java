@@ -7,6 +7,7 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +15,6 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 
 
@@ -24,27 +24,28 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 @Service
 @Transactional(readOnly = false)
 public class PersonService {
-		private OrganizationService _os;
+
+    private OrganizationService _os;
 		private PersonRepository _repo;
-		private FacilityRepository _facilityRepo;
+
+        private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
+                "nameInfo.suffix");
 
 		public PersonService(
 			OrganizationService os,
-			PersonRepository repo,
-			FacilityRepository facilityRepo
+                PersonRepository repo
 		) {
 			_os = os;
 				_repo = repo;
-				_facilityRepo = facilityRepo;
 		}
 
 		public List<Person> getPatients(UUID facilityId) {
 			Organization org = _os.getCurrentOrganization();
 			if (facilityId == null) {
-				return _repo.findAllByOrganization(org);
+                return _repo.findAllByOrganization(org, NAME_SORT);
 			}
 			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-			return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization());
+            return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
 		}
 
 	public Person getPatient(String id) {

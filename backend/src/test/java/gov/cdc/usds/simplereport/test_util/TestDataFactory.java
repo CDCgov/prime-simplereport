@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.test_util;
 import java.time.LocalDate;
 import java.util.Collections;
 
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
@@ -49,14 +49,17 @@ public class TestDataFactory {
 	}
 
 	public Facility createValidFacility(Organization org) {
+        return createValidFacility(org, "Injection Site");
+    }
+
+    public Facility createValidFacility(Organization org, String facilityName) {
 		DeviceType dev = getGenericDevice();
 		StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
 		Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC")); 
-		Facility facility = new Facility(org, "Injection Site", "123456", doc);
+        Facility facility = new Facility(org, facilityName, "123456", doc);
 		facility.setAddress(addy);
 		facility.setDefaultDeviceType(dev);
 		Facility save = _facilityRepo.save(facility);
-		LoggerFactory.getLogger("DERPDERPDERP").warn("Facility looks like {}", save);
 		return save;
 	}
 
@@ -66,10 +69,16 @@ public class TestDataFactory {
 
     public Person createMinimalPerson(Organization org, String firstName, String middleName, String lastName,
             String suffix) {
-        return _personRepo.save(new Person(firstName, middleName, lastName, suffix, org));
+        PersonName names = new PersonName(firstName, middleName, lastName, suffix);
+        return createMinimalPerson(org, null, names);
     }
 
-	public Person createFullPerson(Organization org) {
+    public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
+        Person p = new Person(names, org, fac);
+        return _personRepo.save(p);
+    }
+
+    public Person createFullPerson(Organization org) {
 		Person p = new Person(
 			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(1899, 5, 10),
 			new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
