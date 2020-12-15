@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +43,7 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
-    PersonService ps
+          PersonService ps
   ) {
     _os = os;
     _ps = ps;
@@ -52,13 +53,42 @@ public class TestOrderService {
     _terepo = terepo;
 }
 
-	public List<TestOrder> getQueue() {
-		return _repo.fetchQueueForOrganization(_os.getCurrentOrganization());
-	}
-
-  public List<TestEvent> getTestResults() {
-	  return _terepo.findAllByOrganization(_os.getCurrentOrganization());
+  public List<TestOrder> getQueue(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+    return _repo.fetchQueue(fac.getOrganization(), fac);
   }
+
+  @Transactional(readOnly = true)
+  public List<TestEvent> getTestResults(String facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+    return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
+  }
+
+  @Transactional(readOnly = true)
+  public List<TestEvent> getTestResults(Person patient) {
+      return _terepo.findAllByPatient(patient);
+  }
+
+    @Transactional(readOnly = true)
+    public TestOrder getTestOrder(String id) {
+        Organization org = _os.getCurrentOrganization();
+        return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+    }
+
+    public TestOrder editQueueItem(String id, String deviceId, String result) {
+        TestOrder order = this.getTestOrder(id);
+
+        if (deviceId != null) {
+            DeviceType deviceType = _dts.getDeviceType(deviceId);
+            order.setDeviceType(deviceType);
+        }
+
+        if (result != null) {
+            order.setResult(TestResult.valueOf(result));
+        }
+
+        return _repo.save(order);
+    }
 
   public void addTestResult(String deviceID, TestResult result, String patientId) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
@@ -68,8 +98,8 @@ public class TestOrderService {
 		.orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(deviceType);
     order.setResult(result);
+    order.markComplete();
 
-    
     TestEvent testEvent = new TestEvent(order);
     _terepo.save(testEvent);
 
@@ -77,7 +107,8 @@ public class TestOrderService {
     _repo.save(order);
   }
 
-  public void addPatientToQueue(
+  public TestOrder addPatientToQueue(
+    UUID facilityId,
     Person patient,
     String pregnancy,
     Map<String, Boolean> symptoms,
@@ -95,7 +126,7 @@ public class TestOrderService {
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
     }
-    Facility testFacility = _os.getDefaultFacility(_os.getCurrentOrganization());
+    Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey = new AskOnEntrySurvey(
@@ -111,7 +142,7 @@ public class TestOrderService {
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    _repo.save(newOrder);
+    return _repo.save(newOrder);
   }
 
   public void updateTimeOfTestQuestions(

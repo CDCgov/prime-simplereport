@@ -1,15 +1,12 @@
 package gov.cdc.usds.simplereport.api.organization;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.api.model.ApiOrganization;
-import gov.cdc.usds.simplereport.api.model.ApiProvider;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLResolver;
@@ -20,29 +17,18 @@ import graphql.kickstart.tools.GraphQLResolver;
  * removed before Christmas 2020.
  */
 @Service
-public class OrganizationDataResolver implements GraphQLResolver<ApiOrganization> {
+public class OrganizationDataResolver implements GraphQLResolver<Organization> {
 
 	@Autowired
 	private OrganizationService _orgService;
 
-	public List<ApiFacility> getTestingFacility(ApiOrganization o) {
-		return o.getTestingFacility();
+	public List<ApiFacility> getTestingFacility(Organization o) {
+		return _orgService.getFacilities(o).stream()
+			.map(f -> new ApiFacility(f))
+			.collect(Collectors.toList());
 	}
 
-	public ApiProvider getOrderingProvider(ApiOrganization o) {
-		return new ApiProvider(getCurrentFacility().getOrderingProvider());
-	}
-
-	private Facility getCurrentFacility() {
-		Organization org = _orgService.getCurrentOrganization();
-		return _orgService.getDefaultFacility(org);
-	}
-
-	public List<DeviceType> getDeviceTypes(ApiOrganization o) {
-		return getCurrentFacility().getDeviceTypes();
-	}
-
-	public DeviceType getDefaultDeviceType(ApiOrganization o) {
-		return getCurrentFacility().getDefaultDeviceType();
+	public String getName(Organization o) {
+		return o.getOrganizationName();
 	}
 }

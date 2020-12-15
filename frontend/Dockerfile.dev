@@ -10,8 +10,8 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 COPY package.json /frontend/app
 
-RUN npm install
+RUN yarn
 
 COPY . /frontend/app
 
-CMD ["npm", "start"]
+CMD ["yarn", "start"]

@@ -32,9 +32,9 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         }
 
         final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "");
-        final List<Person> patients = this._ps.getPatients();
+        final List<Person> patients = this._ps.getPatients(null);
         assertAll(() -> assertEquals(1, patients.size()),
-                () -> assertEquals("Tim", patients.get(0).getFirstName()),
+                () -> assertEquals("Best", patients.get(0).getFirstName()),
                 () -> assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
     }
 
@@ -43,7 +43,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         try (ByteArrayInputStream bis = new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
             final IllegalArgumentException e = assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(bis), "Should fail to parse");
             assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
-            assertEquals(0, this._ps.getPatients().size(), "Should not have any patients");
+            assertEquals(0, this._ps.getPatients(null).size(), "Should not have any patients");
         }
     }
 

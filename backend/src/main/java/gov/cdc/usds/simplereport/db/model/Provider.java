@@ -29,10 +29,15 @@ public class Provider extends EternalEntity {
 
 	@ConstructorBinding
 	public Provider(String firstName, String middleName, String lastName, String suffix, String providerId, StreetAddress address, String telephone) {
-		this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
+		this(new PersonName(firstName, middleName, lastName, suffix), providerId, address, telephone);
+	}
+
+	public Provider(PersonName providerName, String providerId, StreetAddress providerAddress,
+			String providerTelephone) {
+		this.nameInfo = providerName;
 		this.providerId = providerId;
-		this.address = address;
-		this.telephone = telephone;
+		this.address = providerAddress;
+		this.telephone = providerTelephone;
 	}
 
 	public PersonName getNameInfo() {

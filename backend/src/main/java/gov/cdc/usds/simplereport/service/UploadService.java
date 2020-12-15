@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -22,6 +23,7 @@ public class UploadService {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
     private static final CsvSchema PERSON_SCHEMA = personSchema();
+    private static final String FACILITY_ID = "facilityId";
 
     private final PersonService _ps;
 
@@ -56,7 +58,9 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-            _ps.addPatient(row.get("ID"),
+            _ps.addPatient(
+                    row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
+                    null,
                     row.get("FirstName"),
                     row.get("MiddleName"),
                     row.get("LastName"),
@@ -81,9 +85,8 @@ public class UploadService {
 
     private static CsvSchema personSchema() {
         return CsvSchema.builder()
-                .addColumn("ID", CsvSchema.ColumnType.STRING)
-                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("FirstName", CsvSchema.ColumnType.STRING)
+                .addColumn("LastName", CsvSchema.ColumnType.STRING)
                 .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
                 .addColumn("Race", CsvSchema.ColumnType.STRING)
@@ -97,11 +100,12 @@ public class UploadService {
                 .addColumn("State", CsvSchema.ColumnType.STRING)
                 .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
                 .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
-                .addColumn("Email", CsvSchema.ColumnType.STRING)
                 .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
                 .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
-                .addColumn("ResidencyType", CsvSchema.ColumnType.STRING)
                 .addColumn("Role", CsvSchema.ColumnType.STRING)
+                .addColumn("Email", CsvSchema.ColumnType.STRING)
+                .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
+                .addColumn("Location", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
     }

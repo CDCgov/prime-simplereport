@@ -3,12 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
 
@@ -17,10 +12,10 @@ import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
-import TestResultsList from "./testResults/TestResultsList";
-import TestQueue from "./testQueue/TestQueue";
-import ManagePatients from "./patients/ManagePatients";
-import EditPatient from "./patients/EditPatient";
+import TestResultsListContainer from "./testResults/TestResultsListContainer";
+import TestQueueContainer from "./testQueue/TestQueueContainer";
+import ManagePatientsContainer from "./patients/ManagePatientsContainer";
+import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
@@ -45,9 +40,6 @@ const WHOAMI_QUERY = gql`
   }
 `;
 
-// typescript doesn't like that these components throw errors
-const Results = TestResultsList as any;
-
 const SettingsRoutes = ({ match }: any) => (
   <>
     {/* note the addition of the exact property here */}
@@ -62,6 +54,12 @@ const SettingsRoutes = ({ match }: any) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
     />
+    <Route
+      path={match.url + "/add-facility/"}
+      render={({ match }) => (
+        <FacilityFormContainer facilityId={match.params.facilityId} />
+      )}
+    />
   </>
 );
 
@@ -72,13 +70,23 @@ const App = () => {
   });
   useEffect(() => {
     if (!data) return;
+
+    const getDefaultFacility = () => {
+      const tucsonMountains = data.whoami.organization.testingFacility.find(
+        (f: Facility) => f.name === "Tucson Mountains"
+      );
+      if (tucsonMountains) {
+        return tucsonMountains;
+      }
+      return data.whoami.organization.testingFacility[0];
+    };
     dispatch(
       setInitialState({
         organization: {
           name: data.whoami.organization.name,
         },
         facilities: data.whoami.organization.testingFacility,
-        facility: data.whoami.organization.testingFacility[0],
+        facility: getDefaultFacility(),
         user: {
           id: data.whoami.id,
           firstName: data.whoami.firstName,
@@ -119,29 +127,32 @@ const App = () => {
                 <Route
                   path="/queue"
                   render={() => {
-                    return <TestQueue />;
+                    return <TestQueueContainer />;
                   }}
                 />
-                <Route exact path="/">
-                  <Redirect to="/queue" />
-                </Route>
-
+                <Route
+                  path="/"
+                  render={() => {
+                    return <TestQueueContainer />;
+                  }}
+                  exact
+                />
                 <Route
                   path="/results"
                   render={() => {
-                    return <Results />;
+                    return <TestResultsListContainer />;
                   }}
                 />
                 <Route
                   path={`/patients`}
                   render={() => {
-                    return <ManagePatients />;
+                    return <ManagePatientsContainer />;
                   }}
                 />
                 <Route
                   path={`/patient/:patientId`}
                   render={({ match }) => (
-                    <EditPatient patientId={match.params.patientId} />
+                    <EditPatientContainer patientId={match.params.patientId} />
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />

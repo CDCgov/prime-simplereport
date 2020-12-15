@@ -3,12 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "engines": {
-    "node": "12.16.1",
+    "node": "14",
     "npm": "6.13.4"
   },
   "dependencies": {
     "@apollo/client": "^3.2.5",
-    "@cmsgov/design-system": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.32",
     "@fortawesome/free-solid-svg-icons": "^5.15.1",
     "@fortawesome/react-fontawesome": "^0.1.11",
@@ -34,7 +33,7 @@
     "react-redux": "^7.2.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4",
+    "react-scripts": "4.0.1",
     "react-toastify": "^6.1.0",
     "redux": "^4.0.5",
     "redux-persist": "^6.0.0",
@@ -46,17 +45,17 @@
   "scripts": {
     "start": "npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
-    "prebuild": "npm run-script compile-scss",
+    "prebuild": "yarn compile-scss",
     "build": "react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile",
     "lint": "npm-run-all -p lint:eslint lint:prettier",
-    "lint:eslint": "eslint --quiet --ext .js --ext .jsx ./src",
+    "lint:eslint": "eslint --quiet --ext .js --ext .jsx --ext .ts --ext .tsx ./src",
     "lint:prettier": "prettier -c ./src",
-    "test": "react-scripts test --passWithNoTests",
+    "test": "TZ='UTC' react-scripts test --passWithNoTests",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
-    "watch-css": "npm run compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
-    "deploy-azure-dev": "REACT_APP_BACKEND_URL=https://dev.simplereport.org/dev/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdev --destination-path '/app'",
+    "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
+    "deploy-azure-dev": "REACT_APP_BACKEND_URL=https://dev.simplereport.org/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdevapp --destination-path '/app'",
     "deploy-azure-beta": "REACT_APP_BACKEND_URL=https://simplereport.cdc.gov/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app'",
     "deploy-azure-test": "REACT_APP_BACKEND_URL=https://api.test.simplerport.org PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestfrontend --destination-path '/app'",
     "deploy-azure-demo": "REACT_APP_BACKEND_URL=https://demo.simplereport.org/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdemo --destination-path '/app'",
@@ -64,7 +63,18 @@
     "maintenance-azure-beta": "mkdir -p /tmp/maintenance && /bin/cp -f public/maintenance.html /tmp/maintenance/index.html && az storage blob upload-batch -s /tmp/maintenance/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app/'"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "plugins": [
+      "graphql"
+    ],
+    "rules": {
+      "graphql/template-strings": [
+        "error",
+        {
+          "env": "apollo"
+        }
+      ]
+    }
   },
   "browserslist": {
     "production": [
@@ -80,11 +90,15 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.11",
+    "@types/jest": "^26.0.18",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "@types/react-modal": "^3.10.6",
     "@types/react-redux": "^7.1.11",
     "@types/uuid": "^8.3.0",
+    "eslint-plugin-graphql": "^4.0.0",
+    "mockdate": "^3.0.2",
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "2.2.0",

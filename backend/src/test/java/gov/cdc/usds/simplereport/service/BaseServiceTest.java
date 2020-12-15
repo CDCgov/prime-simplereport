@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet
@@ -25,6 +26,8 @@ public class BaseServiceTest<T> {
 
 	@Autowired
 	private DbTruncator _truncator;
+    @Autowired
+    protected TestDataFactory _dataFactory;
 	@Autowired
 	protected T _service;
 

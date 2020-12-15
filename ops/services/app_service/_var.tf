@@ -10,6 +10,14 @@ variable "docker_image_uri" {}
 variable "app_settings" {
   default = {}
 }
+variable "https_only" {
+  type    = bool
+  default = false
+}
+
+# Secret Access
+variable "key_vault_id" {}
+variable "tenant_id" {}
 
 # https://azure.microsoft.com/en-us/pricing/details/app-service/windows/
 variable "instance_tier" {

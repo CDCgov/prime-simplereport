@@ -6,11 +6,13 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
@@ -38,7 +40,16 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       );
     }
 
+    public ApiTestOrder editQueueItem(String id, String deviceId, String result) {
+        return new ApiTestOrder(_tos.editQueueItem(
+            id,
+            deviceId,
+            result
+        ));
+    }
+
     public void addPatientToQueue(
+        String facilityID,
         String patientID,
         String pregnancy,
         String symptoms,
@@ -62,6 +73,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       }
 
       _tos.addPatientToQueue(
+        UUID.fromString(facilityID),
         _ps.getPatient(patientID),
         pregnancy,
         symptomsMap,

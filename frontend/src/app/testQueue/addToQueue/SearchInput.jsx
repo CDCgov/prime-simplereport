@@ -18,6 +18,7 @@ const SearchInput = ({
         autoComplete="off"
         className="usa-input"
         id="search-field-small"
+        placeholder="Search for a person to start their test"
         type="search"
         name="search"
         value={queryString}

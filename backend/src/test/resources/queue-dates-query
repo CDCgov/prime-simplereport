@@ -1,5 +1,5 @@
- query {
-    queue {
+ query fetchFacilityQueue($facilityId: String!) {
+    queue(facilityId: $facilityId) {
       patient {
         internalId
         birthDate

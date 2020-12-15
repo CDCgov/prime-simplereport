@@ -18,14 +18,14 @@ public class QueueResolver implements GraphQLQueryResolver {
 	@Autowired
 	private TestOrderService tos;
 
-	public List<ApiTestOrder> getQueue() {
-		return tos.getQueue().stream()
+	public List<ApiTestOrder> getQueue(String facilityId) {
+		return tos.getQueue(facilityId).stream()
 			.map(o -> new ApiTestOrder(o))
 			.collect(Collectors.toList());
 	}
 
-	public List<TestResult> getTestResults() {
-		return tos.getTestResults().stream()
+	public List<TestResult> getTestResults(String facilityId) {
+		return tos.getTestResults(facilityId).stream()
 			.map(TestResult::new)
 			.collect(Collectors.toList());
 	}

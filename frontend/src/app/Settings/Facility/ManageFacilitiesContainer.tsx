@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import ManageFacilities from "./ManageFacilities";
 
-const GET_SETTINGS_QUERY = gql`
+const GET_FACILITIES = gql`
   {
     organization {
       testingFacility {
@@ -42,12 +42,9 @@ const GET_SETTINGS_QUERY = gql`
 `;
 
 const ManageFacilitiesContainer: any = () => {
-  const { data, loading, error } = useQuery<SettingsData, {}>(
-    GET_SETTINGS_QUERY,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
+    fetchPolicy: "no-cache",
+  });
 
   if (loading) {
     return <p> Loading... </p>;

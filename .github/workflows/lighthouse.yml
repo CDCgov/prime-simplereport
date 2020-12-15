@@ -1,0 +1,28 @@
+name: "Run Lighthouse audit"
+on:
+  schedule:
+  - cron: "0 0 * * *"
+jobs:
+  validate-508:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Lighthouse CI Action
+      uses: treosh/lighthouse-ci-action@v2
+      with:
+        urls: |
+          $SITE_URL/
+          $SITE_URL/app/
+          $SITE_URL/app/queue/
+          $SITE_URL/app/results/
+          $SITE_URL/app/patients/
+          $SITE_URL/app/add-patient/
+          $SITE_URL/app/settings/
+          $SITE_URL/app/settings/facilities/
+          $SITE_URL/app/settings/add-facility/
+        uploadArtifacts: false
+        configPath: ./lighthouserc.yml
+        runs: 1
+      env:
+        SITE_URL: https://dev.simplereport.org/

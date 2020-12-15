@@ -31,11 +31,13 @@ public class ExportService {
     }
 
     public String CreateTestEventCSV() throws IOException {
-      List<TestEvent> events = _ts.findAllByOrganization(_os.getCurrentOrganization());
-      List<TestEventExport> eventsToExport = new ArrayList<>();
-      events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
-      CsvMapper mapper = new CsvMapper();
-      CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader();
-      return mapper.writer(schema).writeValueAsString(eventsToExport);
+        List<TestEvent> events = _ts.findAllByOrganizationOrderByCreatedAtDesc(
+            _os.getCurrentOrganization()
+        );
+        List<TestEventExport> eventsToExport = new ArrayList<>();
+        events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
+        CsvMapper mapper = new CsvMapper();
+        CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader();
+        return mapper.writer(schema).writeValueAsString(eventsToExport);
     }
 }

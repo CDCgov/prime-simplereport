@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 
@@ -13,6 +11,10 @@ public class Patient {
 	public Patient(Person person) {
 		super();
 		this.person = person;
+	}
+
+	public Person getWrapped() {
+		return person;
 	}
 
 	public String getInternalId() {
@@ -97,11 +99,5 @@ public class Patient {
 
 	public Boolean getEmployedInHealthcare() {
 		return person.getEmployedInHealthcare();
-	}
-
-	public List<ApiTestOrder> getTestResults() {
-		return person.getTestResults().stream()
-		.map(o -> new ApiTestOrder(o))
-		.collect(Collectors.toList());
 	}
 }

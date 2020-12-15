@@ -1,8 +1,7 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import CMSDialog from "../../commonComponents/CMSDialog";
+import Modal from "react-modal";
 
-import "@cmsgov/design-system/dist/css/index.css";
 import { useState } from "react";
 import {
   getSymptomList,
@@ -11,13 +10,13 @@ import {
 } from "./constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
-import Anchor from "../../commonComponents/Anchor";
 import Button from "../../commonComponents/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import DateInput from "../../commonComponents/DateInput";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
+import "./AoEModalForm.scss";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -165,7 +164,7 @@ const PriorTestInputs = ({
       </>
     );
     return (
-      <>
+      <div className="sr-section">
         {legendIsh}
         <RadioGroup
           buttons={[
@@ -189,7 +188,7 @@ const PriorTestInputs = ({
           horizontal
         />
         {mostRecentTestAnswer === "no" && previousTestEntry}
-      </>
+      </div>
     );
   }
 
@@ -222,12 +221,15 @@ const PriorTestInputs = ({
   );
 };
 
+Modal.setAppElement("#root");
+
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
   patient,
+  facilityId,
   loadState = {},
-  saveCallback = () => null,
+  saveCallback,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
@@ -267,6 +269,7 @@ const AoEModalForm = ({
   // TODO: only get most recent test from the backend
   const { data, loading, error } = useQuery(testResultQuery, {
     fetchPolicy: "no-cache",
+    variables: { facilityId },
   });
   if (loading) return null;
   if (error) throw error;
@@ -319,28 +322,38 @@ const AoEModalForm = ({
     onClose();
   };
 
-  const actionButtons = (
-    <div style={{ float: "right" }}>
-      <Anchor text="Cancel" onClick={onClose} />
+  const buttonGroup = (
+    <div className="sr-time-of-test-buttons" style={{ float: "right" }}>
+      <Button unstyled label="Cancel" onClick={onClose} />
       <Button label={saveButtonText} onClick={saveAnswers} />
     </div>
   );
 
   return (
-    <CMSDialog
-      onExit={onClose}
-      closeText="Cancel"
-      heading={displayFullName(
-        patient.firstName,
-        patient.middleName,
-        patient.lastName
-      )}
-      getApplicationNode={() => {
-        document.getElementById("#root");
+    <Modal
+      isOpen={true}
+      style={{
+        content: {
+          inset: "3em auto auto auto",
+          overflow: "auto",
+          maxHeight: "90vh",
+          width: "50%",
+          minWidth: "20em",
+          marginRight: "50%",
+          transform: "translate(50%, 0)",
+        },
       }}
-      actions={actionButtons}
-      actionsInHeader={true}
+      overlayClassName="prime-modal-overlay"
+      contentLabel="Time of Test Questions"
     >
+      {buttonGroup}
+      <h2>
+        {displayFullName(
+          patient.firstName,
+          patient.middleName,
+          patient.lastName
+        )}
+      </h2>
       <h2>Symptoms</h2>
       <SymptomInputs
         noSymptoms={noSymptoms}
@@ -352,7 +365,7 @@ const AoEModalForm = ({
         onsetDate={onsetDate}
       />
 
-      <h2>Past Tests</h2>
+      <h2>Test History</h2>
       <PriorTestInputs
         testTypeConfig={testConfig}
         priorTestDate={priorTestDate}
@@ -380,7 +393,8 @@ const AoEModalForm = ({
           />
         </>
       )}
-    </CMSDialog>
+      <div className="sr-time-of-test-footer">{buttonGroup}</div>
+    </Modal>
   );
 };
 

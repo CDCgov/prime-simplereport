@@ -24,10 +24,10 @@ public class ApiSmokeTest extends BaseApiTest {
 		JsonNode jsonResponse = runQuery("person-query");
 		assertTrue(jsonResponse.get("patients").isEmpty());
 		// should do this as a mutator call, but not today
-		_personService.addPatient("BAZ", "Baz", null, "Jesek", null, 
+		_personService.addPatient(null, "BAZ", "Baz", null, "Jesek", null, 
 				LocalDate.of(2403, 12, 3),
 				"Someplace", "Nice", "Capitol", "Escobar", "12345-6678",
-				"(12) 2345", "visitor", "baz@dendarii.net", "Vorkosigan", null, null, "M", false, false);
+				"(12) 2345", "STAFF", "baz@dendarii.net", "Vorkosigan", null, null, "M", false, false);
 		jsonResponse = runQuery("person-query");
 		assertTrue(jsonResponse.get("patients").has(0));
 		truncateDb();

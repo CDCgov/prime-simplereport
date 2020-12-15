@@ -32,7 +32,7 @@ const TestResultInputForm = ({ testResultValue, onSubmit, onChange }) => {
         <Button
           onClick={onSubmit}
           type="submit"
-          disabled={testResultValue === null || testResultValue === undefined}
+          disabled={!testResultValue}
           outline
           label="Submit"
         />

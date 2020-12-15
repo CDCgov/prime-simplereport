@@ -16,20 +16,34 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 public class TestEventRepositoryTest extends BaseRepositoryTest {
 
-	@Autowired
-	private TestEventRepository _repo;
-	@Autowired
-	private TestDataFactory _dataFactory;
+    @Autowired
+    private TestEventRepository _repo;
+    @Autowired
+    private TestDataFactory _dataFactory;
 
-	@Test
-	public void testFindByPatient() {
-		Organization org = _dataFactory.createValidOrg();
-		Facility place = _dataFactory.createValidFacility(org);
-		Person patient = _dataFactory.createMinimalPerson(org);
-		_repo.save(new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place));
-		_repo.save(new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place));
-		flush();
-		List<TestEvent> found = _repo.findAllByPatient(patient);
-		assertEquals(2, found.size());
-	}
+    @Test
+    public void testFindByPatient() {
+        Organization org = _dataFactory.createValidOrg();
+        Facility place = _dataFactory.createValidFacility(org);
+        Person patient = _dataFactory.createMinimalPerson(org);
+        _repo.save(new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place));
+        _repo.save(new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place));
+        flush();
+        List<TestEvent> found = _repo.findAllByPatient(patient);
+        assertEquals(2, found.size());
+    }
+
+    @Test
+    public void testLatestTestEventForPerson() {
+        Organization org = _dataFactory.createValidOrg();
+        Facility place = _dataFactory.createValidFacility(org);
+        Person patient = _dataFactory.createMinimalPerson(org);
+        TestEvent first = new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place);
+        TestEvent second = new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place);
+        _repo.save(first);
+        _repo.save(second);
+        flush();
+        TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
+        assertEquals(second.getResult(), TestResult.UNDETERMINED);
+    }
 }

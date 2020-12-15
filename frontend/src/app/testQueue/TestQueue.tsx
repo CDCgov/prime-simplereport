@@ -1,5 +1,4 @@
 import React from "react";
-import { testResultPropType } from "../propTypes";
 import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
@@ -10,8 +9,7 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no people in the queue. Search for people above to add them
-          to the queue.
+          There are no tests running. Search for a person to start their test{" "}
         </p>
       </div>
     </div>
@@ -19,8 +17,9 @@ const emptyQueueMessage = (
 );
 
 const queueQuery = gql`
-  {
-    queue {
+  query Queue($facilityId: String!) {
+    queue(facilityId: $facilityId) {
+      internalId
       pregnancy
       dateAdded
       symptoms
@@ -44,9 +43,11 @@ const queueQuery = gql`
         lastName
         gender
       }
+      result
     }
     organization {
       testingFacility {
+        id
         deviceTypes {
           internalId
           name
@@ -60,9 +61,36 @@ const queueQuery = gql`
   }
 `;
 
-const TestQueue = () => {
+interface Props {
+  activeFacilityId: string;
+}
+
+interface QueueItemData {
+  internalId: string;
+  pregnancy: string;
+  dateAdded: string;
+  symptoms: string;
+  noSymptoms: string;
+  firstTest: string;
+  priorTestDate: string;
+  priorTestType: string;
+  priorTestResult: string;
+  deviceType: {
+    internalId: string;
+  };
+  patient: {
+    internalId: string;
+  };
+  result: string;
+  symptomOnset: string;
+}
+
+const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
     fetchPolicy: "no-cache",
+    variables: {
+      facilityId: activeFacilityId,
+    },
   });
 
   if (error) {
@@ -72,31 +100,35 @@ const TestQueue = () => {
     return <p>Loading patients...</p>;
   }
 
+  const facility = data.organization.testingFacility.find(
+    (f: { id: string }) => f.id === activeFacilityId
+  );
+  if (!facility) {
+    return <p>Facility not found</p>;
+  }
   let shouldRenderQueue =
-    data.queue.length > 0 &&
-    data.organization.testingFacility[0].deviceTypes.length > 0;
-  const createQueueItems = (patientQueue) =>
+    data.queue.length > 0 && facility.deviceTypes.length > 0;
+  const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
-          (
-            {
-              pregnancy,
-              dateAdded,
-              symptoms,
-              noSymptoms,
-              firstTest,
-              priorTestDate,
-              priorTestType,
-              priorTestResult,
-              device,
-              patient,
-              testResult,
-              symptomOnset,
-            },
-            i
-          ) => (
+          ({
+            internalId,
+            pregnancy,
+            dateAdded,
+            symptoms,
+            noSymptoms,
+            firstTest,
+            priorTestDate,
+            priorTestType,
+            priorTestResult,
+            deviceType,
+            patient,
+            result,
+            symptomOnset,
+          }) => (
             <QueueItem
               key={patient.internalId}
+              internalId={internalId}
               patient={patient}
               askOnEntry={{
                 pregnancy,
@@ -109,13 +141,12 @@ const TestQueue = () => {
                 priorTestType,
                 priorTestResult,
               }}
-              selectedDeviceId={device ? device.internalId : null}
-              selectedTestResult={testResult}
-              devices={data.organization.testingFacility[0].deviceTypes}
-              defaultDevice={
-                data.organization.testingFacility[0].defaultDeviceType
-              }
+              selectedDeviceId={deviceType ? deviceType.internalId : null}
+              selectedTestResult={result}
+              devices={facility.deviceTypes}
+              defaultDevice={facility.defaultDeviceType}
               refetchQueue={refetchQueue}
+              facilityId={activeFacilityId}
             />
           )
         )
@@ -125,7 +156,10 @@ const TestQueue = () => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <AddToQueueSearch refetchQueue={refetchQueue} />
+          <AddToQueueSearch
+            refetchQueue={refetchQueue}
+            facilityId={activeFacilityId}
+          />
         </div>
         {createQueueItems(data.queue)}
       </div>
@@ -133,7 +167,4 @@ const TestQueue = () => {
   );
 };
 
-TestQueue.propTypes = {
-  testResults: testResultPropType,
-};
 export default TestQueue;

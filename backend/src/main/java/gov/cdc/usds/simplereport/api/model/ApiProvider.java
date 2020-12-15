@@ -35,23 +35,14 @@ public class ApiProvider {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
-		if(orderingProvider.getAddress().getStreet() == null) {
-			return "";
-		}
-		return orderingProvider.getAddress().getStreet().get(0);
+		return orderingProvider.getAddress().getStreetOne();
 	}
 
 	public String getStreetTwo() {
 		if(orderingProvider.getAddress() == null) {
 			return "";
 		}
-		if(orderingProvider.getAddress().getStreet() == null) {
-			return "";
-		}
-		if(orderingProvider.getAddress().getStreet().size() < 2) {
-			return "";
-		}
-		return orderingProvider.getAddress().getStreet().get(1);
+		return orderingProvider.getAddress().getStreetTwo();
 	}
 
 	public String getCity() {

@@ -1,36 +1,63 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
+import { NavLink } from "react-router-dom";
+import moment from "moment";
 
 import { displayFullName } from "../utils";
-
-import { NavLink } from "react-router-dom";
 
 // this can't be the best way to handle this?
 import {
   PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
+import { daysSince } from "../utils/date";
 
 const patientQuery = gql`
-  {
-    patients {
+  query Patient($facilityId: String!) {
+    patients(facilityId: $facilityId) {
       internalId
       lookupId
       firstName
       lastName
       middleName
       birthDate
+      lastTest {
+        dateAdded
+      }
     }
   }
 `;
 
-const ManagePatients = () => {
-  const { data, loading, error } = useQuery(patientQuery, {
+interface Patient {
+  internalId: string;
+  lookupId: string;
+  firstName: string;
+  lastName: string;
+  middleName: string;
+  birthDate: string;
+  lastTest: {
+    dateAdded: string;
+  };
+}
+
+interface Data {
+  patients: Patient[];
+}
+
+interface Props {
+  activeFacilityId: string;
+}
+
+const ManagePatients = ({ activeFacilityId }: Props) => {
+  const { data, loading, error } = useQuery<Data, {}>(patientQuery, {
     fetchPolicy: "no-cache",
+    variables: {
+      facilityId: activeFacilityId,
+    },
   });
 
-  const patientRows = (patients) => {
-    return patients.map((patient) => (
+  const patientRows = (patients: Patient[]) => {
+    return patients.map((patient: Patient) => (
       <tr key={patient.internalId}>
         <th scope="row">
           <NavLink to={`patient/${patient.internalId}`}>
@@ -44,9 +71,9 @@ const ManagePatients = () => {
         <td>{patient.lookupId}</td>
         <td> {patient.birthDate}</td>
         <td>
-          {patient.lastTestDate === undefined
-            ? "N/A"
-            : `${patient.lastTestDate} days`}
+          {patient.lastTest
+            ? `${daysSince(moment(patient.lastTest.dateAdded))}`
+            : "N/A"}
         </td>
       </tr>
     ));

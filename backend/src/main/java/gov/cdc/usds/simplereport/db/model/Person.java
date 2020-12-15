@@ -16,9 +16,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import java.time.LocalDate;
-import java.util.List;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -65,10 +63,6 @@ public class Person extends OrganizationScopedEternalEntity {
 	private PersonRole role;
 	@Column(nullable = false)
 	private boolean residentCongregateSetting;
-	@OneToMany()
-	@JoinColumn(name = "patient_id")
-	@JsonIgnore // dear Lord do not attempt to serialize this
-	private List<TestOrder> testOrders;
 
 	protected Person() { /* for hibernate */ }
 
@@ -111,7 +105,14 @@ public class Person extends OrganizationScopedEternalEntity {
 		this.employedInHealthcare = employedInHealthcare;
 	}
 
-	public void updatePatient(
+    public Person(PersonName names, Organization org, Facility fac) {
+        super(org);
+        this.facility = fac;
+        this.nameInfo = names;
+        this.role = PersonRole.STAFF;
+    }
+
+    public void updatePatient(
 		String lookupId,
 		String firstName,
 		String middleName,
@@ -157,7 +158,11 @@ public class Person extends OrganizationScopedEternalEntity {
 		return lookupId;
 	}
 
-	public String getFirstName() {
+    public PersonName getNameInfo() {
+        return nameInfo;
+    }
+
+    public String getFirstName() {
 		return nameInfo.getFirstName();
 	}
 
@@ -244,11 +249,6 @@ public class Person extends OrganizationScopedEternalEntity {
 			return "";
 		}
 		return address.getCounty();
-	}
-
-	@JsonIgnore
-	public List<TestOrder> getTestResults() {
-		return testOrders;
 	}
 
 	public PersonRole getRole() {

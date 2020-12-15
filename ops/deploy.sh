@@ -5,14 +5,14 @@
 git checkout main && git pull origin main
 
 if [ "$1" == "frontend" ]; then
-  cd ../$1 && npm install
+  cd ../$1 && yarn
 
   if [ "$2" == "dev" ]; then
-    npm run deploy-azure-dev
+    yarn deploy-azure-dev
   elif [ "$2" == "demo" ]; then
-    npm run deploy-azure-demo
+    yarn deploy-azure-demo
   elif [ "$2" == "beta" ]; then
-    npm run deploy-azure-beta
+    yarn deploy-azure-beta
   fi
 elif [ "$1" == "backend" ]; then
   cd ../$1
