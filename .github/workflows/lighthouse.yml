@@ -1,7 +1,10 @@
-name: "Run HTML Proofer"
+name: "Run Lighthouse audit"
 on:
-  schedule:
-  - cron: "0 0 * * *"
+  # schedule:
+  # - cron: "0 0 * * *"
+  pull_request:
+    branches:
+    - main
 jobs:
   validate-508:
     runs-on: ubuntu-latest
@@ -22,7 +25,7 @@ jobs:
           $SITE_URL/app/settings/facilities/
           $SITE_URL/app/settings/add-facility/
         uploadArtifacts: false
-        configPath: ./lighthouse/lighthouserc.yml
+        configPath: ./lighthouserc.yml
         runs: 1
       env:
         SITE_URL: https://dev.simplereport.org/
