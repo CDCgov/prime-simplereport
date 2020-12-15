@@ -15,14 +15,13 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,8 +56,9 @@ public class DataHubUploaderService {
         } else if (events.size() >= MAX_ROWS_ALLOWED_PER_BATCH) {
             this._warnMessage += "More rows were found than can be uploaded in a single batch. Needs to be more than once.";
         }
-        // timestamp of highest matched entry, used for the next query.
-        this._nextTimestamp = events.get(0).getCreatedAt().toInstant().toString();
+
+        // timestamp of highest matched entry, used for the next query. This is ridiculous, it cannot be right.
+        this._nextTimestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(events.get(0).getCreatedAt()).toString();
         this._rowCount = events.size();
 
         List<TestEventExport> eventsToExport = new ArrayList<>();
@@ -113,6 +113,8 @@ public class DataHubUploaderService {
             return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
         } catch (IOException err) {
             return err.toString();
+        } catch (NoResultException err) {
+            return "No matching results for the given startupdateby + '" + lastEndCreateOn + "'";
         } catch (Exception err) {
             LOG.error(err.toString());
             return "Err: startupdateby='" + lastEndCreateOn + "' Error='" + err.toString() + "'";
