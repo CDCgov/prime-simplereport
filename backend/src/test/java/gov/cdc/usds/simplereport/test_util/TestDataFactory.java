@@ -79,8 +79,12 @@ public class TestDataFactory {
     }
 
     public Person createFullPerson(Organization org) {
+		// consts are to keep style check happy othewise it complains about "magic numbers"
+		final int BIRTH_YEAR = 1899;
+		final int BIRTH_MONTH = 5;
+		final int BIRTH_DAY = 10;
 		Person p = new Person(
-			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(1899, 5, 10),
+			org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
 			new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
 			PersonRole.RESIDENT, null,
 			"W", null, "M", false, false
