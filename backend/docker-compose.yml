@@ -19,6 +19,8 @@ services:
         source: ./db-setup/reset-db.sql
         target: /usr/local/lib/reset-db.sql
     command: -p ${SR_DB_PORT:-5432}
+    networks:
+      - dev-net
   api:
     build:
       context: .
@@ -30,12 +32,21 @@ services:
     ports:
       # map SR_API_PORT on localhost to the API server in the container
       - "${SR_API_PORT:-8080}:8080"
+    networks:
+      - dev-net
   schemaspy:
     build:
       context: .
       dockerfile: Dockerfile.schemaspy
-      network: host
+      network: dev-net
     ports:
       - "8081:80"
+    environment:
+      HOST: dev-net
+    networks:
+      - dev-net
 volumes:
   simple-report-dev-db-data:
+networks:
+  dev-net:
+    name: dev-net
