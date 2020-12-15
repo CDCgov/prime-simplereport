@@ -21,6 +21,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "14"
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./frontend/node_modules
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Install dependencies
         run: yarn install
         working-directory: ./frontend
@@ -28,7 +34,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-
       - name: Cache Java Dependencies
         uses: actions/cache@v2
         with:
