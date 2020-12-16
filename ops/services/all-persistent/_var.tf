@@ -5,6 +5,6 @@ variable "env" {
 
 variable "management_rg" {
   description = "RG holding the management infrastructure"
-  default = "prime-simple-report-test"
+  default = "prime-simple-report-management"
   type = string
 }
