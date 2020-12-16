@@ -117,7 +117,7 @@ public class DataHubUploaderService {
         try {
             this._createTestEventCSV(lastEndCreateOn);
             this._uploadCSVDocument(apiKey);
-            
+
             JSONObject resultJson = new JSONObject();
             resultJson.put("result", "ok");
             resultJson.put("lastTimestamp", this._nextTimestamp);
@@ -131,7 +131,7 @@ public class DataHubUploaderService {
         } catch (IOException err) {
             return err.toString();
         } catch (NoResultException err) {
-            return "No matching results for the given startupdateby + '" + lastEndCreateOn + "'";
+            return "No matching results for the given startupdateby param";
         }
     }
 }
