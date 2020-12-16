@@ -1,13 +1,15 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useRouteMatch } from "react-router-dom";
 
 const SettingsNav = () => {
+  let match = useRouteMatch();
+  let basePath = match.path.split("/").slice(0, 3).join("/");
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
       <ul className="usa-nav__secondary-links prime-nav">
         <li className="usa-nav__secondary-item">
           <NavLink
-            to={`/settings`}
+            to={`${basePath}/settings`}
             onClick={() => 4}
             activeClassName="active"
             exact={true}
@@ -17,7 +19,7 @@ const SettingsNav = () => {
         </li>{" "}
         <li className="usa-nav__secondary-item">
           <NavLink
-            to={`/settings/facilities`}
+            to={`${basePath}/settings/facilities`}
             onClick={() => 4}
             activeClassName="active"
           >

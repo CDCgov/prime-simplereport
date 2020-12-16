@@ -72,6 +72,13 @@ const App = () => {
     if (!data) return;
 
     const getDefaultFacility = () => {
+      const urlFacilityId = window.location.pathname.split("/")[2];
+      const urlFacility = data.whoami.organization.testingFacility.find(
+        (f: Facility) => f.id === urlFacilityId
+      );
+      if (urlFacility) {
+        return urlFacility;
+      }
       const tucsonMountains = data.whoami.organization.testingFacility.find(
         (f: Facility) => f.name === "Tucson Mountains"
       );
@@ -125,7 +132,7 @@ const App = () => {
               <Switch>
                 <Route path="/login" component={LoginView} />
                 <Route
-                  path="/queue"
+                  path="/facility/:facilityId/queue"
                   render={() => {
                     return <TestQueueContainer />;
                   }}
@@ -138,25 +145,31 @@ const App = () => {
                   exact
                 />
                 <Route
-                  path="/results"
+                  path="/facility/:facilityId/results"
                   render={() => {
                     return <TestResultsListContainer />;
                   }}
                 />
                 <Route
-                  path={`/patients`}
+                  path={`/facility/:facilityId/patients`}
                   render={() => {
                     return <ManagePatientsContainer />;
                   }}
                 />
                 <Route
-                  path={`/patient/:patientId`}
+                  path={`/facility/:facilityId/patient/:patientId`}
                   render={({ match }) => (
                     <EditPatientContainer patientId={match.params.patientId} />
                   )}
                 />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
+                <Route
+                  path={`/facility/:facilityId/add-patient/`}
+                  render={() => <AddPatient />}
+                />
+                <Route
+                  path="/facility/:facilityId/settings"
+                  component={SettingsRoutes}
+                />
               </Switch>
             </Router>
             <ToastContainer
