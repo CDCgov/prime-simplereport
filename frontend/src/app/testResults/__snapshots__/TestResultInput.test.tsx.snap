@@ -1,0 +1,191 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TestResultInputForm should render with a value 1`] = `
+<form
+  className="usa-form"
+>
+  <h4
+    className="prime-radio__title"
+  >
+     SARS-CoV-2 Results 
+  </h4>
+  <fieldset
+    className="usa-fieldset prime-radios"
+  >
+    <legend
+      className="usa-sr-only"
+    />
+    <ul
+      className="usa-list--unstyled"
+    >
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={true}
+          className="usa-radio__input"
+          disabled={false}
+          id="b"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="POSITIVE"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="b"
+        >
+          Positive (+)
+        </label>
+      </li>
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="c"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="NEGATIVE"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="c"
+        >
+          Negative (-)
+        </label>
+      </li>
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="d"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="UNDETERMINED"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="d"
+        >
+          Inconclusive
+        </label>
+      </li>
+    </ul>
+  </fieldset>
+  <div
+    className="prime-test-result-submit"
+  >
+    <button
+      className="usa-button usa-button--outline"
+      disabled={false}
+      onClick={[Function]}
+      type="submit"
+    >
+      Submit
+    </button>
+  </div>
+</form>
+`;
+
+exports[`TestResultInputForm should render without a value 1`] = `
+<form
+  className="usa-form"
+>
+  <h4
+    className="prime-radio__title"
+  >
+     SARS-CoV-2 Results 
+  </h4>
+  <fieldset
+    className="usa-fieldset prime-radios"
+  >
+    <legend
+      className="usa-sr-only"
+    />
+    <ul
+      className="usa-list--unstyled"
+    >
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="b"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="POSITIVE"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="b"
+        >
+          Positive (+)
+        </label>
+      </li>
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="c"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="NEGATIVE"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="c"
+        >
+          Negative (-)
+        </label>
+      </li>
+      <li
+        className="prime-radio__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="d"
+          name="covid-test-result-a"
+          onChange={[Function]}
+          type="radio"
+          value="UNDETERMINED"
+        />
+        <label
+          className="usa-radio__label prime-radio__label"
+          htmlFor="d"
+        >
+          Inconclusive
+        </label>
+      </li>
+    </ul>
+  </fieldset>
+  <div
+    className="prime-test-result-submit"
+  >
+    <button
+      className="usa-button usa-button--outline usa-button-disabled"
+      disabled={true}
+      onClick={[Function]}
+      type="submit"
+    >
+      Submit
+    </button>
+  </div>
+</form>
+`;

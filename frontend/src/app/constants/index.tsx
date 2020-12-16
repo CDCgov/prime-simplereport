@@ -1,4 +1,4 @@
-export const COVID_RESULTS = {
+export const COVID_RESULTS: { [key: string]: TestResult } = {
   POSITIVE: "POSITIVE",
   NEGATIVE: "NEGATIVE",
   INCONCLUSIVE: "UNDETERMINED",

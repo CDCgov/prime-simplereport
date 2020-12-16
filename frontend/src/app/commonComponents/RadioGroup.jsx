@@ -12,7 +12,7 @@ const RadioGroup = ({
   disabled,
   horizontal, // should only be used for radio buttons with two options. 3+ options should be vertically stacked
   selectedRadio, // for checkboxes that only support one checked item, use this. Otherwise, add a `checked: Boolean` property to each button in the buttons prop
-  type,
+  type = "radio",
   legend,
   displayLegend = false,
   required = false,

@@ -45,12 +45,12 @@ const EDIT_QUEUE_ITEM = gql`
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
-  result?: string;
+  result?: TestResult;
 }
 
 interface EditQueueItemResponse {
   editQueueItem: {
-    result: string;
+    result: TestResult;
     deviceType: { internalId: string };
   };
 }
@@ -147,7 +147,7 @@ interface QueueItemProps {
   }[];
   askOnEntry: string;
   selectedDeviceId: string;
-  selectedTestResult: string;
+  selectedTestResult: TestResult;
   defaultDevice: {
     internalId: string;
   };
@@ -157,7 +157,7 @@ interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
-  result?: string;
+  result?: TestResult;
 }
 
 const QueueItem: any = ({
@@ -203,7 +203,9 @@ const QueueItem: any = ({
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
-  const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
+  const [testResultValue, updateTestResultValue] = useState<
+    TestResult | undefined
+  >(selectedTestResult);
 
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
@@ -270,7 +272,7 @@ const QueueItem: any = ({
     updateQueueItem({ deviceId });
   };
 
-  const onTestResultChange = (result: string) => {
+  const onTestResultChange = (result: TestResult | undefined) => {
     updateQueueItem({ result });
   };
 
