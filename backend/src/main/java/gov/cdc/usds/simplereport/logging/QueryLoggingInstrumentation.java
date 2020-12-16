@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.logging;
 
+import com.microsoft.applicationinsights.TelemetryClient;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
 import graphql.execution.ExecutionId;
 import graphql.execution.instrumentation.InstrumentationContext;
@@ -24,9 +26,14 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
     private static final Logger LOG = LoggerFactory.getLogger(QueryLoggingInstrumentation.class);
 
+    private final TelemetryClient client;
+
+    public QueryLoggingInstrumentation(TelemetryClient client) {
+        this.client = client;
+    }
+
     @Override
     public InstrumentationContext<List<ValidationError>> beginValidation(InstrumentationValidationParameters parameters) {
-
         // Descend through the GraphQL query and pull out the field names and variables from the operation definitions
         final Set<String> fieldSet = parameters
                 .getDocument()
@@ -46,9 +53,13 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     public InstrumentationContext<ExecutionResult> beginExecution(InstrumentationExecutionParameters parameters) {
         final long queryStart = System.currentTimeMillis();
         final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
-
         // Add the execution ID to the sfl4j MDC
         MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId.toString());
-        return GraphQLLoggingHelpers.createInstrumentationContext(queryStart);
+
+        // Create a new Azure Telemetry Event
+        final RequestTelemetry requestTelemetry = new RequestTelemetry();
+        requestTelemetry.setId(executionId.toString());
+
+        return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
     }
 }
