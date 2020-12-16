@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -116,15 +117,15 @@ public class DataHubUploaderService {
         try {
             this._createTestEventCSV(lastEndCreateOn);
             this._uploadCSVDocument(apiKey);
+            
+            JSONObject resultJson = new JSONObject();
+            resultJson.put("result", "ok");
+            resultJson.put("lastTimestamp", this._nextTimestamp);
+            resultJson.put("rowsSent", this._rowCount);
+            resultJson.put("uploadResultId", this._uploadResultId);
+            resultJson.put("warnMessage", this._warnMessage);
+            return resultJson.toJSONString();
 
-            // todo: must be a better way to do this
-            return String.format("{result:ok,\n" +
-                            "  lastTimestamp:\"%s\",\n" +
-                            "  rowsSent:%d,\n" +
-                            "  uploadResultId:%s,\n" +
-                            "  warnMessage:\"%s\"\n" +
-                            "}",
-                    this._nextTimestamp, this._rowCount, this._uploadResultId, this._warnMessage);
         } catch (RestClientException err) {
             return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
         } catch (IOException err) {
