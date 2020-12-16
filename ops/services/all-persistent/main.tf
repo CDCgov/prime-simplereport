@@ -3,7 +3,7 @@ locals {
     prime-app   = "simplereport"
     environment = var.env
   }
-  management_rg = "prime-simple-report-test"
+  management_rg = "prime-simple-report-management"
 }
 
 data "azurerm_resource_group" "rg" {

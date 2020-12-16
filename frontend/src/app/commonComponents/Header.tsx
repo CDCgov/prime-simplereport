@@ -8,11 +8,22 @@ import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { WhoAmIContext } from "../index";
+import { useSelector } from "react-redux";
+import { connect } from "react-redux";
 
-const Header = () => {
+interface Props {
+  facilityId: string | null;
+}
+
+const Header = (props: Props) => {
   let { facility, updateFacility, facilities, organization, user } = useContext(
     WhoAmIContext
   );
+  // const dispatch = useDispatch();
+  // const history = useHistory();
+  // const organization = useSelector(
+  // (state) => (state as any).organization as Organization
+  // );
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
@@ -32,6 +43,10 @@ const Header = () => {
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
     updateFacility(facilities.find((f: WhoAmIFacility) => f.id === id));
+    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    // props.updateFacilityId(id);
+    // history.push(`${window.location.pathname}?facility=${id}`);
+    window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
   const logout = () => {
@@ -95,7 +110,7 @@ const Header = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/queue`}
+                to={`/queue/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -108,7 +123,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/results`}
+                to={`/results/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -121,7 +136,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/patients`}
+                to={`/patients/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -156,7 +171,7 @@ const Header = () => {
 
             <li className="usa-nav__primary-item prime-settings-hidden">
               <NavLink
-                to={`/settings`}
+                to={`/settings/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
@@ -173,7 +188,7 @@ const Header = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/queue`}
+                to={`/queue/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -186,7 +201,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/results`}
+                to={`/results/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -199,7 +214,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/patients`}
+                to={`/patients/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -248,7 +263,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/settings`}
+                to={`/settings/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{

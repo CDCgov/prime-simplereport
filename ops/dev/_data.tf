@@ -25,7 +25,7 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_resource_group" "rg_global" {
-  name = "${local.project}-${local.name}-test"
+  name = "${local.project}-${local.name}-management"
 }
 
 data "azurerm_resource_group" "rg_prod" {
@@ -70,4 +70,9 @@ data "azurerm_key_vault_secret" "okta_client_secret" {
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
   resource_group_name = data.azurerm_resource_group.rg_global.name
+}
+
+data "azurerm_application_insights" "app_insights" {
+  name                = "prime-simple-report-${var.env}-insights"
+  resource_group_name = data.azurerm_resource_group.rg.name
 }

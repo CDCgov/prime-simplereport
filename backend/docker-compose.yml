@@ -34,17 +34,22 @@ services:
       - "${SR_API_PORT:-8080}:8080"
     networks:
       - dev-net
+    depends_on:
+      - db
   schemaspy:
     build:
       context: .
       dockerfile: Dockerfile.schemaspy
       network: dev-net
     ports:
-      - "8081:80"
+      - "${SR_SCHEMASPY_PORT:-8081}:80"
     environment:
       HOST: dev-net
     networks:
       - dev-net
+    depends_on:
+    - db
+    - api
 volumes:
   simple-report-dev-db-data:
 networks:

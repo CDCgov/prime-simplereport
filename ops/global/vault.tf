@@ -8,11 +8,6 @@ resource "azurerm_key_vault" "sr" {
   tenant_id           = data.azurerm_client_config.current.tenant_id
   soft_delete_enabled = true
 
-  //  network_acls {
-  //    bypass = "AzureServices"
-  //    default_action = "Deny"
-  //  }
-
   tags = local.management_tags
 }
 
