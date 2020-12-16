@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.export;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.service.DataHubUploaderService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Map;
 
 
 /**
@@ -26,11 +29,13 @@ public class DataHubUploadController {
         this._hubuploadservice = us;
     }
 
-    @GetMapping(value = "/uploadTestEvent")
+    @GetMapping(value = "/uploadTestEvent", produces = MediaType.APPLICATION_JSON_VALUE)
     public String uploadTestEventCSVToDataHub(@RequestParam String apikey,
                                               @RequestParam(defaultValue = "") String startupdateby
     ) throws IOException {
-        return _hubuploadservice.uploadTestEventCVSToDataHub(apikey, startupdateby);
+        Map<String, String> result = _hubuploadservice.uploadTestEventCVSToDataHub(apikey, startupdateby);
+        ObjectMapper mapperObj = new ObjectMapper();
+        return mapperObj.writeValueAsString(result);
     }
 
     @GetMapping(value = "/testEvent", produces = {"text/csv"})

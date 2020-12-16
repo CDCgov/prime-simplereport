@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
-import net.minidev.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,14 +26,16 @@ import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional
 public class DataHubUploaderService {
     @Value("${simple-report.data-hub.uploadurl}")
     private String DATAHUB_UPLOAD_URL;
-    static final int MAX_ROWS_ALLOWED_PER_BATCH = 999;
-    static final String API_VERSION = "2";
+    @Value("${simple-report.data-hub.maxcsvrows}")
+    private int MAX_ROWS_ALLOWED_PER_CSV;
+    private static final String CSV_API_VERSION = "2";
     private static final Logger LOG = LoggerFactory.getLogger(RaceArrayConverter.class);
 
     private final TestEventRepository _repo;
@@ -61,11 +62,11 @@ public class DataHubUploaderService {
         List<TestEvent> events = _repo.findAllByCreatedAtInstant(lastEndCreateOn);
         if (events.size() == 0) {
             throw new NoResultException();
-        } else if (events.size() >= MAX_ROWS_ALLOWED_PER_BATCH) {
+        } else if (events.size() >= MAX_ROWS_ALLOWED_PER_CSV) {
             this._warnMessage += "More rows were found than can be uploaded in a single batch. Needs to be more than once.";
         }
 
-        // timestamp of highest matched entry, used for the next query. This is ridiculous, it cannot be right.
+        // timestamp of highest matched entry, used for the next query.
         this._nextTimestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS").format(events.get(0).getCreatedAt()).toString();
         this._rowCount = events.size();
 
@@ -76,8 +77,8 @@ public class DataHubUploaderService {
         mapper.enable(CsvGenerator.Feature.STRICT_CHECK_FOR_QUOTING)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_STRINGS)
                 .enable(CsvGenerator.Feature.ALWAYS_QUOTE_EMPTY_STRINGS);
-        // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but you'd be wrong,
-        // we have to return `""` withNullValue to not put `,,,` in the csv
+        // You would think `withNullValue` and `ALWAYS_QUOTE_EMPTY_STRINGS` would be enough, but it's not.
+        // we have to return `""` withNullValue to keep `,,,` out of the the csv
         CsvSchema schema = mapper.schemaFor(TestEventExport.class).withHeader().withNullValue("\"\"");
         this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
     }
@@ -90,7 +91,7 @@ public class DataHubUploaderService {
             headers.setContentType(new MediaType("text", "csv"));
             headers.add("x-functions-key", apiKey);
             headers.add("client", "simple_report");
-            headers.add("x-api-version", API_VERSION);
+            headers.add("x-api-version", CSV_API_VERSION);
             return execution.execute(request, body);
         })).build();
 
@@ -113,25 +114,26 @@ public class DataHubUploaderService {
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
     @Transactional(readOnly = true)
-    public String uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
+    public Map<String,String> uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
             this._createTestEventCSV(lastEndCreateOn);
             this._uploadCSVDocument(apiKey);
 
-            JSONObject resultJson = new JSONObject();
-            resultJson.put("result", "ok");
-            resultJson.put("lastTimestamp", this._nextTimestamp);
-            resultJson.put("rowsSent", this._rowCount);
-            resultJson.put("uploadResultId", this._uploadResultId);
-            resultJson.put("warnMessage", this._warnMessage);
-            return resultJson.toJSONString();
-
+            return  Map.of(
+                    "result", "ok",
+                    "lastTimestamp", this._nextTimestamp,
+                    "rowsSent", String.valueOf(this._rowCount),
+                    "uploadResultId", this._uploadResultId,
+                    "message", this._warnMessage);
         } catch (RestClientException err) {
-            return "Err: uploading csv to data-hub failed. error='" + err.toString() + "'";
+            return Map.of("result", "error",
+                    "message","Err: uploading csv to data-hub failed. error='" + err.toString() + "'");
         } catch (IOException err) {
-            return err.toString();
+            return Map.of("result", "error",
+                    "messsage", err.toString());
         } catch (NoResultException err) {
-            return "No matching results for the given startupdateby param";
+            return Map.of("result", "error",
+                    "message","No matching results for the given startupdateby param");
         }
     }
 }
