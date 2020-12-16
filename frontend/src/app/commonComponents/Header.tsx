@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, NavLink, useHistory } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
