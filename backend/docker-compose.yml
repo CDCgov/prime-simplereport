@@ -42,7 +42,7 @@ services:
       dockerfile: Dockerfile.schemaspy
       network: dev-net
     ports:
-      - "8081:80"
+      - "${SR_SCHEMASPY_PORT:-8081}:80"
     environment:
       HOST: dev-net
     networks:
