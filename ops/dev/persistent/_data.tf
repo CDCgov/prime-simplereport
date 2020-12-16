@@ -5,7 +5,7 @@ data "azurerm_resource_group" "rg" {
 }
 
 data "azurerm_resource_group" "rg_global" {
-  name = "${local.project}-${local.name}-test"
+  name = "${local.project}-${local.name}-management"
 }
 
 data "azurerm_resource_group" "rg_prod" {

@@ -168,9 +168,9 @@ public class TestEventExport {
 		return patient.getTelephone();
 	}
 
-	@JsonProperty("Patient_lookup_ID")
-	public String getPatientLookupId() {
-		return patient.getLookupId();
+	@JsonProperty("Patient_email")
+	public String getPatientEmail() {
+		return patient.getEmail();
 	}
 
 	@JsonProperty("Patient_ID")
@@ -196,9 +196,16 @@ public class TestEventExport {
 		return boolToYesNoUnk(patient.getResidentCongregateSetting());
 	}
 
+	@JsonProperty("Result_ID")
+	public String getResultID() {
+		return testEvent.getInternalId().toString();
+	}
+
 	@JsonProperty("Testing_lab_specimen_ID")
 	public String getTestingLabSpecimenID() {
-		return testEvent.getInternalId().toString();
+		// When we grab the device id it should go here
+		// Example: the id on the BinaxNow card
+		return "";
 	}
 
 	@JsonProperty("Test_result_code")
@@ -299,6 +306,11 @@ public class TestEventExport {
 	@JsonProperty("Ordering_facility_phone_number")
 	public String getOrderingFacilityPhoneNumber() {
 		return facility.getTelephone();
+	}
+
+	@JsonProperty("Ordering_facility_email")
+	public String getOrderingFacilityEmail() {
+		return "";
 	}
 
 	@JsonProperty("Ordering_facility_state")
