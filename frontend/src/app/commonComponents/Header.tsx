@@ -45,9 +45,10 @@ const Header = (props: Props) => {
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    dispatch(updateFacility(facilities.find((f) => f.id === id)));
-    props.updateFacilityId(id);
-    history.push(`${window.location.pathname}?facility=${id}`);
+    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    // props.updateFacilityId(id);
+    // history.push(`${window.location.pathname}?facility=${id}`);
+    window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
   const logout = () => {

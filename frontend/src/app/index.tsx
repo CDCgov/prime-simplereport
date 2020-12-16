@@ -95,8 +95,6 @@ const App = () => {
       return data.whoami.organization.testingFacility[0].id;
     };
 
-    console.log("default id", getDefaultFacilityId());
-
     // if facilityId is not a query param, we need to refresh the page and add it
     if (!getFacilityIdFromUrl()) {
       window.location.href = `${
