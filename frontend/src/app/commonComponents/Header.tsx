@@ -8,11 +8,17 @@ import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
-import { useDispatch, connect } from "react-redux";
-import { updateFacility } from "../store";
+// import { useDispatch, connect } from "react-redux";
+import { connect } from "react-redux";
+// import { updateFacility } from "../store";
 
-const Header = () => {
-  const dispatch = useDispatch();
+interface Props {
+  facilityId: string | null;
+}
+
+const Header = (props: Props) => {
+  // const dispatch = useDispatch();
+  // const history = useHistory();
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -39,7 +45,10 @@ const Header = () => {
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    // props.updateFacilityId(id);
+    // history.push(`${window.location.pathname}?facility=${id}`);
+    window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
   const logout = () => {
@@ -53,6 +62,7 @@ const Header = () => {
       `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
     );
   };
+
   return (
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container">
@@ -98,7 +108,7 @@ const Header = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/queue`}
+                to={`/queue/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -111,7 +121,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/results`}
+                to={`/results/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -124,7 +134,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/patients`}
+                to={`/patients/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -159,7 +169,7 @@ const Header = () => {
 
             <li className="usa-nav__primary-item prime-settings-hidden">
               <NavLink
-                to={`/settings`}
+                to={`/settings/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
@@ -176,7 +186,7 @@ const Header = () => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/queue`}
+                to={`/queue/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -189,7 +199,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/results`}
+                to={`/results/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -202,7 +212,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/patients`}
+                to={`/patients/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -251,7 +261,7 @@ const Header = () => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/settings`}
+                to={`/settings/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{

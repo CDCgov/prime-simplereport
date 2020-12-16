@@ -1,9 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Redirect,
+  Route,
+  Switch,
+} from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
 
@@ -20,6 +25,7 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
+import { getFacilityIdFromUrl } from "./utils/url";
 
 const WHOAMI_QUERY = gql`
   {
@@ -68,18 +74,41 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
+  const [facilityId, updateFacilityId] = useState<string | null>("");
+
   useEffect(() => {
     if (!data) return;
 
-    const getDefaultFacility = () => {
+    const getDefaultFacilityId = () => {
+      const queryParamsFacilityId = getFacilityIdFromUrl();
+      if (queryParamsFacilityId) {
+        return queryParamsFacilityId;
+      }
+
       const tucsonMountains = data.whoami.organization.testingFacility.find(
         (f: Facility) => f.name === "Tucson Mountains"
       );
       if (tucsonMountains) {
-        return tucsonMountains;
+        return tucsonMountains.id;
       }
-      return data.whoami.organization.testingFacility[0];
+
+      return data.whoami.organization.testingFacility[0].id;
     };
+
+    // if facilityId is not a query param, we need to refresh the page and add it
+    if (!getFacilityIdFromUrl()) {
+      window.location.href = `${
+        window.location.pathname
+      }?facility=${getDefaultFacilityId()}`;
+    }
+
+    const getDefaultFacility = () => {
+      let facilityId = getDefaultFacilityId();
+      return data.whoami.organization.testingFacility.find(
+        (f: Facility) => f.id === facilityId
+      );
+    };
+
     dispatch(
       setInitialState({
         organization: {
@@ -96,6 +125,8 @@ const App = () => {
         },
       })
     );
+
+    updateFacilityId(getFacilityIdFromUrl());
     // eslint-disable-next-line
   }, [data]);
 
@@ -121,7 +152,7 @@ const App = () => {
           <div id="main-wrapper">
             <USAGovBanner />
             <Router basename={process.env.PUBLIC_URL}>
-              <Header />
+              <Header facilityId={facilityId} />
               <Switch>
                 <Route path="/login" component={LoginView} />
                 <Route
@@ -133,7 +164,7 @@ const App = () => {
                 <Route
                   path="/"
                   render={() => {
-                    return <TestQueueContainer />;
+                    return <Redirect to="/queue" />;
                   }}
                   exact
                 />
