@@ -61,6 +61,8 @@ public class GraphQLLoggingHelpers {
      * Handles logging the exeuction time, query success/fail and any associated errors
      *
      * @param queryStart - {@link Long} timestamp of when query started
+     * @param client - {@link TelemetryClient} for submitting GraphQL requests to Azure
+     * @param request - {@link RequestTelemetry} for tracking success/failure and duration
      * @return - {@link InstrumentationContext} to handle query completion
      */
     public static InstrumentationContext<ExecutionResult> createInstrumentationContext(long queryStart, TelemetryClient client, RequestTelemetry request) {
@@ -75,6 +77,7 @@ public class GraphQLLoggingHelpers {
                     LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
                     LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
                     request.setSuccess(false);
+                    client.trackException((Exception) t);
                 } else if (!result.getErrors().isEmpty()) {
                     result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
                     LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());

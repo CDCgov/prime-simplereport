@@ -60,6 +60,14 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
         final RequestTelemetry requestTelemetry = new RequestTelemetry();
         requestTelemetry.setId(executionId.toString());
 
+        // Try to get the operation name, if one exists
+        final String name = parameters.getExecutionInput().getOperationName();
+        if (!name.isBlank()) {
+            requestTelemetry.setName(name);
+        } else {
+            LOG.warn("Anonymous GraphQL operation submitted, we'll be missing interesting data");
+        }
+
         return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
     }
 }
