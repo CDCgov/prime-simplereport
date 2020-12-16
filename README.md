@@ -98,6 +98,8 @@ http://schemaspy.org/
 cd backend
 docker-compose up db
 docker-compose up --build schemaspy
+# to run on a different port than 8081
+SR_SCHEMASPY_PORT=8082 docker-compose up --build schemaspy
 ```
 
 visit http://localhost:8081
