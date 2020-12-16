@@ -38,6 +38,9 @@ dependencies {
 //	Okta dependencies
 	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
 
+// App insights instrumentation
+	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
+
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
