@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
+@SuppressWarnings("checkstyle:MagicNumber")
 public class TestOrderRepositoryTest extends BaseRepositoryTest {
 
     @Autowired

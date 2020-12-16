@@ -36,7 +36,11 @@ public class TestEventExport {
 	private Map<String, String> genderMap = Map.of(
 		"male", "M",
 		"female", "F",
-		"other", "O"
+		"other", "O",
+		"ambiguous", "A",
+		"unknown", "U",
+		"unk", "U",
+		"notapplicable", "N"
 	);
 
 	private Map<String, String> ethnicityMap = Map.of(
@@ -63,7 +67,7 @@ public class TestEventExport {
 
 	private String boolToYesNoUnk(Boolean value) {
 		if (value == null) {
-			return "UNK";
+			return "U";
 		} else if (value) {
 			return "Y";
 		} else {
@@ -120,7 +124,7 @@ public class TestEventExport {
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
 		if (patient.getGender() == null) {
-			return "UNK";
+			return "U";
 		}
 		return genderMap.get(patient.getGender());
 	}
