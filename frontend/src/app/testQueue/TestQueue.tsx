@@ -17,48 +17,48 @@ const emptyQueueMessage = (
 );
 
 const queueQuery = gql`
-  query Queue($facilityId: String!) {
-    queue(facilityId: $facilityId) {
-      internalId
-      pregnancy
-      dateAdded
-      symptoms
-      symptomOnset
-      noSymptoms
-      firstTest
-      priorTestDate
-      priorTestType
-      priorTestResult
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        telephone
-        birthDate
-        lookupId
-        firstName
-        middleName
-        lastName
-        gender
-      }
-      result
-    }
-    organization {
-      testingFacility {
-        id
-        deviceTypes {
-          internalId
-          name
+    query GetFacilityQueue($facilityId: String!) {
+        queue(facilityId: $facilityId) {
+            internalId
+            pregnancy
+            dateAdded
+            symptoms
+            symptomOnset
+            noSymptoms
+            firstTest
+            priorTestDate
+            priorTestType
+            priorTestResult
+            deviceType {
+                internalId
+                name
+            }
+            patient {
+                internalId
+                telephone
+                birthDate
+                lookupId
+                firstName
+                middleName
+                lastName
+                gender
+            }
+            result
         }
-        defaultDeviceType {
-          internalId
-          name
+        organization {
+            testingFacility {
+                id
+                deviceTypes {
+                    internalId
+                    name
+                }
+                defaultDeviceType {
+                    internalId
+                    name
+                }
+            }
         }
-      }
     }
-  }
 `;
 
 interface Props {

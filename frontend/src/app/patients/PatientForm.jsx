@@ -24,7 +24,7 @@ import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 
 const ADD_PATIENT = gql`
-  mutation(
+  mutation AddPatient(
     $facilityId: String
     $lookupId: String
     $firstName: String!
@@ -72,7 +72,7 @@ const ADD_PATIENT = gql`
 `;
 
 const UPDATE_PATIENT = gql`
-  mutation(
+  mutation UpdatePatient(
     $facilityId: String
     $patientId: String!
     $lookupId: String

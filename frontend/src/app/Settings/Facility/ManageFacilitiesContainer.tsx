@@ -3,7 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import ManageFacilities from "./ManageFacilities";
 
 const GET_FACILITIES = gql`
-  {
+  query GetFacilities {
     organization {
       testingFacility {
         id
