@@ -11,15 +11,16 @@ interface Props {
 }
 
 const ManageOrganization: React.FC<Props> = (props) => {
-  const [name, setName] = useState(props.name);
+  const [name, setName] = useState("");
   const [formChanged, setFormChanged] = useState(false);
 
   useEffect(() => {
+    setName(props.name);
     if (!formChanged && name !== props.name) {
       setFormChanged(true);
     }
     // eslint-disable-next-line
-  }, [name]);
+  }, [props]);
 
   return (
     <main className="prime-home">

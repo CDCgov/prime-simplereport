@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useDispatch, connect } from "react-redux";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
@@ -11,6 +11,7 @@ import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
 import ManageOrganization from "./ManageOrganization";
 import { updateOrganization } from "../store";
+import { WhoAmIContext } from "../index";
 
 interface Data {
   organization: {
@@ -33,10 +34,10 @@ const SET_ORGANIZATION = gql`
 `;
 
 const ManageOrganizationContainer: any = () => {
-  const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
-    fetchPolicy: "no-cache",
-  });
-  const dispatch = useDispatch();
+  // const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
+  //   fetchPolicy: "no-cache",
+  // });
+  let { organization, updateOrganization } = useContext(WhoAmIContext);
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(
@@ -46,16 +47,16 @@ const ManageOrganizationContainer: any = () => {
     false
   );
 
-  if (loading) {
-    return <p> Loading... </p>;
-  }
-  if (error) {
-    return error;
-  }
+  // if (loading) {
+  //   return <p> Loading... </p>;
+  // }
+  // if (error) {
+  //   return error;
+  // }
 
-  if (data === undefined) {
-    return <p>Error: setting not found</p>;
-  }
+  // if (data === undefined) {
+  //   return <p>Error: setting not found</p>;
+  // }
 
   const onSave = (name: string) => {
     trackSaveSettings(null);
@@ -72,11 +73,13 @@ const ManageOrganizationContainer: any = () => {
         />
       );
       showNotification(toast, alert);
-      dispatch(updateOrganization({ name }));
+
+      // dispatch(updateOrganization({ name }));
+      updateOrganization({ name });
     });
   };
 
-  return <ManageOrganization name={data.organization.name} onSave={onSave} />;
+  return <ManageOrganization name={organization.name} onSave={onSave} />;
 };
 
 export default connect()(ManageOrganizationContainer);
