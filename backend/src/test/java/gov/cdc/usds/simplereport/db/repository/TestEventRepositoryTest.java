@@ -45,8 +45,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         flush();
         TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
         assertEquals(second.getResult(), TestResult.UNDETERMINED);
-
         List<TestEvent> found2 = _repo.findAllByCreatedAtInstant("2020-01-01T16:13:15.448000Z");
-        // assertNotEquals(2, found2.size());
+        assertEquals(2, found2.size());
     }
 }
