@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
@@ -63,11 +63,28 @@ const SettingsRoutes = ({ match }: any) => (
   </>
 );
 
+export const WhoAmIContext = React.createContext<any>(null);
 const App = () => {
   const dispatch = useDispatch();
+  const [facility, updateFacility] = useState<WhoAmIFacility>({
+    id: "",
+    name: "",
+  });
+  const [facilities, updateFacilities] = useState<WhoAmIFacility[]>([]);
+  const [user, updateUser] = useState<User>({
+    id: "",
+    firstName: "",
+    middleName: "",
+    lastName: "",
+    suffix: "",
+  });
+  const [organization, updateOrganization] = useState<WhoAmIOrganization>({
+    name: "",
+  });
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
+
   useEffect(() => {
     if (!data) return;
 
@@ -80,6 +97,20 @@ const App = () => {
       }
       return data.whoami.organization.testingFacility[0];
     };
+    updateFacility({
+      ...data.whoami.organization.testingFacility[0],
+    });
+    updateFacilities(data.whoami.organization.testingFacility);
+    updateUser({
+      id: data.whoami.id,
+      firstName: data.whoami.firstName,
+      middleName: data.whoami.middleName,
+      lastName: data.whoami.lastName,
+      suffix: data.whoami.suffix,
+    });
+    updateOrganization({
+      name: data.whoami.organization.name,
+    });
     dispatch(
       setInitialState({
         organization: {
@@ -109,66 +140,81 @@ const App = () => {
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary
-        onError={(error: any) => (
-          <div>
-            <h1> There was an error. Please try refreshing</h1>
-            <pre> {JSON.stringify(error, null, 2)} </pre>
-          </div>
-        )}
+      <WhoAmIContext.Provider
+        value={{
+          facility,
+          updateFacility,
+          facilities,
+          updateFacilities,
+          user,
+          updateUser,
+          organization,
+          updateOrganization,
+        }}
       >
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <Router basename={process.env.PUBLIC_URL}>
-              <Header />
-              <Switch>
-                <Route path="/login" component={LoginView} />
-                <Route
-                  path="/queue"
-                  render={() => {
-                    return <TestQueueContainer />;
-                  }}
-                />
-                <Route
-                  path="/"
-                  render={() => {
-                    return <TestQueueContainer />;
-                  }}
-                  exact
-                />
-                <Route
-                  path="/results"
-                  render={() => {
-                    return <TestResultsListContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patients`}
-                  render={() => {
-                    return <ManagePatientsContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patient/:patientId`}
-                  render={({ match }) => (
-                    <EditPatientContainer patientId={match.params.patientId} />
-                  )}
-                />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
-              </Switch>
-            </Router>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+        <PrimeErrorBoundary
+          onError={(error: any) => (
+            <div>
+              <h1> There was an error. Please try refreshing</h1>
+              <pre> {JSON.stringify(error, null, 2)} </pre>
+            </div>
+          )}
+        >
+          <div className="App">
+            <div id="main-wrapper">
+              <USAGovBanner />
+              <Router basename={process.env.PUBLIC_URL}>
+                <Header />
+                <Switch>
+                  <Route path="/login" component={LoginView} />
+                  <Route
+                    path="/queue"
+                    render={() => {
+                      return <TestQueueContainer />;
+                    }}
+                  />
+                  <Route
+                    path="/"
+                    render={() => {
+                      return <TestQueueContainer />;
+                    }}
+                    exact
+                  />
+                  <Route
+                    path="/results"
+                    render={() => {
+                      return <TestResultsListContainer />;
+                    }}
+                  />
+                  <Route
+                    path={`/patients`}
+                    render={() => {
+                      return <ManagePatientsContainer />;
+                    }}
+                  />
+                  <Route
+                    path={`/patient/:patientId`}
+                    render={({ match }) => (
+                      <EditPatientContainer
+                        patientId={match.params.patientId}
+                      />
+                    )}
+                  />
+                  <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                  <Route path="/settings" component={SettingsRoutes} />
+                </Switch>
+              </Router>
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
+              />
+            </div>
           </div>
-        </div>
-      </PrimeErrorBoundary>
+        </PrimeErrorBoundary>
+      </WhoAmIContext.Provider>
     </AppInsightsContext.Provider>
   );
 };

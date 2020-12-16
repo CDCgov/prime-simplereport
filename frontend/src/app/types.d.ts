@@ -153,3 +153,21 @@ interface FacilityData {
     }
   ];
 }
+
+interface WhoAmIFacility {
+  id: string;
+  name: string;
+}
+
+interface WhoAmIOrganization {
+  name: string;
+}
+
+interface WhoAmI {
+  organization: {
+    name: string;
+  };
+  facilities: WhoAmIFacility[];
+  facility: WhoAmIFacility;
+  user: User;
+}

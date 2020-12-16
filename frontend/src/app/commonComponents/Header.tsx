@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
@@ -10,17 +10,21 @@ import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
 import { useDispatch, connect } from "react-redux";
 import { updateFacility } from "../store";
+import { WhoAmIContext } from "../index";
 
 const Header = () => {
-  const dispatch = useDispatch();
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
+  // const dispatch = useDispatch();
+  // const organization = useSelector(
+  //   (state) => (state as any).organization as Organization
+  // );
+  let { facility, updateFacility, facilities, organization, user } = useContext(
+    WhoAmIContext
   );
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
-  );
-  const facility = useSelector((state) => (state as any).facility as Facility);
-  const user = useSelector((state) => (state as any).user as User);
+  // const facilities = useSelector(
+  //   (state) => (state as any).facilities as Facility[]
+  // );
+  // const facility = useSelector((state) => (state as any).facility as Facility);
+  // const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
@@ -39,7 +43,8 @@ const Header = () => {
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    updateFacility(facilities.find((f: WhoAmIFacility) => f.id === id));
+    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
   };
 
   const logout = () => {
@@ -53,6 +58,7 @@ const Header = () => {
       `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
     );
   };
+
   return (
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container">
@@ -75,9 +81,13 @@ const Header = () => {
           <Dropdown
             selectedValue={facility.id}
             onChange={onFacilitySelect}
-            options={facilities.map((f: Facility) => {
-              return { label: f.name, value: f.id };
-            })}
+            options={
+              facilities
+                ? facilities.map((f: WhoAmIFacility) => {
+                    return { label: f.name, value: f.id };
+                  })
+                : []
+            }
           />
         </div>
 
