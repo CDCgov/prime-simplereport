@@ -3,4 +3,4 @@ graphql.servlet.cors:
     - https://simplereport.cdc.gov
 simple-report:
   data-hub:
-    uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
+    uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
