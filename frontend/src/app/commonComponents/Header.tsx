@@ -8,17 +8,17 @@ import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
-import { useDispatch, connect } from "react-redux";
-import { updateFacility } from "../store";
+// import { useDispatch, connect } from "react-redux";
+import { connect } from "react-redux";
+// import { updateFacility } from "../store";
 
 interface Props {
   facilityId: string | null;
-  updateFacilityId: (id: string) => void;
 }
 
 const Header = (props: Props) => {
-  const dispatch = useDispatch();
-  const history = useHistory();
+  // const dispatch = useDispatch();
+  // const history = useHistory();
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );

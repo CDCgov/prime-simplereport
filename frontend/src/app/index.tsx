@@ -152,10 +152,7 @@ const App = () => {
           <div id="main-wrapper">
             <USAGovBanner />
             <Router basename={process.env.PUBLIC_URL}>
-              <Header
-                facilityId={facilityId}
-                updateFacilityId={updateFacilityId}
-              />
+              <Header facilityId={facilityId} />
               <Switch>
                 <Route path="/login" component={LoginView} />
                 <Route
