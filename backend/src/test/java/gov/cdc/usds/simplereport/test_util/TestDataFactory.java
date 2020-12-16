@@ -56,7 +56,7 @@ public class TestDataFactory {
         DeviceType dev = getGenericDevice();
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         Provider doc = _providerRepo
-                .save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "1-900-CALL-FOR-DOC"));
+                .save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "800-555-1212"));
         Facility facility = new Facility(org, facilityName, "123456", doc);
         facility.setAddress(addy);
         facility.setDefaultDeviceType(dev);
