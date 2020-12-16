@@ -97,9 +97,7 @@ const App = () => {
       }
       return data.whoami.organization.testingFacility[0];
     };
-    updateFacility({
-      ...data.whoami.organization.testingFacility[0],
-    });
+    updateFacility(getDefaultFacility());
     updateFacilities(data.whoami.organization.testingFacility);
     updateUser({
       id: data.whoami.id,

@@ -7,24 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
-import { useSelector } from "react-redux";
-import { useDispatch, connect } from "react-redux";
-import { updateFacility } from "../store";
 import { WhoAmIContext } from "../index";
 
 const Header = () => {
-  // const dispatch = useDispatch();
-  // const organization = useSelector(
-  //   (state) => (state as any).organization as Organization
-  // );
   let { facility, updateFacility, facilities, organization, user } = useContext(
     WhoAmIContext
   );
-  // const facilities = useSelector(
-  //   (state) => (state as any).facilities as Facility[]
-  // );
-  // const facility = useSelector((state) => (state as any).facility as Facility);
-  // const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
@@ -44,7 +32,6 @@ const Header = () => {
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
     updateFacility(facilities.find((f: WhoAmIFacility) => f.id === id));
-    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
   };
 
   const logout = () => {
@@ -278,4 +265,4 @@ const Header = () => {
   );
 };
 
-export default connect()(Header);
+export default Header;
