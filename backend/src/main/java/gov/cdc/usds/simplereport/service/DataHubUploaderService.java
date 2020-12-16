@@ -104,7 +104,7 @@ public class DataHubUploaderService {
         } catch (IOException err) {
             return err.toString();
         } catch (NoResultException err) {
-            return "No matching results for the given startupdateby + '" + lastEndCreateOn + "'";
+            return "No matching results for the given startupdateby param";
         }
     }
 
