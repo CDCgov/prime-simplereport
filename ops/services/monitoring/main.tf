@@ -15,7 +15,7 @@ resource "azurerm_application_insights" "app_insights" {
   application_type    = "Node.JS"
   location            = var.rg_location
   resource_group_name = var.rg_name
-  name                = "prime-simple-report-${var.env}-client"
+  name                = "prime-simple-report-${var.env}-insights"
 
   tags = var.tags
 }

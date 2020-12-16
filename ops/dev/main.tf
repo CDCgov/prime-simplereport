@@ -35,7 +35,8 @@ module "simple_report_api" {
     SPRING_DATASOURCE_URL                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"
     OKTA_OAUTH2_CLIENT_ID                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_id.id})"
     OKTA_OAUTH2_CLIENT_SECRET                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
-    OKTA_OAUTH2_ISSUER                               = "https://hhs-prime.okta.com/oauth2/default"
+    OKTA_OAUTH2_ISSUER                               = "https://hhs-prime.okta.com/oauth2/default",
+    APPLICATIONINSIGHTS_CONNECTION_STRING            = "InstrumentationKey=${data.azurerm_application_insights.app_insights.instrumentation_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
   }
 }
 
