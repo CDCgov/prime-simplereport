@@ -69,7 +69,9 @@ const Header = (props: Props) => {
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <em className="usa-logo__text">
-              <Link to="/">{process.env.REACT_APP_TITLE}</Link>
+              <Link to={`/queue/?facility=${facility.id}`}>
+                {process.env.REACT_APP_TITLE}
+              </Link>
               <div className="prime-organization-name">{organization.name}</div>
             </em>
           </div>
