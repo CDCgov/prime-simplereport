@@ -221,8 +221,6 @@ const PriorTestInputs = ({
   );
 };
 
-Modal.setAppElement("#root");
-
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
