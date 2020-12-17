@@ -61,20 +61,24 @@ public class DataHubUploadController {
         String currentDateTime = dateFormatter.format(new Date());
         // we want to set the next timestamp in the cookie. But cookie headers must be set before
         // we start writing back out the html body. So preload the csv so we can call getNextTimestamp()
-        String csv_string = _hubuploadservice.creatTestCVSForDataHub(startupdateby);
-        Cookie cookie = new Cookie("csvsavedstartupby", _hubuploadservice.getNextTimestamp());
-        {
-            final int SECONDS_TO_EXPIRE_COOKIE = 60 * 60 * 24 * 90;  // 90 days to refresh
-            // if we setSecure(true) for localhost, then setting cookie fails.
-            boolean _securecookie = (!this._runtimeprofile.contains("no-security"));
-            cookie.setSecure(_securecookie);
-            cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
-            cookie.setPath("/");
-        }
+        String csv_string = this._hubuploadservice.creatTestCVSForDataHub(startupdateby);
+
+        String nexttimestamp = this._hubuploadservice.getNextTimestamp();
+
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
-        response.addCookie(cookie);
+        if (nexttimestamp.length() > 0) {  // if there were no matches then this will be empty.
+            Cookie cookie = new Cookie("csvsavedstartupby", nexttimestamp);
+            final int SECONDS_TO_EXPIRE_COOKIE = 60 * 60 * 24 * 90;  // 90 days to refresh
+            // if we setSecure(true) for localhost, then setting cookie fails.
+            boolean noSecurity = (this._runtimeprofile.contains("no-security"));
+            cookie.setHttpOnly(noSecurity);
+            cookie.setSecure(!noSecurity);
+            cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
+            cookie.setPath("/");
+            response.addCookie(cookie);
+        }
         response.getWriter().print(csv_string);
         return ResponseEntity.accepted().build();
     }
