@@ -10,21 +10,7 @@ import {
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
 import ManageOrganization from "./ManageOrganization";
-import { WhoAmIContext } from "../index";
-
-interface Data {
-  organization: {
-    name: string;
-  };
-}
-
-const GET_ORGANIZATION = gql`
-  {
-    organization {
-      name
-    }
-  }
-`;
+import { WhoAmIContext } from "../WhoAmIContext";
 
 const SET_ORGANIZATION = gql`
   mutation($name: String!) {

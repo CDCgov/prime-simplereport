@@ -1,16 +1,18 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React, { useContext } from "react";
+// import { useSelector } from "react-redux";
+import { WhoAmIContext } from "../WhoAmIContext";
 
 import TestQueue from "./TestQueue";
 
 const TestQueueContainer = () => {
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
-  if (activeFacilityId.length < 1) {
+  let { activeFacility } = useContext(WhoAmIContext);
+  // const activeFacilityId = useSelector(
+  // (state) => (state as any).facility.id as string
+  // );
+  if (activeFacility) {
     return <div>"No facility selected"</div>;
   }
-  return <TestQueue activeFacilityId={activeFacilityId} />;
+  return <TestQueue activeFacilityId={activeFacility.id} />;
 };
 
 export default TestQueueContainer;

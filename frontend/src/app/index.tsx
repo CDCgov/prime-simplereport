@@ -19,6 +19,7 @@ import LoginView from "./LoginView";
 import { setInitialState } from "./store";
 import TestResultsListContainer from "./testResults/TestResultsListContainer";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
+import TestQueue from "./testQueue/TestQueue";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
@@ -26,6 +27,7 @@ import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer"
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import { getFacilityIdFromUrl } from "./utils/url";
+import { WhoAmIContext } from "./WhoAmIContext";
 
 const WHOAMI_QUERY = gql`
   {
@@ -69,10 +71,10 @@ const SettingsRoutes = ({ match }: any) => (
   </>
 );
 
-export const WhoAmIContext = React.createContext<any>(null);
+// export const WhoAmIContext = React.createContext<any>(null);
 const App = () => {
   const dispatch = useDispatch();
-  const [facility, updateFacility] = useState<WhoAmIFacility>({
+  const [activeFacility, updateActiveFacility] = useState<WhoAmIFacility>({
     id: "",
     name: "",
   });
@@ -90,7 +92,6 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const [facilityId, updateFacilityId] = useState<string | null>("");
 
   useEffect(() => {
     if (!data) return;
@@ -116,6 +117,12 @@ const App = () => {
       window.location.href = `${
         window.location.pathname
       }?facility=${getDefaultFacilityId()}`;
+
+      // window.history.replaceState(
+      //   null,
+      //   "",
+      //   `${window.location.pathname}?facility=${getDefaultFacilityId()}`
+      // );
     }
 
     const getDefaultFacility = () => {
@@ -124,7 +131,7 @@ const App = () => {
         (f: Facility) => f.id === facilityId
       );
     };
-    updateFacility(getDefaultFacility());
+    updateActiveFacility(getDefaultFacility());
     updateFacilities(data.whoami.organization.testingFacility);
     updateUser({
       id: data.whoami.id,
@@ -136,24 +143,23 @@ const App = () => {
     updateOrganization({
       name: data.whoami.organization.name,
     });
-    dispatch(
-      setInitialState({
-        organization: {
-          name: data.whoami.organization.name,
-        },
-        facilities: data.whoami.organization.testingFacility,
-        facility: getDefaultFacility(),
-        user: {
-          id: data.whoami.id,
-          firstName: data.whoami.firstName,
-          middleName: data.whoami.middleName,
-          lastName: data.whoami.lastName,
-          suffix: data.whoami.suffix,
-        },
-      })
-    );
+    // dispatch(
+    //   setInitialState({
+    //     organization: {
+    //       name: data.whoami.organization.name,
+    //     },
+    //     facilities: data.whoami.organization.testingFacility,
+    //     facility: getDefaultFacility(),
+    //     user: {
+    //       id: data.whoami.id,
+    //       firstName: data.whoami.firstName,
+    //       middleName: data.whoami.middleName,
+    //       lastName: data.whoami.lastName,
+    //       suffix: data.whoami.suffix,
+    //     },
+    //   })
+    // );
 
-    updateFacilityId(getFacilityIdFromUrl());
     // eslint-disable-next-line
   }, [data]);
 
@@ -165,12 +171,16 @@ const App = () => {
     throw error;
   }
 
+  if (!activeFacility.id) {
+    return <div>assNo facility selected"</div>;
+  }
+
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
       <WhoAmIContext.Provider
         value={{
-          facility,
-          updateFacility,
+          activeFacility,
+          updateActiveFacility,
           facilities,
           updateFacilities,
           user,
@@ -191,13 +201,13 @@ const App = () => {
             <div id="main-wrapper">
               <USAGovBanner />
               <Router basename={process.env.PUBLIC_URL}>
-                <Header facilityId={facilityId} />
+                <Header />
                 <Switch>
                   <Route path="/login" component={LoginView} />
                   <Route
                     path="/queue"
                     render={() => {
-                      return <TestQueueContainer />;
+                      return <TestQueue activeFacilityId={activeFacility.id} />;
                     }}
                   />
                   <Route

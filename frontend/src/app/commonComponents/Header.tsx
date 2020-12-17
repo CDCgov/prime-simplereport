@@ -7,23 +7,16 @@ import { v4 as uuidv4 } from "uuid";
 import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
-import { WhoAmIContext } from "../index";
-import { useSelector } from "react-redux";
-import { connect } from "react-redux";
+import { WhoAmIContext } from "../WhoAmIContext";
 
-interface Props {
-  facilityId: string | null;
-}
-
-const Header = (props: Props) => {
-  let { facility, updateFacility, facilities, organization, user } = useContext(
-    WhoAmIContext
-  );
-  // const dispatch = useDispatch();
-  // const history = useHistory();
-  // const organization = useSelector(
-  // (state) => (state as any).organization as Organization
-  // );
+const Header = () => {
+  let {
+    activeFacility,
+    updateActiveFacility,
+    facilities,
+    organization,
+    user,
+  } = useContext(WhoAmIContext);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
     ref: staffDefailsRef,
@@ -42,10 +35,14 @@ const Header = (props: Props) => {
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    updateFacility(facilities.find((f: WhoAmIFacility) => f.id === id));
-    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
+    updateActiveFacility(facilities.find((f: WhoAmIFacility) => f.id === id));
     // props.updateFacilityId(id);
     // history.push(`${window.location.pathname}?facility=${id}`);
+    // window.history.replaceState(
+    //   null,
+    //   "",
+    //   `${window.location.pathname}?facility=${id}`
+    // );
     window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
@@ -81,7 +78,7 @@ const Header = (props: Props) => {
 
         <div className="prime-facility-select">
           <Dropdown
-            selectedValue={facility.id}
+            selectedValue={activeFacility.id}
             onChange={onFacilitySelect}
             options={
               facilities
@@ -110,7 +107,7 @@ const Header = (props: Props) => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/queue/?facility=${props.facilityId}`}
+                to={`/queue/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -123,7 +120,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/results/?facility=${props.facilityId}`}
+                to={`/results/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -136,7 +133,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/patients/?facility=${props.facilityId}`}
+                to={`/patients/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -162,7 +159,7 @@ const Header = (props: Props) => {
                 <li className="usa-sidenav__item span-full-name">
                   {formatFullName(user)}
                 </li>
-                <li className="usa-sidenav__item">{facility.name}</li>
+                <li className="usa-sidenav__item">{activeFacility.name}</li>
                 <li className="usa-sidenav__item">
                   <Anchor text="Log out" onClick={() => logout()} />
                 </li>
@@ -171,7 +168,7 @@ const Header = (props: Props) => {
 
             <li className="usa-nav__primary-item prime-settings-hidden">
               <NavLink
-                to={`/settings/?facility=${props.facilityId}`}
+                to={`/settings/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
@@ -188,7 +185,7 @@ const Header = (props: Props) => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/queue/?facility=${props.facilityId}`}
+                to={`/queue/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -201,7 +198,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/results/?facility=${props.facilityId}`}
+                to={`/results/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -214,7 +211,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/patients/?facility=${props.facilityId}`}
+                to={`/patients/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -254,7 +251,7 @@ const Header = (props: Props) => {
                   <li className="usa-sidenav__item span-full-name">
                     {formatFullName(user)}
                   </li>
-                  <li className="usa-sidenav__item">{facility.name}</li>
+                  <li className="usa-sidenav__item">{activeFacility.name}</li>
                   <li className="usa-sidenav__item">
                     <Anchor text={" Log out"} onClick={() => logout()} />
                   </li>
@@ -263,7 +260,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/settings/?facility=${props.facilityId}`}
+                to={`/settings/?facility=${activeFacility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
