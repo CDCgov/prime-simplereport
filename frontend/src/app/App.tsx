@@ -133,8 +133,6 @@ const App = () => {
     throw error;
   }
 
-  console.log(window.location.pathname);
-
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
       <PrimeErrorBoundary
