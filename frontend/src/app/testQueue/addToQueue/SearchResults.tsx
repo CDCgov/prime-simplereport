@@ -57,7 +57,7 @@ const SearchResults = ({
                       text="Begin Test"
                     />
                   ) : (
-                    "Already testing"
+                    "Test in progress"
                   )}
                 </td>
               </tr>
