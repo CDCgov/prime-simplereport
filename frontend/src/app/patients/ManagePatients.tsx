@@ -61,7 +61,7 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
     return patients.map((patient: Patient) => (
       <tr key={patient.internalId}>
         <th scope="row">
-          <NavLink to={`patient/${patient.internalId}`}>
+          <NavLink to={`/patient/${patient.internalId}`}>
             {displayFullName(
               patient.firstName,
               patient.middleName,
@@ -87,7 +87,7 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
-              <NavLink to={"add-patient"}>
+              <NavLink to={`/add-patient/?facility=${activeFacilityId}`}>
                 <Button
                   outline
                   icon={"plus"}
