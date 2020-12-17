@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DateFormat;
@@ -40,15 +41,28 @@ public class DataHubUploadController {
 
     @GetMapping(value = "/testEvent", produces = {"text/csv"})
     public ResponseEntity<?> exportTestEventCSV(HttpServletResponse response,
-                                                @RequestParam(defaultValue = "") String startupdateby) throws IOException {
+                                                @RequestParam(defaultValue = "") String startupdateby,
+                                                @CookieValue(value = "csvsavedstartupby", defaultValue = "")
+                                                        String startupdatebyCookie) throws IOException {
+        if (startupdateby.length() == 0 && startupdatebyCookie.length() > 0) {
+            // if the value doesn't come from the url and it's available in the cookie, use that.
+            startupdateby = startupdatebyCookie;
+        } else if (startupdateby.compareToIgnoreCase("all") == 0) {
+            startupdateby = DataHubUploaderService.EARLIEST_TIMESTAMP;
+        }
+
         response.setContentType("text/csv");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentDateTime = dateFormatter.format(new Date());
+        // we want to set the next timestamp in the cookie. But cookie headers must be set before
+        // we start writing back out the html body. So preload the csv so we can call getNextTimestamp()
+        String csv_string = _hubuploadservice.creatTestCVSForDataHub(startupdateby);
 
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
-        response.getWriter().print(_hubuploadservice.creatTestCVSForDataHub(startupdateby));
+        response.addCookie(new Cookie("csvsavedstartupby", _hubuploadservice.getNextTimestamp()));
+        response.getWriter().print(csv_string);
         return ResponseEntity.accepted().build();
     }
 }

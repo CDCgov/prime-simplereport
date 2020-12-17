@@ -31,6 +31,7 @@ import java.util.Map;
 @Service
 @Transactional
 public class DataHubUploaderService {
+    public static final String EARLIEST_TIMESTAMP = "2020-01-01T00:00:00.0Z";
     @Value("${simple-report.data-hub.uploadurl}")
     private String DATAHUB_UPLOAD_URL;
     @Value("${simple-report.data-hub.maxcsvrows}")
@@ -51,6 +52,12 @@ public class DataHubUploaderService {
         this._warnMessage = "";
         this._uploadResultId = "";
         this._rowCount = 0;
+    }
+
+    // used after _createTestEventCSV() which currently returns a string of csv.
+    // in future this should be flipped around so a writer is passed into the _createTestEventCSV
+    public String getNextTimestamp() {
+        return this._nextTimestamp;
     }
 
     private void _createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
