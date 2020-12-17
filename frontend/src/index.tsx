@@ -18,6 +18,12 @@ import {
 import { onError } from "@apollo/client/link/error";
 import { showError } from "./app/utils";
 import { toast } from "react-toastify";
+import Modal from "react-modal";
+
+// Define the root element for modals
+if (process.env.NODE_ENV !== "test") {
+  Modal.setAppElement("#root");
+}
 
 if (window.location.hash) {
   const params = new URLSearchParams(window.location.hash.slice(1));
