@@ -22,7 +22,7 @@ import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesConta
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 
 const WHOAMI_QUERY = gql`
-  query WhoAmI{
+  query WhoAmI {
     whoami {
       id
       firstName

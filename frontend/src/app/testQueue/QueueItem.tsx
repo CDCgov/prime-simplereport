@@ -56,7 +56,11 @@ interface EditQueueItemResponse {
 }
 
 const SUBMIT_TEST_RESULT = gql`
-  mutation SubmitTestResult($patientId: String!, $deviceId: String!, $result: String!) {
+  mutation SubmitTestResult(
+    $patientId: String!
+    $deviceId: String!
+    $result: String!
+  ) {
     addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
   }
 `;
