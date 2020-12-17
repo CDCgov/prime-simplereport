@@ -3,6 +3,8 @@ import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
+import { showError } from "../utils";
+import { toast } from "react-toastify";
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -105,6 +107,12 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
   if (!facility) {
     return <p>Facility not found</p>;
+  }
+  if (facility.deviceTypes.length === 0) {
+    showError(
+      toast,
+      "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
+    );
   }
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
