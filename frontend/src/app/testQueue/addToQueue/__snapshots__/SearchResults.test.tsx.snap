@@ -1,0 +1,93 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SearchResults should say 'No Results' for no matches 1`] = `
+<h3>
+   No results 
+</h3>
+`;
+
+exports[`SearchResults should show matching results 1`] = `
+<div
+  className="usa-card__container shadow-3 results-dropdown"
+>
+  <div
+    className="usa-card__body"
+  >
+    <table
+      className="usa-table usa-table--borderless"
+    >
+      <thead>
+        <tr>
+          <th
+            scope="col"
+          >
+            Full name
+          </th>
+          <th
+            scope="col"
+          >
+            Date of Birth
+          </th>
+          <th
+            scope="col"
+          >
+            Unique ID
+          </th>
+          <th
+            scope="col"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            George Washington
+          </td>
+          <td />
+          <td />
+          <td>
+            <button
+              className="prime-link"
+              onClick={[Function]}
+            >
+              Begin Test
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Martin Luther King
+          </td>
+          <td />
+          <td />
+          <td>
+            <button
+              className="prime-link"
+              onClick={[Function]}
+            >
+              Begin Test
+            </button>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            Barack Hussein Obama
+          </td>
+          <td />
+          <td />
+          <td>
+            <button
+              className="prime-link"
+              onClick={[Function]}
+            >
+              Begin Test
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+`;

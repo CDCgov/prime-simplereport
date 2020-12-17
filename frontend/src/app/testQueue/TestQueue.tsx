@@ -160,6 +160,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         )
       : emptyQueueMessage;
 
+  const patientsInQueue = data.queue.map(
+    (q: QueueItemData) => q.patient.internalId
+  );
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -167,6 +171,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           <AddToQueueSearch
             refetchQueue={refetchQueue}
             facilityId={activeFacilityId}
+            patientsInQueue={patientsInQueue}
           />
         </div>
         {createQueueItems(data.queue)}

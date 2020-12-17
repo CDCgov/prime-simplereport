@@ -57,7 +57,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
-const AddToQueueSearchBox = ({ refetchQueue, facilityId }) => {
+const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
     appInsights,
@@ -175,12 +175,14 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId }) => {
         queryString={queryString}
         disabled={!shouldShowSuggestions}
       />
-      <SearchResults
-        suggestions={suggestions}
-        shouldDisplay={shouldShowSuggestions}
-        onAddToQueue={onAddToQueue}
-        facilityId={facilityId}
-      />
+      {shouldShowSuggestions && (
+        <SearchResults
+          patients={suggestions}
+          onAddToQueue={onAddToQueue}
+          facilityId={facilityId}
+          patientsInQueue={patientsInQueue}
+        />
+      )}
     </React.Fragment>
   );
 };
