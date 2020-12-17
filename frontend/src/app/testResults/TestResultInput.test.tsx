@@ -68,7 +68,7 @@ describe("TestResultInputForm", () => {
 
     fireEvent.click(screen.getByLabelText("Positive (+)"));
 
-    expect(onChange).toHaveBeenCalledTimes(0);
+    expect(onChange).toBeCalledWith(undefined);
   });
 
   it("should not submit when there is no value", () => {

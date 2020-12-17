@@ -20,7 +20,14 @@ const TestResultInputForm: React.FC<Props> = ({
 }) => {
   const onResultChange = (event: React.FormEvent<HTMLInputElement>) => {
     const value = (event.target as HTMLInputElement).value as TestResult;
-    onChange(value === testResultValue ? undefined : value);
+    onChange(value);
+  };
+
+  const onResultClick = (event: React.FormEvent<HTMLInputElement>) => {
+    const value = (event.target as HTMLInputElement).value as TestResult;
+    if (value === testResultValue) {
+      onChange(undefined);
+    }
   };
 
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
@@ -33,6 +40,7 @@ const TestResultInputForm: React.FC<Props> = ({
       <h4 className="prime-radio__title"> SARS-CoV-2 Results </h4>
       <React.Fragment>
         <RadioGroup
+          onClick={onResultClick}
           onChange={onResultChange}
           buttons={[
             {

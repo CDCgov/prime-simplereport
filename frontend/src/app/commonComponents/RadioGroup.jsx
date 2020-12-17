@@ -7,6 +7,7 @@ import Required from "../commonComponents/Required";
 
 const RadioGroup = ({
   onChange,
+  onClick = undefined,
   buttons,
   name,
   disabled,
@@ -35,6 +36,7 @@ const RadioGroup = ({
           key={button.value}
           name={name}
           onChange={onChange}
+          onClick={onClick}
           type={type || "radio"}
           value={button.value}
           disabled={button.disabled || disabled || false}
