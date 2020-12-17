@@ -28,7 +28,7 @@ public class DataHubUploadController {
     private final DataHubUploaderService _hubuploadservice;
 
     @Value("${simple-report.insecure-cookies:false}")
-    private boolean _insecureCookies;
+    private boolean _insecurecookies;
 
     public DataHubUploadController(DataHubUploaderService us) {
         this._hubuploadservice = us;
@@ -60,7 +60,7 @@ public class DataHubUploadController {
         String currentDateTime = dateFormatter.format(new Date());
         // we want to set the next timestamp in the cookie. But cookie headers must be set before
         // we start writing back out the html body. So preload the csv so we can call getNextTimestamp()
-        String csv_string = this._hubuploadservice.creatTestCVSForDataHub(startupdateby);
+        String csvString = this._hubuploadservice.creatTestCVSForDataHub(startupdateby);
 
         String nexttimestamp = this._hubuploadservice.getNextTimestamp();
 
@@ -71,13 +71,13 @@ public class DataHubUploadController {
             Cookie cookie = new Cookie("csvsavedstartupby", nexttimestamp);
             final int SECONDS_TO_EXPIRE_COOKIE = 60 * 60 * 24 * 90;  // 90 days to refresh
             // if we setSecure(true) for localhost, then setting cookie fails.
-            cookie.setHttpOnly(this._insecureCookies);
-            cookie.setSecure(!this._insecureCookies);
+            cookie.setHttpOnly(this._insecurecookies);
+            cookie.setSecure(!this._insecurecookies);
             cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
             cookie.setPath("/");
             response.addCookie(cookie);
         }
-        response.getWriter().print(csv_string);
+        response.getWriter().print(csvString);
         return ResponseEntity.accepted().build();
     }
 }
