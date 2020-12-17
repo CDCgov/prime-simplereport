@@ -64,3 +64,25 @@ resource "okta_group" "prime_users" {
   name = "Prime Team Members"
   description = "All Prime team members"
 }
+
+// Create a sign on policy requiring MFA
+
+resource "okta_policy_signon" "mfa_require" {
+  name = "simple-report-mfa-require"
+  status = "ACTIVE"
+  description = "Require MFA for all users"
+  groups_included = []
+}
+
+resource "okta_policy_rule_signon" "app_mfa" {
+  policyid = okta_policy_signon.mfa_require.id
+  name = "simple-report-mfa-require"
+  status = "ACTIVE"
+  mfa_required = true
+  mfa_prompt = "SESSION"
+  network_connection = "ANYWHERE"
+  authtype = "ANY"
+  mfa_lifetime = 720
+  session_idle = 720
+  session_lifetime = 720
+}
