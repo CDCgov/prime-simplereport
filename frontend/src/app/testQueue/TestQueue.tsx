@@ -17,7 +17,7 @@ const emptyQueueMessage = (
 );
 
 const queueQuery = gql`
-  query Queue($facilityId: String!) {
+  query GetFacilityQueue($facilityId: String!) {
     queue(facilityId: $facilityId) {
       internalId
       pregnancy

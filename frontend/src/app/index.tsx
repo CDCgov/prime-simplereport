@@ -28,7 +28,7 @@ import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import { getFacilityIdFromUrl } from "./utils/url";
 
 const WHOAMI_QUERY = gql`
-  {
+  query WhoAmI {
     whoami {
       id
       firstName

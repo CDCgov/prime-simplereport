@@ -10,7 +10,7 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 
 export const testResultQuery = gql`
-  query Results($facilityId: String!) {
+  query GetFacilityResults($facilityId: String!) {
     testResults(facilityId: $facilityId) {
       internalId
       dateTested

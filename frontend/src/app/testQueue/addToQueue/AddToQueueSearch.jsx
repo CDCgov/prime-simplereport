@@ -16,7 +16,7 @@ import { displayFullName } from "../../utils";
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
 const QUERY_PATIENT = gql`
-  query Patient($facilityId: String!) {
+  query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
       lookupId
@@ -30,7 +30,7 @@ const QUERY_PATIENT = gql`
 `;
 
 const ADD_PATIENT_TO_QUEUE = gql`
-  mutation(
+  mutation AddPatientToQueue(
     $facilityId: String!
     $patientId: String!
     $symptoms: String
