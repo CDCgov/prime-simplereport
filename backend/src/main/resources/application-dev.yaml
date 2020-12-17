@@ -40,3 +40,5 @@ simple-report-initialization:
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2
+simple-report:
+  insecure-cookies: true

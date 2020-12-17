@@ -27,9 +27,8 @@ public class DataHubUploadController {
 
     private final DataHubUploaderService _hubuploadservice;
 
-    // used to allow insecure cookies when running in dev
-    @Value("${spring.profiles.include}")
-    private String _runtimeprofile;
+    @Value("${simple-report.insecure-cookies:false}")
+    private boolean _insecureCookies;
 
     public DataHubUploadController(DataHubUploaderService us) {
         this._hubuploadservice = us;
@@ -72,9 +71,8 @@ public class DataHubUploadController {
             Cookie cookie = new Cookie("csvsavedstartupby", nexttimestamp);
             final int SECONDS_TO_EXPIRE_COOKIE = 60 * 60 * 24 * 90;  // 90 days to refresh
             // if we setSecure(true) for localhost, then setting cookie fails.
-            boolean noSecurity = (this._runtimeprofile.contains("no-security"));
-            cookie.setHttpOnly(noSecurity);
-            cookie.setSecure(!noSecurity);
+            cookie.setHttpOnly(this._insecureCookies);
+            cookie.setSecure(!this._insecureCookies);
             cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
             cookie.setPath("/");
             response.addCookie(cookie);
