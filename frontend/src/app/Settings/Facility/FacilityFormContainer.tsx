@@ -11,7 +11,7 @@ import { showNotification } from "../../utils";
 import FacilityForm from "./FacilityForm";
 
 const GET_FACILITY_QUERY = gql`
-  {
+  query GetFacilities {
     organization {
       internalId
       testingFacility {
@@ -55,7 +55,7 @@ const GET_FACILITY_QUERY = gql`
 `;
 
 const UPDATE_FACILITY_MUTATION = gql`
-  mutation(
+  mutation UpdateFacility(
     $facilityId: String!
     $testingFacilityName: String!
     $cliaNumber: String
@@ -111,7 +111,7 @@ const UPDATE_FACILITY_MUTATION = gql`
 `;
 
 const ADD_FACILITY_MUTATION = gql`
-  mutation(
+  mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
     $street: String

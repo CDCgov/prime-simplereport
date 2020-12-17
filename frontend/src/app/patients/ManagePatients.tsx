@@ -14,7 +14,7 @@ import {
 import { daysSince } from "../utils/date";
 
 const patientQuery = gql`
-  query Patient($facilityId: String!) {
+  query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
       lookupId

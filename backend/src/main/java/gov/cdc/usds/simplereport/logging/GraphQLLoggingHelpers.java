@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.logging;
 
+import com.microsoft.applicationinsights.TelemetryClient;
+import com.microsoft.applicationinsights.telemetry.Duration;
+import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
@@ -10,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.stream.Stream;
 
 /**
@@ -60,26 +61,34 @@ public class GraphQLLoggingHelpers {
      * Handles logging the exeuction time, query success/fail and any associated errors
      *
      * @param queryStart - {@link Long} timestamp of when query started
+     * @param client - {@link TelemetryClient} for submitting GraphQL requests to Azure
+     * @param request - {@link RequestTelemetry} for tracking success/failure and duration
      * @return - {@link InstrumentationContext} to handle query completion
      */
-    public static InstrumentationContext<ExecutionResult> createInstrumentationContext(long queryStart) {
+    public static InstrumentationContext<ExecutionResult> createInstrumentationContext(long queryStart, TelemetryClient client, RequestTelemetry request) {
         return new SimpleInstrumentationContext<>() {
             @Override
             public void onCompleted(ExecutionResult result, Throwable t) {
                 final long queryEnd = System.currentTimeMillis();
-                final Duration queryDuration = Duration.of(queryEnd - queryStart, ChronoUnit.MILLIS);
+                final Duration queryDuration = new Duration(queryEnd - queryStart);
+                request.setDuration(queryDuration);
 
                 if (t != null) {
                     LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
-                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.toMillis());
+                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+                    request.setSuccess(false);
+                    client.trackException((Exception) t);
                 } else if (!result.getErrors().isEmpty()) {
                     result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
-                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.toMillis());
+                    LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+                    request.setSuccess(false);
                 } else {
-                    LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.toMillis());
+                    LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
+                    request.setSuccess(true);
                 }
                 // Clear the MDC context
                 MDC.remove(GRAPHQL_QUERY_MDC_KEY);
+                client.trackRequest(request);
             }
         };
     }

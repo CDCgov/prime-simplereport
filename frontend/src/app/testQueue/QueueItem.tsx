@@ -26,13 +26,13 @@ import moment from "moment";
 import Button from "../commonComponents/Button";
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
-  mutation($patientId: String!) {
+  mutation RemovePatientFromQueue($patientId: String!) {
     removePatientFromQueue(patientId: $patientId)
   }
 `;
 
 const EDIT_QUEUE_ITEM = gql`
-  mutation($id: String!, $deviceId: String, $result: String) {
+  mutation EditQueueItem($id: String!, $deviceId: String, $result: String) {
     editQueueItem(id: $id, deviceId: $deviceId, result: $result) {
       result
       deviceType {
@@ -56,13 +56,17 @@ interface EditQueueItemResponse {
 }
 
 const SUBMIT_TEST_RESULT = gql`
-  mutation($patientId: String!, $deviceId: String!, $result: String!) {
+  mutation SubmitTestResult(
+    $patientId: String!
+    $deviceId: String!
+    $result: String!
+  ) {
     addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
   }
 `;
 
 const UPDATE_AOE = gql`
-  mutation(
+  mutation UpdateAOE(
     $patientId: String!
     $symptoms: String
     $symptomOnset: String
