@@ -7,5 +7,3 @@ interface User {
   lastName: string;
   suffix: string;
 }
-
-type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";

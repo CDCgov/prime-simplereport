@@ -25,6 +25,8 @@ import { removeTimer, TestTimerWidget } from "./TestTimer";
 import moment from "moment";
 import Button from "../commonComponents/Button";
 
+export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
     removePatientFromQueue(patientId: $patientId)

@@ -3,6 +3,7 @@ import React from "react";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
+import { TestResult } from "../testQueue/QueueItem";
 
 interface Props {
   queueItemId: string;
