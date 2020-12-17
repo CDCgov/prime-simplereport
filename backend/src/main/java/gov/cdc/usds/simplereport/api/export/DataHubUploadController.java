@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.export;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.cdc.usds.simplereport.service.DataHubUploaderService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +26,10 @@ import java.util.Map;
 public class DataHubUploadController {
 
     private final DataHubUploaderService _hubuploadservice;
+
+    // used to allow insecure cookies when running in dev
+    @Value("${spring.profiles.include}")
+    private String _runtimeprofile;
 
     public DataHubUploadController(DataHubUploaderService us) {
         this._hubuploadservice = us;
@@ -57,11 +62,18 @@ public class DataHubUploadController {
         // we want to set the next timestamp in the cookie. But cookie headers must be set before
         // we start writing back out the html body. So preload the csv so we can call getNextTimestamp()
         String csv_string = _hubuploadservice.creatTestCVSForDataHub(startupdateby);
-
+        Cookie cookie = new Cookie("csvsavedstartupby", _hubuploadservice.getNextTimestamp());
+        {
+            // if we setSecure(true) for localhost, then setting cookie fails.
+            boolean _securecookie = (!this._runtimeprofile.contains("no-security"));
+            cookie.setSecure(_securecookie);
+            cookie.setMaxAge(60 * 60 * 24 * 90); // 3 months to refresh
+            cookie.setPath("/");
+        }
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
-        response.addCookie(new Cookie("csvsavedstartupby", _hubuploadservice.getNextTimestamp()));
+        response.addCookie(cookie);
         response.getWriter().print(csv_string);
         return ResponseEntity.accepted().build();
     }
