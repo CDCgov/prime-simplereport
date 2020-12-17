@@ -347,6 +347,7 @@ const QueueItem: any = ({
     <button
       onClick={(e) => removeFromQueue(e, patient.internalId)}
       className="prime-close-button"
+      aria-label="Close"
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
