@@ -224,9 +224,10 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (e?: any) => {
+  const onTestResultSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
       submitTestResult({
         variables: {
@@ -238,7 +239,11 @@ const QueueItem: any = ({
         .then(testResultsSubmitted)
         .then(refetchQueue)
         .then(() => removeTimer(internalId))
-        .catch((error) => updateMutationError(error));
+        .catch((error) => {
+          updateMutationError(error);
+          // Re-enable Submit in the hopes it will work
+          if (e) e.currentTarget.disabled = false;
+        });
     } else {
       updateIsConfirmationModalOpen(true);
     }
@@ -274,8 +279,12 @@ const QueueItem: any = ({
     updateQueueItem({ result });
   };
 
-  const removeFromQueue = (patientId: string) => {
+  const removeFromQueue = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    patientId: string
+  ) => {
     trackRemovePatientFromQueue({});
+    if (e) e.currentTarget.disabled = true;
     removePatientFromQueue({
       variables: {
         patientId,
@@ -283,7 +292,11 @@ const QueueItem: any = ({
     })
       .then(refetchQueue)
       .then(() => removeTimer(internalId))
-      .catch((error) => updateMutationError(error));
+      .catch((error) => {
+        updateMutationError(error);
+        // Re-enable Submit in the hopes it will work
+        if (e) e.currentTarget.disabled = false;
+      });
   };
 
   const openAoeModal = () => {
@@ -331,15 +344,15 @@ const QueueItem: any = ({
   );
 
   const closeButton = (
-    <div
-      onClick={() => removeFromQueue(patient.internalId)}
+    <button
+      onClick={(e) => removeFromQueue(e, patient.internalId)}
       className="prime-close-button"
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
         <FontAwesomeIcon icon={"times-circle"} size="2x" />
       </span>
-    </div>
+    </button>
   );
 
   return (
