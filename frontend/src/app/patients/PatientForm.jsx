@@ -237,7 +237,7 @@ const PatientForm = (props) => {
   };
   // after the submit was success, redirect back to the List page
   if (submitted) {
-    return <Redirect to="/patients" />;
+    return <Redirect to={`/patients/?facility=${props.activeFacilityId}`} />;
   }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
@@ -250,7 +250,10 @@ const PatientForm = (props) => {
       />
       <Breadcrumbs
         crumbs={[
-          { link: "../patients", text: PATIENT_TERM_PLURAL_CAP },
+          {
+            link: `/patients/?facility=${props.activeFacilityId}`,
+            text: PATIENT_TERM_PLURAL_CAP,
+          },
           {
             text: !props.patientId
               ? `Create New ${PATIENT_TERM_CAP}`
