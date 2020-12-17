@@ -64,10 +64,11 @@ public class DataHubUploadController {
         String csv_string = _hubuploadservice.creatTestCVSForDataHub(startupdateby);
         Cookie cookie = new Cookie("csvsavedstartupby", _hubuploadservice.getNextTimestamp());
         {
+            final int SECONDS_TO_EXPIRE_COOKIE = 60 * 60 * 24 * 90;  // 90 days to refresh
             // if we setSecure(true) for localhost, then setting cookie fails.
             boolean _securecookie = (!this._runtimeprofile.contains("no-security"));
             cookie.setSecure(_securecookie);
-            cookie.setMaxAge(60 * 60 * 24 * 90); // 3 months to refresh
+            cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
             cookie.setPath("/");
         }
         String headerKey = "Content-Disposition";
