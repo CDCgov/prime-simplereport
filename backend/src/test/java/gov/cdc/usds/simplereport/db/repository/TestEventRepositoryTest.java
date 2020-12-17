@@ -35,6 +35,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testLatestTestEventForPerson() {
+        List<TestEvent> foundTestReports1 = _repo.findAllByCreatedAtInstant("2020-01-01T16:13:15.448000Z");
         Organization org = _dataFactory.createValidOrg();
         Facility place = _dataFactory.createValidFacility(org);
         Person patient = _dataFactory.createMinimalPerson(org);
@@ -45,7 +46,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         flush();
         TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
         assertEquals(second.getResult(), TestResult.UNDETERMINED);
-        List<TestEvent> found2 = _repo.findAllByCreatedAtInstant("2020-01-01T16:13:15.448000Z");
-        assertEquals(2, found2.size());
+        List<TestEvent> foundTestReports2 = _repo.findAllByCreatedAtInstant("2020-01-01T16:13:15.448000Z");
+        assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
     }
 }
