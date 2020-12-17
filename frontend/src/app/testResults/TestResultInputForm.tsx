@@ -3,15 +3,16 @@ import React from "react";
 import RadioGroup from "../commonComponents/RadioGroup";
 import Button from "../commonComponents/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../constants";
-import { v4 as uuidv4 } from "uuid";
 
 interface Props {
+  queueItemId: string;
   testResultValue: TestResult | undefined;
   onChange: (value: TestResult | undefined) => void;
   onSubmit: () => void;
 }
 
 const TestResultInputForm: React.FC<Props> = ({
+  queueItemId,
   testResultValue,
   onSubmit,
   onChange,
@@ -46,7 +47,7 @@ const TestResultInputForm: React.FC<Props> = ({
               label: `${TEST_RESULT_DESCRIPTIONS.UNDETERMINED}`,
             },
           ]}
-          name={`covid-test-result-${uuidv4()}`}
+          name={`covid-test-result-${queueItemId}`}
           selectedRadio={testResultValue}
         />
         <div className="prime-test-result-submit">

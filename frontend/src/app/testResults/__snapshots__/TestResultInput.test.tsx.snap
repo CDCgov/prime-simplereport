@@ -25,15 +25,15 @@ exports[`TestResultInputForm should render with a value 1`] = `
           checked={true}
           className="usa-radio__input"
           disabled={false}
-          id="b"
-          name="covid-test-result-a"
+          id="a"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="POSITIVE"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="b"
+          htmlFor="a"
         >
           Positive (+)
         </label>
@@ -45,15 +45,15 @@ exports[`TestResultInputForm should render with a value 1`] = `
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="c"
-          name="covid-test-result-a"
+          id="b"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="NEGATIVE"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="c"
+          htmlFor="b"
         >
           Negative (-)
         </label>
@@ -65,15 +65,15 @@ exports[`TestResultInputForm should render with a value 1`] = `
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="d"
-          name="covid-test-result-a"
+          id="c"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="UNDETERMINED"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="d"
+          htmlFor="c"
         >
           Inconclusive
         </label>
@@ -120,15 +120,15 @@ exports[`TestResultInputForm should render without a value 1`] = `
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="b"
-          name="covid-test-result-a"
+          id="a"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="POSITIVE"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="b"
+          htmlFor="a"
         >
           Positive (+)
         </label>
@@ -140,15 +140,15 @@ exports[`TestResultInputForm should render without a value 1`] = `
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="c"
-          name="covid-test-result-a"
+          id="b"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="NEGATIVE"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="c"
+          htmlFor="b"
         >
           Negative (-)
         </label>
@@ -160,15 +160,15 @@ exports[`TestResultInputForm should render without a value 1`] = `
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="d"
-          name="covid-test-result-a"
+          id="c"
+          name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           type="radio"
           value="UNDETERMINED"
         />
         <label
           className="usa-radio__label prime-radio__label"
-          htmlFor="d"
+          htmlFor="c"
         >
           Inconclusive
         </label>

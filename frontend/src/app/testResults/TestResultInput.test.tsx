@@ -11,12 +11,12 @@ describe("TestResultInputForm", () => {
     (uuidv4 as any).mockImplementationOnce(() => "a");
     (uuidv4 as any).mockImplementationOnce(() => "b");
     (uuidv4 as any).mockImplementationOnce(() => "c");
-    (uuidv4 as any).mockImplementationOnce(() => "d");
   });
 
   it("should render with a value", () => {
     const component = renderer.create(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue="POSITIVE"
         onChange={jest.fn()}
         onSubmit={jest.fn()}
@@ -29,6 +29,7 @@ describe("TestResultInputForm", () => {
   it("should render without a value", () => {
     const component = renderer.create(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue={undefined}
         onChange={jest.fn()}
         onSubmit={jest.fn()}
@@ -42,6 +43,7 @@ describe("TestResultInputForm", () => {
     const onChange = jest.fn();
     render(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue={undefined}
         onChange={onChange}
         onSubmit={jest.fn()}
@@ -57,6 +59,7 @@ describe("TestResultInputForm", () => {
     const onChange = jest.fn();
     render(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue="POSITIVE"
         onChange={onChange}
         onSubmit={jest.fn()}
@@ -72,6 +75,7 @@ describe("TestResultInputForm", () => {
     const onSubmit = jest.fn();
     render(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue={undefined}
         onChange={jest.fn()}
         onSubmit={onSubmit}
@@ -87,6 +91,7 @@ describe("TestResultInputForm", () => {
     const onSubmit = jest.fn();
     render(
       <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue="POSITIVE"
         onChange={jest.fn()}
         onSubmit={onSubmit}

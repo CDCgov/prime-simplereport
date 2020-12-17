@@ -413,6 +413,7 @@ const QueueItem: any = ({
               />
             )}
             <TestResultInputForm
+              queueItemId={internalId}
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
