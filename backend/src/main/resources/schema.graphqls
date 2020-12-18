@@ -261,4 +261,17 @@ type Mutation {
     symptomOnset: String
     noSymptoms: Boolean
   ): String
+  createDeviceType(
+    name: String!
+    manufacturer: String!
+    model: String!
+    loincCode: String!
+  ): DeviceType
+  updateDeviceType(
+    id: String!
+    name: String
+    manufacturer: String
+    model: String
+    loincCode: String
+  ): DeviceType
 }

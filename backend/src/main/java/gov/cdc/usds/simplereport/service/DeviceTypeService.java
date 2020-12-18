@@ -20,44 +20,58 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 @Transactional(readOnly = true)
 public class DeviceTypeService {
 
-	private DeviceTypeRepository _repo;
-	public DeviceTypeService(DeviceTypeRepository repo) {
-		_repo = repo;
-	}
+    private DeviceTypeRepository _repo;
+    private ApiUserService _apiUserService;
 
-	@Transactional(readOnly = false)
-	public void removeDeviceType(DeviceType d) {
-		_repo.delete(d);
-	}
+    public DeviceTypeService(DeviceTypeRepository repo, ApiUserService apiUserService) {
+        _repo = repo;
+        _apiUserService = apiUserService;
+    }
 
-	public List<DeviceType> fetchDeviceTypes() {
-		return _repo.findAll();
-	}
+    @Transactional(readOnly = false)
+    public void removeDeviceType(DeviceType d) {
+        _repo.delete(d);
+    }
 
+    public List<DeviceType> fetchDeviceTypes() {
+        return _repo.findAll();
+    }
 
-	public DeviceType getDeviceType(String internalId) {
-		UUID actualId = UUID.fromString(internalId);
-		return _repo.findById(actualId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid device type ID"));
-	}
+    public DeviceType getDeviceType(String internalId) {
+        UUID actualId = UUID.fromString(internalId);
+        return _repo.findById(actualId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid device type ID"));
+    }
 
-	@Transactional(readOnly = false)
-	public DeviceType createDeviceType(String name, String model, String manufacturer, String loincCode) {
-		return _repo.save(new DeviceType(name, manufacturer, model, loincCode));
-	}
+    @Transactional(readOnly = false)
+    public DeviceType updateDeviceType(String id, String name, String model, String manufacturer, String loincCode) {
+        _apiUserService.isAdminUser();
+        DeviceType d = getDeviceType(id);
+        d.setName(name);
+        d.setManufacturer(manufacturer);
+        d.setModel(model);
+        d.setLoincCode(loincCode);
+        return _repo.save(d);
+    }
 
-	public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
-		if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
-			throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
-		}
-		List<DeviceType> configuredTypes = configuredDeviceTypeIds.stream()
-				.map(this::getDeviceType)
-				.collect(Collectors.toList());
-		UUID defaultId = UUID.fromString(defaultDeviceTypeId);
-		DeviceType defaultType = configuredTypes.stream()
-			.filter(dt->dt.getInternalId().equals(defaultId))
-			.findFirst()
-			.orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
-			;
-		return new DeviceTypeHolder(defaultType, configuredTypes);
-	}
+    @Transactional(readOnly = false)
+    public DeviceType createDeviceType(String name, String model, String manufacturer, String loincCode) {
+        _apiUserService.isAdminUser();
+        return _repo.save(new DeviceType(name, manufacturer, model, loincCode));
+    }
+
+    public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
+        if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
+            throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
+        }
+        List<DeviceType> configuredTypes = configuredDeviceTypeIds.stream()
+                .map(this::getDeviceType)
+                .collect(Collectors.toList());
+        UUID defaultId = UUID.fromString(defaultDeviceTypeId);
+        DeviceType defaultType = configuredTypes.stream()
+            .filter(dt->dt.getInternalId().equals(defaultId))
+            .findFirst()
+            .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
+            ;
+        return new DeviceTypeHolder(defaultType, configuredTypes);
+    }
 }

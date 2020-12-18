@@ -3,3 +3,6 @@ simple-report-initialization.default-user:
   first-name: Bobbity
   middle-name: Bob
   last-name: Bobberoo
+simple-report:
+  admin-emails:
+    - bob@example.com
