@@ -25,6 +25,8 @@ import { removeTimer, TestTimerWidget } from "./TestTimer";
 import moment from "moment";
 import Button from "../commonComponents/Button";
 
+export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
     removePatientFromQueue(patientId: $patientId)
@@ -45,12 +47,12 @@ const EDIT_QUEUE_ITEM = gql`
 interface EditQueueItemParams {
   id: string;
   deviceId?: string;
-  result?: string;
+  result?: TestResult;
 }
 
 interface EditQueueItemResponse {
   editQueueItem: {
-    result: string;
+    result: TestResult;
     deviceType: { internalId: string };
   };
 }
@@ -147,7 +149,7 @@ interface QueueItemProps {
   }[];
   askOnEntry: string;
   selectedDeviceId: string;
-  selectedTestResult: string;
+  selectedTestResult: TestResult;
   defaultDevice: {
     internalId: string;
   };
@@ -157,7 +159,7 @@ interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
-  result?: string;
+  result?: TestResult;
 }
 
 const QueueItem: any = ({
@@ -203,7 +205,9 @@ const QueueItem: any = ({
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
-  const [testResultValue, updateTestResultValue] = useState(selectedTestResult);
+  const [testResultValue, updateTestResultValue] = useState<
+    TestResult | undefined
+  >(selectedTestResult);
 
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
@@ -224,9 +228,10 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (e?: any) => {
+  const onTestResultSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
+      if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
       submitTestResult({
         variables: {
@@ -238,7 +243,11 @@ const QueueItem: any = ({
         .then(testResultsSubmitted)
         .then(refetchQueue)
         .then(() => removeTimer(internalId))
-        .catch((error) => updateMutationError(error));
+        .catch((error) => {
+          updateMutationError(error);
+          // Re-enable Submit in the hopes it will work
+          if (e) e.currentTarget.disabled = false;
+        });
     } else {
       updateIsConfirmationModalOpen(true);
     }
@@ -270,12 +279,16 @@ const QueueItem: any = ({
     updateQueueItem({ deviceId });
   };
 
-  const onTestResultChange = (result: string) => {
+  const onTestResultChange = (result: TestResult | undefined) => {
     updateQueueItem({ result });
   };
 
-  const removeFromQueue = (patientId: string) => {
+  const removeFromQueue = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    patientId: string
+  ) => {
     trackRemovePatientFromQueue({});
+    if (e) e.currentTarget.disabled = true;
     removePatientFromQueue({
       variables: {
         patientId,
@@ -283,7 +296,11 @@ const QueueItem: any = ({
     })
       .then(refetchQueue)
       .then(() => removeTimer(internalId))
-      .catch((error) => updateMutationError(error));
+      .catch((error) => {
+        updateMutationError(error);
+        // Re-enable Submit in the hopes it will work
+        if (e) e.currentTarget.disabled = false;
+      });
   };
 
   const openAoeModal = () => {
@@ -331,15 +348,16 @@ const QueueItem: any = ({
   );
 
   const closeButton = (
-    <div
-      onClick={() => removeFromQueue(patient.internalId)}
+    <button
+      onClick={(e) => removeFromQueue(e, patient.internalId)}
       className="prime-close-button"
+      aria-label="Close"
     >
       <span className="fa-layers">
         <FontAwesomeIcon icon={"circle"} size="2x" inverse />
         <FontAwesomeIcon icon={"times-circle"} size="2x" />
       </span>
-    </div>
+    </button>
   );
 
   return (
@@ -411,6 +429,7 @@ const QueueItem: any = ({
               />
             )}
             <TestResultInputForm
+              queueItemId={internalId}
               testResultValue={testResultValue}
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}

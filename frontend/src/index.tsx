@@ -2,11 +2,13 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
-import App from "./app";
+import App from "./app/App";
+import HealthChecks from "./app/HealthChecks";
+
 import * as serviceWorker from "./serviceWorker";
 import "./styles/App.css";
 import { store } from "./app/store";
-
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
@@ -77,7 +79,12 @@ ReactDOM.render(
   <ApolloProvider client={client}>
     <React.StrictMode>
       <Provider store={store}>
-        <App />
+        <Router basename={process.env.PUBLIC_URL}>
+          <Switch>
+            <Route path="/health" component={HealthChecks} />
+            <Route path="/" component={App} />
+          </Switch>
+        </Router>
       </Provider>
     </React.StrictMode>
   </ApolloProvider>,

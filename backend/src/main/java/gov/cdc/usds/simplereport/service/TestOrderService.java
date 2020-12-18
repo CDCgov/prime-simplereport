@@ -83,9 +83,7 @@ public class TestOrderService {
             order.setDeviceType(deviceType);
         }
 
-        if (result != null) {
-            order.setResult(TestResult.valueOf(result));
-        }
+        order.setResult(result == null? null :TestResult.valueOf(result));
 
         return _repo.save(order);
     }

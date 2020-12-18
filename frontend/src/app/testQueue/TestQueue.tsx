@@ -119,37 +119,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
-          ({
-            internalId,
-            pregnancy,
-            dateAdded,
-            symptoms,
-            noSymptoms,
-            firstTest,
-            priorTestDate,
-            priorTestType,
-            priorTestResult,
-            deviceType,
-            patient,
-            result,
-            symptomOnset,
-          }) => (
+          ({ internalId, deviceType, patient, result, ...questions }) => (
             <QueueItem
-              key={patient.internalId}
+              key={internalId}
               internalId={internalId}
               patient={patient}
-              askOnEntry={{
-                pregnancy,
-                dateAdded: dateAdded,
-                noSymptoms,
-                symptoms,
-                symptomOnset: symptomOnset,
-                firstTest,
-                priorTestDate: priorTestDate,
-                priorTestType,
-                priorTestResult,
-              }}
-              selectedDeviceId={deviceType ? deviceType.internalId : null}
+              askOnEntry={questions}
+              selectedDeviceId={deviceType?.internalId || null}
               selectedTestResult={result}
               devices={facility.deviceTypes}
               defaultDevice={facility.defaultDeviceType}
