@@ -75,7 +75,7 @@ public class DataHubUploadController {
             cookie.setSecure(!this._insecurecookies);
             cookie.setMaxAge(SECONDS_TO_EXPIRE_COOKIE);
             cookie.setPath("/");
-            response.addCookie(cookie); // lgtm [java/insecure-cookie]
+            response.addCookie(cookie); // NOSONAR lgtm [java/insecure-cookie]
         }
         response.getWriter().print(csvString);
         return ResponseEntity.accepted().build();
