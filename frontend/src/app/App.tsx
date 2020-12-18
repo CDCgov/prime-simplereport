@@ -3,12 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  BrowserRouter as Router,
-  Redirect,
-  Route,
-  Switch,
-} from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
 
@@ -151,45 +146,43 @@ const App = () => {
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
-            <Router basename={process.env.PUBLIC_URL}>
-              <Header facilityId={facilityId} />
-              <Switch>
-                <Route path="/login" component={LoginView} />
-                <Route
-                  path="/queue"
-                  render={() => {
-                    return <TestQueueContainer />;
-                  }}
-                />
-                <Route
-                  path="/"
-                  render={() => {
-                    return <Redirect to="/queue" />;
-                  }}
-                  exact
-                />
-                <Route
-                  path="/results"
-                  render={() => {
-                    return <TestResultsListContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patients`}
-                  render={() => {
-                    return <ManagePatientsContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patient/:patientId`}
-                  render={({ match }) => (
-                    <EditPatientContainer patientId={match.params.patientId} />
-                  )}
-                />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
-              </Switch>
-            </Router>
+            <Header facilityId={facilityId} />
+            <Switch>
+              <Route path="/login" component={LoginView} />
+              <Route
+                path="/queue"
+                render={() => {
+                  return <TestQueueContainer />;
+                }}
+              />
+              <Route
+                path="/"
+                render={() => {
+                  return <Redirect to="/queue" />;
+                }}
+                exact
+              />
+              <Route
+                path="/results"
+                render={() => {
+                  return <TestResultsListContainer />;
+                }}
+              />
+              <Route
+                path={`/patients`}
+                render={() => {
+                  return <ManagePatientsContainer />;
+                }}
+              />
+              <Route
+                path={`/patient/:patientId`}
+                render={({ match }) => (
+                  <EditPatientContainer patientId={match.params.patientId} />
+                )}
+              />
+              <Route path={`/add-patient/`} render={() => <AddPatient />} />
+              <Route path="/settings" component={SettingsRoutes} />
+            </Switch>
             <ToastContainer
               autoClose={5000}
               closeButton={false}
