@@ -49,7 +49,7 @@ Running with docker:
 Running spring app locally and db in docker
 
 1. `cd backend`
-1. Run `docker-compose up db`
+1. Run `docker-compose up -d db`
 1. Run `gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
@@ -112,6 +112,7 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 
 1. Install [nvm](https://github.com/nvm-sh/nvm)
 1. (optional) Install react developer tools extensions
+1. Install [yarn](https://classic.yarnpkg.com/en/docs/install)
 1. `cd frontend && nvm use && yarn install`
 1. `yarn start`
 1. view site at http://localhost:3000
