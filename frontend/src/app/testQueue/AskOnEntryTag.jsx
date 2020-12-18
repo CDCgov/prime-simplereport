@@ -3,7 +3,8 @@ import React from "react";
 export const areAnswersComplete = (answers) => {
   if (!answers.noSymptoms) {
     const symptoms = JSON.parse(answers.symptoms);
-    const filled = Object.values(symptoms).some((v) => v === true);
+    //TODO: real booleans rather than Pinocchio boolean strings
+    const filled = Object.values(symptoms).some((v) => String(v) === "true");
     if (!filled || !answers.symptomOnset) {
       return false;
     }
