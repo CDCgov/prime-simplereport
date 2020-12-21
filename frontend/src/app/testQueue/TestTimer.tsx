@@ -31,7 +31,11 @@ const initialTimerValues: Omit<Timer, "id"> = {
   alarmed: false,
 } as const;
 
-const alarmSound = new Audio(require("./test-timer.mp3"));
+// React-scripts 4.x (or a dependency) changed the way `require`
+// returns the name of the file. New: a `Module` with a `default`
+// string having the file name; Old: the actual file name.
+const alarmModule = require("./test-timer.mp3");
+const alarmSound = new Audio(alarmModule.default || alarmModule);
 
 const timerTick = () => {
   const now = Date.now();
