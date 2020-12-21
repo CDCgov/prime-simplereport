@@ -238,6 +238,7 @@ type Mutation {
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
   ): String
+  setPatientIsDeleted(id: String!, deleted: Boolean!): Patient
   addTestResult(deviceId: String!, result: String!, patientId: String!): String
   editQueueItem(id: String!, deviceId: String, result: String): TestOrder
   addPatientToQueue(

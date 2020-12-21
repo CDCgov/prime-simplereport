@@ -12,15 +12,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 @MappedSuperclass
 public class EternalEntity extends AuditedEntity {
 
-	@Column
-	private boolean isDeleted;
+    @Column
+    private boolean isDeleted;
 
-	/**
-	 * Is this entity soft-deleted? HINT: you should almost never need to ask.
-	 */
-	@JsonIgnore // this is an artifact of serializing the data at test time, but also seems... correct?
-	public boolean isDeleted() {
-		return isDeleted;
-	}
+    /**
+     * Is this entity soft-deleted? HINT: you should almost never need to ask.
+     */
+    @JsonIgnore // this is an artifact of serializing the data at test time, but also seems... correct?
+    public boolean isDeleted() {
+        return isDeleted;
+    }
+
+    public void setIsDeleted(Boolean deleted) {
+        this.isDeleted = deleted;
+    }
 
 }

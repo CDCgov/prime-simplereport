@@ -26,146 +26,156 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 public class PersonService {
 
     private OrganizationService _os;
-		private PersonRepository _repo;
+    private PersonRepository _repo;
+    private ApiUserService _apiUserService;
 
-        private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
-                "nameInfo.suffix");
+    private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
+            "nameInfo.suffix");
 
-		public PersonService(
-			OrganizationService os,
-                PersonRepository repo
-		) {
-			_os = os;
-				_repo = repo;
-		}
+    public PersonService(
+        OrganizationService os,
+        PersonRepository repo,
+        ApiUserService apiUserService
+    ) {
+        _os = os;
+        _repo = repo;
+        _apiUserService = apiUserService;
+    }
 
-		public List<Person> getPatients(UUID facilityId) {
-			Organization org = _os.getCurrentOrganization();
-			if (facilityId == null) {
-                return _repo.findAllByOrganization(org, NAME_SORT);
-			}
-			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-            return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
-		}
+    public List<Person> getPatients(UUID facilityId) {
+        Organization org = _os.getCurrentOrganization();
+        if (facilityId == null) {
+            return _repo.findAllByOrganization(org, NAME_SORT);
+        }
+        Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+        return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
+    }
 
-	public Person getPatient(String id) {
-		return getPatient(id, _os.getCurrentOrganization());
-	}
+    public Person getPatient(String id) {
+        return getPatient(id, _os.getCurrentOrganization());
+    }
 
-	public Person getPatient(String id, Organization org) {
-		UUID actualId = UUID.fromString(id);
-		return _repo.findByIDAndOrganization(actualId, org)
-			.orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
-	}
+    public Person getPatient(String id, Organization org) {
+        UUID actualId = UUID.fromString(id);
+        return _repo.findByIDAndOrganization(actualId, org)
+            .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
+    }
 
-	public Person addPatient(
-		UUID facilityId,
-		String lookupId,
-		String firstName,
-		String middleName,
-		String lastName,
-		String suffix,
-		LocalDate birthDate,
-		String street,
-		String streetTwo,
-		String city,
-		String state,
-		String zipCode,
-		String telephone,
-		String role,
-		String email,
-		String county,
-		String race,
-		String ethnicity,
-		String gender,
-		Boolean residentCongregateSetting,
-		Boolean employedInHealthcare
-	) {
-		final PersonRole personRole;
+    public Person addPatient(
+        UUID facilityId,
+        String lookupId,
+        String firstName,
+        String middleName,
+        String lastName,
+        String suffix,
+        LocalDate birthDate,
+        String street,
+        String streetTwo,
+        String city,
+        String state,
+        String zipCode,
+        String telephone,
+        String role,
+        String email,
+        String county,
+        String race,
+        String ethnicity,
+        String gender,
+        Boolean residentCongregateSetting,
+        Boolean employedInHealthcare
+    ) {
+        final PersonRole personRole;
 
-		if (role == null || "".equals(role)) {
-			personRole = PersonRole.UNKNOWN;
-		} else {
-			personRole = PersonRole.valueOf(role.toUpperCase());
-		}
+        if (role == null || "".equals(role)) {
+            personRole = PersonRole.UNKNOWN;
+        } else {
+            personRole = PersonRole.valueOf(role.toUpperCase());
+        }
 
-		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
-		Person newPatient = new Person(
-			_os.getCurrentOrganization(),
-			lookupId,
-			firstName,
-			middleName,
-			lastName,
-			suffix,
-			birthDate,
-			patientAddress,
-			telephone,
-			personRole,
-			email,
-			race,
-			ethnicity,
-			gender,
-			residentCongregateSetting,
-			employedInHealthcare
-		);
+        StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        Person newPatient = new Person(
+            _os.getCurrentOrganization(),
+            lookupId,
+            firstName,
+            middleName,
+            lastName,
+            suffix,
+            birthDate,
+            patientAddress,
+            telephone,
+            personRole,
+            email,
+            race,
+            ethnicity,
+            gender,
+            residentCongregateSetting,
+            employedInHealthcare
+        );
 
-		if (newPatient.getRole() != PersonRole.STAFF) {
-			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-			newPatient.setFacility(facility);
-		}
+        if (newPatient.getRole() != PersonRole.STAFF) {
+            Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+            newPatient.setFacility(facility);
+        }
 
-		return _repo.save(newPatient);
-	}
+        return _repo.save(newPatient);
+    }
 
-	public Person updatePatient(
-		UUID facilityId,
-		String patientId,
-		String lookupId,
-		String firstName,
-		String middleName,
-		String lastName,
-		String suffix,
-		LocalDate birthDate,
-		String street,
-		String streetTwo,
-		String city,
-		String state,
-		String zipCode,
-		String telephone,
-		String role,
-		String email,
-		String county,
-		String race,
-		String ethnicity,
-		String gender,
-		Boolean residentCongregateSetting,
-		Boolean employedInHealthcare
-	) {
-		final PersonRole personRole = PersonRole.valueOf(role);
-		StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
-		Person patientToUpdate = this.getPatient(patientId);
-		patientToUpdate.updatePatient(
-			lookupId,
-			firstName,
-			middleName,
-			lastName,
-			suffix,
-			birthDate,
-			patientAddress,
-			telephone,
-			personRole,
-			email,
-			race,
-			ethnicity,
-			gender,
-			residentCongregateSetting,
-			employedInHealthcare
-		);
+    public Person updatePatient(
+        UUID facilityId,
+        String patientId,
+        String lookupId,
+        String firstName,
+        String middleName,
+        String lastName,
+        String suffix,
+        LocalDate birthDate,
+        String street,
+        String streetTwo,
+        String city,
+        String state,
+        String zipCode,
+        String telephone,
+        String role,
+        String email,
+        String county,
+        String race,
+        String ethnicity,
+        String gender,
+        Boolean residentCongregateSetting,
+        Boolean employedInHealthcare
+    ) {
+        final PersonRole personRole = PersonRole.valueOf(role);
+        StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        Person patientToUpdate = this.getPatient(patientId);
+        patientToUpdate.updatePatient(
+            lookupId,
+            firstName,
+            middleName,
+            lastName,
+            suffix,
+            birthDate,
+            patientAddress,
+            telephone,
+            personRole,
+            email,
+            race,
+            ethnicity,
+            gender,
+            residentCongregateSetting,
+            employedInHealthcare
+        );
 
-		if (patientToUpdate.getRole() != PersonRole.STAFF) {
-			Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-			patientToUpdate.setFacility(facility);
-		}
-		return _repo.save(patientToUpdate);
-	}
+        if (patientToUpdate.getRole() != PersonRole.STAFF) {
+            Facility facility = _os.getFacilityInCurrentOrg(facilityId);
+            patientToUpdate.setFacility(facility);
+        }
+        return _repo.save(patientToUpdate);
+    }
+
+    public Person setIsDeleted(UUID id, boolean deleted) {
+        _apiUserService.isAdminUser();
+        Person person = this.getPatient(id.toString());
+        person.setIsDeleted(deleted);
+        return _repo.save(person);
+    }
 }
