@@ -30,6 +30,7 @@ public class DeviceTypeService {
 
     @Transactional(readOnly = false)
     public void removeDeviceType(DeviceType d) {
+        _apiUserService.isAdminUser();
         _repo.delete(d);
     }
 

@@ -38,7 +38,7 @@ public class ApiUserService {
     public void isAdminUser() {
         IdentityAttributes userIdentity = _supplier.get();
         if (!_props.getAdminEmails().contains(userIdentity.getUsername())) {
-            throw new IllegalGraphqlArgumentException("No active test order was found for that patient");
+            throw new IllegalGraphqlArgumentException("Current User does not have permission for this action");
         }
     }
 

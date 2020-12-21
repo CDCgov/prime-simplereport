@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseServiceTest<PersonService> {
+public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
 
     // I'll have you know that I didn't actually mean to do this...
     private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);

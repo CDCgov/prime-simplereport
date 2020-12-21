@@ -15,12 +15,13 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
+public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderService> {
 
     @Autowired
-    private DeviceTypeService _deviceTypeService;
+    private DeviceTypeRepository _deviceTypeRepo;
     @Autowired
     private OrganizationService _organizationService;
     @Autowired
@@ -52,7 +53,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeService.createDeviceType("A", "B", "C", "DUMMY");
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
         _service.addTestResult(devA.getInternalId().toString(), TestResult.POSITIVE,
                 p.getInternalId().toString());
@@ -71,7 +72,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeService.createDeviceType("A", "B", "C", "DUMMY");
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
         _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
                 TestResult.POSITIVE.toString());
