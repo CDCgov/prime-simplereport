@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,16 +19,20 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Service
 @Transactional
 public class ApiUserService {
-    @Autowired
     private SimpleReportProperties _props;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
     
-    public ApiUserService(ApiUserRepository apiUserRepo, IdentitySupplier supplier) {
+    public ApiUserService(
+        ApiUserRepository apiUserRepo,
+        IdentitySupplier supplier,
+        SimpleReportProperties props
+    ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
+        _props = props;
     }
 
     public boolean isAdminUser() {
