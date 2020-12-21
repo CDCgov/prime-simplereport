@@ -94,11 +94,17 @@ const PriorTestInputs = ({
   setPriorTestType,
   mostRecentTest,
 }) => {
+  const recentDate = (mostRecentTest?.dateTested || "").split("T")[0];
   const filledPriorTest =
-    (mostRecentTest ? mostRecentTest.dateTested : "").split("T")[0] ===
-      priorTestDate && mostRecentTest.result === priorTestResult;
+    priorTestDate &&
+    recentDate === priorTestDate &&
+    mostRecentTest.result === priorTestResult;
   const [mostRecentTestAnswer, setMostRecentTestAnswer] = useState(
-    isFirstTest === undefined ? undefined : filledPriorTest ? "yes" : "no"
+    !priorTestDate || isFirstTest === undefined
+      ? undefined
+      : filledPriorTest
+      ? "yes"
+      : "no"
   );
   const previousTestEntry = (
     <>
@@ -181,6 +187,10 @@ const PriorTestInputs = ({
               setPriorTestType("2");
               setPriorTestDate((mostRecentTest.dateTested || "").split("T")[0]);
               setPriorTestResult(mostRecentTest?.result);
+            } else {
+              setPriorTestType(null);
+              setPriorTestDate(null);
+              setPriorTestResult(null);
             }
           }}
           legend="Was this your most recent COVID-19 test?"

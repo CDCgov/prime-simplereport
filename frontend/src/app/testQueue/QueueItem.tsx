@@ -260,22 +260,17 @@ const QueueItem: any = ({
         deviceId,
         result,
       },
-    }).then(
-      (response) => {
-        if (!response.data) {
-          throw Error("null response from update queue");
-        }
+    })
+      .then((response) => {
+        if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result);
-      },
-      (error) => {
-        updateMutationError(error);
-      }
-    );
+      })
+      .catch(updateMutationError);
   };
 
   const onDeviceChange = (e: React.FormEvent<HTMLSelectElement>) => {
-    const deviceId = (e.target as HTMLSelectElement).value;
+    const deviceId = e.currentTarget.value;
     updateQueueItem({ deviceId });
   };
 
@@ -316,24 +311,12 @@ const QueueItem: any = ({
     trackUpdateAoEResponse({});
     updateAoe({
       variables: {
+        ...answers,
         patientId: patient.internalId,
-        noSymptoms: answers.noSymptoms,
-        symptoms: answers.symptoms,
-        symptomOnset: answers.symptomOnset,
-        pregnancy: answers.pregnancy,
-        firstTest: answers.firstTest,
-        priorTestDate: answers.priorTestDate,
-        priorTestType: answers.priorTestType,
-        priorTestResult: answers.priorTestResult,
       },
-    }).then(
-      (_response) => {
-        refetchQueue();
-      },
-      (error) => {
-        updateMutationError(error);
-      }
-    );
+    })
+      .then(refetchQueue)
+      .catch(updateMutationError);
   };
 
   let options = devices.map((device) => ({
