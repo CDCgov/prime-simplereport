@@ -187,6 +187,10 @@ type Mutation {
     defaultDevice: String!
   ): String
   updateOrganization(name: String!): String
+  createOrganization(
+    name: String!
+    externalId: String!
+  ): Organization
   addPatient(
     facilityId: String
     lookupId: String
