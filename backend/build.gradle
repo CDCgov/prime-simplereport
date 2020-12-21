@@ -35,12 +35,14 @@ dependencies {
 	implementation 'org.json:json:20201115'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
-//	Okta dependencies
+	//	Okta dependencies
 	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
 
-// App insights instrumentation
+	// App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
 
+	// Cron dependencies
+	implementation "org.springframework.boot:spring-boot-starter-batch"
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

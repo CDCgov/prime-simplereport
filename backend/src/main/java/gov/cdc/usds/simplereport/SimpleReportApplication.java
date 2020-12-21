@@ -9,9 +9,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableConfigurationProperties(InitialSetupProperties.class)
+@EnableScheduling
 public class SimpleReportApplication {
 
     public static void main(String[] args) {
