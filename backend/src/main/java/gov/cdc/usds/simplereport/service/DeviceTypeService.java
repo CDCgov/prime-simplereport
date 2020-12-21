@@ -43,13 +43,21 @@ public class DeviceTypeService {
     }
 
     @Transactional(readOnly = false)
-    public DeviceType updateDeviceType(String id, String name, String model, String manufacturer, String loincCode) {
+    public DeviceType updateDeviceType(UUID id, String name, String model, String manufacturer, String loincCode) {
         _apiUserService.isAdminUser();
-        DeviceType d = getDeviceType(id);
-        d.setName(name);
-        d.setManufacturer(manufacturer);
-        d.setModel(model);
-        d.setLoincCode(loincCode);
+        DeviceType d = getDeviceType(id.toString());
+        if (name != null) {
+            d.setName(name);
+        }
+        if (manufacturer != null) {
+            d.setManufacturer(manufacturer);
+        }
+        if (model != null) {
+            d.setModel(model);
+        }
+        if (loincCode != null) {
+            d.setLoincCode(loincCode);
+        }
         return _repo.save(d);
     }
 
