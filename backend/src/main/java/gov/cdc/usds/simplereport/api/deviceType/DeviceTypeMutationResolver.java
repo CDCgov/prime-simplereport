@@ -1,6 +1,5 @@
-package gov.cdc.usds.simplereport.api.organization;
+package gov.cdc.usds.simplereport.api.deviceType;
 
-import java.util.List;
 import java.util.UUID;
 
 import graphql.kickstart.tools.GraphQLMutationResolver;

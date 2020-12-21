@@ -1,11 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +30,7 @@ public class DeviceTypeServiceTest extends BaseServiceTestOrgUser<DeviceTypeServ
     @Test
     public void createDeviceType() {
         Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.createDeviceType("A", "B", "C", "D");;
+            _service.createDeviceType("A", "B", "C", "D");
         });
     
         assertEquals("Current User does not have permission for this action", exception.getMessage());
@@ -45,7 +41,7 @@ public class DeviceTypeServiceTest extends BaseServiceTestOrgUser<DeviceTypeServ
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
         Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4");;
+            _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4");
         });
     
         assertEquals("Current User does not have permission for this action", exception.getMessage());
