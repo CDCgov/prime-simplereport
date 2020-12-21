@@ -35,12 +35,11 @@ public class ApiUserService {
         _props = props;
     }
 
-    public boolean isAdminUser() {
+    public void isAdminUser() {
         IdentityAttributes userIdentity = _supplier.get();
         if (!_props.getAdminEmails().contains(userIdentity.getUsername())) {
             throw new IllegalGraphqlArgumentException("No active test order was found for that patient");
         }
-        return true;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
