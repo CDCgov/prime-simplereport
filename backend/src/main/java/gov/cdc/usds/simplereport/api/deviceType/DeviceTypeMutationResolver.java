@@ -6,6 +6,7 @@ import java.util.UUID;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 
@@ -23,17 +24,17 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
         String manufacturer,
         String model,
         String loincCode
-    ) throws Exception {
+    ) throws IllegalGraphqlArgumentException {
         return _dts.createDeviceType(name, manufacturer, model, loincCode);
     }
 
     public DeviceType updateDeviceType(
-        String id,
+        UUID id,
         String name,
         String manufacturer,
         String model,
         String loincCode
-    ) throws Exception {
+    ) throws IllegalGraphqlArgumentException {
         return _dts.updateDeviceType(id, name, manufacturer, model, loincCode);
     }
 }
