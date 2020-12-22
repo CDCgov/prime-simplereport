@@ -130,6 +130,12 @@ const Fieldset = (props) => (
   </fieldset>
 );
 
+// TODO: move to an Address component
+const stateChoices = [
+  { label: "- Select - ", value: "" },
+  ...stateCodes.map((c) => ({ label: c, value: c })),
+];
+
 const PatientForm = (props) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatient = useTrackEvent(appInsights, "Add Patient");
@@ -386,7 +392,7 @@ const PatientForm = (props) => {
             label="State"
             name="state"
             selectedValue={patient.state}
-            options={stateCodes.map((c) => ({ label: c, value: c }))}
+            options={stateChoices}
             addClass="prime-state"
             onChange={onChange}
             required

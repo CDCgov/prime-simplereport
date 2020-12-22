@@ -90,6 +90,17 @@ Running a single test with a full stacktrace can be accomplished by supping the 
 gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
 ```
 
+## E2E Tests
+
+E2E/Integration tests are available using [Nightwatch.js](https://nightwatchjs.org/).
+
+Run them with the following commands while the app (both front and backends) is already running:
+
+```bash
+cd frontend
+npm run e2e
+```
+
 ## SchemaSpy
 
 http://schemaspy.org/

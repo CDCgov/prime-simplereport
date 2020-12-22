@@ -52,13 +52,14 @@
     "lint:eslint": "eslint --quiet --ext .js --ext .jsx --ext .ts --ext .tsx ./src",
     "lint:prettier": "prettier -c ./src",
     "test": "TZ='UTC' react-scripts test",
+    "e2e": "docker-compose -f e2e/docker-compose.yml --env-file e2e/.env run nightwatch ./nightwatch-entrypoint.bash; docker-compose -f e2e/docker-compose.yml --env-file e2e/.env down -v",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
     "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
-    "deploy-azure-dev": "REACT_APP_APPINSIGHTS_KEY=29a75c50-8485-4d80-8e1b-41b1a091abb6 REACT_APP_BACKEND_URL=https://dev.simplereport.org/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdevapp --destination-path '/app'",
-    "deploy-azure-beta": "REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b REACT_APP_BACKEND_URL=https://simplereport.cdc.gov/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app'",
-    "deploy-azure-test": "REACT_APP_BACKEND_URL=https://api.test.simplerport.org PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestfrontend --destination-path '/app'",
-    "deploy-azure-demo": "REACT_APP_BACKEND_URL=https://demo.simplereport.org/api/graphql PUBLIC_URL=/app/ react-scripts build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdemo --destination-path '/app'",
+    "deploy-azure-dev": "REACT_APP_APPINSIGHTS_KEY=29a75c50-8485-4d80-8e1b-41b1a091abb6 REACT_APP_BACKEND_URL=https://dev.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdevapp --destination-path '/app'",
+    "deploy-azure-beta": "REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b REACT_APP_BACKEND_URL=https://simplereport.cdc.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app'",
+    "deploy-azure-test": "REACT_APP_BACKEND_URL=https://api.test.simplerport.org PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestfrontend --destination-path '/app'",
+    "deploy-azure-demo": "REACT_APP_BACKEND_URL=https://demo.simplereport.org/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name usdssimplereportdemo --destination-path '/app'",
     "maintenance-azure-demo": "mkdir -p /tmp/maintenance && /bin/cp -f public/maintenance.html /tmp/maintenance/index.html && az storage blob upload-batch -s /tmp/maintenance/ -d '$web' --account-name usdssimplereportdemo --destination-path '/app/'",
     "maintenance-azure-beta": "mkdir -p /tmp/maintenance && /bin/cp -f public/maintenance.html /tmp/maintenance/index.html && az storage blob upload-batch -s /tmp/maintenance/ -d '$web' --account-name usdssimplereportbeta --destination-path '/app/'"
   },
@@ -74,7 +75,9 @@
           "env": "apollo"
         }
       ],
-      "graphql/named-operations": ["error"]
+      "graphql/named-operations": [
+        "error"
+      ]
     }
   },
   "browserslist": {

@@ -10,12 +10,12 @@ provider "okta" {
 
 locals {
   management_tags = {
-    prime-app = "simplereport"
+    prime-app   = "simplereport"
     environment = "prod"
   }
 }
 
 module "all" {
   source = "../../services/all-persistent"
-  env = local.management_tags.environment
+  env    = local.management_tags.environment
 }

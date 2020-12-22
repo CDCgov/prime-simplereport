@@ -218,6 +218,7 @@ const Header = (props: Props) => {
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
+                id="patient-nav-link"
                 activeStyle={{
                   color: "white",
                 }}

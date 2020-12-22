@@ -3,7 +3,7 @@ graphql.servlet.cors:
     - https://simple-report-api-dev.azurewebsites.net
     - https://simplereportdevapp.z13.web.core.windows.net
     - https://simple-report-dev.azureedge.net
-    - https://dev.simplereport.org
+    - https://dev.simplereport.gov
 simple-report-initialization:
   organization:
     org-name: Dis Organization
