@@ -11,6 +11,7 @@ resource "azurerm_key_vault" "sr" {
   tags = local.management_tags
 }
 
+# Devops Team Permissions
 resource "azurerm_key_vault_access_policy" "team_access" {
   count        = length(var.infra_team)
   key_vault_id = azurerm_key_vault.sr.id
