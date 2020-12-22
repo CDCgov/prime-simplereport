@@ -1,6 +1,18 @@
 /* eslint no-unused-expressions: 0 */
+const faker = require('faker');
+const dayjs = require('dayjs');
 
 function addPatient() {
+  // Generate a random patient
+  const firstName = faker.name.firstName();
+  const lastName = faker.name.lastName();
+  const fullName = `${firstName} ${lastName}`;
+  const dob = dayjs(faker.date.past(100)).format('YYYY-MM-DD');
+  const phone = faker.phone.phoneNumber();
+  const address = faker.address.streetAddress();
+  const state = faker.address.stateAbbr();
+  const zip = faker.address.zipCodeByState(state);
+
   this.expect.section('@navbar').to.be.visible;
   this.section.navbar.expect.element('@patientLink').to.be.visible;
   this.section.navbar.click('@patientLink');
@@ -9,18 +21,20 @@ function addPatient() {
   this.section.patientList.click('@addPatient');
   this.expect.section('@editPatient').to.be.visible;
   this.expect.section('@editPatient').to.contain.text('Create New Person');
-  this.section.editPatient.setValue('@firstName', 'Marty');
-  this.section.editPatient.setValue('@lastName', 'McFly');
-  this.section.editPatient.setValue('@dob', '1950-01-01');
-  this.section.editPatient.setValue('@phone', '5555555555');
-  this.section.editPatient.setValue('@address', '123 Main St');
-  this.section.editPatient.setValue('@state', 'CA');
-  this.section.editPatient.setValue('@zip', '95837');
+  this.section.editPatient.setValue('@firstName', firstName);
+  this.section.editPatient.setValue('@lastName', lastName);
+  this.section.editPatient.setValue('@dob', dob);
+  this.section.editPatient.setValue('@phone', phone);
+  this.section.editPatient.setValue('@address', address);
+  this.section.editPatient.setValue('@state', state);
+  this.section.editPatient.setValue('@zip', zip);
   this.section.editPatient.click('@resident');
   this.section.editPatient.click('@healthcareWorker');
   this.section.editPatient.click('@saveButton');
   this.expect.section('@patientList').to.be.visible;
-  this.expect.section('@patientList').to.contain.text('Marty McFly');
+  this.expect.section('@patientList').to.contain.text(fullName);
+
+  return fullName;
 }
 
 module.exports = {
