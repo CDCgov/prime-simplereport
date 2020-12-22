@@ -40,10 +40,7 @@ dependencies {
 
 	// App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
-
-	// Cron dependencies
-	implementation "org.springframework.boot:spring-boot-starter-batch"
-
+	
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
