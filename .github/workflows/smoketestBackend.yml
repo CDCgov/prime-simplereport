@@ -107,7 +107,7 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest
+        run: ./gradlew checkstyleMain checkstyleTest --continue
   schema-check:
     runs-on: ubuntu-latest
     steps:
