@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.SimpleReportProperties;
+import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -18,7 +18,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Service
 @Transactional
 public class ApiUserService {
-    private SimpleReportProperties _props;
+    private AdminEmailList _admins;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
 
@@ -27,16 +27,16 @@ public class ApiUserService {
     public ApiUserService(
         ApiUserRepository apiUserRepo,
         IdentitySupplier supplier,
-        SimpleReportProperties props
+        AdminEmailList admins
     ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
-        _props = props;
+        _admins = admins;
     }
 
     public void isAdminUser() {
         IdentityAttributes userIdentity = _supplier.get();
-        if (!_props.getAdminEmails().contains(userIdentity.getUsername())) {
+        if (!_admins.contains(userIdentity.getUsername())) {
             throw new IllegalGraphqlArgumentException("Current User does not have permission for this action");
         }
     }
