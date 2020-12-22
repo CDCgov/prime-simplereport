@@ -3,11 +3,9 @@ package gov.cdc.usds.simplereport.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 /**
@@ -21,7 +19,6 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
  */
 @SpringBootTest(properties = "spring.main.web-application-type=NONE")
 @ActiveProfiles("dev")
-@Import(SliceTestConfiguration.class)
 public class BaseServiceTest<T> {
 
     @Autowired

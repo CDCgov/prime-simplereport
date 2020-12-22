@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.model.Patient;
 import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
@@ -120,5 +121,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           residentCongregateSetting,
           employedInHealthcare
       );
+  }
+
+  public Patient setPatientIsDeleted(UUID id, Boolean deleted) {
+    return new Patient(_ps.setIsDeleted(id, deleted));
   }
 }

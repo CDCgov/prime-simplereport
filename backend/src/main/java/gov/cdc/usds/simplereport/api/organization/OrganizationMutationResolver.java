@@ -4,9 +4,10 @@ import java.util.List;
 import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -116,6 +117,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           deviceTypes.getDefaultDeviceType()
         );
         return new ApiFacility(facility);
+    }
+
+    public Organization createOrganization(String name, String externalId) {
+        return _os.createOrganization(name, externalId);
     }
 
     public void updateOrganization(String name) {
