@@ -76,7 +76,6 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
 
     public TestResult getPriorTestResult(TestEvent testEvent) {
         return getSurvey(testEvent).getPriorTestResult();
-        // return getSurvey(testEvent).getPriorTestResult() == null ? "" : survey.getPriorTestResult().toString();
     }
 
     public Date getDateTested(TestEvent testEvent) {
