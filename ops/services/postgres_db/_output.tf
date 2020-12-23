@@ -1,3 +1,7 @@
-output "object_id" {
-  value = azurerm_postgresql_server.db.identity
+output "server_name" {
+  value = azurerm_postgresql_server.db.name
+}
+
+output "server_fqdn" {
+  value = azurerm_postgresql_server.db.fqdn
 }

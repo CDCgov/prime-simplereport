@@ -9,7 +9,6 @@ locals {
   }
 }
 
-
 module "monitoring" {
   source        = "../../services/monitoring"
   env           = local.env
@@ -18,6 +17,32 @@ module "monitoring" {
   rg_name       = data.azurerm_resource_group.demo.name
 
   app_url = "${local.env}.simeplreport.gov"
+
+  tags = local.management_tags
+}
+
+module "bastion" {
+  source = "../../services/bastion_host"
+  env    = local.env
+
+  resource_group_location = data.azurerm_resource_group.demo.location
+  resource_group_name     = data.azurerm_resource_group.demo.name
+
+  virtual_network_name = "${local.name}-${local.env}-network"
+  subnet_cidr          = ["10.2.253.0/27"]
+
+  tags = local.management_tags
+}
+
+module "psql_connect" {
+  source                  = "../../services/basic_vm"
+  name                    = "psql-connect"
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.demo.location
+  resource_group_name     = data.azurerm_resource_group.demo.name
+
+  subnet_id                = azurerm_subnet.vms.id
+  bastion_connect_password = data.azurerm_key_vault_secret.psql_connect_password.value
 
   tags = local.management_tags
 }

@@ -10,7 +10,7 @@ resource "azurerm_postgresql_server" "db" {
   public_network_access_enabled = true
 
   administrator_login          = var.administrator_login
-  administrator_login_password = azurerm_key_vault_secret.db_password.value
+  administrator_login_password = data.azurerm_key_vault_secret.db_password.value
 
   storage_mb                   = 102400
   backup_retention_days        = 7
