@@ -7,7 +7,7 @@ resource "azurerm_postgresql_server" "db" {
   sku_name                      = "GP_Gen5_4"
   version                       = "11"
   ssl_enforcement_enabled       = var.tls_enabled
-  public_network_access_enabled = true
+  public_network_access_enabled = var.public_access
 
   administrator_login          = var.administrator_login
   administrator_login_password = data.azurerm_key_vault_secret.db_password.value

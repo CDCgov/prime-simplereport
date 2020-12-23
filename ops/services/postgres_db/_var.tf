@@ -46,3 +46,7 @@ variable "tls_enabled" {
   type    = bool
   default = false
 }
+
+variable "public_access" {
+  default = true
+}
