@@ -9,22 +9,22 @@ variable "tags" {
 
 variable "rg_name" {
   description = "Name of resource group to deploy into"
-  type = string
+  type        = string
 }
 
 variable "rg_location" {
   description = "Location of resource group to deploy into"
-  type = string
+  type        = string
 }
 
 variable "key_vault_id" {
   description = "ID of Key Vault to fetch secret from"
-  type = string
+  type        = string
 }
 
 variable "log_workspace_id" {
   description = "ID of Log Analytics Workspace to send values to"
-  type = string
+  type        = string
 }
 
 // Note: Rotating the master password has a race condition
