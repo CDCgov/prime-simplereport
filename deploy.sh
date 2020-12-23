@@ -6,8 +6,8 @@ git pull
 if [ $(git tag -l "$GIT_SHA") ]; then
     echo "Tag already exists."
 else
-#    git checkout main
-#    git pull origin main
+    git checkout main
+    git pull origin main
     git tag $GIT_SHA
     git push origin $GIT_SHA
 fi
