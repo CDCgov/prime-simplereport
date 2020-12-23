@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.testresults;
+package gov.cdc.usds.simplereport.api.testresult;
 
 import java.util.List;
 import java.util.stream.Collectors;

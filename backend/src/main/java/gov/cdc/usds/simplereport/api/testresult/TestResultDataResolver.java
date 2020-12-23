@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.patient;
+package gov.cdc.usds.simplereport.api.testresult;
 
 import java.util.Date;
 import java.util.Map;
@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
