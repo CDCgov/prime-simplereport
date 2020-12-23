@@ -16,11 +16,8 @@ type Timer = {
   notify?: (value: number) => any;
 };
 
-// Non-zero handle means we're ticking
-let setIntervalHandle = 0;
-
 // Starting timer value in milliseconds
-const initialCount = 15 * 60 * 1000;
+const initialTimerCount = 15 * 60 * 1000;
 
 // Timer list
 const timers: Timer[] = [];
@@ -29,12 +26,16 @@ const timers: Timer[] = [];
 const initialTimerValues: Omit<Timer, "id"> = {
   alarmAt: 0,
   startedAt: 0,
-  countdown: initialCount,
+  countdown: initialTimerCount,
   elapsed: 0,
   alarmed: false,
 } as const;
 
-const alarmSound = new Audio(require("./test-timer.mp3"));
+// React-scripts 4.x (or a dependency) changed the way `require`
+// returns the name of the file. New: a `Module` with a `default`
+// string having the file name; Old: the actual file name.
+const alarmModule = require("./test-timer.mp3");
+const alarmSound = new Audio(alarmModule.default || alarmModule);
 
 const timerTick = () => {
   const now = Date.now();
@@ -53,21 +54,44 @@ const timerTick = () => {
       t.alarmed = true;
       alarmSound.play();
     }
-    // TODO: remove very stale timers?
   });
 };
+
+const saveTimers = () => {
+  localStorage.setItem("timers", JSON.stringify(timers));
+};
+
+// On load, retrieve timers from localStorage and prune them;
+// only keep running timers that aren't super stale.
+// Then start the timer tick.
+{
+  // Stale timer value (from alarm time) in milliseconds
+  const staleTimerCount = 60 * 60 * 1000;
+
+  let oldTimers: Timer[] = [];
+  try {
+    const storage = localStorage.getItem("timers") || "[]";
+    const cutoff = Date.now() - staleTimerCount;
+    oldTimers = JSON.parse(storage).filter((t: Timer) => t.alarmAt > cutoff);
+  } catch (e) {}
+  timers.push(...oldTimers);
+  saveTimers();
+  window.setInterval(timerTick, 1000);
+}
 
 const findTimer = (id: TimerId): Timer | undefined =>
   timers.find((t) => t.id === id);
 const addTimer = (id: TimerId): Timer => {
   const newTimer = { id, ...initialTimerValues };
   timers.push(newTimer);
+  saveTimers();
   return newTimer;
 };
 export const removeTimer = (id: TimerId) => {
   const index = timers.findIndex((t) => t.id === id);
   if (index >= 0) {
     timers.splice(index, 1);
+    saveTimers();
   }
 };
 
@@ -76,9 +100,6 @@ export const useTestTimer = (id: string) => {
   let timer = findTimer(id) || addTimer(id);
   useEffect(() => {
     timer.notify = setCount;
-    if (!setIntervalHandle) {
-      setIntervalHandle = window.setInterval(timerTick, 1000);
-    }
     return () => {
       timer.notify = undefined;
     };
@@ -86,13 +107,14 @@ export const useTestTimer = (id: string) => {
   return {
     running: timer.startedAt !== 0,
     countdown: Math.round(
-      (timer.startedAt ? timer.countdown : initialCount) / 1000
+      (timer.startedAt ? timer.countdown : initialTimerCount) / 1000
     ),
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
       const timer = findTimer(id) || addTimer(id);
       timer.startedAt = Date.now();
-      timer.alarmAt = timer.startedAt + initialCount;
+      timer.alarmAt = timer.startedAt + initialTimerCount;
+      saveTimers();
     },
     reset: () => {
       const timer = findTimer(id);
@@ -100,7 +122,8 @@ export const useTestTimer = (id: string) => {
         // reset the timer
         Object.assign(timer, initialTimerValues);
         // force final update
-        setCount(initialCount);
+        setCount(initialTimerCount);
+        saveTimers();
       }
     },
   };

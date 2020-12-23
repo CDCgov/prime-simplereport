@@ -9,9 +9,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 
 @SpringBootApplication
-@EnableConfigurationProperties(InitialSetupProperties.class)
+@EnableConfigurationProperties({InitialSetupProperties.class, AdminEmailList.class})
 public class SimpleReportApplication {
 
     public static void main(String[] args) {

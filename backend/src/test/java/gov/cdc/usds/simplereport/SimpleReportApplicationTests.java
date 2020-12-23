@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev") // :-(
+@ActiveProfiles("test")
 public class SimpleReportApplicationTests {
 
     @Test

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
@@ -9,13 +10,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseServiceTest<PersonService> {
+public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
 
     // I'll have you know that I didn't actually mean to do this...
     private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -36,12 +38,27 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     public void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
-                "11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
         _service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main", null,
                 "Hicksville", "NY",
-                "11801", "(888) GET-BENT", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
         List<Person> all = _service.getPatients(null);
         assertEquals(2, all.size());
+    }
+
+    @Test
+    public void deletePatient() {
+        Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
+                "Apartment 3", "Hicksville", "NY",
+                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+
+        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+            _service.setIsDeleted(p.getInternalId(), true);
+        });
+
+
+        assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
+        assertEquals("Current User does not have permission for this action", exception.getMessage());
     }
 
     @Test
