@@ -8,10 +8,14 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties(InitialSetupProperties.class)
+@EnableConfigurationProperties({
+        InitialSetupProperties.class,
+        AuthorizationProperties.class,
+})
 public class SimpleReportApplication {
 
     public static void main(String[] args) {

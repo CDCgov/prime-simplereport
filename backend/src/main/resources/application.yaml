@@ -32,6 +32,7 @@ okta:
     issuer: https://hhs-prime.okta.com/oauth2/default
     client-id: ${clientID:FAKE}
     client-secret: ${clientSecret:FAKE}
+    groups-claim: ${simple-report.authorization.role-claim}
 simple-report-initialization:
   device-types:
     - name: Abbott IDNow
@@ -58,6 +59,10 @@ simple-report:
   data-hub:
     uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
     maxcsvrows: 999
+  authorization:
+    superuser-claim: is_simplereport_admin
+    role-claim: prod_roles
+    role-prefix: "PROD-TENANT:"
 logging:
   pattern:
     console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
