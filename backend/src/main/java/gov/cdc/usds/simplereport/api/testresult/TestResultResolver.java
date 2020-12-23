@@ -18,10 +18,8 @@ public class TestResultResolver implements GraphQLQueryResolver {
     private TestOrderService tos;
 
     public List<TestEvent> getTestResults(String facilityId) {
-        return tos.getTestResults(facilityId);
+        return tos.getTestResults(facilityId).stream()
+            .map(o -> o.getTestEvent())
+            .collect(Collectors.toList());
     }
-
-
 }
-
-
