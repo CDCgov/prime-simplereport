@@ -15,25 +15,31 @@ resource "okta_auth_server_scope" "sr" {
   default          = false
 }
 
+resource "okta_auth_server_scope" "sr_prod" {
+  auth_server_id   = data.okta_auth_server.default.id
+  name             = "simple_report_prod"
+  description      = "Production-only OAUTH scope for Simple Report application"
+  metadata_publish = "NO_CLIENTS"
+  default          = false
+}
+
+resource "okta_auth_server_scope" "sr_stg" {
+  auth_server_id   = data.okta_auth_server.default.id
+  name             = "simple_report_staging"
+  description      = "Staging-only OAUTH scope for Simple Report application"
+  metadata_publish = "NO_CLIENTS"
+  default          = false
+}
+
+resource "okta_auth_server_scope" "sr_devtest" {
+  auth_server_id   = data.okta_auth_server.default.id
+  name             = "simple_report_devtest"
+  description      = "Dev/test-only OAUTH scope for Simple Report application"
+  metadata_publish = "NO_CLIENTS"
+  default          = false
+}
+
 // Add the required claims
-resource "okta_auth_server_claim" "sr_user" {
-  auth_server_id = data.okta_auth_server.default.id
-  claim_type     = "RESOURCE"
-  name           = "org"
-  value          = "appuser.pdi_org"
-  scopes = [
-  okta_auth_server_scope.sr.name]
-}
-
-resource "okta_auth_server_claim" "sr_org" {
-  auth_server_id = data.okta_auth_server.default.id
-  claim_type     = "RESOURCE"
-  name           = "access"
-  value          = "appuser.pdi_user"
-  scopes = [
-  okta_auth_server_scope.sr.name]
-}
-
 resource "okta_auth_server_claim" "family_name" {
   auth_server_id = data.okta_auth_server.default.id
   claim_type     = "RESOURCE"
@@ -48,45 +54,46 @@ resource "okta_auth_server_claim" "given_name" {
   value          = "user.firstName"
 }
 
-resource "okta_auth_server_claim" "groups" {
-  auth_server_id    = data.okta_auth_server.default.id
-  claim_type        = "RESOURCE"
-  name              = "groups"
-  value_type        = "GROUPS"
-  group_filter_type = "REGEX"
-  value             = ".*"
-  scopes = [
-  okta_auth_server_scope.sr.name]
-}
-
-resource "okta_auth_server_claim" "tenant_groups" {
+resource "okta_auth_server_claim" "prod_tenant_roles" {
   auth_server_id = data.okta_auth_server.default.id
   claim_type = "RESOURCE"
-  name = "tenant_groups"
+  name = "prod_roles"
   value_type = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value = "TENANT-MEMBERS:"
+  value = "PROD-TENANT:"
   scopes = [
-    okta_auth_server_scope.sr.name]
+    okta_auth_server_scope.sr_prod.name]
 }
 
-resource "okta_auth_server_claim" "is_tenant_admin" {
-  auth_server_id = data.okta_auth_server.default.id
-  claim_type = "RESOURCE"
-  name = "is_tenant_admin"
-  value_type = "EXPRESSION"
-  value = "isMemberOfGroupName(\"TENANT-ADMINS\")"
-  scopes = [
-    okta_auth_server_scope.sr.name]
+resource "okta_auth_server_claim" "stg_tenant_roles" {
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "staging_roles"
+  value_type        = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value             = "STG-TENANT:"
+  scopes            = [
+    okta_auth_server_scope.sr_stg.name]
+}
+
+resource "okta_auth_server_claim" "devtest_tenant_roles" {
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "devtest_roles"
+  value_type        = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value             = "TEST-TENANT:"
+  scopes            = [
+    okta_auth_server_scope.sr_devtest.name]
 }
 
 resource "okta_auth_server_claim" "is_simplereport_admin" {
-  auth_server_id = data.okta_auth_server.default.id
-  claim_type = "RESOURCE"
-  name = "is_simplereport_admin"
-  value_type = "EXPRESSION"
-  value = "isMemberOfGroupName(\"Prime SimpleReport Admins\")"
-  scopes = [
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "is_simplereport_admin"
+  value_type        = "EXPRESSION"
+  value             = "isMemberOfGroupName(\"Prime SimpleReport Admins\")"
+  scopes            = [
     okta_auth_server_scope.sr.name]
 }
 
@@ -97,7 +104,7 @@ resource "okta_group" "prime_users" {
 }
 
 resource "okta_group" "prime_simplereport_admins" {
-  name = "Prime SimpleReport Admins"
+  name        = "Prime SimpleReport Admins"
   description = "Application Administrators for SimpleReport"
 }
 
