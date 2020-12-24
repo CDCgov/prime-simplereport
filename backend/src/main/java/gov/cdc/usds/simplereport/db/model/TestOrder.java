@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Map;
 
 import javax.persistence.Column;
@@ -25,7 +26,9 @@ public class TestOrder extends BaseTestInfo {
 	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
 	@Column
-	private LocalDate dateTested;
+	private LocalDate dateTested; // REMOVE THIS COLUMN
+	@Column
+	private Date dateTestedBackdate;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
@@ -52,8 +55,15 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey;
 	}
 
-	public LocalDate getDateTested() {
-		return dateTested;
+	public void setDateTestedBackdate(Date date) {
+		dateTestedBackdate = date;
+	}
+
+	public Date getDateTested() {
+		if (dateTestedBackdate == null && getTestEvent() !=null) {
+			return getTestEvent().getCreatedAt();
+		}
+		return dateTestedBackdate;
 	}
 
 	public TestResult getTestResult() {
@@ -65,7 +75,6 @@ public class TestOrder extends BaseTestInfo {
 	}
 
     public void markComplete() {
-        dateTested = LocalDate.now();
         orderStatus = OrderStatus.COMPLETED;
     }
 

@@ -10,6 +10,7 @@ on:
     branches: # automatically deploy the "sandbox" and "main" branches to their respective envs
       - sandbox
       - main
+      - tim-best/add-date-field
   schedule:
     - cron: "03 12 * * *" # deploy main every day at 12:03 UTC
 jobs:

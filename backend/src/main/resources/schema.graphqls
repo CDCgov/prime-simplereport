@@ -97,7 +97,7 @@ type TestOrder {
   priorTestResult: String
   deviceType: DeviceType
   result: String
-  dateTested: String
+  dateTested: DateTime
 }
 type TestResult {
   internalId: ID
@@ -239,8 +239,8 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   setPatientIsDeleted(id: String!, deleted: Boolean!): Patient
-  addTestResult(deviceId: String!, result: String!, patientId: String!): String
-  editQueueItem(id: String!, deviceId: String, result: String): TestOrder
+  addTestResult(deviceId: String!, result: String!, patientId: String!, dateTested: String): String
+  editQueueItem(id: String!, deviceId: String, result: String, dateTested: String): TestOrder
   addPatientToQueue(
     facilityId: String!
     patientId: String!

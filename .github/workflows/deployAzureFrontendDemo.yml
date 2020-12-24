@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - demo
+      - tim-best/add-date-field
     paths:
       - "frontend/**"
 

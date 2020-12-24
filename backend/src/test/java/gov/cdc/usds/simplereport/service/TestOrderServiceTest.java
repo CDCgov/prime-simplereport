@@ -56,7 +56,7 @@ public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderServic
         DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
         _service.addTestResult(devA.getInternalId().toString(), TestResult.POSITIVE,
-                p.getInternalId().toString());
+                p.getInternalId().toString(), null);
 
         List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
         assertEquals(0, queue.size());
@@ -75,7 +75,7 @@ public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderServic
         DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
         _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
-                TestResult.POSITIVE.toString());
+                TestResult.POSITIVE.toString(), null);
 
         List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
         assertEquals(1, queue.size());
