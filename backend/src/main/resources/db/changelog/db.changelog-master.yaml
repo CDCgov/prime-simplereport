@@ -701,3 +701,15 @@ databaseChangeLog:
                   name: default_device_type
               - column:
                   name: ordering_provider_id
+  - changeSet:
+      id: date-tested-backdate
+      author: tbest@cdc.gov
+      comment: add timestamp for date corrections
+      changes:
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: date_tested_backdate
+                  type: DATETIME
+                  remarks: timestamp to store a user correction to when the test was ordered

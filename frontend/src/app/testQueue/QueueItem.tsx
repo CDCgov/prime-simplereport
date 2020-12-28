@@ -13,6 +13,7 @@ import Alert from "../commonComponents/Alert";
 import Anchor from "../commonComponents/Anchor";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
+import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
 import { ALERT_CONTENT } from "./constants";
@@ -34,9 +35,20 @@ const REMOVE_PATIENT_FROM_QUEUE = gql`
 `;
 
 const EDIT_QUEUE_ITEM = gql`
-  mutation EditQueueItem($id: String!, $deviceId: String, $result: String) {
-    editQueueItem(id: $id, deviceId: $deviceId, result: $result) {
+  mutation EditQueueItem(
+    $id: String!
+    $deviceId: String
+    $result: String
+    $dateTested: String
+  ) {
+    editQueueItem(
+      id: $id
+      deviceId: $deviceId
+      result: $result
+      dateTested: $dateTested
+    ) {
       result
+      dateTested
       deviceType {
         internalId
       }
@@ -48,11 +60,13 @@ interface EditQueueItemParams {
   id: string;
   deviceId?: string;
   result?: TestResult;
+  dateTested?: string;
 }
 
 interface EditQueueItemResponse {
   editQueueItem: {
     result: TestResult;
+    dateTested: string;
     deviceType: { internalId: string };
   };
 }
@@ -62,8 +76,14 @@ const SUBMIT_TEST_RESULT = gql`
     $patientId: String!
     $deviceId: String!
     $result: String!
+    $dateTested: String
   ) {
-    addTestResult(patientId: $patientId, deviceId: $deviceId, result: $result)
+    addTestResult(
+      patientId: $patientId
+      deviceId: $deviceId
+      result: $result
+      dateTested: $dateTested
+    )
   }
 `;
 
@@ -153,6 +173,7 @@ interface QueueItemProps {
   defaultDevice: {
     internalId: string;
   };
+  dateTestedProp: string;
   refetchQueue: () => void;
   facilityId: string;
 }
@@ -160,7 +181,15 @@ interface QueueItemProps {
 interface updateQueueItemProps {
   deviceId?: string;
   result?: TestResult;
+  dateTested?: string;
 }
+
+const getDate = (datetime: string) => {
+  if (!datetime) {
+    return datetime;
+  }
+  return datetime.split("T")[0];
+};
 
 const QueueItem: any = ({
   internalId,
@@ -172,6 +201,7 @@ const QueueItem: any = ({
   defaultDevice,
   refetchQueue,
   facilityId,
+  dateTestedProp,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -205,9 +235,12 @@ const QueueItem: any = ({
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
+  const [dateTested, updateDateTested] = useState<string>(
+    getDate(dateTestedProp)
+  );
   const [testResultValue, updateTestResultValue] = useState<
     TestResult | undefined
-  >(selectedTestResult);
+  >(selectedTestResult || undefined);
 
   const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
     false
@@ -238,6 +271,7 @@ const QueueItem: any = ({
           patientId: patient.internalId,
           deviceId: deviceId,
           result: testResultValue,
+          dateTested,
         },
       })
         .then(testResultsSubmitted)
@@ -253,29 +287,44 @@ const QueueItem: any = ({
     }
   };
 
-  const updateQueueItem = ({ deviceId, result }: updateQueueItemProps) => {
+  const updateQueueItem = ({
+    deviceId,
+    result,
+    dateTested,
+  }: updateQueueItemProps) => {
     editQueueItem({
       variables: {
         id: internalId,
         deviceId,
         result,
+        dateTested,
       },
     })
       .then((response) => {
         if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
-        updateTestResultValue(response.data.editQueueItem.result);
+        updateTestResultValue(response.data.editQueueItem.result || undefined);
+        updateDateTested(getDate(response.data.editQueueItem.dateTested));
       })
       .catch(updateMutationError);
   };
 
   const onDeviceChange = (e: React.FormEvent<HTMLSelectElement>) => {
     const deviceId = e.currentTarget.value;
-    updateQueueItem({ deviceId });
+    updateQueueItem({ deviceId, dateTested, result: testResultValue });
+  };
+
+  const onDateTestedChange = (e: React.FormEvent<HTMLInputElement>) => {
+    const dateTested = (e.target as HTMLInputElement).value;
+
+    updateQueueItem({
+      dateTested: dateTested === "" ? undefined : dateTested,
+      result: testResultValue,
+    });
   };
 
   const onTestResultChange = (result: TestResult | undefined) => {
-    updateQueueItem({ result });
+    updateQueueItem({ result, dateTested });
   };
 
   const removeFromQueue = (
@@ -396,6 +445,13 @@ const QueueItem: any = ({
                   name="testDevice"
                   selectedValue={deviceId}
                   onChange={onDeviceChange}
+                />
+                <TextInput
+                  type="date"
+                  label="Override Date Tested"
+                  name="dateTested"
+                  value={dateTested}
+                  onChange={onDateTestedChange}
                 />
               </form>
             </div>

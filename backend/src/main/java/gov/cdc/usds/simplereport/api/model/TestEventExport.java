@@ -219,7 +219,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -409,7 +409,7 @@ public class TestEventExport {
 
 	@JsonProperty("Test_date")
 	public String getTestDate() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
 	}
 
 	@JsonProperty("Date_result_released")
@@ -420,6 +420,6 @@ public class TestEventExport {
 	@JsonProperty("Order_test_date")
 	public String getOrderTestDate() {
 		// order_test_date = test_date for antigen testing
-		return dateToHealthCareString(convertToLocalDate(testEvent.getCreatedAt()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
 	}
 }
