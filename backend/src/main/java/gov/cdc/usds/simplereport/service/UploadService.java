@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,7 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
 
             final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
+            final String phone = normalizePhoneNumber(row.get("PhoneNumber"));
             _ps.addPatient(
                     row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
                     null,
@@ -71,7 +74,7 @@ public class UploadService {
                     row.get("City"),
                     row.get("State"),
                     row.get("ZipCode"),
-                    row.get("PhoneNumber"),
+                    phone,
                     row.get("Role").toUpperCase(),
                     row.get("Email"),
                     row.get("County"),
@@ -108,5 +111,18 @@ public class UploadService {
                 .addColumn("Location", CsvSchema.ColumnType.STRING)
                 .setUseHeader(true)
                 .build();
+    }
+
+    private static String normalizePhoneNumber(String suppliedNumber) {
+        if (suppliedNumber == null) {
+            return null;
+        }
+
+        try {
+            var phoneUtil = PhoneNumberUtil.getInstance();
+            return phoneUtil.format(phoneUtil.parse(suppliedNumber, "US"), PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
+        } catch (NumberParseException parseException) {
+            throw new IllegalArgumentException("[" + suppliedNumber + "] is not a valid phone number.", parseException);
+        }
     }
 }

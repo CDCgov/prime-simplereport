@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.time.LocalDate;
@@ -60,7 +61,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             city,
             state,
             zipCode,
-            telephone,
+            parsePhoneNumber(telephone),
             role,
             email,
             county,
@@ -111,7 +112,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           city,
           state,
           zipCode,
-          telephone,
+          parsePhoneNumber(telephone),
           role,
           email,
           county,
