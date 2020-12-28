@@ -1,4 +1,4 @@
-output "subnet_dev_vm_id" {
+output "subnet_vm_id" {
   value = azurerm_subnet.vms.id
 }
 
