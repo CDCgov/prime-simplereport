@@ -191,7 +191,6 @@ databaseChangeLog:
             remarks: A provider who can (we hope) write test orders.
             columns:
               - column:
-
                   name: internal_id
                   type: *idtype
                   remarks: The internal database identifier for this entity.
