@@ -1,17 +1,16 @@
 package gov.cdc.usds.simplereport.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.IOException;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
+import java.io.IOException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for adding and fetching patients through the API
@@ -45,17 +44,37 @@ public class PatientManagementTest extends BaseApiTest {
         assertEquals("(800) 249-6263", sansa.get("telephone").asText());
     }
 
+    @Test
+    public void failsOnInvalidPhoneNumber() throws Exception {
+        GraphQLResponse resp = executeAddPersonMutation("a", "b", "12/29/2020", "d", "e");
+        JsonNode errors = resp.readTree().get("errors");
+        assertNotNull(errors);
+        assertTrue(errors.isArray());
+        assertEquals(1, errors.size());
+        assertTrue(errors.get(0).toString().contains("[d] is not a valid phone number"));
+    }
+
     private JsonNode doCreateAndFetch(String firstName, String lastName, String birthDate, String phone, String lookupId)
             throws IOException {
+        GraphQLResponse resp = executeAddPersonMutation(firstName, lastName, birthDate, phone, lookupId);
+        assertGraphQLSuccess(resp);
+        JsonNode patients = runQuery("person-query").get("patients");
+        return patients;
+    }
+
+    private GraphQLResponse executeAddPersonMutation(
+            String firstName,
+            String lastName,
+            String birthDate,
+            String phone,
+            String lookupId
+    ) throws IOException {
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
                 .put("firstName", firstName)
                 .put("lastName", lastName)
                 .put("birthDate", birthDate)
                 .put("telephone", phone)
                 .put("lookupId", lookupId);
-        GraphQLResponse resp = _template.perform("add-person", variables);
-        assertGraphQLSuccess(resp);
-        JsonNode patients = runQuery("person-query").get("patients");
-        return patients;
+        return _template.perform("add-person", variables);
     }
 }
