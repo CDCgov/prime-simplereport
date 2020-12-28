@@ -1,7 +1,7 @@
 import { useState } from "react";
 
-// TODO: make some tests and get this from env
-const IS_TEST_ENV = false;
+// Use predictable id values in snapshots
+const IS_TEST = process.env.NODE_ENV === "test";
 
 // Global to track unique instance creations
 let instanceCount = 0;
@@ -9,10 +9,10 @@ let instanceCount = 0;
 /**
  * @description Generate unique HTML IDs for elements
  * @returns Array of unique string IDs
- * @param testPrefix  Used in tests to prevent snapshot diffs
+ * @param prefix  general identifier prefix
  * @param numberOfIds Number of unique IDs to return in array
  */
-export default function useUniqueIds(testPrefix, numberOfIds) {
+export default function useUniqueIds(prefix: string, numberOfIds: number) {
   const [instance, setInstance] = useState(0);
 
   if (!instance) {
@@ -21,6 +21,6 @@ export default function useUniqueIds(testPrefix, numberOfIds) {
   }
 
   return Array(numberOfIds)
-    .fill("id-" + (IS_TEST_ENV ? testPrefix : instance || instanceCount) + "-")
+    .fill(`${prefix}-${IS_TEST ? "test" : instance || instanceCount}-`)
     .map((prefix, i) => prefix + (i + 1));
 }

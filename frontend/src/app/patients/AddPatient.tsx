@@ -11,7 +11,10 @@ const AddPatient = () => {
     return <div>"No facility selected"</div>;
   }
   return (
-    <PatientForm patient={{ id: "" }} activeFacilityId={activeFacilityId} />
+    <PatientForm
+      patient={{ patientId: "" }}
+      activeFacilityId={activeFacilityId}
+    />
   );
 };
 

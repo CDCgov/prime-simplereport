@@ -18,8 +18,8 @@ interface Props {
   selectedValue: string;
   disabled?: boolean;
   defaultOption?: string;
-  addClass?: string;
-  includeUndefined?: boolean;
+  className?: string;
+  defaultSelect?: boolean;
   required?: boolean;
 }
 
@@ -29,16 +29,16 @@ const Dropdown: React.FC<Props> = ({
   name,
   onChange,
   disabled,
-  addClass = "",
+  className,
   defaultOption, // value of the default option
   selectedValue,
-  includeUndefined,
+  defaultSelect,
   required,
 }) => {
-  const [selectId] = useUniqueIds("dropdown", 1);
+  const [selectId] = useUniqueIds("drop", 1);
 
   return (
-    <div className={classnames("prime-dropdown", addClass)}>
+    <div className={classnames("prime-dropdown", className)}>
       {label ? (
         <label className="usa-label" htmlFor={selectId}>
           {label}
@@ -59,9 +59,7 @@ const Dropdown: React.FC<Props> = ({
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
       >
-        {includeUndefined ? (
-          <option value={undefined}>- Select -</option>
-        ) : null}
+        {defaultSelect && <option value={undefined}>- Select -</option>}
         {options.map(({ value, label, disabled }, i) => (
           <option key={value + i} value={value} disabled={disabled}>
             {label}
