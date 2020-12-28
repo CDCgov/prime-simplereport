@@ -31,7 +31,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
  * Created by nickrobison on 11/13/20
  */
 @Configuration
-@Profile("!" + DevSecurityConfiguration.PROFILE) // Activate this profile to disable security
+@Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {

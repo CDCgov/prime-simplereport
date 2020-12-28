@@ -15,21 +15,19 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 /**
  * Stub no-op configuration for development and test environments.
  */
-@Profile(DevSecurityConfiguration.PROFILE)
+@Profile(BeanProfiles.NO_SECURITY)
 @Configuration
 @ConditionalOnWebApplication
 public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
-    public static final String PROFILE = "no-security";
-
     @Autowired
     private InitialSetupProperties _setupProps;
 
     @Override
     public void configure(WebSecurity web) {
-        logger.warn("SECURITY DISABLED BY {} PROFILE", PROFILE);
+        logger.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
         web
                 .ignoring()
                 .antMatchers("/**");
