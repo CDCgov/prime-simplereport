@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - demo
+      - main # TODO change to demo for branch based deploys
     paths:
       - "backend/**"
 
