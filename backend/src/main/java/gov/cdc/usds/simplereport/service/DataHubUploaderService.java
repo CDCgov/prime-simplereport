@@ -24,9 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.persistence.NoResultException;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -174,7 +176,11 @@ public class DataHubUploaderService {
             return execution.execute(request, body);
         })).build();
 
-        _resultJson = restTemplate.postForObject(_config.getUploadUrl(), contentsAsResource, String.class);
+        // have data hub only reject some lines not whole upload
+        URI url = UriComponentsBuilder.fromUriString(_config.getUploadUrl())
+                .queryParam("option", "SkipInvalidItems").build().toUri();
+
+        _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
     public String creatTestCVSForDataHub(String lastEndCreateOn) {
