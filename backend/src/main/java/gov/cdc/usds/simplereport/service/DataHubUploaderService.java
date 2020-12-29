@@ -185,7 +185,7 @@ public class DataHubUploaderService {
         } catch (IOException err) {
             return err.toString();
         } catch (NoResultException err) {
-            return "No matching results for the given startupdateby param";
+            return "No matching results for the given time range";
         }
     }
 
@@ -274,15 +274,13 @@ public class DataHubUploaderService {
             _dataHubUploadRepo.save(newUpload.setJobState("No matching results for the given startupdateby param"));
         }
 
-        // this could use member variables
-        sendSlackChannelMessage("DataHubUpload result",
-                new ArrayList<String>() {{
-                    add("Result:\n> ```" + newUpload.getJobState() + "\n```");
-                    add("RecordsProcessed: " + String.valueOf(newUpload.getRecordsProcessed()));
-                    add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
-                    add("setResponseData:");
-                    add("> ``` " + newUpload.getResponseData() + " ```");
-                }}, false);
-
+        // Build and send message to slackChannel
+        ArrayList<String> message = new ArrayList<String>();
+        message.add("Result:\n> ```" + newUpload.getJobState() + "\n```");
+        message.add("RecordsProcessed: " + String.valueOf(newUpload.getRecordsProcessed()));
+        message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
+        message.add("setResponseData:");
+        message.add("> ``` " + newUpload.getResponseData() + " ```");
+        sendSlackChannelMessage("DataHubUpload result", message, false);
     }
 }
