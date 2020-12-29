@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import java.util.List;
 import java.util.UUID;
 
@@ -60,7 +61,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
             orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
-        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, phone, deviceTypes,
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), deviceTypes,
             providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
         return new ApiFacility(created);
     }
@@ -100,7 +101,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           county,
           state,
           zipCode,
-          phone,
+          Translators.parsePhoneNumber(phone),
           orderingProviderFirstName,
           orderingProviderMiddleName,
           orderingProviderLastName,
