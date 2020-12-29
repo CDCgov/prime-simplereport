@@ -959,3 +959,15 @@ databaseChangeLog:
                   name: date_tested_backdate
                   type: DATETIME
                   remarks: timestamp to store a user correction to when the test was ordered
+  - changeSet:
+      id: add-facility-email
+      author: nclyde@skylight.digital
+      comment: add email field to facility
+      changes:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: email
+                  type: *string
+                  remarks: The facility's contact email address.

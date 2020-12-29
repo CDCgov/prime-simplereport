@@ -32,11 +32,20 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             onChange={(v) => onChange("cliaNumber", v)}
           />
         </div>
+      </div>
+      <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
             label={"Phone Number"}
             value={facility.phone || ""}
             onChange={(v) => onChange("phone", v)}
+          />
+        </div>
+        <div className="tablet:grid-col">
+          <TextInput
+            label={"Email"}
+            value={facility.email || ""}
+            onChange={(v) => onChange("email", v)}
           />
         </div>
       </div>

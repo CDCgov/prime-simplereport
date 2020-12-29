@@ -82,6 +82,7 @@ public class OrganizationService {
         String state,
         String zipCode,
         String phone,
+        String email,
         String orderingProviderFirstName,
         String orderingProviderMiddleName,
         String orderingProviderLastName,
@@ -101,6 +102,7 @@ public class OrganizationService {
         facility.setFacilityName(testingFacilityName);
         facility.setCliaNumber(cliaNumber);
         facility.setTelephone(phone);
+        facility.setEmail(email);
         facility.addDefaultDeviceType(defaultDeviceType);
         StreetAddress af = facility.getAddress() == null ? new StreetAddress(
             street,
@@ -164,14 +166,14 @@ public class OrganizationService {
         return _repo.save(org);
     }
 
-    public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone,
+    public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
             DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
         Facility facility = new Facility(getCurrentOrganization(),
             testingFacilityName, cliaNumber,
-            facilityAddress, phone,
+            facilityAddress, phone, email,
             orderingProvider,
             deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         return _facilityRepo.save(facility);

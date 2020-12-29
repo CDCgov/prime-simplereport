@@ -52,6 +52,7 @@ type Facility {
   state: String
   zipCode: String
   phone: String
+  email: String
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
@@ -146,6 +147,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
@@ -171,6 +173,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
@@ -187,10 +190,7 @@ type Mutation {
     defaultDevice: String!
   ): String
   updateOrganization(name: String!): String
-  createOrganization(
-    name: String!
-    externalId: String!
-  ): Organization
+  createOrganization(name: String!, externalId: String!): Organization
   addPatient(
     facilityId: String
     lookupId: String
@@ -239,8 +239,18 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   setPatientIsDeleted(id: String!, deleted: Boolean!): Patient
-  addTestResult(deviceId: String!, result: String!, patientId: String!, dateTested: String): String
-  editQueueItem(id: String!, deviceId: String, result: String, dateTested: String): TestOrder
+  addTestResult(
+    deviceId: String!
+    result: String!
+    patientId: String!
+    dateTested: String
+  ): String
+  editQueueItem(
+    id: String!
+    deviceId: String
+    result: String
+    dateTested: String
+  ): TestOrder
   addPatientToQueue(
     facilityId: String!
     patientId: String!
