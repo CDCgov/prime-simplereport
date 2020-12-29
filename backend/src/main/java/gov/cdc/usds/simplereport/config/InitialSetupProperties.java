@@ -18,87 +18,94 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 @ConstructorBinding
 public class InitialSetupProperties {
 
-	private Organization organization;
-	private Provider provider;
-	private List<? extends DeviceType> deviceTypes;
-	private List<String> configuredDeviceTypes;
-	private IdentityAttributes defaultUser;
-	private ConfigFacility facility;
+    private Organization organization;
+    private Provider provider;
+    private List<? extends DeviceType> deviceTypes;
+    private List<String> configuredDeviceTypes;
+    private IdentityAttributes defaultUser;
+    private IdentityAttributes adminUser;
+    private ConfigFacility facility;
 
-	public InitialSetupProperties(Organization organization,
-			ConfigFacility facility,
-			Provider provider,
-			List<DeviceType> deviceTypes,
-			List<String> configuredDeviceTypes,
-			IdentityAttributes defaultUser) {
-		this.organization = organization;
-		this.provider = provider;
-		this.deviceTypes = deviceTypes;
-		this.configuredDeviceTypes = configuredDeviceTypes;
-		this.defaultUser = defaultUser;
-		this.facility = facility;
-	}
+    public InitialSetupProperties(Organization organization,
+            ConfigFacility facility,
+            Provider provider,
+            List<DeviceType> deviceTypes,
+            List<String> configuredDeviceTypes,
+            IdentityAttributes defaultUser,
+            IdentityAttributes adminUser) {
+        this.organization = organization;
+        this.provider = provider;
+        this.deviceTypes = deviceTypes;
+        this.configuredDeviceTypes = configuredDeviceTypes;
+        this.defaultUser = defaultUser;
+        this.adminUser = adminUser;
+        this.facility = facility;
+    }
 
-	public ConfigFacility getFacility() {
-		return facility;
-	}
+    public ConfigFacility getFacility() {
+        return facility;
+    }
 
-	public List<String> getConfiguredDeviceTypeNames() {
-		return configuredDeviceTypes;
-	}
+    public List<String> getConfiguredDeviceTypeNames() {
+        return configuredDeviceTypes;
+    }
 
-	public Organization getOrganization() {
-		return new Organization(organization.getOrganizationName(), organization.getExternalId());
-	}
+    public Organization getOrganization() {
+        return new Organization(organization.getOrganizationName(), organization.getExternalId());
+    }
 
-	public Provider getProvider() {
-		PersonName n = provider.getNameInfo();
-		return new Provider(n.getFirstName(), n.getMiddleName(), n.getLastName(), n.getSuffix(),
-			provider.getProviderId(), provider.getAddress(), provider.getTelephone());
-	}
+    public Provider getProvider() {
+        PersonName n = provider.getNameInfo();
+        return new Provider(n.getFirstName(), n.getMiddleName(), n.getLastName(), n.getSuffix(),
+            provider.getProviderId(), provider.getAddress(), provider.getTelephone());
+    }
 
-	public List<? extends DeviceType> getDeviceTypes() {
-		return deviceTypes.stream()
-			.map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode()))
-			.collect(Collectors.toList())
-			;
-	}
+    public List<? extends DeviceType> getDeviceTypes() {
+        return deviceTypes.stream()
+            .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode()))
+            .collect(Collectors.toList())
+            ;
+    }
 
-	public IdentityAttributes getDefaultUser() {
-		return defaultUser;
-	}
+    public IdentityAttributes getDefaultUser() {
+        return defaultUser;
+    }
 
-	public static final class ConfigFacility {
-		private String name;
-		private String cliaNumber;
-		private StreetAddress address;
-		private String telephone;
-		public ConfigFacility(String facilityName, String cliaNumber, StreetAddress address, String telephone) {
-			super();
-			this.name = facilityName;
-			this.cliaNumber = cliaNumber;
-			this.address = address;
-			this.telephone = telephone;
-		}
+    public IdentityAttributes getAdminUser() {
+        return adminUser;
+    }
 
-		public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType, List<DeviceType> configured) {
-			Facility f = new Facility(org, name, cliaNumber, p, defaultDeviceType, configured);
-			f.setAddress(address);
-			f.setTelephone(telephone);
-			return f;
-		}
+    public static final class ConfigFacility {
+        private String name;
+        private String cliaNumber;
+        private StreetAddress address;
+        private String telephone;
+        public ConfigFacility(String facilityName, String cliaNumber, StreetAddress address, String telephone) {
+            super();
+            this.name = facilityName;
+            this.cliaNumber = cliaNumber;
+            this.address = address;
+            this.telephone = telephone;
+        }
 
-		public String getName() {
-			return name;
-		}
-		public String getCliaNumber() {
-			return cliaNumber;
-		}
-		public StreetAddress getAddress() {
-			return address;
-		}
-		public String getTelephone() {
-			return telephone;
-		}
-	}
+        public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType, List<DeviceType> configured) {
+            Facility f = new Facility(org, name, cliaNumber, p, defaultDeviceType, configured);
+            f.setAddress(address);
+            f.setTelephone(telephone);
+            return f;
+        }
+
+        public String getName() {
+            return name;
+        }
+        public String getCliaNumber() {
+            return cliaNumber;
+        }
+        public StreetAddress getAddress() {
+            return address;
+        }
+        public String getTelephone() {
+            return telephone;
+        }
+    }
 }

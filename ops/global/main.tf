@@ -1,7 +1,7 @@
 locals {
   management_tags = {
     prime-app         = "simple-report"
-    prime-environment = "all"
+    prime-environment = "global"
   }
 }
 

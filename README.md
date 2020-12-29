@@ -4,16 +4,20 @@ https://simplereport.cdc.gov/
 
 ## Table of Contents
 
-- [Setup](#setup)
-- [Backend](#backend)
-  - [Setup](#backend-Setup)
-  - [Restart & Clean](#restart-&-clean)
-  - [API Testing](#api-testing)
-  - [Tests](#tests)
-  - [SchemaSpy](#SchemaSpy)
-- [Frontend](#frontend)
-  - [Setup](#frontend-Setup)
-- [Deploy](#Deploy)
+- [Simple Report](#simple-report)
+  - [Table of Contents](#table-of-contents)
+  - [Setup](#setup)
+  - [Backend](#backend)
+    - [Backend-Setup](#backend-setup)
+    - [Restart & Clean](#restart--clean)
+    - [API Testing](#api-testing)
+    - [Tests](#tests)
+    - [E2E Tests](#e2e-tests)
+    - [Local Settings](#local-settings)
+    - [SchemaSpy](#schemaspy)
+  - [Frontend](#frontend)
+    - [Frontend-Setup](#frontend-setup)
+    - [Deploy](#deploy)
 
 ## Setup
 
@@ -60,7 +64,7 @@ Running spring app locally and db in docker on port 5433
 1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
-## Restart & Clean
+### Restart & Clean
 
 When there are DB schema changes the backend may throw and error and fail to start.
 
@@ -76,11 +80,11 @@ Restarting the SQL way:
 1. run `db-setup/nuke-db.sh`
 2. restart the spring app `gradle bootRun --args='--spring.profiles.active=dev'`
 
-## API Testing
+### API Testing
 
 Go to `localhost:8080` to see interact with the graphql api. You would need to point the api endpoint to the backend at: `http://localhost:8080/graphql` This gives you a preview to query/mutate the local database.
 
-## Tests
+### Tests
 
 All the test can be run with `gradle test`
 
@@ -90,7 +94,7 @@ Running a single test with a full stacktrace can be accomplished by supping the 
 gradle test --tests gov.cdc.usds.simplereport.api.QueueManagementTest.updateItemInQueue --stacktrace
 ```
 
-## E2E Tests
+### E2E Tests
 
 E2E/Integration tests are available using [Nightwatch.js](https://nightwatchjs.org/).
 
@@ -101,7 +105,33 @@ cd frontend
 npm run e2e
 ```
 
-## SchemaSpy
+### Local Settings
+
+to edit Spring boot settings for your local set up you must first create a `application-local.yaml`
+(note this file is git ignored):
+
+bash
+```
+touch backend/src/main/resources/application-local.yaml
+```
+
+Useful local settings
+- make the default user an admin
+```
+simple-report:
+  admin-emails:
+    - bob@example.com
+```
+- make SQL pretty
+```
+spring:
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+```
+
+### SchemaSpy
 
 http://schemaspy.org/
 
@@ -129,6 +159,6 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
-## Deploy
+### Deploy
 
 See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md

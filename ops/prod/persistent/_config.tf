@@ -5,6 +5,9 @@ terraform {
     container_name       = "sr-tfstate"
     key                  = "prod/persistent-terraform.tfstate"
   }
+}
+
+terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
@@ -18,8 +21,12 @@ terraform {
 }
 
 
+provider "azurerm" {
+  features {}
+  skip_provider_registration = true
+}
 
-
-terraform {
-
+provider "okta" {
+  org_name = "hhs-prime"
+  base_url = "okta.com"
 }

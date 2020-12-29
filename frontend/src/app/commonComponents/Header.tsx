@@ -192,6 +192,7 @@ const Header = (props: Props) => {
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
+                id="conduct-test-nav-link"
                 activeStyle={{
                   color: "white",
                 }}
@@ -205,6 +206,7 @@ const Header = (props: Props) => {
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
+                id="results-nav-link"
                 activeStyle={{
                   color: "white",
                 }}

@@ -24,20 +24,24 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 @Transactional(readOnly=false)
 public class OrganizationService {
 
-	private OrganizationRepository _repo;
-	private FacilityRepository _facilityRepo;
-	private ProviderRepository _providerRepo;
-	private AuthorizationService _authService;
+    private OrganizationRepository _repo;
+    private FacilityRepository _facilityRepo;
+    private ProviderRepository _providerRepo;
+    private ApiUserService _apiUserService;
+    private AuthorizationService _authService;
 
-	public OrganizationService(OrganizationRepository repo,
-			FacilityRepository facilityRepo,
-			AuthorizationService authService,
-			ProviderRepository providerRepo) {
-		_repo = repo;
-		_facilityRepo = facilityRepo;
-		_authService = authService;
-		_providerRepo = providerRepo;
-	}
+
+    public OrganizationService(OrganizationRepository repo,
+            FacilityRepository facilityRepo,
+            AuthorizationService authService,
+            ProviderRepository providerRepo,
+            ApiUserService apiUserService) {
+        _repo = repo;
+        _facilityRepo = facilityRepo;
+        _authService = authService;
+        _providerRepo = providerRepo;
+        _apiUserService = apiUserService;
+    }
 
     public Organization getCurrentOrganization() {
         List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
@@ -52,123 +56,128 @@ public class OrganizationService {
         }
     }
 
-	public void assertFacilityNameAvailable(String testingFacilityName) {
-		Organization org = this.getCurrentOrganization();
-		_facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
-			.ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
-		;
-	}
+    public void assertFacilityNameAvailable(String testingFacilityName) {
+        Organization org = this.getCurrentOrganization();
+        _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
+            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
+        ;
+    }
 
-	@Transactional(readOnly=true)
-	public List<Facility> getFacilities(Organization org) {
-		return _facilityRepo.findByOrganizationOrderByFacilityName(org);
-	}
+    @Transactional(readOnly=true)
+    public List<Facility> getFacilities(Organization org) {
+        return _facilityRepo.findByOrganizationOrderByFacilityName(org);
+    }
 
-	@Transactional(readOnly=true)
-	public Facility getFacilityInCurrentOrg(UUID facilityId) {
-		Organization org = getCurrentOrganization();
-		return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
-				.orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
-	}
+    @Transactional(readOnly=true)
+    public Facility getFacilityInCurrentOrg(UUID facilityId) {
+        Organization org = getCurrentOrganization();
+        return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
+                .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
+    }
 
-	public Facility updateFacility(
-		UUID facilityId,
-		String testingFacilityName,
-		String cliaNumber,
-		String street,
-		String streetTwo,
-		String city,
-		String county,
-		String state,
-		String zipCode,
-		String phone,
-		String orderingProviderFirstName,
-		String orderingProviderMiddleName,
-		String orderingProviderLastName,
-		String orderingProviderSuffix,
-		String orderingProviderNPI,
-		String orderingProviderStreet,
-		String orderingProviderStreetTwo,
-		String orderingProviderCity,
-		String orderingProviderCounty,
-		String orderingProviderState,
-		String orderingProviderZipCode,
-		String orderingProviderTelephone,
-		List<DeviceType> devices,
-		DeviceType defaultDeviceType
-	) {
-		Facility facility = this.getFacilityInCurrentOrg(facilityId);
-		facility.setFacilityName(testingFacilityName);
-		facility.setCliaNumber(cliaNumber);
-		facility.setTelephone(phone);
-		facility.addDefaultDeviceType(defaultDeviceType);
-		StreetAddress af = facility.getAddress() == null ? new StreetAddress(
-			street,
-			streetTwo,
-			city,
-			county,
-			state,
-			zipCode
-		 ) : facility.getAddress();
-		 af.setStreet(street, streetTwo);
-		 af.setCity(city);
-		 af.setCounty(county);
-		 af.setState(state);
-		 af.setPostalCode(zipCode);
-		facility.setAddress(af);
+    public Facility updateFacility(
+        UUID facilityId,
+        String testingFacilityName,
+        String cliaNumber,
+        String street,
+        String streetTwo,
+        String city,
+        String county,
+        String state,
+        String zipCode,
+        String phone,
+        String orderingProviderFirstName,
+        String orderingProviderMiddleName,
+        String orderingProviderLastName,
+        String orderingProviderSuffix,
+        String orderingProviderNPI,
+        String orderingProviderStreet,
+        String orderingProviderStreetTwo,
+        String orderingProviderCity,
+        String orderingProviderCounty,
+        String orderingProviderState,
+        String orderingProviderZipCode,
+        String orderingProviderTelephone,
+        List<DeviceType> devices,
+        DeviceType defaultDeviceType
+    ) {
+        Facility facility = this.getFacilityInCurrentOrg(facilityId);
+        facility.setFacilityName(testingFacilityName);
+        facility.setCliaNumber(cliaNumber);
+        facility.setTelephone(phone);
+        facility.addDefaultDeviceType(defaultDeviceType);
+        StreetAddress af = facility.getAddress() == null ? new StreetAddress(
+            street,
+            streetTwo,
+            city,
+            county,
+            state,
+            zipCode
+         ) : facility.getAddress();
+         af.setStreet(street, streetTwo);
+         af.setCity(city);
+         af.setCounty(county);
+         af.setState(state);
+         af.setPostalCode(zipCode);
+        facility.setAddress(af);
 
-		Provider p = facility.getOrderingProvider();
-		p.getNameInfo().setFirstName(orderingProviderFirstName);
-		p.getNameInfo().setMiddleName(orderingProviderMiddleName);
-		p.getNameInfo().setLastName(orderingProviderLastName);
-		p.getNameInfo().setSuffix(orderingProviderSuffix);
-		p.setProviderId(orderingProviderNPI);
-		p.setTelephone(orderingProviderTelephone);
+        Provider p = facility.getOrderingProvider();
+        p.getNameInfo().setFirstName(orderingProviderFirstName);
+        p.getNameInfo().setMiddleName(orderingProviderMiddleName);
+        p.getNameInfo().setLastName(orderingProviderLastName);
+        p.getNameInfo().setSuffix(orderingProviderSuffix);
+        p.setProviderId(orderingProviderNPI);
+        p.setTelephone(orderingProviderTelephone);
 
-		StreetAddress a = p.getAddress() == null ? new StreetAddress(
-			orderingProviderStreet,
-			orderingProviderStreetTwo,
-			orderingProviderCity,
-			orderingProviderState,
-			orderingProviderZipCode,
-			orderingProviderCounty
-		 ) : p.getAddress();
-		a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
-		a.setCity(orderingProviderCity);
-		a.setCounty(orderingProviderCounty);
-		a.setState(orderingProviderState);
-		a.setPostalCode(orderingProviderZipCode);
-		p.setAddress(a);
+        StreetAddress a = p.getAddress() == null ? new StreetAddress(
+            orderingProviderStreet,
+            orderingProviderStreetTwo,
+            orderingProviderCity,
+            orderingProviderState,
+            orderingProviderZipCode,
+            orderingProviderCounty
+         ) : p.getAddress();
+        a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
+        a.setCity(orderingProviderCity);
+        a.setCounty(orderingProviderCounty);
+        a.setState(orderingProviderState);
+        a.setPostalCode(orderingProviderZipCode);
+        p.setAddress(a);
 
-		// remove all existing devices
-		for(DeviceType d : facility.getDeviceTypes()) {
-			facility.removeDeviceType(d);
-		}
+        // remove all existing devices
+        for(DeviceType d : facility.getDeviceTypes()) {
+            facility.removeDeviceType(d);
+        }
 
-		// add new devices
-		for(DeviceType d : devices) {
-			facility.addDeviceType(d);
-		}
-		facility.setDefaultDeviceType(defaultDeviceType);
-		return _facilityRepo.save(facility);
-	}
+        // add new devices
+        for(DeviceType d : devices) {
+            facility.addDeviceType(d);
+        }
+        facility.setDefaultDeviceType(defaultDeviceType);
+        return _facilityRepo.save(facility);
+    }
 
-	public Organization updateOrganization(String name) {
-		Organization org = this.getCurrentOrganization();
-		org.setOrganizationName(name);
-		return _repo.save(org);
-	}
+    public Organization createOrganization(String name, String externalId) {
+        _apiUserService.isAdminUser();
+        return _repo.save(new Organization(name, externalId));
+    }
 
-	public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone,
-			DeviceTypeHolder deviceTypes,
-			PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
-		Provider orderingProvider = _providerRepo.save(
-				new Provider(providerName, providerNPI, providerAddress, providerTelephone));
-		Facility facility = new Facility(getCurrentOrganization(),
-			testingFacilityName, cliaNumber,
-			facilityAddress, phone,
-			orderingProvider,
-			deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
-		return _facilityRepo.save(facility);
-	}
+    public Organization updateOrganization(String name) {
+        Organization org = this.getCurrentOrganization();
+        org.setOrganizationName(name);
+        return _repo.save(org);
+    }
+
+    public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone,
+            DeviceTypeHolder deviceTypes,
+            PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
+        Provider orderingProvider = _providerRepo.save(
+                new Provider(providerName, providerNPI, providerAddress, providerTelephone));
+        Facility facility = new Facility(getCurrentOrganization(),
+            testingFacilityName, cliaNumber,
+            facilityAddress, phone,
+            orderingProvider,
+            deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
+        return _facilityRepo.save(facility);
+    }
 }

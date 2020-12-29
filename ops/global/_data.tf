@@ -1,3 +1,3 @@
 data "azurerm_resource_group" "rg" {
-  name = var.resource_group
+  name = "prime-simple-report-management"
 }

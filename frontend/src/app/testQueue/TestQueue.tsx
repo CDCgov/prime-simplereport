@@ -46,6 +46,7 @@ const queueQuery = gql`
         gender
       }
       result
+      dateTested
     }
     organization {
       testingFacility {
@@ -85,6 +86,7 @@ interface QueueItemData {
   };
   result: string;
   symptomOnset: string;
+  dateTested: string;
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
@@ -119,7 +121,14 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
-          ({ internalId, deviceType, patient, result, ...questions }) => (
+          ({
+            internalId,
+            deviceType,
+            patient,
+            result,
+            dateTested,
+            ...questions
+          }) => (
             <QueueItem
               key={internalId}
               internalId={internalId}
@@ -131,6 +140,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               defaultDevice={facility.defaultDeviceType}
               refetchQueue={refetchQueue}
               facilityId={activeFacilityId}
+              dateTestedProp={dateTested}
             />
           )
         )

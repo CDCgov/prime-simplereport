@@ -10,10 +10,12 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 
 @SpringBootApplication
 @EnableConfigurationProperties({
         InitialSetupProperties.class,
+        AdminEmailList.class,
         AuthorizationProperties.class,
 })
 public class SimpleReportApplication {
