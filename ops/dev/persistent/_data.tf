@@ -49,9 +49,3 @@ data "azurerm_key_vault_key" "db_encryption_key" {
   name         = local.env
   key_vault_id = data.azurerm_key_vault.db_keys.id
 }
-
-# Database
-//data "azurerm_postgresql_server" "db" {
-//  name                = "simple-report-dev-db"
-//  resource_group_name = data.azurerm_resource_group.dev.name
-//}
