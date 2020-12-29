@@ -19,7 +19,7 @@ import java.util.UUID;
 public class DataHubUpload {
 
     @Transient
-    static public final String SUCCESS_JOB = "SUCCESS";
+    public static final String SUCCESS_JOB = "SUCCESS";
 
     protected DataHubUpload() { /* no-op for hibernate */ }
 

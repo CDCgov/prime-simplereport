@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
+class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private DataHubUploadRespository _repo;
@@ -21,11 +21,12 @@ public class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
     private DataHubConfig _config;
 
     @Test
-    public void Test() {
+    void Test() {
         final Date DATE_OLDEST = _config.EARLIEST_DATE;
         final Date DATE_3MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(3));
         final Date DATE_4MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(4));
         final Date DATE_5MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5));
+        final String TEST_RESPONSE = "{\"UnitTestResponse\":\"OK\"}";
 
         // add a new entry, verify count increases by 1
         List<DataHubUpload> results_before = _repo.findAll();
@@ -45,12 +46,13 @@ public class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
         // assertNotEquals(d1.getCreatedAt(), d1.getUpdatedAt());
 
         List<DataHubUpload> results_after = _repo.findAll();
-        assertEquals((results_after.size() - results_before.size()), 1);
+        assertEquals(1, (results_after.size() - results_before.size()));
 
         // Add a second and make sure it's returned.
         DataHubUpload d2 = new DataHubUpload(_config)
                 .setJobState("TEST")
                 .setHttpResponse(200)
+                .setResponseData(TEST_RESPONSE)
                 .setEarliestRecordedTimestamp(DATE_5MIN_AGO)
                 .setLatestRecordedTimestamp(DATE_4MIN_AGO);
         _repo.save(d2);
@@ -58,8 +60,9 @@ public class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
         DataHubUpload result2 = _repo.findDistinctTopByJobStateOrderByLatestRecordedTimestampDesc("TEST");
         assertNotNull(result2);
         assertNotNull(result2.getInternalId());
-        assertEquals(result2.getJobState(), "TEST");
-        assertEquals(result2.getHttpResponse(), 200);
+        assertEquals("TEST", result2.getJobState() );
+        assertEquals( 200, result2.getHttpResponse());
+        assertEquals(TEST_RESPONSE, result2.getResponseData());
 
         // Now we're going to be tricky. this is newer, but had an error
         DataHubUpload d3 = new DataHubUpload(_config)

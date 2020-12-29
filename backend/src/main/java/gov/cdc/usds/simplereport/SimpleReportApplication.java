@@ -12,9 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import gov.cdc.usds.simplereport.config.InitialSetupProperties;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 
 @SpringBootApplication
 @EnableScheduling

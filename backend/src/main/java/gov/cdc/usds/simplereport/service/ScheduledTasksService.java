@@ -15,13 +15,13 @@ public class ScheduledTasksService {
         _dataHubUploaderService = dataHubUploaderService;
     }
 
-// Example of how to run periodically, save for future use (and testing)
-    private static final int FIXED_DELAY_MS = 1000*60*5;  // fixed period in milliseconds after last task ends
+    // Example of how to run periodically, save for future use (and testing)
+    private static final int FIXED_DELAY_MS = 1000*60*30;  // fixed period in milliseconds after last task ends
 
-    @Scheduled(fixedDelay = FIXED_DELAY_MS)
+    @Scheduled(fixedDelay = FIXED_DELAY_MS, initialDelay = FIXED_DELAY_MS)
     public void runOnDelay() {
         LOG.info("Delay periodic run: Start");
-        _dataHubUploaderService.dataHubUploaderTask();
+        // _dataHubUploaderService.dataHubUploaderTask();
         LOG.info("Delay periodic run: Finish");
     }
 
