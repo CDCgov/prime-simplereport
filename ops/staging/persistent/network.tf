@@ -29,7 +29,7 @@ resource "azurerm_subnet" "webapp" {
   name                 = "${local.project}-${local.name}-${local.env}-webapp"
   resource_group_name  = data.azurerm_resource_group.stg.name
   virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = ["10.3.100.0/24"]
+  address_prefixes     = ["10.4.100.0/24"]
 
   lifecycle {
     ignore_changes = [delegation]
