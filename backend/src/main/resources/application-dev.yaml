@@ -46,7 +46,5 @@ simple-report:
     uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
     maxcsvrows: 999
     serviceuuid: ${datahubUploadServiceId:00000000-0000-0000-dddd-000000000001}
-#    apikey: ${datahubApiKey:MISSING_DEV_DATAHUB_KEY}
-#    slacknotifywebhookurl: ${slackNotifyWebHookUrl:MISSING_DEV_SLACK_WEBHOOK_URL}
-    apikey: "ya9Lu8OygA0le9pxb8B0apmB3F5ht4aQSCohItN5JZdXs65oZ/tWDA=="
-    slacknotifywebhookurl: "https://hooks.slack.com/services/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"
+    apikey: ${datahubApiKey:MISSING_DEV_DATAHUB_KEY}
+    slacknotifywebhookurl: ${slackNotifyWebHookUrl:MISSING_DEV_SLACK_WEBHOOK_URL}
