@@ -1,0 +1,36 @@
+name: Deploy Frontend Azure Resources
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main # TODO change to stg for branch based deploys
+    paths:
+      - "frontend/**"
+
+env:
+  ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
+  ACR_ADMIN_PASWORD: ${{ secrets.ACR_ADMIN_PASWORD }}
+  ACR_REPO_URL: ${{ secrets.ACR_REPO_URL }}
+
+defaults:
+  run:
+    working-directory: ./frontend
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: "14"
+      - name: Install dependencies
+        run: yarn install
+      - name: Build deploy artifact
+        run: yarn run build
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: Deploy frontend app
+        run: yarn run deploy-azure-stg
