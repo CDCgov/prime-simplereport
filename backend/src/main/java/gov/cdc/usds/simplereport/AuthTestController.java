@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class AuthTestController {
     }
 
     @GetMapping("/authTest/authorities")
-    public Collection<? extends GrantedAuthority> getAuthorities(Authentication auth) {
-        return auth.getAuthorities();
+    public Collection<GrantedAuthority> getAuthorities(Authentication auth) {
+        return Collections.unmodifiableCollection(auth.getAuthorities());
     }
 }

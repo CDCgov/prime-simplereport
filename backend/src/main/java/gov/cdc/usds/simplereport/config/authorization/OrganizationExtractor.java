@@ -48,7 +48,6 @@ public class OrganizationExtractor
                 }
             } catch (IllegalArgumentException e) {
                 LOG.debug("Unexpected role constant {}", claimedRole);
-                continue;
             }
         }
         if (rolesFound.isEmpty()) {

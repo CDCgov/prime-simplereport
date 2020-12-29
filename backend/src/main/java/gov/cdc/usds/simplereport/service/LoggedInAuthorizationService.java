@@ -18,10 +18,10 @@ public class LoggedInAuthorizationService implements AuthorizationService {
     private OrganizationExtractor _extractor;
     private OrganizationInitializingService _initService;
 
-    public LoggedInAuthorizationService(OrganizationExtractor _extractor, OrganizationInitializingService _initService) {
+    public LoggedInAuthorizationService(OrganizationExtractor extractor, OrganizationInitializingService initService) {
         super();
-        this._extractor = _extractor;
-        this._initService = _initService;
+        this._extractor = extractor;
+        this._initService = initService;
     }
 
     @Override
