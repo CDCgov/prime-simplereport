@@ -28,9 +28,11 @@ import org.springframework.web.client.RestTemplate;
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -65,7 +67,9 @@ public class DataHubUploaderService {
 
     // todo: move to these somewhere common
     private static String dateToUTCString(Date d) {
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(d);
+        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        return simpleDateFormat.format(d);
     }
 
     private static Date utcStringToDate(String s) {
@@ -216,9 +220,6 @@ public class DataHubUploaderService {
     // new Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1));
     @Transactional
     public void DataHubUploaderTask() {
-        // end range is back 1 minute, this is to avoid selecting transactions that
-        // may still be rolled back.
-        final Date DATE_1MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1));
 
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
@@ -247,6 +248,10 @@ public class DataHubUploaderService {
         _dataHubUploadRepo.save(newUpload);
 
         try {
+            // end range is back 1 minute, this is to avoid selecting transactions that
+            // may still be rolled back.
+            final Timestamp DATE_1MIN_AGO = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
+
             this._createTestEventCSV(lastTimestamp, DATE_1MIN_AGO);
             _dataHubUploadRepo.save(newUpload
                     .setRecordsProcessed(_rowCount)

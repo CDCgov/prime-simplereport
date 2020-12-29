@@ -16,14 +16,14 @@ public class ScheduledTasksService {
     }
 
 // Example of how to run periodically, save for future use (and testing)
-//    private static final int FIXED_DELAY_MS = 1000*60*5;  // fixed period in milliseconds after last task ends
-//
-//    @Scheduled(fixedDelay = FIXED_DELAY_MS)
-//    public void runOnDelay() {
-//        LOG.info("Delay periodic run: Start");
-//        _dataHubUploaderService.DataHubUploaderTask();
-//        LOG.info("Delay periodic run: Finish");
-//    }
+    private static final int FIXED_DELAY_MS = 1000*60*5;  // fixed period in milliseconds after last task ends
+
+    @Scheduled(fixedDelay = FIXED_DELAY_MS)
+    public void runOnDelay() {
+        LOG.info("Delay periodic run: Start");
+        _dataHubUploaderService.DataHubUploaderTask();
+        LOG.info("Delay periodic run: Finish");
+    }
 
     // see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html
     // Try to pick times where most of the US is on the same calendar date.
