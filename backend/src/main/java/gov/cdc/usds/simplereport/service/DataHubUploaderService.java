@@ -162,7 +162,7 @@ public class DataHubUploaderService {
         this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
     }
 
-    private void uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
+    private void uploadCSVDocument(final String apiKey) throws RestClientException {
         ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents.getBytes(StandardCharsets.UTF_8));
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
