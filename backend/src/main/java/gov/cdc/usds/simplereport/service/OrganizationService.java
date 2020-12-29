@@ -1,13 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -24,29 +25,32 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 public class OrganizationService {
 
 	private OrganizationRepository _repo;
-	private OrganizationInitializingService _initService;
 	private FacilityRepository _facilityRepo;
 	private ProviderRepository _providerRepo;
+	private AuthorizationService _authService;
 
 	public OrganizationService(OrganizationRepository repo,
 			FacilityRepository facilityRepo,
-			OrganizationInitializingService initService,
+			AuthorizationService authService,
 			ProviderRepository providerRepo) {
 		_repo = repo;
 		_facilityRepo = facilityRepo;
-		_initService = initService;
+		_authService = authService;
 		_providerRepo = providerRepo;
 	}
 
-	public Organization getCurrentOrganization() {
-		_initService.initAll();
-		Optional<Organization> maybe = _repo.findByExternalId(_initService.getDefaultOrganizationId());
-		if (maybe.isPresent()) {
-			return maybe.get();
-		} else {
-			throw new RuntimeException("Default organization not found: serious troubles");
-		}
-	}
+    public Organization getCurrentOrganization() {
+        List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
+        List<String> candidateExternalIds = orgRoles.stream()
+                .map(OrganizationRoles::getOrganizationExternalId)
+                .collect(Collectors.toList());
+        List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
+        if (validOrgs.size() == 1) {
+            return validOrgs.get(0);
+        } else {
+            throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
+        }
+    }
 
 	public void assertFacilityNameAvailable(String testingFacilityName) {
 		Organization org = this.getCurrentOrganization();

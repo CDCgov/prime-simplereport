@@ -39,7 +39,6 @@ public class QueueManagementTest extends BaseApiTest {
 
     @BeforeEach
     public void init() {
-        truncateDb();
         _org = _orgService.getCurrentOrganization();
         _site = _orgService.getFacilities(_org).get(0);
     }

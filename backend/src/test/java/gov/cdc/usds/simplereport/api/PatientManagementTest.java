@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -18,10 +17,6 @@ import com.graphql.spring.boot.test.GraphQLResponse;
  */
 public class PatientManagementTest extends BaseApiTest {
 
-    @BeforeEach
-    public void setup() {
-        truncateDb();
-    }
 
     @Test
     public void createAndFetchOnePatientUsDate() throws Exception {
