@@ -16,11 +16,6 @@ public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID
     // @Query("from #{#entityName} q where t.createdAt > (cast(?1 as timestamp) and t.createdAt <= (cast(?1 as timestamp) order by createdAt")
     public DataHubUpload queryDataHubUploadsByCreatedAtBetweenOrderByCreatedAtAsc(Date earliest, Date latest);
 
-    // note: this will match the last highest value. So that could be hours in the past.
-    public DataHubUpload queryTopByCreatedAtBeforeOrderByCreatedAtAsc(Date latest);
-    // Spring's function names that sounds more like incantation chants than coding
-    // https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.limit-query-result
-
     // @Query("FROM #{#entityName} e WHERE e.job_state=?1 ORDER BY latest_recorded_timestamp DESC LIMIT 1")
     public DataHubUpload findDistinctTopByJobStateOrderByLatestRecordedTimestampDesc(String jobState);
 

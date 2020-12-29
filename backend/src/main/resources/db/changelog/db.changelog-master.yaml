@@ -1029,3 +1029,11 @@ databaseChangeLog:
                   remarks: Upperbounds timestamp in test_event entities using. Entities with created_by <= this value were sent.
                   constraints:
                     nullable: false
+        - createIndex:
+            indexName: data_hub_upload_latest_recorded_timestamp_index
+            tableName: data_hub_upload
+            unique: true
+            columns:
+              - column:
+                  name: latest_recorded_timestamp
+                  descending: true
