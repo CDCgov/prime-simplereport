@@ -54,47 +54,37 @@ resource "okta_auth_server_claim" "given_name" {
   value          = "user.firstName"
 }
 
-resource "okta_auth_server_claim" "prod_tenant_roles" {
+resource "okta_auth_server_claim" "simplereport_prod_roles" {
   auth_server_id = data.okta_auth_server.default.id
   claim_type = "RESOURCE"
   name = "prod_roles"
   value_type = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value = "PROD-TENANT:"
+  value = "SR-PROD-"
   scopes = [
     okta_auth_server_scope.sr_prod.name]
 }
 
-resource "okta_auth_server_claim" "stg_tenant_roles" {
+resource "okta_auth_server_claim" "simplereport_stg_roles" {
   auth_server_id    = data.okta_auth_server.default.id
   claim_type        = "RESOURCE"
   name              = "staging_roles"
   value_type        = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value             = "STG-TENANT:"
+  value             = "SR-STG-"
   scopes            = [
     okta_auth_server_scope.sr_stg.name]
 }
 
-resource "okta_auth_server_claim" "devtest_tenant_roles" {
+resource "okta_auth_server_claim" "simplereport_devtest_roles" {
   auth_server_id    = data.okta_auth_server.default.id
   claim_type        = "RESOURCE"
   name              = "devtest_roles"
   value_type        = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value             = "TEST-TENANT:"
+  value             = "SR-TEST-"
   scopes            = [
     okta_auth_server_scope.sr_devtest.name]
-}
-
-resource "okta_auth_server_claim" "is_simplereport_admin" {
-  auth_server_id    = data.okta_auth_server.default.id
-  claim_type        = "RESOURCE"
-  name              = "is_simplereport_admin"
-  value_type        = "EXPRESSION"
-  value             = "isMemberOfGroupName(\"Prime SimpleReport Admins\")"
-  scopes            = [
-    okta_auth_server_scope.sr.name]
 }
 
 // Create the CDC/USDS user groups
@@ -103,9 +93,19 @@ resource "okta_group" "prime_users" {
   description = "All Prime team members"
 }
 
-resource "okta_group" "prime_simplereport_admins" {
-  name        = "Prime SimpleReport Admins"
-  description = "Application Administrators for SimpleReport"
+resource "okta_group" "simplereport_prod_admins" {
+  name        = "SR-PROD-ADMINS"
+  description = "PRODUCTION Application Administrators for SimpleReport"
+}
+
+resource "okta_group" "simplereport_stg_admins" {
+  name        = "SR-STG-ADMINS"
+  description = "STAGING Application Administrators for SimpleReport"
+}
+
+resource "okta_group" "simplereport_devtest_admins" {
+  name        = "SR-TEST-ADMINS"
+  description = "DEV/TEST Application Administrators for SimpleReport"
 }
 
 // Create a sign on policy requiring MFA
