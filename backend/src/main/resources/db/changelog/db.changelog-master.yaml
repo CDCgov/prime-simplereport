@@ -69,9 +69,25 @@ databaseChangeLog:
             tableName: api_user
             remarks: Any user who authenticates to the API to take actions using it.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *updated_at_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
               - column:
                   name: login_email
                   type: *string
@@ -107,12 +123,47 @@ databaseChangeLog:
             tableName: device_type
             remarks: Testing devices that may be present.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: name
                   type: *string
@@ -139,12 +190,47 @@ databaseChangeLog:
             tableName: provider
             remarks: A provider who can (we hope) write test orders.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: first_name
                   remarks: The provider's given name, if any.
@@ -197,12 +283,47 @@ databaseChangeLog:
             tableName: organization
             remarks: A site where testing occurs, and also the main user grouping entity.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: facility_name
                   type: *string
@@ -262,12 +383,47 @@ databaseChangeLog:
             tableName: person
             remarks: The personal information we store about users and patients
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  constraints:
+                    nullable: false
               - column:
                   name: organization_id
                   remarks: Foreign key to the facility/organization responsible for entering this person's information.
@@ -359,11 +515,41 @@ databaseChangeLog:
         - createTable:
             tableName: patient_answers
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
               - column:
                   name: ask_on_entry
                   type: jsonb
@@ -371,11 +557,41 @@ databaseChangeLog:
         - createTable:
             tableName: test_event
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
@@ -415,11 +631,41 @@ databaseChangeLog:
             tableName: test_order
             remarks: Test orders, whether pending, completed or canceled.
             columns:
-              - column: *pk_column
-              - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
               - column:
                   name: patient_id
                   remarks: The person who is being given the test.
@@ -701,6 +947,18 @@ databaseChangeLog:
                   name: default_device_type
               - column:
                   name: ordering_provider_id
+  - changeSet:
+      id: date-tested-backdate
+      author: tbest@cdc.gov
+      comment: add timestamp for date corrections
+      changes:
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: date_tested_backdate
+                  type: DATETIME
+                  remarks: timestamp to store a user correction to when the test was ordered
   - changeSet:
       id: add-data-hub-upload
       author: tnielsen2@cdc.gov

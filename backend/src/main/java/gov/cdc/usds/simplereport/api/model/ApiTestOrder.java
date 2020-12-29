@@ -82,7 +82,7 @@ public class ApiTestOrder {
 		return order.getTestResult().toString();
 	}
 
-	public LocalDate getDateTested() {
+	public Date getDateTested() {
 		return order.getDateTested();
 	}
 }

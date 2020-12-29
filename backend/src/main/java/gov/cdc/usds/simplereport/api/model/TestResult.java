@@ -88,7 +88,7 @@ public class TestResult {
 
 
 	public Date getDateTested() {
-		return event.getCreatedAt();
+		return event.getTestOrder().getDateTested();
 	}
 
 

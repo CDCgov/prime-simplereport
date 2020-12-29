@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.Date;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,7 +76,7 @@ public class TestOrderService {
         return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
     }
 
-    public TestOrder editQueueItem(String id, String deviceId, String result) {
+    public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
         TestOrder order = this.getTestOrder(id);
 
         if (deviceId != null) {
@@ -85,10 +86,12 @@ public class TestOrderService {
 
         order.setResult(result == null? null :TestResult.valueOf(result));
 
+        order.setDateTestedBackdate(dateTested);
+
         return _repo.save(order);
     }
 
-  public void addTestResult(String deviceID, TestResult result, String patientId) {
+  public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
@@ -96,6 +99,7 @@ public class TestOrderService {
 		.orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(deviceType);
     order.setResult(result);
+    order.setDateTestedBackdate(dateTested);
     order.markComplete();
 
     TestEvent testEvent = new TestEvent(order);
