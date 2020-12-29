@@ -25,14 +25,14 @@ public class DataHubUpload {
 
     // We have to pass config into the constructor because Configuration doesn't work in constructors
     @ConstructorBinding
-    public DataHubUpload(@NotNull DataHubConfig _config) {
-        createdBy = UUID.fromString(_config.getServiceUuid());
+    public DataHubUpload(@NotNull DataHubConfig config) {
+        createdBy = UUID.fromString(config.getServiceUuid());
         updatedBy = createdBy;
         jobState = "INIT";
         recordsProcessed = 0;
         responseData = "{}";
-        earliestRecordedTimestamp = _config.EARLIEST_DATE;
-        latestRecordedTimestamp = _config.EARLIEST_DATE;
+        earliestRecordedTimestamp = config.EARLIEST_DATE;
+        latestRecordedTimestamp = config.EARLIEST_DATE;
     }
 
     @Column(updatable = false, nullable = false)

@@ -21,7 +21,7 @@ public class ScheduledTasksService {
     @Scheduled(fixedDelay = FIXED_DELAY_MS)
     public void runOnDelay() {
         LOG.info("Delay periodic run: Start");
-        _dataHubUploaderService.DataHubUploaderTask();
+        _dataHubUploaderService.dataHubUploaderTask();
         LOG.info("Delay periodic run: Finish");
     }
 
@@ -30,7 +30,7 @@ public class ScheduledTasksService {
     @Scheduled(cron = "0 0 4 * * *", zone="America/New_York")
     public void runDaily() {
         LOG.info("Daily Cron: Start");
-        _dataHubUploaderService.DataHubUploaderTask();
+        _dataHubUploaderService.dataHubUploaderTask();
         LOG.info("Daily Cron: Finish");
     }
 }

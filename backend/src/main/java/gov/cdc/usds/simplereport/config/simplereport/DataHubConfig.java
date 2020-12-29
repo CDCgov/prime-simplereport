@@ -17,7 +17,7 @@ public final class DataHubConfig {
     private final String apiKey;
     private final String slackNotifyWebhookUrl;
 
-    public Date EARLIEST_DATE = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+    public final Date EARLIEST_DATE = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
 
     public DataHubConfig(boolean uploadenabled, String uploadurl, int maxcsvrows, String serviceuuid, String apikey,
                          String slacknotifywebhookurl) {

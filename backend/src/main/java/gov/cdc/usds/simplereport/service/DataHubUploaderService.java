@@ -78,8 +78,7 @@ public class DataHubUploaderService {
 
     private void sendSlackChannelMessage(String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
         if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
-            LOG.error("SlackChannelNotConfigured. Message not sent '" + titleMsg + "' \n" +
-                    String.join("\n ", markupMsgs));
+            LOG.error("SlackChannelNotConfigured. Message not sent '{}' \n {}", titleMsg, markupMsgs);
             return;
         }
         try {
@@ -103,7 +102,7 @@ public class DataHubUploaderService {
                         "text", Map.of(
                                 "type", "mrkdwn",
                                 "text", msg)));
-                if (separateMsgs) {
+                if (Boolean.TRUE.equals(separateMsgs)) {
                     blocks.put(Map.of("type", "divider"));
                 }
             });
@@ -117,7 +116,7 @@ public class DataHubUploaderService {
     }
 
     // we put this in a function because the query can return null and it abstracts it out
-    private Date _getLatestRecordedTimestamp() {
+    private Date getLatestRecordedTimestamp() {
         DataHubUpload lastUpload = _dataHubUploadRepo.findDistinctTopByJobStateOrderByLatestRecordedTimestampDesc(DataHubUpload.SUCCESS_JOB);
         if (lastUpload != null) {
             return lastUpload.getLatestRecordedTimestamp();
@@ -127,17 +126,17 @@ public class DataHubUploaderService {
     }
 
     // backwards compatible while refactoring
-    private void _createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
+    private void createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
         final Date DATE_1MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1));
         if (lastEndCreateOn.length() == 0) {
             // testing only, just query everything
             lastEndCreateOn = "2020-01-01T00:00:00.00Z";
             LOG.info("Empty startupdateby so using 2020-01-01");
         }
-        _createTestEventCSV(utcStringToDate(lastEndCreateOn), DATE_1MIN_AGO);
+        createTestEventCSV(utcStringToDate(lastEndCreateOn), DATE_1MIN_AGO);
     }
 
-    private void _createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
+    private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
             throws IOException, DateTimeParseException, NoResultException {
         List<TestEvent> events = _testReportEventsRepo.findAllByCreatedAtBetweenOrderByCreatedAtDesc(earlistCreatedAt, latestCreateOn);
         if (events.size() == 0) {
@@ -163,7 +162,7 @@ public class DataHubUploaderService {
         this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
     }
 
-    private void _uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
+    private void uploadCSVDocument(final String apiKey) throws IOException, RestClientException {
         ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents.getBytes(StandardCharsets.UTF_8));
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
@@ -180,7 +179,7 @@ public class DataHubUploaderService {
 
     public String creatTestCVSForDataHub(String lastEndCreateOn) {
         try {
-            this._createTestEventCSV(lastEndCreateOn);
+            this.createTestEventCSV(lastEndCreateOn);
             return this._fileContents;
         } catch (IOException err) {
             return err.toString();
@@ -196,8 +195,8 @@ public class DataHubUploaderService {
     @Transactional(readOnly = true)
     public Map<String, String> uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
-            this._createTestEventCSV(lastEndCreateOn);
-            this._uploadCSVDocument(apiKey);
+            this.createTestEventCSV(lastEndCreateOn);
+            this.uploadCSVDocument(apiKey);
 
             return Map.of(
                     "result", "ok",
@@ -217,9 +216,8 @@ public class DataHubUploaderService {
         }
     }
 
-    // new Date(System.currentTimeMillis() - TimeUnit.HOURS.toMillis(1));
     @Transactional
-    public void DataHubUploaderTask() {
+    public void dataHubUploaderTask() {
 
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
@@ -241,7 +239,7 @@ public class DataHubUploaderService {
         }
 
         // The start date is the last end date. Can be null for empty database.
-        Date lastTimestamp = _getLatestRecordedTimestamp();
+        Date lastTimestamp = getLatestRecordedTimestamp();
         DataHubUpload newUpload = new DataHubUpload(_config)
                 .setJobState("INIT")
                 .setEarliestRecordedTimestamp(lastTimestamp);
@@ -250,17 +248,16 @@ public class DataHubUploaderService {
         try {
             // end range is back 1 minute, this is to avoid selecting transactions that
             // may still be rolled back.
-            final Timestamp DATE_1MIN_AGO = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
+            final Timestamp DATE_ONE_MIN_AGO = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
 
-            this._createTestEventCSV(lastTimestamp, DATE_1MIN_AGO);
+            this.createTestEventCSV(lastTimestamp, DATE_ONE_MIN_AGO);
             _dataHubUploadRepo.save(newUpload
                     .setRecordsProcessed(_rowCount)
                     .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp)));
 
-            this._uploadCSVDocument(_config.getApiKey());
+            this.uploadCSVDocument(_config.getApiKey());
 
-            // todo: parse json and fill in httpResult and send notice to slack
-            // after parsing json, run sanity checks like total records processed matches what we sent.
+            // todo: parse json run sanity checks like total records processed matches what we sent.
 
             _dataHubUploadRepo.save(newUpload
                     .setResponseData(_resultJson)
@@ -275,9 +272,9 @@ public class DataHubUploaderService {
         }
 
         // Build and send message to slackChannel
-        ArrayList<String> message = new ArrayList<String>();
+        ArrayList<String> message = new ArrayList<>();
         message.add("Result:\n> ```" + newUpload.getJobState() + "\n```");
-        message.add("RecordsProcessed: " + String.valueOf(newUpload.getRecordsProcessed()));
+        message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
         message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
         message.add("setResponseData:");
         message.add("> ``` " + newUpload.getResponseData() + " ```");
