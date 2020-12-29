@@ -3,4 +3,9 @@ graphql.servlet.cors:
     - https://simplereport.cdc.gov
 simple-report:
   data-hub:
+    uploadenabled: false
     uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
+    serviceuuid: ${datahubUploadServiceId:d0000000-0000-0000-0000-000000000002}
+    maxcsvrows: 999
+    apikey: ${datahubApiKey:MISSING_PROD_DATAHUB_KEY}
+    slackNotifyWebHookUrl: ${slackNotifyWebHookUrl:MISSING_PROD_SLACK_WEBHOOK_URL}

@@ -701,3 +701,73 @@ databaseChangeLog:
                   name: default_device_type
               - column:
                   name: ordering_provider_id
+  - changeSet:
+      id: add-data-hub-upload
+      author: tnielsen2@cdc.gov
+      comment: Add data_hub_upload table used to the automated results uploader.
+      changes:
+        - createTable:
+            tableName: data_hub_upload
+            remarks: Track uploads and results of test_events to the data-hub
+            columns:
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_state
+                  type: *string
+                  remarks: State of this upload. Enumerated value
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The service/machine/user that created this entity.
+                  constraints:
+                    nullable: true
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The service/machine/user that created this entity.
+                  constraints:
+                    nullable: true
+              - column:
+                  name: records_processed
+                  type: int
+                  remarks: Http response code from data-hub
+              - column:
+                  name: http_response
+                  type: int
+                  remarks: Http response code from data-hub
+              - column:
+                  name: response_data
+                  type: jsonb
+                  remarks: Response json from data-hub
+              - column:
+                  name: earliest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value were sent.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: latest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Upperbounds timestamp in test_event entities using. Entities with created_by <= this value were sent.
+                  constraints:
+                    nullable: false
