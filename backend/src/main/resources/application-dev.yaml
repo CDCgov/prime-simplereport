@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security,auth-dev,local
+  profiles.include: no-security,auth-dev,single-tenant,local
   liquibase:
     user: simple_report_migrations
     password: migrations456

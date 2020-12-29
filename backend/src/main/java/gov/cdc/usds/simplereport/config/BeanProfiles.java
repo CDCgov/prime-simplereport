@@ -10,4 +10,13 @@ public interface BeanProfiles {
     String AUTHORIZATION_DEV = "auth-dev";
     /** Profile for mocking and bypassing most security (DEV OR TEST ONLY) */
     String NO_SECURITY = "no-security";
+    /**
+     * Profile where we assume there is a single tenant and do not check for roles
+     * in the authentication token.
+     */
+    String SINGLE_TENANT = "single-tenant";
+    /**
+     * Profile for local development, sometimes also used for QA/Demo environments.
+     */
+    String DEVELOPMENT = "dev";
 }
