@@ -21,6 +21,8 @@ interface Props {
   className?: string;
   defaultSelect?: boolean;
   required?: boolean;
+  errorMessage?: React.ReactNode;
+  validationStatus?: "error" | "success";
 }
 
 const Dropdown: React.FC<Props> = ({
@@ -34,23 +36,29 @@ const Dropdown: React.FC<Props> = ({
   selectedValue,
   defaultSelect,
   required,
+  validationStatus,
+  errorMessage,
 }) => {
   const [selectId] = useUniqueIds("drop", 1);
 
   return (
-    <div className={classnames("prime-dropdown", className)}>
-      {label ? (
+    <div
+      className={classnames(
+        "usa-form-group prime-dropdown ",
+        validationStatus === "error" && "usa-form-group--error",
+        className
+      )}
+    >
+      {label && (
         <label className="usa-label" htmlFor={selectId}>
-          {label}
-          {required ? (
-            <span>
-              {" "}
-              <Required />
-            </span>
-          ) : null}
+          {required ? <Required label={label} /> : label}
         </label>
-      ) : null}
-
+      )}
+      {validationStatus === "error" && (
+        <div role="alert" className="usa-error-message">
+          {errorMessage}
+        </div>
+      )}
       <select
         className="usa-select"
         name={name}
