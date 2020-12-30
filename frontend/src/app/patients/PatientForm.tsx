@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
@@ -23,6 +23,19 @@ import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 import FormGroup from "../commonComponents/FormGroup";
+import { string } from "prop-types";
+
+const GET_FACILITIES_QUERY = gql`
+  query GetFacilities {
+    organization {
+      internalId
+      testingFacility {
+        id
+        name
+      }
+    }
+  }
+`;
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -139,14 +152,32 @@ const PatientForm = (props: Props) => {
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
 
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const { data, loading, error } = useQuery(GET_FACILITIES_QUERY, {
+    fetchPolicy: "no-cache",
+  });
+  if (loading) {
+    return <p> Loading... </p>;
+  }
+  if (error) {
+    throw error;
+  }
+  if (data === undefined) {
+    return <p>Error: facility not found</p>;
+  }
+  const facilityList = data.organization.testingFacility.map((f: any) => ({
+    label: f.name,
+    value: f.id,
+  }));
+  // This select list is a bit strange because we need real nulls
+  // but the initial value can be undefined meaning no selection
+  facilityList.unshift({ label: "All facilities", value: "" });
+
+  const onChange = (e: any) => {
     let value = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
         ...patient[e.target.name],
-        [e.target.value]: (e.target as any).checked,
+        [e.target.value]: e.target.checked,
       };
     }
     setFormChanged(true);
@@ -287,7 +318,7 @@ const PatientForm = (props: Props) => {
             required
           />
           <TextInput
-            label="Middle Name"
+            label="Middle Name (optional)"
             name="middleName"
             value={patient.middleName}
             onChange={onChange}
@@ -318,6 +349,22 @@ const PatientForm = (props: Props) => {
               { label: "Student", value: "STUDENT" },
               { label: "Visitor", value: "VISITOR" },
             ]}
+          />
+          <Dropdown
+            label="Facility"
+            name="facilityId"
+            selectedValue={
+              patient.facilityId === null
+                ? undefined
+                : patient.facilityId || props.activeFacilityId
+            }
+            onChange={(e) =>
+              onChange({
+                target: { name: e.target.name, value: e.target.value || null },
+              })
+            }
+            options={facilityList}
+            defaultSelect
           />
         </div>
         <div className="prime-form-line">
