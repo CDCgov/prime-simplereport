@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.config.simplereport;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-import java.time.Instant;
-import java.util.Date;
 
 @ConfigurationProperties(prefix = "simple-report.data-hub")
 @ConstructorBinding
@@ -16,8 +14,6 @@ public final class DataHubConfig {
     private final String serviceUuid;
     private final String apiKey;
     private final String slackNotifyWebhookUrl;
-
-    public final Date EARLIEST_DATE = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
 
     public DataHubConfig(boolean uploadenabled, String uploadurl, int maxcsvrows, String serviceuuid, String apikey,
                          String slacknotifywebhookurl) {

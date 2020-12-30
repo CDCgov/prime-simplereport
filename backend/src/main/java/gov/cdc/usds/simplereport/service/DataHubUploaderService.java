@@ -35,7 +35,11 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -123,7 +127,9 @@ public class DataHubUploaderService {
         if (lastUpload != null) {
             return lastUpload.getLatestRecordedTimestamp();
         } else {
-            return _config.EARLIEST_DATE;
+            // This should only happen when database is empty
+            LOG.warn("Returning default timestamp - first run only");
+            return Date.from(Instant.parse("2020-01-01T00:00:00Z"));
         }
     }
 
@@ -183,7 +189,7 @@ public class DataHubUploaderService {
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
-    public String creatTestCVSForDataHub(String lastEndCreateOn) {
+    public String createTestCVSForDataHub(String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);
             return this._fileContents;
@@ -281,6 +287,7 @@ public class DataHubUploaderService {
         ArrayList<String> message = new ArrayList<>();
         message.add("Result:\n> ```" + newUpload.getJobState() + "\n```");
         message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
+        message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
         message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
         message.add("setResponseData:");
         message.add("> ``` " + newUpload.getResponseData() + " ```");

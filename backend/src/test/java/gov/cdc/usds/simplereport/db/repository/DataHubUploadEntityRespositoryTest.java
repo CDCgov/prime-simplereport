@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -22,7 +23,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
     @Test
     void Test() {
-        final Date DATE_OLDEST = _config.EARLIEST_DATE;
+        final Date DATE_OLDEST = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
         final Date DATE_3MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(3));
         final Date DATE_4MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(4));
         final Date DATE_5MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5));

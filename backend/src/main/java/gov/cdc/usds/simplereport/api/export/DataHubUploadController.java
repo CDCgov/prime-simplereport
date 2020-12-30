@@ -48,7 +48,7 @@ public class DataHubUploadController {
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
-        response.getWriter().print(_hubuploadservice.creatTestCVSForDataHub(startupdateby));
+        response.getWriter().print(_hubuploadservice.createTestCVSForDataHub(startupdateby));
         return ResponseEntity.accepted().build();
     }
 }

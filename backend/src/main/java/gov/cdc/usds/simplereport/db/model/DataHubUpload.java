@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
+import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -31,8 +32,9 @@ public class DataHubUpload {
         jobState = "INIT";
         recordsProcessed = 0;
         responseData = "{}";
-        earliestRecordedTimestamp = config.EARLIEST_DATE;
-        latestRecordedTimestamp = config.EARLIEST_DATE;
+        // give some non-null default so things (like logging) don't fail.
+        earliestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+        latestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
     }
 
     @Column(updatable = false, nullable = false)
