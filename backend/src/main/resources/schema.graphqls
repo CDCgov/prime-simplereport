@@ -18,6 +18,7 @@ type DeviceType {
 }
 type Patient {
   internalId: ID
+  facility: Facility
   lookupId: String
   firstName: String
   middleName: String

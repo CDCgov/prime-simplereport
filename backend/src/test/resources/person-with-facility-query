@@ -1,0 +1,11 @@
+{ 
+  patients {
+    firstName
+    lastName
+    birthDate
+    telephone
+    facility {
+      id
+    }
+  }
+}

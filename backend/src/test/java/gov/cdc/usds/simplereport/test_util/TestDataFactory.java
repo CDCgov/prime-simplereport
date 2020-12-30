@@ -70,13 +70,13 @@ public class TestDataFactory {
     }
 
     public Person createMinimalPerson(Organization org) {
-        return createMinimalPerson(org, "John", "Brown", "Boddie", "Jr.");
+        return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
     }
 
-    public Person createMinimalPerson(Organization org, String firstName, String middleName, String lastName,
+    public Person createMinimalPerson(Organization org, Facility fac, String firstName, String middleName, String lastName,
             String suffix) {
         PersonName names = new PersonName(firstName, middleName, lastName, suffix);
-        return createMinimalPerson(org, null, names);
+        return createMinimalPerson(org, fac, names);
     }
 
     public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {
