@@ -8,4 +8,4 @@ simple-report:
     serviceuuid: ${datahubUploadServiceId:d0000000-0000-0000-0000-000000000002}
     maxcsvrows: 999
     apikey: ${datahubApiKey:MISSING_PROD_DATAHUB_KEY}
-    slackNotifyWebhookUrl: ${slackNotifyWebhookUrl:MISSING_PROD_SLACK_WEBHOOK_URL}
+    secretSlackNotifyWebhookUrl: ${secretSlackNotifyWebhookUrl:MISSING_PROD_SLACK_WEBHOOK_URL}

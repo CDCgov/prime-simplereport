@@ -189,7 +189,7 @@ public class DataHubUploaderService {
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
-    public String createTestCVSForDataHub(String lastEndCreateOn) {
+    public String createTestCSVForDataHub(String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);
             return this._fileContents;
@@ -205,7 +205,7 @@ public class DataHubUploaderService {
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
     @Transactional(readOnly = true)
-    public Map<String, String> uploadTestEventCVSToDataHub(final String apiKey, String lastEndCreateOn) {
+    public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);
             this.uploadCSVDocument(apiKey);

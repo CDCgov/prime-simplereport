@@ -33,7 +33,7 @@ public class DataHubUploadController {
     public String uploadTestEventCSVToDataHub(@RequestParam String apikey,
                                               @RequestParam(defaultValue = "") String startupdateby
     ) throws IOException {
-        Map<String, String> result = _hubuploadservice.uploadTestEventCVSToDataHub(apikey, startupdateby);
+        Map<String, String> result = _hubuploadservice.uploadTestEventCSVToDataHub(apikey, startupdateby);
         ObjectMapper mapperObj = new ObjectMapper();
         return mapperObj.writeValueAsString(result);
     }
@@ -48,7 +48,7 @@ public class DataHubUploadController {
         String headerKey = "Content-Disposition";
         String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
         response.setHeader(headerKey, headerValue);
-        response.getWriter().print(_hubuploadservice.createTestCVSForDataHub(startupdateby));
+        response.getWriter().print(_hubuploadservice.createTestCSVForDataHub(startupdateby));
         return ResponseEntity.accepted().build();
     }
 }

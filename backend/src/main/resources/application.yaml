@@ -65,4 +65,4 @@ simple-report:
     maxcsvrows: 0
     serviceuuid: ""
     apikey: ""
-    slacknotifywebhookurl: ""
+    secretslacknotifywebhookurl: ""

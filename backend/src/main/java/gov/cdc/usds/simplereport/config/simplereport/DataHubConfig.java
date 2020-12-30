@@ -13,16 +13,16 @@ public final class DataHubConfig {
     private final int maxCsvRows;
     private final String serviceUuid;
     private final String apiKey;
-    private final String slackNotifyWebhookUrl;
+    private final String secretSlackNotifyWebhookUrl;
 
     public DataHubConfig(boolean uploadenabled, String uploadurl, int maxcsvrows, String serviceuuid, String apikey,
-                         String slacknotifywebhookurl) {
+                         String secretslacknotifywebhookurl) {
         this.uploadenabled = uploadenabled;
         this.uploadUrl = uploadurl;
         this.maxCsvRows = maxcsvrows;
         this.serviceUuid = serviceuuid;
         this.apiKey = apikey;
-        this.slackNotifyWebhookUrl = slacknotifywebhookurl;
+        this.secretSlackNotifyWebhookUrl = secretslacknotifywebhookurl;
     }
 
     // to change go into application-dev.yaml and/or application-test.yaml and change uploadenabled
@@ -45,6 +45,6 @@ public final class DataHubConfig {
     }
 
     public String getSlackNotifyWebhookUrl() {
-        return slackNotifyWebhookUrl;
+        return secretSlackNotifyWebhookUrl;
     }
 }
