@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -54,53 +53,21 @@ public class Facility extends OrganizationScopedEternalEntity {
 
 	protected Facility() {/* for hibernate */}
 
-	public Facility(Organization org, String facilityName, String cliaNumber, Provider orderingProvider) {
+	public Facility(Organization org, String facilityName, String cliaNumber, StreetAddress facilityAddress,
+			String phone, String email, Provider orderingProvider, DeviceType defaultDeviceType,
+			List<DeviceType> configuredDeviceTypes) {
 		super(org);
 		this.facilityName = facilityName;
 		this.cliaNumber = cliaNumber;
+		this.address = facilityAddress;
+		this.telephone = phone;
+		this.email = email;
 		this.orderingProvider = orderingProvider;
-	}
-
-	public Facility(Organization org,
-			String facilityName,
-			String cliaNumber,
-			Provider orderingProvider,
-			DeviceType defaultDeviceType) {
-		this(org, facilityName, cliaNumber, orderingProvider);
 		this.defaultDeviceType = defaultDeviceType;
 		if (defaultDeviceType != null) {
 			this.configuredDevices.add(defaultDeviceType);
 		}
-	}
-
-	public Facility(
-			Organization org,
-			String facilityName,
-			String cliaNumber,
-			Provider orderingProvider,
-			DeviceType defaultDeviceType,
-			Collection<DeviceType> configuredDevices) {
-		this(org, facilityName, cliaNumber, orderingProvider, defaultDeviceType);
-		this.configuredDevices.addAll(configuredDevices);
-	}
-
-	public Facility(Organization org, String facilityName, String cliaNumber,
-			StreetAddress facilityAddress, String phone,
-			Provider orderingProvider, 
-			DeviceType defaultDeviceType,
-			List<DeviceType> configuredDeviceTypes) {
-		this(org, facilityName, cliaNumber, orderingProvider, defaultDeviceType, configuredDeviceTypes);
-		this.address = facilityAddress;
-		this.telephone = phone;
-	}
-
-	public Facility(Organization org, String facilityName, String cliaNumber,
-			StreetAddress facilityAddress, String phone, String email,
-			Provider orderingProvider, 
-			DeviceType defaultDeviceType,
-			List<DeviceType> configuredDeviceTypes) {
-		this(org, facilityName, cliaNumber, facilityAddress, phone, orderingProvider, defaultDeviceType, configuredDeviceTypes);
-		this.email = email;
+		this.configuredDevices.addAll(configuredDeviceTypes);
 	}
 
 	public void setFacilityName(String facilityName) {

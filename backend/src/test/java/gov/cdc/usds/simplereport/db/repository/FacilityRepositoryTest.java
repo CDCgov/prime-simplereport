@@ -4,9 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 public class FacilityRepositoryTest extends BaseRepositoryTest {
 
@@ -29,13 +31,15 @@ public class FacilityRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void smokeTestDeviceOperations() {
-        Set<DeviceType> configuredDevices = new HashSet<>();
+        List<DeviceType> configuredDevices = new ArrayList<>();
         DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6");
         Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
         configuredDevices.add(_devices.save(bill));
         configuredDevices.add(_devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7")));
         Organization org = _orgs.save(new Organization("My Office", "650Mass"));
-        Facility saved = _repo.save(new Facility(org, "Third Floor", "123456", mccoy, bill, configuredDevices));
+        StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
+        Facility saved = _repo.save(new Facility(org, "Third Floor", "123456", addy, "555-867-5309",
+                "facility@test.com", mccoy, bill, configuredDevices));
         Optional<Facility> maybe = _repo.findByOrganizationAndFacilityName(org, "Third Floor");
         assertTrue(maybe.isPresent(), "should find the facility");
         Facility found = maybe.get();
