@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.time.LocalDate;
@@ -7,7 +8,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PersonService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
@@ -60,7 +61,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             city,
             state,
             zipCode,
-            telephone,
+            parsePhoneNumber(telephone),
             role,
             email,
             county,
@@ -111,7 +112,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           city,
           state,
           zipCode,
-          telephone,
+          parsePhoneNumber(telephone),
           role,
           email,
           county,
@@ -123,7 +124,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       );
   }
 
-  public Patient setPatientIsDeleted(UUID id, Boolean deleted) {
-    return new Patient(_ps.setIsDeleted(id, deleted));
+  public Person setPatientIsDeleted(UUID id, Boolean deleted) {
+    return _ps.setIsDeleted(id, deleted);
   }
 }

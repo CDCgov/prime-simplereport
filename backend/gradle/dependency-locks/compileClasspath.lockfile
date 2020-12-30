@@ -15,6 +15,7 @@ com.fasterxml.jackson.module:jackson-module-kotlin:2.11.3
 com.fasterxml.jackson.module:jackson-module-parameter-names:2.11.3
 com.fasterxml:classmate:1.5.1
 com.github.stephenc.jcip:jcip-annotations:1.0-1
+com.googlecode.libphonenumber:libphonenumber:8.12.15
 com.graphql-java-kickstart:graphiql-spring-boot-starter:8.0.0
 com.graphql-java-kickstart:graphql-java-kickstart:10.0.0
 com.graphql-java-kickstart:graphql-java-servlet:10.0.0

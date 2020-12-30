@@ -2,13 +2,12 @@ package gov.cdc.usds.simplereport.api.patient;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
-import gov.cdc.usds.simplereport.api.model.Patient;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PersonService;
 
 /**
@@ -17,17 +16,14 @@ import gov.cdc.usds.simplereport.service.PersonService;
 @Component
 public class PatientResolver implements GraphQLQueryResolver {
 
-	@Autowired
-	private PersonService ps;
+    @Autowired
+    private PersonService ps;
 
-	public List<Patient> getPatients(String facilityId) {
+    public List<Person> getPatients(UUID facilityId) {
+        return ps.getPatients(facilityId);
+    }
 
-		return ps.getPatients(facilityId == null ? null : UUID.fromString(facilityId)).stream()
-		.map(p -> new Patient(p))
-		.collect(Collectors.toList());
-	}
-
-	public Patient getPatient(String id) {
-		return new Patient(ps.getPatient(id));
-	}
+    public Person getPatient(String id) {
+        return ps.getPatient(id);
+    }
 }

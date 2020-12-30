@@ -39,7 +39,7 @@ type Patient {
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
   lastTest: TestResult
-  testResults: [PatientTestResult!]!
+  testResults: [TestResult!]!
 }
 type Facility {
   id: ID

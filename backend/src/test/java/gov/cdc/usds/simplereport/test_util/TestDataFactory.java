@@ -13,10 +13,12 @@ import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -24,6 +26,7 @@ import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 
 @Component
 public class TestDataFactory {
@@ -41,6 +44,8 @@ public class TestDataFactory {
     private DeviceTypeRepository _deviceRepo;
     @Autowired
     private TestOrderRepository _testOrderRepo;
+    @Autowired
+    private TestEventRepository _testEventRepo;
     @Autowired
     private PatientAnswersRepository _patientAnswerRepo;
 
@@ -101,6 +106,17 @@ public class TestDataFactory {
         TestOrder o = new TestOrder(p, f);
         o.setAskOnEntrySurvey(answers);
         return _testOrderRepo.save(o);
+    }
+
+    public TestEvent createTestEvent(Person p, Facility f) {
+        TestOrder o = createTestOrder(p, f);
+        o.setResult(TestResult.NEGATIVE);
+
+        TestEvent e = _testEventRepo.save(new TestEvent(o));
+        o.setTestEvent(e);
+        o.markComplete();
+        _testOrderRepo.save(o);
+        return e;
     }
 
     public DeviceType getGenericDevice() {

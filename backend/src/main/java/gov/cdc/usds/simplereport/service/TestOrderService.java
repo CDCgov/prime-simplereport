@@ -60,9 +60,9 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<TestEvent> getTestResults(String facilityId) {
+  public List<TestOrder> getTestResults(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
-    return _terepo.findAllByOrganizationAndFacility(fac.getOrganization(), fac);
+    return _repo.getTestResults(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
