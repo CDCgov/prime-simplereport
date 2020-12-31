@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 
@@ -25,20 +26,23 @@ public class PatientManagementTest extends BaseApiTest {
 
     @Autowired
     private TestDataFactory _dataFactory;
+    @Autowired
+    private OrganizationService _orgService;
 
     @BeforeEach
     public void setup() {
         truncateDb();
     }
 
+    @Test
     public void queryPatientWithFacility() throws Exception {
-        Organization org = _dataFactory.createValidOrg();
-        Facility place = _dataFactory.createValidFacility(org);
+        Organization org = _orgService.getCurrentOrganization();
+        Facility place = _orgService.getFacilities(org).get(0);
         _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
         _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
         JsonNode patients = fetchPatientsWithFacility();
-        assertEquals(place.getInternalId().toString(), patients.get(0).get("facilityId").asText());
-        assertEquals(null, patients.get(1).get("facility").get("id").asText());
+        assertEquals(true, patients.get(0).get("facility").isNull());
+        assertEquals(place.getInternalId().toString(), patients.get(1).get("facility").get("id").asText());
     }
 
     @Test
