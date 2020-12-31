@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import org.json.JSONArray;
@@ -14,7 +15,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
@@ -58,7 +58,6 @@ public class DataHubUploaderService {
     private String _resultJson;
     private int _rowCount;
 
-    @Autowired
     public DataHubUploaderService(DataHubConfig config,
                                   TestEventRepository testReportEventsRepo,
                                   DataHubUploadRespository dataHubUploadRepo) {
@@ -123,7 +122,7 @@ public class DataHubUploaderService {
 
     // we put this in a function because the query can return null and it abstracts it out
     private Date getLatestRecordedTimestamp() {
-        DataHubUpload lastUpload = _dataHubUploadRepo.findDistinctTopByJobStateOrderByLatestRecordedTimestampDesc(DataHubUpload.SUCCESS_JOB);
+        DataHubUpload lastUpload = _dataHubUploadRepo.findDistinctTopByJobStatusOrderByLatestRecordedTimestampDesc(DataHubUploadStatus.SUCCESS);
         if (lastUpload != null) {
             return lastUpload.getLatestRecordedTimestamp();
         } else {
@@ -146,7 +145,7 @@ public class DataHubUploaderService {
 
     private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
             throws IOException, DateTimeParseException, NoResultException {
-        List<TestEvent> events = _testReportEventsRepo.findAllByCreatedAtBetweenOrderByCreatedAtDesc(earlistCreatedAt, latestCreateOn);
+        List<TestEvent> events = _testReportEventsRepo.queryMatchAllBetweenDates(earlistCreatedAt, latestCreateOn);
         if (events.size() == 0) {
             throw new NoResultException();
         } else if (events.size() >= _config.getMaxCsvRows()) {
@@ -233,7 +232,7 @@ public class DataHubUploaderService {
 
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
-            LOG.info("DataHubUploaderTask not running because simple-report.data-hub.uploadenabled is false");
+            LOG.info("DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
             return;
         }
 
@@ -253,7 +252,7 @@ public class DataHubUploaderService {
         // The start date is the last end date. Can be null for empty database.
         Date lastTimestamp = getLatestRecordedTimestamp();
         DataHubUpload newUpload = new DataHubUpload(_config)
-                .setJobState("INIT")
+                .setJobStatus(DataHubUploadStatus.INIT)
                 .setEarliestRecordedTimestamp(lastTimestamp);
         _dataHubUploadRepo.save(newUpload);
 
@@ -273,19 +272,22 @@ public class DataHubUploaderService {
 
             _dataHubUploadRepo.save(newUpload
                     .setResponseData(_resultJson)
-                    .setJobState(DataHubUpload.SUCCESS_JOB));
+                    .setJobStatus(DataHubUploadStatus.SUCCESS));
 
         } catch (RestClientException | IOException err) {
             _dataHubUploadRepo.save(newUpload
                     .setResponseData(_resultJson)
-                    .setJobState(err.toString()));
+                    .setJobStatus(DataHubUploadStatus.FAIL)
+                    .setErrorMessage(err.toString()));
         } catch (NoResultException err) {
-            _dataHubUploadRepo.save(newUpload.setJobState("No matching results for the given startupdateby param"));
+            _dataHubUploadRepo.save(newUpload
+                    .setJobStatus(DataHubUploadStatus.FAIL)
+                    .setErrorMessage("No matching results for the given startupdateby param"));
         }
 
         // Build and send message to slackChannel
         ArrayList<String> message = new ArrayList<>();
-        message.add("Result:\n> ```" + newUpload.getJobState() + "\n```");
+        message.add("Result:\n> ```" + newUpload.getJobStatus() + "\n```");
         message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
         message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
         message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));

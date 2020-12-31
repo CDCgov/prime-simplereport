@@ -964,6 +964,13 @@ databaseChangeLog:
       author: tnielsen2@cdc.gov
       comment: Add data_hub_upload table used to the automated results uploader.
       changes:
+        - sql:
+            remarks: Create the enumerations needed for DataHubUpload.
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('INIT', 'SUCCESS', 'FAIL');
+            rollback:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
         - createTable:
             tableName: data_hub_upload
             remarks: Track uploads and results of test_events to the data-hub
@@ -976,8 +983,8 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: job_state
-                  type: *string
+                  name: job_status
+                  type: ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS
                   remarks: State of this upload. Enumerated value
                   constraints:
                     nullable: false
@@ -988,31 +995,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: created_by
-                  type: *idtype
-                  remarks: The service/machine/user that created this entity.
-                  constraints:
-                    nullable: true
-              - column:
                   name: updated_at
                   type: DATETIME
                   remarks: The timestamp for the most recent update of this entity.
                   constraints:
                     nullable: false
               - column:
-                  name: updated_by
-                  type: *idtype
-                  remarks: The service/machine/user that created this entity.
-                  constraints:
-                    nullable: true
-              - column:
                   name: records_processed
                   type: int
                   remarks: Http response code from data-hub
               - column:
-                  name: http_response
-                  type: int
-                  remarks: Http response code from data-hub
+                  name: error_message
+                  type: text
+                  remarks: Set if an exception happens
               - column:
                   name: response_data
                   type: jsonb
@@ -1033,7 +1028,10 @@ databaseChangeLog:
             indexName: data_hub_upload_latest_recorded_timestamp_index
             tableName: data_hub_upload
             unique: true
+            clustered: true
             columns:
+              - column:
+                  name: job_status
               - column:
                   name: latest_recorded_timestamp
                   descending: true

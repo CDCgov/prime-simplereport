@@ -43,9 +43,8 @@ simple-report-initialization:
     - Quidel Sofia 2
 simple-report:
   data-hub:
-    uploadenabled: false
-    uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
-    maxcsvrows: 999
-    serviceuuid: ${datahubUploadServiceId:e0000000-0000-0000-dddd-000000000001}
-    apikey: ${datahubApiKey:MISSING_DEV_DATAHUB_KEY}
-    secretslacknotifywebhookurl: ${secretSlackNotifyWebhookUrl:MISSING_PROD_SLACK_WEBHOOK_URL}
+    upload-enabled: false
+    upload-url: "https://prime-data-hub-test.azurefd.net/api/reports"
+    max-csv-rows: 999
+    api-key: ${datahubApiKey:MISSING_DEV_DATAHUB_KEY}
+    secret-slack-notify-webhook-url: ${secretSlackNotifyWebhookUrl:MISSING_PROD_SLACK_WEBHOOK_URL}

@@ -60,9 +60,8 @@ logging:
 simple-report:
   data-hub:
     # these are overridden by application-dev, -prod, -test, etc
-    uploadenabled: false
-    uploadurl: ""
-    maxcsvrows: 0
-    serviceuuid: ""
-    apikey: ""
-    secretslacknotifywebhookurl: ""
+    upload-enabled: false
+    upload-url: ""
+    max-csv-rows: 0
+    api-key: ""
+    secret-slack-notify-webhook-url: ""

@@ -1,35 +1,37 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.boot.context.properties.ConstructorBinding;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.ReadOnlyProperty;
 
-import javax.persistence.*;
 import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.UpdateTimestamp;;
+import org.springframework.boot.context.properties.ConstructorBinding;
+
 
 @Entity
 @DynamicUpdate
 public class DataHubUpload {
 
-    @Transient
-    public static final String SUCCESS_JOB = "SUCCESS";
-
     protected DataHubUpload() { /* no-op for hibernate */ }
 
     // We have to pass config into the constructor because Configuration doesn't work in constructors
     @ConstructorBinding
-    public DataHubUpload(@NotNull DataHubConfig config) {
-        createdBy = UUID.fromString(config.getServiceUuid());
-        updatedBy = createdBy;
-        jobState = "INIT";
+    public DataHubUpload(DataHubConfig config) {
+        jobStatus = DataHubUploadStatus.INIT;
         recordsProcessed = 0;
         responseData = "{}";
         // give some non-null default so things (like logging) don't fail.
@@ -44,40 +46,29 @@ public class DataHubUpload {
 
     // set to "SUCCESS" when done.
     @Column(nullable = false)
-    private String jobState;
+    @Type(type = "pg_enum")
+    @Enumerated(EnumType.STRING)
+    private DataHubUploadStatus jobStatus;
 
     @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
     private Date createdAt;
 
-    @Column(updatable = false)
-    @ReadOnlyProperty
-    private UUID createdBy;
-
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
     @UpdateTimestamp
     private Date updatedAt;
-
-    @Column
-    private UUID updatedBy;
 
     @Column
     private int recordsProcessed;
 
     @Column
-    @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
+    private String errorMessage;
+
+    @Column
     private Date earliestRecordedTimestamp;
 
     @Column
-    @LastModifiedDate
-    @Temporal(TemporalType.TIMESTAMP)
     private Date latestRecordedTimestamp;
-
-    @Column
-    private int httpResponse;
 
     @Column
     @Type(type = "jsonb")
@@ -87,20 +78,20 @@ public class DataHubUpload {
         return internalId;
     }
 
+    public DataHubUploadStatus getJobStatus() {
+        return jobStatus;
+    }
+
+    public DataHubUpload setJobStatus(DataHubUploadStatus jobStatus) {
+        this.jobStatus = jobStatus;
+        return this;
+    }
+
     public Date getCreatedAt() {
         return createdAt;
     }
 
     public Date getUpdatedAt() { return updatedAt; }
-
-    public String getJobState() {
-        return jobState;
-    }
-
-    public DataHubUpload setJobState(String jobState) {
-        this.jobState = jobState;
-        return this;
-    }
 
     public int getRecordsProcessed() {
         return recordsProcessed;
@@ -129,12 +120,10 @@ public class DataHubUpload {
         return this;
     }
 
-    public int getHttpResponse() {
-        return httpResponse;
-    }
+    public String getErrorMessage() { return errorMessage; }
 
-    public DataHubUpload setHttpResponse(int httpResponse) {
-        this.httpResponse = httpResponse;
+    public DataHubUpload setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
         return this;
     }
 
