@@ -13,7 +13,7 @@ public final class DataHubConfig {
     private final String apiKey;
     private final String secretSlackNotifyWebhookUrl;
 
-    public DataHubConfig(boolean uploadEnabled, String uploadUrl, int maxCsvRows, String serviceUuid, String apiKey,
+    public DataHubConfig(boolean uploadEnabled, String uploadUrl, int maxCsvRows, String apiKey,
                          String secretSlackNotifyWebhookUrl) {
         this.uploadEnabled = uploadEnabled;
         this.uploadUrl = uploadUrl;
