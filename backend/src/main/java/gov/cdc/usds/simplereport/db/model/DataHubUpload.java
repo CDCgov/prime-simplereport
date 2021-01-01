@@ -31,7 +31,7 @@ public class DataHubUpload {
     // We have to pass config into the constructor because Configuration doesn't work in constructors
     @ConstructorBinding
     public DataHubUpload(DataHubConfig config) {
-        jobStatus = DataHubUploadStatus.INIT;
+        jobStatus = DataHubUploadStatus.IN_PROGRESS;
         recordsProcessed = 0;
         responseData = "{}";
         // give some non-null default so things (like logging) don't fail.

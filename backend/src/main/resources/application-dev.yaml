@@ -42,7 +42,7 @@ simple-report-initialization:
     - Quidel Sofia 2
 simple-report:
   data-hub:
-    upload-enabled: ${datahubUploadEnable:false}
+    datahub-upload-enabled: ${datahubUploadEnable:false}
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports"
     max-csv-rows: 999
     api-key: ${datahubApiKey:MISSING_DEV_DATAHUB_KEY}

@@ -967,7 +967,7 @@ databaseChangeLog:
         - sql:
             remarks: Create the enumerations needed for DataHubUpload.
             sql: |
-              CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('INIT', 'SUCCESS', 'FAIL');
+              CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('IN_PROGRESS', 'SUCCESS', 'FAIL');
             rollback:
               sql: |
                 DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
@@ -1003,7 +1003,7 @@ databaseChangeLog:
               - column:
                   name: records_processed
                   type: int
-                  remarks: Http response code from data-hub
+                  remarks: Number of rows sent to the server
               - column:
                   name: error_message
                   type: text
@@ -1015,19 +1015,18 @@ databaseChangeLog:
               - column:
                   name: earliest_recorded_timestamp
                   type: DATETIME
-                  remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value were sent.
+                  remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value are sent.
                   constraints:
                     nullable: false
               - column:
                   name: latest_recorded_timestamp
                   type: DATETIME
-                  remarks: Upperbounds timestamp in test_event entities using. Entities with created_by <= this value were sent.
+                  remarks: Upperbounds timestamp used to collect test_event. Entities with created_by <= this value are sent.
                   constraints:
                     nullable: false
         - createIndex:
-            indexName: data_hub_upload_latest_recorded_timestamp_index
+            indexName: uk__${table_name}__job_status__latest_recorded_timestamp
             tableName: data_hub_upload
-            unique: true
             clustered: true
             columns:
               - column:

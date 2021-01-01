@@ -62,6 +62,6 @@ simple-report:
     # these are overridden by application-dev, -prod, -test, etc
     upload-enabled: false
     upload-url: ""
-    max-csv-rows: 0
+    max-csv-rows: 999
     api-key: ""
     secret-slack-notify-webhook-url: ""

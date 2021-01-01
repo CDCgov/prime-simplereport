@@ -227,7 +227,6 @@ public class DataHubUploaderService {
         }
     }
 
-    @Transactional
     public void dataHubUploaderTask() {
 
         // sanity check everything is configured correctly (dev likely will not be)
@@ -237,8 +236,8 @@ public class DataHubUploaderService {
         }
 
         ArrayList<String> msgs = new ArrayList<>();
-        final int MIN_KEY_LENGTH = 24;
-        if (_config.getApiKey().length() < MIN_KEY_LENGTH) {
+        // sanity check the key was successful gotten from the data vault
+        if (_config.getApiKey().startsWith("MISSING")) {
             msgs.add("> DataHub API key is not configured.");
         }
         if (!_config.getUploadUrl().startsWith("https://")) {
@@ -252,16 +251,15 @@ public class DataHubUploaderService {
         // The start date is the last end date. Can be null for empty database.
         Date lastTimestamp = getLatestRecordedTimestamp();
         DataHubUpload newUpload = new DataHubUpload(_config)
-                .setJobStatus(DataHubUploadStatus.INIT)
                 .setEarliestRecordedTimestamp(lastTimestamp);
         _dataHubUploadRepo.save(newUpload);
 
         try {
             // end range is back 1 minute, this is to avoid selecting transactions that
             // may still be rolled back.
-            final Timestamp DATE_ONE_MIN_AGO = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
+            final Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
 
-            this.createTestEventCSV(lastTimestamp, DATE_ONE_MIN_AGO);
+            this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
             _dataHubUploadRepo.save(newUpload
                     .setRecordsProcessed(_rowCount)
                     .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp)));
