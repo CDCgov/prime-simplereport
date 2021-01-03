@@ -45,6 +45,9 @@ x-ref-data:
         constraints:
           nullable: false
 databaseChangeLog:
+  - property:
+      name: migrations_user_email
+      value: usds@cdc.gov
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -1192,3 +1195,191 @@ databaseChangeLog:
                   name: refreshed_at
                   type: DATETIME
                   remarks: The timestamp for the most recent refresh of this entity.
+  - changeSet:
+      id: add-swab-tables
+      description: Introduce the tables necessary for tracking swab types.
+      changes:
+        - createTable:
+            tableName: swab_type
+            remarks: A type of swab/specimen collection location.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: name
+                  type: *string
+                  remarks: The name of the swab type, as displayed in isolation
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__swab_type__name
+              - column:
+                  name: type_code
+                  remarks: The SNOMED specimen type code for this swab type.
+                  type: *string
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__swab_type__type_code
+        - createTable:
+            tableName: device_swab
+            remarks: A usable combination of device type and swab type.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: device_type_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_swab__device_type
+                    references: device_type
+              - column:
+                  name: swab_type_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_swab__swab_type
+                    references: swab_type
+        - addUniqueConstraint:
+            tableName: device_swab
+            constraintName: uk__device_swab
+            columnNames: device_type_id, swab_type_id
+        - createTable:
+            tableName: facility_device_swab
+            remarks: Many-to-many table for device/swab configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_swab__facility
+                    references: facility
+              - column:
+                  name: device_swab_id
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_swab__device_swab
+                    references: device_swab
+        - addUniqueConstraint:
+            tableName: facility_device_swab
+            constraintName: uk__facility_device_swab
+            columnNames: facility_id, device_swab_id
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_device_swab_id
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__facility__default_device_swab
+                    referencedTableName: device_swab
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: device_swab_id
+                  remarks: The device/swab combination used to record the test result.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__test_order__device_swab
+                    referencedTableName: device_swab
+                    # will be made non-null in a subsequent migration
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: device_swab_id
+                  remarks: The device/swab combination used to record the test result.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__test_event__device_swab
+                    referencedTableName: device_swab
+                    # will be made non-null in a subsequent migration
+  - changeSet:
+      id: populate-specimen-tables
+      author: bwarfield@cdc.gov
+      comment: Populate specimen tables and relations based on existing data.
+      preConditions:
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
+            expectedResult: 1
+      changes:
+        - sql:
+          remarks: Create migrations user to indicate records created by migration rather than by a human.
+          sql: |
+            INSERT INTO ${database.defaultSchemaName}.api_user
+            (internal_id, created_at, updated_at, last_seen, login_email, last_name)
+            VALUES (
+              gen_random_uuid(), now(), now(), null,
+              '${migration_user_email}', 'Database Migration Process'
+            )
+        - sql:
+          remarks: Create default specimen type for known devices at the time of this migration.
+          sql: |
+            WITH specimen_types_historical as (
+              select distinct swab_type as type_code from ${database.defaultSchemaName}.device_type
+            ),
+            migration_user as (
+              SELECT internal_id as migrations_user_id
+              FROM ${database.defaultSchemaName}.api_user 
+              WHERE login_email = '${migrations_user_email}'
+            )
+            INSERT INTO ${database.defaultSchemaName}.specimen_type (name, type_code,
+              internal_id, created_at, created_by, updated_at, updated_by, is_deleted)
+            SELECT (
+              'Auto-generated specimen type ' || type_code,
+              type_code,
+              gen_random_uuid(),
+              migrations_user_id,
+              now(),
+              migrations_user_id,
+              now(),
+              false             
+            )
+            FROM specimen_types_historical cross join migration_user
+        - sql:
+          remarks: Add device_specimen and facility_device_specimen entries based on existing data, and populate facility.default_device_specimen_id.
+          sql: |
+            WITH device_swab_historical as (
+              SELECT dt.internal_id device_type_id, swt.internal_id specimen_type_id
+              FROM ${database.defaultSchemaName}.device_type dt
+               JOIN ${database.defaultSchemaName}.specimen_type swt ON dt.swab_type = swt.type_code 
+            ),
+            migration_user as (
+              SELECT internal_id as migrations_user_id
+              FROM ${database.defaultSchemaName}.api_user 
+              WHERE login_email = '${migrations_user_email}'
+            )
+            
+            INSERT INTO ${database.defaultSchemaName}.device_specimen
+            ( internal_id,               
+              created_at, created_by, updated_at, updated_by, is_deleted,
+            )
+            SELECT
+              gen_random_uuid(),
+              now(), migration_user_id, now(), migration_user_id, false
+            FROM device_swab_historical cross join migration_user 
+  - changeSet:
+      id: complete-specimen-column-additions
+      author: bwarfield@cdc.gov
+      comment: Update constraints for newly-added columns referencing device_specimen.
+      changes:
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_id
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_id
