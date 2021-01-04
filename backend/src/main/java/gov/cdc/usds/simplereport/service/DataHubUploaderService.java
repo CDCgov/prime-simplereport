@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class DataHubUploaderService {
     private static final String CSV_API_VERSION = "2";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
+    private static final Date FALLBACK_EARLIEST_DATE = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
 
     private final DataHubConfig _config;
     private final TestEventRepository _testReportEventsRepo;
@@ -128,7 +129,7 @@ public class DataHubUploaderService {
         } else {
             // This should only happen when database is empty
             LOG.warn("Returning default timestamp - first run only");
-            return Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+            return FALLBACK_EARLIEST_DATE;
         }
     }
 
@@ -289,6 +290,7 @@ public class DataHubUploaderService {
         message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
         message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
         message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
+        message.add("ErrorMessage: " + newUpload.getErrorMessage());
         message.add("setResponseData:");
         message.add("> ``` " + newUpload.getResponseData() + " ```");
         sendSlackChannelMessage("DataHubUpload result", message, false);

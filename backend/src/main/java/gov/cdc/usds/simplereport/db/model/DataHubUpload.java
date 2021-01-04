@@ -34,6 +34,7 @@ public class DataHubUpload {
         jobStatus = DataHubUploadStatus.IN_PROGRESS;
         recordsProcessed = 0;
         responseData = "{}";
+        errorMessage = "";
         // give some non-null default so things (like logging) don't fail.
         earliestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
         latestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
