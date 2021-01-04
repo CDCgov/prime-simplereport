@@ -304,23 +304,30 @@ const QueueItem: any = ({
         if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
-        updateDateTested(getDate(response.data.editQueueItem.dateTested));
       })
       .catch(updateMutationError);
   };
 
-  const onDeviceChange = (e: React.FormEvent<HTMLSelectElement>) => {
+  const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const deviceId = e.currentTarget.value;
     updateQueueItem({ deviceId, dateTested, result: testResultValue });
   };
 
-  const onDateTestedChange = (e: React.FormEvent<HTMLInputElement>) => {
-    const dateTested = (e.target as HTMLInputElement).value;
-
-    updateQueueItem({
-      dateTested: dateTested === "" ? undefined : dateTested,
-      result: testResultValue,
-    });
+  const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dateTested = e.target.value;
+    // If we try to round-trip the date to the server, it is too slow and the
+    // new prop clobbers what the user typed after the request continued.
+    // So, only save complete recent dates but always update locally.
+    // This will need further fixing once we go to subscriptions, ugh.
+    updateDateTested(dateTested);
+    const thisYear = new Date().getFullYear();
+    const check = new RegExp(`^(${thisYear - 1}|${thisYear})-\\d\\d-\\d\\d`);
+    if (check.test(dateTested)) {
+      updateQueueItem({
+        dateTested: dateTested,
+        result: testResultValue,
+      });
+    }
   };
 
   const onTestResultChange = (result: TestResult | undefined) => {

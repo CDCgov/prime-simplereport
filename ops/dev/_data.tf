@@ -56,11 +56,6 @@ data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "psql_connect_password_dev" {
-  name         = "psql-connect-password-dev"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
-}
-
 data "azurerm_key_vault_secret" "okta_client_id" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   name         = "okta-${var.env}-client-id"

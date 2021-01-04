@@ -27,6 +27,7 @@ dependencies {
 	implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
 	implementation 'org.liquibase:liquibase-core'
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
 
 	// UI layer dependencies
 	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
@@ -48,6 +49,7 @@ dependencies {
 	}
 	testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
 	testImplementation 'org.springframework.security:spring-security-test'
+	testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 }
 
 test {

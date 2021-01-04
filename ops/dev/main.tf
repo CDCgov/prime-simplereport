@@ -1,6 +1,7 @@
 locals {
   project = "prime"
   name    = "simple-report"
+  env     = "dev"
   management_tags = {
     prime-app      = "simple-report"
     environment    = var.env
@@ -29,6 +30,8 @@ module "simple_report_api" {
     "DOCKER_REGISTRY_SERVER_USERNAME"                = data.terraform_remote_state.global.outputs.acr_simeplereport_name
     "SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA" = "public"
     "WEBSITES_PORT"                                  = "8080"
+    "WEBSITE_DNS_SERVER"                             = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                         = "1"
     SPRING_PROFILES_ACTIVE                           = "azure-dev,no-security"
     SPRING_LIQUIBASE_ENABLED                         = "true"
     SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA   = "public"
@@ -39,38 +42,12 @@ module "simple_report_api" {
 }
 
 
-module "bastion" {
-  source = "../services/bastion_host"
-  env    = var.env
-
-  resource_group_location = data.azurerm_resource_group.rg.location
-  resource_group_name     = data.azurerm_resource_group.rg.name
-
-  virtual_network_name = "${local.name}-${var.env}-network"
-  subnet_cidr          = ["10.1.253.0/27"]
-
-  tags = local.management_tags
-}
-
-module "psql_connect" {
-  source                  = "../services/basic_vm"
-  name                    = "psql-connect"
-  env                     = var.env
-  resource_group_location = data.azurerm_resource_group.rg.location
-  resource_group_name     = data.azurerm_resource_group.rg.name
-
-  subnet_id                = data.terraform_remote_state.persistent_dev.outputs.subnet_dev_vm_id
-  bastion_connect_password = data.azurerm_key_vault_secret.psql_connect_password_dev.value
-
-  tags = local.management_tags
-}
-
 # Frontend React App
 resource "azurerm_storage_account" "app" {
   account_replication_type  = "GRS" # Cross-regional redundancy
   account_tier              = "Standard"
   account_kind              = "StorageV2"
-  name                      = "simplereport${var.env}app"
+  name                      = "simplereport${local.env}app"
   resource_group_name       = data.azurerm_resource_group.rg.name
   location                  = data.azurerm_resource_group.rg.location
   enable_https_traffic_only = false
@@ -83,7 +60,7 @@ resource "azurerm_storage_account" "app" {
 }
 
 resource "azurerm_cdn_profile" "cdn_profile" {
-  name                = "${local.name}-${var.env}"
+  name                = "${local.name}-${local.env}"
   resource_group_name = data.azurerm_resource_group.rg.name
   location            = data.azurerm_resource_group.rg.location
   sku                 = "Standard_Microsoft"
@@ -91,7 +68,7 @@ resource "azurerm_cdn_profile" "cdn_profile" {
 }
 
 resource "azurerm_cdn_endpoint" "cdn_endpoint" {
-  name                          = "${local.name}-${var.env}"
+  name                          = "${local.name}-${local.env}"
   profile_name                  = azurerm_cdn_profile.cdn_profile.name
   resource_group_name           = data.azurerm_resource_group.rg.name
   location                      = data.azurerm_resource_group.rg.location
@@ -99,7 +76,7 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
   querystring_caching_behaviour = "IgnoreQueryString"
 
   origin {
-    name      = "${local.name}-${var.env}-static"
+    name      = "${local.name}-${local.env}-static"
     host_name = azurerm_storage_account.app.primary_web_host
   }
 }
@@ -109,7 +86,7 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
 module "app_gateway" {
   source                  = "../services/app_gateway"
   name                    = local.name
-  env                     = var.env
+  env                     = local.env
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
