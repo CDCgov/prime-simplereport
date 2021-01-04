@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
@@ -95,6 +95,11 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     variables: {
       facilityId: activeFacilityId,
     },
+  });
+
+  useEffect(() => {
+    const interval = setInterval(refetchQueue, 10000);
+    return () => clearInterval(interval);
   });
 
   if (error) {
