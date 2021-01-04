@@ -4,15 +4,15 @@ locals {
   env     = "dev"
   management_tags = {
     prime-app      = "simple-report"
-    environment    = var.env
-    resource_group = "${local.project}-${local.name}-${var.env}"
+    environment    = local.env
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
 }
 
 module "simple_report_api" {
   source = "../services/app_service"
   name   = "${local.name}-api"
-  env    = var.env
+  env    = local.env
 
   instance_tier = "Standard"
   instance_size = "S1"

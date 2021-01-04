@@ -21,7 +21,7 @@ data "terraform_remote_state" "global" {
 
 # Resource Groups
 data "azurerm_resource_group" "rg" {
-  name = "${local.project}-${local.name}-${var.env}"
+  name = "${local.project}-${local.name}-${local.env}"
 }
 
 data "azurerm_resource_group" "rg_global" {
@@ -36,7 +36,7 @@ data "azurerm_client_config" "current" {}
 
 # Network
 data "azurerm_virtual_network" "dev" {
-  name                = "simple-report-${var.env}-network"
+  name                = "simple-report-${local.env}-network"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
 
@@ -63,12 +63,12 @@ data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
 
 data "azurerm_key_vault_secret" "okta_client_id" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
-  name         = "okta-${var.env}-client-id"
+  name         = "okta-${local.env}-client-id"
 }
 
 data "azurerm_key_vault_secret" "okta_client_secret" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
-  name         = "okta-${var.env}-client-secret"
+  name         = "okta-${local.env}-client-secret"
 }
 
 # logs
@@ -78,6 +78,6 @@ data "azurerm_log_analytics_workspace" "log_analytics" {
 }
 
 data "azurerm_application_insights" "app_insights" {
-  name                = "prime-simple-report-${var.env}-insights"
+  name                = "prime-simple-report-${local.env}-insights"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
