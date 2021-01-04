@@ -1,9 +1,0 @@
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-stg.azurewebsites.net
-    - https://simple-report-api-prod.azurewebsites.net
-    - https://simple-report-stg.azureedge.net
-    - https://simple-report-prod.azureedge.net
-    - https://stg.simplereport.gov
-    - https://prod.simplereport.gov
-    - https://simplereport.gov

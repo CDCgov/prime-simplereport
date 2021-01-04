@@ -1,24 +1,10 @@
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereport.cdc.gov
+    - https://simple-report-api-prod.azurewebsites.net
+    - https://simple-report-prod.azureedge.net
+    - https://prod.simplereport.gov
+    - https://simplereport.gov
 simple-report:
   data-hub:
     uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
-simple-report-initialization:
-  organization:
-    facility-name: Via Elegante, Tucsan Mountains
-    external-id: 6eaeeb05-e3ab-48e0-a793-b19d71e2302a
-    clia-number: "03D2159846"
-  provider:
-    first-name: Zach
-    last-name: Briefer
-    provider-id: "n/a"
-    telephone: 5202475315
-    address:
-      street-1: 2797 N Cerrada de Beto
-      city: Tucson
-      state: AZ
-      zip-code: "85745"
-  configured-device-types:
-    - LumiraDX
-    - Quidel Sofia 2
