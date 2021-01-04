@@ -30,7 +30,7 @@ module "simple_report_api" {
     "DOCKER_REGISTRY_SERVER_USERNAME"                = data.terraform_remote_state.global.outputs.acr_simeplereport_name
     "SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA" = "public"
     "WEBSITES_PORT"                                  = "8080"
-    SPRING_PROFILES_ACTIVE                           = "azure-prod"
+    SPRING_PROFILES_ACTIVE                           = "stg"
     SPRING_LIQUIBASE_ENABLED                         = "true"
     SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA   = "public"
     SPRING_DATASOURCE_URL                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
@@ -82,22 +82,21 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
 }
 
 
-# Manually configured rules/rewrite sets
-//module "app_gateway" {
-//  source                  = "../services/app_gateway"
-//  name                    = local.name
-//  env                     = local.env
-//  resource_group_location = data.azurerm_resource_group.rg.location
-//  resource_group_name     = data.azurerm_resource_group.rg.name
-//
-//  cdn_hostname      = azurerm_cdn_endpoint.cdn_endpoint.host_name
-//  subnet_id         = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
-//  key_vault_id      = data.azurerm_key_vault.global.id
-//  log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
-//
-//  fqdns = [
-//    module.simple_report_api.app_hostname
-//  ]
-//
-//  tags = local.management_tags
-//}
+module "app_gateway" {
+  source                  = "../services/app_gateway"
+  name                    = local.name
+  env                     = local.env
+  resource_group_location = data.azurerm_resource_group.rg.location
+  resource_group_name     = data.azurerm_resource_group.rg.name
+
+  cdn_hostname      = azurerm_cdn_endpoint.cdn_endpoint.host_name
+  subnet_id         = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
+  key_vault_id      = data.azurerm_key_vault.global.id
+  log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
+
+  fqdns = [
+    module.simple_report_api.app_hostname
+  ]
+
+  tags = local.management_tags
+}

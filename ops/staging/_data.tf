@@ -52,16 +52,16 @@ data "azurerm_key_vault_secret" "sr_db_jdbc" {
 }
 
 
-//
-//data "azurerm_key_vault_secret" "okta_client_id" {
-//  key_vault_id = data.azurerm_key_vault.sr_global.id
-//  name         = "okta-${var.env}-client-id"
-//}
-//
-//data "azurerm_key_vault_secret" "okta_client_secret" {
-//  key_vault_id = data.azurerm_key_vault.sr_global.id
-//  name         = "okta-${var.env}-client-secret"
-//}
+# Stg will reuse prod okta secrets
+data "azurerm_key_vault_secret" "okta_client_id" {
+  key_vault_id = data.azurerm_key_vault.global.id
+  name         = "okta-prod-client-id"
+}
+
+data "azurerm_key_vault_secret" "okta_client_secret" {
+  key_vault_id = data.azurerm_key_vault.global.id
+  name         = "okta-prod-client-secret"
+}
 
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {

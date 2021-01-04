@@ -56,7 +56,8 @@ module "db" {
   global_vault_id      = data.azurerm_key_vault.global.id
   db_vault_id          = data.azurerm_key_vault.db_keys.id
   db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
-  public_access        = false
+  public_access        = true
+  administrator_login  = "simplereport"
 
   log_workspace_id = module.monitoring.log_analytics_workspace_id
 
