@@ -59,8 +59,8 @@ jobs:
           key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
         run: yarn
-      - name: Lint
-        run: yarn lint
+      #- name: Lint
+      #  run: yarn lint
   build-test:
     strategy:
       matrix:
