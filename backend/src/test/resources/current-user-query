@@ -5,6 +5,7 @@
     middleName
     lastName
     suffix
+    email
     organization {
       testingFacility {
         name

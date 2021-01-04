@@ -9,12 +9,14 @@ public class User {
 	private String id;
 	private Organization org;
 	private PersonName nameInfo;
+	private String email;
 
 	public User(ApiUser currentUser, Organization currentOrg) {
 		super();
 		this.id = currentUser.getInternalId().toString();
 		this.org = currentOrg;
 		this.nameInfo = currentUser.getNameInfo();
+		this.email = currentUser.getLoginEmail();
 	}
 
 	public String getId() {
@@ -39,5 +41,9 @@ public class User {
 
 	public String getSuffix() {
 		return nameInfo.getSuffix();
+	}
+
+	public String getEmail() {
+		return email;
 	}
 }

@@ -122,6 +122,7 @@ type User {
   middleName: String
   lastName: String
   suffix: String
+  email: String
   organization: Organization
 }
 
