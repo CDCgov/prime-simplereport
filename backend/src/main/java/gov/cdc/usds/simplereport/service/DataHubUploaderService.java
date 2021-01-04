@@ -84,8 +84,11 @@ public class DataHubUploaderService {
 
     private void sendSlackChannelMessage(String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
         if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
-            LOG.error("SlackChannelNotConfigured. Message not sent '{}' \n {}", titleMsg, markupMsgs);
+            LOG.error("SlackChannelNotConfigured. Message not sent Title: '{}' Body: '{}", titleMsg, String.join("  ", markupMsgs));
             return;
+        } else {
+            // log the result since slack may be down.
+            LOG.info("slackMessage Title: '{}'  Body: '{}'", titleMsg, String.join(" ", markupMsgs));
         }
         try {
             RestTemplate restTemplate = new RestTemplate();
@@ -278,20 +281,22 @@ public class DataHubUploaderService {
                     .setResponseData(_resultJson)
                     .setJobStatus(DataHubUploadStatus.FAIL)
                     .setErrorMessage(err.toString()));
+            LOG.error("DataHubUploaderService Error '{}'", err.toString());
         } catch (NoResultException err) {
             _dataHubUploadRepo.save(newUpload
                     .setJobStatus(DataHubUploadStatus.FAIL)
                     .setErrorMessage("No matching results for the given startupdateby param"));
+            LOG.warn("DataHubUploaderService Warning NoMatchingRows latestRecordedTimestamp() '{}'", newUpload.getLatestRecordedTimestamp());
         }
 
         // Build and send message to slackChannel
         ArrayList<String> message = new ArrayList<>();
-        message.add("Result:\n> ```" + newUpload.getJobStatus() + "\n```");
+        message.add("Result: ```" + newUpload.getJobStatus() + "``` ");
         message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
         message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
         message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
         message.add("ErrorMessage: " + newUpload.getErrorMessage());
-        message.add("setResponseData:");
+        message.add("setResponseData: ");
         message.add("> ``` " + newUpload.getResponseData() + " ```");
         sendSlackChannelMessage("DataHubUpload result", message, false);
     }

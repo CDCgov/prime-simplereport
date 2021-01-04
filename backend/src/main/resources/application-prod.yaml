@@ -3,7 +3,7 @@ graphql.servlet.cors:
     - https://simplereport.cdc.gov
 simple-report:
   data-hub:
-    upload-enabled: false
+    upload-enabled: true
     upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports"
     max-csv-rows: 999
     api-key: ${datahubApiKey:MISSING_PROD_DATAHUB_KEY}
