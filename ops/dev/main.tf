@@ -38,6 +38,7 @@ module "simple_report_api" {
     SPRING_DATASOURCE_URL                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_dev_db_jdbc.id})"
     DATAHUB_API_KEY                                  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING            = "InstrumentationKey=${data.azurerm_application_insights.app_insights.instrumentation_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
+    SECRET_SLACK_NOTIFY_WEBHOOK_URL                  = ""
   }
 }
 
