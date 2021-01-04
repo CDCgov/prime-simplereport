@@ -16,6 +16,7 @@ public class User {
 		this.id = currentUser.getInternalId().toString();
 		this.org = currentOrg;
 		this.nameInfo = currentUser.getNameInfo();
+		// Note: we assume a user's email and login username are the same thing.
 		this.email = currentUser.getLoginEmail();
 	}
 

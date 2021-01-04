@@ -116,6 +116,7 @@ type TestResult {
   dateTested: DateTime
 }
 
+# Note: we assume a user's email and login username are the same thing.
 type User {
   id: ID
   firstName: String
