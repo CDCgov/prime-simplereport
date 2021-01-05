@@ -65,6 +65,11 @@ public class DataHubUploaderService {
         _config = config;
         _testReportEventsRepo = testReportEventsRepo;
         _dataHubUploadRepo = dataHubUploadRepo;
+    }
+
+    private void init() {
+        // because we are a service these need to be reset each time through.
+        // this needs a refactor. This is ONLY here until we can get rid of running the schedule via a webaddress
         _nextTimestamp = "";
         _warnMessage = "";
         _resultJson = "";
@@ -73,6 +78,9 @@ public class DataHubUploaderService {
 
     // todo: move to these somewhere common
     private static String dateToUTCString(Date d) {
+        if (d == null) {
+            return "null";
+        }
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat.format(d);
@@ -133,9 +141,9 @@ public class DataHubUploaderService {
         if (lastUpload != null) {
             return lastUpload.getLatestRecordedTimestamp();
         } else {
-            // This should only happen when database is empty
-            LOG.warn("Returning default timestamp - first run only");
-            return FALLBACK_EARLIEST_DATE;
+            // This should only happen when database is empty, throw?
+            LOG.error("No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
+            return null;
         }
     }
 
@@ -143,9 +151,9 @@ public class DataHubUploaderService {
     private void createTestEventCSV(String lastEndCreateOn) throws IOException, DateTimeParseException, NoResultException {
         final Date DATE_1MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1));
         if (lastEndCreateOn.length() == 0) {
-            // testing only, just query everything
-            lastEndCreateOn = "2020-01-01T00:00:00.00Z";
-            LOG.info("Empty startupdateby so using 2020-01-01");
+            // This should only happen when database is empty
+            LOG.error("No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
+            throw new NoResultException("No default lastEndCreateOn, everything would match.");
         }
         createTestEventCSV(utcStringToDate(lastEndCreateOn), DATE_1MIN_AGO);
     }
@@ -206,15 +214,32 @@ public class DataHubUploaderService {
         }
     }
 
-    // todo: Think through this transaction. In theory, this operation will have it's own table to
-    // track and log uploads.
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
-    @Transactional(readOnly = true)
+    @Transactional
     public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
-            this.createTestEventCSV(lastEndCreateOn);
-            this.uploadCSVDocument(apiKey);
+            this.init();
+            // this will be null if there are no enties in the tracking table.
+            // This is important for first-ever-run and then if the webpage is run again after the db is initialized
+            Date lastTimestamp = getLatestRecordedTimestamp();
+            if (lastTimestamp == null) {
+                // database has no entries. FIRST EVER RUN.
+                this.createTestEventCSV(lastEndCreateOn);
+                this.uploadCSVDocument(apiKey);
+                DataHubUpload newUpload = new DataHubUpload(_config);
+                newUpload.setJobStatus(DataHubUploadStatus.SUCCESS)
+                        .setEarliestRecordedTimestamp(utcStringToDate(lastEndCreateOn))
+                        .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp))
+                        .setRecordsProcessed(_rowCount)
+                        .setResponseData(_resultJson)
+                        .setErrorMessage(_warnMessage);
+                _dataHubUploadRepo.save(newUpload);
+                LOG.info("Added {} to data_hub_upload table", newUpload.getInternalId());
+            } else {
+                // run the new code and ignore the lastEndCreateOn passed in.
+                dataHubUploaderTask();
+            }
 
             return Map.of(
                     "result", "ok",
@@ -230,18 +255,18 @@ public class DataHubUploaderService {
                     "messsage", err.toString());
         } catch (NoResultException err) {
             return Map.of("result", "error",
-                    "message", "No matching results for the given startupdateby param");
+                    "message", "No matching results for the given startupdateby param.  " + err.toString());
         }
     }
 
     public void dataHubUploaderTask() {
-
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
             LOG.warn("DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
             return;
         }
 
+        this.init();
         ArrayList<String> msgs = new ArrayList<>();
         // sanity check the key was successful gotten from the data vault
         if (_config.getApiKey().startsWith("MISSING")) {
@@ -255,13 +280,18 @@ public class DataHubUploaderService {
             return;
         }
 
-        // The start date is the last end date. Can be null for empty database.
-        Date lastTimestamp = getLatestRecordedTimestamp();
-        DataHubUpload newUpload = new DataHubUpload(_config)
-                .setEarliestRecordedTimestamp(lastTimestamp);
-        _dataHubUploadRepo.save(newUpload);
-
+        DataHubUpload newUpload = new DataHubUpload(_config);
         try {
+            // The start date is the last end date. Can be null for empty database.
+            Date lastTimestamp = getLatestRecordedTimestamp();
+            if (lastTimestamp == null) {
+                // this happens if EVERYTHING in the db would be matched.
+                LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
+                return;
+            }
+            newUpload.setEarliestRecordedTimestamp(lastTimestamp);
+            _dataHubUploadRepo.save(newUpload);
+
             // end range is back 1 minute, this is to avoid selecting transactions that
             // may still be rolled back.
             final Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));

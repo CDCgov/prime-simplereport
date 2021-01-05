@@ -23,7 +23,7 @@ simple-report-initialization:
       street-1: 123 Main Street
       city: Oz
       state: KS
-      zip-code: "12345"
+      postal-code: "12345"
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2

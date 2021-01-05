@@ -25,8 +25,13 @@ simple-report-initialization:
   facility:
     facility-name: Injection Site
     clia-number: "000111222-3"
+    telephone: (202) 555-1212
     address:
       street-1: 2797 N Cerrada de Beto
+      city: Oz
+      county: Yellow Brick
+      state: KS
+      postal-code: "12345"
   provider:
     first-name: Fred
     last-name: Flintstone
@@ -35,8 +40,9 @@ simple-report-initialization:
     address:
       street-1: 123 Main Street
       city: Oz
+      county: Yellow Brick
       state: KS
-      zip-code: "12345"
+      postal-code: "12345"
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2

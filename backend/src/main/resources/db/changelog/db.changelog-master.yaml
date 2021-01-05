@@ -1016,14 +1016,10 @@ databaseChangeLog:
                   name: earliest_recorded_timestamp
                   type: DATETIME
                   remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value are sent.
-                  constraints:
-                    nullable: false
               - column:
                   name: latest_recorded_timestamp
                   type: DATETIME
                   remarks: Upperbounds timestamp used to collect test_event. Entities with created_by <= this value are sent.
-                  constraints:
-                    nullable: false
         - createIndex:
             indexName: uk__${table_name}__job_status__latest_recorded_timestamp
             tableName: data_hub_upload
