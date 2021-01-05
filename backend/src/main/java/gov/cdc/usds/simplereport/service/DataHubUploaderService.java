@@ -83,13 +83,16 @@ public class DataHubUploaderService {
     }
 
     private void sendSlackChannelMessage(String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
+        // NOTE: logging this is overkill. Putting it hear until we fully trust Slack messaging is working.
+        final String markupMsgsForLog = String.join(" ", markupMsgs);
         if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
-            LOG.error("SlackChannelNotConfigured. Message not sent Title: '{}' Body: '{}", titleMsg, String.join("  ", markupMsgs));
+            LOG.error("SlackChannelNotConfigured. Message not sent Title: '{}' Body: {}", titleMsg, markupMsgsForLog);
             return;
         } else {
             // log the result since slack may be down.
-            LOG.info("slackMessage Title: '{}'  Body: '{}'", titleMsg, String.join(" ", markupMsgs));
+            LOG.info("slackMessage Title: '{}'  Body: '{}'", titleMsg, markupMsgsForLog);
         }
+
         try {
             RestTemplate restTemplate = new RestTemplate();
             HttpHeaders headers = new HttpHeaders();
