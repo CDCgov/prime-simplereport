@@ -41,24 +41,6 @@ resource "okta_app_oauth" "app" {
 
 // Create the custom app mappings
 
-resource "okta_app_user_schema" "org_schema" {
-  app_id      = okta_app_oauth.app.id
-  index       = "simple_report_org"
-  title       = "Healthcare Organization"
-  description = "Associated Healthcare Organization"
-  type        = "string"
-  master      = "PROFILE_MASTER"
-}
-
-resource "okta_app_user_schema" "user_schema" {
-  app_id      = okta_app_oauth.app.id
-  index       = "simple_report_user"
-  title       = "User Type"
-  description = "Whether or not the user is an administrator"
-  type        = "string"
-  master      = "PROFILE_MASTER"
-}
-
 resource "okta_app_group_assignment" "users" {
   count    = length(var.user_groups)
   app_id   = okta_app_oauth.app.id
@@ -77,4 +59,52 @@ resource "okta_app_group_assignment" "prime_users" {
     simple_report_org  = null
     simple_report_user = null
   })
+}
+
+resource "okta_group" "simplereport_prod_admins" {
+  name        = "SR-PROD-ADMINS"
+  description = "PRODUCTION Application Administrators for SimpleReport"
+}
+
+resource "okta_group" "simplereport_stg_admins" {
+  name        = "SR-STG-ADMINS"
+  description = "STAGING Application Administrators for SimpleReport"
+}
+
+resource "okta_group" "simplereport_dev_admins" {
+  name        = "SR-DEV-ADMINS"
+  description = "DEV/TEST Application Administrators for SimpleReport"
+}
+
+resource "okta_auth_server_claim" "simplereport_prod_roles" {
+  auth_server_id = data.okta_auth_server.default.id
+  claim_type = "RESOURCE"
+  name = "prod_roles"
+  value_type = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value = "SR-PROD-"
+  scopes = [
+    okta_auth_server_scope.sr_prod.name]
+}
+
+resource "okta_auth_server_claim" "simplereport_stg_roles" {
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "stg_roles"
+  value_type        = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value             = "SR-STG-"
+  scopes            = [
+    okta_auth_server_scope.sr_stg.name]
+}
+
+resource "okta_auth_server_claim" "simplereport_dev_roles" {
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "dev_roles"
+  value_type        = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value             = "SR-DEV-"
+  scopes            = [
+    okta_auth_server_scope.sr_dev.name]
 }
