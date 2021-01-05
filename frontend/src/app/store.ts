@@ -21,7 +21,7 @@ const initialState = {
     middleName: "",
     lastName: "",
     suffix: "",
-    email: "", 
+    email: "",
   },
 };
 
