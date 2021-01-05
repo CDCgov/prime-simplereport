@@ -61,50 +61,26 @@ resource "okta_app_group_assignment" "prime_users" {
   })
 }
 
-resource "okta_group" "simplereport_prod_admins" {
-  name        = "SR-PROD-ADMINS"
-  description = "PRODUCTION Application Administrators for SimpleReport"
+resource "okta_group" "simplereport_admins" {
+  name        = "SR-${upper(var.env)}-ADMINS"
+  description = "${upper(var.env)} Application Administrators for SimpleReport"
 }
 
-resource "okta_group" "simplereport_stg_admins" {
-  name        = "SR-STG-ADMINS"
-  description = "STAGING Application Administrators for SimpleReport"
-}
-
-resource "okta_group" "simplereport_dev_admins" {
-  name        = "SR-DEV-ADMINS"
-  description = "DEV/TEST Application Administrators for SimpleReport"
-}
-
-resource "okta_auth_server_claim" "simplereport_prod_roles" {
+resource "okta_auth_server_claim" "simplereport_roles" {
   auth_server_id = data.okta_auth_server.default.id
   claim_type = "RESOURCE"
-  name = "prod_roles"
+  name = "${var.env}_roles"
   value_type = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value = "SR-PROD-"
+  value = "SR-${upper(var.env)}-"
   scopes = [
-    okta_auth_server_scope.sr_prod.name]
+    okta_auth_server_scope.sr_env.name]
 }
 
-resource "okta_auth_server_claim" "simplereport_stg_roles" {
-  auth_server_id    = data.okta_auth_server.default.id
-  claim_type        = "RESOURCE"
-  name              = "stg_roles"
-  value_type        = "GROUPS"
-  group_filter_type = "STARTS_WITH"
-  value             = "SR-STG-"
-  scopes            = [
-    okta_auth_server_scope.sr_stg.name]
-}
-
-resource "okta_auth_server_claim" "simplereport_dev_roles" {
-  auth_server_id    = data.okta_auth_server.default.id
-  claim_type        = "RESOURCE"
-  name              = "dev_roles"
-  value_type        = "GROUPS"
-  group_filter_type = "STARTS_WITH"
-  value             = "SR-DEV-"
-  scopes            = [
-    okta_auth_server_scope.sr_dev.name]
+resource "okta_auth_server_scope" "sr_env" {
+  auth_server_id   = data.okta_auth_server.default.id
+  name             = "simple_report_${var.env}"
+  description      = "${upper(var.env)}-only OAUTH scope for Simple Report application"
+  metadata_publish = "NO_CLIENTS"
+  default          = false
 }

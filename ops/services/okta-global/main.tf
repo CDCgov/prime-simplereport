@@ -1,9 +1,5 @@
 // Create the required simple report scope
 
-data "okta_auth_server" "default" {
-  name = "default"
-}
-
 // We need to import and manage the pdi scope as well.
 // So we can remove it later
 
@@ -11,30 +7,6 @@ resource "okta_auth_server_scope" "sr" {
   auth_server_id   = data.okta_auth_server.default.id
   name             = "simple_report"
   description      = "Default OAUTH scope for Simple Report application"
-  metadata_publish = "NO_CLIENTS"
-  default          = false
-}
-
-resource "okta_auth_server_scope" "sr_prod" {
-  auth_server_id   = data.okta_auth_server.default.id
-  name             = "simple_report_prod"
-  description      = "Production-only OAUTH scope for Simple Report application"
-  metadata_publish = "NO_CLIENTS"
-  default          = false
-}
-
-resource "okta_auth_server_scope" "sr_stg" {
-  auth_server_id   = data.okta_auth_server.default.id
-  name             = "simple_report_staging"
-  description      = "Staging-only OAUTH scope for Simple Report application"
-  metadata_publish = "NO_CLIENTS"
-  default          = false
-}
-
-resource "okta_auth_server_scope" "sr_devtest" {
-  auth_server_id   = data.okta_auth_server.default.id
-  name             = "simple_report_devtest"
-  description      = "Dev/test-only OAUTH scope for Simple Report application"
   metadata_publish = "NO_CLIENTS"
   default          = false
 }
