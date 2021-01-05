@@ -50,6 +50,5 @@ simple-report:
   data-hub:
     upload-enabled: ${DATAHUB_UPLOAD_ENABLE:false}
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports"
-    max-csv-rows: 999
-    api-key: ${DATAHUB_API_KEY:MISSING}
-    secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
+
+

@@ -973,7 +973,7 @@ databaseChangeLog:
                 DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
         - createTable:
             tableName: data_hub_upload
-            remarks: Track uploads and results of test_events to the data-hub
+            remarks: Track uploads and results of test_events to the data-hub.
             columns:
               - column:
                   name: internal_id
@@ -985,7 +985,7 @@ databaseChangeLog:
               - column:
                   name: job_status
                   type: ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS
-                  remarks: State of this upload. Enumerated value
+                  remarks: State of this upload. Enumerated value.
                   constraints:
                     nullable: false
               - column:
@@ -1003,15 +1003,15 @@ databaseChangeLog:
               - column:
                   name: records_processed
                   type: int
-                  remarks: Number of rows sent to the server
+                  remarks: Number of rows sent to the server.
               - column:
                   name: error_message
                   type: text
-                  remarks: Set if an exception happens
+                  remarks: Set if an exception happens.
               - column:
                   name: response_data
                   type: jsonb
-                  remarks: Response json from data-hub
+                  remarks: Response json from data-hub.
               - column:
                   name: earliest_recorded_timestamp
                   type: DATETIME

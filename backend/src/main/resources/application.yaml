@@ -63,5 +63,5 @@ simple-report:
     upload-enabled: false
     upload-url: ""
     max-csv-rows: 999
-    api-key: ""
-    secret-slack-notify-webhook-url: ""
+    api-key: ${DATAHUB_API_KEY:MISSING}
+    secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}

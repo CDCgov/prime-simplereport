@@ -41,9 +41,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
         assertNotNull(d1.getInternalId());
         assertEquals(d1.getCreatedAt(), d1.getUpdatedAt());
         _repoDH.save(d1);
-
-        // Spring's updateAt doesn't work as expected.
-        // assertNotEquals(d1.getCreatedAt(), d1.getUpdatedAt());
+        flush();
 
         List<DataHubUpload> results_after = _repoDH.findAll();
         assertEquals(1, (results_after.size() - results_before.size()));

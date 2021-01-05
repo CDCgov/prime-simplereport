@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model;
 
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 
-import java.time.Instant;
 import java.util.Date;
 import java.util.UUID;
 
@@ -18,8 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.UpdateTimestamp;;
-import org.springframework.boot.context.properties.ConstructorBinding;
+import org.hibernate.annotations.UpdateTimestamp;
 
 
 @Entity
@@ -29,7 +27,6 @@ public class DataHubUpload {
     protected DataHubUpload() { /* no-op for hibernate */ }
 
     // We have to pass config into the constructor because Configuration doesn't work in constructors
-    @ConstructorBinding
     public DataHubUpload(DataHubConfig config) {
         jobStatus = DataHubUploadStatus.IN_PROGRESS;
         recordsProcessed = 0;
