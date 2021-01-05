@@ -1,10 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
+
+const pollInterval = 10_000;
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -95,11 +97,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     variables: {
       facilityId: activeFacilityId,
     },
-  });
-
-  useEffect(() => {
-    const interval = setInterval(refetchQueue, 10000);
-    return () => clearInterval(interval);
+    pollInterval,
   });
 
   if (error) {
