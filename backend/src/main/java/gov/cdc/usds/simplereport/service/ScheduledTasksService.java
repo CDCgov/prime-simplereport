@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import javax.management.timer.Timer;
+
 
 @Service
 public class ScheduledTasksService {
@@ -16,7 +18,7 @@ public class ScheduledTasksService {
     }
 
     // Example of how to run periodically, save for future use (and testing)
-    private static final int FIXED_DELAY_MS = 1000*60*30;  // fixed period in milliseconds after last task ends
+    private static final long FIXED_DELAY_MS = Timer.ONE_MINUTE * 30;
 
     @Scheduled(fixedDelay = FIXED_DELAY_MS, initialDelay = FIXED_DELAY_MS)
     public void runOnDelay() {

@@ -47,7 +47,7 @@ import java.util.concurrent.TimeUnit;
 public class DataHubUploaderService {
     private static final String CSV_API_VERSION = "2";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
-    private static final Date FALLBACK_EARLIEST_DATE = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+    private static final Date FALLBACK_EARLIEST_DATE = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
 
     private final DataHubConfig _config;
     private final TestEventRepository _testReportEventsRepo;
@@ -235,7 +235,7 @@ public class DataHubUploaderService {
 
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
-            LOG.info("DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
+            LOG.warn("DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
             return;
         }
 

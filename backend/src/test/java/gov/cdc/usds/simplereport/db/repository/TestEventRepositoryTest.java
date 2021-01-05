@@ -37,7 +37,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
 
     @Test
     public void testLatestTestEventForPerson() {
-        Date d1 = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+        Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
         final Date DATE_1MIN_FUTURE = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
         List<TestEvent> foundTestReports1 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE);
         Organization org = _dataFactory.createValidOrg();

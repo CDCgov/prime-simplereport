@@ -24,7 +24,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
     @Test
     void testBasicSavingQueryDataHubUpload() {
-        final Date DATE_OLDEST = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+        final Date DATE_OLDEST = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
         final Date DATE_3MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(3));
         final Date DATE_4MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(4));
         final Date DATE_5MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(5));

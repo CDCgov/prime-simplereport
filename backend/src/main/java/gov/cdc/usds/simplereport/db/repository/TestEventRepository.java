@@ -19,6 +19,6 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 	public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
 	// Need to control how this query is built. "between" is too vague.
-	@Query("FROM #{#entityName} q WHERE q.createdAt > ?1 AND q.createdAt <= ?2 ORDER BY q.createdAt DESC ")
-	public List<TestEvent> queryMatchAllBetweenDates(Date d1, Date d2);
+	@Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC ")
+	public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after);
 }

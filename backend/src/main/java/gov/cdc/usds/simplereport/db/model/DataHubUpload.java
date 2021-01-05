@@ -36,8 +36,8 @@ public class DataHubUpload {
         responseData = "{}";
         errorMessage = "";
         // give some non-null default so things (like logging) don't fail.
-        earliestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
-        latestRecordedTimestamp = Date.from(Instant.parse("2020-01-01T00:00:00Z"));
+        earliestRecordedTimestamp = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
+        latestRecordedTimestamp = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
     }
 
     @Column(updatable = false, nullable = false)
