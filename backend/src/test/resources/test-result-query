@@ -1,0 +1,18 @@
+query GetFacilityResults($facilityId: String!) {
+  testResults(facilityId: $facilityId) {
+    internalId
+    dateTested
+    result
+    deviceType {
+      internalId
+      name
+    }
+    patient {
+      internalId
+      firstName
+      middleName
+      lastName
+      lookupId
+    }
+  }
+}

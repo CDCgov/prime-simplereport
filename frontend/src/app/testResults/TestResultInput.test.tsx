@@ -1,18 +1,11 @@
 import React from "react";
 import renderer from "react-test-renderer";
 import { render, fireEvent, screen } from "@testing-library/react";
-import { v4 as uuidv4 } from "uuid";
 import TestResultInputForm from "./TestResultInputForm";
 
 jest.mock("uuid");
 
 describe("TestResultInputForm", () => {
-  beforeEach(() => {
-    (uuidv4 as any).mockImplementationOnce(() => "a");
-    (uuidv4 as any).mockImplementationOnce(() => "b");
-    (uuidv4 as any).mockImplementationOnce(() => "c");
-  });
-
   it("should render with a value", () => {
     const component = renderer.create(
       <TestResultInputForm

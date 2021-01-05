@@ -46,13 +46,18 @@ data "azurerm_key_vault" "sr_global" {
   resource_group_name = data.azurerm_resource_group.rg_global.name
 }
 
-data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
-  name         = "simple-report-dev-db-jdbc"
+data "azurerm_key_vault_secret" "datahub_api_key" {
+  name         = "datahub-api-key-dev"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "psql_connect_password_dev" {
-  name         = "psql-connect-password-dev"
+data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
+  name         = "slack-notify-webhook-url-dev"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
+  name         = "simple-report-dev-db-jdbc"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 

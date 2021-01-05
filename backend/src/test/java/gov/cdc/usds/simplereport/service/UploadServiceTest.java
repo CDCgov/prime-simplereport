@@ -60,4 +60,12 @@ class UploadServiceTest extends BaseServiceTestOrgUser<UploadService> {
                     "Should have correct error message");
         }
     }
+
+    @Test
+    void testInvalidPhoneNumber() throws Exception {
+        try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
+                .getResourceAsStream("test-upload-invalid-phone.csv")) {
+            assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
+        }
+    }
 }

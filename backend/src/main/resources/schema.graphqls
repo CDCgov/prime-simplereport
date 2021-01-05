@@ -18,6 +18,7 @@ type DeviceType {
 }
 type Patient {
   internalId: ID
+  facility: Facility
   lookupId: String
   firstName: String
   middleName: String
@@ -39,7 +40,7 @@ type Patient {
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
   lastTest: TestResult
-  testResults: [PatientTestResult!]!
+  testResults: [TestResult!]!
 }
 type Facility {
   id: ID
@@ -52,6 +53,7 @@ type Facility {
   state: String
   zipCode: String
   phone: String
+  email: String
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
@@ -116,12 +118,14 @@ type TestResult {
   dateTested: DateTime
 }
 
+# Note: we assume a user's email and login username are the same thing.
 type User {
   id: ID
   firstName: String
   middleName: String
   lastName: String
   suffix: String
+  email: String
   organization: Organization
 }
 
@@ -146,6 +150,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
@@ -171,6 +176,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!

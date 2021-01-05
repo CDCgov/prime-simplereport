@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
-import gov.cdc.usds.simplereport.api.model.TestResult;
 import gov.cdc.usds.simplereport.service.TestOrderService; 
 
 
@@ -21,12 +20,6 @@ public class QueueResolver implements GraphQLQueryResolver {
 	public List<ApiTestOrder> getQueue(String facilityId) {
 		return tos.getQueue(facilityId).stream()
 			.map(o -> new ApiTestOrder(o))
-			.collect(Collectors.toList());
-	}
-
-	public List<TestResult> getTestResults(String facilityId) {
-		return tos.getTestResults(facilityId).stream()
-			.map(TestResult::new)
 			.collect(Collectors.toList());
 	}
 }

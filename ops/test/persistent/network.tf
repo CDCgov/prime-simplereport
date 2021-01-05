@@ -11,10 +11,11 @@ resource "azurerm_virtual_network" "vn" {
 
 # VMs subnet
 resource "azurerm_subnet" "vms" {
-  name                 = "${local.env}-vms"
-  resource_group_name  = data.azurerm_resource_group.test.name
-  virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = ["10.3.252.0/24"]
+  name                                           = "${local.env}-vms"
+  resource_group_name                            = data.azurerm_resource_group.test.name
+  virtual_network_name                           = azurerm_virtual_network.vn.name
+  address_prefixes                               = ["10.3.252.0/24"]
+  enforce_private_link_endpoint_network_policies = true
 }
 
 resource "azurerm_subnet" "lbs" {
@@ -22,4 +23,15 @@ resource "azurerm_subnet" "lbs" {
   resource_group_name  = data.azurerm_resource_group.test.name
   virtual_network_name = azurerm_virtual_network.vn.name
   address_prefixes     = ["10.3.254.0/24"]
+}
+
+resource "azurerm_subnet" "webapp" {
+  name                 = "${local.project}-${local.name}-${local.env}-webapp"
+  resource_group_name  = data.azurerm_resource_group.test.name
+  virtual_network_name = azurerm_virtual_network.vn.name
+  address_prefixes     = ["10.3.100.0/24"]
+
+  lifecycle {
+    ignore_changes = [delegation]
+  }
 }

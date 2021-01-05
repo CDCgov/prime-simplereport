@@ -885,7 +885,7 @@ databaseChangeLog:
                   name: facility_id
                   afterColumn: organization_id
                   type: *idtype
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   remarks: The facility where this person is expected to be tested (null if they will be tested at multiple sites)
                   constraints:
                     nullable: true
@@ -899,7 +899,7 @@ databaseChangeLog:
                   afterColumn: organization_id
                   type: *idtype
                   remarks: The facility where this test took place.
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__test_event__facility
                     referencedTableName: facility
@@ -914,7 +914,7 @@ databaseChangeLog:
                   afterColumn: organization_id
                   type: *idtype
                   remarks: The facility where this test was ordered.
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__test_order__facility
                     referencedTableName: facility
@@ -928,7 +928,7 @@ databaseChangeLog:
                   name: facility_id
                   afterColumn: organization_id
                   type: *idtype
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__facility_device_type__facility
                     referencedTableName: facility
@@ -959,6 +959,18 @@ databaseChangeLog:
                   name: date_tested_backdate
                   type: DATETIME
                   remarks: timestamp to store a user correction to when the test was ordered
+  - changeSet:
+      id: add-facility-email
+      author: nclyde@skylight.digital
+      comment: add email field to facility
+      changes:
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: email
+                  type: *string
+                  remarks: The facility's contact email address.
   - changeSet:
       id: add-data-hub-upload
       author: tnielsen2@cdc.gov

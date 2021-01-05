@@ -1,4 +1,8 @@
 { 
-patients {
-  firstName lastName birthDate
-}}
+  patients {
+    firstName
+    lastName
+    birthDate
+    telephone
+  }
+}

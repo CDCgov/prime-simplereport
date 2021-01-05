@@ -25,8 +25,8 @@ const SearchInput = ({
         onChange={onInputChange}
       />
       <button
-        className="usa-button"
         type="submit"
+        className="usa-button"
         disabled={disabled}
         onClick={onSearchClick}
       >
