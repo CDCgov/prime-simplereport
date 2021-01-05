@@ -49,8 +49,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td />
           <td>
             <button
-              className="prime-link"
+              className="usa-button usa-button--unstyled"
               onClick={[Function]}
+              type="button"
             >
               Begin Test
             </button>
@@ -64,8 +65,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td />
           <td>
             <button
-              className="prime-link"
+              className="usa-button usa-button--unstyled"
               onClick={[Function]}
+              type="button"
             >
               Begin Test
             </button>
@@ -79,8 +81,9 @@ exports[`SearchResults should show matching results 1`] = `
           <td />
           <td>
             <button
-              className="prime-link"
+              className="usa-button usa-button--unstyled"
               onClick={[Function]}
+              type="button"
             >
               Begin Test
             </button>

@@ -10,7 +10,7 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../commonComponents/Alert";
-import Anchor from "../commonComponents/Anchor";
+import Button from "../commonComponents/Button";
 import AoeModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
@@ -24,7 +24,6 @@ import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget } from "./TestTimer";
 import moment from "moment";
-import Button from "../commonComponents/Button";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
@@ -145,7 +144,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
       completed. Do you want to submit results anyway?
     </p>
     <div className="prime-modal-buttons">
-      <Button onClick={cancelHandler} unstyled label="No, go back" />
+      <Button onClick={cancelHandler} variant="unstyled" label="No, go back" />
       <Button onClick={continueHandler} label="Submit Anyway" />
     </div>
   </Modal>
@@ -252,12 +251,12 @@ const QueueItem: any = ({
   }
 
   const testResultsSubmitted = () => {
-    let { type, title, body } = {
+    let { title, body } = {
       ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS](
         patient
       ),
     };
-    let alert = <Alert type={type} title={title} body={body} />;
+    let alert = <Alert type="success" title={title} body={body} />;
     showNotification(toast, alert);
   };
 
@@ -424,8 +423,9 @@ const QueueItem: any = ({
                   />
                 </li>
                 <li className="prime-li">
-                  <Anchor
-                    text="Time of Test Questions"
+                  <Button
+                    variant="unstyled"
+                    label="Time of Test Questions"
                     onClick={openAoeModal}
                   />
                   {isAoeModalOpen && (

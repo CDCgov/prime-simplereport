@@ -40,6 +40,8 @@ const TestResultInputForm: React.FC<Props> = ({
       <h4 className="prime-radio__title"> SARS-CoV-2 Results </h4>
       <React.Fragment>
         <RadioGroup
+          legend="Test result"
+          legendSrOnly
           onClick={onResultClick}
           onChange={onResultChange}
           buttons={[
@@ -64,7 +66,7 @@ const TestResultInputForm: React.FC<Props> = ({
             onClick={onResultSubmit}
             type="submit"
             disabled={!testResultValue}
-            outline
+            variant="outline"
             label="Submit"
           />
         </div>

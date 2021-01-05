@@ -13,11 +13,34 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+
+
 /**
  * Tests for adding and fetching patients through the API
  */
 public class PatientManagementTest extends BaseApiTest {
 
+    @Autowired
+    private TestDataFactory _dataFactory;
+    @Autowired
+    private OrganizationService _orgService;
+
+    @Test
+    public void queryPatientWithFacility() throws Exception {
+        Organization org = _orgService.getCurrentOrganization();
+        Facility place = _orgService.getFacilities(org).get(0);
+        _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
+        _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
+        JsonNode patients = fetchPatientsWithFacility();
+        assertEquals(true, patients.get(0).get("facility").isNull());
+        assertEquals(place.getInternalId().toString(), patients.get(1).get("facility").get("id").asText());
+    }
 
     @Test
     public void createAndFetchOnePatientUsDate() throws Exception {
@@ -55,8 +78,16 @@ public class PatientManagementTest extends BaseApiTest {
             throws IOException {
         GraphQLResponse resp = executeAddPersonMutation(firstName, lastName, birthDate, phone, lookupId);
         assertGraphQLSuccess(resp);
-        JsonNode patients = runQuery("person-query").get("patients");
+        JsonNode patients = fetchPatients();
         return patients;
+    }
+
+    private JsonNode fetchPatients() {
+        return (JsonNode) runQuery("person-query").get("patients");
+    }
+
+    private JsonNode fetchPatientsWithFacility() {
+        return (JsonNode) runQuery("person-with-facility-query").get("patients");
     }
 
     private GraphQLResponse executeAddPersonMutation(

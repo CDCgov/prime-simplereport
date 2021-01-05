@@ -25,6 +25,7 @@ const GET_FACILITY_QUERY = gql`
         state
         zipCode
         phone
+        email
         defaultDeviceType {
           internalId
         }
@@ -66,6 +67,7 @@ const UPDATE_FACILITY_MUTATION = gql`
     $state: String
     $zipCode: String!
     $phone: String
+    $email: String
     $orderingProviderFirstName: String!
     $orderingProviderMiddleName: String
     $orderingProviderLastName: String!
@@ -92,6 +94,7 @@ const UPDATE_FACILITY_MUTATION = gql`
       state: $state
       zipCode: $zipCode
       phone: $phone
+      email: $email
       orderingProviderFirstName: $orderingProviderFirstName
       orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
@@ -121,6 +124,7 @@ const ADD_FACILITY_MUTATION = gql`
     $state: String
     $zipCode: String!
     $phone: String
+    $email: String
     $orderingProviderFirstName: String!
     $orderingProviderMiddleName: String
     $orderingProviderLastName: String!
@@ -146,6 +150,7 @@ const ADD_FACILITY_MUTATION = gql`
       state: $state
       zipCode: $zipCode
       phone: $phone
+      email: $email
       orderingProviderFirstName: $orderingProviderFirstName
       orderingProviderMiddleName: $orderingProviderMiddleName
       orderingProviderLastName: $orderingProviderLastName
@@ -212,6 +217,7 @@ const FacilityFormContainer: any = (props: Props) => {
         state: facility.state,
         zipCode: facility.zipCode,
         phone: facility.phone,
+        email: facility.email,
         orderingProviderFirstName: provider.firstName,
         orderingProviderMiddleName: provider.middleName,
         orderingProviderLastName: provider.lastName,
@@ -267,6 +273,7 @@ const FacilityFormContainer: any = (props: Props) => {
       state: "",
       zipCode: "",
       phone: "",
+      email: "",
       orderingProvider: {
         firstName: "",
         middleName: "",

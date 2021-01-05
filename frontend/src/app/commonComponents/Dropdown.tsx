@@ -18,9 +18,11 @@ interface Props {
   selectedValue: string;
   disabled?: boolean;
   defaultOption?: string;
-  addClass?: string;
-  includeUndefined?: boolean;
+  className?: string;
+  defaultSelect?: boolean;
   required?: boolean;
+  errorMessage?: React.ReactNode;
+  validationStatus?: "error" | "success";
 }
 
 const Dropdown: React.FC<Props> = ({
@@ -29,28 +31,34 @@ const Dropdown: React.FC<Props> = ({
   name,
   onChange,
   disabled,
-  addClass = "",
+  className,
   defaultOption, // value of the default option
   selectedValue,
-  includeUndefined,
+  defaultSelect,
   required,
+  validationStatus,
+  errorMessage,
 }) => {
-  const [selectId] = useUniqueIds("dropdown", 1);
+  const [selectId] = useUniqueIds("drop", 1);
 
   return (
-    <div className={classnames("prime-dropdown", addClass)}>
-      {label ? (
+    <div
+      className={classnames(
+        "usa-form-group prime-dropdown ",
+        validationStatus === "error" && "usa-form-group--error",
+        className
+      )}
+    >
+      {label && (
         <label className="usa-label" htmlFor={selectId}>
-          {label}
-          {required ? (
-            <span>
-              {" "}
-              <Required />
-            </span>
-          ) : null}
+          {required ? <Required label={label} /> : label}
         </label>
-      ) : null}
-
+      )}
+      {validationStatus === "error" && (
+        <div role="alert" className="usa-error-message">
+          {errorMessage}
+        </div>
+      )}
       <select
         className="usa-select"
         name={name}
@@ -59,9 +67,7 @@ const Dropdown: React.FC<Props> = ({
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
       >
-        {includeUndefined ? (
-          <option value={undefined}>- Select -</option>
-        ) : null}
+        {defaultSelect && <option value={undefined}>- Select -</option>}
         {options.map(({ value, label, disabled }, i) => (
           <option key={value + i} value={value} disabled={disabled}>
             {label}

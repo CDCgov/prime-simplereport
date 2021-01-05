@@ -2,9 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
-
 import { displayFullName } from "../utils";
-import Button from "../commonComponents/Button";
 
 // this can't be the best way to handle this?
 import {
@@ -12,6 +10,7 @@ import {
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 import { daysSince } from "../utils/date";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
@@ -88,14 +87,12 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
             <div className="usa-card__header">
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
               <NavLink
+                className="usa-button usa-button--outline"
                 to={`/add-patient/?facility=${activeFacilityId}`}
                 id="add-patient-button"
               >
-                <Button
-                  outline
-                  icon={"plus"}
-                  label={` New ${PATIENT_TERM_CAP}`}
-                />
+                <FontAwesomeIcon icon="plus" />
+                {` New ${PATIENT_TERM_CAP}`}
               </NavLink>
             </div>
             <div className="usa-card__body">

@@ -1,14 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-const Breadcrumbs = (props) => {
-  const crumbs = props.crumbs || [{}];
+interface Props {
+  crumbs: { text: string; link: string }[];
+}
+
+const Breadcrumbs = ({ crumbs }: Props): React.ReactElement => {
   const [current] = crumbs.slice(-1);
+  const trail = crumbs.slice(0, -1);
 
   return (
     <nav className="usa-breadcrumb" aria-label="Breadcrumbs">
       <ol className="usa-breadcrumb__list">
-        {crumbs.slice(0, -1).map((crumb) => (
+        {trail.map((crumb) => (
           <li key={crumb.text} className="usa-breadcrumb__list-item">
             <Link to={crumb.link} className="usa-breadcrumb__link">
               <span>{crumb.text}</span>

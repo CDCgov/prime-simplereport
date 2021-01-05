@@ -12,6 +12,7 @@ interface Facility extends Address {
   cliaNumber: string;
   name: string;
   phone: string;
+  email: string;
   deviceTypes: string[];
   defaultDevice: string;
   orderingProvider: Provider;
@@ -72,6 +73,7 @@ interface SettingsData {
         state: string;
         zipCode: string;
         phone: string;
+        email: string;
         defaultDeviceType: {
           internalId: string;
         };
@@ -121,6 +123,7 @@ interface FacilityData {
         state: string;
         zipCode: string;
         phone: string;
+        email: string;
         defaultDeviceType: {
           internalId: string;
         };

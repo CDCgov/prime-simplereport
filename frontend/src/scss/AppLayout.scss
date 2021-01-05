@@ -24,29 +24,12 @@ main {
   margin: 1em;
 }
 
-//TODO: determine where these belong and convert to SASS
-
-//TODO: resolve design discrepancies across forms in the app
-// Time-of-test design wants these bold; other pages, I dunno
-.prime-radios > .usa-legend,
-.prime-checkboxes > .usa-legend {
+.prime-radios > .usa-legend:not(.usa-sr-only),
+.prime-checkboxes > .usa-legend:not(.usa-sr-only) {
   font-weight: bold;
-}
-
-.prime-fieldset {
   position: relative;
-  background: #fff;
-  margin: 1em;
-  padding: 1em;
-  border: none;
-  outline: 1px solid #ccc;
-  padding-top: 2em;
-
-  > legend {
-    position: absolute;
-    top: 0;
-    left: 1em;
-  }
+  top: 1em;
+  margin: 1em 0;
 }
 
 .prime-edit-patient-heading {
@@ -63,37 +46,31 @@ main {
   flex-flow: row wrap;
 
   > * {
-    margin-left: 2em;
+    margin-right: 2em;
   }
 }
-.prime-radios,
-.prime-checkboxes {
+
+.prime-radios
+  .usa-form-group:not(.prime-radio--horizontal__container)
+  .usa-radio {
   margin-top: 1em;
 }
 
-.prime-text-input.prime-first-name,
-.prime-text-input.prime-middle-name,
-.prime-text-input.prime-last-name {
-  width: 10em;
+.prime-checkboxes .usa-form-group .usa-checkbox {
+  margin-top: 0.75em;
 }
-.prime-text-input.prime-phone {
-  width: 10em;
-}
-.prime-text-input.prime-email {
-  width: 18em;
-}
-.prime-text-input.prime-street-address {
-  width: 100%;
-}
-.prime-text-input.prime-city {
-  width: 12em;
-}
-.prime-text-input.prime-county {
-  width: 10em;
-}
-.prime-dropdown.prime-state {
-  width: 7em;
-}
-.prime-text-input.prime-zip {
-  width: 8em;
+
+.usa-form-group {
+  &.sr-width-sm {
+    width: 8em;
+  }
+  &.sr-width-md {
+    width: 10em;
+  }
+  &.sr-width-lg {
+    width: 20em;
+  }
+  &.sr-width-xl {
+    width: 40em;
+  }
 }

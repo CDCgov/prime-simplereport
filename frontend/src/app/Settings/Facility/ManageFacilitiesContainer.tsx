@@ -16,6 +16,7 @@ const GET_FACILITIES = gql`
         state
         zipCode
         phone
+        email
         defaultDeviceType {
           internalId
         }

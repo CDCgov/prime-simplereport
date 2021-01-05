@@ -41,27 +41,26 @@ data "azurerm_virtual_network" "vn" {
 }
 
 # Secrets
-data "azurerm_key_vault" "sr_global" {
+data "azurerm_key_vault" "global" {
   name                = "simple-report-global"
   resource_group_name = data.azurerm_resource_group.rg_global.name
 }
 
 data "azurerm_key_vault_secret" "sr_db_jdbc" {
   name         = "simple-report-${local.env}-db-jdbc"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
 
-//
-//data "azurerm_key_vault_secret" "okta_client_id" {
-//  key_vault_id = data.azurerm_key_vault.sr_global.id
-//  name         = "okta-${var.env}-client-id"
-//}
-//
-//data "azurerm_key_vault_secret" "okta_client_secret" {
-//  key_vault_id = data.azurerm_key_vault.sr_global.id
-//  name         = "okta-${var.env}-client-secret"
-//}
+data "azurerm_key_vault_secret" "datahub_api_key" {
+  name         = "datahub-api-key-dev"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
+  name         = "slack-notify-webhook-url-dev"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
 
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {

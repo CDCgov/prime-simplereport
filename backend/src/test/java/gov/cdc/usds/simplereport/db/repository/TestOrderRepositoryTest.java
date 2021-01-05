@@ -140,9 +140,9 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     @Test
     public void fetchQueue_multipleEntries_sortedFifo() {
         Organization org = _dataFactory.createValidOrg();
-        Person adam = _dataFactory.createMinimalPerson(org, "Adam", "A.", "Astaire", "Jr.");
-        Person brad = _dataFactory.createMinimalPerson(org, "Bradley", "B.", "Bones", null);
-        Person charlie = _dataFactory.createMinimalPerson(org, "Charles", "C.", "Crankypants", "3rd");
+        Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
+        Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
+        Person charlie = _dataFactory.createMinimalPerson(org, null, "Charles", "C.", "Crankypants", "3rd");
         Facility facility = _dataFactory.createValidFacility(org);
         _repo.save(new TestOrder(charlie, facility));
         pause();
@@ -158,9 +158,9 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     @Test
     public void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
         Organization org = _dataFactory.createValidOrg();
-        Person adam = _dataFactory.createMinimalPerson(org, "Adam", "A.", "Astaire", "Jr.");
-        Person brad = _dataFactory.createMinimalPerson(org, "Bradley", "B.", "Bones", null);
-        Person charlie = _dataFactory.createMinimalPerson(org, "Charles", "C.", "Crankypants", "3rd");
+        Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
+        Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
+        Person charlie = _dataFactory.createMinimalPerson(org, null, "Charles", "C.", "Crankypants", "3rd");
         Facility facility = _dataFactory.createValidFacility(org);
 
         TestOrder charlieOrder = _repo.save(new TestOrder(charlie, facility));

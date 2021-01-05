@@ -6,4 +6,5 @@ interface User {
   middleName: string;
   lastName: string;
   suffix: string;
+  email: string;
 }

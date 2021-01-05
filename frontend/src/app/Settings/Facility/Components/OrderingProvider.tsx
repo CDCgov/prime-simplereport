@@ -1,7 +1,7 @@
 import React from "react";
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
-import TextInput from "../../../commonComponents/ManagedTextInput";
+import TextInput from "../../../commonComponents/TextInput";
 
 interface Props {
   provider: Provider;
@@ -9,8 +9,10 @@ interface Props {
 }
 
 const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
-  const onChange = (field: keyof Provider, value: string) => {
-    updateProvider({ ...provider, [field]: value });
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    updateProvider({ ...provider, [e.target.name]: e.target.value });
   };
   return (
     <div className="prime-container usa-card__container">
@@ -21,90 +23,101 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label={"First Name"}
-              value={provider.firstName || ""}
-              onChange={(v) => onChange("firstName", v)}
+              label="First Name"
+              name="firstName"
+              value={provider.firstName}
+              onChange={onChange}
               required
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"Middle Name"}
-              value={provider.middleName || ""}
-              onChange={(v) => onChange("middleName", v)}
+              label="Middle Name"
+              name="middleName"
+              value={provider.middleName}
+              onChange={onChange}
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"Last Name"}
-              value={provider.lastName || ""}
-              onChange={(v) => onChange("lastName", v)}
+              label="Last Name"
+              name="lastName"
+              value={provider.lastName}
+              onChange={onChange}
               required
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"Suffix"}
-              value={provider.suffix || ""}
-              onChange={(v) => onChange("suffix", v)}
+              label="Suffix"
+              name="suffix"
+              value={provider.suffix}
+              onChange={onChange}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label={"NPI"}
-              value={provider.NPI || ""}
-              onChange={(v) => onChange("NPI", v)}
+              label="NPI"
+              name="NPI"
+              value={provider.NPI}
+              onChange={onChange}
               required
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"Phone Number"}
-              value={provider.phone || ""}
-              onChange={(v) => onChange("phone", v)}
+              label="Phone Number"
+              name="phone"
+              value={provider.phone}
+              onChange={onChange}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label={"Street 1"}
-              value={provider.street || ""}
-              onChange={(v) => onChange("street", v)}
+              label="Street 1"
+              name="street"
+              value={provider.street}
+              onChange={onChange}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label={"Street 2"}
-              value={provider.streetTwo || ""}
-              onChange={(v) => onChange("streetTwo", v)}
+              label="Street 2"
+              name="streetTwo"
+              value={provider.streetTwo}
+              onChange={onChange}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label={"City"}
-              value={provider.city || ""}
-              onChange={(v) => onChange("city", v)}
+              label="City"
+              name="city"
+              value={provider.city}
+              onChange={onChange}
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"County"}
-              value={provider.county || ""}
-              onChange={(v) => onChange("county", v)}
+              label="County"
+              name="county"
+              value={provider.county}
+              onChange={onChange}
             />
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label={"Zip Code"}
-              value={provider.zipCode || ""}
-              onChange={(v) => onChange("zipCode", v)}
+              label="Zip Code"
+              name="zipCode"
+              value={provider.zipCode}
+              onChange={onChange}
               required
             />
           </div>
@@ -114,10 +127,9 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="state"
               selectedValue={provider.state}
               options={stateCodes.map((c) => ({ label: c, value: c }))}
-              addClass="prime-state"
-              onChange={(e) =>
-                onChange("state", (e.target as HTMLSelectElement).value)
-              }
+              defaultSelect
+              className="sr-width-sm"
+              onChange={onChange}
             />
           </div>
         </div>
