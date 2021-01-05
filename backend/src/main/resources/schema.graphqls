@@ -53,6 +53,7 @@ type Facility {
   state: String
   zipCode: String
   phone: String
+  email: String
   deviceTypes: [DeviceType]
   defaultDeviceType: DeviceType
   orderingProvider: Provider
@@ -147,6 +148,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
@@ -172,6 +174,7 @@ type Mutation {
     state: String
     zipCode: String!
     phone: String
+    email: String
     orderingProviderFirstName: String!
     orderingProviderMiddleName: String
     orderingProviderLastName: String!
