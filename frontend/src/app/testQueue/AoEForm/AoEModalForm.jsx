@@ -8,11 +8,12 @@ import {
   getTestTypes,
   getPregnancyResponses,
 } from "./constants";
+import Checkboxes from "../../commonComponents/Checkboxes";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
-import DateInput from "../../commonComponents/DateInput";
+import TextInput from "../../commonComponents/TextInput";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
@@ -33,52 +34,44 @@ const SymptomInputs = ({
   onsetDate,
   setOnsetDate,
 }) => {
-  const symptomChange = (evt) => {
-    const choice = evt.currentTarget;
-    setSymptoms({ ...currentSymptoms, [choice.value]: choice.checked });
+  const symptomChange = (e) => {
+    setSymptoms({ ...currentSymptoms, [e.target.value]: e.target.checked });
   };
-  const choiceList = symptomListConfig.map((conf) => {
-    const { label, value } = conf;
-    return { label, value, checked: currentSymptoms[value] };
-  });
-
-  // build the choice list we would have without the no-symptom toggle,
-  // so we can extract its contents to plug into the wrapper.
-  const wrappedSymptomChoiceList = noSymptoms ? null : (
-    <React.Fragment>
-      <hr />
-      <RadioGroup
-        type="checkbox"
-        name="symptom_list"
-        onChange={symptomChange}
-        buttons={choiceList}
-      />
-      <DateInput
-        label="Date of symptom onset"
-        name="symptom_onset"
-        value={onsetDate}
-        onChange={setOnsetDate}
-        min="2020-02-01"
-        max={new Date().toISOString().split("T")[0]}
-      />
-    </React.Fragment>
-  );
 
   return (
-    <React.Fragment>
-      <RadioGroup
-        type="checkbox"
+    <>
+      <Checkboxes
         name="symptom_list"
         legend="Are you experiencing any of the following symptoms?"
-        displayLegend
-        onChange={(evt) => {
-          setNoSymptoms(evt.currentTarget.checked);
-        }}
-        buttons={[{ value: "hasNoSymptoms", label: "No Symptoms" }]}
-        selectedRadio={noSymptoms ? "hasNoSymptoms" : null}
+        onChange={(e) => setNoSymptoms(e.target.checked)}
+        boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
       />
-      {wrappedSymptomChoiceList}
-    </React.Fragment>
+      {!noSymptoms && (
+        <>
+          <hr />
+          <Checkboxes
+            legend="Symptoms"
+            legendSrOnly
+            name="symptom_list"
+            onChange={symptomChange}
+            boxes={symptomListConfig.map(({ label, value }) => ({
+              label,
+              value,
+              checked: currentSymptoms[value],
+            }))}
+          />
+          <TextInput
+            type="date"
+            label="Date of symptom onset"
+            name="symptom_onset"
+            value={onsetDate}
+            onChange={(e) => setOnsetDate(e.target.value)}
+            min="2020-02-01"
+            max={new Date().toISOString().split("T")[0]}
+          />
+        </>
+      )}
+    </>
   );
 };
 
@@ -108,11 +101,12 @@ const PriorTestInputs = ({
   );
   const previousTestEntry = (
     <>
-      <DateInput
+      <TextInput
+        type="date"
         label="Date of Most Recent Test"
         name="prior_test_date"
         value={priorTestDate}
-        onChange={setPriorTestDate}
+        onChange={(e) => setPriorTestDate(e.target.value)}
         max={new Date().toISOString().split("T")[0]}
         min="2020-02-01"
       />
@@ -122,7 +116,7 @@ const PriorTestInputs = ({
         name="prior_test_type"
         selectedValue={priorTestType}
         onChange={(e) => setPriorTestType(e.target.value)}
-        includeUndefined
+        defaultSelect
       />
       <Dropdown
         options={[
@@ -142,7 +136,7 @@ const PriorTestInputs = ({
         label="Result of Prior Test"
         name="prior_test_result"
         selectedValue={priorTestResult}
-        includeUndefined
+        defaultSelect
         onChange={(e) => setPriorTestResult(e.target.value)}
       />
     </>
@@ -194,8 +188,9 @@ const PriorTestInputs = ({
             }
           }}
           legend="Was this your most recent COVID-19 test?"
+          legendSrOnly
           name="most_recent_flag"
-          horizontal
+          variant="horizontal"
         />
         {mostRecentTestAnswer === "no" && previousTestEntry}
       </div>
@@ -223,8 +218,9 @@ const PriorTestInputs = ({
           setIsFirstTest(e.target.value === "yes");
         }}
         legend="Is this your first covid test?"
+        legendSrOnly
         name="prior_test_flag"
-        horizontal
+        variant="horizontal"
       />
       {isFirstTest === false && previousTestEntry}
     </>
@@ -332,7 +328,7 @@ const AoEModalForm = ({
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons" style={{ float: "right" }}>
-      <Button unstyled label="Cancel" onClick={onClose} />
+      <Button variant="unstyled" label="Cancel" onClick={onClose} />
       <Button label={saveButtonText} onClick={saveAnswers} />
     </div>
   );
@@ -392,7 +388,6 @@ const AoEModalForm = ({
           <h2>Pregnancy</h2>
           <RadioGroup
             legend="Currently pregnant?"
-            displayLegend
             name="pregnancy"
             type="radio"
             onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}

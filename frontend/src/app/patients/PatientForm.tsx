@@ -22,6 +22,7 @@ import Dropdown from "../commonComponents/Dropdown";
 import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
+import FormGroup from "../commonComponents/FormGroup";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -121,25 +122,16 @@ const UPDATE_PATIENT = gql`
   }
 `;
 
-const Fieldset = (props) => (
-  <fieldset className="prime-fieldset">
-    <legend>
-      <h3>{props.legend}</h3>
-    </legend>
-    {props.children}
-  </fieldset>
-);
+interface Props {
+  activeFacilityId: string;
+  patientId?: string;
+  patient?: any; //TODO: TYPES
+}
 
-// TODO: move to an Address component
-const stateChoices = [
-  { label: "- Select - ", value: "" },
-  ...stateCodes.map((c) => ({ label: c, value: c })),
-];
-
-const PatientForm = (props) => {
+const PatientForm = (props: Props) => {
   const appInsights = useAppInsightsContext();
-  const trackAddPatient = useTrackEvent(appInsights, "Add Patient");
-  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient");
+  const trackAddPatient = useTrackEvent(appInsights, "Add Patient", {});
+  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient", {});
 
   const [addPatient] = useMutation(ADD_PATIENT);
   const [updatePatient] = useMutation(UPDATE_PATIENT);
@@ -147,12 +139,14 @@ const PatientForm = (props) => {
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
 
-  const onChange = (e) => {
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     let value = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
         ...patient[e.target.name],
-        [e.target.value]: e.target.checked,
+        [e.target.value]: (e.target as any).checked,
       };
     }
     setFormChanged(true);
@@ -189,7 +183,7 @@ const PatientForm = (props) => {
       employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.patientId) {
-      trackUpdatePatient();
+      trackUpdatePatient({});
       updatePatient({
         variables: {
           patientId: props.patientId,
@@ -217,7 +211,7 @@ const PatientForm = (props) => {
         }
       );
     } else {
-      trackAddPatient();
+      trackAddPatient({});
       addPatient({ variables }).then(
         () => {
           showNotification(
@@ -261,6 +255,7 @@ const PatientForm = (props) => {
             text: PATIENT_TERM_PLURAL_CAP,
           },
           {
+            link: "",
             text: !props.patientId
               ? `Create New ${PATIENT_TERM_CAP}`
               : fullName,
@@ -282,7 +277,7 @@ const PatientForm = (props) => {
           Save Changes
         </button>
       </div>
-      <Fieldset legend="General info">
+      <FormGroup title="General info">
         <div className="prime-form-line">
           <TextInput
             label="First Name"
@@ -292,7 +287,7 @@ const PatientForm = (props) => {
             required
           />
           <TextInput
-            label="Middle Name (optional)"
+            label="Middle Name"
             name="middleName"
             value={patient.middleName}
             onChange={onChange}
@@ -335,22 +330,24 @@ const PatientForm = (props) => {
             required
           />
         </div>
-      </Fieldset>
-      <Fieldset legend="Contact Information">
+      </FormGroup>
+      <FormGroup title="Contact Information">
         <div className="prime-form-line">
           <TextInput
+            type="tel"
             label="Phone Number"
             name="telephone"
             value={patient.telephone}
-            addClass="prime-phone"
+            className="sr-width-md"
             onChange={onChange}
             required
           />
           <TextInput
+            type="email"
             label="Email Address"
             name="email"
             value={patient.email}
-            addClass="prime-email"
+            className="sr-width-lg"
             onChange={onChange}
           />
         </div>
@@ -359,7 +356,7 @@ const PatientForm = (props) => {
             label="Street address 1"
             name="street"
             value={patient.street}
-            addClass="prime-street-address"
+            className="sr-width-xl"
             onChange={onChange}
             required
           />
@@ -369,7 +366,7 @@ const PatientForm = (props) => {
             label="Street address 2"
             name="streetTwo"
             value={patient.streetTwo}
-            addClass="prime-street-address"
+            className="sr-width-xl"
             onChange={onChange}
           />
         </div>
@@ -378,22 +375,23 @@ const PatientForm = (props) => {
             label="City"
             name="city"
             value={patient.city}
-            addClass="prime-city"
+            className="sr-width-md"
             onChange={onChange}
           />
           <TextInput
             label="County"
             name="county"
             value={patient.county}
-            addClass="prime-county"
+            className="sr-width-md"
             onChange={onChange}
           />
           <Dropdown
             label="State"
             name="state"
             selectedValue={patient.state}
-            options={stateChoices}
-            addClass="prime-state"
+            options={stateCodes.map((c) => ({ label: c, value: c }))}
+            defaultSelect
+            className="sr-width-sm"
             onChange={onChange}
             required
           />
@@ -401,17 +399,16 @@ const PatientForm = (props) => {
             label="Zip"
             name="zipCode"
             value={patient.zipCode}
-            addClass="prime-zip"
+            className="sr-width-sm"
             onChange={onChange}
             required
           />
         </div>
-      </Fieldset>
-      <Fieldset legend="Demographics">
+      </FormGroup>
+      <FormGroup title="Demographics">
         <div>
           <RadioGroup
             legend="Race"
-            displayLegend
             name="race"
             buttons={[
               {
@@ -450,7 +447,6 @@ const PatientForm = (props) => {
         <div>
           <RadioGroup
             legend="Ethnicity"
-            displayLegend
             name="ethnicity"
             buttons={[
               { label: "Hispanic or Latino", value: "hispanic" },
@@ -463,7 +459,6 @@ const PatientForm = (props) => {
         <div>
           <RadioGroup
             legend="Biological Sex"
-            displayLegend
             name="gender"
             buttons={[
               { label: "Male", value: "male" },
@@ -474,12 +469,11 @@ const PatientForm = (props) => {
             onChange={onChange}
           />
         </div>
-      </Fieldset>
-      <Fieldset legend="Other">
+      </FormGroup>
+      <FormGroup title="Other">
         <div>
           <RadioGroup
             legend="Resident in congregate care/living setting?"
-            displayLegend
             name="residentCongregateSetting"
             buttons={[
               { label: "Yes", value: "YES" },
@@ -493,7 +487,6 @@ const PatientForm = (props) => {
         <div>
           <RadioGroup
             legend="Work in Healthcare?"
-            displayLegend
             name="employedInHealthcare"
             buttons={[
               { label: "Yes", value: "YES" },
@@ -504,8 +497,8 @@ const PatientForm = (props) => {
             required
           />
         </div>
-      </Fieldset>
-      <Fieldset legend="Test History">
+      </FormGroup>
+      <FormGroup title="Test History">
         {patient.testResults && patient.testResults.length !== 0 && (
           <table className="usa-table usa-table--borderless">
             <thead>
@@ -515,7 +508,7 @@ const PatientForm = (props) => {
               </tr>
             </thead>
             <tbody>
-              {patient.testResults.map((r, i) => (
+              {patient.testResults.map((r: any, i: number) => (
                 <tr key={i}>
                   <td>{moment(r.dateTested).format("lll")}</td>
                   <td>{r.result}</td>
@@ -524,7 +517,7 @@ const PatientForm = (props) => {
             </tbody>
           </table>
         )}
-      </Fieldset>
+      </FormGroup>
       <div className="prime-edit-patient-heading">
         <div></div>
         <button

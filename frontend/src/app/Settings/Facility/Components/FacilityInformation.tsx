@@ -1,7 +1,7 @@
 import React from "react";
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
-import TextInput from "../../../commonComponents/ManagedTextInput";
+import TextInput from "../../../commonComponents/TextInput";
 
 interface Props {
   facility: Facility;
@@ -9,84 +9,95 @@ interface Props {
 }
 
 const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
-  const onChange = (field: keyof Facility, value: string) => {
-    updateFacility({ ...facility, [field]: value });
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    updateFacility({ ...facility, [e.target.name]: e.target.value });
   };
 
   return (
-    <div className="">
+    <div>
       <h2 style={{ margin: 0 }}>Facility Information</h2>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label={"Testing Facility Name"}
-            value={facility.name || ""}
-            onChange={(v) => onChange("name", v)}
+            label="Testing Facility Name"
+            name="name"
+            value={facility.name}
+            onChange={onChange}
             required
           />
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label={"CLIA Number"}
-            value={facility.cliaNumber || ""}
-            onChange={(v) => onChange("cliaNumber", v)}
+            label="CLIA Number"
+            name="cliaNumber"
+            value={facility.cliaNumber}
+            onChange={onChange}
           />
         </div>
       </div>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label={"Phone Number"}
-            value={facility.phone || ""}
-            onChange={(v) => onChange("phone", v)}
+            label="Phone Number"
+            name="phone"
+            value={facility.phone}
+            onChange={onChange}
           />
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label={"Email"}
-            value={facility.email || ""}
-            onChange={(v) => onChange("email", v)}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label={"Street 1"}
-            value={facility.street || ""}
-            onChange={(v) => onChange("street", v)}
+            label="Email"
+            name="email"
+            value={facility.email}
+            onChange={onChange}
           />
         </div>
       </div>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label={"Street 2"}
-            value={facility.streetTwo || ""}
-            onChange={(v) => onChange("streetTwo", v)}
+            label="Street 1"
+            name="street"
+            value={facility.street}
+            onChange={onChange}
           />
         </div>
       </div>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label={"City"}
-            value={facility.city || ""}
-            onChange={(v) => onChange("city", v)}
+            label="Street 2"
+            name="streetTwo"
+            value={facility.streetTwo}
+            onChange={onChange}
+          />
+        </div>
+      </div>
+      <div className="grid-row grid-gap">
+        <div className="tablet:grid-col">
+          <TextInput
+            label="City"
+            name="city"
+            value={facility.city}
+            onChange={onChange}
           />
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label={"County"}
-            value={facility.county || ""}
-            onChange={(v) => onChange("county", v)}
+            label="County"
+            name="county"
+            value={facility.county}
+            onChange={onChange}
           />
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label={"Zip Code"}
-            value={facility.zipCode || ""}
-            onChange={(v) => onChange("zipCode", v)}
+            label="Zip Code"
+            name="zipCode"
+            value={facility.zipCode}
+            onChange={onChange}
             required
           />
         </div>
@@ -96,10 +107,9 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="state"
             selectedValue={facility.state}
             options={stateCodes.map((c) => ({ label: c, value: c }))}
-            addClass="prime-state"
-            onChange={(e) =>
-              onChange("state", (e.target as HTMLSelectElement).value)
-            }
+            defaultSelect
+            className="sr-width-sm"
+            onChange={onChange}
           />
         </div>
       </div>

@@ -23,9 +23,8 @@
     }
   }
   .usa-card__body {
-    .prime-text-input,
-    .prime-dropdown {
-      width: 100%;
+    .usa-form-group {
+      width: 90%;
       margin-left: 0;
       padding: 0;
     }
@@ -76,6 +75,7 @@
 
 .prime-test-result {
   border-left: 1px solid color($theme-color-prime-gray-light);
+  padding-left: 1em;
 }
 
 .prime-queue-item {
@@ -101,17 +101,6 @@
   margin-left: 0.5em;
   border-left: 4px solid #ccc;
   padding-left: 0.5em;
-}
-
-// things that look like links but aren't links
-
-.prime-link {
-  background: none !important;
-  border: none;
-  padding: 0 !important;
-  color: #069;
-  text-decoration: underline;
-  cursor: pointer;
 }
 
 // close button

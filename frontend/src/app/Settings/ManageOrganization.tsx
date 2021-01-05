@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
-import TextInput from "../commonComponents/ManagedTextInput";
+import TextInput from "../commonComponents/TextInput";
 import Button from "../commonComponents/Button";
 import RequiredMessage from "../commonComponents/RequiredMessage";
 import Nav from "./Nav";
@@ -13,13 +13,10 @@ interface Props {
 const ManageOrganization: React.FC<Props> = (props) => {
   const [name, setName] = useState(props.name);
   const [formChanged, setFormChanged] = useState(false);
-
-  useEffect(() => {
-    if (!formChanged && name !== props.name) {
-      setFormChanged(true);
-    }
-    // eslint-disable-next-line
-  }, [name]);
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+    setFormChanged(true);
+  };
 
   return (
     <main className="prime-home">
@@ -30,7 +27,6 @@ const ManageOrganization: React.FC<Props> = (props) => {
             <div className="usa-card__header">
               <h2>Manage Organization</h2>
               <Button
-                type="button"
                 onClick={() => props.onSave(name)}
                 label="Save Settings"
                 disabled={!formChanged}
@@ -39,9 +35,10 @@ const ManageOrganization: React.FC<Props> = (props) => {
             <div className="usa-card__body">
               <RequiredMessage />
               <TextInput
-                label={"Organization Name"}
+                label="Organization Name"
+                name="name"
                 value={name}
-                onChange={setName}
+                onChange={onChange}
                 required
               />
             </div>

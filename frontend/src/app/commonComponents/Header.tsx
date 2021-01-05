@@ -4,12 +4,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
-import Anchor from "./Anchor";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
 // import { useDispatch, connect } from "react-redux";
 import { connect } from "react-redux";
+import Button from "./Button";
 // import { updateFacility } from "../store";
 
 interface Props {
@@ -87,9 +87,10 @@ const Header = (props: Props) => {
           <Dropdown
             selectedValue={facility.id}
             onChange={onFacilitySelect}
-            options={facilities.map((f: Facility) => {
-              return { label: f.name, value: f.id };
-            })}
+            options={facilities.map(({ name, id }) => ({
+              label: name,
+              value: id,
+            }))}
           />
         </div>
 
@@ -164,7 +165,7 @@ const Header = (props: Props) => {
                 </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
                 <li className="usa-sidenav__item">
-                  <Anchor text="Log out" onClick={() => logout()} />
+                  <Button variant="unstyled" label="Log out" onClick={logout} />
                 </li>
               </ul>
             </li>
@@ -259,7 +260,11 @@ const Header = (props: Props) => {
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
-                    <Anchor text={" Log out"} onClick={() => logout()} />
+                    <Button
+                      variant="unstyled"
+                      label=" Log out"
+                      onClick={logout}
+                    />
                   </li>
                 </ul>
               </div>
