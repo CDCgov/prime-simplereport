@@ -3,8 +3,8 @@ locals {
     "http://localhost:8080",
     "http://localhost:9090",
     "http://localhost:3000",
-    "https://simple-report.app.cloud.gov/",
-    "https://prime-data-input-sandbox-backend.app.cloud.gov/",
+    "https://simple-report-qa.app.cloud.gov/",
+    "https://simple-report-qa-api.app.cloud.gov/",
     "https://staging.simplereport.org/app"
   ]
   is_prod = var.env == "prod"
