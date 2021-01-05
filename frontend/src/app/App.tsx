@@ -30,6 +30,7 @@ const WHOAMI_QUERY = gql`
       middleName
       lastName
       suffix
+      email
       organization {
         name
         testingFacility {
@@ -117,6 +118,7 @@ const App = () => {
           middleName: data.whoami.middleName,
           lastName: data.whoami.lastName,
           suffix: data.whoami.suffix,
+          email: data.whoami.email,
         },
       })
     );
