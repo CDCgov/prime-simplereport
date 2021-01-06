@@ -1,10 +1,9 @@
 import React from "react";
-import { v4 as uuidv4 } from "uuid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../../commonComponents/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
-import RadioGroup from "../../../commonComponents/RadioGroup";
+import Checkboxes from "../../../commonComponents/Checkboxes";
 
 interface Props {
   deviceTypes: string[];
@@ -54,7 +53,7 @@ const ManageDevices: React.FC<Props> = ({
         };
       });
       return (
-        <tr key={uuidv4()}>
+        <tr key={deviceId}>
           <td>
             <Dropdown
               options={dropdownOptions}
@@ -65,16 +64,18 @@ const ManageDevices: React.FC<Props> = ({
             />
           </td>
           <td>
-            <RadioGroup
-              type="checkbox"
+            <Checkboxes
               onChange={() => updateDefaultDevice(deviceId)}
-              buttons={[
+              legend="Set default"
+              legendSrOnly
+              name="default_device"
+              boxes={[
                 {
-                  value: "true",
+                  value: "1",
                   label: "Set as Default",
+                  checked: deviceId === defaultDevice,
                 },
               ]}
-              selectedRadio={deviceId === defaultDevice ? "true" : "false"}
             />
           </td>
           <td>
@@ -117,8 +118,7 @@ const ManageDevices: React.FC<Props> = ({
       <div className="usa-card__footer">
         <Button
           onClick={onAddDevice}
-          type="submit"
-          outline
+          variant="outline"
           label="Add Device"
           icon="plus"
           disabled={_getRemainingDeviceOptions().length === 0}

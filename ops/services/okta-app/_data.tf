@@ -6,3 +6,7 @@ data "okta_default_policy" "signon" {
 data "okta_group" "cdc_users" {
   name = "Prime Team Members"
 }
+
+data "okta_auth_server" "default" {
+  name = "default"
+}

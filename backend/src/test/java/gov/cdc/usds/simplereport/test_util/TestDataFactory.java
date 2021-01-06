@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.test_util;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,24 +61,24 @@ public class TestDataFactory {
 
     public Facility createValidFacility(Organization org, String facilityName) {
         DeviceType dev = getGenericDevice();
+        List<DeviceType> configuredDevices = new ArrayList<>();
+        configuredDevices.add(dev);
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
-        Provider doc = _providerRepo
-                .save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "800-555-1212"));
-        Facility facility = new Facility(org, facilityName, "123456", doc);
-        facility.setAddress(addy);
-        facility.setDefaultDeviceType(dev);
+        Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "800-555-1212"));
+        Facility facility = new Facility(org, facilityName, "123456", addy, "555-867-5309", "facility@test.com", doc,
+                dev, configuredDevices);
         Facility save = _facilityRepo.save(facility);
         return save;
     }
 
     public Person createMinimalPerson(Organization org) {
-        return createMinimalPerson(org, "John", "Brown", "Boddie", "Jr.");
+        return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
     }
 
-    public Person createMinimalPerson(Organization org, String firstName, String middleName, String lastName,
+    public Person createMinimalPerson(Organization org, Facility fac, String firstName, String middleName, String lastName,
             String suffix) {
         PersonName names = new PersonName(firstName, middleName, lastName, suffix);
-        return createMinimalPerson(org, null, names);
+        return createMinimalPerson(org, fac, names);
     }
 
     public Person createMinimalPerson(Organization org, Facility fac, PersonName names) {

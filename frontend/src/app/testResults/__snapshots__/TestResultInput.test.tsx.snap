@@ -13,19 +13,21 @@ exports[`TestResultInputForm should render with a value 1`] = `
     className="usa-fieldset prime-radios"
   >
     <legend
-      className="usa-sr-only"
-    />
-    <ul
-      className="usa-list--unstyled"
+      className="usa-legend usa-sr-only"
     >
-      <li
-        className="prime-radio__container"
+      Test result
+    </legend>
+    <div
+      className="usa-form-group"
+    >
+      <div
+        className="usa-radio"
       >
         <input
           checked={true}
           className="usa-radio__input"
           disabled={false}
-          id="a"
+          id="radio-test-1_POSITIVE_0"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -33,20 +35,20 @@ exports[`TestResultInputForm should render with a value 1`] = `
           value="POSITIVE"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="a"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_POSITIVE_0"
         >
           Positive (+)
         </label>
-      </li>
-      <li
-        className="prime-radio__container"
+      </div>
+      <div
+        className="usa-radio"
       >
         <input
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="b"
+          id="radio-test-1_NEGATIVE_1"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -54,20 +56,20 @@ exports[`TestResultInputForm should render with a value 1`] = `
           value="NEGATIVE"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="b"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_NEGATIVE_1"
         >
           Negative (-)
         </label>
-      </li>
-      <li
-        className="prime-radio__container"
+      </div>
+      <div
+        className="usa-radio"
       >
         <input
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="c"
+          id="radio-test-1_UNDETERMINED_2"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -75,13 +77,13 @@ exports[`TestResultInputForm should render with a value 1`] = `
           value="UNDETERMINED"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="c"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_UNDETERMINED_2"
         >
           Inconclusive
         </label>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
   <div
     className="prime-test-result-submit"
@@ -111,19 +113,21 @@ exports[`TestResultInputForm should render without a value 1`] = `
     className="usa-fieldset prime-radios"
   >
     <legend
-      className="usa-sr-only"
-    />
-    <ul
-      className="usa-list--unstyled"
+      className="usa-legend usa-sr-only"
     >
-      <li
-        className="prime-radio__container"
+      Test result
+    </legend>
+    <div
+      className="usa-form-group"
+    >
+      <div
+        className="usa-radio"
       >
         <input
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="a"
+          id="radio-test-1_POSITIVE_0"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -131,20 +135,20 @@ exports[`TestResultInputForm should render without a value 1`] = `
           value="POSITIVE"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="a"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_POSITIVE_0"
         >
           Positive (+)
         </label>
-      </li>
-      <li
-        className="prime-radio__container"
+      </div>
+      <div
+        className="usa-radio"
       >
         <input
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="b"
+          id="radio-test-1_NEGATIVE_1"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -152,20 +156,20 @@ exports[`TestResultInputForm should render without a value 1`] = `
           value="NEGATIVE"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="b"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_NEGATIVE_1"
         >
           Negative (-)
         </label>
-      </li>
-      <li
-        className="prime-radio__container"
+      </div>
+      <div
+        className="usa-radio"
       >
         <input
           checked={false}
           className="usa-radio__input"
           disabled={false}
-          id="c"
+          id="radio-test-1_UNDETERMINED_2"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -173,13 +177,13 @@ exports[`TestResultInputForm should render without a value 1`] = `
           value="UNDETERMINED"
         />
         <label
-          className="usa-radio__label prime-radio__label"
-          htmlFor="c"
+          className="usa-radio__label"
+          htmlFor="radio-test-1_UNDETERMINED_2"
         >
           Inconclusive
         </label>
-      </li>
-    </ul>
+      </div>
+    </div>
   </fieldset>
   <div
     className="prime-test-result-submit"

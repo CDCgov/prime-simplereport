@@ -40,6 +40,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String state,
             String zipCode,
             String phone,
+            String email,
             String orderingProviderFirstName,
             String orderingProviderMiddleName,
             String orderingProviderLastName,
@@ -61,7 +62,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
             orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
-        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), deviceTypes,
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), email, deviceTypes,
             providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
         return new ApiFacility(created);
     }
@@ -76,6 +77,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String state,
                                    String zipCode,
                                    String phone,
+                                   String email,
                                    String orderingProviderFirstName,
                                    String orderingProviderMiddleName,
                                    String orderingProviderLastName,
@@ -102,6 +104,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           state,
           zipCode,
           Translators.parsePhoneNumber(phone),
+          email,
           orderingProviderFirstName,
           orderingProviderMiddleName,
           orderingProviderLastName,

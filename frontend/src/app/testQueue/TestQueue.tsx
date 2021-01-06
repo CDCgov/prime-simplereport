@@ -6,6 +6,8 @@ import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
 
+const pollInterval = 10_000;
+
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
     <div className="grid-row">
@@ -95,6 +97,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     variables: {
       facilityId: activeFacilityId,
     },
+    pollInterval,
   });
 
   if (error) {

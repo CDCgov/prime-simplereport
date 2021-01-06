@@ -35,24 +35,6 @@ resource "okta_app_oauth" "app" {
 
 // Create the custom app mappings
 
-resource "okta_app_user_schema" "org_schema" {
-  app_id      = okta_app_oauth.app.id
-  index       = "simple_report_org"
-  title       = "Healthcare Organization"
-  description = "Associated Healthcare Organization"
-  type        = "string"
-  master      = "PROFILE_MASTER"
-}
-
-resource "okta_app_user_schema" "user_schema" {
-  app_id      = okta_app_oauth.app.id
-  index       = "simple_report_user"
-  title       = "User Type"
-  description = "Whether or not the user is an administrator"
-  type        = "string"
-  master      = "PROFILE_MASTER"
-}
-
 resource "okta_app_group_assignment" "users" {
   count    = length(var.user_groups)
   app_id   = okta_app_oauth.app.id
@@ -66,4 +48,28 @@ resource "okta_app_group_assignment" "prime_users" {
     simple_report_org  = null
     simple_report_user = null
   })
+}
+
+resource "okta_group" "simplereport_admins" {
+  name        = "SR-${upper(var.env)}-ADMINS"
+  description = "${upper(var.env)} Application Administrators for SimpleReport"
+}
+
+resource "okta_auth_server_claim" "simplereport_roles" {
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "${var.env}_roles"
+  value_type        = "GROUPS"
+  group_filter_type = "STARTS_WITH"
+  value             = "SR-${upper(var.env)}-"
+  scopes = [
+  okta_auth_server_scope.sr_env.name]
+}
+
+resource "okta_auth_server_scope" "sr_env" {
+  auth_server_id   = data.okta_auth_server.default.id
+  name             = "simple_report_${var.env}"
+  description      = "${upper(var.env)}-only OAUTH scope for Simple Report application"
+  metadata_publish = "NO_CLIENTS"
+  default          = false
 }

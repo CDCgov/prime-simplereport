@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Anchor from "../../commonComponents/Anchor";
+import Button from "../../commonComponents/Button";
 import AoeModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 
@@ -52,9 +52,10 @@ const SearchResults = ({
                 <td>{p.lookupId}</td>
                 <td>
                   {patientsInQueue.indexOf(p.internalId) === -1 ? (
-                    <Anchor
+                    <Button
+                      variant="unstyled"
+                      label="Begin Test"
                       onClick={() => setDialogPatient(p)}
-                      text="Begin Test"
                     />
                   ) : (
                     "Test in progress"

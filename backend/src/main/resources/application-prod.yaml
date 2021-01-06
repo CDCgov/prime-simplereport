@@ -1,0 +1,8 @@
+spring:
+  profiles.include: single-tenant
+graphql.servlet.cors:
+  allowed-origins:
+    - https://simplereport.cdc.gov
+simple-report:
+  data-hub:
+    uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"

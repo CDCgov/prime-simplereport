@@ -58,6 +58,10 @@ public class ApiFacility {
 		return facility.getTelephone();
 	}
 
+	public String getEmail() {
+		return facility.getEmail();
+	}
+
 	public List<DeviceType> getDeviceTypes() {
 		return facility.getDeviceTypes();
 	}

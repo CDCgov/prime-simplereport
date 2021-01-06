@@ -57,7 +57,7 @@ public class InitialSetupProperties {
     public Provider getProvider() {
         PersonName n = provider.getNameInfo();
         return new Provider(n.getFirstName(), n.getMiddleName(), n.getLastName(), n.getSuffix(),
-            provider.getProviderId(), provider.getAddress(), provider.getTelephone());
+                provider.getProviderId(), provider.getAddress(), provider.getTelephone());
     }
 
     public List<? extends DeviceType> getDeviceTypes() {
@@ -80,32 +80,43 @@ public class InitialSetupProperties {
         private String cliaNumber;
         private StreetAddress address;
         private String telephone;
-        public ConfigFacility(String facilityName, String cliaNumber, StreetAddress address, String telephone) {
+        private String email;
+
+        public ConfigFacility(String facilityName, String cliaNumber, StreetAddress address, String telephone,
+                String email) {
             super();
             this.name = facilityName;
             this.cliaNumber = cliaNumber;
             this.address = address;
             this.telephone = telephone;
+            this.email = email;
         }
 
-        public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType, List<DeviceType> configured) {
-            Facility f = new Facility(org, name, cliaNumber, p, defaultDeviceType, configured);
-            f.setAddress(address);
-            f.setTelephone(telephone);
+        public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType,
+                List<DeviceType> configured) {
+            Facility f = new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceType,
+                    configured);
             return f;
         }
 
         public String getName() {
             return name;
         }
+
         public String getCliaNumber() {
             return cliaNumber;
         }
+
         public StreetAddress getAddress() {
             return address;
         }
+
         public String getTelephone() {
             return telephone;
+        }
+
+        public String getEmail() {
+            return email;
         }
     }
 }
