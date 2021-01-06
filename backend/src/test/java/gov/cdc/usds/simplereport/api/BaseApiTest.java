@@ -2,13 +2,18 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,20 +21,40 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
+import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("dev")
 public abstract class BaseApiTest {
 
+    private static final OrganizationRoles DEFAULT_ORG = new OrganizationRoles("DIS_ORG",
+            Collections.singleton(OrganizationRole.USER));
+
     @Autowired
     private DbTruncator _truncator;
+    @Autowired
+    private OrganizationInitializingService _initService;
 
     @Autowired
     protected GraphQLTestTemplate _template; // screw delegation
 
+    @MockBean
+    protected AuthorizationService _authService;
+
     protected void truncateDb() {
         _truncator.truncateAll();
+    }
+
+    @BeforeEach
+    public void setup() {
+        truncateDb();
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock");
+        _initService.initAll();
+        when(_authService.findAllOrganizationRoles()).thenReturn(Collections.singletonList(DEFAULT_ORG));
     }
 
     @AfterEach

@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,11 +22,6 @@ class CSVUploadTest extends BaseApiTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @BeforeEach
-    void setup() {
-        truncateDb();
-    }
 
     @Test
     void testPersonUpload() throws Exception {

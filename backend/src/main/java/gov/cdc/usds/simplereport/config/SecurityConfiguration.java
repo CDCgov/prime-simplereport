@@ -11,17 +11,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
 import org.springframework.security.web.savedrequest.SimpleSavedRequest;
-import org.springframework.http.HttpMethod;
 
 import com.okta.spring.boot.oauth.Okta;
 
@@ -32,7 +31,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
  * Created by nickrobison on 11/13/20
  */
 @Configuration
-@Profile("!" + DevSecurityConfiguration.PROFILE) // Activate this profile to disable security
+@Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
@@ -54,12 +53,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                 .anyRequest()
-                .authenticated()
-                .and()
-                .csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and()
-                .oauth2ResourceServer().jwt();
+                .authenticated();
         Okta.configureResourceServer401ResponseBody(http);
     }
 
@@ -75,7 +69,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             }
         };
     }
-
 
 	@Bean
 	public IdentitySupplier getRealIdentity() {

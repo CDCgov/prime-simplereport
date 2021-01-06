@@ -39,6 +39,7 @@ public class OrganizationInitializingService {
 	private FacilityRepository _facilityRepo;
 
 	public void initAll() {
+		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
 		if (probe.isPresent()) {

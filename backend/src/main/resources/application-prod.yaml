@@ -1,3 +1,5 @@
+spring:
+  profiles.include: single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereport.cdc.gov
