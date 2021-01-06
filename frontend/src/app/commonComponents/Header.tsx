@@ -10,6 +10,7 @@ import { useSelector } from "react-redux";
 // import { useDispatch, connect } from "react-redux";
 import { connect } from "react-redux";
 import Button from "./Button";
+import { formatFullName } from "../utils/user";
 // import { updateFacility } from "../store";
 
 interface Props {
@@ -33,15 +34,6 @@ const Header = (props: Props) => {
     isComponentVisible: staffDetailsVisible,
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
-
-  const formatFullName = (user: User) => {
-    // this trick will not include spaces if middlename is blank.
-    let result = user.firstName;
-    result += user.middleName ? ` ${user.middleName}` : "";
-    result += user.lastName ? ` ${user.lastName}` : "";
-    result += user.suffix ? `, ${user.suffix}` : "";
-    return result;
-  };
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
