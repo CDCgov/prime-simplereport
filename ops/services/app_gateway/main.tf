@@ -220,13 +220,14 @@ resource "azurerm_application_gateway" "load_balancer" {
   tags = var.tags
 
   # Azure doesn't not support rewrite rules efficiently so they must be manually built out
-  # Uncomment if you are creating for the first time
+
   lifecycle {
     ignore_changes = [
-      request_routing_rule,
       identity,
       rewrite_rule_set,
-      url_path_map
+      url_path_map,
+      # comment if you are creating the gateway for the first time
+      request_routing_rule,
     ]
   }
 }

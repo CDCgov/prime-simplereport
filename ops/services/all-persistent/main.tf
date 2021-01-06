@@ -4,6 +4,8 @@ locals {
     environment = var.env
   }
   management_rg = "prime-simple-report-management"
+  is_prod       = var.env == "prod"
+  app_url       = local.is_prod ? "https://simplereport.cdc.gov/app" : "https://${var.env}.simplereport.org/app"
 }
 
 data "azurerm_resource_group" "rg" {
@@ -16,9 +18,11 @@ data "azurerm_key_vault" "kv" {
 }
 
 // Okta application
+
 module "okta" {
-  source = "../../services/okta-app"
-  env    = var.env
+  source  = "../../services/okta-app"
+  env     = var.env
+  app_url = local.app_url
 }
 
 // Create the Okta secrets

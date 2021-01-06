@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security
+  profiles.include: okta-dev
   jpa:
     properties:
       hibernate:

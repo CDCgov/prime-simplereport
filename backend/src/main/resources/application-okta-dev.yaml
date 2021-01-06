@@ -1,0 +1,8 @@
+# Bean profile to be included in deployment-specific profiles
+# for DEV/TEST deployments.
+okta:
+  oauth2:
+    client-id: 0oa61vdmqd56921Ka4h6
+simple-report.authorization:
+    role-claim: dev_roles
+    role-prefix: "SR-DEV-TENANT:"

@@ -20,7 +20,6 @@ public class ApiSmokeTest extends BaseApiTest {
 
     @Test
     public void smoketestPatientList() throws IOException {
-        truncateDb();
         JsonNode jsonResponse = runQuery("person-query");
         assertTrue(jsonResponse.get("patients").isEmpty());
         // should do this as a mutator call, but not today

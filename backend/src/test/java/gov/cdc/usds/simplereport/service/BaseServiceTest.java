@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -17,9 +18,13 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
  * configuration module. (That module is also on the wrong profile, so there's a
  * significant rearrangement required regardless.)
  */
-@SpringBootTest(properties = "spring.main.web-application-type=NONE")
+@SpringBootTest(properties = {
+        "spring.main.web-application-type=NONE",
+        "simple-report.authorization.role-prefix=TEST-TENANT:",
+})
 @ActiveProfiles("dev")
-public class BaseServiceTest<T> {
+@WithMockUser(authorities = { "TEST-TENANT:DIS_ORG:USER" })
+public abstract class BaseServiceTest<T> {
 
     @Autowired
     private DbTruncator _truncator;

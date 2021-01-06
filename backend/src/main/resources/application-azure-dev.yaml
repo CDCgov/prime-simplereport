@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-dev, single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereportdevapp.z13.web.core.windows.net

@@ -30,8 +30,11 @@ graphql:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
+    # DEPRECATION: the FAKE fallback here is to enable behavior that
+    # we would be better off not enabling. Removal planned before 1/15/2021
     client-id: ${clientID:FAKE}
-    client-secret: ${clientSecret:FAKE}
+    client-secret: ${OKTA_OAUTH2_CLIENT_ID:FAKE}
+    groups-claim: ${simple-report.authorization.role-claim}
 simple-report-initialization:
   device-types:
     - name: Abbott IDNow
@@ -54,9 +57,6 @@ simple-report-initialization:
       manufacturer: LumiraDx UK Ltd.
       model: LumiraDx SARS-CoV-2 Ag Test*
       loinc-code: "95209-3"
-logging:
-  pattern:
-    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
 simple-report:
   data-hub:
     # these are overridden by application-dev, -prod, -test, etc
@@ -65,3 +65,9 @@ simple-report:
     max-csv-rows: 999
     api-key: ${DATAHUB_API_KEY:MISSING}
     secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
+  authorization:
+    role-claim: prod_roles
+    role-prefix: "SR-PROD-TENANT:"
+logging:
+  pattern:
+    console: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} [Query: %X{graphql-query}] %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"

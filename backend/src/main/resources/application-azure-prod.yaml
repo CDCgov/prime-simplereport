@@ -1,0 +1,17 @@
+spring:
+  profiles.include: okta-prod, single-tenant
+graphql.servlet.cors:
+  allowed-origins:
+    - https://simple-report-api-prod.azurewebsites.net
+    - https://simple-report-prod.azureedge.net
+    - https://prod.simplereport.gov
+    - https://simplereport.gov
+simple-report:
+  data-hub:
+    uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
+
+simple-report-initialization:
+  organization:
+    facility-name: ${ORG_FACILITY_NAME}
+    external-id: ${ORG_EXTERNAL_ID}
+    clia-number: ${ORG_CLIA_NUMBER}

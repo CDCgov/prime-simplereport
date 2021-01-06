@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
@@ -11,4 +13,8 @@ public interface OrganizationRepository extends EternalEntityRepository<Organiza
 
 	@Query(EternalEntityRepository.BASE_QUERY + " and e.externalId = :externalId")
 	public Optional<Organization> findByExternalId(String externalId);
+
+    @Query(EternalEntityRepository.BASE_QUERY + " and e.externalId in (:externalIds)")
+    public List<Organization> findAllByExternalId(Collection<String> externalIds);
+
 }

@@ -1,0 +1,8 @@
+# Bean profile to be included in deployment-specific profiles
+# for STAGING deployments.
+okta:
+  oauth2:
+    client-id: 0oa62qncijWSeQMuc4h6
+simple-report.authorization:
+    role-claim: stg_roles
+    role-prefix: "SR-STG-TENANT:"
