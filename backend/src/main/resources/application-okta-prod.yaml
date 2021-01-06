@@ -1,0 +1,8 @@
+# Bean profile to be included in deployment-specific profiles
+# for PRODUCTION ONLY.
+okta:
+  oauth2:
+    client-id: 0oa5ahrdfSpxmNZO74h6
+simple-report.authorization:
+    role-claim: prod_roles
+    role-prefix: "SR-PROD-TENANT:"

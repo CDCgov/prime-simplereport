@@ -30,8 +30,10 @@ graphql:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
+    # DEPRECATION: the FAKE fallback here is to enable behavior that
+    # we would be better off not enabling. Removal planned before 1/15/2021
     client-id: ${clientID:FAKE}
-    client-secret: ${clientSecret:FAKE}
+    client-secret: ${OKTA_OAUTH2_CLIENT_ID:FAKE}
     groups-claim: ${simple-report.authorization.role-claim}
 simple-report-initialization:
   device-types:

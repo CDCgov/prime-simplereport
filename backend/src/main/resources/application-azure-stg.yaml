@@ -1,15 +1,10 @@
+spring:
+  profiles.include: okta-stg, single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-stg.azurewebsites.net
     - https://simple-report-stg.azureedge.net
     - https://stg.simplereport.gov
-
-okta:
-  oauth2:
-    issuer: https://hhs-prime.okta.com/oauth2/default
-    client-id: ${OKTA_OAUTH2_CLIENT_ID}
-    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
-
 simple-report-initialization:
   organization:
     facility-name: ${ORG_FACILITY_NAME}
