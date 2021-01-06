@@ -19,6 +19,8 @@ public final class BeanProfiles {
      * Profile for local development, sometimes also used for QA/Demo environments.
      */
     public static final String DEVELOPMENT = "dev";
+    /** Profile that creates sample data on application startup. */
+    public static final String CREATE_SAMPLE_DATA = "create-sample-data";
 
     private BeanProfiles() { /* no instances! */ }
 

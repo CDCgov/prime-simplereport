@@ -5,12 +5,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PersonServiceAdminTest extends BaseServiceTestAdmin<PersonService> {
+
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
 
     @Test
     public void deletePatient() {

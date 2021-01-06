@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,6 +24,11 @@ class UploadServiceTest extends BaseServiceTestOrgUser<UploadService> {
 
     @Autowired
     private PersonService _ps;
+
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
 
     @Test
     void testInsert() throws IOException {

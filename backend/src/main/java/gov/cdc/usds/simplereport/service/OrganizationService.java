@@ -21,7 +21,7 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
-@Transactional(readOnly=false)
+@Transactional(readOnly = true)
 public class OrganizationService {
 
     private OrganizationRepository _repo;
@@ -63,18 +63,17 @@ public class OrganizationService {
         ;
     }
 
-    @Transactional(readOnly=true)
     public List<Facility> getFacilities(Organization org) {
         return _facilityRepo.findByOrganizationOrderByFacilityName(org);
     }
 
-    @Transactional(readOnly=true)
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
         Organization org = getCurrentOrganization();
         return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
                 .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
     }
 
+    @Transactional(readOnly = false)
     public Facility updateFacility(
         UUID facilityId,
         String testingFacilityName,
@@ -159,17 +158,20 @@ public class OrganizationService {
         return _facilityRepo.save(facility);
     }
 
+    @Transactional(readOnly = false)
     public Organization createOrganization(String name, String externalId) {
         _apiUserService.isAdminUser();
         return _repo.save(new Organization(name, externalId));
     }
 
+    @Transactional(readOnly = false)
     public Organization updateOrganization(String name) {
         Organization org = this.getCurrentOrganization();
         org.setOrganizationName(name);
         return _repo.save(org);
     }
 
+    @Transactional(readOnly = false)
     public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
             DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {

@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
@@ -34,6 +35,11 @@ public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderServic
     @Autowired
     private TestDataFactory _dataFactory;
 
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
+    
     @Test
     public void addPatientToQueue() {
         Organization org = _organizationService.getCurrentOrganization();
@@ -100,13 +106,13 @@ public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderServic
         // Count queries with one order
         hibernateQueryInterceptor.startQueryCount();
         _service.getTestResults(facility.getInternalId().toString());
-        assertEquals(8, hibernateQueryInterceptor.getQueryCount());
+        assertEquals(7, hibernateQueryInterceptor.getQueryCount());
 
         // Count queries with three order
         TestEvent _e1 = _dataFactory.createTestEvent(p, facility);
         TestEvent _e2 = _dataFactory.createTestEvent(p, facility);
         hibernateQueryInterceptor.startQueryCount();
         _service.getTestResults(facility.getInternalId().toString());
-        assertEquals(8, hibernateQueryInterceptor.getQueryCount());
+        assertEquals(7, hibernateQueryInterceptor.getQueryCount());
     }
 }
