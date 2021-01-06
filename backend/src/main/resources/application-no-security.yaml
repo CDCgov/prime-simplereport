@@ -1,3 +1,9 @@
+spring:
+  autoconfigure:
+    exclude:
+      - com.okta.spring.boot.oauth.OktaOAuth2AutoConfig
+      - com.okta.spring.boot.oauth.OktaOAuth2ResourceServerAutoConfig
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
 simple-report-initialization.default-user:
   username: bob@example.com
   first-name: Bobbity
