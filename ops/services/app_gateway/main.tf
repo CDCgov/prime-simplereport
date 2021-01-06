@@ -104,6 +104,16 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   backend_http_settings {
+    name                                = local.api_backend_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
+    probe_name                          = "backend-https"
+  }
+
+  backend_http_settings {
     name                                = local.api_backend_http_setting
     cookie_based_affinity               = "Disabled"
     port                                = 80
@@ -112,13 +122,33 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
-  backend_http_settings {
-    name                                = local.api_backend_https_setting
-    cookie_based_affinity               = "Disabled"
-    port                                = 443
-    protocol                            = "Https"
-    request_timeout                     = 20
-    pick_host_name_from_backend_address = true
+  # Add custom healthcheck probe to ping the Spring health endpoint
+  probe {
+    name                                      = "api-http"
+    interval                                  = 10
+    path                                      = "/actuator/health"
+    pick_host_name_from_backend_http_settings = true
+    protocol                                  = "Http"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      status_code = ["200-399"]
+    }
+  }
+
+  probe {
+    name                                      = "api-https"
+    interval                                  = 10
+    path                                      = "/actuator/health"
+    pick_host_name_from_backend_http_settings = true
+    protocol                                  = "Https"
+    timeout                                   = 10
+    unhealthy_threshold                       = 3
+
+    match {
+      status_code = ["200-399"]
+    }
   }
 
   # ------- Listeners -------------------------
@@ -226,8 +256,9 @@ resource "azurerm_application_gateway" "load_balancer" {
       identity,
       rewrite_rule_set,
       url_path_map,
+      probe,
       # comment if you are creating the gateway for the first time
-      request_routing_rule,
+      request_routing_rule
     ]
   }
 }
@@ -264,5 +295,63 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
         enabled = false
       }
     }
+  }
+}
+
+data "azurerm_monitor_action_group" "ag" {
+  name                = "test-action-group"
+  resource_group_name = "prime-dev-nrobison"
+}
+
+// Create alerts
+resource "azurerm_monitor_metric_alert" "backend_health" {
+  name                = "${var.env}-backend-health"
+  description         = "Alert which fires whenever any of the backend API hosts become unhealthy"
+  resource_group_name = var.resource_group_name
+  scopes              = [azurerm_application_gateway.load_balancer.id]
+  criteria {
+    aggregation      = "Average"
+    metric_name      = "UnhealthyHostCount"
+    metric_namespace = "Microsoft.Network/applicationGateways"
+    operator         = "GreaterThan"
+    threshold        = 0
+
+    dimension {
+      name     = "BackendSettingsPool"
+      operator = "Include"
+      values = [
+        "${local.api_backend_pool}~${local.api_backend_https_setting}"
+      ]
+    }
+  }
+
+  action {
+    action_group_id = data.azurerm_monitor_action_group.ag.id
+  }
+}
+
+resource "azurerm_monitor_metric_alert" "fronted_health" {
+  name                = "${var.env}-frontend-health"
+  description         = "Alert which fires whenever the static website becomes unavailable"
+  resource_group_name = var.resource_group_name
+  scopes              = [azurerm_application_gateway.load_balancer.id]
+  criteria {
+    aggregation      = "Average"
+    metric_name      = "UnhealthyHostCount"
+    metric_namespace = "Microsoft.Network/applicationGateways"
+    operator         = "GreaterThan"
+    threshold        = 0
+
+    dimension {
+      name     = "BackendSettingsPool"
+      operator = "Include"
+      values = [
+        "${local.static_backend_pool}~${local.static_backend_https_setting}"
+      ]
+    }
+  }
+
+  action {
+    action_group_id = data.azurerm_monitor_action_group.ag.id
   }
 }
