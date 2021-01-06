@@ -8,6 +8,7 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
+    open-in-view: false # this is misleading: we actually have a filter that does this instead
     properties:
       hibernate:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
