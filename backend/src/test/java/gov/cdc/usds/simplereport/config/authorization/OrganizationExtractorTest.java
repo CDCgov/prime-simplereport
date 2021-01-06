@@ -16,7 +16,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 
 class OrganizationExtractorTest {
 
-    private static final AuthorizationProperties MOCK_PROPS = new AuthorizationProperties(null, null, "SR-UNITTEST-TENANT:");
+    private static final AuthorizationProperties MOCK_PROPS = new AuthorizationProperties(null, "SR-UNITTEST-TENANT:");
 
     @Test
     public void convert_emptyList_emptyReturn() {
