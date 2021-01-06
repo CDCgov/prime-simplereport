@@ -1,0 +1,28 @@
+graphql.servlet.cors:
+  allowed-origins:
+    - https://simple-report-api-demo.azurewebsites.net
+    - https://simple-report-demo.azureedge.net
+    - https://demo.simplereport.gov
+
+simple-report-initialization:
+  organization:
+    org-name: Dis Organization
+    external-id: DIS_ORG
+  facility:
+    facility-name: Injection Site
+    clia-number: "000111222-3"
+    address:
+      street-1: 2797 N Cerrada de Beto
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      zip-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2

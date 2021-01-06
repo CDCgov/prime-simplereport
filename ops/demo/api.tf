@@ -21,7 +21,7 @@ module "simple_report_api" {
     "WEBSITES_PORT"                                  = "8080"
     "WEBSITE_DNS_SERVER"                             = "168.63.129.16"
     "WEBSITE_VNET_ROUTE_ALL"                         = "1"
-    SPRING_PROFILES_ACTIVE                           = "azure-dev,no-security"
+    SPRING_PROFILES_ACTIVE                           = "azure-demo,no-security"
     SPRING_LIQUIBASE_ENABLED                         = "true"
     SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA   = "public"
     SPRING_DATASOURCE_URL                            = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
