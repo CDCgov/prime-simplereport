@@ -1,4 +1,4 @@
-name: Deploy Backend Azure Resources
+name: Deploy Dev Backend Azure Resources
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "backend/**"
+      - "ops/dev/api.tf"
 
 defaults:
   run:

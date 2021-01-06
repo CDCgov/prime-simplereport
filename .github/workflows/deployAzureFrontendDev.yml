@@ -1,4 +1,4 @@
-name: Deploy Frontend Azure Resources
+name: Deploy Dev Frontend Azure Resources
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: Deploy Backend Azure Resources
+name: Deploy Demo Backend Azure Resources
 
 on:
   workflow_dispatch:
@@ -7,6 +7,7 @@ on:
       - main # TODO change to demo for branch based deploys
     paths:
       - "backend/**"
+      - "ops/demo/api.tf"
 
 defaults:
   run:

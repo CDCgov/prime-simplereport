@@ -7,6 +7,7 @@
 #      - <your_branch_here>
 #    paths:
 #      - "backend/**"
+#      - "ops/test/api.tf"
 #
 #defaults:
 #  run:
