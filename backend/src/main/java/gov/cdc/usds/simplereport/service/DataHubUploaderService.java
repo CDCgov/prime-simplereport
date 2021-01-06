@@ -64,6 +64,20 @@ public class DataHubUploaderService {
         _config = config;
         _testReportEventsRepo = testReportEventsRepo;
         _dataHubUploadRepo = dataHubUploadRepo;
+
+        LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
+
+        // sanity checks that run at startup since they are used by scheduler and may not fail until 4am.
+        // maybe these should throw?
+        if (config.getApiKey().startsWith("MISSING")) {
+            LOG.warn("DataHub API key is not configured.");
+        }
+        if (!config.getUploadUrl().startsWith("https://")) {
+            LOG.warn("DataHub upload URL is not configured.");
+        }
+        if (!config.getSlackNotifyWebhookUrl().startsWith("https://")) {
+            LOG.warn("DataHub Slack webhook URL is not configured.");
+        }
     }
 
     private void init() {
