@@ -19,12 +19,12 @@ class OrganizationExtractorTest {
     private static final AuthorizationProperties MOCK_PROPS = new AuthorizationProperties(null, "SR-UNITTEST-TENANT:");
 
     @Test
-    public void convert_emptyList_emptyReturn() {
+    void convert_emptyList_emptyReturn() {
         assertEquals(0, convert(Collections.emptyList()).size());
     }
 
     @Test
-    public void convert_noRelevantAuthorities_emptyReturn() {
+    void convert_noRelevantAuthorities_emptyReturn() {
         List<OrganizationRoles> converted = convert(
                 Arrays.asList(new SimpleGrantedAuthority("SUPERUSER"),
                         new SimpleGrantedAuthority("SR-PROD-TENANT:FOOBAR:USER")));
@@ -32,7 +32,7 @@ class OrganizationExtractorTest {
     }
 
     @Test
-    public void convert_onlyInvalidAuthorities_emptyReturn() {
+    void convert_onlyInvalidAuthorities_emptyReturn() {
         List<OrganizationRoles> converted = convert(
                 Arrays.asList(new SimpleGrantedAuthority("SUPERUSER"),
                         new SimpleGrantedAuthority("SR-UNITTEST-TENANT:FOOBAR:FROBOBNITZ")));
@@ -40,7 +40,7 @@ class OrganizationExtractorTest {
     }
 
     @Test
-    public void convert_oneRelevantAuthority_singleReturn() {
+    void convert_oneRelevantAuthority_singleReturn() {
         List<OrganizationRoles> converted = convert(
                 Arrays.asList(new SimpleGrantedAuthority("SR-UNITTEST-TENANT:MYNIFTYORG:USER"),
                         new SimpleGrantedAuthority("SR-PROD-TENANT:FOOBAR:USER")));
@@ -50,7 +50,7 @@ class OrganizationExtractorTest {
     }
 
     @Test
-    public void convert_twoRelevantAuthoritiesOneOrg_singleReturn() {
+    void convert_twoRelevantAuthoritiesOneOrg_singleReturn() {
         List<OrganizationRoles> converted = convert(Arrays.asList(
                 new SimpleGrantedAuthority("SR-UNITTEST-TENANT:MYNIFTYORG:USER"),
                 new SimpleGrantedAuthority("SR-UNITTEST-TENANT:MYNIFTYORG:ADMIN")));
@@ -60,7 +60,7 @@ class OrganizationExtractorTest {
     }
 
     @Test
-    public void convert_multipleOrgAuthorities_multipleReturn() {
+    void convert_multipleOrgAuthorities_multipleReturn() {
         List<OrganizationRoles> converted = convert(Arrays.asList(
                 new SimpleGrantedAuthority("SR-UNITTEST-TENANT:MYNIFTYORG:USER"),
                 new SimpleGrantedAuthority("SR-UNITTEST-TENANT:YOURNIFTYORG:USER")));
@@ -70,6 +70,7 @@ class OrganizationExtractorTest {
         assertEquals(Set.of(OrganizationRole.USER), converted.get(0).getGrantedRoles());
         assertEquals(Set.of(OrganizationRole.USER), converted.get(1).getGrantedRoles());
     }
+
     private List<OrganizationRoles> convert(List<GrantedAuthority> authorities) {
         return new OrganizationExtractor(MOCK_PROPS).convert(authorities);
     }
