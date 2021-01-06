@@ -33,7 +33,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
         // add a new entry, verify count increases by 1
         List<DataHubUpload> results_before = _repoDH.findAll();
 
-        DataHubUpload d1 = new DataHubUpload(_config)
+        DataHubUpload d1 = new DataHubUpload()
                 .setEarliestRecordedTimestamp(DATE_OLDEST)
                 .setLatestRecordedTimestamp(DATE_5MIN_AGO);
         _repoDH.save(d1);
@@ -47,7 +47,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
         assertEquals(1, (results_after.size() - results_before.size()));
 
         // Add a second and make sure it's returned.
-        DataHubUpload d2 = new DataHubUpload(_config)
+        DataHubUpload d2 = new DataHubUpload()
                 .setJobStatus(DataHubUploadStatus.SUCCESS)
                 .setResponseData(TEST_RESPONSE)
                 .setEarliestRecordedTimestamp(DATE_5MIN_AGO)
@@ -62,7 +62,7 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
         // Now we're going to be tricky. this is newer, but had an error
         final String errormsg = "This would be the exception if an error was thrown.";
-        DataHubUpload d3 = new DataHubUpload(_config)
+        DataHubUpload d3 = new DataHubUpload()
                 .setJobStatus(DataHubUploadStatus.FAIL)
                 .setErrorMessage(errormsg)
                 .setEarliestRecordedTimestamp(DATE_4MIN_AGO)

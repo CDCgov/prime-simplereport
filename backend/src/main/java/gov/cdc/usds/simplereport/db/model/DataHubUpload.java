@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
-
 import java.util.Date;
 import java.util.UUID;
 
@@ -24,10 +22,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 @DynamicUpdate
 public class DataHubUpload {
 
-    protected DataHubUpload() { /* no-op for hibernate */ }
-
     // We have to pass config into the constructor because Configuration doesn't work in constructors
-    public DataHubUpload(DataHubConfig config) {
+    public DataHubUpload() {
         jobStatus = DataHubUploadStatus.IN_PROGRESS;
         recordsProcessed = 0;
         responseData = "{}";
@@ -86,7 +82,9 @@ public class DataHubUpload {
         return createdAt;
     }
 
-    public Date getUpdatedAt() { return updatedAt; }
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 
     public int getRecordsProcessed() {
         return recordsProcessed;
@@ -115,7 +113,9 @@ public class DataHubUpload {
         return this;
     }
 
-    public String getErrorMessage() { return errorMessage; }
+    public String getErrorMessage() {
+        return errorMessage;
+    }
 
     public DataHubUpload setErrorMessage(String errorMessage) {
         this.errorMessage = errorMessage;

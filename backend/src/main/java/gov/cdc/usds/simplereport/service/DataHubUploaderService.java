@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 public class DataHubUploaderService {
     private static final String CSV_API_VERSION = "2";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
-    private static final Date FALLBACK_EARLIEST_DATE = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
 
     private final DataHubConfig _config;
     private final TestEventRepository _testReportEventsRepo;
@@ -79,9 +78,9 @@ public class DataHubUploaderService {
     // todo: move to these somewhere common
     private static String dateToUTCString(Date d) {
         if (d == null) {
-            return "null";
+            return "null";   // Note: is a temp workaround. Logging may pass NULL for uninitialized fields
         }
-        final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return simpleDateFormat.format(d);
     }
@@ -92,7 +91,7 @@ public class DataHubUploaderService {
 
     private void sendSlackChannelMessage(String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
         // NOTE: logging this is overkill. Putting it hear until we fully trust Slack messaging is working.
-        final String markupMsgsForLog = String.join(" ", markupMsgs);
+        String markupMsgsForLog = String.join(" ", markupMsgs);
         if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
             LOG.error("SlackChannelNotConfigured. Message not sent Title: '{}' Body: {}", titleMsg, markupMsgsForLog);
             return;
@@ -184,7 +183,7 @@ public class DataHubUploaderService {
         this._fileContents = mapper.writer(schema).writeValueAsString(eventsToExport);
     }
 
-    private void uploadCSVDocument(final String apiKey) throws RestClientException {
+    private void uploadCSVDocument(String apiKey) throws RestClientException {
         ByteArrayResource contentsAsResource = new ByteArrayResource(this._fileContents.getBytes(StandardCharsets.UTF_8));
 
         RestTemplate restTemplate = new RestTemplateBuilder(rt -> rt.getInterceptors().add((request, body, execution) -> {
@@ -227,7 +226,7 @@ public class DataHubUploaderService {
                 // database has no entries. FIRST EVER RUN.
                 this.createTestEventCSV(lastEndCreateOn);
                 this.uploadCSVDocument(apiKey);
-                DataHubUpload newUpload = new DataHubUpload(_config);
+                DataHubUpload newUpload = new DataHubUpload();
                 newUpload.setJobStatus(DataHubUploadStatus.SUCCESS)
                         .setEarliestRecordedTimestamp(utcStringToDate(lastEndCreateOn))
                         .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp))
@@ -280,7 +279,7 @@ public class DataHubUploaderService {
             return;
         }
 
-        DataHubUpload newUpload = new DataHubUpload(_config);
+        DataHubUpload newUpload = new DataHubUpload();
         try {
             // The start date is the last end date. Can be null for empty database.
             Date lastTimestamp = getLatestRecordedTimestamp();
