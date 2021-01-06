@@ -72,6 +72,18 @@ data "azurerm_key_vault_secret" "okta_client_secret" {
   name         = "okta-${local.env}-client-secret"
 }
 
+data "azurerm_key_vault_secret" "org_facility_name" {
+  name         = "org-facility-name"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+data "azurerm_key_vault_secret" "org_external_id" {
+  name         = "org-external-id"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+data "azurerm_key_vault_secret" "org_clia_number" {
+  name         = "org-clia-number"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
