@@ -1,3 +1,5 @@
+spring:
+  profiles.include: okta-prod, single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-prod.azurewebsites.net
@@ -7,12 +9,6 @@ graphql.servlet.cors:
 simple-report:
   data-hub:
     uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
-
-okta:
-  oauth2:
-    issuer: https://hhs-prime.okta.com/oauth2/default
-    client-id: ${OKTA_OAUTH2_CLIENT_ID}
-    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
 
 simple-report-initialization:
   organization:

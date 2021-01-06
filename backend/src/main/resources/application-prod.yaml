@@ -1,5 +1,5 @@
 spring:
-  profiles.include: single-tenant
+  profiles.include: okta-prod, single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereport.cdc.gov
