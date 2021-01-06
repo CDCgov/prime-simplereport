@@ -1,7 +1,7 @@
 locals {
   project = "prime"
   name    = "simple-report"
-  env     = "test"
+  env     = "stg"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
@@ -49,7 +49,6 @@ resource "azurerm_cdn_endpoint" "cdn_endpoint" {
 }
 
 
-# Manually configured rules/rewrite sets
 module "app_gateway" {
   source                  = "../services/app_gateway"
   name                    = local.name
@@ -58,8 +57,8 @@ module "app_gateway" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   cdn_hostname      = azurerm_cdn_endpoint.cdn_endpoint.host_name
-  subnet_id         = data.terraform_remote_state.persistent_test.outputs.subnet_lbs_id
-  key_vault_id      = data.azurerm_key_vault.sr_global.id
+  subnet_id         = data.terraform_remote_state.persistent_stg.outputs.subnet_lbs_id
+  key_vault_id      = data.azurerm_key_vault.global.id
   log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
 
   fqdns = [

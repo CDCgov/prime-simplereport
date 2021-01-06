@@ -1,14 +1,5 @@
 locals {
-  dev_urls = [
-    "http://localhost:8080",
-    "http://localhost:9090",
-    "http://localhost:3000",
-    "https://simple-report-qa.app.cloud.gov/",
-    "https://simple-report-qa-api.app.cloud.gov/",
-    "https://staging.simplereport.org/app"
-  ]
   is_prod = var.env == "prod"
-  app_url = local.is_prod ? "https://simplereport.cdc.gov/app" : "https://${var.env}.simplereport.org/app"
 }
 
 
@@ -17,17 +8,20 @@ resource "okta_app_oauth" "app" {
   type  = "web"
   grant_types = [
     "authorization_code",
-  "implicit"]
-  redirect_uris = concat(local.dev_urls, [
+    "implicit"
+  ]
+  redirect_uris = concat(var.redirect_urls, [
     "https://${var.env}.simplereport.org/app",
-  "https://simplereport.cdc.gov/app"])
+    "https://${var.env}.simplereport.gov/app",
+  ])
   response_types = [
     "code",
     "id_token",
-  "token"]
-  login_uri = local.app_url
+    "token"
+  ]
+  login_uri = var.app_url
   post_logout_redirect_uris = [
-    "https://simplereport.cdc.gov"
+    var.logout_redirect_uris
   ]
   hide_ios = false
   hide_web = false
@@ -47,11 +41,6 @@ resource "okta_app_group_assignment" "users" {
   group_id = element(var.user_groups, count.index)
 }
 
-// Link the CDC/USDS users to the application
-data "okta_group" "cdc_users" {
-  name = "Prime Team Members"
-}
-
 resource "okta_app_group_assignment" "prime_users" {
   app_id   = okta_app_oauth.app.id
   group_id = data.okta_group.cdc_users.id
@@ -67,14 +56,14 @@ resource "okta_group" "simplereport_admins" {
 }
 
 resource "okta_auth_server_claim" "simplereport_roles" {
-  auth_server_id = data.okta_auth_server.default.id
-  claim_type = "RESOURCE"
-  name = "${var.env}_roles"
-  value_type = "GROUPS"
+  auth_server_id    = data.okta_auth_server.default.id
+  claim_type        = "RESOURCE"
+  name              = "${var.env}_roles"
+  value_type        = "GROUPS"
   group_filter_type = "STARTS_WITH"
-  value = "SR-${upper(var.env)}-"
+  value             = "SR-${upper(var.env)}-"
   scopes = [
-    okta_auth_server_scope.sr_env.name]
+  okta_auth_server_scope.sr_env.name]
 }
 
 resource "okta_auth_server_scope" "sr_env" {
