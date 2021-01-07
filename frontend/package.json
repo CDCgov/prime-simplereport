@@ -19,7 +19,6 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/react-router-dom": "^5.1.6",
     "ajv": "^6.12.6",
-    "axios": "^0.20.0",
     "classnames": "^2.2.6",
     "graphql": "^15.4.0",
     "lodash": "^4.17.20",
