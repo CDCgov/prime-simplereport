@@ -32,14 +32,20 @@ public class TestEventExport {
 		this.facility = testEvent.getFacility();
 	}
 
+	private String testResultStatusFinal = "F";
+	private String genderUnknown = "U";
+	private String ethnicityUnknown = "U";
+	private String raceUnknown = "UNK";
+	private String anteriorNaresSwabCode = "445297001";
+	private String nasopharyngealStructureCode = "71836000";
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
 	private Map<String, String> genderMap = Map.of(
 		"male", "M",
 		"female", "F",
 		"other", "O",
 		"ambiguous", "A",
-		"unknown", "U",
-		"unk", "U",
+		"unknown", genderUnknown,
+		"unk", genderUnknown,
 		"notapplicable", "N"
 	);
 
@@ -61,7 +67,7 @@ public class TestEventExport {
 		"pacific", "2076-8",
 		"white", "2106-3",
 		"other", "2131-1", // not currently in our app
-		"unknown", "UNK",
+		"unknown", raceUnknown,
 		"refused", "ASKU" // Asked, but unknown
 	);
 
@@ -111,7 +117,7 @@ public class TestEventExport {
 	@JsonProperty("Patient_race")
 	public String getPatientRace() {
 		if (patient.getRace() == null) {
-			return "UNK";
+			return raceUnknown;
 		}
 		return raceMap.get(patient.getRace());
 	}
@@ -124,7 +130,7 @@ public class TestEventExport {
 	@JsonProperty("Patient_gender")
 	public String getPatientGender() {
 		if (patient.getGender() == null) {
-			return "U";
+			return genderUnknown;
 		}
 		return genderMap.get(patient.getGender());
 	}
@@ -132,7 +138,7 @@ public class TestEventExport {
 	@JsonProperty("Patient_ethnicity")
 	public String getPatientEthnicity() {
 		if (patient.getEthnicity() == null) {
-			return "U";
+			return ethnicityUnknown;
 		}
 		return ethnicityMap.get(patient.getEthnicity());
 	}
@@ -207,7 +213,7 @@ public class TestEventExport {
 
 	@JsonProperty("Test_result_status")
 	public String getTestResultStatus() {
-		return "F";
+		return testResultStatusFinal;
 	}
 
 	@JsonProperty("Test_result_code")
@@ -387,12 +393,12 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return "71836000";
+		return nasopharyngealStructureCode;
 	}
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return "445297001"; //Swab of internal nose (changed from "697989009" on 8Jan2021)
+		return anteriorNaresSwabCode;
 	}
 
 	@JsonProperty("Instrument_ID")
