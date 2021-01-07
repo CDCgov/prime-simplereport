@@ -165,10 +165,18 @@ public class PersonService {
             employedInHealthcare
         );
 
-        if (patientToUpdate.getRole() != PersonRole.STAFF) {
-            Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-            patientToUpdate.setFacility(facility);
+        Facility facility = null;
+        if (patientToUpdate.getRole() == PersonRole.STAFF) {
+            // Staff do not need to be assigned to a facility,
+            // but if an id is given it should be valid
+            if ( facilityId != null ) {
+                facility = _os.getFacilityInCurrentOrg(facilityId);
+            }
+        } else {
+            // The facilityId is required, null will blow up
+            facility = _os.getFacilityInCurrentOrg(facilityId);
         }
+        patientToUpdate.setFacility(facility);
         return _repo.save(patientToUpdate);
     }
 

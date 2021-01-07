@@ -140,6 +140,10 @@ const PatientForm = (props: Props) => {
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
 
+  const allFacilities = "~~ALL-FACILITIES~~";
+  const [currentFacilityId, setCurrentFacilityId] = useState(
+    patient.facility === null ? allFacilities : patient.facility?.id
+  );
   const facilities = useSelector(
     (state) => (state as any).facilities as Facility[]
   );
@@ -148,9 +152,11 @@ const PatientForm = (props: Props) => {
     value: f.id,
   }));
   // This select list is a bit strange because we need real nulls
-  // but the initial value can be undefined meaning no selection
-  const allFacilities = "~~ALL-FACILITIES~~";
-  facilityList.unshift({ label: "All facilities", value: allFacilities });
+  // but only if the person is a staff member; the initial
+  // value can be undefined meaning no selection.
+  if (patient.role === "STAFF") {
+    facilityList.unshift({ label: "All facilities", value: allFacilities });
+  }
   facilityList.unshift({ label: "-Select-", value: "" });
 
   const onChange = (
@@ -177,7 +183,8 @@ const PatientForm = (props: Props) => {
   const savePatientData = () => {
     setFormChanged(false);
     const variables = {
-      facilityId: patient.facilityId,
+      facilityId:
+        currentFacilityId === allFacilities ? null : currentFacilityId,
       lookupId: patient.lookupId,
       firstName: patient.firstName,
       middleName: patient.middleName,
@@ -337,13 +344,12 @@ const PatientForm = (props: Props) => {
           />
           <Dropdown
             label="Facility"
-            name="facilityId"
-            selectedValue={
-              patient.facilityId === null
-                ? allFacilities
-                : patient.facilityId || props.activeFacilityId
-            }
-            onChange={onChange}
+            name="currentFacilityId"
+            selectedValue={currentFacilityId}
+            onChange={(e) => {
+              setCurrentFacilityId(e.target.value);
+              setFormChanged(true);
+            }}
             options={facilityList}
           />
         </div>
