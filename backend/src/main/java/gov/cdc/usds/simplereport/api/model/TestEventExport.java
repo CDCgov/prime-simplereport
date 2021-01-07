@@ -205,11 +205,9 @@ public class TestEventExport {
 		return testEvent.getInternalId().toString();
 	}
 
-	@JsonProperty("Testing_lab_specimen_ID")
-	public String getTestingLabSpecimenID() {
-		// When we grab the device id it should go here
-		// Example: the id on the BinaxNow card
-		return "";
+	@JsonProperty("Test_result_status")
+	public String getTestResultStatus() {
+		return "F";
 	}
 
 	@JsonProperty("Test_result_code")
