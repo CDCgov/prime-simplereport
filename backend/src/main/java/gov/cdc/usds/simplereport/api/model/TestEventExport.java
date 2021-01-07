@@ -318,7 +318,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordering_facility_email")
 	public String getOrderingFacilityEmail() {
-		return "";
+		return facility.getEmail();
 	}
 
 	@JsonProperty("Ordering_facility_state")
