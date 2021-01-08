@@ -151,16 +151,11 @@ const PatientForm = (props: Props) => {
     label: f.name,
     value: f.id,
   }));
-  // This select list is a bit strange because we need real nulls
-  // but only if the person is a staff member; the initial
-  // value can be undefined meaning no selection.
-  if (patient.role === "STAFF") {
-    facilityList.unshift({ label: "All facilities", value: allFacilities });
-  }
+  facilityList.unshift({ label: "All facilities", value: allFacilities });
   facilityList.unshift({ label: "-Select-", value: "" });
 
   const onChange = (
-    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     let value: string | null = e.target.value;
     if (e.target.type === "checkbox") {
@@ -325,17 +320,18 @@ const PatientForm = (props: Props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Lookup ID"
+            label="Lookup ID (optional)"
             name="lookupId"
             value={patient.lookupId}
             onChange={onChange}
           />
           <Dropdown
-            label="Role"
+            label="Role (optional)"
             name="role"
             selectedValue={patient.role}
             onChange={onChange}
             options={[
+              { label: "-Select-", value: "" },
               { label: "Staff", value: "STAFF" },
               { label: "Resident", value: "RESIDENT" },
               { label: "Student", value: "STUDENT" },
@@ -351,6 +347,7 @@ const PatientForm = (props: Props) => {
               setFormChanged(true);
             }}
             options={facilityList}
+            required
           />
         </div>
         <div className="prime-form-line">

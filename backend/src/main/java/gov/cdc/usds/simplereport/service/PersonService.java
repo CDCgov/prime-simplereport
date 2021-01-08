@@ -32,6 +32,16 @@ public class PersonService {
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
 
+    private void updatePersonFacility(Person person, UUID facilityId) {
+        Facility facility = null;
+        // People do not need to be assigned to a facility,
+        // but if an id is given it must be valid
+        if ( facilityId != null ) {
+            facility = _os.getFacilityInCurrentOrg(facilityId);
+        }
+        person.setFacility(facility);
+    }
+
     public PersonService(
         OrganizationService os,
         PersonRepository repo,
@@ -112,11 +122,7 @@ public class PersonService {
             employedInHealthcare
         );
 
-        if (newPatient.getRole() != PersonRole.STAFF) {
-            Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-            newPatient.setFacility(facility);
-        }
-
+        updatePersonFacility(newPatient, facilityId);
         return _repo.save(newPatient);
     }
 
@@ -165,18 +171,7 @@ public class PersonService {
             employedInHealthcare
         );
 
-        Facility facility = null;
-        if (patientToUpdate.getRole() == PersonRole.STAFF) {
-            // Staff do not need to be assigned to a facility,
-            // but if an id is given it should be valid
-            if ( facilityId != null ) {
-                facility = _os.getFacilityInCurrentOrg(facilityId);
-            }
-        } else {
-            // The facilityId is required, null will blow up
-            facility = _os.getFacilityInCurrentOrg(facilityId);
-        }
-        patientToUpdate.setFacility(facility);
+        updatePersonFacility(patientToUpdate, facilityId);
         return _repo.save(patientToUpdate);
     }
 
