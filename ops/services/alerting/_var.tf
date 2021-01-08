@@ -33,3 +33,8 @@ variable "alert_function_name" {
   default     = "prime-simple-report-error-manager"
   type        = string
 }
+
+variable "log_workspace_id" {
+  description = "ID of log workspace to report to"
+  type        = string
+}

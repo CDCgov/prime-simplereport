@@ -65,3 +65,24 @@ resource "azurerm_function_app" "alerts" {
     SLACK_WEBHOOK                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.slack_webhook.id})"
   }
 }
+
+# Send logs to Log Analytics workspace
+resource "azurerm_monitor_diagnostic_setting" "logs" {
+  name                       = "FunctionAppLogs"
+  target_resource_id         = azurerm_function_app.alerts.id
+  log_analytics_workspace_id = var.log_workspace_id
+
+  log {
+    category = "FunctionAppLogs"
+  }
+
+  metric {
+    category = "AllMetrics"
+    enabled  = false
+
+    retention_policy {
+      days    = 0
+      enabled = false
+    }
+  }
+}

@@ -52,6 +52,7 @@ module "alerting" {
   storage_account  = local.storage_account_name
   key_vault_id     = azurerm_key_vault.sr.id
   app_insights_key = module.insights.app_insights_instrumentation_key
+  log_workspace_id = module.insights.log_analytics_workspace_id
 
   depends_on = [
     azurerm_key_vault_secret.slack_webhook
