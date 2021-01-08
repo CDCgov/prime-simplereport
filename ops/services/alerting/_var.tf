@@ -17,3 +17,18 @@ variable "function_app" {
   description = "zip-file of function"
   type        = string
 }
+
+variable "key_vault_id" {
+  description = "ID of Key Vault to fetch secret from"
+  type        = string
+}
+
+variable "app_insights_key" {
+  description = "App Insights Instrumentation Key"
+  type        = string
+}
+
+variable "app_insights_instrumentation_key" {
+  description = "App Insights Instrumentation Key"
+  type        = string
+}

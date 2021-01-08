@@ -14,7 +14,7 @@
     "*.tf"
   ],
   "mode": "add",
-  "outputEntry": "build/alertrouter.zip",
+  "outputEntry": "build/alertscode.zip",
   "quiet": false,
   "verbose": false
 }

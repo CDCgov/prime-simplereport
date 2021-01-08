@@ -1,7 +1,7 @@
 # Create an action group to handle alerts
 locals {
   admins        = split("\n", file("${path.module}/admins.txt"))
-  function_code = "${path.module}/functions/build/alertrouter.zip"
+  function_code = "${path.module}/functions/build/alertscode.zip"
 }
 
 resource "azurerm_monitor_action_group" "admins" {
@@ -21,6 +21,17 @@ resource "azurerm_app_service_plan" "alerts-plan" {
   }
 }
 
+# Create an access policy in order to grab the KV secret
+resource "azurerm_key_vault_access_policy" "slack_webhook" {
+  key_vault_id = var.key_vault_id
+  object_id    = azurerm_function_app.alerts.identity[0].principal_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+
+  secret_permissions = [
+    "get"
+  ]
+}
+
 
 # Create the azure function
 resource "azurerm_function_app" "alerts" {
@@ -31,14 +42,19 @@ resource "azurerm_function_app" "alerts" {
   version                    = "~3"
   storage_account_name       = data.azurerm_storage_account.global.name
   storage_account_access_key = data.azurerm_storage_account.global.primary_access_key
+  https_only                 = true
+
+  identity {
+    type = "SystemAssigned"
+  }
 
   app_settings = {
-    https_only                            = true
-    APPINSIGHTS_INSTRUMENTATIONKEY        = "ad816943-bac3-4910-a49d-6dba7b3e1a5f"
-    APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=ad816943-bac3-4910-a49d-6dba7b3e1a5f;IngestionEndpoint=https://eastus-0.in.applicationinsights.azure.com/"
+    APPINSIGHTS_INSTRUMENTATIONKEY        = var.app_insights_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = var.app_insights_instrumentation_key
     FUNCTIONS_WORKER_RUNTIME              = "node"
     WEBSITE_NODE_DEFAULT_VERSION          = "~12"
     HASH                                  = base64encode(filesha256(local.function_code))
     WEBSITE_RUN_FROM_PACKAGE              = "https://${data.azurerm_storage_account.global.name}.blob.core.windows.net/${azurerm_storage_container.alerts.name}/${azurerm_storage_blob.alertscode.name}${data.azurerm_storage_account_sas.sas.sas}"
+    SLACK_WEBHOOK                         = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.slack_webhook.id})"
   }
 }

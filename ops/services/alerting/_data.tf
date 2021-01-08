@@ -1,3 +1,5 @@
+data "azurerm_client_config" "current" {}
+
 data "azurerm_storage_account" "global" {
   name                = var.storage_account
   resource_group_name = "prime-simple-report-test" # TF state has not yet been migrated to the global RG
@@ -29,4 +31,9 @@ data "azurerm_storage_account_sas" "sas" {
     update  = false
     process = false
   }
+}
+
+data "azurerm_key_vault_secret" "slack_webhook" {
+  key_vault_id = var.key_vault_id
+  name         = "simple-report-global-slack-webhook"
 }
