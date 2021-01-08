@@ -37,3 +37,8 @@ data "azurerm_key_vault_secret" "slack_webhook" {
   key_vault_id = var.key_vault_id
   name         = "simple-report-global-slack-webhook"
 }
+
+data "azurerm_function_app_host_keys" "example" {
+  name                = azurerm_function_app.alerts.name
+  resource_group_name = var.rg_name
+}

@@ -11,7 +11,7 @@ resource "azurerm_monitor_action_group" "admins" {
   azure_function_receiver {
     function_app_resource_id = azurerm_function_app.alerts.id
     function_name            = var.function_app
-    http_trigger_url         = "https://${azurerm_function_app.alerts.default_hostname}/api/AlertsRouter"
+    http_trigger_url         = "https://${azurerm_function_app.alerts.default_hostname}/api/alertrouter?code=${data.azurerm_function_app_host_keys.example.default_function_key}"
     name                     = "sendtoslack"
     use_common_alert_schema  = true
   }
