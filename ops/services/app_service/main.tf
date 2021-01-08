@@ -25,8 +25,16 @@ resource "azurerm_app_service" "service" {
     always_on        = "true"
   }
 
-  app_settings = var.app_settings
-  https_only   = var.https_only
+  app_settings = merge(var.app_settings, {
+    "DOCKER_REGISTRY_SERVER_PASSWORD"                = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
+    "DOCKER_REGISTRY_SERVER_URL"                     = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
+    "DOCKER_REGISTRY_SERVER_USERNAME"                = data.terraform_remote_state.global.outputs.acr_simeplereport_name
+    "SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA" = "public"
+    "WEBSITES_PORT"                                  = "8080"
+    "WEBSITE_DNS_SERVER"                             = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                         = "1"
+  })
+  https_only = var.https_only
 
   identity {
     type = "SystemAssigned"
