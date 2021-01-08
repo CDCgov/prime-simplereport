@@ -12,7 +12,9 @@
     "test": "echo \"No tests yet...\"",
     "prebuild:zip": "mkdirp --mode=700 build",
     "build:zip": "jszip-cli",
-    "build": "run-s clean build:compile build:zip"
+    "build": "run-s clean build:compile build:zip",
+    "deploy": "run-s build deploy:upload",
+    "deploy:upload": "az storage blob upload-batch -s build/ -d alert-manager-releases --account-name usdssimplereportglobal"
   },
   "description": "",
   "devDependencies": {
