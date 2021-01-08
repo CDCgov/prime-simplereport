@@ -29,6 +29,7 @@ interface Provider extends Address {
 
 interface Organization {
   name: string;
+  externalId?: string;
   internalId: string;
   testingFacility: Facility[];
 }

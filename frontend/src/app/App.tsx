@@ -21,6 +21,8 @@ import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer"
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import { getFacilityIdFromUrl } from "./utils/url";
+import Admin from "./admin/Admin";
+import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -184,6 +186,11 @@ const App = () => {
               />
               <Route path={`/add-patient/`} render={() => <AddPatient />} />
               <Route path="/settings" component={SettingsRoutes} />
+              <Route
+                path={"/admin/create-organization"}
+                render={() => <OrganizationFormContainer />}
+              />
+              <Route path={"/admin"} render={() => <Admin />} />
             </Switch>
             <ToastContainer
               autoClose={5000}

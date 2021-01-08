@@ -196,6 +196,30 @@ type Mutation {
   createOrganization(
     name: String!
     externalId: String!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String
+    streetTwo: String
+    city: String
+    county: String
+    state: String
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String!
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String!
+    orderingProviderSuffix: String
+    orderingProviderNPI: String!
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    orderingProviderState: String
+    orderingProviderZipCode: String!
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    defaultDevice: String!
   ): Organization
   addPatient(
     facilityId: String
