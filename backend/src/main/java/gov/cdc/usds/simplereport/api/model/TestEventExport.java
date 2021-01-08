@@ -394,7 +394,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return "697989009"; // Anterior nares swab
+		return "445297001"; //Swab of internal nose (changed from "697989009" on 8Jan2021)
 	}
 
 	@JsonProperty("Instrument_ID")
