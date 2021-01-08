@@ -2,6 +2,9 @@ import {AlertSchema, isAlertSchema} from './schema';
 import {AzureFunction, Context, HttpRequest} from '@azure/functions';
 const fetch = require('node-fetch');
 
+
+const BASE_URL = 'https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AlertDetailsTemplateBlade/alertId/';
+
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('HTTP trigger function processed a request.');
     context.log('I have a request: ', req.body);
@@ -63,6 +66,13 @@ function generateSlackMessage(alert: AlertSchema): any {
                 text: {
                     type: 'plain_text',
                     text: headerText
+                }
+            },
+            {
+                type: 'section',
+                text: {
+                    type: 'mrkdwn',
+                    text: `${alert.data.essentials.alertRule}\n${alert.data.essentials.description}\nDetails here:\n${BASE_URL + encodeURIComponent(alert.data.essentials.alertId)}.`
                 }
             },
             {
