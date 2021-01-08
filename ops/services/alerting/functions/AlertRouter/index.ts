@@ -18,10 +18,9 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
 
     if (req.body !== undefined && isAlertSchema(req.body)) {
         // I'm not really sure why the type guards aren't working correctly, but this is pretty simple
-        const alert = <AlertSchema> req.body;
         // Send to Slack
         context.log("I have an alert, sending to slack");
-        const res = await sendToSlack('https://hooks.slack.com/services/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', alert);
+        const res = await sendToSlack(webhook, req.body);
 
         context.res = {
             status: res.status,
