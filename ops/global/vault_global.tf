@@ -56,5 +56,5 @@ resource "azurerm_key_vault_access_policy" "team_access" {
 resource "azurerm_key_vault_secret" "slack_webhook" {
   key_vault_id = azurerm_key_vault.sr.id
   name         = "simple-report-global-slack-webhook"
-  value        = "http://change.me"
+  value        = var.slack_webhook
 }

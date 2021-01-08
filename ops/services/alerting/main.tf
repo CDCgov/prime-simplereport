@@ -1,6 +1,5 @@
 # Create an action group to handle alerts
 locals {
-  admins        = split("\n", file("${path.module}/admins.txt"))
   function_code = "${path.module}/functions/build/alertscode.zip"
 }
 
@@ -8,6 +7,14 @@ resource "azurerm_monitor_action_group" "admins" {
   name                = "prime-simple-report-global-admins"
   resource_group_name = var.rg_name
   short_name          = "SR Admins"
+
+  azure_function_receiver {
+    function_app_resource_id = azurerm_function_app.alerts.id
+    function_name            = var.function_app
+    http_trigger_url         = "https://${azurerm_function_app.alerts.default_hostname}/api/AlertsRouter"
+    name                     = "sendtoslack"
+    use_common_alert_schema  = true
+  }
 }
 
 resource "azurerm_app_service_plan" "alerts-plan" {
@@ -37,7 +44,7 @@ resource "azurerm_key_vault_access_policy" "slack_webhook" {
 resource "azurerm_function_app" "alerts" {
   app_service_plan_id        = azurerm_app_service_plan.alerts-plan.id
   location                   = var.rg_location
-  name                       = "prime-simple-report-error-manager"
+  name                       = var.alert_function_name
   resource_group_name        = var.rg_name
   version                    = "~3"
   storage_account_name       = data.azurerm_storage_account.global.name
@@ -50,7 +57,7 @@ resource "azurerm_function_app" "alerts" {
 
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY        = var.app_insights_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = var.app_insights_instrumentation_key
+    APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=${var.app_insights_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
     FUNCTIONS_WORKER_RUNTIME              = "node"
     WEBSITE_NODE_DEFAULT_VERSION          = "~12"
     HASH                                  = base64encode(filesha256(local.function_code))

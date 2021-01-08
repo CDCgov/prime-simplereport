@@ -66,5 +66,7 @@ module "app_gateway" {
     module.simple_report_api.app_hostname
   ]
 
+  action_group_id = data.azurerm_monitor_action_group.admin_group.id
+
   tags = local.management_tags
 }

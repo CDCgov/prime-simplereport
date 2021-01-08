@@ -28,7 +28,8 @@ variable "app_insights_key" {
   type        = string
 }
 
-variable "app_insights_instrumentation_key" {
-  description = "App Insights Instrumentation Key"
+variable "alert_function_name" {
+  description = "Name of Azure Function for routing alerts"
+  default     = "prime-simple-report-error-manager"
   type        = string
 }

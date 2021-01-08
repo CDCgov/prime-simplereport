@@ -298,17 +298,13 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
   }
 }
 
-data "azurerm_monitor_action_group" "ag" {
-  name                = "test-action-group"
-  resource_group_name = "prime-dev-nrobison"
-}
-
 // Create alerts
 resource "azurerm_monitor_metric_alert" "backend_health" {
   name                = "${var.env}-backend-health"
-  description         = "Alert which fires whenever any of the backend API hosts become unhealthy"
+  description         = "${var.env} backend services are unhealthy"
   resource_group_name = var.resource_group_name
   scopes              = [azurerm_application_gateway.load_balancer.id]
+  severity            = 1
   criteria {
     aggregation      = "Average"
     metric_name      = "UnhealthyHostCount"
@@ -326,7 +322,7 @@ resource "azurerm_monitor_metric_alert" "backend_health" {
   }
 
   action {
-    action_group_id = data.azurerm_monitor_action_group.ag.id
+    action_group_id = var.action_group_id
   }
 }
 
@@ -352,6 +348,6 @@ resource "azurerm_monitor_metric_alert" "fronted_health" {
   }
 
   action {
-    action_group_id = data.azurerm_monitor_action_group.ag.id
+    action_group_id = var.action_group_id
   }
 }
