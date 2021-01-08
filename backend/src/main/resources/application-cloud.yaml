@@ -1,5 +1,5 @@
 spring:
-  profiles.include: okta-dev
+  profiles.include: okta-dev, auth-dev
   jpa:
     properties:
       hibernate:

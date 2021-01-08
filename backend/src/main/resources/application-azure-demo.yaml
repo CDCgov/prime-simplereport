@@ -1,5 +1,5 @@
 spring:
-  profiles.active: no-security, single-tenant
+  profiles.include: no-security, single-tenant
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-demo.azurewebsites.net

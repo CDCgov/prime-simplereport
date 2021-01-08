@@ -72,7 +72,7 @@ Restarting the docker way:
 
 1. run `cd backend`
 1. Bring down the service by running `docker-compose down`
-1. Wipe the db by running `docker system prune && docker images prune && docker volumes prune`
+1. Wipe the db by running `docker system prune && docker images prune && docker volume prune`
 1. Restart the service `docker-compose up --build`
 
 Restarting the SQL way:
