@@ -8,8 +8,9 @@ resource "azurerm_app_service_plan" "service_plan" {
   reserved = true
 
   sku {
-    tier = var.instance_tier
-    size = var.instance_size
+    tier     = var.instance_tier
+    size     = var.instance_size
+    capacity = var.instance_count
   }
 }
 
