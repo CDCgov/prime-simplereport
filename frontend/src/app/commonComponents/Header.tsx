@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { connect } from "react-redux";
 import Button from "./Button";
 // import { updateFacility } from "../store";
+import siteLogo from "../../img/simplereport-logo-color.svg";
 
 interface Props {
   facilityId: string | null;
@@ -68,12 +69,16 @@ const Header = (props: Props) => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <em className="usa-logo__text">
+            <div>
               <Link to={`/queue/?facility=${facility.id}`}>
-                {process.env.REACT_APP_TITLE}
+                <img
+                  className="width-card desktop:width-full"
+                  src={siteLogo}
+                  alt="{process.env.REACT_APP_TITLE}"
+                />
               </Link>
               <div className="prime-organization-name">{organization.name}</div>
-            </em>
+            </div>
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
@@ -83,20 +88,9 @@ const Header = (props: Props) => {
           </button>
         </div>
 
-        <div className="prime-facility-select">
-          <Dropdown
-            selectedValue={facility.id}
-            onChange={onFacilitySelect}
-            options={facilities.map(({ name, id }) => ({
-              label: name,
-              value: id,
-            }))}
-          />
-        </div>
-
         <nav
           aria-label="Primary navigation"
-          className={classNames("usa-nav", "prime-nav", {
+          className={classNames("usa-nav", "prime-nav", "desktop:display-none", {
             "is-visible": menuVisible,
           })}
         >
@@ -151,7 +145,6 @@ const Header = (props: Props) => {
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user"}
-                size="2x"
                 style={{
                   fill: "white",
                 }}
@@ -179,7 +172,7 @@ const Header = (props: Props) => {
                   color: "white",
                 }}
               >
-                <FontAwesomeIcon icon={"cog"} size="2x" /> Settings
+                <FontAwesomeIcon icon={"cog"} /> Settings
               </NavLink>
             </li>
           </ul>
@@ -229,7 +222,17 @@ const Header = (props: Props) => {
                 {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+            <div className="prime-facility-select">
+              <Dropdown
+                selectedValue={facility.id}
+                onChange={onFacilitySelect}
+                options={facilities.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                }))}
+              />
+            </div>
+            <li className="usa-nav__primary-item nav__primary-item-icon">
               <NavLink
                 to={`#`}
                 isActive={() => staffDetailsVisible}
@@ -269,7 +272,7 @@ const Header = (props: Props) => {
                 </ul>
               </div>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item nav__primary-item-icon">
               <NavLink
                 to={`/settings/?facility=${props.facilityId}`}
                 onClick={() => setMenuVisible(false)}

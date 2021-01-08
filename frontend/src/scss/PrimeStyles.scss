@@ -60,9 +60,26 @@
 }
 
 // header
+.usa-header--basic {
+  .usa-navbar {
+    @include at-media('desktop') {
+      margin-right: units(3);
+      width: 13rem;
+    }
+  }
 
-.active-nav-item {
-  background-color: color($theme-color-primary-darker);
+  .usa-nav {
+    @include at-media('desktop') {
+      // justify-content: flex-start;
+      display: initial;
+    }
+
+    @include at-media('desktop') {
+      [data-prefix="fas"] {
+        font-size: size('body', 'xl');
+      }
+    }
+  }
 }
 
 .prime-nav {
@@ -238,6 +255,22 @@
 .prime-facility-select {
   margin: 0 0 16px 0;
   width: 100%;
+
+  @include at-media('desktop') {
+    border-right: 1px solid color($theme-color-prime-gray-light);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 0;
+    margin-left: units(7);
+    padding-right: units(2.5);
+  }
+
+  .usa-select {
+    @include at-media('desktop') {
+      margin-top: 0;
+    }
+  }
 }
 
 //navbar customizations
@@ -249,14 +282,26 @@
 }
 
 @media (min-width: 64em) {
-  .usa-nav__primary > .usa-nav__primary-item > a {
-    padding: 1.5rem;
-    font-size: 1rem;
+  .usa-nav__primary .usa-nav__primary-item a {
+    padding: units(2) units(2);
+    font-size: size('heading', 'lg');
+    font-weight: normal;
     border-right: 1px solid color($theme-color-prime-gray-light);
+
+    &.active-nav-item {
+      font-weight: font-weight('bold');
+    }
   }
 
-  .usa-nav__primary > .usa-nav__primary-item:first-child > a {
+  .usa-nav__primary .usa-nav__primary-item:first-child a {
     border-left: 1px solid color($theme-color-prime-gray-light);
+  }
+
+  .usa-nav__primary .nav__primary-item-icon {
+    > a {
+      padding-left: units(2.5);
+      padding-right: units(2.5);
+    }
   }
 
   .usa-logo {
@@ -269,6 +314,11 @@
     display: none;
   }
 }
+
+.active-nav-item {
+  background-color: color($theme-color-primary-darker);
+}
+
 .prime-nav-close-button {
   margin: 0 0 0 auto;
 }
@@ -299,8 +349,9 @@
 }
 
 .prime-organization-name {
-  margin-top: 2px;
-  font-size: 0.9rem;
+  color: color('base');
+  margin-left: 32px; // custom margin width
+  font-size: size('body', '3xs');
 }
 
 .prime-staff-infobox {
@@ -339,8 +390,12 @@
 
 // override. default forcing the top nav to be too tall
 .usa-logo {
-  margin: 0 0 16px 0;
+  margin-bottom: 0;
   font-size: 1.1rem;
+
+  @include at-media('desktop') {
+    margin-bottom: 8px;
+  }
 }
 // export
 
