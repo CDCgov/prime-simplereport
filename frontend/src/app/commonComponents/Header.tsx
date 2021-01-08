@@ -90,9 +90,14 @@ const Header = (props: Props) => {
 
         <nav
           aria-label="Primary navigation"
-          className={classNames("usa-nav", "prime-nav", "desktop:display-none", {
-            "is-visible": menuVisible,
-          })}
+          className={classNames(
+            "usa-nav",
+            "prime-nav",
+            "desktop:display-none",
+            {
+              "is-visible": menuVisible,
+            }
+          )}
         >
           <button
             className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"

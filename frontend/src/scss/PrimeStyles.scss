@@ -62,21 +62,21 @@
 // header
 .usa-header--basic {
   .usa-navbar {
-    @include at-media('desktop') {
+    @include at-media("desktop") {
       margin-right: units(3);
       width: 13rem;
     }
   }
 
   .usa-nav {
-    @include at-media('desktop') {
+    @include at-media("desktop") {
       // justify-content: flex-start;
       display: initial;
     }
 
-    @include at-media('desktop') {
+    @include at-media("desktop") {
       [data-prefix="fas"] {
-        font-size: size('body', 'xl');
+        font-size: size("body", "xl");
       }
     }
   }
@@ -256,7 +256,7 @@
   margin: 0 0 16px 0;
   width: 100%;
 
-  @include at-media('desktop') {
+  @include at-media("desktop") {
     border-right: 1px solid color($theme-color-prime-gray-light);
     display: flex;
     flex-direction: column;
@@ -267,7 +267,7 @@
   }
 
   .usa-select {
-    @include at-media('desktop') {
+    @include at-media("desktop") {
       margin-top: 0;
     }
   }
@@ -284,12 +284,12 @@
 @media (min-width: 64em) {
   .usa-nav__primary .usa-nav__primary-item a {
     padding: units(2) units(2);
-    font-size: size('heading', 'lg');
+    font-size: size("heading", "lg");
     font-weight: normal;
     border-right: 1px solid color($theme-color-prime-gray-light);
 
     &.active-nav-item {
-      font-weight: font-weight('bold');
+      font-weight: font-weight("bold");
     }
   }
 
@@ -349,9 +349,9 @@
 }
 
 .prime-organization-name {
-  color: color('base');
+  color: color("base");
   margin-left: 32px; // custom margin width
-  font-size: size('body', '3xs');
+  font-size: size("body", "3xs");
 }
 
 .prime-staff-infobox {
@@ -393,7 +393,7 @@
   margin-bottom: 0;
   font-size: 1.1rem;
 
-  @include at-media('desktop') {
+  @include at-media("desktop") {
     margin-bottom: 8px;
   }
 }
