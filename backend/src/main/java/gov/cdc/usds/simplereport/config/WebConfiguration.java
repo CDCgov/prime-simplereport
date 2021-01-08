@@ -32,6 +32,6 @@ public class WebConfiguration implements WebMvcConfigurer {
      */
     @Bean
     public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
-        return new FilterRegistrationBean<OpenEntityManagerInViewFilter>(new OpenEntityManagerInViewFilter());
+        return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
     }
 }

@@ -28,6 +28,6 @@ public class SimpleReportApplication {
     @Bean
     @Profile(BeanProfiles.CREATE_SAMPLE_DATA)
     public CommandLineRunner initDataOnStartup(OrganizationInitializingService initService) {
-        return (args) -> initService.initAll();
+        return args -> initService.initAll();
     }
 }
