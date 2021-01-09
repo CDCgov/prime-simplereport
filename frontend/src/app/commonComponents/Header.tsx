@@ -253,7 +253,6 @@ const Header = (props: Props) => {
               >
                 <FontAwesomeIcon
                   icon={"user-circle"}
-                  size="2x"
                   style={{
                     color: staffDetailsVisible ? "white" : "",
                   }}
@@ -290,7 +289,7 @@ const Header = (props: Props) => {
                   color: "white",
                 }}
               >
-                <FontAwesomeIcon icon={"cog"} size="2x" />
+                <FontAwesomeIcon icon={"cog"} />
               </NavLink>
             </li>
           </ul>
