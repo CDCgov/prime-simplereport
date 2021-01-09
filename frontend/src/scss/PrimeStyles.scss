@@ -268,7 +268,6 @@
     }
 
     .usa-nav {
-      // display: initial;
       padding: 0;
 
       [data-prefix="fas"] {
@@ -280,10 +279,10 @@
   .usa-nav__primary {
     .usa-nav__primary-item {
       a {
-        padding: units(3) units(2);
+        border-right: 1px solid color($theme-color-prime-gray-light);
         font-size: size("heading", "lg");
         font-weight: normal;
-        border-right: 1px solid color($theme-color-prime-gray-light);
+        padding: units(3) units(2);
 
         &.active-nav-item {
           font-weight: font-weight("bold");
@@ -355,8 +354,8 @@
 
 .prime-organization-name {
   color: color("base");
-  margin-left: units(4);
   font-size: size("body", "3xs");
+  margin-left: units(4);
 }
 
 .prime-staff-infobox {
