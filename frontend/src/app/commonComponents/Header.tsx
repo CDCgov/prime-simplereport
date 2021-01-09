@@ -70,7 +70,7 @@ const Header = (props: Props) => {
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <div>
-              <Link to={`/queue/?facility=${facility.id}`}>
+              <Link to={`/queue/?facility=${facility.id}`} title="Home" aria-label="Home">
                 <img
                   className="width-card desktop:width-full"
                   src={siteLogo}
