@@ -311,10 +311,8 @@
   }
 }
 
-// override. default forcing the top nav to be too tall
 .usa-logo {
   margin-bottom: 0;
-  font-size: 1.1rem;
 
   @include at-media("desktop") {
     margin-bottom: units(1);
