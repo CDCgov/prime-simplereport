@@ -349,7 +349,7 @@
 
 .prime-organization-name {
   color: color("base");
-  margin-left: 32px; // custom margin width
+  margin-left: units(4);
   font-size: size("body", "3xs");
 }
 
@@ -393,7 +393,7 @@
   font-size: 1.1rem;
 
   @include at-media("desktop") {
-    margin-bottom: 8px;
+    margin-bottom: units(1);
   }
 }
 // export
