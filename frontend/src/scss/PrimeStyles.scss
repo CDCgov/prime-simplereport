@@ -314,7 +314,7 @@
   margin-bottom: 0;
 
   @include at-media("desktop") {
-    margin-bottom: units(1);
+    margin-bottom: 10px;
   }
 }
 
