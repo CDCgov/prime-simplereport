@@ -16,6 +16,8 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+
 @SuppressWarnings("checkstyle:MagicNumber")
 public class TestResultTest extends BaseApiTest {
 
@@ -53,6 +55,34 @@ public class TestResultTest extends BaseApiTest {
 
     private ArrayNode fetchTestResults(ObjectNode variables) {
         return (ArrayNode) runQuery("test-result-query", variables).get("testResults");
+    }
+
+    // TODO: THIS DOESN'T WORK
+    @Test
+    public void submitTestResult() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        _dataFactory.createTestEvent(p, _site);
+
+        String dateTested = "2020-12-31T14:30:30.000Z";
+        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+  
+        // TODO: add real variables here
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+            .put("deviceId", "some device id")
+            .put("patientId", p.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE)
+            .put("date tested", dateTested);
+        
+        ObjectNode testResultId = submitTestResult(variables);
+
+        assertEquals(testResultId, "this should be an object not a string");
+    }
+
+    private ObjectNode submitTestResult(ObjectNode variables) {
+        ObjectNode testResultId = runQuery("add-test-result-mutation", variables);
+        System.out.println("TEST RESULT ID:");
+        System.out.println(testResultId);
+        return testResultId;
     }
 
 }

@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.time.ZoneId;
 import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,21 +37,25 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       _ps = ps;
     }
 
-    public void addTestResult(String deviceID, String result, String patientID, String dateTested) {
+    public void addTestResult(String deviceID, String result, String patientID, String dateTested) throws ParseException {
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      Date dateTestedString = df.parse(dateTested);
       _tos.addTestResult(
         deviceID,
         TestResult.valueOf(result),
         patientID,
-        parseUserDate(dateTested) == null ? null : Date.from(parseUserDate(dateTested).atStartOfDay(ZoneId.systemDefault()).toInstant())
+        dateTestedString
       );
     }
 
-    public ApiTestOrder editQueueItem(String id, String deviceId, String result, String dateTested) {
+    public ApiTestOrder editQueueItem(String id, String deviceId, String result, String dateTested) throws ParseException {
+      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      Date dateTestedString = df.parse(dateTested);
         return new ApiTestOrder(_tos.editQueueItem(
             id,
             deviceId,
             result,
-            parseUserDate(dateTested) == null ? null : Date.from(parseUserDate(dateTested).atStartOfDay(ZoneId.systemDefault()).toInstant())
+            dateTestedString
         ));
     }
 
