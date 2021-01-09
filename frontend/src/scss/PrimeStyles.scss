@@ -59,35 +59,6 @@
   min-width: 22em;
 }
 
-// header
-.usa-header--basic {
-  .usa-navbar {
-    @include at-media("desktop") {
-      margin-right: units(3);
-      width: 13rem;
-    }
-  }
-
-  .usa-nav {
-    @include at-media("desktop") {
-      // justify-content: flex-start;
-      display: initial;
-    }
-
-    @include at-media("desktop") {
-      [data-prefix="fas"] {
-        font-size: size("body", "xl");
-      }
-    }
-  }
-}
-
-.prime-nav {
-  justify-content: left;
-  padding: 0;
-  transition: 0.2s ease-in-out;
-}
-
 // patient in the queue
 
 .prime-test-result {
@@ -273,7 +244,14 @@
   }
 }
 
-//navbar customizations
+// header and navbar customizations
+
+.prime-nav {
+  justify-content: left;
+  padding: 0;
+  transition: 0.2s ease-in-out;
+}
+
 .prime-nav-link {
   white-space: nowrap;
   height: 100%;
@@ -281,35 +259,55 @@
   align-items: center;
 }
 
-@media (min-width: 64em) {
-  .usa-nav__primary .usa-nav__primary-item a {
-    padding: units(2) units(2);
-    font-size: size("heading", "lg");
-    font-weight: normal;
-    border-right: 1px solid color($theme-color-prime-gray-light);
+// header at desktop
 
-    &.active-nav-item {
-      font-weight: font-weight("bold");
+@include at-media("desktop") {
+  .usa-header--basic {
+    .usa-navbar {
+      margin-right: units(3);
+      width: 13rem;
+    }
+
+    .usa-nav {
+      display: initial;
+      padding: 0;
+
+      [data-prefix="fas"] {
+        font-size: size("body", "xl");
+      }
     }
   }
 
-  .usa-nav__primary .usa-nav__primary-item:first-child a {
-    border-left: 1px solid color($theme-color-prime-gray-light);
-  }
+  .usa-nav__primary {
+    .usa-nav__primary-item {
+      a {
+        padding: units(2) units(2);
+        font-size: size("heading", "lg");
+        font-weight: normal;
+        border-right: 1px solid color($theme-color-prime-gray-light);
 
-  .usa-nav__primary .nav__primary-item-icon {
-    > a {
-      padding-left: units(2.5);
-      padding-right: units(2.5);
+        &.active-nav-item {
+          font-weight: font-weight("bold");
+        }
+      }
+
+      &:first-child a {
+        border-left: 1px solid color($theme-color-prime-gray-light);
+      }
+    }
+
+    .nav__primary-item-icon {
+      > a {
+        padding-left: units(2.5);
+        padding-right: units(2.5);
+      }
     }
   }
 
   .usa-logo {
-    margin: 0 0 20px 0;
+    margin-top: 0;
   }
-  .usa-header--basic .usa-nav {
-    padding: 0;
-  }
+
   .prime-settings-hidden {
     display: none;
   }
@@ -322,6 +320,7 @@
 .prime-nav-close-button {
   margin: 0 0 0 auto;
 }
+
 .prime-nav-close-button img {
   width: 1rem;
 }
