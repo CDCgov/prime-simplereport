@@ -23,9 +23,12 @@ import { QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget } from "./TestTimer";
+import Checkboxes from "../commonComponents/Checkboxes";
 import moment from "moment";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+
+const EARLIEST_TEST_DATE = moment("01/01/2020", "MM/DD/YYYY");
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
@@ -184,10 +187,11 @@ interface updateQueueItemProps {
 }
 
 const getDate = (datetime: string) => {
-  if (!datetime) {
-    return datetime;
-  }
-  return datetime.split("T")[0];
+  return datetime;
+  // if (!datetime) {
+  //   return datetime;
+  // }
+  // return datetime.split("T")[0];
 };
 
 const QueueItem: any = ({
@@ -230,6 +234,9 @@ const QueueItem: any = ({
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
+  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
+    "true"
+  );
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
@@ -319,14 +326,20 @@ const QueueItem: any = ({
     // So, only save complete recent dates but always update locally.
     // This will need further fixing once we go to subscriptions, ugh.
     updateDateTested(dateTested);
-    const thisYear = new Date().getFullYear();
-    const check = new RegExp(`^(${thisYear - 1}|${thisYear})-\\d\\d-\\d\\d`);
-    if (check.test(dateTested)) {
-      updateQueueItem({
-        dateTested: dateTested,
-        result: testResultValue,
-      });
-    }
+    var dateTestedMoment = moment(dateTested, "YYYY-MM-DDTHH:mm");
+    const isDateTestedComplete =
+      dateTestedMoment.isValid() &&
+      dateTestedMoment.isBetween(
+        EARLIEST_TEST_DATE,
+        moment().endOf("day").add(1, "days")
+      );
+    console.log(`${dateTested}:00.000Z`);
+    updateQueueItem({
+      // dateTested: "2021-01-07",
+      dateTested: `${dateTested}:00.000Z`, // datetime.split("T")[0
+      result: testResultValue,
+    });
+    // }
   };
 
   const onTestResultChange = (result: TestResult | undefined) => {
@@ -398,6 +411,30 @@ const QueueItem: any = ({
     </button>
   );
 
+  const testDateFields =
+    useCurrentDateTime === "false" ? (
+      <React.Fragment>
+        {/* <TextInput
+          type="date"
+          label="Override Date Tested"
+          name="dateTested"
+          value={dateTested}
+          onChange={onDateTestedChange}
+        /> */}
+
+        <TextInput
+          type="datetime-local"
+          label="time"
+          // id="meeting-time"
+          name="meeting-time"
+          value={dateTested}
+          min="2020-01-01T00:00"
+          max={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
+          onChange={onDateTestedChange}
+        />
+      </React.Fragment>
+    ) : null;
+
   return (
     <React.Fragment>
       <div className="grid-container prime-container prime-queue-item usa-card__container">
@@ -453,13 +490,23 @@ const QueueItem: any = ({
                   selectedValue={deviceId}
                   onChange={onDeviceChange}
                 />
-                <TextInput
-                  type="date"
-                  label="Override Date Tested"
-                  name="dateTested"
-                  value={dateTested}
-                  onChange={onDateTestedChange}
+                <Checkboxes
+                  boxes={[
+                    {
+                      value: useCurrentDateTime,
+                      label: "Use current date & time",
+                      checked: useCurrentDateTime === "true",
+                    },
+                  ]}
+                  legend="Use current date and time"
+                  name="currentDateTime"
+                  onChange={() => {
+                    updateUseCurrentDateTime(
+                      useCurrentDateTime === "true" ? "false" : "true"
+                    );
+                  }}
                 />
+                {testDateFields}
               </form>
             </div>
           </div>
