@@ -69,16 +69,18 @@ const Header = (props: Props) => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <div>
-              <Link to={`/queue/?facility=${facility.id}`} title="Home" aria-label="Home">
-                <img
-                  className="width-card desktop:width-full"
-                  src={siteLogo}
-                  alt="{process.env.REACT_APP_TITLE}"
-                />
-              </Link>
-              <div className="prime-organization-name">{organization.name}</div>
-            </div>
+            <Link
+              to={`/queue/?facility=${facility.id}`}
+              title="Home"
+              aria-label="Home"
+            >
+              <img
+                className="width-card desktop:width-full"
+                src={siteLogo}
+                alt="{process.env.REACT_APP_TITLE}"
+              />
+            </Link>
+            <div className="prime-organization-name">{organization.name}</div>
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
@@ -149,7 +151,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
-                icon={"user"}
+                icon={"user-circle"}
                 style={{
                   fill: "white",
                 }}
@@ -227,16 +229,18 @@ const Header = (props: Props) => {
                 {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
-            <div className="prime-facility-select">
-              <Dropdown
-                selectedValue={facility.id}
-                onChange={onFacilitySelect}
-                options={facilities.map(({ name, id }) => ({
-                  label: name,
-                  value: id,
-                }))}
-              />
-            </div>
+          </ul>
+          <div className="prime-facility-select">
+            <Dropdown
+              selectedValue={facility.id}
+              onChange={onFacilitySelect}
+              options={facilities.map(({ name, id }) => ({
+                label: name,
+                value: id,
+              }))}
+            />
+          </div>
+          <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item nav__primary-item-icon">
               <NavLink
                 to={`#`}
@@ -248,7 +252,7 @@ const Header = (props: Props) => {
                 activeClassName="active-nav-item"
               >
                 <FontAwesomeIcon
-                  icon={"user"}
+                  icon={"user-circle"}
                   size="2x"
                   style={{
                     color: staffDetailsVisible ? "white" : "",

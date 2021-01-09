@@ -228,7 +228,6 @@
   width: 100%;
 
   @include at-media("desktop") {
-    border-right: 1px solid color($theme-color-prime-gray-light);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -269,7 +268,7 @@
     }
 
     .usa-nav {
-      display: initial;
+      // display: initial;
       padding: 0;
 
       [data-prefix="fas"] {
@@ -281,7 +280,7 @@
   .usa-nav__primary {
     .usa-nav__primary-item {
       a {
-        padding: units(2) units(2);
+        padding: units(3) units(2);
         font-size: size("heading", "lg");
         font-weight: normal;
         border-right: 1px solid color($theme-color-prime-gray-light);
@@ -298,8 +297,7 @@
 
     .nav__primary-item-icon {
       > a {
-        padding-left: units(2.5);
-        padding-right: units(2.5);
+        padding: 18.5px units(2.5);
       }
     }
   }
@@ -310,6 +308,16 @@
 
   .prime-settings-hidden {
     display: none;
+  }
+}
+
+// override. default forcing the top nav to be too tall
+.usa-logo {
+  margin-bottom: 0;
+  font-size: 1.1rem;
+
+  @include at-media("desktop") {
+    margin-bottom: units(1);
   }
 }
 
@@ -387,15 +395,6 @@
   }
 }
 
-// override. default forcing the top nav to be too tall
-.usa-logo {
-  margin-bottom: 0;
-  font-size: 1.1rem;
-
-  @include at-media("desktop") {
-    margin-bottom: units(1);
-  }
-}
 // export
 
 .prime-csv-import-columns {
