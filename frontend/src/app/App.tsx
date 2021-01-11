@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
@@ -71,7 +70,6 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const facility = useSelector((state) => (state as any).facility as Facility);
 
   useEffect(() => {
     if (!data) return;
