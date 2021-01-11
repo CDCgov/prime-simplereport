@@ -142,10 +142,10 @@ const App = () => {
               />
               <Route
                 path="/"
-                render={() => {
-                  return <Redirect to="/queue" />;
-                }}
                 exact
+                render={({ location }) => (
+                  <Redirect to={{ ...location, pathname: "/queue" }} />
+                )}
               />
               <Route
                 path="/results"
