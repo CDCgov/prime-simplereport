@@ -1,40 +1,23 @@
 import React from "react";
-import { useDispatch, useSelector, connect } from "react-redux";
-import { useHistory } from "react-router-dom";
 
 import Button from "../commonComponents/Button";
-import { updateFacility } from "../store";
 import { formatFullName } from "../utils/user";
 
 import "./FacilitySelect.scss";
 
-const FacilitySelect: React.FC<{}> = () => {
-  const dispatch = useDispatch();
+interface Props {
+  setActiveFacility: (facility: Facility) => void;
+  facilities: Facility[];
+  organization: Organization;
+  user: User;
+}
 
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
-  );
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
-  const user = useSelector((state) => (state as any).user as User);
-
-  const history = useHistory();
-
-  const setFacilityProp = (facilityId: string) => {
-    history.push({ search: `?facility=${facilityId}` });
-  };
-
-  const setActiveFacility = (facility: Facility) => {
-    dispatch(updateFacility(facility));
-    setFacilityProp(facility.id);
-  };
-
-  if (facilities.length === 1) {
-    setActiveFacility(facilities[0]);
-    return <p>Loading facility information...</p>;
-  }
-
+const FacilitySelect: React.FC<Props> = ({
+  facilities,
+  organization,
+  user,
+  setActiveFacility,
+}) => {
   return (
     <main className="prime-home" id="facility-select">
       <div className="grid-container">
@@ -68,4 +51,4 @@ const FacilitySelect: React.FC<{}> = () => {
   );
 };
 
-export default connect()(FacilitySelect);
+export default FacilitySelect;
