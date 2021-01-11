@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional
 public class DataHubUploaderService {
-    private static final String CSV_API_VERSION = "2";
+    private static final String CSV_API_VERSION = "3";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
 
     private final DataHubConfig _config;

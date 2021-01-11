@@ -15,6 +15,13 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
+/**
+ * For latest supported values, see:
+ * https://github.com/CDCgov/prime-data-hub/blob/production/prime-router/docs/schema_documentation/primedatainput-pdi-covid-19.md
+ *
+ * And significant changes to these constants should be accompanied by a version bump of
+ * DataHubUploaderService.CSV_API_VERSION. This is only used for debugging issues, but it's a good practice.
+ */
 public class TestEventExport {
 
 	private TestEvent testEvent;
