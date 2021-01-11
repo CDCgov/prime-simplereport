@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
@@ -20,6 +21,7 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
+import FacilitySelect from "./facilitySelect/FacilitySelect";
 import { getFacilityIdFromUrl } from "./utils/url";
 
 const WHOAMI_QUERY = gql`
@@ -70,40 +72,13 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const [facilityId, updateFacilityId] = useState<string | null>("");
+  const facilities = useSelector(
+    (state) => (state as any).facilities as Facility[]
+  );
+  const facility = useSelector((state) => (state as any).facility as Facility);
 
   useEffect(() => {
     if (!data) return;
-
-    const getDefaultFacilityId = () => {
-      const queryParamsFacilityId = getFacilityIdFromUrl();
-      if (queryParamsFacilityId) {
-        return queryParamsFacilityId;
-      }
-
-      const tucsonMountains = data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.name === "Tucson Mountains"
-      );
-      if (tucsonMountains) {
-        return tucsonMountains.id;
-      }
-
-      return data.whoami.organization.testingFacility[0].id;
-    };
-
-    // if facilityId is not a query param, we need to refresh the page and add it
-    if (!getFacilityIdFromUrl()) {
-      window.location.href = `${
-        window.location.pathname
-      }?facility=${getDefaultFacilityId()}`;
-    }
-
-    const getDefaultFacility = () => {
-      let facilityId = getDefaultFacilityId();
-      return data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.id === facilityId
-      );
-    };
 
     dispatch(
       setInitialState({
@@ -111,7 +86,7 @@ const App = () => {
           name: data.whoami.organization.name,
         },
         facilities: data.whoami.organization.testingFacility,
-        facility: getDefaultFacility(),
+        facility: null,
         user: {
           id: data.whoami.id,
           firstName: data.whoami.firstName,
@@ -122,8 +97,6 @@ const App = () => {
         },
       })
     );
-
-    updateFacilityId(getFacilityIdFromUrl());
     // eslint-disable-next-line
   }, [data]);
 
@@ -133,6 +106,16 @@ const App = () => {
 
   if (error) {
     throw error;
+  }
+
+  const getSelectedFacility = (
+    facilities: Facility[]
+  ): Facility | undefined => {
+    return facilities.find((f) => f.id === getFacilityIdFromUrl());
+  };
+
+  if (!getSelectedFacility(facilities)) {
+    return <FacilitySelect />;
   }
 
   return (
@@ -148,7 +131,7 @@ const App = () => {
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
-            <Header facilityId={facilityId} />
+            <Header facilityId={facility.id} />
             <Switch>
               <Route path="/login" component={LoginView} />
               <Route
