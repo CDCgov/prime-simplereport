@@ -143,7 +143,14 @@ const App = () => {
               <Route
                 path="/"
                 render={() => {
-                  return <Redirect to="/queue" />;
+                  return (
+                    <Redirect
+                      to={{
+                        pathname: "/queue",
+                        search: window.location.search,
+                      }}
+                    />
+                  );
                 }}
                 exact
               />
