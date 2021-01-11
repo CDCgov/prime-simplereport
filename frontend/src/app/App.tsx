@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
@@ -21,8 +20,7 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
-import FacilitySelect from "./facilitySelect/FacilitySelect";
-import { getFacilityIdFromUrl } from "./utils/url";
+import WithFacility from "./facilitySelect/WithFacility";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -72,10 +70,6 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
-  );
-  const facility = useSelector((state) => (state as any).facility as Facility);
 
   useEffect(() => {
     if (!data) return;
@@ -108,16 +102,6 @@ const App = () => {
     throw error;
   }
 
-  const getSelectedFacility = (
-    facilities: Facility[]
-  ): Facility | undefined => {
-    return facilities.find((f) => f.id === getFacilityIdFromUrl());
-  };
-
-  if (!getSelectedFacility(facilities)) {
-    return <FacilitySelect />;
-  }
-
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
       <PrimeErrorBoundary
@@ -128,55 +112,57 @@ const App = () => {
           </div>
         )}
       >
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <Header facilityId={facility.id} />
-            <Switch>
-              <Route path="/login" component={LoginView} />
-              <Route
-                path="/queue"
-                render={() => {
-                  return <TestQueueContainer />;
-                }}
+        <WithFacility>
+          <div className="App">
+            <div id="main-wrapper">
+              <USAGovBanner />
+              <Header />
+              <Switch>
+                <Route path="/login" component={LoginView} />
+                <Route
+                  path="/queue"
+                  render={() => {
+                    return <TestQueueContainer />;
+                  }}
+                />
+                <Route
+                  path="/"
+                  exact
+                  render={({ location }) => (
+                    <Redirect to={{ ...location, pathname: "/queue" }} />
+                  )}
+                />
+                <Route
+                  path="/results"
+                  render={() => {
+                    return <TestResultsListContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patients`}
+                  render={() => {
+                    return <ManagePatientsContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patient/:patientId`}
+                  render={({ match }) => (
+                    <EditPatientContainer patientId={match.params.patientId} />
+                  )}
+                />
+                <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                <Route path="/settings" component={SettingsRoutes} />
+              </Switch>
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
               />
-              <Route
-                path="/"
-                exact
-                render={({ location }) => (
-                  <Redirect to={{ ...location, pathname: "/queue" }} />
-                )}
-              />
-              <Route
-                path="/results"
-                render={() => {
-                  return <TestResultsListContainer />;
-                }}
-              />
-              <Route
-                path={`/patients`}
-                render={() => {
-                  return <ManagePatientsContainer />;
-                }}
-              />
-              <Route
-                path={`/patient/:patientId`}
-                render={({ match }) => (
-                  <EditPatientContainer patientId={match.params.patientId} />
-                )}
-              />
-              <Route path={`/add-patient/`} render={() => <AddPatient />} />
-              <Route path="/settings" component={SettingsRoutes} />
-            </Switch>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+            </div>
           </div>
-        </div>
+        </WithFacility>
       </PrimeErrorBoundary>
     </AppInsightsContext.Provider>
   );

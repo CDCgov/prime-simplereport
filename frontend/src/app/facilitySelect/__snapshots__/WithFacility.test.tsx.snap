@@ -1,6 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`FacilitySelect should render with a value 1`] = `
+exports[`WithFacility With one facility should render with a value 1`] = `
+<p>
+  Loading facility information...
+</p>
+`;
+
+exports[`WithFacility With two facilities should render with a value 1`] = `
 <main
   className="prime-home"
   id="facility-select"
