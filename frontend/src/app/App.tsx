@@ -21,7 +21,7 @@ import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer"
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import WithFacility from "./facilitySelect/WithFacility";
-
+import AoEPatientFormContainer from "./testQueue/AoEForm/AoEPatientFormContainer";
 const WHOAMI_QUERY = gql`
   query WhoAmI {
     whoami {
@@ -144,6 +144,12 @@ const App = () => {
                     return <ManagePatientsContainer />;
                   }}
                 />
+                <Route
+                path={`/patient/:patientId/symptoms`}
+                render={({ match }) => (
+                  <AoEPatientFormContainer patientId={match.params.patientId} />
+                )}
+              />
                 <Route
                   path={`/patient/:patientId`}
                   render={({ match }) => (

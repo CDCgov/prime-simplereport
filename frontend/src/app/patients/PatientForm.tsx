@@ -264,9 +264,9 @@ const PatientForm = (props: Props) => {
       />
       <div className="prime-edit-patient-heading">
         <div>
-          <h2>
+          <h1>
             {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
-          </h2>
+          </h1>
           <RequiredMessage />
         </div>
         <button
