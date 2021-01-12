@@ -75,7 +75,6 @@ public class TestResultTest extends BaseApiTest {
     //         .put("date tested", dateTested);
         
     //     // ObjectNode testResultId = submitTestResult(variables);
-    //     assertEquals(1, 1);
     //     // assertEquals(testResultId, "this should be an object not a string");
     // }
 

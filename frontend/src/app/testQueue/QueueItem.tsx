@@ -250,7 +250,11 @@ const QueueItem: any = ({
   );
 
   // this is an ISO string
-  const [dateTested, updateDateTested] = useState<string>(dateTestedProp);
+  // always assume the current date unless provided something else
+  const [dateTested, updateDateTested] = useState<string>(
+    dateTestedProp || new Date().toISOString()
+  );
+
   const [testResultValue, updateTestResultValue] = useState<
     TestResult | undefined
   >(selectedTestResult || undefined);
@@ -279,6 +283,7 @@ const QueueItem: any = ({
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
+      console.log("SUBMITTING\nDate tested:", dateTested);
       submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -327,30 +332,35 @@ const QueueItem: any = ({
   };
 
   const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const dateTested = e.target.value;
-    // If we try to round-trip the date to the server, it is too slow and the
-    // new prop clobbers what the user typed after the request continued.
-    // So, only save complete recent dates but always update locally.
-    // This will need further fixing once we go to subscriptions, ugh.
-    updateDateTested(dateTested);
+    const rawDateString = e.target.value;
+    const dateTested = new Date(rawDateString);
 
-    // the user can manually enter future dates and bypass the `max` attribute.
-    // arbitrarily enforce the max future date to be 1 day from the time of submission. Not sure if this is a good idea?
+    // problem: user can manually input future dates and bypass the `max` attribute.
+    // this enforces the max future date to be 1 day from the time of submission, an arbitrary upper bound -- not sure if this is a good idea?
     const MAX_TEST_DATE = new Date();
     MAX_TEST_DATE.setDate(MAX_TEST_DATE.getDate() + 1);
-
-    const date = new Date(dateTested);
-    const isValidDate = date > EARLIEST_TEST_DATE && date < MAX_TEST_DATE;
+    const isValidDate =
+      dateTested > EARLIEST_TEST_DATE && dateTested < MAX_TEST_DATE;
     if (isValidDate) {
+      const isoDateTested = dateTested.toISOString(); // backend always expects ISO strings
+
+      /* the custom date input field manages its own state in the DOM, not in the react state
+      The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
+      Instead, we are only going to update react if there is a *valid* date. 
+      this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
+      or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
+    */
+      updateDateTested(isoDateTested);
       updateQueueItem({
-        dateTested: date.toISOString(), // always send ISO strings.
+        deviceId,
+        dateTested: isoDateTested,
         result: testResultValue,
       });
     }
   };
 
   const onTestResultChange = (result: TestResult | undefined) => {
-    updateQueueItem({ result, dateTested });
+    updateQueueItem({ deviceId, result, dateTested });
   };
 
   const removeFromQueue = (
@@ -392,6 +402,18 @@ const QueueItem: any = ({
     })
       .then(refetchQueue)
       .catch(updateMutationError);
+  };
+
+  const onUseCurrentDateChange = () => {
+    // if we want to use a custom date
+    if (useCurrentDateTime === "true") {
+      updateUseCurrentDateTime("false");
+    }
+    // if we want to use the current date time
+    else {
+      updateDateTested(new Date().toISOString());
+      updateUseCurrentDateTime("true");
+    }
   };
 
   let options = devices.map((device) => ({
@@ -513,11 +535,7 @@ const QueueItem: any = ({
                         useCurrentDateTime === "true" ? "Test Date" : null
                       }
                       name="currentDateTime"
-                      onChange={() => {
-                        updateUseCurrentDateTime(
-                          useCurrentDateTime === "true" ? "false" : "true"
-                        );
-                      }}
+                      onChange={onUseCurrentDateChange}
                     />
                   </li>
                 </ul>
