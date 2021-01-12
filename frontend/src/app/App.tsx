@@ -117,48 +117,50 @@ const App = () => {
             <div id="main-wrapper">
               <USAGovBanner />
               <Header />
-              <Switch>
-                <Route path="/login" component={LoginView} />
-                <Route
-                  path="/queue"
-                  render={() => {
-                    return <TestQueueContainer />;
-                  }}
-                />
-                <Route
-                  path="/"
-                  exact
-                  render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: "/queue" }} />
-                  )}
-                />
-                <Route
-                  path="/results"
-                  render={() => {
-                    return <TestResultsListContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patients`}
-                  render={() => {
-                    return <ManagePatientsContainer />;
-                  }}
-                />
-                <Route
-                path={`/patient/:patientId/symptoms`}
-                render={({ match }) => (
-                  <AoEPatientFormContainer patientId={match.params.patientId} />
-                )}
-              />
-                <Route
-                  path={`/patient/:patientId`}
+              <main className="main">
+                <Switch>
+                  <Route path="/login" component={LoginView} />
+                  <Route
+                    path="/queue"
+                    render={() => {
+                      return <TestQueueContainer />;
+                    }}
+                  />
+                  <Route
+                    path="/"
+                    exact
+                    render={({ location }) => (
+                      <Redirect to={{ ...location, pathname: "/queue" }} />
+                    )}
+                  />
+                  <Route
+                    path="/results"
+                    render={() => {
+                      return <TestResultsListContainer />;
+                    }}
+                  />
+                  <Route
+                    path={`/patients`}
+                    render={() => {
+                      return <ManagePatientsContainer />;
+                    }}
+                  />
+                  <Route
+                  path={`/patient/:patientId/symptoms`}
                   render={({ match }) => (
-                    <EditPatientContainer patientId={match.params.patientId} />
+                    <AoEPatientFormContainer patientId={match.params.patientId} />
                   )}
-                />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
-              </Switch>
+                  />
+                  <Route
+                    path={`/patient/:patientId`}
+                    render={({ match }) => (
+                      <EditPatientContainer patientId={match.params.patientId} />
+                    )}
+                  />
+                  <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                  <Route path="/settings" component={SettingsRoutes} />
+                </Switch>
+              </main>
               <ToastContainer
                 autoClose={5000}
                 closeButton={false}
