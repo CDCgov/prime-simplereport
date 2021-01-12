@@ -59,18 +59,6 @@
   min-width: 22em;
 }
 
-// header
-
-.active-nav-item {
-  background-color: color($theme-color-primary-darker);
-}
-
-.prime-nav {
-  justify-content: left;
-  padding: 0;
-  transition: 0.2s ease-in-out;
-}
-
 // patient in the queue
 
 .prime-test-result {
@@ -238,9 +226,31 @@
 .prime-facility-select {
   margin: 0 0 16px 0;
   width: 100%;
+
+  @include at-media("desktop") {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 0;
+    margin-left: units(7);
+    padding-right: units(2.5);
+  }
+
+  .usa-select {
+    @include at-media("desktop") {
+      margin-top: 0;
+    }
+  }
 }
 
-//navbar customizations
+// header and navbar customizations
+
+.prime-nav {
+  justify-content: left;
+  padding: 0;
+  transition: 0.2s ease-in-out;
+}
+
 .prime-nav-link {
   white-space: nowrap;
   height: 100%;
@@ -248,30 +258,74 @@
   align-items: center;
 }
 
-@media (min-width: 64em) {
-  .usa-nav__primary > .usa-nav__primary-item > a {
-    padding: 1.5rem;
-    font-size: 1rem;
-    border-right: 1px solid color($theme-color-prime-gray-light);
+// header at desktop
+
+@include at-media("desktop") {
+  .usa-header--basic {
+    .usa-navbar {
+      margin-right: units(3);
+      width: 13rem;
+    }
+
+    .usa-nav {
+      padding: 0;
+
+      [data-prefix="fas"] {
+        font-size: size("body", "xl");
+      }
+    }
   }
 
-  .usa-nav__primary > .usa-nav__primary-item:first-child > a {
-    border-left: 1px solid color($theme-color-prime-gray-light);
+  .usa-nav__primary {
+    .usa-nav__primary-item {
+      a {
+        border-right: 1px solid color($theme-color-prime-gray-light);
+        font-size: size("heading", "lg");
+        font-weight: normal;
+        padding: units(3) units(2);
+
+        &.active-nav-item {
+          font-weight: font-weight("bold");
+        }
+      }
+
+      &:first-child a {
+        border-left: 1px solid color($theme-color-prime-gray-light);
+      }
+    }
+
+    .nav__primary-item-icon {
+      > a {
+        padding: 18.5px units(2.5);
+      }
+    }
   }
 
   .usa-logo {
-    margin: 0 0 20px 0;
+    margin-top: 0;
   }
-  .usa-header--basic .usa-nav {
-    padding: 0;
-  }
+
   .prime-settings-hidden {
     display: none;
   }
 }
+
+.usa-logo {
+  margin-bottom: 0;
+
+  @include at-media("desktop") {
+    margin-bottom: 10px;
+  }
+}
+
+.active-nav-item {
+  background-color: color($theme-color-primary-darker);
+}
+
 .prime-nav-close-button {
   margin: 0 0 0 auto;
 }
+
 .prime-nav-close-button img {
   width: 1rem;
 }
@@ -299,8 +353,9 @@
 }
 
 .prime-organization-name {
-  margin-top: 2px;
-  font-size: 0.9rem;
+  color: color("base");
+  font-size: size("body", "3xs");
+  margin-left: units(4);
 }
 
 .prime-staff-infobox {
@@ -337,11 +392,6 @@
   }
 }
 
-// override. default forcing the top nav to be too tall
-.usa-logo {
-  margin: 0 0 16px 0;
-  font-size: 1.1rem;
-}
 // export
 
 .prime-csv-import-columns {

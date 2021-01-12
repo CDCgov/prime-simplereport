@@ -15,6 +15,13 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
+/**
+ * For latest supported values, see:
+ * https://github.com/CDCgov/prime-data-hub/blob/production/prime-router/docs/schema_documentation/primedatainput-pdi-covid-19.md
+ *
+ * And significant changes to these constants should be accompanied by a version bump of
+ * DataHubUploaderService.CSV_API_VERSION. This is only used for debugging issues, but it's a good practice.
+ */
 public class TestEventExport {
 
 	private TestEvent testEvent;
@@ -394,7 +401,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return "697989009"; // Anterior nares swab
+		return "445297001"; //Swab of internal nose (changed from "697989009" on 8Jan2021)
 	}
 
 	@JsonProperty("Instrument_ID")

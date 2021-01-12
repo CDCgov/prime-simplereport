@@ -1,5 +1,5 @@
 spring:
-  profiles.include: okta-dev, single-tenant, auth-dev
+  profiles.include: okta-dev, auth-dev
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereportdevapp.z13.web.core.windows.net
@@ -31,7 +31,7 @@ simple-report-initialization:
       street-1: 123 Main Street
       city: Oz
       state: KS
-      zip-code: "12345"
+      postal-code: "12345"
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2

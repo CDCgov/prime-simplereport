@@ -3,6 +3,11 @@
 okta:
   oauth2:
     client-id: 0oa61vdmqd56921Ka4h6
-simple-report.authorization:
+simple-report:
+  authorization:
     role-claim: dev_roles
     role-prefix: "SR-DEV-TENANT:"
+  admin-emails:
+    - bwarfield@cdc.gov
+    - tim.best@usds.dhs.gov
+    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov

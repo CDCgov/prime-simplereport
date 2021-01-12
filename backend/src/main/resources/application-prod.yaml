@@ -1,8 +1,9 @@
 spring:
-  profiles.include: okta-prod, single-tenant
+  profiles.include: okta-prod
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereport.cdc.gov
 simple-report:
   data-hub:
-    uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports"
+    upload-enabled: true
+    upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports"

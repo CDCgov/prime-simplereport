@@ -1,28 +1,29 @@
-import React, { useEffect, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
-import { ToastContainer } from "react-toastify";
-import { useDispatch, connect } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
-import { reactPlugin } from "./AppInsights";
+import React, { useEffect } from 'react';
+import { gql, useQuery } from '@apollo/client';
+import { ToastContainer } from 'react-toastify';
+import { useDispatch, connect } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
+import { reactPlugin } from './AppInsights';
 
-import PrimeErrorBoundary from "./PrimeErrorBoundary";
-import Header from "./commonComponents/Header";
-import USAGovBanner from "./commonComponents/USAGovBanner";
-import LoginView from "./LoginView";
-import { setInitialState } from "./store";
-import TestResultsListContainer from "./testResults/TestResultsListContainer";
-import TestQueueContainer from "./testQueue/TestQueueContainer";
-import ManagePatientsContainer from "./patients/ManagePatientsContainer";
-import EditPatientContainer from "./patients/EditPatientContainer";
-import AddPatient from "./patients/AddPatient";
-import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
-import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
-import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
-import { getFacilityIdFromUrl } from "./utils/url";
-import Admin from "./admin/Admin";
-import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
+import PrimeErrorBoundary from './PrimeErrorBoundary';
+import Header from './commonComponents/Header';
+import USAGovBanner from './commonComponents/USAGovBanner';
+import LoginView from './LoginView';
+import { setInitialState } from './store';
+import TestResultsListContainer from './testResults/TestResultsListContainer';
+import TestQueueContainer from './testQueue/TestQueueContainer';
+import ManagePatientsContainer from './patients/ManagePatientsContainer';
+import EditPatientContainer from './patients/EditPatientContainer';
+import AddPatient from './patients/AddPatient';
+import ManageOrganizationContainer from './Settings/ManageOrganizationContainer';
+import ManageFacilitiesContainer from './Settings/Facility/ManageFacilitiesContainer';
+import FacilityFormContainer from './Settings/Facility/FacilityFormContainer';
+import { getFacilityIdFromUrl } from './utils/url';
+import Admin from './admin/Admin';
+import OrganizationFormContainer from './admin/Organization/OrganizationFormContainer';
+import WithFacility from './facilitySelect/WithFacility';
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -49,17 +50,17 @@ const SettingsRoutes = ({ match }: any) => (
     {/* note the addition of the exact property here */}
     <Route exact path={match.url} component={ManageOrganizationContainer} />
     <Route
-      path={match.url + "/facilities"}
+      path={match.url + '/facilities'}
       component={ManageFacilitiesContainer}
     />
     <Route
-      path={match.url + "/facility/:facilityId"}
+      path={match.url + '/facility/:facilityId'}
       render={({ match }) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
     />
     <Route
-      path={match.url + "/add-facility/"}
+      path={match.url + '/add-facility/'}
       render={({ match }) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
@@ -70,42 +71,11 @@ const SettingsRoutes = ({ match }: any) => (
 const App = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: 'no-cache',
   });
-  const [facilityId, updateFacilityId] = useState<string | null>("");
 
   useEffect(() => {
     if (!data) return;
-
-    const getDefaultFacilityId = () => {
-      const queryParamsFacilityId = getFacilityIdFromUrl();
-      if (queryParamsFacilityId) {
-        return queryParamsFacilityId;
-      }
-
-      const tucsonMountains = data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.name === "Tucson Mountains"
-      );
-      if (tucsonMountains) {
-        return tucsonMountains.id;
-      }
-
-      return data.whoami.organization.testingFacility[0].id;
-    };
-
-    // if facilityId is not a query param, we need to refresh the page and add it
-    if (!getFacilityIdFromUrl()) {
-      window.location.href = `${
-        window.location.pathname
-      }?facility=${getDefaultFacilityId()}`;
-    }
-
-    const getDefaultFacility = () => {
-      let facilityId = getDefaultFacilityId();
-      return data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.id === facilityId
-      );
-    };
 
     dispatch(
       setInitialState({
@@ -113,7 +83,7 @@ const App = () => {
           name: data.whoami.organization.name,
         },
         facilities: data.whoami.organization.testingFacility,
-        facility: getDefaultFacility(),
+        facility: null,
         user: {
           id: data.whoami.id,
           firstName: data.whoami.firstName,
@@ -124,8 +94,6 @@ const App = () => {
         },
       })
     );
-
-    updateFacilityId(getFacilityIdFromUrl());
     // eslint-disable-next-line
   }, [data]);
 
@@ -147,60 +115,62 @@ const App = () => {
           </div>
         )}
       >
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <Header facilityId={facilityId} />
-            <Switch>
-              <Route path="/login" component={LoginView} />
-              <Route
-                path="/queue"
-                render={() => {
-                  return <TestQueueContainer />;
-                }}
+        <WithFacility>
+          <div className="App">
+            <div id="main-wrapper">
+              <USAGovBanner />
+              <Header />
+              <Switch>
+                <Route path="/login" component={LoginView} />
+                <Route
+                  path="/queue"
+                  render={() => {
+                    return <TestQueueContainer />;
+                  }}
+                />
+                <Route
+                  path="/"
+                  exact
+                  render={({ location }) => (
+                    <Redirect to={{ ...location, pathname: '/queue' }} />
+                  )}
+                />
+                <Route
+                  path="/results"
+                  render={() => {
+                    return <TestResultsListContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patients`}
+                  render={() => {
+                    return <ManagePatientsContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patient/:patientId`}
+                  render={({ match }) => (
+                    <EditPatientContainer patientId={match.params.patientId} />
+                  )}
+                />
+                <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                <Route path="/settings" component={SettingsRoutes} />
+                <Route
+                  path={'/admin/create-organization'}
+                  render={() => <OrganizationFormContainer />}
+                />
+                <Route path={'/admin'} render={() => <Admin />} />
+              </Switch>
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
               />
-              <Route
-                path="/"
-                render={() => {
-                  return <Redirect to="/queue" />;
-                }}
-                exact
-              />
-              <Route
-                path="/results"
-                render={() => {
-                  return <TestResultsListContainer />;
-                }}
-              />
-              <Route
-                path={`/patients`}
-                render={() => {
-                  return <ManagePatientsContainer />;
-                }}
-              />
-              <Route
-                path={`/patient/:patientId`}
-                render={({ match }) => (
-                  <EditPatientContainer patientId={match.params.patientId} />
-                )}
-              />
-              <Route path={`/add-patient/`} render={() => <AddPatient />} />
-              <Route path="/settings" component={SettingsRoutes} />
-              <Route
-                path={"/admin/create-organization"}
-                render={() => <OrganizationFormContainer />}
-              />
-              <Route path={"/admin"} render={() => <Admin />} />
-            </Switch>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+            </div>
           </div>
-        </div>
+        </WithFacility>
       </PrimeErrorBoundary>
     </AppInsightsContext.Provider>
   );
