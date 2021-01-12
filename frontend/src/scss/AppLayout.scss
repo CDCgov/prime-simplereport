@@ -26,10 +26,9 @@ main {
 
 .prime-radios > .usa-legend:not(.usa-sr-only),
 .prime-checkboxes > .usa-legend:not(.usa-sr-only) {
-  font-weight: bold;
   position: relative;
-  top: 1em;
-  margin: 1em 0;
+  top: units(2.5);
+  margin-bottom: units(2.5);
 }
 
 .prime-edit-patient-heading {

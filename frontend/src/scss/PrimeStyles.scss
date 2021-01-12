@@ -85,10 +85,8 @@
 }
 
 .prime-previous-test-display {
-  font-size: 90%;
-  margin-left: 0.5em;
-  border-left: 4px solid #ccc;
-  padding-left: 0.5em;
+  border-left: units(.5) solid color('base-lighter');
+  padding-left: units(1.5);
 }
 
 // close button
@@ -424,4 +422,27 @@
 .usa-textarea,
 .usa-combo-box__input {
   max-width: none;
+}
+
+// Patient form 
+.patient-app--form {
+  background-color: color('base-lightest');
+}
+
+.prime-formgroup {
+  @include u-padding($theme-card-padding-perimeter);
+  background: color('white');
+  border-width: units('2px');
+  border-color: color('base-lighter');
+  border-style: solid;
+  border-radius: units(.5);
+
+  + .prime-formgroup {
+    margin-top: units(2);
+  }
+}
+
+.prime-formgroup-heading {
+  font-size: size('body', 'lg');
+  margin: 0;
 }

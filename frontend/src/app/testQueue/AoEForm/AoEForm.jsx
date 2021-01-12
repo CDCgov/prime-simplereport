@@ -46,7 +46,7 @@ const SymptomInputs = ({
       />
       {!noSymptoms && (
         <>
-          <hr />
+          <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
           <Checkboxes
             legend="Symptoms"
             legendSrOnly
@@ -198,7 +198,7 @@ const PriorTestInputs = ({
   return (
     <>
       <div className="usa-legend">
-        <b>Is this your first COVID-19 test?</b>
+        Is this your first COVID-19 test?
       </div>
       <div className="usa-legend prime-previous-test-display">
         SimpleReport did not find any previous test data
@@ -339,13 +339,13 @@ const AoEForm = ({
   return (
     <>
       {buttonGroup}
-      <h2>
+      <h1 className="patient-name">
         {displayFullName(
           patient.firstName,
           patient.middleName,
           patient.lastName
         )}
-      </h2>
+      </h1>
       <FormGroup
         title="Symptoms">
         <SymptomInputs

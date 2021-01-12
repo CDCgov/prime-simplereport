@@ -57,18 +57,22 @@ const AoEPatientFormContainer = (props: Props) => {
 
 const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
-    <AoEForm
-      patient={{
-        ...data.patient,
-        residentCongregateSetting,
-        employedInHealthcare,
-      }}
-      facilityId={facilityId}
-      isModal={false}
-      saveButtonText="foobar"
-      onClose={null}
-      saveCallback={null}
-    />
+    <main className="patient-app patient-app--form">
+      <div className="grid-container">
+        <AoEForm
+          patient={{
+            ...data.patient,
+            residentCongregateSetting,
+            employedInHealthcare,
+          }}
+          facilityId={facilityId}
+          isModal={false}
+          saveButtonText="foobar"
+          onClose={null}
+          saveCallback={null}
+        />
+      </div>
+    </main>
   );
 };
 
