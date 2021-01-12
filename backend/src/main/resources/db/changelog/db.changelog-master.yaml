@@ -1033,7 +1033,7 @@ databaseChangeLog:
                   type: DATETIME
                   remarks: Upperbounds timestamp used to collect test_event. Entities with created_by <= this value are sent.
         - createIndex:
-            indexName: uk__${table_name}__job_status__latest_recorded_timestamp
+            indexName: uk__data_hub_upload__job_status__latest_recorded_timestamp
             tableName: data_hub_upload
             clustered: true
             columns:
