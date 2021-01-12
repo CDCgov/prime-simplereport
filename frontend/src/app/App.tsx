@@ -9,6 +9,8 @@ import { reactPlugin } from "./AppInsights";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
+import PatientHeader from "./commonComponents/PatientHeader";
+
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
@@ -117,6 +119,7 @@ const App = () => {
             <div id="main-wrapper">
               <USAGovBanner />
               <Header />
+              <PatientHeader />
               <Switch>
                 <Route path="/login" component={LoginView} />
                 <Route
