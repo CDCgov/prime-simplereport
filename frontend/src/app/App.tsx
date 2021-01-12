@@ -148,11 +148,13 @@ const App = () => {
                   }}
                 />
                 <Route
-                path={`/patient/:patientId/symptoms`}
-                render={({ match }) => (
-                  <AoEPatientFormContainer patientId={match.params.patientId} />
-                )}
-              />
+                  path={`/patient/:patientId/symptoms`}
+                  render={({ match }) => (
+                    <AoEPatientFormContainer
+                      patientId={match.params.patientId}
+                    />
+                  )}
+                />
                 <Route
                   path={`/patient/:patientId`}
                   render={({ match }) => (

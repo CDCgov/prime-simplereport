@@ -197,9 +197,7 @@ const PriorTestInputs = ({
 
   return (
     <>
-      <div className="usa-legend">
-        Is this your first COVID-19 test?
-      </div>
+      <div className="usa-legend">Is this your first COVID-19 test?</div>
       <div className="usa-legend prime-previous-test-display">
         SimpleReport did not find any previous test data
       </div>
@@ -326,13 +324,16 @@ const AoEForm = ({
   };
 
   const savePatientAnswers = () => {
-    console.log("saved")
-  }
+    console.log("saved");
+  };
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons" style={{ float: "right" }}>
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      <Button label={saveButtonText} onClick={isModal ? saveAnswers : savePatientAnswers} />
+      <Button
+        label={saveButtonText}
+        onClick={isModal ? saveAnswers : savePatientAnswers}
+      />
     </div>
   );
 
@@ -340,18 +341,17 @@ const AoEForm = ({
     <>
       {isModal && (
         <>
-        {buttonGroup}
-        <h1 className="patient-name">
-          {displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )}
-        </h1>
+          {buttonGroup}
+          <h1 className="patient-name">
+            {displayFullName(
+              patient.firstName,
+              patient.middleName,
+              patient.lastName
+            )}
+          </h1>
         </>
       )}
-      <FormGroup
-        title="Symptoms">
+      <FormGroup title="Symptoms">
         <SymptomInputs
           noSymptoms={noSymptoms}
           setNoSymptoms={setNoSymptoms}
@@ -363,8 +363,7 @@ const AoEForm = ({
         />
       </FormGroup>
 
-      <FormGroup
-        title="Test History">
+      <FormGroup title="Test History">
         <PriorTestInputs
           testTypeConfig={testConfig}
           priorTestDate={priorTestDate}
@@ -380,8 +379,7 @@ const AoEForm = ({
       </FormGroup>
 
       {patient.gender !== "male" && (
-        <FormGroup
-          title="Pregnancy">
+        <FormGroup title="Pregnancy">
           <RadioGroup
             legend="Currently pregnant?"
             name="pregnancy"

@@ -51,12 +51,12 @@ const AoEPatientFormContainer = (props: Props) => {
   }
 
   const residentCongregateSetting = data.patient.residentCongregateSetting
-  ? "YES"
-  : "NO";
+    ? "YES"
+    : "NO";
 
-  const facilityId = getFacilityIdFromUrl()
+  const facilityId = getFacilityIdFromUrl();
 
-const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
+  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
     <main className="patient-app patient-app--form">
       <div className="grid-container">

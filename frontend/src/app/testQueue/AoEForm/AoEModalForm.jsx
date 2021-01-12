@@ -41,7 +41,8 @@ const AoEModalForm = ({
         facilityId={facilityId}
         loadState={loadState}
         saveCallback={saveCallback}
-        isModal={true}></AoEForm>
+        isModal={true}
+      ></AoEForm>
     </Modal>
   );
 };
