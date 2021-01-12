@@ -446,3 +446,14 @@
   font-size: size('body', 'lg');
   margin: 0;
 }
+
+.usa-step-indicator--counters-sm {
+  .usa-step-indicator__segment {
+    &:last-child {
+      // Display the last segment when counters appear
+      &:after {
+        display: block;
+      }
+    }
+  }
+}

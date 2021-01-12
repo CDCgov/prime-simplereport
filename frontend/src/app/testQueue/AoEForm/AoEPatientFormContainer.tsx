@@ -2,6 +2,7 @@ import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import AoEForm from "./AoEForm";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 interface Props {
   patientId: string;
@@ -59,6 +60,7 @@ const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
     <main className="patient-app patient-app--form">
       <div className="grid-container">
+        <StepIndicator></StepIndicator>
         <AoEForm
           patient={{
             ...data.patient,
