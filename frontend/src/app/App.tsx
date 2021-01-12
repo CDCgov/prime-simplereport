@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { ToastContainer } from 'react-toastify';
-import { useDispatch, connect } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
-import { reactPlugin } from './AppInsights';
+import React, { useEffect } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { ToastContainer } from "react-toastify";
+import { useDispatch, connect } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
+import { reactPlugin } from "./AppInsights";
 
-import PrimeErrorBoundary from './PrimeErrorBoundary';
-import Header from './commonComponents/Header';
-import USAGovBanner from './commonComponents/USAGovBanner';
-import LoginView from './LoginView';
-import { setInitialState } from './store';
-import TestResultsListContainer from './testResults/TestResultsListContainer';
-import TestQueueContainer from './testQueue/TestQueueContainer';
-import ManagePatientsContainer from './patients/ManagePatientsContainer';
-import EditPatientContainer from './patients/EditPatientContainer';
-import AddPatient from './patients/AddPatient';
-import ManageOrganizationContainer from './Settings/ManageOrganizationContainer';
-import ManageFacilitiesContainer from './Settings/Facility/ManageFacilitiesContainer';
-import FacilityFormContainer from './Settings/Facility/FacilityFormContainer';
-import { getFacilityIdFromUrl } from './utils/url';
-import Admin from './admin/Admin';
-import OrganizationFormContainer from './admin/Organization/OrganizationFormContainer';
-import WithFacility from './facilitySelect/WithFacility';
+import PrimeErrorBoundary from "./PrimeErrorBoundary";
+import Header from "./commonComponents/Header";
+import USAGovBanner from "./commonComponents/USAGovBanner";
+import LoginView from "./LoginView";
+import { setInitialState } from "./store";
+import TestResultsListContainer from "./testResults/TestResultsListContainer";
+import TestQueueContainer from "./testQueue/TestQueueContainer";
+import ManagePatientsContainer from "./patients/ManagePatientsContainer";
+import EditPatientContainer from "./patients/EditPatientContainer";
+import AddPatient from "./patients/AddPatient";
+import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
+import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
+import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
+import { getFacilityIdFromUrl } from "./utils/url";
+import Admin from "./admin/Admin";
+import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
+import WithFacility from "./facilitySelect/WithFacility";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -51,17 +51,17 @@ const SettingsRoutes = ({ match }: any) => (
     {/* note the addition of the exact property here */}
     <Route exact path={match.url} component={ManageOrganizationContainer} />
     <Route
-      path={match.url + '/facilities'}
+      path={match.url + "/facilities"}
       component={ManageFacilitiesContainer}
     />
     <Route
-      path={match.url + '/facility/:facilityId'}
+      path={match.url + "/facility/:facilityId"}
       render={({ match }) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
     />
     <Route
-      path={match.url + '/add-facility/'}
+      path={match.url + "/add-facility/"}
       render={({ match }) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
@@ -72,7 +72,7 @@ const SettingsRoutes = ({ match }: any) => (
 const App = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -134,7 +134,7 @@ const App = () => {
                   path="/"
                   exact
                   render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: '/queue' }} />
+                    <Redirect to={{ ...location, pathname: "/queue" }} />
                   )}
                 />
                 <Route
@@ -160,16 +160,16 @@ const App = () => {
                 {data.whoami.isAdmin ? (
                   <>
                     <Route
-                      path={'/admin/create-organization'}
+                      path={"/admin/create-organization"}
                       render={() => <OrganizationFormContainer />}
                     />
-                    <Route path={'/admin'} render={() => <Admin />} />
+                    <Route path={"/admin"} render={() => <Admin />} />
                   </>
                 ) : (
                   <Route
-                    path={'/admin'}
+                    path={"/admin"}
                     render={({ location }) => (
-                      <Redirect to={{ ...location, pathname: '/queue' }} />
+                      <Redirect to={{ ...location, pathname: "/queue" }} />
                     )}
                   />
                 )}
