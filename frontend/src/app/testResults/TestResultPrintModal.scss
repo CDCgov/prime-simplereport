@@ -1,0 +1,83 @@
+.sr-result-print-buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  & button {
+    margin: 0 0 0 1.5rem;
+  }
+}
+@media print {
+  body {
+    font-size: 80%;
+  }
+  body .sr-result-print-buttons {
+    display: none;
+  }
+}
+
+.sr-test-result-report {
+  header {
+    & > .sr-print-logo {
+      float: right;
+      width: 200px;
+    }
+  }
+
+  main {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  footer {
+    margin-top: 1rem;
+  }
+}
+
+.sr-result-section {
+  width: 100%;
+  border: 1px solid #767676;
+  margin: 0.5rem 0;
+
+  h2 {
+    font-size: 100%;
+    font-weight: normal;
+    color: #f8f8f8;
+    background: #777;
+    margin: 0;
+    padding: 0.75rem;
+    /* allow dark background on header */
+    -webkit-print-color-adjust: exact;
+  }
+  p {
+    margin: 1rem;
+  }
+}
+
+.sr-result-patient-details,
+.sr-result-facility-details {
+  width: 49%;
+}
+.sr-result-facility-details {
+  margin-left: 2%;
+}
+
+.sr-details-list {
+  list-style-type: none;
+  margin-left: 0.5rem;
+  padding: 0;
+
+  li {
+    margin: 0.5rem;
+  }
+  b {
+    display: inline-block;
+    width: 8rem;
+  }
+  span {
+    display: inline-block;
+  }
+  .hanging {
+    margin-top: 0.25rem;
+    margin-left: 8rem;
+  }
+}

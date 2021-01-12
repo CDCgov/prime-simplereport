@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import {
   useAppInsightsContext,
@@ -8,6 +8,11 @@ import {
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
+import TestResultPrintModal from "./TestsResultPrintModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import "@szhsin/react-menu/dist/index.css";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -24,6 +29,15 @@ export const testResultQuery = gql`
         firstName
         middleName
         lastName
+        birthDate
+        gender
+        telephone
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
         lookupId
       }
     }
@@ -49,6 +63,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
     variables: { facilityId: activeFacilityId },
     fetchPolicy: "no-cache",
   });
+  const [printModalItem, setPrintModalItem] = useState(undefined);
 
   if (loading) {
     return <p>Loading</p>;
@@ -58,6 +73,15 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
       name: "Failed Fetching Tests Results",
     });
     return error;
+  }
+
+  if (printModalItem) {
+    return (
+      <TestResultPrintModal
+        item={printModalItem}
+        closeModal={() => setPrintModalItem(undefined)}
+      />
+    );
   }
 
   const testResultRows = (testResults: any) => {
@@ -84,6 +108,20 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
         <td>{moment(r.dateTested).format("lll")}</td>
         <td>{r.result}</td>
         <td>{r.deviceType.name}</td>
+        <td>
+          <Menu
+            menuButton={
+              <MenuButton className="sr-modal-menu-button">
+                <FontAwesomeIcon icon={faEllipsisH} />
+                <span className="usa-sr-only">More actions</span>
+              </MenuButton>
+            }
+          >
+            <MenuItem onClick={() => setPrintModalItem(r)}>
+              Print Result
+            </MenuItem>
+          </Menu>
+        </td>
       </tr>
     ));
   };
