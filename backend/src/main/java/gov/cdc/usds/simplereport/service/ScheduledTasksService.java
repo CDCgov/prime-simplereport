@@ -18,13 +18,12 @@ public class ScheduledTasksService {
     }
 
     // Example of how to run periodically, save for future use (and testing)
-    private static final long FIXED_DELAY_MS = Timer.ONE_MINUTE * 30;
+    private static final long FIXED_DELAY_MS = Timer.ONE_MINUTE * 120;
 
     @Scheduled(fixedDelay = FIXED_DELAY_MS, initialDelay = FIXED_DELAY_MS)
     public void runOnDelay() {
         LOG.info("Delay periodic run: Start");
         // _dataHubUploaderService.dataHubUploaderTask();
-        LOG.info("Delay periodic run: Finish");
     }
 
     // see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html
@@ -33,6 +32,5 @@ public class ScheduledTasksService {
     public void runDaily() {
         LOG.info("Daily Cron: Start");
         _dataHubUploaderService.dataHubUploaderTask();
-        LOG.info("Daily Cron: Finish");
     }
 }
