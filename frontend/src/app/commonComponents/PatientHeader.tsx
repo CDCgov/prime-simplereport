@@ -132,18 +132,6 @@ const PatientHeader: React.FC<{}> = () => {
                 </ul>
               </div>
             </li>
-            <li className="usa-nav__primary-item nav__primary-item-icon">
-              <NavLink
-                to={`/settings/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                <FontAwesomeIcon icon={"cog"} />
-              </NavLink>
-            </li>
           </ul>
         </nav>
       </div>

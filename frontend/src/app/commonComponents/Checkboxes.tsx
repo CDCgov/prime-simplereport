@@ -21,6 +21,7 @@ interface Props {
   errorMessage?: string;
   validationStatus?: "error" | "success";
   onChange: React.ChangeEventHandler;
+  required?: boolean;
 }
 
 const Checkboxes = (props: Props) => {
@@ -33,6 +34,7 @@ const Checkboxes = (props: Props) => {
     legendSrOnly,
     validationStatus,
     errorMessage,
+    required = false,
   } = props;
   const checkboxIds = useUniqueIds("check", boxes.length);
 
@@ -43,7 +45,10 @@ const Checkboxes = (props: Props) => {
       <legend
         className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
       >
-        {legend}
+        {legend} 
+        {required && (
+          <span className="usa-hint--required"><span className="usa-sr-only">Required</span> *</span>
+        )}
       </legend>
       {validationStatus === "error" && (
         <div role="alert" className="usa-error-message">

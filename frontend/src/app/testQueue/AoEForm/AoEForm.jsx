@@ -338,14 +338,18 @@ const AoEForm = ({
 
   return (
     <>
-      {buttonGroup}
-      <h1 className="patient-name">
-        {displayFullName(
-          patient.firstName,
-          patient.middleName,
-          patient.lastName
-        )}
-      </h1>
+      {isModal && (
+        <>
+        {buttonGroup}
+        <h1 className="patient-name">
+          {displayFullName(
+            patient.firstName,
+            patient.middleName,
+            patient.lastName
+          )}
+        </h1>
+        </>
+      )}
       <FormGroup
         title="Symptoms">
         <SymptomInputs
