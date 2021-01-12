@@ -34,6 +34,7 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       email
+      isAdmin
       organization {
         name
         testingFacility {
@@ -91,6 +92,7 @@ const App = () => {
           lastName: data.whoami.lastName,
           suffix: data.whoami.suffix,
           email: data.whoami.email,
+          isAdmin: data.whoami.isAdmin,
         },
       })
     );
@@ -155,11 +157,22 @@ const App = () => {
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
                 <Route path="/settings" component={SettingsRoutes} />
-                <Route
-                  path={'/admin/create-organization'}
-                  render={() => <OrganizationFormContainer />}
-                />
-                <Route path={'/admin'} render={() => <Admin />} />
+                {data.whoami.isAdmin ? (
+                  <>
+                    <Route
+                      path={'/admin/create-organization'}
+                      render={() => <OrganizationFormContainer />}
+                    />
+                    <Route path={'/admin'} render={() => <Admin />} />
+                  </>
+                ) : (
+                  <Route
+                    path={'/admin'}
+                    render={({ location }) => (
+                      <Redirect to={{ ...location, pathname: '/queue' }} />
+                    )}
+                  />
+                )}
               </Switch>
               <ToastContainer
                 autoClose={5000}
