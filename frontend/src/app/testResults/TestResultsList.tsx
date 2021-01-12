@@ -7,15 +7,12 @@ import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
-import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
-import "@szhsin/react-menu/dist/index.css";
 import "./TestResultsList.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
+import { ActionsMenu } from "../commonComponents/ActionsMenu";
 
 const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
@@ -33,6 +30,16 @@ const testResultQuery = gql`
         firstName
         middleName
         lastName
+        birthDate
+        gender
+        telephone
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        lookupId
       }
     }
   }
@@ -96,49 +103,45 @@ export const DetachedTestResultsList: any = ({
     if (testResults.length === 0) {
       return <tr>"No results"</tr>;
     }
-    // When printing is enabled add this menu item
-    // <MenuItem onClick={() => setPrintModalId(r.internalId)}>
-    //   Print result
-    // </MenuItem>
 
     // `sort` mutates the array, so make a copy
-    return [...testResults].sort(byDateTested).map((r) => (
-      <tr
-        key={r.internalId}
-        title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
-        className={classnames(
-          "sr-test-result-row",
-          r.correctionStatus === "REMOVED" && "sr-test-result-row--removed"
-        )}
-      >
-        <th scope="row">
-          {displayFullName(
-            r.patient.firstName,
-            r.patient.middleName,
-            r.patient.lastName
+    return [...testResults].sort(byDateTested).map((r) => {
+      const removed = r.correctionStatus === "REMOVED";
+      const actionItems = [
+        { name: "Print result", action: () => setPrintModalId(r.internalId) },
+      ];
+      if (!removed) {
+        actionItems.push({
+          name: "Mark as error",
+          action: () => setMarkErrorId(r.internalId),
+        });
+      }
+      return (
+        <tr
+          key={r.internalId}
+          title={removed ? "Marked as error" : ""}
+          className={classnames(
+            "sr-test-result-row",
+            removed && "sr-test-result-row--removed"
           )}
-        </th>
-        <td>{moment(r.dateTested).format("lll")}</td>
-        <td>{r.result}</td>
-        <td>{r.deviceType.name}</td>
-        <td>
-          {r.correctionStatus !== "REMOVED" && (
-            <Menu
-              menuButton={
-                <MenuButton className="sr-modal-menu-button">
-                  <FontAwesomeIcon icon={faEllipsisH} size="2x" />
-                  <span className="usa-sr-only">More actions</span>
-                </MenuButton>
-              }
-            >
-              <MenuItem onClick={() => setMarkErrorId(r.internalId)}>
-                Mark as error
-              </MenuItem>
-            </Menu>
-          )}
-        </td>
-      </tr>
-    ));
+        >
+          <th scope="row">
+            {displayFullName(
+              r.patient.firstName,
+              r.patient.middleName,
+              r.patient.lastName
+            )}
+          </th>
+          <td>{r.patient.lookupId}</td>
+          <td>{moment(r.dateTested).format("lll")}</td>
+          <td>{r.result}</td>
+          <td>{r.deviceType.name}</td>
+          <td>
+            <ActionsMenu items={actionItems} />
+          </td>
+        </tr>
+      );
+    });
   };
 
   return (
