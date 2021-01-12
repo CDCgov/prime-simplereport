@@ -11,44 +11,8 @@ import { showNotification } from "../../utils";
 import OrganizationForm from "./OrganizationForm";
 import { Redirect } from "react-router-dom";
 
-const GET_FACILITY_QUERY = gql`
-  query GetFacilities {
-    organization {
-      internalId
-      testingFacility {
-        id
-        cliaNumber
-        name
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
-        phone
-        email
-        defaultDeviceType {
-          internalId
-        }
-        deviceTypes {
-          internalId
-        }
-        orderingProvider {
-          firstName
-          middleName
-          lastName
-          suffix
-          NPI
-          street
-          streetTwo
-          city
-          county
-          state
-          zipCode
-          phone
-        }
-      }
-    }
+const GET_DEVICES_QUERY = gql`
+  query GetDevices {
     deviceType {
       internalId
       name
@@ -124,8 +88,8 @@ interface Props {
 
 const OrganizationFormContainer: any = (props: Props) => {
   const [submitted, setSubmitted] = useState(false);
-  const { data, loading, error } = useQuery<FacilityData, {}>(
-    GET_FACILITY_QUERY,
+  const { data, loading, error } = useQuery<DeviceTypes, {}>(
+    GET_DEVICES_QUERY,
     {
       fetchPolicy: "no-cache",
     }
@@ -147,7 +111,7 @@ const OrganizationFormContainer: any = (props: Props) => {
   }
 
   if (data === undefined) {
-    return <p>Error: facility not found</p>;
+    return <p>Error: device types not found</p>;
   }
 
   const saveOrganization = (organization: Organization, facility: Facility) => {
@@ -196,21 +160,6 @@ const OrganizationFormContainer: any = (props: Props) => {
   };
 
   const getFacilityData = (): Facility => {
-    const facility = data.organization.testingFacility.find(
-      (f) => f.id === props.facilityId
-    );
-    if (facility) {
-      let deviceTypes = Object.values(facility.deviceTypes).map(
-        (d) => d.internalId
-      );
-      return {
-        ...facility,
-        deviceTypes: deviceTypes,
-        defaultDevice: facility.defaultDeviceType
-          ? facility.defaultDeviceType.internalId
-          : "",
-      };
-    }
     const defaultDevice = data.deviceType[0].internalId;
     return {
       id: "",

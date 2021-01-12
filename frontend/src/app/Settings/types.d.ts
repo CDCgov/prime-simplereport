@@ -58,6 +58,10 @@ interface DeviceType {
   name: string;
 }
 
+interface DeviceTypes {
+  deviceType: [DeviceType];
+}
+
 interface SettingsData {
   organization: {
     internalId: string;
