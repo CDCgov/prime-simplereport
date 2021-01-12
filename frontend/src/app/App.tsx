@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
@@ -20,7 +20,7 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
-import { getFacilityIdFromUrl } from "./utils/url";
+import WithFacility from "./facilitySelect/WithFacility";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -70,40 +70,9 @@ const App = () => {
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
     fetchPolicy: "no-cache",
   });
-  const [facilityId, updateFacilityId] = useState<string | null>("");
 
   useEffect(() => {
     if (!data) return;
-
-    const getDefaultFacilityId = () => {
-      const queryParamsFacilityId = getFacilityIdFromUrl();
-      if (queryParamsFacilityId) {
-        return queryParamsFacilityId;
-      }
-
-      const tucsonMountains = data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.name === "Tucson Mountains"
-      );
-      if (tucsonMountains) {
-        return tucsonMountains.id;
-      }
-
-      return data.whoami.organization.testingFacility[0].id;
-    };
-
-    // if facilityId is not a query param, we need to refresh the page and add it
-    if (!getFacilityIdFromUrl()) {
-      window.location.href = `${
-        window.location.pathname
-      }?facility=${getDefaultFacilityId()}`;
-    }
-
-    const getDefaultFacility = () => {
-      let facilityId = getDefaultFacilityId();
-      return data.whoami.organization.testingFacility.find(
-        (f: Facility) => f.id === facilityId
-      );
-    };
 
     dispatch(
       setInitialState({
@@ -111,7 +80,7 @@ const App = () => {
           name: data.whoami.organization.name,
         },
         facilities: data.whoami.organization.testingFacility,
-        facility: getDefaultFacility(),
+        facility: null,
         user: {
           id: data.whoami.id,
           firstName: data.whoami.firstName,
@@ -122,8 +91,6 @@ const App = () => {
         },
       })
     );
-
-    updateFacilityId(getFacilityIdFromUrl());
     // eslint-disable-next-line
   }, [data]);
 
@@ -145,55 +112,57 @@ const App = () => {
           </div>
         )}
       >
-        <div className="App">
-          <div id="main-wrapper">
-            <USAGovBanner />
-            <Header facilityId={facilityId} />
-            <Switch>
-              <Route path="/login" component={LoginView} />
-              <Route
-                path="/queue"
-                render={() => {
-                  return <TestQueueContainer />;
-                }}
+        <WithFacility>
+          <div className="App">
+            <div id="main-wrapper">
+              <USAGovBanner />
+              <Header />
+              <Switch>
+                <Route path="/login" component={LoginView} />
+                <Route
+                  path="/queue"
+                  render={() => {
+                    return <TestQueueContainer />;
+                  }}
+                />
+                <Route
+                  path="/"
+                  exact
+                  render={({ location }) => (
+                    <Redirect to={{ ...location, pathname: "/queue" }} />
+                  )}
+                />
+                <Route
+                  path="/results"
+                  render={() => {
+                    return <TestResultsListContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patients`}
+                  render={() => {
+                    return <ManagePatientsContainer />;
+                  }}
+                />
+                <Route
+                  path={`/patient/:patientId`}
+                  render={({ match }) => (
+                    <EditPatientContainer patientId={match.params.patientId} />
+                  )}
+                />
+                <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                <Route path="/settings" component={SettingsRoutes} />
+              </Switch>
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
               />
-              <Route
-                path="/"
-                render={() => {
-                  return <Redirect to="/queue" />;
-                }}
-                exact
-              />
-              <Route
-                path="/results"
-                render={() => {
-                  return <TestResultsListContainer />;
-                }}
-              />
-              <Route
-                path={`/patients`}
-                render={() => {
-                  return <ManagePatientsContainer />;
-                }}
-              />
-              <Route
-                path={`/patient/:patientId`}
-                render={({ match }) => (
-                  <EditPatientContainer patientId={match.params.patientId} />
-                )}
-              />
-              <Route path={`/add-patient/`} render={() => <AddPatient />} />
-              <Route path="/settings" component={SettingsRoutes} />
-            </Switch>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+            </div>
           </div>
-        </div>
+        </WithFacility>
       </PrimeErrorBoundary>
     </AppInsightsContext.Provider>
   );
