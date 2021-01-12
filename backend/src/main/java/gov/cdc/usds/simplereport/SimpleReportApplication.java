@@ -11,13 +11,18 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+// Adding any configuration here should probably be added to SliceTestConfiguration &/or SliceTestConfigurationAdmin
 @EnableConfigurationProperties({
         InitialSetupProperties.class,
         AdminEmailList.class,
         AuthorizationProperties.class,
+        DataHubConfig.class,
 })
+@EnableScheduling
 public class SimpleReportApplication {
 
     public static void main(String[] args) {
