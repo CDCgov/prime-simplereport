@@ -38,13 +38,13 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void addTestResult(String deviceID, String result, String patientID, String dateTested) throws ParseException {
-      DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      Date dateTestedString = df.parse(dateTested);
+      DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+      Date utcDate = sdf.parse(dateTested);
       _tos.addTestResult(
         deviceID,
         TestResult.valueOf(result),
         patientID,
-        dateTestedString
+        utcDate
       );
     }
 
