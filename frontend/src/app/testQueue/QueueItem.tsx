@@ -30,7 +30,7 @@ import "./QueueItem.scss";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
-const EARLIEST_TEST_DATE = moment("01/01/2020", "MM/DD/YYYY");
+const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
@@ -156,6 +156,19 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
 );
 Modal.setAppElement("#root");
 
+/* 
+  Dates from the backend are coming in as ISO 8601 strings: (eg: "2021-01-11T23:56:53.103Z")
+  The datetime-local text input expects values in the following format *IN LOCAL TIME*: (eg: "2014-01-02T11:42:13.510")
+
+  AFAICT, there is no easy ISO -> datetime-local converter built into vanilla JS dates, so using moment
+
+*/
+const isoDateToDatetimeLocal = (isoDateString: string) => {
+  let datetime = moment(isoDateString);
+  let datetimeLocalString = datetime.format(moment.HTML5_FMT.DATETIME_LOCAL);
+  return datetimeLocalString;
+};
+
 interface QueueItemProps {
   internalId: string;
   patient: {
@@ -187,14 +200,6 @@ interface updateQueueItemProps {
   result?: TestResult;
   dateTested?: string;
 }
-
-const getDate = (datetime: string) => {
-  return datetime;
-  // if (!datetime) {
-  //   return datetime;
-  // }
-  // return datetime.split("T")[0];
-};
 
 const QueueItem: any = ({
   internalId,
@@ -237,15 +242,15 @@ const QueueItem: any = ({
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
   const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
-    "true"
+    dateTestedProp ? "false" : "true"
   );
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
-  const [dateTested, updateDateTested] = useState<string>(
-    getDate(dateTestedProp)
-  );
+
+  // this is an ISO string
+  const [dateTested, updateDateTested] = useState<string>(dateTestedProp);
   const [testResultValue, updateTestResultValue] = useState<
     TestResult | undefined
   >(selectedTestResult || undefined);
@@ -328,20 +333,20 @@ const QueueItem: any = ({
     // So, only save complete recent dates but always update locally.
     // This will need further fixing once we go to subscriptions, ugh.
     updateDateTested(dateTested);
-    var dateTestedMoment = moment(dateTested, "YYYY-MM-DDTHH:mm");
-    const isDateTestedComplete =
-      dateTestedMoment.isValid() &&
-      dateTestedMoment.isBetween(
-        EARLIEST_TEST_DATE,
-        moment().endOf("day").add(1, "days")
-      );
-    console.log(`${dateTested}:00.000Z`);
-    updateQueueItem({
-      // dateTested: "2021-01-07",
-      dateTested: `${dateTested}:00.000Z`, // datetime.split("T")[0
-      result: testResultValue,
-    });
-    // }
+
+    // the user can manually enter future dates and bypass the `max` attribute.
+    // arbitrarily enforce the max future date to be 1 day from the time of submission. Not sure if this is a good idea?
+    const MAX_TEST_DATE = new Date();
+    MAX_TEST_DATE.setDate(MAX_TEST_DATE.getDate() + 1);
+
+    const date = new Date(dateTested);
+    const isValidDate = date > EARLIEST_TEST_DATE && date < MAX_TEST_DATE;
+    if (isValidDate) {
+      updateQueueItem({
+        dateTested: date.toISOString(), // always send ISO strings.
+        result: testResultValue,
+      });
+    }
   };
 
   const onTestResultChange = (result: TestResult | undefined) => {
@@ -420,7 +425,7 @@ const QueueItem: any = ({
           type="datetime-local"
           label="Test Date"
           name="meeting-time"
-          value={dateTested}
+          value={isoDateToDatetimeLocal(dateTested)}
           min="2020-01-01T00:00"
           max={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
           onChange={onDateTestedChange}
