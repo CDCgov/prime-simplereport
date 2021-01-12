@@ -37,7 +37,14 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     setFacilityProp(facility.id);
   };
 
-  if (facilities.length === 1) {
+  if (facilities.length === 0) {
+    return <Loading />;
+  }
+
+  if (
+    facilities.length === 1 &&
+    (!facilityFromUrl?.id || !facilityInStore?.id)
+  ) {
     setActiveFacility(facilities[0]);
     return <Loading />;
   }
