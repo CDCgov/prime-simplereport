@@ -329,7 +329,9 @@ const AoEForm = ({
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      <Button variant="unstyled" label="Cancel" onClick={onClose} />
+      {isModal && (
+        <Button variant="unstyled" label="Cancel" onClick={onClose} />
+      )}
       <Button
         label={saveButtonText}
         onClick={isModal ? saveAnswers : savePatientAnswers}
