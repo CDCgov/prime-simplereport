@@ -47,7 +47,7 @@ const Header: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container">
+      <div className="usa-nav-container display-flex flex-align-center">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
             <Link

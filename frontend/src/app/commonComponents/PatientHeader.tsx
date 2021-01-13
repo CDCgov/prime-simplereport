@@ -10,7 +10,7 @@ import { useSelector } from "react-redux";
 import { connect } from "react-redux";
 import Button from "./Button";
 import { formatFullName } from "../utils/user";
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../img/simplereport-logomark-color.svg";
 
 const PatientHeader: React.FC<{}> = () => {
   const organization = useSelector(
@@ -47,21 +47,26 @@ const PatientHeader: React.FC<{}> = () => {
 
   return (
     <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container">
-        <div className="usa-navbar">
+      <div className="usa-nav-container display-flex flex-align-center">
+        <div className="usa-navbar width-full">
           <div className="usa-logo" id="basic-logo">
             <Link
+              className="display-flex flex-align-center"
               to={`/queue/?facility=${facility.id}`}
               title="Home"
               aria-label="Home"
             >
               <img
-                className="width-card desktop:width-full"
+                className="width-4"
                 src={siteLogo}
                 alt="{process.env.REACT_APP_TITLE}"
               />
+              <div className="logo-text margin-left-1 display-flex flex-column">
+              <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">{organization.name}</span>
+              {/* <span className="text-base-lighter margin-x-1">|</span> */}
+              <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">COVID-19 Testing Portal</span>
+              </div>
             </Link>
-            <div className="prime-organization-name">{organization.name}</div>
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
