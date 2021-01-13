@@ -23,28 +23,10 @@ const PatientProfile = (props: Props) => {
         label="Edit information"
         onClick={savePatientAnswers}
         variant="outline"
+        className="margin-top-105 mobile-lg:margin-top-0"
       />
     </div>
   );
-
-  // props.patient.firstName,
-  // props.patient.middleName,
-  // props.patient.lastName,
-  // props.patient.birthDate,
-  // props.patient.street,
-  // props.patient.streetTwo,
-  // props.patient.city,
-  // props.patient.state,
-  // props.patient.zipCode,
-  // props.patient.telephone,
-  // props.patient.role,
-  // props.patient.email,
-  // props.patient.county,
-  // props.patient.race,
-  // props.patient.ethnicity,
-  // props.patient.gender,
-  // props.patient.residentCongregateSetting
-  // props.patient.employedInHealthcare
 
   return (
     <>
