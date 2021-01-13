@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+// import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
 import useComponentVisible from "./ComponentVisible";
-import Dropdown from "./Dropdown";
+// import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
 import { connect } from "react-redux";
 import Button from "./Button";
@@ -16,9 +16,9 @@ const PatientHeader: React.FC<{}> = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
-  );
+  // const facilities = useSelector(
+  //   (state) => (state as any).facilities as Facility[]
+  // );
   const facility = useSelector((state) => (state as any).facility as Facility);
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -28,10 +28,10 @@ const PatientHeader: React.FC<{}> = () => {
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
 
-  const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
-    const id = (e.target as HTMLSelectElement).value;
-    window.location.href = `${window.location.pathname}?facility=${id}`;
-  };
+  // const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
+  //   const id = (e.target as HTMLSelectElement).value;
+  //   window.location.href = `${window.location.pathname}?facility=${id}`;
+  // };
 
   const logout = () => {
     // Fetch the id_token from local storage
