@@ -23,6 +23,7 @@ function addPatient() {
   this.expect.section('@editPatient').to.contain.text('Create New Person');
   this.section.editPatient.setValue('@firstName', firstName);
   this.section.editPatient.setValue('@lastName', lastName);
+  this.section.editPatient.setValue('@facility', '~~ALL-FACILITIES~~');
   this.section.editPatient.setValue('@dob', dob);
   this.section.editPatient.setValue('@phone', phone);
   this.section.editPatient.setValue('@address', address);
@@ -31,6 +32,8 @@ function addPatient() {
   this.section.editPatient.click('@resident');
   this.section.editPatient.click('@healthcareWorker');
   this.section.editPatient.click('@saveButton');
+
+  // this.expect.section('@editPatient').to.contain.text('FARTZ');
   this.expect.section('@patientList').to.be.visible;
   this.expect.section('@patientList').to.contain.text(fullName);
 
@@ -67,13 +70,14 @@ module.exports = {
     editPatient: {
       selector: '.prime-edit-patient',
       elements: {
-        firstName: '#id-4-1',
-        lastName: '#id-8-1',
-        dob: '#id-14-1',
-        phone: '#id-16-1',
-        address: '#id-20-1',
-        state: '#id-28-1',
-        zip: '#id-30-1',
+        firstName: '#text-4-1',
+        lastName: '#text-8-1',
+        facility: '#drop-14-1',
+        dob: '#text-16-1',
+        phone: '#text-18-1',
+        address: '#text-22-1',
+        state: '#drop-30-1',
+        zip: '#text-32-1',
         resident: 'input[name="residentCongregateSetting"]+label',
         healthcareWorker: 'input[name="employedInHealthcare"]+label',
         saveButton: '.prime-save-patient-changes',
