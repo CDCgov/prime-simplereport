@@ -10,7 +10,9 @@ const DOB = () => {
     <>
       <main>
         <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Enter your date of birth to access your COVID-19 Testing Portal.</p>
+          <p className="margin-top-3">
+            Enter your date of birth to access your COVID-19 Testing Portal.
+          </p>
           {/* // <TextInput
           //     type="date"
           //     label="Date of Birth (mm/dd/yyyy)"
@@ -24,6 +26,6 @@ const DOB = () => {
       </main>
     </>
   );
-}
+};
 
 export default DOB;

@@ -32,7 +32,10 @@ const PatientProfile = (props: Props) => {
     <>
       <div className="usa-alert usa-alert--info margin-bottom-3">
         <div className="usa-alert__body">
-          <p className="usa-alert__text">Confirm your profile info is correct. If it's incorrect, tell the testing administrator.</p>
+          <p className="usa-alert__text">
+            Confirm your profile info is correct. If it's incorrect, tell the
+            testing administrator.
+          </p>
         </div>
       </div>
       <div className="prime-formgroup usa-prose">

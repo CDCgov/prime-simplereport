@@ -25,6 +25,7 @@ import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import WithFacility from "./facilitySelect/WithFacility";
 import AoEPatientFormContainer from "./testQueue/AoEForm/AoEPatientFormContainer";
 import DOB from "./testQueue/AoEForm/DOB";
+import PatientLanding from "./testQueue/AoEForm/PatientLanding";
 const WHOAMI_QUERY = gql`
   query WhoAmI {
     whoami {
@@ -164,10 +165,16 @@ const App = () => {
                   )}
                 />
                 <Route
-                  path={`/patient/:patientId/symptoms`}
+                  path={`/patient/:patientId/home`}
+                  render={() => {
+                    return <PatientLanding />;
+                  }}
+                />
+                <Route
+                  path={`/patient/:patientId/home`}
                   render={({ match }) => (
                     <AoEPatientFormContainer
-                      page={"symptoms"}
+                      page={"home"}
                       patientId={match.params.patientId}
                     />
                   )}
