@@ -4,11 +4,6 @@ import Modal from "react-modal";
 import "./AoEModalForm.scss";
 import AoEForm from "./AoEForm";
 
-// Get the value associate with a button label
-// TODO: move to utility?
-const findValueForLabel = (label, list) =>
-  (list.filter((item) => item.label === label)[0] || {}).value;
-
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
