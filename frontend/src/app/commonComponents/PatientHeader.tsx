@@ -49,7 +49,7 @@ const PatientHeader: React.FC<{}> = () => {
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container display-flex flex-align-center">
         <div className="usa-navbar width-full">
-          <div className="usa-logo" id="basic-logo">
+          <div className="usa-logo margin-bottom-0" id="basic-logo">
             <Link
               className="display-flex flex-align-center"
               to={`/queue/?facility=${facility.id}`}
@@ -62,9 +62,13 @@ const PatientHeader: React.FC<{}> = () => {
                 alt="{process.env.REACT_APP_TITLE}"
               />
               <div className="logo-text margin-left-1 display-flex flex-column">
-              <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">{organization.name}</span>
-              {/* <span className="text-base-lighter margin-x-1">|</span> */}
-              <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">COVID-19 Testing Portal</span>
+                <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">
+                  {organization.name}
+                </span>
+                {/* <span className="text-base-lighter margin-x-1">|</span> */}
+                <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
+                  COVID-19 Testing Portal
+                </span>
               </div>
             </Link>
           </div>

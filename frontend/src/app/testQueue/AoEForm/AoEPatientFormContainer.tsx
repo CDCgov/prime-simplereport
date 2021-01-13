@@ -58,8 +58,8 @@ const AoEPatientFormContainer = (props: Props) => {
 
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
-    <main className="patient-app patient-app--form">
-      <div className="grid-container">
+    <main className="patient-app patient-app--form padding-bottom-4">
+      <div className="grid-container maxw-tablet">
         <StepIndicator></StepIndicator>
         <AoEForm
           patient={{
@@ -69,7 +69,7 @@ const AoEPatientFormContainer = (props: Props) => {
           }}
           facilityId={facilityId}
           isModal={false}
-          saveButtonText="foobar"
+          saveButtonText="Submit"
           onClose={null}
           saveCallback={null}
         />

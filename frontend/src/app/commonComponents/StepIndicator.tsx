@@ -25,7 +25,7 @@ const StepIndicator = () => (
         <span className="usa-step-indicator__heading-counter">
           <span className="usa-sr-only">Step</span>
           <span className="usa-step-indicator__current-step margin-right-05">
-            1
+            2
           </span>
           <span className="usa-step-indicator__total-steps">of 2</span>
         </span>

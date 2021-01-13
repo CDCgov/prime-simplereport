@@ -476,3 +476,21 @@
     padding-right: units(2);
   }
 }
+
+.usa-step-indicator__segment {
+  max-width: none;
+}
+
+.sr-time-of-test-footer {
+  margin-top: 2em;
+}
+
+.sr-time-of-test-buttons {
+  text-align: right;
+
+  button {
+    @include at-media("mobile-lg") {
+      margin-left: 1em;
+    }
+  }
+}
