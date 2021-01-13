@@ -73,5 +73,7 @@ jobs:
         run: cd frontend; yarn
       - name: Run frontend
         run: cd frontend; yarn start &> ../yarn-log.txt &
+      - name: debug
+        run: sleep 20; echo 'BACKEND:'; cat gradle-log.txt; echo 'FRONTEND:'; cat yarn-log.txt
       - name: Run e2e tests
-        run: docker-compose -f frontend/e2e/docker-compose.yml --env-file frontend/e2e/.env run nightwatch ./nightwatch-entrypoint.bash; echo 'BACKEND:'; cat gradle-log.txt; echo 'FRONTEND:'; cat yarn-log.txt
+        run: docker-compose -f frontend/e2e/docker-compose.yml --env-file frontend/e2e/.env run nightwatch ./nightwatch-entrypoint.bash;
