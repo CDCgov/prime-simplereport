@@ -469,3 +469,10 @@
     }
   }
 }
+
+.usa-step-indicator__segment-label {
+  // Show labels only at the min-width
+  @include at-media($theme-step-indicator-min-width) {
+    padding-right: units(2);
+  }
+}
