@@ -4,7 +4,6 @@ interface Props {
   patient: any;
 }
 
-
 const PatientProfile = (props: Props) => {
   const fullName = displayFullName(
     props.patient.firstName,

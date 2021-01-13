@@ -1,58 +1,20 @@
-import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import classNames from "classnames";
-import { v4 as uuidv4 } from "uuid";
-import useComponentVisible from "./ComponentVisible";
-// import Dropdown from "./Dropdown";
+import React from "react";
 import { useSelector } from "react-redux";
 import { connect } from "react-redux";
-import Button from "./Button";
-import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logomark-color.svg";
 
 const PatientHeader: React.FC<{}> = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
-  // const facilities = useSelector(
-  //   (state) => (state as any).facilities as Facility[]
-  // );
-  const facility = useSelector((state) => (state as any).facility as Facility);
-  const user = useSelector((state) => (state as any).user as User);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const {
-    ref: staffDefailsRef,
-    isComponentVisible: staffDetailsVisible,
-    setIsComponentVisible: setStaffDetailsVisible,
-  } = useComponentVisible(false);
-
-  // const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
-  //   const id = (e.target as HTMLSelectElement).value;
-  //   window.location.href = `${window.location.pathname}?facility=${id}`;
-  // };
-
-  const logout = () => {
-    // Fetch the id_token from local storage
-    const id_token = localStorage.getItem("id_token");
-    const state = uuidv4();
-    // Remove auth data from local_storage
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
-    window.location.replace(
-      `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
-    );
-  };
 
   return (
     <header className="usa-header usa-header--basic">
       <div className="usa-nav-container display-flex flex-align-center">
-        <div className="usa-navbar width-full">
+        <div className="usa-navbar padding-y-1">
           <div className="usa-logo margin-bottom-0" id="basic-logo">
-            <Link
+            <div
               className="display-flex flex-align-center"
-              to={`/queue/?facility=${facility.id}`}
               title="Home"
               aria-label="Home"
             >
@@ -65,84 +27,13 @@ const PatientHeader: React.FC<{}> = () => {
                 <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">
                   {organization.name}
                 </span>
-                {/* <span className="text-base-lighter margin-x-1">|</span> */}
                 <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
                   COVID-19 Testing Portal
                 </span>
               </div>
-            </Link>
+            </div>
           </div>
-          <button
-            onClick={() => setMenuVisible(!menuVisible)}
-            className="usa-menu-btn"
-          >
-            Menu
-          </button>
         </div>
-
-        <nav
-          aria-label="Primary navigation"
-          className={classNames(
-            "usa-nav",
-            "prime-nav",
-            "desktop:display-none",
-            {
-              "is-visible": menuVisible,
-            }
-          )}
-        >
-          <button
-            className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
-            onClick={() => setMenuVisible(false)}
-            title={"close menu"}
-          >
-            <FontAwesomeIcon icon={"window-close"} />
-          </button>
-        </nav>
-
-        <nav aria-label="Primary navigation" className="usa-nav prime-nav">
-          <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item nav__primary-item-icon">
-              <NavLink
-                to={`#`}
-                isActive={() => staffDetailsVisible}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setStaffDetailsVisible(!staffDetailsVisible);
-                }}
-                activeClassName="active-nav-item"
-              >
-                <FontAwesomeIcon
-                  icon={"user-circle"}
-                  style={{
-                    color: staffDetailsVisible ? "white" : "",
-                  }}
-                />
-              </NavLink>
-              <div
-                ref={staffDefailsRef}
-                aria-label="Primary navigation"
-                className={classNames("shadow-3", "prime-staff-infobox", {
-                  "is-prime-staff-infobox-visible": staffDetailsVisible,
-                })}
-              >
-                <ul className="usa-sidenav__sublist">
-                  <li className="usa-sidenav__item span-full-name">
-                    {formatFullName(user)}
-                  </li>
-                  <li className="usa-sidenav__item">{facility.name}</li>
-                  <li className="usa-sidenav__item">
-                    <Button
-                      variant="unstyled"
-                      label=" Log out"
-                      onClick={logout}
-                    />
-                  </li>
-                </ul>
-              </div>
-            </li>
-          </ul>
-        </nav>
       </div>
     </header>
   );
