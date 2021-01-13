@@ -209,9 +209,7 @@ public class DataHubUploaderService {
             return execution.execute(request, body);
         })).build();
 
-        // have data hub only reject some lines not whole upload
-        URI url = UriComponentsBuilder.fromUriString(_config.getUploadUrl())
-                .queryParam("option", "SkipInvalidItems").build().toUri();
+        URI url = UriComponentsBuilder.fromUriString(_config.getUploadUrl()).build().toUri();
 
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
