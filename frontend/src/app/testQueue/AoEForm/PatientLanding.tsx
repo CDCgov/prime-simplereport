@@ -1,4 +1,5 @@
 import Button from "../../commonComponents/Button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PatientLanding = () => {
   const savePatientAnswers = () => {
@@ -6,21 +7,34 @@ const PatientLanding = () => {
   };
 
   return (
-    <main className="patient-app patient-app--form padding-bottom-4">
+    <main className="patient-app patient-app--landing padding-bottom-4">
       <div className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
           Hello, Sam Williams
         </h1>
         <div className="prime-formgroup usa-prose">
           <h2 className="font-heading-lg">Test questionnaire</h2>
-          <h3 className="font-heading-sm">Questionnaire complete</h3>
-          <p className="margin-top-05">
-            You can update your responses until your test result is submitted.
-          </p>
+          <div className="usa-media-block">
+            <FontAwesomeIcon
+              icon={"check-circle"}
+              style={{
+                fill: "#008817",
+              }}
+              className="usa-media-block__img margin-right-2"
+            />
+            <div className="usa-mmedia-block__body usa-prose">
+              <h3 className="font-heading-sm">Questionnaire complete</h3>
+              <p className="margin-top-05">
+                You can update your responses until your test result is
+                submitted.
+              </p>
+            </div>
+          </div>
           <Button
             label="Edit responses"
             onClick={savePatientAnswers}
             variant="outline"
+            className="margin-top-3"
           />
         </div>
         <div className="prime-formgroup usa-prose">

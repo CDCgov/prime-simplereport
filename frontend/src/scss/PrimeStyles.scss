@@ -494,3 +494,13 @@
     }
   }
 }
+
+.patient-app--landing {
+  [data-icon="check-circle"] {
+    font-size: units(5);
+
+    path {
+      fill: color("green-cool-50v");
+    }
+  }
+}
