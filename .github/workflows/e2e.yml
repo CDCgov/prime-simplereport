@@ -58,7 +58,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
       - name: Run API
-        run: backend/gradlew bootRun --args='--spring.profiles.active=dev' &> gradle-log.txt &
+        run: cd backend; ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
