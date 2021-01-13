@@ -21,7 +21,7 @@ const StepIndicator = () => (
       </li>
     </ol>
     <div className="usa-step-indicator__header">
-      <h2 className="usa-step-indicator__heading">
+      <h1 className="usa-step-indicator__heading">
         <span className="usa-step-indicator__heading-counter">
           <span className="usa-sr-only">Step</span>
           <span className="usa-step-indicator__current-step margin-right-05">
@@ -32,7 +32,7 @@ const StepIndicator = () => (
         <span className="usa-step-indicator__heading-text">
           Symptoms and history
         </span>
-      </h2>
+      </h1>
     </div>
   </div>
 );
