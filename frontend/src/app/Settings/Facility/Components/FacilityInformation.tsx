@@ -44,6 +44,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="phone"
             value={facility.phone}
             onChange={onChange}
+            required
           />
         </div>
         <div className="tablet:grid-col">

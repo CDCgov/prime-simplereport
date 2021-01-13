@@ -116,11 +116,11 @@ public class OrganizationService {
             state,
             zipCode
          ) : facility.getAddress();
-         af.setStreet(street, streetTwo);
-         af.setCity(city);
-         af.setCounty(county);
-         af.setState(state);
-         af.setPostalCode(zipCode);
+        af.setStreet(street, streetTwo);
+        af.setCity(city);
+        af.setCounty(county);
+        af.setState(state);
+        af.setPostalCode(zipCode);
         facility.setAddress(af);
 
         Provider p = facility.getOrderingProvider();
@@ -159,9 +159,17 @@ public class OrganizationService {
         return _facilityRepo.save(facility);
     }
 
-    public Organization createOrganization(String name, String externalId) {
+    public Organization createOrganization(String name, String externalId, String testingFacilityName,
+            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceTypeHolder deviceTypes,
+            PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         _apiUserService.isAdminUser();
-        return _repo.save(new Organization(name, externalId));
+        Organization org = _repo.save(new Organization(name, externalId));
+        Provider orderingProvider = _providerRepo
+                .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
+        Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
+                orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
+        _facilityRepo.save(facility);
+        return org;
     }
 
     public Organization updateOrganization(String name) {
