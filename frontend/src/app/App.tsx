@@ -20,7 +20,6 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
-import { getFacilityIdFromUrl } from "./utils/url";
 import Admin from "./admin/Admin";
 import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
 import WithFacility from "./facilitySelect/WithFacility";
