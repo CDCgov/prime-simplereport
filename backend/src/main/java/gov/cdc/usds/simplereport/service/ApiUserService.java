@@ -23,12 +23,8 @@ public class ApiUserService {
     private IdentitySupplier _supplier;
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
-    
-    public ApiUserService(
-        ApiUserRepository apiUserRepo,
-        IdentitySupplier supplier,
-        AdminEmailList admins
-    ) {
+
+    public ApiUserService(ApiUserRepository apiUserRepo, IdentitySupplier supplier, AdminEmailList admins) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
         _admins = admins;
@@ -39,6 +35,10 @@ public class ApiUserService {
         if (!_admins.contains(userIdentity.getUsername())) {
             throw new IllegalGraphqlArgumentException("Current User does not have permission for this action");
         }
+    }
+
+    public Boolean isAdminUser(ApiUser user) {
+        return _admins.contains(user.getLoginEmail());
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

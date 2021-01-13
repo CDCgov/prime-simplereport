@@ -27,3 +27,7 @@ variable "instance_tier" {
 variable "instance_size" {
   default = "B1"
 }
+
+variable "instance_count" {
+  default = 1
+}

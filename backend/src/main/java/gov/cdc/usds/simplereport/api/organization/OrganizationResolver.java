@@ -13,7 +13,7 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
  * Created by nickrobison on 11/17/20
  */
 @Component
-public class OrganizationResolver implements GraphQLQueryResolver  {
+public class OrganizationResolver implements GraphQLQueryResolver {
 
 	private ApiUserService _userService;
 	private OrganizationService _organizationService;
@@ -29,7 +29,8 @@ public class OrganizationResolver implements GraphQLQueryResolver  {
 
 	public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
+		Boolean isAdmin = _userService.isAdminUser(currentUser);
 		Organization currentOrg = _organizationService.getCurrentOrganization();
-		return new User(currentUser, currentOrg);
+		return new User(currentUser, currentOrg, isAdmin);
 	}
 }

@@ -60,8 +60,12 @@ simple-report-initialization:
       loinc-code: "95209-3"
 simple-report:
   data-hub:
-    uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
-    maxcsvrows: 999
+    # these are overridden by application-dev, -prod, -test, etc
+    upload-enabled: false
+    upload-url: ""
+    max-csv-rows: 999
+    api-key: ${DATAHUB_API_KEY:MISSING}
+    secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
   authorization:
     role-claim: prod_roles
     role-prefix: "SR-PROD-TENANT:"
