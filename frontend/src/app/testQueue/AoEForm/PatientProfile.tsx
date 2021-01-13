@@ -19,17 +19,22 @@ const PatientProfile = (props: Props) => {
   const buttonGroup = (
     <div className="margin-top-3">
       <Button label="Confirm and continue" onClick={savePatientAnswers} />
-      <Button
+      {/* <Button
         label="Edit information"
         onClick={savePatientAnswers}
         variant="outline"
         className="margin-top-105 mobile-lg:margin-top-0"
-      />
+      /> */}
     </div>
   );
 
   return (
     <>
+      <div className="usa-alert usa-alert--info margin-bottom-3">
+        <div className="usa-alert__body">
+          <p className="usa-alert__text">Confirm your profile info is correct. If it's incorrect, tell the testing administrator.</p>
+        </div>
+      </div>
       <div className="prime-formgroup usa-prose">
         <h2 className="prime-formgroup-heading font-heading-lg">
           General information
