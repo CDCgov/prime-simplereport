@@ -30,6 +30,9 @@ const GET_PATIENT = gql`
         dateTested
         result
       }
+      facility {
+        id
+      }
     }
   }
 `;
