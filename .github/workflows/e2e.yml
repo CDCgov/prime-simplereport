@@ -1,0 +1,77 @@
+name: Run end-to-end tests
+
+# Run this on pushes to any branch that change a backend file or the workflow definition
+on:
+  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
+  push:
+    branches:
+      - "**"
+
+env:
+  NODE_VERSION: 14
+  JAVA_VERSION: 11
+  PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
+
+defaults:
+  run:
+    working-directory: .
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      test-db:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_PASSWORD: this_is_a_super_secure_admin_password
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Disable shallow clones so Sonar can have all the data
+      - name: Set up JDK ${{env.JAVA_VERSION}}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{env.JAVA_VERSION}}
+      - name: Cache Java Dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
+      - name: Set up postgresql sidecar
+        env:
+          PGHOST: localhost
+          PGPASSFILE: backend/db-setup/.pgpass_ci
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+          LIB_DIR: db-setup
+        run: |
+          chmod 0600 $PGPASSFILE
+          backend/db-setup/create-db.sh
+      - name: Run API
+        run: backend/gradlew bootRun --args='--spring.profiles.active=dev' &
+      - name: Use Node.js ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./frontend/node_modules
+          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Node setup
+        run: cd frontend; yarn
+      - name: Run frontend
+        run: yarn start &
+      - name: Run e2e tests
+        run: yarn e2e

@@ -71,7 +71,7 @@ jobs:
           retention-days: 7
       - name: Sonar analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
   build-jar:
