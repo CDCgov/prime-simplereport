@@ -283,7 +283,6 @@ const QueueItem: any = ({
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
-      console.log("SUBMITTING\nDate tested:", dateTested);
       submitTestResult({
         variables: {
           patientId: patient.internalId,
@@ -332,8 +331,8 @@ const QueueItem: any = ({
   };
 
   const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const rawDateString = e.target.value;
-    const dateTested = new Date(rawDateString);
+    const rawDateString = e.target.value; // local time
+    const dateTested = new Date(rawDateString); // local time
 
     // problem: user can manually input future dates and bypass the `max` attribute.
     // this enforces the max future date to be 1 day from the time of submission, an arbitrary upper bound -- not sure if this is a good idea?
