@@ -3,9 +3,9 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PatientLanding = () => {
-  const savePatientAnswers = () => {
-    console.log("saved");
-  };
+  // const savePatientAnswers = () => {
+  //   console.log("saved");
+  // };
 
   return (
     <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">
