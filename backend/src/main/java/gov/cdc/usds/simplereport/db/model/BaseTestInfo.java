@@ -66,6 +66,10 @@ public abstract class BaseTestInfo extends AuditedEntity
 		return facility;
 	}
 
+	public void setFacility(Facility facility) {
+		this.facility = facility;
+	}
+
 	public DeviceType getDeviceType() {
 		return deviceType;
 	}
