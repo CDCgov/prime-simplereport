@@ -13,6 +13,7 @@ function addPatient() {
   const state = faker.address.stateAbbr();
   const zip = faker.address.zipCodeByState(state);
 
+  this.expect.section('@app').to.contain.text('FOOBARBAZ');
   this.expect.section('@navbar').to.be.visible;
   this.section.navbar.expect.element('@patientLink').to.be.visible;
   this.section.navbar.click('@patientLink');
