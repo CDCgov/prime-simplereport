@@ -9,6 +9,7 @@ locals {
   https_listener               = "${var.name}-https"
   frontend_config              = "${var.name}-config"
   redirect_rule                = "${var.name}-redirect"
+  is_prod                      = var.env == "prod"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -295,59 +296,5 @@ resource "azurerm_monitor_diagnostic_setting" "logs_metrics" {
         enabled = false
       }
     }
-  }
-}
-
-// Create alerts
-resource "azurerm_monitor_metric_alert" "backend_health" {
-  name                = "${var.env}-backend-health"
-  description         = "${var.env} backend services are unhealthy"
-  resource_group_name = var.resource_group_name
-  scopes              = [azurerm_application_gateway.load_balancer.id]
-  severity            = 1
-  criteria {
-    aggregation      = "Average"
-    metric_name      = "UnhealthyHostCount"
-    metric_namespace = "Microsoft.Network/applicationGateways"
-    operator         = "GreaterThan"
-    threshold        = 0
-
-    dimension {
-      name     = "BackendSettingsPool"
-      operator = "Include"
-      values = [
-        "${local.api_backend_pool}~${local.api_backend_https_setting}"
-      ]
-    }
-  }
-
-  action {
-    action_group_id = var.action_group_id
-  }
-}
-
-resource "azurerm_monitor_metric_alert" "fronted_health" {
-  name                = "${var.env}-frontend-health"
-  description         = "Alert which fires whenever the static website becomes unavailable"
-  resource_group_name = var.resource_group_name
-  scopes              = [azurerm_application_gateway.load_balancer.id]
-  criteria {
-    aggregation      = "Average"
-    metric_name      = "UnhealthyHostCount"
-    metric_namespace = "Microsoft.Network/applicationGateways"
-    operator         = "GreaterThan"
-    threshold        = 0
-
-    dimension {
-      name     = "BackendSettingsPool"
-      operator = "Include"
-      values = [
-        "${local.static_backend_pool}~${local.static_backend_https_setting}"
-      ]
-    }
-  }
-
-  action {
-    action_group_id = var.action_group_id
   }
 }
