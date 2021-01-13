@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -13,13 +14,19 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class OrganizationServiceAdminTest extends BaseServiceTestAdmin<OrganizationService> {
+
+    @Autowired
+    private DeviceTypeRepository _deviceTypeRepo;
+
 
     @Test
     public void createOrganization() {
         List<DeviceType> configuredDevices = new ArrayList<>();
-        DeviceType device = new DeviceType("Bill", "Weasleys", "1", "12345-6");
+        DeviceType device = new DeviceType("Bill2", "Weasleys2", "2", "12345-9");
+        _deviceTypeRepo.save(device);
         configuredDevices.add(device);
         DeviceTypeHolder holder = new DeviceTypeHolder(device, configuredDevices);
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
