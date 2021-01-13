@@ -1,4 +1,5 @@
-import Button from "../../commonComponents/Button";
+// import Button from "../../commonComponents/Button";
+// import { displayFullName } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PatientLanding = () => {
@@ -7,7 +8,7 @@ const PatientLanding = () => {
   };
 
   return (
-    <main className="patient-app patient-app--landing padding-bottom-4">
+    <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
           Hello, Sam Williams
@@ -17,27 +18,24 @@ const PatientLanding = () => {
           <div className="usa-media-block">
             <FontAwesomeIcon
               icon={"check-circle"}
-              style={{
-                fill: "#008817",
-              }}
               className="usa-media-block__img margin-right-2"
             />
             <div className="usa-mmedia-block__body usa-prose">
               <h3 className="font-heading-sm">Questionnaire complete</h3>
-              <p className="margin-top-05">
+              {/* <p className="margin-top-05">
                 You can update your responses until your test result is
                 submitted.
-              </p>
+              </p> */}
             </div>
           </div>
-          <Button
+          {/* <Button
             label="Edit responses"
             onClick={savePatientAnswers}
             variant="outline"
             className="margin-top-3"
-          />
+          /> */}
         </div>
-        <div className="prime-formgroup usa-prose">
+        {/* <div className="prime-formgroup usa-prose">
           <table className="usa-table usa-table--borderless margin-y-0 width-full mobile-lg:width-auto">
             <caption className="font-heading-lg">Results</caption>
             <thead>
@@ -73,7 +71,7 @@ const PatientLanding = () => {
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
     </main>
   );

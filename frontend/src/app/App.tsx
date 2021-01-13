@@ -165,12 +165,6 @@ const App = () => {
                   )}
                 />
                 <Route
-                  path={`/patient/:patientId/home`}
-                  render={() => {
-                    return <PatientLanding />;
-                  }}
-                />
-                <Route
                   path={`/patient/:patientId/symptoms`}
                   render={({ match }) => (
                     <AoEPatientFormContainer
@@ -178,6 +172,12 @@ const App = () => {
                       patientId={match.params.patientId}
                     />
                   )}
+                />
+                <Route
+                  path={`/patient/:patientId/home`}
+                  render={() => {
+                    return <PatientLanding />;
+                  }}
                 />
                 <Route
                   path={`/patient/:patientId`}
