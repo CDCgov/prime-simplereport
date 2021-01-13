@@ -74,4 +74,4 @@ jobs:
       - name: Run frontend
         run: cd frontend; yarn start &
       - name: Run e2e tests
-        run: cd frontend; yarn e2e
+        run: docker-compose -f frontend/e2e/docker-compose.yml --env-file frontend/e2e/.env run nightwatch ./nightwatch-entrypoint.bash
