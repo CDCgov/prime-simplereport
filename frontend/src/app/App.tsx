@@ -171,10 +171,10 @@ const App = () => {
                   }}
                 />
                 <Route
-                  path={`/patient/:patientId/home`}
+                  path={`/patient/:patientId/symptoms`}
                   render={({ match }) => (
                     <AoEPatientFormContainer
-                      page={"home"}
+                      page={"symptoms"}
                       patientId={match.params.patientId}
                     />
                   )}
