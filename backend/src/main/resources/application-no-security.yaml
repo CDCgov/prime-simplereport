@@ -1,6 +1,6 @@
 spring:
   autoconfigure:
-    exclude:
+    exclude: # avoid running OAuth2 autoconfigure, even though we are setting some OAuth2 properties by default
       - com.okta.spring.boot.oauth.OktaOAuth2AutoConfig
       - com.okta.spring.boot.oauth.OktaOAuth2ResourceServerAutoConfig
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration

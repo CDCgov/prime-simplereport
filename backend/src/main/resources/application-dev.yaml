@@ -18,37 +18,7 @@ logging:
     # org.hibernate.type: TRACE
     # Always have our own debug logging turned on in dev environments:
     gov.cdc.usds: DEBUG
-simple-report-initialization:
-  organization:
-    org-name: Dis Organization
-    external-id: DIS_ORG
-  facility:
-    facility-name: Injection Site
-    clia-number: "000111222-3"
-    telephone: (202) 555-1212
-    address:
-      street-1: 2797 N Cerrada de Beto
-      city: Oz
-      county: Yellow Brick
-      state: KS
-      postal-code: "12345"
-  provider:
-    first-name: Fred
-    last-name: Flintstone
-    provider-id: PEBBLES
-    telephone: (202) 555-1212
-    address:
-      street-1: 123 Main Street
-      city: Oz
-      county: Yellow Brick
-      state: KS
-      postal-code: "12345"
-  configured-device-types:
-    - LumiraDX
-    - Quidel Sofia 2
 simple-report:
   data-hub:
     upload-enabled: ${DATAHUB_UPLOAD_ENABLE:false}
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipSend"  # ValidatePayload, SkipSend, SkipInvalidItems
-
-
