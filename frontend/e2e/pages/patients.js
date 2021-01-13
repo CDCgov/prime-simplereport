@@ -32,8 +32,6 @@ function addPatient() {
   this.section.editPatient.click('@resident');
   this.section.editPatient.click('@healthcareWorker');
   this.section.editPatient.click('@saveButton');
-
-  // this.expect.section('@editPatient').to.contain.text('FARTZ');
   this.expect.section('@patientList').to.be.visible;
   this.expect.section('@patientList').to.contain.text(fullName);
 
