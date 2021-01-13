@@ -63,5 +63,4 @@ fi
 
 echo 'Browser nodes online! Starting Nightwatch...'
 
-curl -k http://localhost:3000
 npx nightwatch -e selenium.firefox "$@"
