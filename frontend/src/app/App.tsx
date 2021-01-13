@@ -148,9 +148,19 @@ const App = () => {
                   }}
                 />
                 <Route
+                  path={`/patient/:patientId/profile`}
+                  render={({ match }) => (
+                    <AoEPatientFormContainer
+                      page={"profile"}
+                      patientId={match.params.patientId}
+                    />
+                  )}
+                />
+                <Route
                   path={`/patient/:patientId/symptoms`}
                   render={({ match }) => (
                     <AoEPatientFormContainer
+                      page={"symptoms"}
                       patientId={match.params.patientId}
                     />
                   )}

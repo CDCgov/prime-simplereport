@@ -3,10 +3,13 @@ import { gql, useQuery } from "@apollo/client";
 import { getFacilityIdFromUrl } from "../../utils/url";
 import AoEForm from "./AoEForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
+import PatientProfile from "./PatientProfile"
 
 interface Props {
   patientId: string;
+  page: string;
 }
+
 const GET_PATIENT = gql`
   query GetPatientDetails($id: String!) {
     patient(id: $id) {
@@ -61,18 +64,29 @@ const AoEPatientFormContainer = (props: Props) => {
     <main className="patient-app patient-app--form padding-bottom-4">
       <div className="grid-container maxw-tablet">
         <StepIndicator></StepIndicator>
-        <AoEForm
-          patient={{
-            ...data.patient,
-            residentCongregateSetting,
-            employedInHealthcare,
-          }}
-          facilityId={facilityId}
-          isModal={false}
-          saveButtonText="Submit"
-          onClose={null}
-          saveCallback={null}
-        />
+        { props.page === 'symptoms' && (
+          <AoEForm
+            patient={{
+              ...data.patient,
+              residentCongregateSetting,
+              employedInHealthcare,
+            }}
+            facilityId={facilityId}
+            isModal={false}
+            saveButtonText="Submit"
+            onClose={null}
+            saveCallback={null}
+          />
+        )}
+        { props.page === 'profile' && (
+          <PatientProfile
+            patient={{
+              ...data.patient,
+              residentCongregateSetting,
+              employedInHealthcare,
+            }}
+          />
+        )}
       </div>
     </main>
   );
