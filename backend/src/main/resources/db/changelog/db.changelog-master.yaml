@@ -836,7 +836,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
             expectedResult: 1
       changes:
         - sql:
@@ -885,7 +885,7 @@ databaseChangeLog:
                   name: facility_id
                   afterColumn: organization_id
                   type: *idtype
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   remarks: The facility where this person is expected to be tested (null if they will be tested at multiple sites)
                   constraints:
                     nullable: true
@@ -899,7 +899,7 @@ databaseChangeLog:
                   afterColumn: organization_id
                   type: *idtype
                   remarks: The facility where this test took place.
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__test_event__facility
                     referencedTableName: facility
@@ -914,7 +914,7 @@ databaseChangeLog:
                   afterColumn: organization_id
                   type: *idtype
                   remarks: The facility where this test was ordered.
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__test_order__facility
                     referencedTableName: facility
@@ -928,7 +928,7 @@ databaseChangeLog:
                   name: facility_id
                   afterColumn: organization_id
                   type: *idtype
-                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id) 
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.facility f where f.organization_id = organization_id)
                   constraints:
                     foreignKeyName: fk__facility_device_type__facility
                     referencedTableName: facility
@@ -971,3 +971,16 @@ databaseChangeLog:
                   name: email
                   type: *string
                   remarks: The facility's contact email address.
+  - changeSet: # NOTE: this has not been tested
+      id: change-test-results-to-MST
+      author: neil.s.sharma@omb.eop.gov
+      comment: changes all existing test results to be MST ISO 8601 strings
+      changes:
+        - sql:
+            comment: Update all completed test_orders from UTC to MST. This is a one-time update.
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order
+              SET date_tested_backdate = (
+                SELECT date_tested_backdate at time zone 'utc' at time zone 'mst'
+                WHERE order_status='COMPLETED'
+              );
