@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
+import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
 type OptionsArray = { label: string; value: string; disabled?: boolean }[];
@@ -63,7 +64,7 @@ const RadioGroup = ({
         <legend
           className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
         >
-          {required ? <Required label={legend} /> : legend}
+          {required ? <Required label={legend} /> : <Optional label={legend} />}
         </legend>
       )}
       {validationStatus === "error" && (
