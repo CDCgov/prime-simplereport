@@ -12,9 +12,13 @@ const DOB = () => {
           <p className="margin-top-3">
             Enter your date of birth to access your COVID-19 Testing Portal.
           </p>
-          <label className="usa-label" htmlFor="bday" aria-describedby="bdayFormat">Date of Birth (MMDDYYYY)</label>
-          <input className="usa-input" id="bday" type="text" required aria-required="true" autoComplete="bday" size={8} pattern="[0-9]{8}" inputMode="numeric" />
-          <Button label="Continue" onClick={savePatientAnswers} />
+          <form className="usa-form">
+            <label className="usa-label" htmlFor="bday" aria-describedby="bdayFormat">
+              Date of birth <span className="usa-hint">(MMDDYYYY)</span>
+            </label>
+            <input className="usa-input" id="bday" type="text" required aria-required="true" autoComplete="bday" size={8} pattern="[0-9]{8}" inputMode="numeric" />
+            <Button label="Continue" onClick={savePatientAnswers} />
+          </form>
         </div>
       </main>
     </>
