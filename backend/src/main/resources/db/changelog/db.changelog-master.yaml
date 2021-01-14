@@ -971,6 +971,77 @@ databaseChangeLog:
                   name: email
                   type: *string
                   remarks: The facility's contact email address.
+  - changeSet:
+      id: add-data-hub-upload
+      author: tnielsen2@cdc.gov
+      comment: Add data_hub_upload table used to the automated results uploader.
+      changes:
+        - sql:
+            remarks: Create the enumerations needed for DataHubUpload.
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS as ENUM('IN_PROGRESS', 'SUCCESS', 'FAIL');
+            rollback:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS;
+        - createTable:
+            tableName: data_hub_upload
+            remarks: Track uploads and results of test_events to the data-hub.
+            columns:
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: job_status
+                  type: ${database.defaultSchemaName}.DATA_HUB_UPLOAD_STATUS
+                  remarks: State of this upload. Enumerated value.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: records_processed
+                  type: int
+                  remarks: Number of rows sent to the server.
+              - column:
+                  name: error_message
+                  type: text
+                  remarks: Set if an exception happens.
+              - column:
+                  name: response_data
+                  type: jsonb
+                  remarks: Response json from data-hub.
+              - column:
+                  name: earliest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Lowerbound timestamp used to collect test_events. Entities with created_by > this value are sent.
+              - column:
+                  name: latest_recorded_timestamp
+                  type: DATETIME
+                  remarks: Upperbounds timestamp used to collect test_event. Entities with created_by <= this value are sent.
+        - createIndex:
+            indexName: uk__data_hub_upload__job_status__latest_recorded_timestamp
+            tableName: data_hub_upload
+            clustered: true
+            columns:
+              - column:
+                  name: job_status
+              - column:
+                  name: latest_recorded_timestamp
+                  descending: true
   - changeSet: # NOTE: this has not been tested
       id: change-test-results-to-MST
       author: neil.s.sharma@omb.eop.gov

@@ -29,6 +29,7 @@ interface Provider extends Address {
 
 interface Organization {
   name: string;
+  externalId?: string;
   internalId: string;
   testingFacility: Facility[];
 }
@@ -55,6 +56,10 @@ interface FlatOrganization {
 interface DeviceType {
   internalId: string;
   name: string;
+}
+
+interface DeviceTypes {
+  deviceType: [DeviceType];
 }
 
 interface SettingsData {

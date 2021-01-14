@@ -24,7 +24,7 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
         String model,
         String loincCode
     ) throws IllegalGraphqlArgumentException {
-        return _dts.createDeviceType(name, manufacturer, model, loincCode);
+        return _dts.createDeviceType(name, model, manufacturer, loincCode);
     }
 
     public DeviceType updateDeviceType(
@@ -34,6 +34,6 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
         String model,
         String loincCode
     ) throws IllegalGraphqlArgumentException {
-        return _dts.updateDeviceType(id, name, manufacturer, model, loincCode);
+        return _dts.updateDeviceType(id, name, model, manufacturer, loincCode);
     }
 }

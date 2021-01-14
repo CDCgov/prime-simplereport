@@ -13,8 +13,3 @@ simple-report:
     - bwarfield@cdc.gov
     - tim.best@usds.dhs.gov
     - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
-simple-report-initialization:
-  organization:
-    facility-name: ${ORG_FACILITY_NAME}
-    external-id: ${ORG_EXTERNAL_ID}
-    clia-number: ${ORG_CLIA_NUMBER}
