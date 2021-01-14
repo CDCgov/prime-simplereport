@@ -64,20 +64,12 @@ public class TestResultTest extends BaseApiTest {
         return (ArrayNode) runQuery("test-result-query", variables).get("testResults");
     }
     
-    // TODO: THIS DOESN'T WORK
     @Test
     public void submitTestResult() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         DeviceType d = _dataFactory.getGenericDevice();
         TestOrder to = _dataFactory.createTestOrder(p, _site);
-        String dateTested = "2020-12-31T14:30:30.000Z";
-        // DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        // Date isoDate = sdf.parse(dateTested);
-        
-        // to.setDeviceType(d);
-        // to.setResult(TestResult.NEGATIVE);
-        // to.setDateTestedBackdate(isoDate);
-        // to.markComplete();
+        String dateTested = "2020-12-31T14:30:30.001Z";
 
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
             .put("deviceId", d.getInternalId().toString())
@@ -88,8 +80,8 @@ public class TestResultTest extends BaseApiTest {
 
         ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
 
-        assertTrue(testResults.has(0), "Has at least one submitted test result="); // good
-        assertEquals(testResults.get(0).get("dateTested").asText(), dateTested); // doesn't work
+        assertTrue(testResults.has(0), "Has at least one submitted test result=");
+        assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
     }
 
     private ObjectNode submitTestResult(ObjectNode variables) {
