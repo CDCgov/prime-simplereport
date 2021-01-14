@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.testresult;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.UUID;
 
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
@@ -21,5 +22,9 @@ public class TestResultResolver implements GraphQLQueryResolver {
         return tos.getTestResults(facilityId).stream()
             .map(o -> o.getTestEvent())
             .collect(Collectors.toList());
+    }
+
+    public TestEvent getTestResult(UUID id) {
+        return tos.getTestResult(id);
     }
 }

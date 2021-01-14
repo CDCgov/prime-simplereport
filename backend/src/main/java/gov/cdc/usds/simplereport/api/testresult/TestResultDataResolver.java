@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TestEventService;
+import gov.cdc.usds.simplereport.api.model.ApiFacility;
 
 @Component
 public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
@@ -80,5 +81,9 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
 
     public Date getDateTested(TestEvent testEvent) {
         return testEvent.getTestOrder().getDateTested();
+    }
+
+    public ApiFacility getFacility(TestEvent testEvent) {
+        return new ApiFacility(testEvent.getFacility());
     }
 }

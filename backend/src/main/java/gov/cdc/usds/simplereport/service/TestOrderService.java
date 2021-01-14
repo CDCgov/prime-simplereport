@@ -66,6 +66,12 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  public TestEvent getTestResult(UUID id) {
+    Organization org = _os.getCurrentOrganization();
+    return _terepo.findFirst1ByOrganizationAndInternalId(org, id);
+  }
+
+  @Transactional(readOnly = true)
   public List<TestEvent> getTestResults(Person patient) {
       return _terepo.findAllByPatient(patient);
   }

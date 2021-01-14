@@ -103,6 +103,7 @@ type TestOrder {
 }
 type TestResult {
   internalId: ID
+  facility: Facility
   patient: Patient
   dateAdded: String
   pregnancy: String
@@ -137,6 +138,7 @@ type Query {
   organization: Organization
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
+  testResult(id: String!): TestResult
   whoami: User!
 }
 type Mutation {
