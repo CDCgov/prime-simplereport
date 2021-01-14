@@ -67,7 +67,7 @@ module.exports = {
     searchResults: {
       selector: '.results-dropdown',
       elements: {
-        beginTest: 'button.prime-link:first-of-type',
+        beginTest: 'button.usa-button--unstyled:first-of-type',
       },
     },
     modal: {

@@ -8,6 +8,7 @@ spring:
   jpa:
     database: POSTGRESQL
     hibernate.ddl-auto: validate
+    open-in-view: false # this is misleading: we actually have a filter that does this instead
     properties:
       hibernate:
         default_schema: public # Using the public schema for now, so we don't have to add a manual step to the deploy process
@@ -30,37 +31,17 @@ graphql:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
-    # DEPRECATION: the FAKE fallback here is to enable behavior that
-    # we would be better off not enabling. Removal planned before 1/15/2021
-    client-id: ${clientID:FAKE}
-    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:FAKE}
+    client-id: ${clientID}
+    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
     groups-claim: ${simple-report.authorization.role-claim}
-simple-report-initialization:
-  device-types:
-    - name: Abbott IDNow
-      manufacturer: Abbott
-      model: ID Now
-      loinc-code: "94534-5"
-    - name: Abbott BinaxNow
-      manufacturer: Abbott
-      model: BinaxNOW COVID-19 Ag Card
-      loinc-code: "94558-4"
-    - name: Quidel Sofia 2
-      manufacturer: Quidel
-      model: Sofia 2 SARS Antigen FIA
-      loinc-code: "95209-3"
-    - name: BD Veritor
-      manufacturer: Becton, Dickinson and Company (BD)
-      model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
-      loinc-code: "94558-4"
-    - name: LumiraDX
-      manufacturer: LumiraDx UK Ltd.
-      model: LumiraDx SARS-CoV-2 Ag Test*
-      loinc-code: "95209-3"
 simple-report:
   data-hub:
-    uploadurl: "https://prime-data-hub-test.azurefd.net/api/reports"
-    maxcsvrows: 999
+    # these are overridden by application-dev, -prod, -test, etc
+    upload-enabled: false
+    upload-url: ""
+    max-csv-rows: 999
+    api-key: ${DATAHUB_API_KEY:MISSING}
+    secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
   authorization:
     role-claim: prod_roles
     role-prefix: "SR-PROD-TENANT:"

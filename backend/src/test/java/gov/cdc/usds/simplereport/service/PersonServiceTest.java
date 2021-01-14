@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,6 +34,11 @@ public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
     private Organization _org;
     private Facility _site1;
     private Facility _site2;
+
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
 
     @Test
     public void roundTrip() {

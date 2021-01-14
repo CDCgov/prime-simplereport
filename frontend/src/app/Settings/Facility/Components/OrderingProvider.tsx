@@ -72,6 +72,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="phone"
               value={provider.phone}
               onChange={onChange}
+              required
             />
           </div>
         </div>

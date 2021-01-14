@@ -36,8 +36,6 @@ jobs:
         run: yarn
       - name: Test
         run: yarn test
-      - name: E2E Test
-        run: yarn e2e
   linter:
     strategy:
       matrix:

@@ -7,18 +7,12 @@ import { v4 as uuidv4 } from "uuid";
 import useComponentVisible from "./ComponentVisible";
 import Dropdown from "./Dropdown";
 import { useSelector } from "react-redux";
-// import { useDispatch, connect } from "react-redux";
 import { connect } from "react-redux";
 import Button from "./Button";
-// import { updateFacility } from "../store";
+import { formatFullName } from "../utils/user";
+import siteLogo from "../../img/simplereport-logo-color.svg";
 
-interface Props {
-  facilityId: string | null;
-}
-
-const Header = (props: Props) => {
-  // const dispatch = useDispatch();
-  // const history = useHistory();
+const Header: React.FC<{}> = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -34,20 +28,8 @@ const Header = (props: Props) => {
     setIsComponentVisible: setStaffDetailsVisible,
   } = useComponentVisible(false);
 
-  const formatFullName = (user: User) => {
-    // this trick will not include spaces if middlename is blank.
-    let result = user.firstName;
-    result += user.middleName ? ` ${user.middleName}` : "";
-    result += user.lastName ? ` ${user.lastName}` : "";
-    result += user.suffix ? `, ${user.suffix}` : "";
-    return result;
-  };
-
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    // dispatch(updateFacility(facilities.find((f) => f.id === id)));
-    // props.updateFacilityId(id);
-    // history.push(`${window.location.pathname}?facility=${id}`);
     window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
@@ -68,12 +50,18 @@ const Header = (props: Props) => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <em className="usa-logo__text">
-              <Link to={`/queue/?facility=${facility.id}`}>
-                {process.env.REACT_APP_TITLE}
-              </Link>
-              <div className="prime-organization-name">{organization.name}</div>
-            </em>
+            <Link
+              to={`/queue/?facility=${facility.id}`}
+              title="Home"
+              aria-label="Home"
+            >
+              <img
+                className="width-card desktop:width-full"
+                src={siteLogo}
+                alt="{process.env.REACT_APP_TITLE}"
+              />
+            </Link>
+            <div className="prime-organization-name">{organization.name}</div>
           </div>
           <button
             onClick={() => setMenuVisible(!menuVisible)}
@@ -83,22 +71,16 @@ const Header = (props: Props) => {
           </button>
         </div>
 
-        <div className="prime-facility-select">
-          <Dropdown
-            selectedValue={facility.id}
-            onChange={onFacilitySelect}
-            options={facilities.map(({ name, id }) => ({
-              label: name,
-              value: id,
-            }))}
-          />
-        </div>
-
         <nav
           aria-label="Primary navigation"
-          className={classNames("usa-nav", "prime-nav", {
-            "is-visible": menuVisible,
-          })}
+          className={classNames(
+            "usa-nav",
+            "prime-nav",
+            "desktop:display-none",
+            {
+              "is-visible": menuVisible,
+            }
+          )}
         >
           <button
             className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
@@ -111,7 +93,7 @@ const Header = (props: Props) => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/queue/?facility=${props.facilityId}`}
+                to={`/queue/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -124,7 +106,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/results/?facility=${props.facilityId}`}
+                to={`/results/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -137,7 +119,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <NavLink
-                to={`/patients/?facility=${props.facilityId}`}
+                to={`/patients/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -150,8 +132,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
-                icon={"user"}
-                size="2x"
+                icon={"user-circle"}
                 style={{
                   fill: "white",
                 }}
@@ -172,14 +153,14 @@ const Header = (props: Props) => {
 
             <li className="usa-nav__primary-item prime-settings-hidden">
               <NavLink
-                to={`/settings/?facility=${props.facilityId}`}
+                to={`/settings/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
                   color: "white",
                 }}
               >
-                <FontAwesomeIcon icon={"cog"} size="2x" /> Settings
+                <FontAwesomeIcon icon={"cog"} /> Settings
               </NavLink>
             </li>
           </ul>
@@ -189,7 +170,7 @@ const Header = (props: Props) => {
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/queue/?facility=${props.facilityId}`}
+                to={`/queue/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -203,7 +184,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/results/?facility=${props.facilityId}`}
+                to={`/results/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -217,7 +198,7 @@ const Header = (props: Props) => {
             </li>
             <li className="usa-nav__primary-item">
               <NavLink
-                to={`/patients/?facility=${props.facilityId}`}
+                to={`/patients/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 className="prime-nav-link"
@@ -229,7 +210,19 @@ const Header = (props: Props) => {
                 {PATIENT_TERM_PLURAL_CAP}
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
+          </ul>
+          <div className="prime-facility-select">
+            <Dropdown
+              selectedValue={facility.id}
+              onChange={onFacilitySelect}
+              options={facilities.map(({ name, id }) => ({
+                label: name,
+                value: id,
+              }))}
+            />
+          </div>
+          <ul className="usa-nav__primary usa-accordion">
+            <li className="usa-nav__primary-item nav__primary-item-icon">
               <NavLink
                 to={`#`}
                 isActive={() => staffDetailsVisible}
@@ -240,8 +233,7 @@ const Header = (props: Props) => {
                 activeClassName="active-nav-item"
               >
                 <FontAwesomeIcon
-                  icon={"user"}
-                  size="2x"
+                  icon={"user-circle"}
                   style={{
                     color: staffDetailsVisible ? "white" : "",
                   }}
@@ -269,16 +261,16 @@ const Header = (props: Props) => {
                 </ul>
               </div>
             </li>
-            <li className="usa-nav__primary-item">
+            <li className="usa-nav__primary-item nav__primary-item-icon">
               <NavLink
-                to={`/settings/?facility=${props.facilityId}`}
+                to={`/settings/?facility=${facility.id}`}
                 onClick={() => setMenuVisible(false)}
                 activeClassName="active-nav-item"
                 activeStyle={{
                   color: "white",
                 }}
               >
-                <FontAwesomeIcon icon={"cog"} size="2x" />
+                <FontAwesomeIcon icon={"cog"} />
               </NavLink>
             </li>
           </ul>

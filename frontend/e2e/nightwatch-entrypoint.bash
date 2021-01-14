@@ -1,5 +1,10 @@
 #!/bin/bash
 
+trap trapint 2
+function trapint {
+    exit 0
+}
+
 echo 'Waiting for app to boot...'
 curl -k http://localhost:3000 > /dev/null 2>&1
 result=$?

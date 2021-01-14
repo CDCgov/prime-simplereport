@@ -60,7 +60,9 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
     return patients.map((patient: Patient) => (
       <tr key={patient.internalId}>
         <th scope="row">
-          <NavLink to={`/patient/${patient.internalId}`}>
+          <NavLink
+            to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
+          >
             {displayFullName(
               patient.firstName,
               patient.middleName,

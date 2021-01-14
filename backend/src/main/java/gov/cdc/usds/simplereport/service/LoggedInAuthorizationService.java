@@ -16,17 +16,13 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 public class LoggedInAuthorizationService implements AuthorizationService {
 
     private OrganizationExtractor _extractor;
-    private OrganizationInitializingService _initService;
 
-    public LoggedInAuthorizationService(OrganizationExtractor extractor, OrganizationInitializingService initService) {
-        super();
+    public LoggedInAuthorizationService(OrganizationExtractor extractor) {
         this._extractor = extractor;
-        this._initService = initService;
     }
 
     @Override
     public List<OrganizationRoles> findAllOrganizationRoles() {
-        _initService.initAll();
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
         if (currentAuth == null) {
             throw new RuntimeException("Nobody is currently authenticated");

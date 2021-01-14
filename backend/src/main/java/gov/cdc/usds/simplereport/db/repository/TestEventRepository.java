@@ -1,12 +1,13 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import java.util.List;
-
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import org.springframework.data.jpa.repository.Query;
+
+import java.util.Date;
+import java.util.List;
 
 public interface TestEventRepository extends AuditedEntityRepository<TestEvent> {
 	public List<TestEvent> findAllByPatient(Person p);
@@ -17,7 +18,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
-	@Query("FROM #{#entityName} q WHERE q.createdAt > (cast(?1 as timestamp)) " +
-			"ORDER BY q.createdAt DESC ")
-	public List<TestEvent> findAllByCreatedAtInstant(String d);
+	// Need to control how this query is built. "between" is too vague.
+	@Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC ")
+	public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after);
 }
