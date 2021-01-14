@@ -11,6 +11,8 @@ import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import java.util.TimeZone;
+import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 @EnableConfigurationProperties({
@@ -19,6 +21,11 @@ import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
         AuthorizationProperties.class,
 })
 public class SimpleReportApplication {
+
+   @PostConstruct
+    public void init(){
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(SimpleReportApplication.class, args);

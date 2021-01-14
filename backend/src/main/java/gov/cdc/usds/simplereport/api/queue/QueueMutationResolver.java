@@ -39,13 +39,9 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
 
     public void addTestResult(String deviceID, String result, String patientID, String dateTested) throws ParseException {
       DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      Date isoDate;
+
+      Date isoDate = sdf.parse(dateTested);
       // client *shouldn't* be able to send invalid dates, but can't make assumptions
-      try {
-        isoDate = sdf.parse(dateTested);
-      } catch(ParseException e) {
-        isoDate = null;
-      }
       _tos.addTestResult(
         deviceID,
         TestResult.valueOf(result),
