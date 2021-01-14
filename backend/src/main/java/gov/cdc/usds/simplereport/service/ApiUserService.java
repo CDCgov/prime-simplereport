@@ -76,6 +76,10 @@ public class ApiUserService {
         }
     }
 
+    public Boolean isAdminUser(ApiUser user) {
+        return _admins.contains(user.getLoginEmail());
+    }
+
     public void assertEmailAvailable(String email) {
         _apiUserRepo.findByLoginEmail(email)
             .ifPresent(f->{throw new IllegalGraphqlArgumentException("A User with that email already exists");})

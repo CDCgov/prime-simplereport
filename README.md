@@ -23,7 +23,7 @@ https://simplereport.cdc.gov/
 
 1. Install Docker and docker-compose
    - You can install docker hub directly: https://hub.docker.com/. This is the preferred solution and should come with docker-compose
-   - Alternatively, you can install docker and run it as a daemon: `brew install docker`.
+   - Alternatively, you can install docker and run it as a daemon: `brew install docker docker-compose`.
 
 ## Backend
 
@@ -72,7 +72,7 @@ Restarting the docker way:
 
 1. run `cd backend`
 1. Bring down the service by running `docker-compose down`
-1. Wipe the db by running `docker system prune && docker images prune && docker volumes prune`
+1. Wipe the db by running `docker system prune && docker images prune && docker volume prune`
 1. Restart the service `docker-compose up --build`
 
 Restarting the SQL way:

@@ -23,6 +23,7 @@ import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 import FormGroup from "../commonComponents/FormGroup";
+import { useSelector } from "react-redux";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -139,15 +140,31 @@ const PatientForm = (props: Props) => {
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
 
+  const allFacilities = "~~ALL-FACILITIES~~";
+  const [currentFacilityId, setCurrentFacilityId] = useState(
+    patient.facility === null ? allFacilities : patient.facility?.id
+  );
+  const facilities = useSelector(
+    (state) => (state as any).facilities as Facility[]
+  );
+  const facilityList = facilities.map((f: any) => ({
+    label: f.name,
+    value: f.id,
+  }));
+  facilityList.unshift({ label: "All facilities", value: allFacilities });
+  facilityList.unshift({ label: "-Select-", value: "" });
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    let value = e.target.value;
+    let value: string | null = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
         ...patient[e.target.name],
         [e.target.value]: (e.target as any).checked,
       };
+    } else if (value === allFacilities) {
+      value = null;
     }
     setFormChanged(true);
     setPatient({ ...patient, [e.target.name]: value });
@@ -161,7 +178,8 @@ const PatientForm = (props: Props) => {
   const savePatientData = () => {
     setFormChanged(false);
     const variables = {
-      facilityId: props.activeFacilityId,
+      facilityId:
+        currentFacilityId === allFacilities ? null : currentFacilityId,
       lookupId: patient.lookupId,
       firstName: patient.firstName,
       middleName: patient.middleName,
@@ -287,7 +305,7 @@ const PatientForm = (props: Props) => {
             required
           />
           <TextInput
-            label="Middle Name"
+            label="Middle Name (optional)"
             name="middleName"
             value={patient.middleName}
             onChange={onChange}
@@ -302,22 +320,34 @@ const PatientForm = (props: Props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Lookup ID"
+            label="Lookup ID (optional)"
             name="lookupId"
             value={patient.lookupId}
             onChange={onChange}
           />
           <Dropdown
-            label="Role"
+            label="Role (optional)"
             name="role"
             selectedValue={patient.role}
             onChange={onChange}
             options={[
+              { label: "-Select-", value: "" },
               { label: "Staff", value: "STAFF" },
               { label: "Resident", value: "RESIDENT" },
               { label: "Student", value: "STUDENT" },
               { label: "Visitor", value: "VISITOR" },
             ]}
+          />
+          <Dropdown
+            label="Facility"
+            name="currentFacilityId"
+            selectedValue={currentFacilityId}
+            onChange={(e) => {
+              setCurrentFacilityId(e.target.value);
+              setFormChanged(true);
+            }}
+            options={facilityList}
+            required
           />
         </div>
         <div className="prime-form-line">

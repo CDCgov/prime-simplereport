@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { NavLink } from "react-router-dom";
 
 import Nav from "../Nav";
@@ -8,6 +9,9 @@ interface Props {
 }
 
 const ManageFacilities: React.FC<Props> = ({ facilities }) => {
+  const activeFacilityId = useSelector(
+    (state) => (state as any).facility.id as string
+  );
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -35,7 +39,9 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
                   {facilities.map((facility) => (
                     <tr key={facility.id}>
                       <td>
-                        <NavLink to={`/settings/facility/${facility.id}`}>
+                        <NavLink
+                          to={`/settings/facility/${facility.id}?facility=${activeFacilityId}`}
+                        >
                           {facility.name}
                         </NavLink>
                       </td>

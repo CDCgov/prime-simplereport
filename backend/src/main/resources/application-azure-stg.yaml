@@ -1,12 +1,12 @@
 spring:
-  profiles.include: okta-stg, single-tenant
+  profiles.include: okta-stg
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-stg.azurewebsites.net
     - https://simple-report-stg.azureedge.net
     - https://stg.simplereport.gov
-simple-report-initialization:
-  organization:
-    facility-name: ${ORG_FACILITY_NAME}
-    external-id: ${ORG_EXTERNAL_ID}
-    clia-number: ${ORG_CLIA_NUMBER}
+simple-report:
+  admin-emails:
+    - bwarfield@cdc.gov
+    - tim.best@usds.dhs.gov
+    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov

@@ -30,14 +30,12 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
     private final OrganizationService _os;
     private final ApiUserService _us;
-    private final DeviceTypeService _dts;
 
     private static final Logger logger = LoggerFactory.getLogger(ApiUserMutationResolver.class);
 
-    public ApiUserMutationResolver(OrganizationService os, ApiUserService us, DeviceTypeService dts) {
+    public ApiUserMutationResolver(OrganizationService os, ApiUserService us) {
         _os = os;
         _us = us;
-        _dts = dts;
     }
 
     public User addUser(
@@ -52,7 +50,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
         Organization org = _os.getOrganization(organizationExternalID);
-        return new User(apiUser, org);
+        Boolean isAdmin = _us.isAdminUser(apiUser);
+        return new User(apiUser, org, isAdmin);
     }
 
     public User updateUser(
@@ -72,7 +71,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         }
         ApiUser apiUser = _us.updateUser(Id, newEmail, oldEmail, firstName, middleName, lastName, suffix, organizationExternalID);
         Organization org = _os.getOrganization(organizationExternalID);
-        return new User(apiUser, org);
+        Boolean isAdmin = _us.isAdminUser(apiUser);
+        return new User(apiUser, org, isAdmin);
     }
 }
 
