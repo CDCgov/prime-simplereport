@@ -836,7 +836,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
             expectedResult: 1
       changes:
         - sql:
@@ -1042,3 +1042,25 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
+  - changeSet:
+      id: add-patient-link-table
+      author: nclyde@skylight.digital
+      comment: The patient link table stores time-sensitive UUIDs granting patients access to answer time of test questions
+      changes:
+        - createTable:
+            tableName: patient_link
+            remarks: Time-sensitive UUIDs granting patients access to answer time of test questions
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column:
+                  name: test_order_id
+                  remarks: The test order this link was generated for
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__patient_link__test_order
+                    references: test_order

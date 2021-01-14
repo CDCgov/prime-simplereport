@@ -130,6 +130,12 @@ type User {
   organization: Organization
 }
 
+type PatientLink {
+  internalId: ID
+  createdAt: DateTime
+  testOrder: TestOrder
+}
+
 type Query {
   deviceType: [DeviceType]
   patients(facilityId: String): [Patient]
@@ -138,6 +144,7 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
   whoami: User!
+  patientLink(id: String!): PatientLink
 }
 type Mutation {
   updateFacility(
@@ -320,4 +327,5 @@ type Mutation {
     model: String
     loincCode: String
   ): DeviceType
+  createPatientLink(testOrderUuid: String!): PatientLink
 }
