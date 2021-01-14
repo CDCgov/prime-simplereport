@@ -40,6 +40,10 @@ public class OrganizationInitializingService {
 
 	public void initAll() {
 		LOG.debug("Organization init called (again?)");
+		Optional<Organization> viaE = _orgRepo.findByExternalId("6eaeeb05-e3ab-48e0-a793-b19d71e2302a");
+		if (viaE.isPresent()) {
+			return; // one and done
+		}
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
 		if (probe.isPresent()) {
