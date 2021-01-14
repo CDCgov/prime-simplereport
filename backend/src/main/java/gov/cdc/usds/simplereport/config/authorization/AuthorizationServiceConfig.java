@@ -17,9 +17,8 @@ public class AuthorizationServiceConfig {
 
     @Bean
     @Profile("!"+BeanProfiles.SINGLE_TENANT)
-    public AuthorizationService getRealAuthorizer(OrganizationExtractor extractor,
-            OrganizationInitializingService initService) {
-        return new LoggedInAuthorizationService(extractor, initService);
+    public AuthorizationService getRealAuthorizer(OrganizationExtractor extractor) {
+        return new LoggedInAuthorizationService(extractor);
     }
 
     @Bean
@@ -29,9 +28,6 @@ public class AuthorizationServiceConfig {
         final OrganizationRoles defaultOrg = new OrganizationRoles(
                 setupProps.getOrganization().getExternalId(),
                 Collections.singleton(OrganizationRole.USER));
-        return () -> {
-            initService.initAll();
-            return Collections.singletonList(defaultOrg);
-        };
+        return () -> Collections.singletonList(defaultOrg);
     }
 }

@@ -21,6 +21,7 @@ public class OrganizationServiceTest extends BaseServiceTestOrgUser<Organization
 
     @Test
     public void findit() {
+        initSampleData();
         Organization org = _service.getCurrentOrganization();
         assertNotNull(org);
         assertEquals("DIS_ORG", org.getExternalId());

@@ -29,6 +29,8 @@ public abstract class BaseServiceTest<T> {
     @Autowired
     private DbTruncator _truncator;
     @Autowired
+    private OrganizationInitializingService _initService;
+    @Autowired
     protected TestDataFactory _dataFactory;
     @Autowired
     protected T _service;
@@ -36,6 +38,10 @@ public abstract class BaseServiceTest<T> {
     @BeforeEach
     public void clearDb() {
         _truncator.truncateAll();
+    }
+
+    protected void initSampleData() {
+        _initService.initAll();
     }
 
     protected void reset() {
