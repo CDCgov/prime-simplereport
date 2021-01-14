@@ -1,4 +1,3 @@
-import TextInput from "../../commonComponents/TextInput";
 import Button from "../../commonComponents/Button";
 
 const DOB = () => {
