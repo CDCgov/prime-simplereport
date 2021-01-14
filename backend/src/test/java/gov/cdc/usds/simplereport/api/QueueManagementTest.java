@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.text.SimpleDateFormat;
 
 import org.junit.jupiter.api.BeforeEach;
