@@ -1,6 +1,6 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   getSymptomList,
   getTestTypes,
@@ -31,6 +31,8 @@ const SymptomInputs = ({
   setSymptoms,
   onsetDate,
   setOnsetDate,
+  symptomError,
+  symptomOnsetError,
 }) => {
   const symptomChange = (e) => {
     setSymptoms({ ...currentSymptoms, [e.target.value]: e.target.checked });
@@ -43,6 +45,9 @@ const SymptomInputs = ({
         legend="Are you experiencing any of the following symptoms?"
         onChange={(e) => setNoSymptoms(e.target.checked)}
         boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
+        required
+        errorMessage={symptomError}
+        validationStatus={symptomError ? "error" : null}
       />
       {!noSymptoms && (
         <>
@@ -66,6 +71,11 @@ const SymptomInputs = ({
             onChange={(e) => setOnsetDate(e.target.value)}
             min="2020-02-01"
             max={new Date().toISOString().split("T")[0]}
+            required={Object.keys(currentSymptoms).some(
+              (key) => currentSymptoms[key]
+            )}
+            errorMessage={symptomOnsetError}
+            validationStatus={symptomOnsetError ? "error" : null}
           />
         </>
       )}
@@ -267,6 +277,50 @@ const AoEForm = ({
     loadState.pregnancy
   );
 
+  const firstRender = useRef(true);
+  const [disable, setDisabled] = useState(true);
+  const [symptomError, setSymptomError] = useState(null);
+  const [symptomOnsetError, setSymptomOnsetError] = useState(null);
+
+  useEffect(() => {
+    // Skip validation on first render
+    if (firstRender.current) {
+      firstRender.current = false;
+      setDisabled(validateForm())
+      return;
+    }
+
+    setDisabled(validateForm());
+  }, [noSymptoms, currentSymptoms]);
+
+  const validateForm = () => {
+    const hasSymptoms = Object.keys(currentSymptoms).some((key) => currentSymptoms[key]);
+
+    if (!noSymptoms && !hasSymptoms) {
+      setSymptomError('required')
+      setSymptomOnsetError(null)
+      return true;
+    }
+
+    if (noSymptoms) {
+      setSymptomError(null)
+      setSymptomOnsetError(null)
+      return false
+    }
+
+    if (hasSymptoms && !onsetDate) {
+      setSymptomError(null);
+      setSymptomOnsetError("required");
+      return true;
+    }
+
+    if (hasSymptoms && onsetDate) {
+      setSymptomError(null);
+      setSymptomOnsetError(null);
+      return false;
+    }
+  };
+
   // TODO: only get most recent test from the backend
   const { data, loading, error } = useQuery(testResultQuery, {
     fetchPolicy: "no-cache",
@@ -332,10 +386,7 @@ const AoEForm = ({
       {isModal && (
         <Button variant="unstyled" label="Cancel" onClick={onClose} />
       )}
-      <Button
-        label={saveButtonText}
-        onClick={isModal ? saveAnswers : savePatientAnswers}
-      />
+      <Button label={saveButtonText} type={"submit"} disabled={disable} />
     </div>
   );
 
@@ -353,46 +404,50 @@ const AoEForm = ({
           </h1>
         </>
       )}
-      <FormGroup title="Symptoms">
-        <SymptomInputs
-          noSymptoms={noSymptoms}
-          setNoSymptoms={setNoSymptoms}
-          currentSymptoms={currentSymptoms}
-          setSymptoms={setSymptoms}
-          symptomListConfig={symptomConfig}
-          setOnsetDate={setOnsetDate}
-          onsetDate={onsetDate}
-        />
-      </FormGroup>
-
-      <FormGroup title="Test History">
-        <PriorTestInputs
-          testTypeConfig={testConfig}
-          priorTestDate={priorTestDate}
-          setPriorTestDate={setPriorTestDate}
-          isFirstTest={isFirstTest}
-          setIsFirstTest={setIsFirstTest}
-          priorTestType={priorTestType}
-          setPriorTestType={setPriorTestType}
-          priorTestResult={priorTestResult}
-          setPriorTestResult={setPriorTestResult}
-          mostRecentTest={mostRecentTest}
-        />
-      </FormGroup>
-
-      {patient.gender !== "male" && (
-        <FormGroup title="Pregnancy">
-          <RadioGroup
-            legend="Currently pregnant?"
-            name="pregnancy"
-            type="radio"
-            onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
-            buttons={pregnancyResponses}
-            selectedRadio={pregnancyResponse}
+      <form onSubmit={saveAnswers}>
+        <FormGroup title="Symptoms">
+          <SymptomInputs
+            noSymptoms={noSymptoms}
+            setNoSymptoms={setNoSymptoms}
+            currentSymptoms={currentSymptoms}
+            setSymptoms={setSymptoms}
+            symptomListConfig={symptomConfig}
+            setOnsetDate={setOnsetDate}
+            onsetDate={onsetDate}
+            symptomError={symptomError}
+            symptomOnsetError={symptomOnsetError}
           />
         </FormGroup>
-      )}
-      <div className="sr-time-of-test-footer">{buttonGroup}</div>
+
+        <FormGroup title="Test History">
+          <PriorTestInputs
+            testTypeConfig={testConfig}
+            priorTestDate={priorTestDate}
+            setPriorTestDate={setPriorTestDate}
+            isFirstTest={isFirstTest}
+            setIsFirstTest={setIsFirstTest}
+            priorTestType={priorTestType}
+            setPriorTestType={setPriorTestType}
+            priorTestResult={priorTestResult}
+            setPriorTestResult={setPriorTestResult}
+            mostRecentTest={mostRecentTest}
+          />
+        </FormGroup>
+
+        {patient.gender !== "male" && (
+          <FormGroup title="Pregnancy">
+            <RadioGroup
+              legend="Currently pregnant?"
+              name="pregnancy"
+              type="radio"
+              onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+              buttons={pregnancyResponses}
+              selectedRadio={pregnancyResponse}
+            />
+          </FormGroup>
+        )}
+        <div className="sr-time-of-test-footer">{buttonGroup}</div>
+      </form>
     </>
   );
 };
