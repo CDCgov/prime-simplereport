@@ -1,6 +1,6 @@
 import React from "react";
 import { displayFullName } from "../../utils";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import {
   getSymptomList,
   getTestTypes,
@@ -277,47 +277,35 @@ const AoEForm = ({
     loadState.pregnancy
   );
 
-  const firstRender = useRef(true);
-  const [disable, setDisabled] = useState(true);
+  // form validation
   const [symptomError, setSymptomError] = useState(null);
   const [symptomOnsetError, setSymptomOnsetError] = useState(null);
 
-  useEffect(() => {
-    // Skip validation on first render
-    if (firstRender.current) {
-      firstRender.current = false;
-      setDisabled(validateForm())
-      return;
-    }
 
-    setDisabled(validateForm());
-  }, [noSymptoms, currentSymptoms]);
-
-  const validateForm = () => {
+  const isValidForm = () => {
     const hasSymptoms = Object.keys(currentSymptoms).some((key) => currentSymptoms[key]);
-
     if (!noSymptoms && !hasSymptoms) {
       setSymptomError('required')
       setSymptomOnsetError(null)
-      return true;
+      return false;
     }
 
     if (noSymptoms) {
       setSymptomError(null)
       setSymptomOnsetError(null)
-      return false
+      return true;
     }
 
     if (hasSymptoms && !onsetDate) {
       setSymptomError(null);
       setSymptomOnsetError("required");
-      return true;
+      return false;
     }
 
     if (hasSymptoms && onsetDate) {
       setSymptomError(null);
       setSymptomOnsetError(null);
-      return false;
+      return true;
     }
   };
 
@@ -346,35 +334,39 @@ const AoEForm = ({
   }
 
   const saveAnswers = (evt) => {
-    const saveSymptoms = { ...currentSymptoms };
-    if (noSymptoms) {
-      // set all symptoms explicitly to false
-      symptomConfig.forEach(({ value }) => {
-        saveSymptoms[value] = false;
-      });
-    }
-    const priorTest = isFirstTest
-      ? {
-          firstTest: true,
-          priorTestDate: null,
-          priorTestType: null,
-          priorTestResult: null,
-        }
-      : {
-          firstTest: false,
-          priorTestDate: priorTestDate,
-          priorTestType: priorTestType,
-          priorTestResult: priorTestResult ? priorTestResult : null,
-        };
+    if (isValidForm()) {
+      const saveSymptoms = { ...currentSymptoms };
+      if (noSymptoms) {
+        // set all symptoms explicitly to false
+        symptomConfig.forEach(({ value }) => {
+          saveSymptoms[value] = false;
+        });
+      }
+      const priorTest = isFirstTest
+        ? {
+            firstTest: true,
+            priorTestDate: null,
+            priorTestType: null,
+            priorTestResult: null,
+          }
+        : {
+            firstTest: false,
+            priorTestDate: priorTestDate,
+            priorTestType: priorTestType,
+            priorTestResult: priorTestResult ? priorTestResult : null,
+          };
 
-    saveCallback({
-      noSymptoms,
-      symptoms: JSON.stringify(saveSymptoms),
-      symptomOnset: onsetDate,
-      ...priorTest,
-      pregnancy: pregnancyResponse,
-    });
-    onClose();
+      saveCallback({
+        noSymptoms,
+        symptoms: JSON.stringify(saveSymptoms),
+        symptomOnset: onsetDate,
+        ...priorTest,
+        pregnancy: pregnancyResponse,
+      });
+      onClose();
+    } else {
+      evt.preventDefault();
+    }
   };
 
   const savePatientAnswers = () => {
@@ -386,25 +378,25 @@ const AoEForm = ({
       {isModal && (
         <Button variant="unstyled" label="Cancel" onClick={onClose} />
       )}
-      <Button label={saveButtonText} type={"submit"} disabled={disable} />
+      <Button label={saveButtonText} type={"submit"}/>
     </div>
   );
 
   return (
     <>
-      {isModal && (
-        <>
-          {buttonGroup}
-          <h1 className="patient-name">
-            {displayFullName(
-              patient.firstName,
-              patient.middleName,
-              patient.lastName
-            )}
-          </h1>
-        </>
-      )}
       <form onSubmit={saveAnswers}>
+        {isModal && (
+          <>
+            {buttonGroup}
+            <h1 className="patient-name">
+              {displayFullName(
+                patient.firstName,
+                patient.middleName,
+                patient.lastName
+              )}
+            </h1>
+          </>
+        )}
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
