@@ -29,15 +29,6 @@ export const testResultQuery = gql`
         firstName
         middleName
         lastName
-        birthDate
-        gender
-        telephone
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
         lookupId
       }
     }
@@ -63,7 +54,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
     variables: { facilityId: activeFacilityId },
     fetchPolicy: "no-cache",
   });
-  const [printModalItem, setPrintModalItem] = useState(undefined);
+  const [printModalId, setPrintModalId] = useState(undefined);
 
   if (loading) {
     return <p>Loading</p>;
@@ -75,11 +66,11 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
     return error;
   }
 
-  if (printModalItem) {
+  if (printModalId) {
     return (
       <TestResultPrintModal
-        item={printModalItem}
-        closeModal={() => setPrintModalItem(undefined)}
+        testResultId={printModalId}
+        closeModal={() => setPrintModalId(undefined)}
       />
     );
   }
@@ -117,7 +108,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
               </MenuButton>
             }
           >
-            <MenuItem onClick={() => setPrintModalItem(r)}>
+            <MenuItem onClick={() => setPrintModalId(r.internalId)}>
               Print Result
             </MenuItem>
           </Menu>
@@ -144,6 +135,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>{rows}</tbody>

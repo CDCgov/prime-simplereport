@@ -1,4 +1,5 @@
 import React from "react";
+import { gql, useQuery } from "@apollo/client";
 import Modal from "react-modal";
 import Button from "../commonComponents/Button";
 import { displayFullName } from "../utils";
@@ -9,12 +10,65 @@ import logo from "../../img/simplereport-logo-black.svg";
 const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");
 
+export const testQuery = gql`
+  query getTestResult($id: String!) {
+    testResult(id: $id) {
+      dateTested
+      result
+      deviceType {
+        name
+      }
+      patient {
+        firstName
+        middleName
+        lastName
+        birthDate
+        gender
+        telephone
+        street
+        streetTwo
+        city
+        county
+        state
+        zipCode
+        lookupId
+      }
+      facility {
+        name
+        cliaNumber
+        phone
+        street
+        streetTwo
+        city
+        state
+        zipCode
+        orderingProvider {
+          firstName
+          middleName
+          lastName
+          NPI
+        }
+      }
+    }
+  }
+`;
 interface Props {
-  item: any;
+  testResultId: any;
   closeModal: () => void;
 }
 
-const TestResultPrintModal = ({ item, closeModal }: Props) => {
+const TestResultPrintModal = ({ testResultId, closeModal }: Props) => {
+  const { data, loading, error } = useQuery(testQuery, {
+    variables: { id: testResultId },
+    fetchPolicy: "no-cache",
+  });
+
+  if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    throw error;
+  }
   const printDocument = () => {
     window.print();
   };
@@ -24,27 +78,13 @@ const TestResultPrintModal = ({ item, closeModal }: Props) => {
       <Button label="Print" onClick={printDocument} />
     </div>
   );
-  const patient = item.patient;
+  const { patient, facility, deviceType } = data.testResult;
 
   return (
     <Modal
       isOpen={true}
-      style={{
-        content: {
-          border: "none",
-          inset: "3em auto auto auto",
-          overflow: "auto",
-          maxHeight: "90vh",
-          width: "80%",
-          minWidth: "40em",
-          maxWidth: "120em",
-          transform: "translate(10%, 0)",
-        },
-        overlay: {
-          background: "#ddd",
-        },
-      }}
-      overlayClassName="prime-modal-overlay"
+      className="sr-test-results-modal-content"
+      overlayClassName="sr-test-results-modal-overlay"
       contentLabel="Printable test result"
     >
       {buttonGroup}
@@ -96,27 +136,39 @@ const TestResultPrintModal = ({ item, closeModal }: Props) => {
             <ul className="sr-details-list">
               <li>
                 <b>Facility Name</b>
-                <span>xxxx</span>
+                <span>{facility.name}</span>
               </li>
               <li>
                 <b>Facility Phone</b>
-                <span>xxxx</span>
+                <span>{facility.phone}</span>
               </li>
               <li>
                 <b>Facility Address</b>
-                <span>xxxx</span>
+                <span>{facility.street}</span>
+                {facility.streetTwo && (
+                  <div className="hanging">{facility.streetTwo}</div>
+                )}
+                <div className="hanging">
+                  {facility.city}, {facility.state} {facility.zipCode}
+                </div>
               </li>
               <li>
                 <b>CLIA Number</b>
-                <span>xxxx</span>
+                <span>{facility.cliaNumber}</span>
               </li>
               <li>
                 <b>Ordering Provider</b>
-                <span>xxxx</span>
+                <span>
+                  {displayFullName(
+                    facility.orderingProvider.firstName,
+                    facility.orderingProvider.middleName,
+                    facility.orderingProvider.lastName
+                  )}
+                </span>
               </li>
               <li>
                 <b>NPI</b>
-                <span>xxxx</span>
+                <span>{facility.orderingProvider.NPI}</span>
               </li>
             </ul>
           </section>
@@ -133,7 +185,7 @@ const TestResultPrintModal = ({ item, closeModal }: Props) => {
               </li>
               <li>
                 <b>Test Device</b>
-                <span>{item.deviceType.name}</span>
+                <span>{deviceType.name}</span>
               </li>
               <li>
                 <b>Collection Date</b>
@@ -141,11 +193,11 @@ const TestResultPrintModal = ({ item, closeModal }: Props) => {
               </li>
               <li>
                 <b>Test Date</b>
-                <span>{formatDate(item.dateTested)}</span>
+                <span>{formatDate(data.dateTested)}</span>
               </li>
               <li>
                 <b>Test Result</b>
-                <span>{item.result}</span>
+                <span>{data.result}</span>
               </li>
             </ul>
           </section>
@@ -163,7 +215,7 @@ const TestResultPrintModal = ({ item, closeModal }: Props) => {
           </section>
         </main>
         <footer>
-          <em>Test result printed {new Date().toLocaleString()}</em>
+          <p>Test result printed {new Date().toLocaleString()}</p>
         </footer>
       </div>
       {buttonGroup}

@@ -8,11 +8,36 @@
 }
 @media print {
   body {
-    font-size: 80%;
+    .sr-result-print-buttons {
+      display: none;
+    }
+    .sr-test-results-modal-content {
+      transform: none;
+      max-height: none;
+      padding: none;
+    }
   }
-  body .sr-result-print-buttons {
-    display: none;
-  }
+}
+
+.sr-test-results-modal-content {
+  font-size: 80% !important;
+  background: #fff;
+  inset: 3em auto auto auto;
+  overflow: auto;
+  max-height: 90vh;
+  width: 7.6in;
+  padding: 0.4in;
+  transform: translate(5%, 5%);
+}
+
+.sr-test-results-modal-overlay {
+  background-color: rgba(0, 0, 0, 0.8);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
 }
 
 .sr-test-result-report {
@@ -29,7 +54,7 @@
   }
 
   footer {
-    margin-top: 1rem;
+    margin: 1rem 0;
   }
 }
 
