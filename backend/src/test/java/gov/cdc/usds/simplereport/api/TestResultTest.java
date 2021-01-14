@@ -9,12 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import java.text.SimpleDateFormat;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
@@ -58,31 +61,28 @@ public class TestResultTest extends BaseApiTest {
     }
 
     // TODO: THIS DOESN'T WORK
-    // @Test
-    // public void submitTestResult() throws Exception {
-    //     Person p = _dataFactory.createFullPerson(_org);
-    //     _dataFactory.createTestEvent(p, _site);
+    @Test
+    public void submitTestResult() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        DeviceType d = _dataFactory.getGenericDevice();
+        TestEvent te = _dataFactory.createTestEvent(p, _site);
 
-    //     System.out.printf("person: %s", p.toString());
-    //     String dateTested = "2020-12-31T14:30:30.000Z";
-    //     // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        String dateTested = "2020-12-31T14:30:30.000Z";
+        // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
   
-    //     // TODO: add real variables here
-    //     ObjectNode variables = JsonNodeFactory.instance.objectNode()
-    //         .put("deviceId", "ff86e743-5876-4117-9936-2932fbdbcec2")
-    //         .put("patientId", p.getInternalId().toString())
-    //         .put("result", TestResult.NEGATIVE.toString())
-    //         .put("date tested", dateTested);
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
         
-    //     // ObjectNode testResultId = submitTestResult(variables);
-    //     // assertEquals(testResultId, "this should be an object not a string");
-    // }
+        submitTestResult(variables);
+        ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+        assertEquals(testResults.size(), 1);
+    }
 
     private ObjectNode submitTestResult(ObjectNode variables) {
-        ObjectNode testResultId = runQuery("add-test-result-mutation", variables);
-        System.out.println("TEST RESULT ID:");
-        System.out.println(testResultId);
-        return testResultId;
+        return runQuery("add-test-result-mutation", variables);
     }
 
 }
