@@ -15,6 +15,8 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientLinkService;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -37,6 +39,7 @@ public class TestOrderService {
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
+  private PatientLinkService _pls;
 
   public TestOrderService(
     OrganizationService os,
@@ -44,7 +47,8 @@ public class TestOrderService {
     TestOrderRepository repo,
     PatientAnswersRepository parepo,
     TestEventRepository terepo,
-          PersonService ps
+    PersonService ps,
+    PatientLinkService pls
   ) {
     _os = os;
     _ps = ps;
@@ -52,6 +56,7 @@ public class TestOrderService {
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
+    _pls = pls;
 }
 
   public List<TestOrder> getQueue(String facilityId) {
@@ -144,7 +149,9 @@ public class TestOrderService {
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    return _repo.save(newOrder);
+    TestOrder savedOrder = _repo.save(newOrder);
+    _pls.createPatientLink(savedOrder.getInternalId());
+    return savedOrder;
   }
 
   public void updateTimeOfTestQuestions(
