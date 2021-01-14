@@ -75,6 +75,7 @@ type Provider {
 type Organization {
   internalId: ID
   name: String
+  externalId: String
   testingFacility: [Facility]
 }
 # When starting from the patient, take a more limited view
@@ -134,6 +135,7 @@ type Query {
   patients(facilityId: String): [Patient]
   patient(id: String!): Patient
   organization: Organization
+  organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
   whoami: User!
@@ -197,6 +199,24 @@ type Mutation {
     name: String!
     externalId: String!
   ): Organization
+  addUser(
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    email: String
+    organizationExternalId: String
+  ): ID
+  updateUser(
+    id: ID
+    firstName: String
+    middleName: String
+    lastName: String
+    suffix: String
+    newEmail: String
+    oldEmail: String
+    organizationExternalId: String
+  ): ID
   addPatient(
     facilityId: String
     lookupId: String

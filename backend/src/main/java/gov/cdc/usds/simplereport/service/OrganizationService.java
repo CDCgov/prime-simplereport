@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -19,6 +20,7 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.OktaService;
 
 @Service
 @Transactional(readOnly=false)
@@ -29,18 +31,20 @@ public class OrganizationService {
     private ProviderRepository _providerRepo;
     private ApiUserService _apiUserService;
     private AuthorizationService _authService;
-
+    private OktaService _oktaService;
 
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            ApiUserService apiUserService) {
+            ApiUserService apiUserService,
+            OktaService oktaService) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
         _apiUserService = apiUserService;
+        _oktaService = oktaService;
     }
 
     public Organization getCurrentOrganization() {
@@ -54,6 +58,19 @@ public class OrganizationService {
         } else {
             throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
         }
+    }
+
+    public Organization getOrganization(String externalId) {
+        Optional<Organization> found = _repo.findByExternalId(externalId);
+        if (found.isEmpty()) {
+            throw new IllegalGraphqlArgumentException("Organization could not be found");
+        } else {
+            return found.get();
+        }
+    }
+
+    public List<Organization> getOrganizations() {
+        return _repo.findAll();
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -159,9 +176,12 @@ public class OrganizationService {
         return _facilityRepo.save(facility);
     }
 
+    @Transactional
     public Organization createOrganization(String name, String externalId) {
         _apiUserService.isAdminUser();
-        return _repo.save(new Organization(name, externalId));
+        Organization org = _repo.save(new Organization(name, externalId));
+        _oktaService.createOrganization(externalId, name);
+        return org;
     }
 
     public Organization updateOrganization(String name) {

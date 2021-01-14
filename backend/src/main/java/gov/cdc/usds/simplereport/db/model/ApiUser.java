@@ -41,8 +41,8 @@ public class ApiUser {
 	@Temporal(TemporalType.TIMESTAMP)
 	@UpdateTimestamp
 	private Date updatedAt;
-	@Column(nullable = false, updatable = false)
-	@NaturalId
+	@Column(nullable = false, updatable = true, unique = true)
+	@NaturalId(mutable = true)
 	private String loginEmail;
 	@Embedded
 	private PersonName nameInfo;
@@ -72,6 +72,10 @@ public class ApiUser {
 		return loginEmail;
 	}
 
+	public void setLoginEmail(String newEmail) {
+		loginEmail = newEmail;
+	}
+
 	public Date getLastSeen() {
 		return lastSeen;
 	}
@@ -82,5 +86,9 @@ public class ApiUser {
 
 	public PersonName getNameInfo() {
 		return nameInfo;
+	}
+
+	public void setNameInfo(PersonName newNameInfo) {
+		nameInfo = newNameInfo;
 	}
 }

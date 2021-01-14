@@ -35,6 +35,8 @@ okta:
     client-id: ${clientID:FAKE}
     client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:FAKE}
     groups-claim: ${simple-report.authorization.role-claim}
+  entity-mgmt:
+    org-url: https://hhs-prime.okta.com
 simple-report-initialization:
   device-types:
     - name: Abbott IDNow

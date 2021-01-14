@@ -11,13 +11,13 @@ public class User {
 	private PersonName nameInfo;
 	private String email;
 
-	public User(ApiUser currentUser, Organization currentOrg) {
+	public User(ApiUser user, Organization org) {
 		super();
-		this.id = currentUser.getInternalId().toString();
-		this.org = currentOrg;
-		this.nameInfo = currentUser.getNameInfo();
+		this.id = user.getInternalId().toString();
+		this.org = org;
+		this.nameInfo = user.getNameInfo();
 		// Note: we assume a user's email and login username are the same thing.
-		this.email = currentUser.getLoginEmail();
+		this.email = user.getLoginEmail();
 	}
 
 	public String getId() {
