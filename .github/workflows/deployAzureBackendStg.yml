@@ -1,11 +1,5 @@
 name: Deploy Staging Backend Azure Resources
 
-on:
-  workflow_dispatch:
-    inputs:
-      shortGitsha:
-        description: 'First 7 charactrs of the commit sha'
-
 defaults:
   run:
     working-directory: ./backend
