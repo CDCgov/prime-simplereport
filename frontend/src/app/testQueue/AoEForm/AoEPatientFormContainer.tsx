@@ -40,9 +40,9 @@ const GET_PATIENT = gql`
     }
   }
 `;
-const AoEPatientFormContainer = (props: Props) => {
+const AoEPatientFormContainer = ({ patientId, page }: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
-    variables: { id: props.patientId || "" },
+    variables: { id: patientId || "" },
     fetchPolicy: "no-cache",
   });
 
@@ -50,7 +50,7 @@ const AoEPatientFormContainer = (props: Props) => {
     return <p>Loading...</p>;
   }
   if (error) {
-    return <p>error loading patient with id {props.patientId}...</p>;
+    return <p>error loading patient with id {patientId}...</p>;
   }
 
   const residentCongregateSetting = data.patient.residentCongregateSetting
@@ -58,13 +58,30 @@ const AoEPatientFormContainer = (props: Props) => {
     : "NO";
 
   const facilityId = getFacilityIdFromUrl();
-
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
+
+  const steps = [
+    {
+      label: "Profile information",
+      value: "profile",
+      order: 0,
+      isCurrent: page === "profile",
+    },
+    {
+      label: "Symptoms and history",
+      value: "symptoms",
+      order: 1,
+      isCurrent: page === "symptoms"
+    },
+  ];
+
   return (
     <main className="patient-app patient-app--form padding-bottom-4">
       <div className="grid-container maxw-tablet">
-        <StepIndicator></StepIndicator>
-        {props.page === "symptoms" && (
+        <StepIndicator
+          steps={steps}
+        />
+        {page === "symptoms" && (
           <AoEForm
             patient={{
               ...data.patient,
@@ -78,7 +95,7 @@ const AoEPatientFormContainer = (props: Props) => {
             saveCallback={null}
           />
         )}
-        {props.page === "profile" && (
+        {page === "profile" && (
           <PatientProfile
             patient={{
               ...data.patient,
