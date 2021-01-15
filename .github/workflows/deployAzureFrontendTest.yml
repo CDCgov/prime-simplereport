@@ -1,4 +1,4 @@
-name: Deploy Staging Frontend Azure Resources
+name: Deploy Test Frontend Azure Resources
 
 on:
   workflow_dispatch:
