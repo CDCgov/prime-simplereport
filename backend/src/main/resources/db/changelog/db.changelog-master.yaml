@@ -1051,7 +1051,5 @@ databaseChangeLog:
             comment: Update all completed test_orders from UTC to MST. This is a one-time update.
             sql: |
               UPDATE ${database.defaultSchemaName}.test_order
-              SET date_tested_backdate = (
-                SELECT date_tested_backdate at time zone 'utc' at time zone 'mst'
-                WHERE order_status='COMPLETED'
-              );
+              SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
+              WHERE date_tested_backdate is not null;
