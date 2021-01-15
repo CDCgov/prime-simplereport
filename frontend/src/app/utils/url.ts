@@ -3,4 +3,9 @@ function getFacilityIdFromUrl(): string | null {
   return queryParams.has("facility") ? queryParams.get("facility") : null;
 }
 
-export { getFacilityIdFromUrl };
+function getPatientLinkIdFromUrl(): string | null {
+  const queryParams = new URLSearchParams(window.location.search);
+  return queryParams.has("plid") ? queryParams.get("plid") : null;
+}
+
+export { getFacilityIdFromUrl, getPatientLinkIdFromUrl };

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
 import App from "./app/App";
+import PatientApp from "./app/PatientApp";
 import HealthChecks from "./app/HealthChecks";
 
 import * as serviceWorker from "./serviceWorker";
@@ -82,6 +83,7 @@ ReactDOM.render(
         <Router basename={process.env.PUBLIC_URL}>
           <Switch>
             <Route path="/health" component={HealthChecks} />
+            <Route path="/pxp" component={PatientApp} />
             <Route path="/" component={App} />
           </Switch>
         </Router>
