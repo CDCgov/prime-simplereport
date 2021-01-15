@@ -1,39 +1,37 @@
-#name: Deploy [Test] Backend Azure Resources
-#
-#on:
-#  workflow_dispatch:
-#  push:
-#    branches:
-#      - <your_branch_here>
-#    paths:
-#      - "backend/**"
-#      - "ops/test/api.tf"
-#
-#defaults:
-#  run:
-#    working-directory: ./backend
-#
-#env:
-#  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
-#  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
-#  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
-#  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
-#
-#jobs:
-#  build-image:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up QEMU
-#        uses: docker/setup-qemu-action@v1
-#      - name: Set up Docker Buildx
-#        uses: docker/setup-buildx-action@v1
-#      - name: Login to ACR
-#        run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
-#      - uses: hashicorp/setup-terraform@v1
-#      - name: Terraform Init
-#        working-directory: ${{ github.workspace }}/ops/test
-#        run: terraform init
-#      - name: Azure deploy Api
-#        working-directory: ${{ github.workspace }}/ops/test
-#        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
+name: Deploy [Test] Backend Azure Resources
+
+on:
+  workflow_dispatch:
+    env:
+      description: 'environment to deploy'
+      default: 'test'
+      required: true
+
+defaults:
+  run:
+    working-directory: ./backend
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.TERRAFORM_ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.TERRAFORM_ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.TERRAFORM_ARM_TENANT_ID }}
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to ACR
+        run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
+      - uses: hashicorp/setup-terraform@v1
+      - name: Terraform Init
+        working-directory: ${{ github.workspace }}/ops/${{ github.event.inputs.env }}
+        run: terraform init
+      - name: Azure deploy Api
+        working-directory: ${{ github.workspace }}/ops/${{ github.event.inputs.env }}
+        run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
