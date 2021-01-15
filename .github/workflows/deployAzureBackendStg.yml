@@ -2,12 +2,9 @@ name: Deploy Staging Backend Azure Resources
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main # TODO change to stg for branch based deploys
-    paths:
-      - "backend/**"
-      - "ops/stg/api.tf"
+    inputs:
+      shortGitsha:
+        description: 'First 7 charactrs of the commit sha'
 
 defaults:
   run:
