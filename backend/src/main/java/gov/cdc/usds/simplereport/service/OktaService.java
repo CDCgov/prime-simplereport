@@ -38,8 +38,8 @@ public class OktaService {
 
     public OktaService() {
         _client = Clients.builder()
-            .setOrgUrl(ORG_URL) 
-            .setClientCredentials(new TokenClientCredentials(API_TOKEN))
+            .setOrgUrl("https://hhs-prime.okta.com") // TODO: replace with ORG_URL) 
+            .setClientCredentials(new TokenClientCredentials("00ZhnplwI5hz2713WfAKghdX4-WNP_K0uYxG_KNWHE")) // TODO: replace with API_TOKEN
             .build();
     }
 
