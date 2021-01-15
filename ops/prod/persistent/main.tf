@@ -65,7 +65,7 @@ module "db" {
   public_access        = false
   administrator_login  = "simplereport"
 
-  log_workspace_id = data.azurerm_log_analytics_workspace.global.id
+  log_workspace_id = module.monitoring.log_analytics_workspace_id
 
   tags = local.management_tags
 }
