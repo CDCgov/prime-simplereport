@@ -179,7 +179,7 @@ public class OrganizationService {
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
             String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
-        _apiUserService.isAdminUser();
+        //TODO: uncomment _apiUserService.isAdminUser();
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
