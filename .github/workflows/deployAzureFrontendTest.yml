@@ -1,10 +1,10 @@
-name: Deploy Demo Frontend Azure Resources
+name: Deploy Staging Frontend Azure Resources
 
 on:
   workflow_dispatch:
     env:
       description: 'environment to deploy'
-      default: 'demo'
+      default: 'test'
       required: true
 
 env:

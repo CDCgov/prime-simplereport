@@ -1,10 +1,10 @@
-name: Deploy Demo Backend Azure Resources
+name: Deploy Production Backend Azure Resources
 
 on:
   workflow_dispatch:
     env:
       description: 'environment to deploy'
-      default: 'demo'
+      default: 'prod'
       required: true
 
 defaults:
