@@ -14,8 +14,9 @@ const DOB = () => {
           </p>
           <form className="usa-form">
             <label className="usa-label" htmlFor="bday" aria-describedby="bdayFormat">
-              Date of birth <span className="usa-hint">(MMDDYYYY)</span>
+              Date of birth<span className="usa-hint--required"><span className="usa-sr-only">Required</span> *</span>
             </label>
+            <span className="usa-hint">MM/DD/YYYY or MMDDYYYY</span>
             <input className="usa-input" id="bday" type="text" required aria-required="true" autoComplete="bday" size={8} pattern="[0-9]{8}" inputMode="numeric" />
             <Button label="Continue" onClick={savePatientAnswers} />
           </form>
