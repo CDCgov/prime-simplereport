@@ -13,7 +13,7 @@ import Dropdown from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import FormGroup from "../../commonComponents/FormGroup";
-import Optional from "../../commonComponents/Optional"
+import Optional from "../../commonComponents/Optional";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
