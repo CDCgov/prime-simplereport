@@ -6,17 +6,19 @@ import {
   getTestTypes,
   getPregnancyResponses,
 } from "./constants";
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button";
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import TextInput from "../../commonComponents/TextInput";
+import FormGroup from "../../commonComponents/FormGroup";
+import Optional from "../../commonComponents/Optional"
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
 import "./AoEModalForm.scss";
-import FormGroup from "../../commonComponents/FormGroup";
+
 // Get the value associate with a button label
 // TODO: move to utility?
 const findValueForLabel = (label, list) =>
@@ -57,6 +59,7 @@ const SymptomInputs = ({
             legendSrOnly
             name="symptom_list"
             onChange={symptomChange}
+            validationStatus={symptomError ? "error" : null}
             boxes={symptomListConfig.map(({ label, value }) => ({
               label,
               value,
@@ -158,6 +161,7 @@ const PriorTestInputs = ({
       <>
         <div className="usa-legend">
           <b>Was this your most recent COVID-19 test?</b>
+          <Optional/>
         </div>
         <div className="usa-legend prime-previous-test-display">
           <div>
@@ -207,7 +211,10 @@ const PriorTestInputs = ({
 
   return (
     <>
-      <div className="usa-legend">Is this your first COVID-19 test?</div>
+      <div className="usa-legend">
+        Is this your first COVID-19 test?
+        <Optional />
+      </div>
       <div className="usa-legend prime-previous-test-display">
         SimpleReport did not find any previous test data
       </div>

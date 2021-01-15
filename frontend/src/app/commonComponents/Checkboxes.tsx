@@ -40,10 +40,18 @@ const Checkboxes = (props: Props) => {
 
   return (
     <fieldset
-      className={classnames("usa-fieldset prime-checkboxes", props.className)}
+      className={classnames(
+        "usa-fieldset prime-checkboxes",
+        validationStatus === "error" && "usa-form-group--error",
+        props.className
+      )}
     >
       <legend
-        className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
+        className={classnames(
+          "usa-legend",
+          validationStatus === "error" && "usa-label--error",
+          legendSrOnly && "usa-sr-only"
+        )}
       >
         {legend}
         {required && (
