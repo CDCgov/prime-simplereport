@@ -292,7 +292,7 @@ const AoEForm = ({
   const isValidForm = () => {
     const hasSymptoms = Object.keys(currentSymptoms).some((key) => currentSymptoms[key]);
     if (!noSymptoms && !hasSymptoms) {
-      setSymptomError('required')
+      setSymptomError('Select your symptoms')
       setSymptomOnsetError(null)
       return false;
     }
@@ -305,7 +305,7 @@ const AoEForm = ({
 
     if (hasSymptoms && !onsetDate) {
       setSymptomError(null);
-      setSymptomOnsetError("required");
+      setSymptomOnsetError("Enter the date of symptom onset");
       return false;
     }
 
