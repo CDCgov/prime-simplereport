@@ -5,7 +5,7 @@ locals {
   }
   management_rg = "prime-simple-report-management"
   is_prod       = var.env == "prod"
-  app_url       = local.is_prod ? "https://simplereport.cdc.gov/app" : "https://${var.env}.simplereport.org/app"
+  app_url       = local.is_prod ? "https://simplereport.gov/app" : "https://${var.env}.simplereport.gov/app"
 }
 
 data "azurerm_resource_group" "rg" {
@@ -20,10 +20,11 @@ data "azurerm_key_vault" "kv" {
 // Okta application
 
 module "okta" {
-  source        = "../../services/okta-app"
-  env           = var.env
-  app_url       = local.app_url
-  redirect_urls = []
+  source               = "../../services/okta-app"
+  env                  = var.env
+  app_url              = local.app_url
+  redirect_urls        = []
+  logout_redirect_uris = local.is_prod ? "https://simplereport.gov" : "https://${var.env}.simplereport.gov"
 }
 
 // Create the Okta secrets

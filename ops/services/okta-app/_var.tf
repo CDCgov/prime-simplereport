@@ -23,8 +23,7 @@ variable "redirect_urls" {
     "http://localhost:3000",
     "https://simple-report-qa.app.cloud.gov/",
     "https://simple-report-qa-api.app.cloud.gov/",
-    "https://staging.simplereport.org/app",
-    "https://simplereport.cdc.gov/app"
+    "https://simplereport.gov/app"
   ]
 }
 
@@ -33,5 +32,6 @@ variable "app_url" {
 }
 
 variable "logout_redirect_uris" {
-  default = "https://simplereport.cdc.gov"
+  description = "Where to redirect users on logout"
+  type        = string
 }

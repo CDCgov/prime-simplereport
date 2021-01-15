@@ -11,8 +11,7 @@ resource "okta_app_oauth" "app" {
     "implicit"
   ]
   redirect_uris = concat(var.redirect_urls, [
-    "https://${var.env}.simplereport.org/app",
-    "https://${var.env}.simplereport.gov/app",
+    var.app_url
   ])
   response_types = [
     "code",

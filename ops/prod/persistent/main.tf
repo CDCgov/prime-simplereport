@@ -21,7 +21,7 @@ module "monitoring" {
   rg_location   = data.azurerm_resource_group.prod.location
   rg_name       = data.azurerm_resource_group.prod.name
 
-  app_url = "${local.env}.simeplreport.gov"
+  app_url = "simplereport.gov"
 
   tags = local.management_tags
 }
