@@ -9,7 +9,7 @@ graphql.servlet.cors:
 simple-report:
   data-hub:
     upload-enabled: true
-    uploadurl: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
+    upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
   admin-emails:
     - bwarfield@cdc.gov
     - tim.best@usds.dhs.gov
