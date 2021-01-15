@@ -22,9 +22,8 @@ const StepIndicator = ({ steps }: Props): React.ReactElement => {
           <li
             className={classnames(
               "usa-step-indicator__segment",
-              step.isCurrent
-                ? "usa-step-indicator__segment--current"
-                : "usa-step-indicator__segment--complete"
+              step.isCurrent && "usa-step-indicator__segment--current",
+              (currentStep.order + 1 > step.order + 1) && "usa-step-indicator__segment--complete"
             )}
             aria-current={step.isCurrent}
           >
