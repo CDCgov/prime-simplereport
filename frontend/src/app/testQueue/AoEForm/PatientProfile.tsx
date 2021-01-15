@@ -27,7 +27,7 @@ const PatientProfile = (props: Props) => {
       <div className="usa-alert usa-alert--info margin-bottom-3">
         <div className="usa-alert__body">
           <p className="usa-alert__text">
-            Confirm your profile info is correct. If it's incorrect, tell the
+            Confirm that your profile info is correct. If it's incorrect, tell the
             test administrator.
           </p>
         </div>
