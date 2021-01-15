@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -72,7 +71,7 @@ public class QueueManagementTest extends BaseApiTest {
         String orderId = o.getInternalId().toString();
         DeviceType d = _dataFactory.getGenericDevice();
         String deviceId = d.getInternalId().toString();
-        String dateTested = "2020-12-31T14:30:30.000Z";
+        String dateTested = "2020-12-31T14:30:30Z";
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
                 .put("id", orderId)
                 .put("deviceId", deviceId)
@@ -80,13 +79,11 @@ public class QueueManagementTest extends BaseApiTest {
                 .put("dateTested", dateTested);
 
         performQueueUpdateMutation(variables);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
         assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
         assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
         assertEquals(updatedTestOrder.getTestEvent(), null);
-        assertEquals(sdf.format(updatedTestOrder.getDateTested()), dateTested);
+        assertEquals(updatedTestOrder.getDateTested().toInstant().toString(), dateTested);
     }
 
     @Test

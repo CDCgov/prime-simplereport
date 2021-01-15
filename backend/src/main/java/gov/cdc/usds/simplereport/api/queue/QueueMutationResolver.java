@@ -8,9 +8,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Date;
-import java.text.SimpleDateFormat;
-import java.text.DateFormat;
-import java.text.ParseException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import static gov.cdc.usds.simplereport.api.Translators.parseUserDateTime;
 
 /**
  * Mutations for creating and updating test queue entries.
@@ -36,10 +34,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       _ps = ps;
     }
 
-    public void addTestResult(String deviceID, String result, String patientID, String dateTested) throws ParseException {
-      DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-      Date isoDate = sdf.parse(dateTested);
+    public void addTestResult(String deviceID, String result, String patientID, String dateTested) {
+      Date isoDate = parseUserDateTime(dateTested);
       _tos.addTestResult(
         deviceID,
         TestResult.valueOf(result),
@@ -48,9 +44,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
       );
     }
 
-    public ApiTestOrder editQueueItem(String id, String deviceId, String result, String dateTested) throws ParseException {
-      DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-      Date isoDate = sdf.parse(dateTested);
+    public ApiTestOrder editQueueItem(String id, String deviceId, String result, String dateTested) {
+      Date isoDate = parseUserDateTime(dateTested);
       return new ApiTestOrder(_tos.editQueueItem(
           id,
           deviceId,

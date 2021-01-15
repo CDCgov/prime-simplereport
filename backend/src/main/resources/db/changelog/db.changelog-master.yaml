@@ -1042,7 +1042,7 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
-  - changeSet: # NOTE: this has not been tested
+  - changeSet:
       id: change-test-results-to-MST
       author: neil.s.sharma@omb.eop.gov
       comment: changes all existing test results to be MST ISO 8601 strings
