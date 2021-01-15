@@ -32,4 +32,4 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: yarn run deploy-azure-${{ github.event.inputs.env }}
+        run: yarn run deploy-azure-stg
