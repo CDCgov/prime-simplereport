@@ -42,45 +42,48 @@ const SymptomInputs = ({
 
   return (
     <>
-      <Checkboxes
-        name="symptom_list"
-        legend="Are you experiencing any of the following symptoms?"
-        onChange={(e) => setNoSymptoms(e.target.checked)}
-        boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
-        required
-        errorMessage={symptomError}
-        validationStatus={symptomError ? "error" : null}
-      />
+      <div className={symptomError ? "usa-form-group--error" : ""}>
+        <Checkboxes
+          name="symptom_list"
+          legend="Are you experiencing any of the following symptoms?"
+          onChange={(e) => setNoSymptoms(e.target.checked)}
+          boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
+          required
+          errorMessage={symptomError}
+          validationStatus={symptomError ? "error" : null}
+        />
+        {!noSymptoms && (
+          <>
+            <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
+            <Checkboxes
+              legend="What are your symptoms?"
+              legendSrOnly
+              name="symptom_list"
+              onChange={symptomChange}
+              boxes={symptomListConfig.map(({ label, value }) => ({
+                label,
+                value,
+                checked: currentSymptoms[value],
+              }))}
+            />
+          </>
+          )}
+      </div>
       {!noSymptoms && (
-        <>
-          <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
-          <Checkboxes
-            legend="What are your symptoms?"
-            legendSrOnly
-            name="symptom_list"
-            onChange={symptomChange}
-            validationStatus={symptomError ? "error" : null}
-            boxes={symptomListConfig.map(({ label, value }) => ({
-              label,
-              value,
-              checked: currentSymptoms[value],
-            }))}
-          />
-          <TextInput
-            type="date"
-            label="Date of symptom onset"
-            name="symptom_onset"
-            value={onsetDate}
-            onChange={(e) => setOnsetDate(e.target.value)}
-            min="2020-02-01"
-            max={new Date().toISOString().split("T")[0]}
-            required={Object.keys(currentSymptoms).some(
-              (key) => currentSymptoms[key]
-            )}
-            errorMessage={symptomOnsetError}
-            validationStatus={symptomOnsetError ? "error" : null}
-          />
-        </>
+        <TextInput
+          type="date"
+          label="Date of symptom onset"
+          name="symptom_onset"
+          value={onsetDate}
+          onChange={(e) => setOnsetDate(e.target.value)}
+          min="2020-02-01"
+          max={new Date().toISOString().split("T")[0]}
+          required={Object.keys(currentSymptoms).some(
+            (key) => currentSymptoms[key]
+          )}
+          errorMessage={symptomOnsetError}
+          validationStatus={symptomOnsetError ? "error" : null}
+        />
       )}
     </>
   );

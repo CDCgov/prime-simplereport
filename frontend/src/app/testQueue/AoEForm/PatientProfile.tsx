@@ -19,12 +19,6 @@ const PatientProfile = (props: Props) => {
   const buttonGroup = (
     <div className="margin-top-3">
       <Button label="Confirm and continue" onClick={savePatientAnswers} />
-      {/* <Button
-        label="Edit information"
-        onClick={savePatientAnswers}
-        variant="outline"
-        className="margin-top-105 mobile-lg:margin-top-0"
-      /> */}
     </div>
   );
 
