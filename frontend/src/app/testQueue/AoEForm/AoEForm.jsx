@@ -55,7 +55,7 @@ const SymptomInputs = ({
         <>
           <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
           <Checkboxes
-            legend="Symptoms"
+            legend="What are your symptoms?"
             legendSrOnly
             name="symptom_list"
             onChange={symptomChange}
