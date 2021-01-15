@@ -1,5 +1,8 @@
 name: Deploy Staging Backend Azure Resources
 
+on:
+  workflow_dispatch:
+
 defaults:
   run:
     working-directory: ./backend
