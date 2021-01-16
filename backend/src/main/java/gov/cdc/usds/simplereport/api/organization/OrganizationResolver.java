@@ -20,9 +20,9 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 	private OrganizationService _organizationService;
 	private ApiUserService _userService;
 
-    public OrganizationResolver(OrganizationService os, ApiUserService us) {
+    public OrganizationResolver(OrganizationService os, ApiUserService users) {
 		_organizationService = os;
-		_userService = us;
+		_userService = users;
 	}
 
 	public Organization getOrganization() {

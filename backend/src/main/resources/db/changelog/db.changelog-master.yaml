@@ -1042,3 +1042,12 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
+  - changeSet:
+      id: drop-not-null-last-seen-user
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Allow user's last seen timestamp to be null to allow for other people to create users
+      # Allows us to create a user without having to assign it a last-seen value (ie if user does not create themselves)
+      changes:
+        - dropNotNullConstraint:
+            tableName: api_user
+            columnName: last_seen

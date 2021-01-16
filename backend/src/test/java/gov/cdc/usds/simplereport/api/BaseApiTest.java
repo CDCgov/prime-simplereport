@@ -24,6 +24,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
+import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 
@@ -44,6 +45,9 @@ public abstract class BaseApiTest {
 
     @MockBean
     protected AuthorizationService _authService;
+
+    @MockBean
+    protected OktaService _oktaService;
 
     protected void truncateDb() {
         _truncator.truncateAll();

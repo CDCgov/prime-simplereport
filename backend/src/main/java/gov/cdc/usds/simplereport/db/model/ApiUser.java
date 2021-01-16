@@ -46,6 +46,7 @@ public class ApiUser {
 	private String loginEmail;
 	@Embedded
 	private PersonName nameInfo;
+	@Column(nullable = true)
 	private Date lastSeen;
 
 	protected ApiUser() { /* for hibernate */ }
@@ -53,7 +54,7 @@ public class ApiUser {
 	public ApiUser(String email, PersonName name) {
 		loginEmail = email;
 		nameInfo = name;
-		lastSeen = new Date();
+		lastSeen = null;
 	}
 
 	public UUID getInternalId() {
@@ -86,9 +87,5 @@ public class ApiUser {
 
 	public PersonName getNameInfo() {
 		return nameInfo;
-	}
-
-	public void setNameInfo(PersonName newNameInfo) {
-		nameInfo = newNameInfo;
 	}
 }

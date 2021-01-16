@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -45,13 +46,12 @@ public class ApiUserService {
         //TODO: uncomment isAdminUser();
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        _oktaService.createUser(user);
-        _oktaService.addUserToOrganization(user, organizationExternalId);
+        _oktaService.createUser(userIdentity, organizationExternalId);
         return user;
     }
 
     @Transactional
-    public ApiUser updateUser(String Id, String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
+    public ApiUser updateUser(String Id, String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix) {
         //TODO: uncomment isAdminUser();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(oldUsername);
         if (!found.isPresent()) {
@@ -59,13 +59,16 @@ public class ApiUserService {
         }
         ApiUser user = found.get();
         user.setLoginEmail(newUsername);
-        PersonName nameInfo = new PersonName(firstName, middleName, lastName, suffix);
-        user.setNameInfo(nameInfo);
+        PersonName nameInfo = user.getNameInfo();
+        nameInfo.setFirstName(firstName);
+        nameInfo.setMiddleName(middleName);
+        nameInfo.setLastName(lastName);
+        nameInfo.setSuffix(suffix);
         user = _apiUserRepo.save(user);
+        IdentityAttributes userIdentity = new IdentityAttributes(newUsername, firstName, middleName, lastName, suffix);
         if (!newUsername.equals(oldUsername)) {
-            _oktaService.updateUser(oldUsername, user);
+            _oktaService.updateUser(oldUsername, userIdentity);
         }
-        _oktaService.addUserToOrganization(user, organizationExternalId);
         return user;
     }
 

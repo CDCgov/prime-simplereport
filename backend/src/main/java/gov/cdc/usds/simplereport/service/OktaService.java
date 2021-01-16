@@ -3,21 +3,24 @@ package gov.cdc.usds.simplereport.service;
 import org.springframework.stereotype.Service;
 
 import java.util.Map; 
-import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
-import org.springframework.beans.factory.annotation.Value;
-
+import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
+import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 
-import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 /**
@@ -26,54 +29,62 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 @Service
 public class OktaService {
 
-    @Value("${okta.entity-mgmt.org-url}")
-    private String ORG_URL;
-    @Value("${OKTA_API_KEY}")
-    private String API_TOKEN;
-    @Value("${simple-report.authorization.role-prefix}")
-    private String ROLE_PREFIX;
+    private String _rolePrefix;
+    private Client _client;
 
-    Client _client;
+    public OktaService(AuthorizationProperties authorizationProperties,
+                       OktaClientProperties oktaClientProperties) {
+        // TODO: remove these print lines
+        System.out.print("ORG IS ");
+        System.out.print(oktaClientProperties.getOrgUrl());
+        System.out.print("API TOKEN IS ");
+        System.out.print(oktaClientProperties.getToken());
 
-
-    public OktaService() {
+        _rolePrefix = authorizationProperties.getRolePrefix();
+        System.out.print("ROLE PREFIX IS ");
+        System.out.print(_rolePrefix);
         _client = Clients.builder()
-            .setOrgUrl("https://hhs-prime.okta.com") // TODO: replace with ORG_URL) 
-            .setClientCredentials(new TokenClientCredentials("***REMOVED***")) // TODO: replace with API_TOKEN
-            .build();
+                .setOrgUrl(oktaClientProperties.getOrgUrl())
+                .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+                .build();
     }
 
-    public void createUser(ApiUser apiUser) {
-        Map<String,Object> userProfileMap = new HashMap<String,Object>();
-        userProfileMap.put("firstName",apiUser.getNameInfo().getFirstName());
-        userProfileMap.put("middleName",apiUser.getNameInfo().getMiddleName());
-        userProfileMap.put("lastName",apiUser.getNameInfo().getLastName());
-        // This is cheating. Suffix and honorific suffix aren't the same thing. Shhh.
-        userProfileMap.put("honorificSuffix",apiUser.getNameInfo().getSuffix());
-        // We assume login == email
-        userProfileMap.put("email",apiUser.getLoginEmail());
-        userProfileMap.put("login",apiUser.getLoginEmail());
+    public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {
+        Map<String,Object> userProfileMap = Map.of(
+            "firstName", userIdentity.getFirstName(),
+            "middleName", userIdentity.getMiddleName(),
+            "lastName", userIdentity.getLastName(),
+            // This is cheating. Suffix and honorific suffix aren't the same thing. Shhh.
+            "honorificSuffix", userIdentity.getSuffix(),
+            // We assume login == email
+            "email", userIdentity.getUsername(),
+            "login", userIdentity.getUsername()
+        );
 
+        // Okta SDK's way of getting a group by group name
+        String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
+        Group group = _client.listGroups(groupName, null, null).single();
         UserBuilder.instance()
                 .setProfileProperties(userProfileMap)
+                .setGroups(group.getId())
                 .buildAndCreate(_client);
     }
 
-    public void updateUser(String oldUsername, ApiUser apiUser) {
+    public void updateUser(String oldUsername, IdentityAttributes userIdentity) {
         User user = _client.listUsers(oldUsername, null, null, null, null).single();
-        user.getProfile().setFirstName(apiUser.getNameInfo().getFirstName());
-        user.getProfile().setMiddleName(apiUser.getNameInfo().getMiddleName());
-        user.getProfile().setLastName(apiUser.getNameInfo().getLastName());
+        user.getProfile().setFirstName(userIdentity.getFirstName());
+        user.getProfile().setMiddleName(userIdentity.getMiddleName());
+        user.getProfile().setLastName(userIdentity.getLastName());
         // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they 
         // don't have regular suffix? You decide.
-        user.getProfile().setHonorificSuffix(apiUser.getNameInfo().getSuffix());
+        user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
         // We assume login == email
-        user.getProfile().setEmail(apiUser.getLoginEmail());
-        user.getProfile().setLogin(apiUser.getLoginEmail());
+        user.getProfile().setEmail(userIdentity.getUsername());
+        user.getProfile().setLogin(userIdentity.getUsername());
         user.update();
     }
 
-    public void createOrganization(String externalId, String name) {
+    public void createOrganization(String name, String externalId) {
         for (OrganizationRole role : OrganizationRole.values()) {
             GroupBuilder.instance()
             .setName(generateGroupName(externalId, role))
@@ -82,40 +93,42 @@ public class OktaService {
         }
     }
 
-    public void addUserToOrganization(ApiUser apiUser, String organizationExternalId) {
-        User user = _client.listUsers(apiUser.getLoginEmail(), null, null, null, null).single();
-        String userId = user.getId();
-        // We assume that a user can only be a member of one organization at a time;
-        // if user is in any groups, remove that association first
+    // returns the external ID of the organization the specified user belongs to
+    public String getOrganizationExternalIdForUser(String username) {
+        User user = _client.listUsers(username, null, null, null, null).single();
         GroupList oldGroups = user.listGroups();
+        List<String> orgNames = new ArrayList<String>();
         oldGroups.forEach(g->{
-            System.out.print(g.toString());
-            if (g.getType() == GroupType.OKTA_GROUP && g.getProfile().getName().endsWith(":USER")) {
-                g.removeUser(userId);
+            String groupName = g.getProfile().getName();
+            if (g.getType() == GroupType.OKTA_GROUP &&
+                    groupName.startsWith(_rolePrefix) &&
+                    groupName.endsWith(generateRoleSuffix(OrganizationRole.USER))) {
+                orgNames.add(groupName);
             }
         });
-        // Okta SDK's way of adding a user to a group by group name
-        String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
-        GroupList groups = _client.listGroups(groupName, null, null);
-        groups.forEach(g->{
-            if (groupName.equals(g.getProfile().getName())) {
-                user.addToGroup(g.getId());
-            }
-        });
+
+        // We assume that a user can only be a member of one user group
+        String externalId = getOrganizationExternalIdFromGroupName(orgNames.get(0), 
+                                                                   OrganizationRole.USER);
+        return externalId;
     }
 
     private String generateGroupName(String externalId, OrganizationRole role) {
-        String suffix = (role == OrganizationRole.ADMIN ) ? ":ADMIN" :
-                        (role == OrganizationRole.USER  ) ? ":USER"  :
-                                                            ":OTHER";
-        return ROLE_PREFIX + externalId + suffix;
+        return String.format("%s%s%s", _rolePrefix, externalId, generateRoleSuffix(role));
     }
 
-    private String generateGroupDescription(String groupDesc, OrganizationRole role) {
-        String suffix = (role == OrganizationRole.ADMIN ) ? " - Admins" :
-                        (role == OrganizationRole.USER  ) ? " - Users"  :
-                                                            " - Other";
-        return groupDesc + suffix;
+    private String getOrganizationExternalIdFromGroupName(String groupName, OrganizationRole role) {
+        int roleSuffixOffset = groupName.lastIndexOf(generateRoleSuffix(role));
+        String externalId = groupName.substring(_rolePrefix.length(), roleSuffixOffset);
+        return externalId;
+    }
+
+    private String generateGroupDescription(String orgName, OrganizationRole role) {
+        return String.format("%s - %s", orgName, role.getDescription());
+    }
+
+    private String generateRoleSuffix(OrganizationRole role) {
+        return ":" + role.name();
     }
 
 }
