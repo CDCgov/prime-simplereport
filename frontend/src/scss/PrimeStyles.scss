@@ -444,7 +444,8 @@
 
 .prime-formgroup-heading {
   font-size: size("body", "lg");
-  margin: 0;
+  margin-bottom: units(3);
+  margin-top: 0;
 }
 
 .usa-step-indicator {
@@ -510,4 +511,8 @@
 
 .tag--new {
   background-color: color("green-cool-50v");
+}
+
+.usa-form-group--error {
+  margin-top: units(3);
 }

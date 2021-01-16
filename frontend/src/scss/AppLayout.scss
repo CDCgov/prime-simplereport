@@ -26,9 +26,9 @@ main {
 
 .prime-radios > .usa-legend:not(.usa-sr-only),
 .prime-checkboxes > .usa-legend:not(.usa-sr-only) {
-  position: relative;
-  top: units(2.5);
-  margin-bottom: units(2.5);
+  // position: relative;
+  // top: units(2.5);
+  // margin-bottom: units(2.5);
 }
 
 .prime-edit-patient-heading {
@@ -53,10 +53,6 @@ main {
   .usa-form-group:not(.prime-radio--horizontal__container)
   .usa-radio {
   margin-top: 1em;
-}
-
-.prime-checkboxes .usa-form-group .usa-checkbox {
-  margin-top: 0.75em;
 }
 
 .usa-form-group {
