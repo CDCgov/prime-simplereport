@@ -1,6 +1,14 @@
 spring:
   profiles.include: no-security
-# configuration for dev and demo server startup on a blank DB
+  datasource:
+    url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
+  liquibase:
+    user: simple_report_migrations
+    password: migrations456
+  jpa:
+    properties:
+      hibernate:
+        default_schema: simple_report
 simple-report-initialization:
   organization:
     org-name: Dis Organization
