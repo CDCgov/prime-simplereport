@@ -29,5 +29,6 @@ export const getTestTypes = () => [
 export const getPregnancyResponses = () => [
   { label: "Yes", value: "77386006" },
   { label: "No", value: "60001007" },
-  { label: "Would not state", value: "261665006" },
+  { label: "Possible", value: "" },
+  { label: "Prefer not to answer", value: "261665006" },
 ];
