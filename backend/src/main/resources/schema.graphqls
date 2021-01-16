@@ -227,21 +227,20 @@ type Mutation {
   addUser(
     firstName: String
     middleName: String
-    lastName: String
+    lastName: String!
     suffix: String
-    email: String
-    organizationExternalId: String
-  ): ID
+    email: String!
+    organizationExternalId: String!
+  ): User
   updateUser(
     id: ID
     firstName: String
     middleName: String
-    lastName: String
+    lastName: String!
     suffix: String
-    newEmail: String
-    oldEmail: String
-    organizationExternalId: String
-  ): ID
+    newEmail: String!
+    oldEmail: String!
+  ): User
   addPatient(
     facilityId: String
     lookupId: String

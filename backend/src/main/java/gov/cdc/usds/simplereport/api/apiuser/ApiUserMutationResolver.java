@@ -61,16 +61,14 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String lastName,
             String suffix,
             String newEmail,
-            String oldEmail,
-            // may want to replace with an Organization object in the future
-            String organizationExternalID
+            String oldEmail
                 ) {
         // if no changes to email are made, email validation will happen inside _us.updateUser()
         if (!newEmail.equals(oldEmail)) {
             _us.assertEmailAvailable(newEmail);
         }
-        ApiUser apiUser = _us.updateUser(Id, newEmail, oldEmail, firstName, middleName, lastName, suffix, organizationExternalID);
-        Organization org = _os.getOrganization(organizationExternalID);
+        ApiUser apiUser = _us.updateUser(Id, newEmail, oldEmail, firstName, middleName, lastName, suffix);
+        Organization org = _os.getOrganizationForUser(apiUser);
         Boolean isAdmin = _us.isAdminUser(apiUser);
         return new User(apiUser, org, isAdmin);
     }

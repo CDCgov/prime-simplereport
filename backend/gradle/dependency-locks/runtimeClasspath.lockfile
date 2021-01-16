@@ -40,9 +40,9 @@ com.okta.commons:okta-http-httpclient:1.2.4
 com.okta.sdk:okta-sdk-api:3.0.1
 com.okta.sdk:okta-sdk-httpclient:3.0.1
 com.okta.sdk:okta-sdk-impl:3.0.1
-com.okta.spring:okta-spring-boot-starter:1.4.0
-com.okta.spring:okta-spring-sdk:1.4.0
-com.okta.spring:okta-spring-security-oauth2:1.4.0
+com.okta.spring:okta-spring-boot-starter:2.0.0
+com.okta.spring:okta-spring-sdk:2.0.0
+com.okta.spring:okta-spring-security-oauth2:2.0.0
 com.sun.activation:jakarta.activation:1.2.2
 com.sun.istack:istack-commons-runtime:3.0.11
 com.sun.mail:javax.mail:1.6.1

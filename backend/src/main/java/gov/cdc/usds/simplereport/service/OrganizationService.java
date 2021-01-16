@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -71,6 +72,11 @@ public class OrganizationService {
 
     public List<Organization> getOrganizations() {
         return _repo.findAll();
+    }
+
+    public Organization getOrganizationForUser(ApiUser apiUser) {
+        String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
+        return getOrganization(orgExternalId);
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -186,7 +192,7 @@ public class OrganizationService {
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
                 orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         _facilityRepo.save(facility);
-        _oktaService.createOrganization(externalId, name);
+        _oktaService.createOrganization(name, externalId);
         return org;
     }
 
