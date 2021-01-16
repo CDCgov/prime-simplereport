@@ -4,7 +4,6 @@ import { getFacilityIdFromUrl } from "../../utils/url";
 import AoEForm from "./AoEForm";
 import StepIndicator from "../../commonComponents/StepIndicator";
 import PatientProfile from "./PatientProfile";
-import RequiredMessage from "../../commonComponents/RequiredMessage";
 
 interface Props {
   patientId: string;
@@ -83,8 +82,6 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
           steps={steps}
         />
         {page === "symptoms" && (
-          <>
-          <RequiredMessage />
           <AoEForm
             patient={{
               ...data.patient,
@@ -97,7 +94,6 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
             onClose={null}
             saveCallback={null}
           />
-          </>
         )}
         {page === "profile" && (
           <PatientProfile
