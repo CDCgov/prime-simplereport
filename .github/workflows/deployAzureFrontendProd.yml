@@ -1,10 +1,10 @@
-name: Deploy Demo Frontend Azure Resources
+name: Deploy Production Frontend Azure Resources
 
 on:
   workflow_dispatch:
     env:
       description: 'environment to deploy'
-      default: 'demo'
+      default: 'prod'
       required: true
 
 env:
@@ -32,4 +32,4 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: yarn run deploy-azure-demo
+        run: yarn run deploy-azure-prod
