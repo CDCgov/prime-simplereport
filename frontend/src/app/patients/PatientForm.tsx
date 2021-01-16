@@ -406,7 +406,6 @@ const PatientForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Demographics">
-        <div>
           <RadioGroup
             legend="Race"
             name="race"
@@ -443,8 +442,6 @@ const PatientForm = (props: Props) => {
             selectedRadio={patient.race}
             onChange={onChange}
           />
-        </div>
-        <div>
           <RadioGroup
             legend="Ethnicity"
             name="ethnicity"
@@ -455,8 +452,6 @@ const PatientForm = (props: Props) => {
             selectedRadio={patient.ethnicity}
             onChange={onChange}
           />
-        </div>
-        <div>
           <RadioGroup
             legend="Biological Sex"
             name="gender"
@@ -468,10 +463,8 @@ const PatientForm = (props: Props) => {
             selectedRadio={patient.gender}
             onChange={onChange}
           />
-        </div>
       </FormGroup>
       <FormGroup title="Other">
-        <div>
           <RadioGroup
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
@@ -483,8 +476,6 @@ const PatientForm = (props: Props) => {
             onChange={onChange}
             required
           />
-        </div>
-        <div>
           <RadioGroup
             legend="Work in Healthcare?"
             name="employedInHealthcare"
@@ -496,7 +487,6 @@ const PatientForm = (props: Props) => {
             onChange={onChange}
             required
           />
-        </div>
       </FormGroup>
       <FormGroup title="Test History">
         {patient.testResults && patient.testResults.length !== 0 && (

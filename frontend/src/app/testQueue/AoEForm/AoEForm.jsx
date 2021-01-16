@@ -42,7 +42,7 @@ const SymptomInputs = ({
 
   return (
     <>
-      <div className={symptomError ? "usa-form-group--error" : ""}>
+      <div className={symptomError ? "usa-form-group--error" : "usa-fieldset"}>
         <Checkboxes
           name="symptom_list"
           legend="Are you experiencing any of the following symptoms?"
