@@ -4,16 +4,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 import javax.management.timer.Timer;
 
 
+// ApplicationScope makes it a singleton
 @Service
+@ApplicationScope
 public class ScheduledTasksService {
     private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasksService.class);
     private final DataHubUploaderService _dataHubUploaderService;
 
     ScheduledTasksService(DataHubUploaderService dataHubUploaderService) {
+        LOG.info("Scheduler initialized. Should ONLY HAPPEN ONCE.");
         _dataHubUploaderService = dataHubUploaderService;
     }
 

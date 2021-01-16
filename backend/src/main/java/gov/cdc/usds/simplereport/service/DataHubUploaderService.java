@@ -270,6 +270,7 @@ public class DataHubUploaderService {
         }
     }
 
+    @Transactional
     public void dataHubUploaderTask() {
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
