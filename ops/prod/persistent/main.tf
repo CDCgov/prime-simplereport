@@ -14,17 +14,17 @@ module "all" {
   env    = local.management_tags.environment
 }
 
-//module "monitoring" {
-//  source        = "../../services/monitoring"
-//  env           = local.env
-//  management_rg = data.azurerm_resource_group.global.name
-//  rg_location   = data.azurerm_resource_group.prod.location
-//  rg_name       = data.azurerm_resource_group.prod.name
-//
-//  app_url = "${local.env}.simeplreport.gov"
-//
-//  tags = local.management_tags
-//}
+module "monitoring" {
+  source        = "../../services/monitoring"
+  env           = local.env
+  management_rg = data.azurerm_resource_group.global.name
+  rg_location   = data.azurerm_resource_group.prod.location
+  rg_name       = data.azurerm_resource_group.prod.name
+
+  app_url = "${local.env}.simeplreport.gov"
+
+  tags = local.management_tags
+}
 
 module "bastion" {
   source = "../../services/bastion_host"
@@ -53,19 +53,19 @@ module "psql_connect" {
 }
 
 
-//module "db" {
-//  source      = "../../services/postgres_db"
-//  env         = local.env
-//  rg_location = data.azurerm_resource_group.prod.location
-//  rg_name     = data.azurerm_resource_group.prod.name
-//
-//  global_vault_id      = data.azurerm_key_vault.global.id
-//  db_vault_id          = data.azurerm_key_vault.db_keys.id
-//  db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
-//  public_access        = false
-//  administrator_login  = "simplereport"
-//
-//  log_workspace_id = data.azurerm_log_analytics_workspace.global.id
-//
-//  tags = local.management_tags
-//}
+module "db" {
+  source      = "../../services/postgres_db"
+  env         = local.env
+  rg_location = data.azurerm_resource_group.prod.location
+  rg_name     = data.azurerm_resource_group.prod.name
+
+  global_vault_id      = data.azurerm_key_vault.global.id
+  db_vault_id          = data.azurerm_key_vault.db_keys.id
+  db_encryption_key_id = data.azurerm_key_vault_key.db_encryption_key.id
+  public_access        = false
+  administrator_login  = "simplereport"
+
+  log_workspace_id = module.monitoring.log_analytics_workspace_id
+
+  tags = local.management_tags
+}
