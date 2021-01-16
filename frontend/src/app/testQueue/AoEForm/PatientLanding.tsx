@@ -41,6 +41,7 @@ const PatientLanding = () => {
               <tr>
                 <th scope="col">Result</th>
                 <th scope="col">Date</th>
+                <th className="usa-sr-only" scope="col">New</th>
               </tr>
             </thead>
             <tbody>
@@ -51,6 +52,9 @@ const PatientLanding = () => {
                   </a>
                 </th>
                 <td>12/21/2020</td>
+                <td>
+                  <span className="usa-tag tag--new">New</span>
+                </td>
               </tr>
               <tr>
                 <th scope="row">
@@ -59,6 +63,7 @@ const PatientLanding = () => {
                   </a>
                 </th>
                 <td>12/14/2020</td>
+                <td></td>
               </tr>
               <tr>
                 <th scope="row">
@@ -67,6 +72,7 @@ const PatientLanding = () => {
                   </a>
                 </th>
                 <td>12/7/2020</td>
+                <td></td>
               </tr>
             </tbody>
           </table>
