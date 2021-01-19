@@ -16,10 +16,11 @@ const PatientProfile = (props: Props) => {
   const gender =  GENDER_VALUES.find(val => val.value === props.patient.gender)?.label;
 
   const formattedAddress = () => {
+    const hasCityZipCode = props.patient.city && props.patient.zipCode;
     const lastAddressLine = `${props.patient.city}${
       props.patient.state && props.patient.city ? ", " : ""
     }${props.patient.state}${
-      props.patient.state || props.patient.city && props.patient.zipCode ? " " : ""
+      props.patient.state || hasCityZipCode ? " " : ""
     }${props.patient.zipCode}`;
 
     let result = props.patient.street;

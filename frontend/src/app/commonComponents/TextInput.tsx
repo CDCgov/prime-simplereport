@@ -17,13 +17,21 @@ interface Props {
     | "text"
     | "time"
     | "url"
-    | "week";
+    | "week"
+    | "bday";
   label: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
+  required?: boolean;
   errorMessage?: React.ReactNode;
   groupClassName?: string;
   validationStatus?: "error" | "success";
+  autoComplete?: string;
+  size?: number;
+  pattern?: string;
+  inputMode?: string;
+  ariaDescribedBy?: string;
+  hintText?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -40,6 +48,12 @@ export const TextInput = ({
   className,
   required,
   validationStatus,
+  autoComplete,
+  size,
+  pattern,
+  inputMode,
+  ariaDescribedBy,
+  hintText,
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -62,6 +76,7 @@ export const TextInput = ({
           validationStatus === "error" && "usa-label--error"
         )}
         htmlFor={widgetId}
+        aria-describedby={ariaDescribedBy}
       >
         {required ? <Required label={label} /> : label}
       </label>
@@ -70,6 +85,7 @@ export const TextInput = ({
           {errorMessage}
         </span>
       )}
+      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
       <input
         className={classnames(
           "usa-input",
@@ -79,7 +95,12 @@ export const TextInput = ({
         name={name}
         value={value || ""}
         type={type || "text"}
+        aria-required={required || "false"}
         onChange={onChange}
+        autoComplete={autoComplete}
+        size={size}
+        pattern={pattern}
+        inputMode={inputMode}
         {...inputProps}
         {...(validationStatus === "error"
           ? { "aria-describedby": errorId }

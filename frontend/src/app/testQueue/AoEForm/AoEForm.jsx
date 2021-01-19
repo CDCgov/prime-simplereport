@@ -343,7 +343,7 @@ const AoEForm = ({
     setPregnancyResponse(findValueForLabel("No", pregnancyResponses));
   }
 
-  const saveAnswers = (evt) => {
+  const saveAnswers = (e) => {
     if (isValidForm()) {
       const saveSymptoms = { ...currentSymptoms };
       if (noSymptoms) {
@@ -375,12 +375,8 @@ const AoEForm = ({
       });
       onClose();
     } else {
-      evt.preventDefault();
+      e.preventDefault();
     }
-  };
-
-  const savePatientAnswers = () => {
-    console.log("saved");
   };
 
   const buttonGroup = (
@@ -394,7 +390,7 @@ const AoEForm = ({
 
   return (
     <>
-      <form onSubmit={saveAnswers}>
+      <form onSubmit={(e) => { saveAnswers(e); }}>
         {isModal && (
           <>
             {buttonGroup}
