@@ -61,12 +61,16 @@ data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-//
-//data "azurerm_key_vault_secret" "okta_client_id" {
-//  key_vault_id = data.azurerm_key_vault.sr_global.id
-//  name         = "okta-${var.env}-client-id"
-//}
-//
+data "azurerm_key_vault_secret" "okta_api_key" {
+  name         = "okta-api-key"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "okta_client_id" {
+  name         = "okta-dev-client-id"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 //data "azurerm_key_vault_secret" "okta_client_secret" {
 //  key_vault_id = data.azurerm_key_vault.sr_global.id
 //  name         = "okta-${var.env}-client-secret"
