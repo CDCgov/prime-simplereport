@@ -13,6 +13,7 @@ interface Props {
 const GET_PATIENT = gql`
   query GetPatientDetails($id: String!) {
     patient(id: $id) {
+      internalId
       lookupId
       firstName
       middleName
@@ -32,11 +33,6 @@ const GET_PATIENT = gql`
       gender
       residentCongregateSetting
       employedInHealthcare
-      testResults {
-        internalId
-        dateTested
-        result
-      }
     }
   }
 `;
