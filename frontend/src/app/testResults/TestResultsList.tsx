@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
+import "./TestResultsList.scss";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -87,7 +88,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
     };
     // `sort` mutates the array, so make a copy
     return [...testResults].sort(byDateTested).map((r) => (
-      <tr key={r.internalId}>
+      <tr key={r.internalId} className="sr-test-result-row">
         <th scope="row">
           {displayFullName(
             r.patient.firstName,
@@ -103,7 +104,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
           <Menu
             menuButton={
               <MenuButton className="sr-modal-menu-button">
-                <FontAwesomeIcon icon={faEllipsisH} />
+                <FontAwesomeIcon icon={faEllipsisH} size="2x" />
                 <span className="usa-sr-only">More actions</span>
               </MenuButton>
             }

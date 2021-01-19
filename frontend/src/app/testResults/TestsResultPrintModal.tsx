@@ -99,29 +99,29 @@ const TestResultPrintModal = ({ testResultId, closeModal }: Props) => {
             <ul className="sr-details-list">
               <li>
                 <b>Name</b>
-                <span>
+                <div>
                   {displayFullName(
                     patient.firstName,
                     patient.middleName,
                     patient.lastName
                   )}
-                </span>
+                </div>
               </li>
               <li>
                 <b>Date of Birth</b>
-                <span>{formatDate(patient.birthDate)}</span>
+                <div>{formatDate(patient.birthDate)}</div>
               </li>
               <li>
                 <b>Sex</b>
-                <span>{patient.gender}</span>
+                <div>{patient.gender}</div>
               </li>
               <li>
                 <b>Phone</b>
-                <span>{patient.telephone}</span>
+                <div>{patient.telephone}</div>
               </li>
               <li>
                 <b>Address</b>
-                <span>{patient.street}</span>
+                <div>{patient.street}</div>
                 {patient.streetTwo && (
                   <div className="hanging">{patient.streetTwo}</div>
                 )}
@@ -136,39 +136,37 @@ const TestResultPrintModal = ({ testResultId, closeModal }: Props) => {
             <ul className="sr-details-list">
               <li>
                 <b>Facility Name</b>
-                <span>{facility.name}</span>
+                <div>{facility.name}</div>
               </li>
               <li>
                 <b>Facility Phone</b>
-                <span>{facility.phone}</span>
+                <div>{facility.phone}</div>
               </li>
               <li>
                 <b>Facility Address</b>
-                <span>{facility.street}</span>
-                {facility.streetTwo && (
-                  <div className="hanging">{facility.streetTwo}</div>
-                )}
-                <div className="hanging">
+                <div>{facility.street}</div>
+                {facility.streetTwo && <div>{facility.streetTwo}</div>}
+                <div>
                   {facility.city}, {facility.state} {facility.zipCode}
                 </div>
               </li>
               <li>
                 <b>CLIA Number</b>
-                <span>{facility.cliaNumber}</span>
+                <div>{facility.cliaNumber}</div>
               </li>
               <li>
                 <b>Ordering Provider</b>
-                <span>
+                <div>
                   {displayFullName(
                     facility.orderingProvider.firstName,
                     facility.orderingProvider.middleName,
                     facility.orderingProvider.lastName
                   )}
-                </span>
+                </div>
               </li>
               <li>
                 <b>NPI</b>
-                <span>{facility.orderingProvider.NPI}</span>
+                <div>{facility.orderingProvider.NPI}</div>
               </li>
             </ul>
           </section>
@@ -177,41 +175,48 @@ const TestResultPrintModal = ({ testResultId, closeModal }: Props) => {
             <ul className="sr-details-list">
               <li>
                 <b>Specimen ID</b>
-                <span>xxxx</span>
+                <div>?</div>
               </li>
               <li>
                 <b>Test Name</b>
-                <span>xxxx</span>
+                <div>SARS-CoV-2 Antigen</div>
               </li>
               <li>
                 <b>Test Device</b>
-                <span>{deviceType.name}</span>
-              </li>
-              <li>
-                <b>Collection Date</b>
-                <span>xxxx</span>
+                <div>{deviceType.name}</div>
               </li>
               <li>
                 <b>Test Date</b>
-                <span>{formatDate(data.dateTested)}</span>
+                <div>{formatDate(data.testResult.dateTested)}</div>
               </li>
               <li>
                 <b>Test Result</b>
-                <span>{data.result}</span>
+                <div>{data.testResult.result}</div>
               </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-next-steps">
             <h2>Next Steps</h2>
             <p>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum
+              Antigen tests can return inaccurate or false results and follow up
+              testing may be needed. Continue social distancing and wearing a
+              mask. Contact your healthcare provider to determine if additional
+              testing is needed especially if you experience any of these
+              COVID-19 symptoms.
             </p>
+            <ul className="sr-multi-column">
+              <li>Fever or chills</li>
+              <li>Cough</li>
+              <li>Shortness of breath or difficulty breathing</li>
+              <li>Fatigue</li>
+              <li>Muscle or body aches</li>
+              <li>Headache</li>
+              <li>New loss of taste or smell</li>
+              <li>Sore throat</li>
+              <li>Congestion or runny nose</li>
+              <li>Nausea or vomiting</li>
+              <li>Diarrhea</li>
+            </ul>
           </section>
         </main>
         <footer>

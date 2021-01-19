@@ -22,15 +22,18 @@
 .sr-test-results-modal-content {
   font-size: 80% !important;
   background: #fff;
+  margin-top: 2%;
   inset: 3em auto auto auto;
   overflow: auto;
   max-height: 90vh;
   width: 7.6in;
   padding: 0.4in;
-  transform: translate(5%, 5%);
+  //transform: translate(5%, 5%);
 }
 
 .sr-test-results-modal-overlay {
+  display: flex;
+  justify-content: center;
   background-color: rgba(0, 0, 0, 0.8);
   position: fixed;
   top: 0;
@@ -73,6 +76,12 @@
     /* allow dark background on header */
     -webkit-print-color-adjust: exact;
   }
+  ul.sr-multi-column {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    max-height: 14ex;
+  }
   p {
     margin: 1rem;
   }
@@ -95,14 +104,10 @@
     margin: 0.5rem;
   }
   b {
-    display: inline-block;
+    float: left;
     width: 8rem;
   }
-  span {
-    display: inline-block;
-  }
-  .hanging {
-    margin-top: 0.25rem;
-    margin-left: 8rem;
+  div {
+    margin: 0.25rem 0 0.25rem 8rem;
   }
 }

@@ -1,0 +1,19 @@
+.sr-modal-menu-button {
+  border: none;
+  color: #162e51;
+  background: inherit;
+  &:hover {
+    background: inherit;
+  }
+}
+
+/* reset white background on usa-table so we can hover */
+.usa-table .sr-test-result-row {
+  td,
+  th {
+    background-color: inherit;
+  }
+}
+.sr-test-result-row:hover {
+  background-color: #e1f3f8;
+}
