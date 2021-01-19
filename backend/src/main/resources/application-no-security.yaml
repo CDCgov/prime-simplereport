@@ -16,4 +16,4 @@ simple-report-initialization.admin-user:
   last-name: Reynolds
 simple-report:
   admin-emails:
-    - ruby@example.com
+    - bob@example.com

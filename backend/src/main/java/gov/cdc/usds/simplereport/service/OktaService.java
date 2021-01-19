@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import org.springframework.stereotype.Service;
 
 import java.util.Map; 
+import java.util.HashMap; 
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.client.Client;
@@ -41,16 +42,31 @@ public class OktaService {
     }
 
     public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {
-        Map<String,Object> userProfileMap = Map.of(
-            "firstName", userIdentity.getFirstName(),
-            "middleName", userIdentity.getMiddleName(),
-            "lastName", userIdentity.getLastName(),
-            // This is cheating. Suffix and honorific suffix aren't the same thing. Shhh.
-            "honorificSuffix", userIdentity.getSuffix(),
-            // We assume login == email
-            "email", userIdentity.getUsername(),
-            "login", userIdentity.getUsername()
-        );
+        // need to validate fields before adding them because Maps don't like nulls
+        Map<String,Object> userProfileMap = new HashMap<String, Object>();
+        if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
+            userProfileMap.put("firstName", userIdentity.getFirstName());
+        }
+        if (userIdentity.getMiddleName() != null && !userIdentity.getMiddleName().isEmpty()) {
+            userProfileMap.put("middleName", userIdentity.getMiddleName());
+        }
+        if (userIdentity.getLastName() != null && !userIdentity.getLastName().isEmpty()) {
+            userProfileMap.put("lastName", userIdentity.getLastName());
+        } else {
+            // last name is required
+            throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
+        }
+        if (userIdentity.getSuffix() != null && !userIdentity.getSuffix().isEmpty()) {
+            userProfileMap.put("honorificSuffix", userIdentity.getSuffix());
+        }
+        if (userIdentity.getUsername() != null && !userIdentity.getUsername().isEmpty()) {
+            // we assume login == email
+            userProfileMap.put("email", userIdentity.getUsername());
+            userProfileMap.put("login", userIdentity.getUsername());
+        } else {
+            // username is required
+            throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
+        }
 
         // Okta SDK's way of getting a group by group name
         String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
@@ -85,9 +101,12 @@ public class OktaService {
     }
 
     public void deleteOrganization(String externalId) {
-        String groupName = generateGroupName(externalId, OrganizationRole.USER);
-        Group group = _client.listGroups(groupName, null, null).single();
-        group.delete();
+        for (OrganizationRole role : OrganizationRole.values()) {
+            String groupName = generateGroupName(externalId, role);
+            Group group = _client.listGroups(groupName, null, null).single();
+            group.delete();
+        }
+
     }
 
     // returns the external ID of the organization the specified user belongs to
