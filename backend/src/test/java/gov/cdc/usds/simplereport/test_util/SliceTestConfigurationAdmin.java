@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -19,7 +20,7 @@ import com.okta.spring.boot.sdk.config.OktaClientProperties;
  * application context being created. This is not annotated with a Spring
  * stereotype because we very much do not want it to be picked up automatically!
  */
-@Import({ TestDataFactory.class, AuditingConfig.class, OktaService.class, ApiUserService.class, OrganizationInitializingService.class })
+@Import({ TestDataFactory.class, AuditingConfig.class, DeviceTypeService.class, OktaService.class, ApiUserService.class, OrganizationInitializingService.class })
 @EnableConfigurationProperties({InitialSetupProperties.class, OktaClientProperties.class, AuthorizationProperties.class})
 public class SliceTestConfigurationAdmin {
 

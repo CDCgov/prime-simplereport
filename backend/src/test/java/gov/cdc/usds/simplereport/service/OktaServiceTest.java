@@ -4,21 +4,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupType;
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;

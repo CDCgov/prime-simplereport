@@ -4,8 +4,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
