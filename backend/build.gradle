@@ -84,3 +84,19 @@ sonarqube {
 		property "sonar.sources", "backend/src/main/java,frontend/src"
 	}
 }
+
+task testDbStart(type: Exec) {
+    environment "SR_DB_PORT", testDbPort
+    commandLine "docker-compose", "-p", "simple-report-tests", "up", "-d", "db"
+}
+
+task testDbStop(type: Exec) {
+    commandLine "docker-compose", "-p", "simple-report-tests", "down"
+}
+
+test {
+    systemProperty "test-db-port", testDbPort
+    if (System.getenv("CI") == null) {
+        dependsOn testDbStart
+    }
+}

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
@@ -19,6 +19,8 @@ import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupType;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
@@ -39,7 +41,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         "simple-report.authorization.role-prefix=TEST-TENANT:",
 })
 @ActiveProfiles("dev")
-@WithMockUser(authorities = { "TEST-TENANT:DIS_ORG:USER" })
+@Import(SliceTestConfiguration.class)
+@WithSimpleReportStandardUser
 @EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseServiceTest<T> {
 
