@@ -19,7 +19,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.OktaService;
 
 @Service
-@Transactional
+@Transactional(readOnly = false)
 public class ApiUserService {
 
     private AdminEmailList _admins;
@@ -43,7 +43,7 @@ public class ApiUserService {
 
     @Transactional
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
-        //TODO: uncomment isAdminUser();
+        isAdminUser();
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
         _oktaService.createUser(userIdentity, organizationExternalId);
@@ -52,7 +52,7 @@ public class ApiUserService {
 
     @Transactional
     public ApiUser updateUser(String Id, String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix) {
-        //TODO: uncomment isAdminUser();
+        isAdminUser();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(oldUsername);
         if (!found.isPresent()) {
             throw new IllegalGraphqlArgumentException("Cannot update User whose email does not exist");

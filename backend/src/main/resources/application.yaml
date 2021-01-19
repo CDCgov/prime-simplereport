@@ -31,7 +31,7 @@ graphql:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
-    client-id: ${clientID}
+    client-id: ${OKTA_OAUTH2_CLIENT_ID}
     client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
     groups-claim: ${simple-report.authorization.role-claim}
   client:

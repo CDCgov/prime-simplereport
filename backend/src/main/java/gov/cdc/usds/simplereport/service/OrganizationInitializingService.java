@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.PreDestroy;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class OrganizationInitializingService {
 	private DeviceTypeRepository _deviceTypeRepo;
 	@Autowired
 	private FacilityRepository _facilityRepo;
+	@Autowired
+	private OktaService _oktaService;
 
 	public void initAll() {
 		LOG.debug("Organization init called (again?)");
@@ -62,6 +66,7 @@ public class OrganizationInitializingService {
 		DeviceType defaultDeviceType = configured.get(0);
 		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
 		Organization realOrg = _orgRepo.save(emptyOrg);
+		_oktaService.createOrganization(emptyOrg.getOrganizationName(), emptyOrg.getExternalId());
 		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
 		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
 		_facilityRepo.save(defaultFacility);
@@ -70,4 +75,11 @@ public class OrganizationInitializingService {
 	public String getDefaultOrganizationId() {
 		return _props.getOrganization().getExternalId();
 	}
+
+	@PreDestroy
+    public void preDestroy() {
+		Organization emptyOrg = _props.getOrganization();
+		LOG.info("Removing organization {} from Okta", emptyOrg.getOrganizationName());
+        _oktaService.deleteOrganization(emptyOrg.getExternalId());
+    }
 }

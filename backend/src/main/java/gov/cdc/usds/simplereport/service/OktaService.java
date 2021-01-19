@@ -24,6 +24,8 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 /**
+ * Created by jeremyzitomer-usds on 1/7/21
+ * 
  * Handles all user/organization management in Okta
  */
 @Service
@@ -34,15 +36,7 @@ public class OktaService {
 
     public OktaService(AuthorizationProperties authorizationProperties,
                        OktaClientProperties oktaClientProperties) {
-        // TODO: remove these print lines
-        System.out.print("ORG IS ");
-        System.out.print(oktaClientProperties.getOrgUrl());
-        System.out.print("API TOKEN IS ");
-        System.out.print(oktaClientProperties.getToken());
-
         _rolePrefix = authorizationProperties.getRolePrefix();
-        System.out.print("ROLE PREFIX IS ");
-        System.out.print(_rolePrefix);
         _client = Clients.builder()
                 .setOrgUrl(oktaClientProperties.getOrgUrl())
                 .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
@@ -93,24 +87,27 @@ public class OktaService {
         }
     }
 
+    public void deleteOrganization(String externalId) {
+        String groupName = generateGroupName(externalId, OrganizationRole.USER);
+        Group group = _client.listGroups(groupName, null, null).single();
+        group.delete();
+    }
+
     // returns the external ID of the organization the specified user belongs to
     public String getOrganizationExternalIdForUser(String username) {
         User user = _client.listUsers(username, null, null, null, null).single();
-        GroupList oldGroups = user.listGroups();
-        List<String> orgNames = new ArrayList<String>();
-        oldGroups.forEach(g->{
+        for (Group g : user.listGroups()) {
             String groupName = g.getProfile().getName();
+            // We assume that a user is only a member of one user group
             if (g.getType() == GroupType.OKTA_GROUP &&
                     groupName.startsWith(_rolePrefix) &&
                     groupName.endsWith(generateRoleSuffix(OrganizationRole.USER))) {
-                orgNames.add(groupName);
+                return getOrganizationExternalIdFromGroupName(groupName, 
+                                                              OrganizationRole.USER);
             }
-        });
+        }
 
-        // We assume that a user can only be a member of one user group
-        String externalId = getOrganizationExternalIdFromGroupName(orgNames.get(0), 
-                                                                   OrganizationRole.USER);
-        return externalId;
+        throw new IllegalGraphqlArgumentException("User is not in any Okta user groups");
     }
 
     private String generateGroupName(String externalId, OrganizationRole role) {
