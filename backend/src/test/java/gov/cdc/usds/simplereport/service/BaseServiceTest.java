@@ -40,7 +40,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         "spring.main.web-application-type=NONE",
         "simple-report.authorization.role-prefix=TEST-TENANT:",
 })
-@ActiveProfiles("dev")
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser
 @EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
