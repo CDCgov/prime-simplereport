@@ -38,7 +38,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
         "spring.main.web-application-type=NONE",
         "simple-report.authorization.role-prefix=TEST-TENANT:",
 })
-@ActiveProfiles({"okta-dev","dev"})
+@ActiveProfiles("dev")
 @WithMockUser(authorities = { "TEST-TENANT:DIS_ORG:USER" })
 @EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseServiceTest<T> {
@@ -86,6 +86,7 @@ public abstract class BaseServiceTest<T> {
     protected void clearOktaUsers() {
         for (User u : _oktaClient.listUsers()) {
             if (getOktaTestUsernames().contains(u.getProfile().getLogin())) {
+                u.deactivate();
                 u.delete();
             }
         }

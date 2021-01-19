@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.group.Group;
+import com.okta.sdk.resource.ResourceException;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
@@ -33,8 +33,7 @@ public class OktaServiceTest extends BaseServiceTestOrgUser<OktaService> {
                                                         CHARLES.getUsername(),
                                                         DEXTER.getUsername(),
                                                         ELIZABETH.getUsername(),
-                                                        FRANK.getUsername(),
-                                                        GEORGE.getUsername());
+                                                        FRANK.getUsername());
 
     private static final Organization ABC = new Organization("ABC Network", "ABC");
     private static final Organization DEF = new Organization("DEF Alliance", "DEF");
@@ -132,7 +131,7 @@ public class OktaServiceTest extends BaseServiceTestOrgUser<OktaService> {
         _service.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
         _service.createUser(FRANK, ABC.getExternalId());
 
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(ResourceException.class, () -> {
             _service.createUser(GEORGE, ABC.getExternalId());
         });
 
@@ -152,7 +151,7 @@ public class OktaServiceTest extends BaseServiceTestOrgUser<OktaService> {
     @Test
     public void createOrganization_duplicateExternalIds() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(ResourceException.class, () -> {
             _service.createOrganization(GHI_DUP.getOrganizationName(), GHI_DUP.getExternalId());
         });
 
