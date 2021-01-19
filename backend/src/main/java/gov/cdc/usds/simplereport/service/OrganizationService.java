@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -27,7 +28,6 @@ public class OrganizationService {
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
-    private ApiUserService _apiUserService;
     private AuthorizationService _authService;
 
 
@@ -40,7 +40,6 @@ public class OrganizationService {
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
-        _apiUserService = apiUserService;
     }
 
     public Organization getCurrentOrganization() {
@@ -159,10 +158,10 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
             String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
-        _apiUserService.isAdminUser();
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));

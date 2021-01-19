@@ -9,8 +9,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.security.access.AccessDeniedException;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -31,7 +31,7 @@ public class OrganizationServiceTest extends BaseServiceTest<OrganizationService
 
     @Test
     public void createOrganization_standardUser_error() {
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
             List<DeviceType> configuredDevices = new ArrayList<>();
             DeviceType device = new DeviceType("Bill", "Weasleys", "1", "12345-6");
             configuredDevices.add(device);
@@ -43,7 +43,7 @@ public class OrganizationServiceTest extends BaseServiceTest<OrganizationService
                     addy, "123-456-7890", "test@foo.com", holder, bill, addy, "123-456-7890", "547329472");
         });
 
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertEquals("Access is denied", exception.getMessage());
     }
 
     @Test
