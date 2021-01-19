@@ -1,5 +1,6 @@
+import moment from "moment";
+
 import { formatFullName } from "../../utils/user";
-import { formatBirthDate } from "../../utils/date";
 import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants"
 
 import Button from "../../commonComponents/Button";
@@ -10,7 +11,6 @@ interface Props {
 
 const PatientProfile = (props: Props) => {
   const fullName = formatFullName(props.patient);
-  const birthDate = formatBirthDate(props.patient.birthDate);
   const race =  RACE_VALUES.find(val => val.value === props.patient.race)?.label;
   const ethnicity =  ETHNICITY_VALUES.find(val => val.value === props.patient.ethnicity)?.label;
   const gender =  GENDER_VALUES.find(val => val.value === props.patient.gender)?.label;
@@ -76,7 +76,7 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">Name</h3>
         <p>{fullName}</p>
         <h3 className="font-heading-sm">Date of birth</h3>
-        <p>{birthDate || notProvided}</p>
+        <p>{props.patient.birthDate? moment(props.patient.birthDate).format("MM/DD/yyyy") : notProvided}</p>
         <h3 className="font-heading-sm">Phone number</h3>
         <p>{props.patient.telephone || notProvided}</p>
         {/* <h3 className="font-heading-sm">Phone type</h3>

@@ -5,7 +5,3 @@ export const daysSince = (date: moment.Moment): String => {
   const days = now.diff(date, "days");
   return `${days} day${days === 1 ? "" : "s"}`;
 };
-
-export const formatBirthDate = (date: moment.Moment): String => {
-  return `${moment(date).format('L')}`
-}
