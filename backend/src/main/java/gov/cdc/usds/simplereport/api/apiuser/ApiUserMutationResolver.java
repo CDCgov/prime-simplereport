@@ -1,23 +1,13 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.api.model.ApiFacility;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 

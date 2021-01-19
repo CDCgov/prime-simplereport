@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import org.springframework.stereotype.Service;
 
 import java.util.Map; 
-import java.util.List;
-import java.util.ArrayList;
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.client.Client;
@@ -12,7 +10,6 @@ import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
