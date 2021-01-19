@@ -45,7 +45,7 @@ export const RACE_VALUES = [
   },
   {
     value: "refused",
-    label: "Refused to Answer",
+    label: "Refused to answer",
   },
 ];
 
