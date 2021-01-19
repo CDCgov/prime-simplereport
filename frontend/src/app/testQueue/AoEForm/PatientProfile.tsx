@@ -1,5 +1,5 @@
 import { formatFullName } from "../../utils/user";
-import { formatBirthDate} from "../../utils/date";
+import { formatBirthDate } from "../../utils/date";
 import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants"
 
 import Button from "../../commonComponents/Button";
@@ -15,6 +15,37 @@ const PatientProfile = (props: Props) => {
   const ethnicity =  ETHNICITY_VALUES.find(val => val.value === props.patient.ethnicity)?.label;
   const gender =  GENDER_VALUES.find(val => val.value === props.patient.gender)?.label;
 
+  const formattedAddress = () => {
+    const lastAddressLine = `${props.patient.city}${
+      props.patient.state && props.patient.city ? ", " : ""
+    }${props.patient.state}${
+      props.patient.state || props.patient.city && props.patient.zipCode ? " " : ""
+    }${props.patient.zipCode}`;
+
+    let result = props.patient.street;
+    result += `${
+      result.length > 0
+        ? "\n" + props.patient.streetTwo
+        : props.patient.streetTwo
+    }`;
+    result += `${result.length > 0 ? "\n" + lastAddressLine : lastAddressLine}`;
+    return result;
+  };
+
+  const newLineSpan = ({text = ''}) => {
+    return (
+      text.split("\n").map((str) =>
+        <span className="display-block">{str}</span>
+      )
+    );
+  }
+
+  const capitalize = ({text = ''}) => {
+    const answer = text.toLowerCase()
+    return answer.charAt(0).toUpperCase() + answer.slice(1);
+  }
+
+  const address = formattedAddress()
   const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
@@ -51,15 +82,7 @@ const PatientProfile = (props: Props) => {
         {/* <h3 className="font-heading-sm">Phone type</h3>
         <p></p> */}
         <h3 className="font-heading-sm">Address</h3>
-        <p>
-          <span className="display-block">{props.patient.street}</span>
-          <span className="display-block">{props.patient.streetTwo}</span>
-          <span>
-            {props.patient.city}
-            {props.patient.city ? <span>,</span> : null} {props.patient.state}{" "}
-            {props.patient.zipCode}
-          </span>
-        </p>
+        <p>{address ? newLineSpan({ text: address }) : notProvided}</p>
         <h3 className="font-heading-sm">Email address</h3>
         <p>{props.patient.email || notProvided}</p>
         <h2 className="prime-formgroup-heading font-heading-lg">
@@ -77,9 +100,17 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">
           Resident in congregate care/living setting
         </h3>
-        <p>{props.patient.residentCongregateSetting || notProvided}</p>
+        <p>
+          {props.patient.residentCongregateSetting
+            ? capitalize({ text: props.patient.residentCongregateSetting })
+            : notProvided}
+        </p>
         <h3 className="font-heading-sm">Employed in healthcare</h3>
-        <p>{props.patient.employedInHealthcare || notProvided}</p>
+        <p>
+          {props.patient.employedInHealthcare
+            ? capitalize({ text: props.patient.employedInHealthcare })
+            : notProvided}
+        </p>
       </div>
       {buttonGroup}
     </>
