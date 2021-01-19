@@ -1,11 +1,11 @@
 # external state
-data "terraform_remote_state" "persistent_stg" {
+data "terraform_remote_state" "persistent_prod" {
   backend = "azurerm"
   config = {
     resource_group_name  = "prime-simple-report-test"
     storage_account_name = "usdssimplereportglobal"
     container_name       = "sr-tfstate"
-    key                  = "stg/persistent-terraform.tfstate"
+    key                  = "prod/persistent-terraform.tfstate"
   }
 }
 
@@ -53,12 +53,12 @@ data "azurerm_key_vault_secret" "sr_db_jdbc" {
 
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
-  name         = "datahub-api-key-dev"
+  name         = "datahub-api-key-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
-  name         = "slack-notify-webhook-url-dev"
+  name         = "slack-notify-webhook-url-prod"
   key_vault_id = data.azurerm_key_vault.global.id
 }
 

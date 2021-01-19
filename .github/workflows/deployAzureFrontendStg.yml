@@ -2,11 +2,10 @@ name: Deploy Staging Frontend Azure Resources
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main # TODO change to stg for branch based deploys
-    paths:
-      - "frontend/**"
+    env:
+      description: 'environment to deploy'
+      default: 'stg'
+      required: true
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}

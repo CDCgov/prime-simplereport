@@ -1,10 +1,10 @@
-name: Deploy Staging Backend Azure Resources
+name: Deploy Production Backend Azure Resources
 
 on:
   workflow_dispatch:
     env:
       description: 'environment to deploy'
-      default: 'stg'
+      default: 'prod'
       required: true
 
 defaults:
@@ -33,8 +33,8 @@ jobs:
           ./build_and_push.sh
       - uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
-        working-directory: ${{ github.workspace }}/ops/stg
+        working-directory: ${{ github.workspace }}/ops/prod
         run: terraform init
       - name: Azure deploy Api
-        working-directory: ${{ github.workspace }}/ops/stg
+        working-directory: ${{ github.workspace }}/ops/prod
         run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
