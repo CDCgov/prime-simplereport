@@ -18,7 +18,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 import gov.cdc.usds.simplereport.service.OktaService;
 
-public class OktaServiceTest extends BaseServiceTestOrgUser<OktaService> {
+public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     private static final IdentityAttributes AMOS = new IdentityAttributes("aquint@gmail.com", "Amos", null, "Quint", null);
     private static final IdentityAttributes BRAD = new IdentityAttributes("bzj@msn.com", "Bradley", "Z.", "Jones", "Jr.");

@@ -41,7 +41,7 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     window.location.replace(
-      `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=https://simplereport.cdc.gov&state=${state}`
+      `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=${process.env.REACT_APP_OKTA_URL}&state=${state}`
     );
   };
 

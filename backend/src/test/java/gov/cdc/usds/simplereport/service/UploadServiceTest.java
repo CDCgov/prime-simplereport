@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
-class UploadServiceTest extends BaseServiceTestOrgUser<UploadService> {
+class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Autowired
     private PersonService _ps;
