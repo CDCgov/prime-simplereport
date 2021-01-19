@@ -14,6 +14,8 @@ import {
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../config/constants";
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
+
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -409,57 +411,21 @@ const PatientForm = (props: Props) => {
           <RadioGroup
             legend="Race"
             name="race"
-            buttons={[
-              {
-                value: "native",
-                label: "American Indian or Alaskan Native",
-              },
-              {
-                value: "asian",
-                label: "Asian",
-              },
-              {
-                value: "black",
-                label: "Black or African American",
-              },
-              {
-                value: "pacific",
-                label: "Native Hawaiian or other Pacific Islander",
-              },
-              {
-                value: "white",
-                label: "White",
-              },
-              {
-                value: "unknown",
-                label: "Unknown",
-              },
-              {
-                value: "refused",
-                label: "Refused to Answer",
-              },
-            ]}
+            buttons={RACE_VALUES}
             selectedRadio={patient.race}
             onChange={onChange}
           />
           <RadioGroup
             legend="Ethnicity"
             name="ethnicity"
-            buttons={[
-              { label: "Hispanic or Latino", value: "hispanic" },
-              { label: "Not Hispanic", value: "not_hispanic" },
-            ]}
+            buttons={ETHNICITY_VALUES}
             selectedRadio={patient.ethnicity}
             onChange={onChange}
           />
           <RadioGroup
             legend="Biological Sex"
             name="gender"
-            buttons={[
-              { label: "Male", value: "male" },
-              { label: "Female", value: "female" },
-              { label: "Other", value: "other" },
-            ]}
+            buttons={GENDER_VALUES}
             selectedRadio={patient.gender}
             onChange={onChange}
           />

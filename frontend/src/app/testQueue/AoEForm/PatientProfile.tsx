@@ -1,4 +1,7 @@
-import { displayFullName } from "../../utils";
+import { formatFullName } from "../../utils/user";
+import { formatBirthDate} from "../../utils/date";
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants"
+
 import Button from "../../commonComponents/Button";
 
 interface Props {
@@ -6,15 +9,18 @@ interface Props {
 }
 
 const PatientProfile = (props: Props) => {
-  const fullName = displayFullName(
-    props.patient.firstName,
-    props.patient.middleName,
-    props.patient.lastName
-  );
+  const fullName = formatFullName(props.patient);
+  const birthDate = formatBirthDate(props.patient.birthDate);
+  const race =  RACE_VALUES.find(val => val.value === props.patient.race)?.label;
+  const ethnicity =  ETHNICITY_VALUES.find(val => val.value === props.patient.ethnicity)?.label;
+  const gender =  GENDER_VALUES.find(val => val.value === props.patient.gender)?.label;
+
+  const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
     console.log("saved");
   };
+
 
   const buttonGroup = (
     <div className="margin-top-3">
@@ -27,8 +33,8 @@ const PatientProfile = (props: Props) => {
       <div className="usa-alert usa-alert--info margin-bottom-3">
         <div className="usa-alert__body">
           <p className="usa-alert__text">
-            Confirm that your profile info is correct. If it's incorrect, tell the
-            test administrator.
+            Confirm that your profile info is correct. If it's incorrect, tell
+            the test administrator.
           </p>
         </div>
       </div>
@@ -39,11 +45,11 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">Name</h3>
         <p>{fullName}</p>
         <h3 className="font-heading-sm">Date of birth</h3>
-        <p>{props.patient.birthDate}</p>
+        <p>{birthDate || notProvided}</p>
         <h3 className="font-heading-sm">Phone number</h3>
-        <p>{props.patient.telephone}</p>
-        <h3 className="font-heading-sm">Phone type</h3>
-        <p></p>
+        <p>{props.patient.telephone || notProvided}</p>
+        {/* <h3 className="font-heading-sm">Phone type</h3>
+        <p></p> */}
         <h3 className="font-heading-sm">Address</h3>
         <p>
           <span className="display-block">{props.patient.street}</span>
@@ -55,25 +61,25 @@ const PatientProfile = (props: Props) => {
           </span>
         </p>
         <h3 className="font-heading-sm">Email address</h3>
-        <p>{props.patient.email}</p>
+        <p>{props.patient.email || notProvided}</p>
         <h2 className="prime-formgroup-heading font-heading-lg">
           Demographics
         </h2>
         <h3 className="font-heading-sm">Race</h3>
-        <p>{props.patient.race}</p>
-        <h3 className="font-heading-sm">Tribal affiliation</h3>
-        <p></p>
+        <p>{race || notProvided}</p>
+        {/* <h3 className="font-heading-sm">Tribal affiliation</h3>
+        <p></p> */}
         <h3 className="font-heading-sm">Ethnicity</h3>
-        <p>{props.patient.ethnicity}</p>
+        <p>{ethnicity || notProvided}</p>
         <h3 className="font-heading-sm">Biological sex</h3>
-        <p>{props.patient.gender}</p>
+        <p>{gender || notProvided}</p>
         <h2 className="prime-formgroup-heading font-heading-lg">Other</h2>
         <h3 className="font-heading-sm">
           Resident in congregate care/living setting
         </h3>
-        <p>{props.patient.residentCongregateSetting}</p>
+        <p>{props.patient.residentCongregateSetting || notProvided}</p>
         <h3 className="font-heading-sm">Employed in healthcare</h3>
-        <p>{props.patient.employedInHealthcare}</p>
+        <p>{props.patient.employedInHealthcare || notProvided}</p>
       </div>
       {buttonGroup}
     </>
