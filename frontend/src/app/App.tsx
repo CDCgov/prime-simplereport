@@ -9,7 +9,6 @@ import { reactPlugin } from "./AppInsights";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
-import PatientHeader from "./commonComponents/PatientHeader";
 
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
@@ -23,9 +22,7 @@ import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer"
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import WithFacility from "./facilitySelect/WithFacility";
-import AoEPatientFormContainer from "./testQueue/AoEForm/AoEPatientFormContainer";
-import DOB from "./testQueue/AoEForm/DOB";
-import PatientLanding from "./testQueue/AoEForm/PatientLanding";
+
 const WHOAMI_QUERY = gql`
   query WhoAmI {
     whoami {
@@ -121,7 +118,6 @@ const App = () => {
             <div id="main-wrapper">
               <USAGovBanner />
               <Header />
-              <PatientHeader />
               <Switch>
                 <Route path="/login" component={LoginView} />
                 <Route
@@ -147,36 +143,6 @@ const App = () => {
                   path={`/patients`}
                   render={() => {
                     return <ManagePatientsContainer />;
-                  }}
-                />
-                <Route
-                  path={`/patient/:patientId/dob`}
-                  render={() => {
-                    return <DOB />;
-                  }}
-                />
-                <Route
-                  path={`/patient/:patientId/profile`}
-                  render={({ match }) => (
-                    <AoEPatientFormContainer
-                      page={"profile"}
-                      patientId={match.params.patientId}
-                    />
-                  )}
-                />
-                <Route
-                  path={`/patient/:patientId/symptoms`}
-                  render={({ match }) => (
-                    <AoEPatientFormContainer
-                      page={"symptoms"}
-                      patientId={match.params.patientId}
-                    />
-                  )}
-                />
-                <Route
-                  path={`/patient/:patientId/home`}
-                  render={() => {
-                    return <PatientLanding />;
                   }}
                 />
                 <Route
