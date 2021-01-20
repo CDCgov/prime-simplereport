@@ -166,7 +166,7 @@ const PriorTestInputs = ({
           <b>Was this your most recent COVID-19 test?</b>
           <Optional/>
         </div>
-        <p className="margin-top-2 prime-previous-test-display margin-bottom-0 line-height-sans-5">
+        <p className="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
           {moment(mostRecentTest.dateTested).format("LLLL")}<br />
           <b>Type: </b>
