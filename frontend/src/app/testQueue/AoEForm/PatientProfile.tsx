@@ -23,7 +23,7 @@ const PatientProfile = (props: Props) => {
     const hasCityZipCode = props.patient.city && props.patient.zipCode;
     const lastAddressLine = `${props.patient.city}${
       props.patient.state && props.patient.city ? ", " : ""
-    }${props.patient.state}${props.patient.state || hasCityZipCode ? " " : ""}${
+    }${props.patient.state}${props.patient.state && hasCityZipCode ? " " : ""}${
       props.patient.zipCode
     }`;
 
