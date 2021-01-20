@@ -1,7 +1,7 @@
 import moment from "moment";
 
 import { formatFullName } from "../../utils/user";
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants"
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
 
 import Button from "../../commonComponents/Button";
 
@@ -11,17 +11,21 @@ interface Props {
 
 const PatientProfile = (props: Props) => {
   const fullName = formatFullName(props.patient);
-  const race =  RACE_VALUES.find(val => val.value === props.patient.race)?.label;
-  const ethnicity =  ETHNICITY_VALUES.find(val => val.value === props.patient.ethnicity)?.label;
-  const gender =  GENDER_VALUES.find(val => val.value === props.patient.gender)?.label;
+  const race = RACE_VALUES.find((val) => val.value === props.patient.race)
+    ?.label;
+  const ethnicity = ETHNICITY_VALUES.find(
+    (val) => val.value === props.patient.ethnicity
+  )?.label;
+  const gender = GENDER_VALUES.find((val) => val.value === props.patient.gender)
+    ?.label;
 
   const formattedAddress = () => {
     const hasCityZipCode = props.patient.city && props.patient.zipCode;
     const lastAddressLine = `${props.patient.city}${
       props.patient.state && props.patient.city ? ", " : ""
-    }${props.patient.state}${
-      props.patient.state || hasCityZipCode ? " " : ""
-    }${props.patient.zipCode}`;
+    }${props.patient.state}${props.patient.state || hasCityZipCode ? " " : ""}${
+      props.patient.zipCode
+    }`;
 
     let result = props.patient.street;
     result += `${
@@ -33,26 +37,23 @@ const PatientProfile = (props: Props) => {
     return result;
   };
 
-  const newLineSpan = ({text = ''}) => {
-    return (
-      text.split("\n").map((str) =>
-        <span className="display-block">{str}</span>
-      )
-    );
-  }
+  const newLineSpan = ({ text = "" }) => {
+    return text
+      .split("\n")
+      .map((str) => <span className="display-block">{str}</span>);
+  };
 
-  const capitalize = ({text = ''}) => {
-    const answer = text.toLowerCase()
+  const capitalize = ({ text = "" }) => {
+    const answer = text.toLowerCase();
     return answer.charAt(0).toUpperCase() + answer.slice(1);
-  }
+  };
 
-  const address = formattedAddress()
+  const address = formattedAddress();
   const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
     console.log("saved");
   };
-
 
   const buttonGroup = (
     <div className="margin-top-3">
@@ -65,8 +66,8 @@ const PatientProfile = (props: Props) => {
       <div className="usa-alert usa-alert--info margin-bottom-3">
         <div className="usa-alert__body">
           <p className="usa-alert__text">
-            Confirm that your profile info is correct. If it’s incorrect, tell the
-            test administrator.
+            Confirm that your profile info is correct. If it’s incorrect, tell
+            the test administrator.
           </p>
         </div>
       </div>
@@ -77,7 +78,11 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">Name</h3>
         <p>{fullName}</p>
         <h3 className="font-heading-sm">Date of birth</h3>
-        <p>{props.patient.birthDate? moment(props.patient.birthDate).format("MM/DD/yyyy") : notProvided}</p>
+        <p>
+          {props.patient.birthDate
+            ? moment(props.patient.birthDate).format("MM/DD/yyyy")
+            : notProvided}
+        </p>
         <h3 className="font-heading-sm">Phone number</h3>
         <p>{props.patient.telephone || notProvided}</p>
         {/* <h3 className="font-heading-sm">Phone type</h3>

@@ -66,7 +66,7 @@ const SymptomInputs = ({
               }))}
             />
           </>
-          )}
+        )}
       </div>
       {!noSymptoms && (
         <TextInput
@@ -163,13 +163,15 @@ const PriorTestInputs = ({
       <>
         <div className="margin-top-2">
           <b>Was this your most recent COVID-19 test?</b>
-          <Optional/>
+          <Optional />
         </div>
         <p className="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
-          {moment(mostRecentTest.dateTested).format("LLLL")}<br />
+          {moment(mostRecentTest.dateTested).format("LLLL")}
+          <br />
           <b>Type: </b>
-          Antigen<br />
+          Antigen
+          <br />
           <b>Result: </b>
           {mostRecentTest.result}
         </p>
@@ -288,18 +290,19 @@ const AoEForm = ({
   const [symptomError, setSymptomError] = useState(null);
   const [symptomOnsetError, setSymptomOnsetError] = useState(null);
 
-
   const isValidForm = () => {
-    const hasSymptoms = Object.keys(currentSymptoms).some((key) => currentSymptoms[key]);
+    const hasSymptoms = Object.keys(currentSymptoms).some(
+      (key) => currentSymptoms[key]
+    );
     if (!noSymptoms && !hasSymptoms) {
-      setSymptomError('Select your symptoms')
-      setSymptomOnsetError(null)
+      setSymptomError("Select your symptoms");
+      setSymptomOnsetError(null);
       return false;
     }
 
     if (noSymptoms) {
-      setSymptomError(null)
-      setSymptomOnsetError(null)
+      setSymptomError(null);
+      setSymptomOnsetError(null);
       return true;
     }
 
@@ -381,13 +384,17 @@ const AoEForm = ({
       {isModal && (
         <Button variant="unstyled" label="Cancel" onClick={onClose} />
       )}
-      <Button label={saveButtonText} type={"submit"}/>
+      <Button label={saveButtonText} type={"submit"} />
     </div>
   );
 
   return (
     <>
-      <form onSubmit={(e) => { saveAnswers(e); }}>
+      <form
+        onSubmit={(e) => {
+          saveAnswers(e);
+        }}
+      >
         {isModal && (
           <>
             {buttonGroup}

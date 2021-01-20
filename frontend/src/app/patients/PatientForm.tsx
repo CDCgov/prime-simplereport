@@ -408,51 +408,51 @@ const PatientForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Demographics">
-          <RadioGroup
-            legend="Race"
-            name="race"
-            buttons={RACE_VALUES}
-            selectedRadio={patient.race}
-            onChange={onChange}
-          />
-          <RadioGroup
-            legend="Ethnicity"
-            name="ethnicity"
-            buttons={ETHNICITY_VALUES}
-            selectedRadio={patient.ethnicity}
-            onChange={onChange}
-          />
-          <RadioGroup
-            legend="Biological Sex"
-            name="gender"
-            buttons={GENDER_VALUES}
-            selectedRadio={patient.gender}
-            onChange={onChange}
-          />
+        <RadioGroup
+          legend="Race"
+          name="race"
+          buttons={RACE_VALUES}
+          selectedRadio={patient.race}
+          onChange={onChange}
+        />
+        <RadioGroup
+          legend="Ethnicity"
+          name="ethnicity"
+          buttons={ETHNICITY_VALUES}
+          selectedRadio={patient.ethnicity}
+          onChange={onChange}
+        />
+        <RadioGroup
+          legend="Biological Sex"
+          name="gender"
+          buttons={GENDER_VALUES}
+          selectedRadio={patient.gender}
+          onChange={onChange}
+        />
       </FormGroup>
       <FormGroup title="Other">
-          <RadioGroup
-            legend="Resident in congregate care/living setting?"
-            name="residentCongregateSetting"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
-            selectedRadio={patient.residentCongregateSetting}
-            onChange={onChange}
-            required
-          />
-          <RadioGroup
-            legend="Work in Healthcare?"
-            name="employedInHealthcare"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
-            selectedRadio={patient.employedInHealthcare}
-            onChange={onChange}
-            required
-          />
+        <RadioGroup
+          legend="Resident in congregate care/living setting?"
+          name="residentCongregateSetting"
+          buttons={[
+            { label: "Yes", value: "YES" },
+            { label: "No", value: "NO" },
+          ]}
+          selectedRadio={patient.residentCongregateSetting}
+          onChange={onChange}
+          required
+        />
+        <RadioGroup
+          legend="Work in Healthcare?"
+          name="employedInHealthcare"
+          buttons={[
+            { label: "Yes", value: "YES" },
+            { label: "No", value: "NO" },
+          ]}
+          selectedRadio={patient.employedInHealthcare}
+          onChange={onChange}
+          required
+        />
       </FormGroup>
       <FormGroup title="Test History">
         {patient.testResults && patient.testResults.length !== 0 && (

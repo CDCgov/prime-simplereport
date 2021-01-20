@@ -471,7 +471,8 @@
   }
 
   .usa-step-indicator__segment::before {
-    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"), 0 0 0 0.25rem color("base-lightest");
+    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"),
+      0 0 0 0.25rem color("base-lightest");
   }
 
   .usa-step-indicator__segment--complete,

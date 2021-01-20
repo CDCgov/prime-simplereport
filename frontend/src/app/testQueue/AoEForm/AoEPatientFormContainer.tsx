@@ -67,16 +67,14 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
       label: "Symptoms and history",
       value: "symptoms",
       order: 1,
-      isCurrent: page === "symptoms"
+      isCurrent: page === "symptoms",
     },
   ];
 
   return (
     <main className="patient-app patient-app--form padding-bottom-4">
       <div className="grid-container maxw-tablet">
-        <StepIndicator
-          steps={steps}
-        />
+        <StepIndicator steps={steps} />
         {page === "symptoms" && (
           <AoEForm
             patient={{

@@ -6,24 +6,27 @@ import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 
 const DOB = () => {
-  const [birthDateResponse, setBirthDateResponse] = useState('');
-  const [birthDateError, setBirthDateError] = useState('');
+  const [birthDateResponse, setBirthDateResponse] = useState("");
+  const [birthDateError, setBirthDateError] = useState("");
 
   const isValidForm = () => {
-    const validDate = moment(birthDateResponse.replace('/', ''), "MMDDDYYYY").isValid();
+    const validDate = moment(
+      birthDateResponse.replace("/", ""),
+      "MMDDDYYYY"
+    ).isValid();
 
     if (validDate) {
-      setBirthDateError('');
+      setBirthDateError("");
       return true;
     } else {
-      setBirthDateError('Enter your date of birth');
+      setBirthDateError("Enter your date of birth");
       return false;
     }
-  }
+  };
 
   const confirmBirthDate = () => {
     if (isValidForm()) {
-      console.log("saved")
+      console.log("saved");
     }
   };
 
