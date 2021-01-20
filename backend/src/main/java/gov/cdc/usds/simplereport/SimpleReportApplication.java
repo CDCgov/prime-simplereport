@@ -12,8 +12,6 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
-import java.util.TimeZone;
-import javax.annotation.PostConstruct;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 
@@ -27,11 +25,6 @@ import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 })
 @EnableScheduling
 public class SimpleReportApplication {
-
-   @PostConstruct
-    public void init(){
-        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-    }
 
     public static void main(String[] args) {
         SpringApplication.run(SimpleReportApplication.class, args);
