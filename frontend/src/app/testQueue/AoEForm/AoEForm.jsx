@@ -169,7 +169,8 @@ const PriorTestInputs = ({
         <p className="margin-top-2 prime-previous-test-display margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
           {moment(mostRecentTest.dateTested).format("LLLL")}<br />
-          <b>Type: </b> Antigen<br />
+          <b>Type: </b>
+          Antigen<br />
           <b>Result: </b>
           {mostRecentTest.result}
         </p>
