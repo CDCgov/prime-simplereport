@@ -1,12 +1,6 @@
-// import Button from "../../commonComponents/Button";
-// import { displayFullName } from "../../utils";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const PatientLanding = () => {
-  // const savePatientAnswers = () => {
-  //   console.log("saved");
-  // };
-
   return (
     <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">

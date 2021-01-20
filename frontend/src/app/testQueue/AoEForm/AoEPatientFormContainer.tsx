@@ -87,8 +87,6 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
             facilityId={facilityId}
             isModal={false}
             saveButtonText="Submit"
-            onClose={null}
-            saveCallback={null}
           />
         )}
         {page === "profile" && (

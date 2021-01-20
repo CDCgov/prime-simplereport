@@ -1,5 +1,4 @@
 import React from "react";
-import "./FormGroup.scss";
 
 interface Props {
   title: string;

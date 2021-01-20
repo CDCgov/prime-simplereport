@@ -2,6 +2,8 @@ import React from "react";
 import classnames from "classnames";
 import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
+import Optional from "./Optional";
+
 interface Props {
   id?: string;
   name: string;
@@ -78,7 +80,7 @@ export const TextInput = ({
         htmlFor={widgetId}
         aria-describedby={ariaDescribedBy}
       >
-        {required ? <Required label={label} /> : label}
+        {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {validationStatus === "error" && (
         <span role="alert" className="usa-error-message" id={errorId}>

@@ -243,11 +243,11 @@ const PriorTestInputs = ({
 
 const AoEForm = ({
   saveButtonText,
-  onClose,
+  onClose = {},
   patient,
   facilityId,
   loadState = {},
-  saveCallback,
+  saveCallback = {},
   isModal,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,

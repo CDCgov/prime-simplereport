@@ -1,7 +1,5 @@
 import React from "react";
 import Modal from "react-modal";
-
-import "./AoEModalForm.scss";
 import AoEForm from "./AoEForm";
 
 const AoEModalForm = ({

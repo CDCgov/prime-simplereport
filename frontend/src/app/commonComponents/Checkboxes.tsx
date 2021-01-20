@@ -1,6 +1,8 @@
 import React from "react";
 import classnames from "classnames";
 import useUniqueIds from "./useUniqueIds";
+import Required from "../commonComponents/Required";
+import Optional from "../commonComponents/Optional";
 
 // Checkbox objects need a value and label but also can have intrinsic `input`
 // DOM properties such as `disabled`, `readonly`, `aria-xxx` etc.
@@ -34,7 +36,7 @@ const Checkboxes = (props: Props) => {
     legendSrOnly,
     validationStatus,
     errorMessage,
-    required = false,
+    required,
   } = props;
   const checkboxIds = useUniqueIds("check", boxes.length);
 
@@ -54,11 +56,7 @@ const Checkboxes = (props: Props) => {
         )}
       >
         {legend}
-        {required && (
-          <span className="usa-hint--required">
-            <span className="usa-sr-only">Required</span> *
-          </span>
-        )}
+        {required ? <Required label={legend} /> : <Optional label={legend} />}
       </legend>
       {validationStatus === "error" && (
         <div role="alert" className="usa-error-message">

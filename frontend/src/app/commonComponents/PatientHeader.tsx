@@ -1,9 +1,7 @@
-import React from "react";
 import { useSelector } from "react-redux";
-import { connect } from "react-redux";
 import siteLogo from "../../img/simplereport-logomark-color.svg";
 
-const PatientHeader: React.FC<{}> = () => {
+const PatientHeader = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
@@ -39,4 +37,4 @@ const PatientHeader: React.FC<{}> = () => {
   );
 };
 
-export default connect()(PatientHeader);
+export default PatientHeader;
