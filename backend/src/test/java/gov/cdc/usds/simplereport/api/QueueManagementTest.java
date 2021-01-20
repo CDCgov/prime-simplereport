@@ -79,11 +79,18 @@ public class QueueManagementTest extends BaseApiTest {
                 .put("dateTested", dateTested);
 
         performQueueUpdateMutation(variables);
+
         TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
         assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
         assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
         assertEquals(updatedTestOrder.getTestEvent(), null);
         assertEquals(updatedTestOrder.getDateTested().toInstant().toString(), dateTested);
+
+        ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
+        assertEquals(orderId, singleQueueEntry.get("internalId").asText());
+        assertEquals(p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
+        assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());
+
     }
 
     @Test
