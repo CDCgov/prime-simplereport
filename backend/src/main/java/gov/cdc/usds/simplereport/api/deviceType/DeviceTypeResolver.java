@@ -1,9 +1,10 @@
 package gov.cdc.usds.simplereport.api.deviceType;
 
+
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
-import gov.cdc.usds.simplereport.service.DeviceTypeService;
+import gov.cdc.usds.simplereport.service.DeviceTypeService; 
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,5 +19,5 @@ public class DeviceTypeResolver implements GraphQLQueryResolver {
 
   public List<DeviceType> getDeviceType() {
     return dts.fetchDeviceTypes();
-  }
+}
 }
