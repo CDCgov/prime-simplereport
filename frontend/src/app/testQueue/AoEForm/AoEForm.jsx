@@ -17,6 +17,7 @@ import Optional from "../../commonComponents/Optional";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
+import "./AoEForm.scss";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -49,6 +50,7 @@ const SymptomInputs = ({
           boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
           required
           errorMessage={symptomError}
+          validationStatus={symptomError ? "error" : undefined}
         />
         {!noSymptoms && (
           <>
