@@ -162,11 +162,11 @@ const PriorTestInputs = ({
     // TODO: ARIA/508 compliance
     const legendIsh = (
       <>
-        <div className="usa-legend">
+        <div className="margin-top-2">
           <b>Was this your most recent COVID-19 test?</b>
           <Optional/>
         </div>
-        <p className="usa-legend prime-previous-test-display margin-bottom-0 line-height-sans-5">
+        <p className="margin-top-2 prime-previous-test-display margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
           {moment(mostRecentTest.dateTested).format("LLLL")}<br />
           <b>Type: </b> Antigen<br />
@@ -215,7 +215,7 @@ const PriorTestInputs = ({
         Is this your first COVID-19 test?
         <Optional />
       </div>
-      <div className="usa-legend prime-previous-test-display">
+      <div className="prime-previous-test-display margin-top-2">
         SimpleReport did not find any previous test data
       </div>
 
