@@ -16,7 +16,7 @@ const DOB = () => {
       setBirthDateError('');
       return true;
     } else {
-      setBirthDateError('Error');
+      setBirthDateError('Enter your date of birth');
       return false;
     }
   }
