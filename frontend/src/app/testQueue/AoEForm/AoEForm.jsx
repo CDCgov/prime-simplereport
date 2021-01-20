@@ -179,7 +179,7 @@ const PriorTestInputs = ({
       </>
     );
     return (
-      <div className="sr-section">
+      <>
         {legendIsh}
         <RadioGroup
           buttons={[
@@ -208,7 +208,7 @@ const PriorTestInputs = ({
           variant="horizontal"
         />
         {mostRecentTestAnswer === "no" && previousTestEntry}
-      </div>
+      </>
     );
   }
 
