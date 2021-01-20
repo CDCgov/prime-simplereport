@@ -55,7 +55,6 @@ const Checkboxes = (props: Props) => {
           legendSrOnly && "usa-sr-only"
         )}
       >
-        {legend}
         {required ? <Required label={legend} /> : <Optional label={legend} />}
       </legend>
       {validationStatus === "error" && (
