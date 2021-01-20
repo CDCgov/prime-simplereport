@@ -44,7 +44,7 @@ services:
       - chrome
     volumes:
       - /dev/shm:/dev/shm
-      - "${E2E_DIR}:/app/e2e"
+      - ".:/app/e2e"
       - downloads:/app/downloads
 
 volumes:

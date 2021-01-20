@@ -11,7 +11,7 @@ import org.hibernate.annotations.Immutable;
 @Entity
 @Immutable
 @AttributeOverride(name = "result", column = @Column(nullable = false))
-public class PatientLink extends AuditedEntity {
+public class PatientLink extends EternalEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "test_order_id", nullable = false)

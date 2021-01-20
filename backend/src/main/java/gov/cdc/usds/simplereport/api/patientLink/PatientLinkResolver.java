@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.patientLink;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,12 @@ public class PatientLinkResolver implements GraphQLQueryResolver {
     @Autowired
     private PatientLinkService pls;
 
-    public PatientLink getPatientLink(UUID id) {
-        return pls.getPatientLink(id);
+    public PatientLink getPatientLinkById(String internalId) {
+        return pls.getPatientLinkById(internalId);
+    }
+
+    public List<PatientLink> getPatientLink() {
+        return pls.fetchPatientLinks();
     }
 
 }

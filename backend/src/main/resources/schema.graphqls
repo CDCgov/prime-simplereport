@@ -137,6 +137,7 @@ type PatientLink {
 }
 
 type Query {
+  deviceTypeById(internalId: String!): DeviceType
   deviceType: [DeviceType]
   patients(facilityId: String): [Patient]
   patient(id: String!): Patient
@@ -144,7 +145,8 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
   whoami: User!
-  patientLink(id: String!): PatientLink
+  patientLinkById(internalId: String!): PatientLink
+  patientLink: [PatientLink]
 }
 type Mutation {
   updateFacility(

@@ -1056,6 +1056,7 @@ databaseChangeLog:
               - column: *created_by_column
               - column: *updated_at_column
               - column: *updated_by_column
+              - column: *soft_delete_column
               - column:
                   name: test_order_id
                   remarks: The test order this link was generated for

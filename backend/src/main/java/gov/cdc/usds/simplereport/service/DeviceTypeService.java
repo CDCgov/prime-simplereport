@@ -13,8 +13,8 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 /**
- * Service for fetching the device-type reference list (<i>not</i> the device types available for a
- * specific facility or organization).
+ * Service for fetching the device-type reference list (<i>not</i> the device
+ * types available for a specific facility or organization).
  */
 @Service
 @Transactional(readOnly = true)
@@ -40,7 +40,8 @@ public class DeviceTypeService {
 
     public DeviceType getDeviceType(String internalId) {
         UUID actualId = UUID.fromString(internalId);
-        return _repo.findById(actualId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid device type ID"));
+        return _repo.findById(actualId)
+                .orElseThrow(() -> new IllegalGraphqlArgumentException("invalid device type ID"));
     }
 
     @Transactional(readOnly = false)
@@ -72,15 +73,12 @@ public class DeviceTypeService {
         if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
             throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
         }
-        List<DeviceType> configuredTypes = configuredDeviceTypeIds.stream()
-                .map(this::getDeviceType)
+        List<DeviceType> configuredTypes = configuredDeviceTypeIds.stream().map(this::getDeviceType)
                 .collect(Collectors.toList());
         UUID defaultId = UUID.fromString(defaultDeviceTypeId);
-        DeviceType defaultType = configuredTypes.stream()
-            .filter(dt->dt.getInternalId().equals(defaultId))
-            .findFirst()
-            .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
-            ;
+        DeviceType defaultType = configuredTypes.stream().filter(dt -> dt.getInternalId().equals(defaultId)).findFirst()
+                .orElseThrow(() -> new RuntimeException(
+                        "Inexplicable inability to find device for ID " + defaultId.toString()));
         return new DeviceTypeHolder(defaultType, configuredTypes);
     }
 }

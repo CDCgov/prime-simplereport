@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -22,9 +23,17 @@ public class PatientLinkService {
         _torepo = torepo;
     }
 
-    public PatientLink getPatientLink(UUID id) {
-        return _plrepo.findById(id)
+    public PatientLink getPatientLinkById(String internalId) {
+        System.out.println("------------------------------");
+        System.out.println(internalId);
+        System.out.println("------------------------------");
+        UUID actualId = UUID.fromString(internalId);
+        return _plrepo.findById(actualId)
                 .orElseThrow(() -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    }
+
+    public List<PatientLink> fetchPatientLinks() {
+        return _plrepo.findAll();
     }
 
     public PatientLink createPatientLink(UUID testOrderUuid) {

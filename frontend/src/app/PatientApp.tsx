@@ -1,31 +1,22 @@
-import React, { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
-import { ToastContainer } from "react-toastify";
-import { useDispatch, connect } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import { Redirect, Route, Switch } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
-import { reactPlugin } from "./AppInsights";
+import React, { useEffect } from 'react';
+import { gql, useQuery } from '@apollo/client';
+import { ToastContainer } from 'react-toastify';
+import { useDispatch, connect } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
+import { Redirect, Route, Switch } from 'react-router-dom';
+import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
+import { reactPlugin } from './AppInsights';
 
-import PrimeErrorBoundary from "./PrimeErrorBoundary";
-import Header from "./commonComponents/Header";
-import USAGovBanner from "./commonComponents/USAGovBanner";
-import LoginView from "./LoginView";
-import { setInitialState } from "./store";
-import TestResultsListContainer from "./testResults/TestResultsListContainer";
-import TestQueueContainer from "./testQueue/TestQueueContainer";
-import ManagePatientsContainer from "./patients/ManagePatientsContainer";
-import EditPatientContainer from "./patients/EditPatientContainer";
-import AddPatient from "./patients/AddPatient";
+import PrimeErrorBoundary from './PrimeErrorBoundary';
+import Header from './commonComponents/Header';
+import USAGovBanner from './commonComponents/USAGovBanner';
+import { setInitialState } from './store';
 import { getPatientLinkIdFromUrl } from './utils/url';
-import Admin from "./admin/Admin";
-import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
-import WithFacility from "./facilitySelect/WithFacility";
-import TimeOfTest from "./TimeOfTest/TimeOfTest";
+import TimeOfTest from './TimeOfTest/TimeOfTest';
 
-const PATIENT_LINK_QUERY = (plid: String) => gql`
-  query PatientLink {
-    patientLink(internalId: ${plid}) {
+const PATIENT_LINK_QUERY = gql`
+  query PatientLinkById($plid: String!) {
+    patientLinkById(internalId: $plid) {
       internalId
     }
   }
@@ -35,20 +26,19 @@ const PatientApp = () => {
   const dispatch = useDispatch();
 
   const plid = getPatientLinkIdFromUrl();
-  if(plid == null) {
-    throw 'Patient Link ID from URL was null';
+  if (plid == null) {
+    throw new Error('Patient Link ID from URL was null');
   }
 
-  const { data, loading, error } = useQuery(PATIENT_LINK_QUERY(plid), {
-    fetchPolicy: "no-cache",
+  const { data, loading, error } = useQuery(PATIENT_LINK_QUERY, {
+    variables: { plid },
+    fetchPolicy: 'no-cache',
   });
 
   useEffect(() => {
     if (!data) return;
 
-    dispatch(
-      setInitialState({})
-    );
+    dispatch(setInitialState({}));
     // eslint-disable-next-line
   }, [data]);
 
@@ -70,29 +60,29 @@ const PatientApp = () => {
           </div>
         )}
       >
-          <div className="App">
-            <div id="main-wrapper">
-              <USAGovBanner />
-              <Header />
-              <Switch>
-                <Route
-                  path="/"
-                  exact
-                  render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: "/time-of-test" }} />
-                  )}
-                />
-                <Route path="/time-of-test" component={TimeOfTest} />
-              </Switch>
-              <ToastContainer
-                autoClose={5000}
-                closeButton={false}
-                limit={2}
-                position="bottom-center"
-                hideProgressBar={true}
+        <div className="App">
+          <div id="main-wrapper">
+            <USAGovBanner />
+            <Header />
+            <Switch>
+              <Route
+                path="/"
+                exact
+                render={({ location }) => (
+                  <Redirect to={{ ...location, pathname: '/time-of-test' }} />
+                )}
               />
-            </div>
+              <Route path="/time-of-test" component={TimeOfTest} />
+            </Switch>
+            <ToastContainer
+              autoClose={5000}
+              closeButton={false}
+              limit={2}
+              position="bottom-center"
+              hideProgressBar={true}
+            />
           </div>
+        </div>
       </PrimeErrorBoundary>
     </AppInsightsContext.Provider>
   );

@@ -3,7 +3,7 @@ interface Props {
 }
 
 const TimeOfTest: any = (props: Props) => {
-  return <><p>Placeholder component dot gif </p></>;
-}
+  return <p>Placeholder component dot gif </p>;
+};
 
 export default TimeOfTest;
