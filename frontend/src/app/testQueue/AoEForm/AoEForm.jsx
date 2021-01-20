@@ -49,7 +49,6 @@ const SymptomInputs = ({
           boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
           required
           errorMessage={symptomError}
-          validationStatus={symptomError ? "error" : null}
         />
         {!noSymptoms && (
           <>

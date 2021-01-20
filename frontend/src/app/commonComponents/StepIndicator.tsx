@@ -23,6 +23,7 @@ const StepIndicator = ({ steps }: Props): React.ReactElement => {
       <ol className="usa-step-indicator__segments">
         {steps.map((step) => (
           <li
+            key={step.value}
             className={classnames(
               "usa-step-indicator__segment",
               step.isCurrent && "usa-step-indicator__segment--current",
