@@ -3,20 +3,25 @@ import { gql, useQuery } from '@apollo/client';
 import { ToastContainer } from 'react-toastify';
 import { useDispatch, connect } from 'react-redux';
 import 'react-toastify/dist/ReactToastify.css';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import {
+  Redirect,
+  Route,
+  Switch,
+  BrowserRouter as Router,
+} from 'react-router-dom';
 import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
-import { reactPlugin } from './AppInsights';
+import { reactPlugin } from '../app/AppInsights';
 
-import PrimeErrorBoundary from './PrimeErrorBoundary';
-import Header from './commonComponents/Header';
-import USAGovBanner from './commonComponents/USAGovBanner';
-import { setInitialState } from './store';
-import { getPatientLinkIdFromUrl } from './utils/url';
-import TimeOfTest from './TimeOfTest/TimeOfTest';
+import PrimeErrorBoundary from '../app/PrimeErrorBoundary';
+import USAGovBanner from '../app/commonComponents/USAGovBanner';
+import { setInitialState } from '../app/store';
+import { getPatientLinkIdFromUrl } from '../app/utils/url';
+import TimeOfTest from './timeOfTest/TimeOfTest';
+import ErrorPage from './ErrorPage';
 
 const PATIENT_LINK_QUERY = gql`
   query PatientLinkById($plid: String!) {
-    patientLinkById(internalId: $plid) {
+    patientLink(internalId: $plid) {
       internalId
     }
   }
@@ -46,10 +51,6 @@ const PatientApp = () => {
     return <p>Loading account information...</p>;
   }
 
-  if (error) {
-    throw error;
-  }
-
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
       <PrimeErrorBoundary
@@ -63,17 +64,24 @@ const PatientApp = () => {
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
-            <Header />
-            <Switch>
-              <Route
-                path="/"
-                exact
-                render={({ location }) => (
-                  <Redirect to={{ ...location, pathname: '/time-of-test' }} />
-                )}
-              />
-              <Route path="/time-of-test" component={TimeOfTest} />
-            </Switch>
+            {error ? (
+              <ErrorPage error={error} />
+            ) : (
+              <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+                <Switch>
+                  <Route
+                    path="/"
+                    exact
+                    render={({ location }) => (
+                      <Redirect
+                        to={{ ...location, pathname: '/time-of-test' }}
+                      />
+                    )}
+                  />
+                  <Route path="/time-of-test" component={TimeOfTest} />
+                </Switch>
+              </Router>
+            )}
             <ToastContainer
               autoClose={5000}
               closeButton={false}

@@ -16,12 +16,8 @@ public class PatientLinkResolver implements GraphQLQueryResolver {
     @Autowired
     private PatientLinkService pls;
 
-    public PatientLink getPatientLinkById(String internalId) {
+    public PatientLink getPatientLink(String internalId) {
         return pls.getPatientLinkById(internalId);
-    }
-
-    public List<PatientLink> getPatientLink() {
-        return pls.fetchPatientLinks();
     }
 
 }

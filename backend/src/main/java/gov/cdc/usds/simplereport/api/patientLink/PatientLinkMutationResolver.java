@@ -15,8 +15,8 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private PatientLinkService pls;
 
-    public PatientLink createPatientLink(UUID testOrderUuid) {
-        return pls.createPatientLink(testOrderUuid);
+    public PatientLink refreshPatientLink(String testOrderUuid) {
+        return pls.refreshPatientLink(testOrderUuid);
     }
 
 }

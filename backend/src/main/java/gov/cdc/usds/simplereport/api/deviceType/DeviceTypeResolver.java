@@ -19,8 +19,4 @@ public class DeviceTypeResolver implements GraphQLQueryResolver {
   public List<DeviceType> getDeviceType() {
     return dts.fetchDeviceTypes();
   }
-
-  public DeviceType getDeviceTypeById(String internalId) {
-    return dts.getDeviceType(internalId);
-  }
 }
