@@ -83,7 +83,7 @@ export const TextInput = ({
         {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {validationStatus === "error" && (
-        <span role="alert" className="usa-error-message" id={errorId}>
+        <span className="usa-error-message" id={errorId} role="alert">
           {errorMessage}
         </span>
       )}
