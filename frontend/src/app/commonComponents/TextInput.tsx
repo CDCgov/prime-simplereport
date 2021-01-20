@@ -84,6 +84,7 @@ export const TextInput = ({
       </label>
       {validationStatus === "error" && (
         <span className="usa-error-message" id={errorId} role="alert">
+          <span className="usa-sr-only">Error: </span>
           {errorMessage}
         </span>
       )}

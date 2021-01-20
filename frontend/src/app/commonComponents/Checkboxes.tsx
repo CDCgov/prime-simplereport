@@ -59,6 +59,7 @@ const Checkboxes = (props: Props) => {
       </legend>
       {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
+          <span className="usa-sr-only">Error: </span>
           {errorMessage}
         </div>
       )}
