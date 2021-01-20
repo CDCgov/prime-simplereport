@@ -172,7 +172,10 @@ const PriorTestInputs = ({
             {moment(mostRecentTest.dateTested).format("LLLL")}
           </div>
           <div>
-            <b>Type: </b> Antigen <b>Result: </b>
+            <b>Type: </b> Antigen 
+          </div>
+          <div>
+            <b>Result: </b>
             {mostRecentTest.result}
           </div>
         </div>
