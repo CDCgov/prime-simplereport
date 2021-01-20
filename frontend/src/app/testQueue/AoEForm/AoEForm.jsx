@@ -17,7 +17,6 @@ import Optional from "../../commonComponents/Optional";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
-import "./AoEModalForm.scss";
 
 // Get the value associate with a button label
 // TODO: move to utility?
