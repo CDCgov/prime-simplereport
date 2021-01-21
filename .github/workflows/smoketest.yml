@@ -11,75 +11,66 @@ on:
     branches:
       - main
 
+env:
+  NODE_VERSION: 14
+
 defaults:
   run:
     working-directory: frontend
 jobs:
   smoketest:
-    strategy:
-      matrix:
-        node: [14]
-        os: [ubuntu-18.04, ubuntu-20.04]
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{matrix.node}}
+      - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.node}}
+          node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
         run: yarn
       - name: Test
         run: yarn test
   linter:
-    strategy:
-      matrix:
-        node: [14]
-        os: [ubuntu-18.04, ubuntu-20.04]
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{matrix.node}}
+      - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.node}}
+          node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
         run: yarn
       - name: Lint
         run: yarn lint
   build-test:
-    strategy:
-      matrix:
-        node: [14]
-        os: [ubuntu-18.04, ubuntu-20.04]
-    runs-on: ${{matrix.os}}
+    runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{matrix.node}}
+      - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
-          node-version: ${{matrix.node}}
+          node-version: ${{env.NODE_VERSION}}
       - name: Cache npm local files
         uses: actions/cache@v2
         with:
           path: |
             ./frontend/node_modules
-          key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Install dependencies
         run: yarn
       - name: Build release
