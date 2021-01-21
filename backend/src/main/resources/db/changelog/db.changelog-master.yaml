@@ -1045,10 +1045,10 @@ databaseChangeLog:
   - changeSet:
       id: change-test-results-to-MST
       author: neil.s.sharma@omb.eop.gov
-      comment: changes all existing test results to be MST ISO 8601 strings
+      comment: Change all existing backdated tests to be midnight MST instead of midnight UTC.
       changes:
         - sql:
-            comment: Update all completed test_orders from UTC to MST. This is a one-time update.
+            comment: Update backdated test_orders from UTC to MST.
             sql: |
               UPDATE ${database.defaultSchemaName}.test_order
               SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
