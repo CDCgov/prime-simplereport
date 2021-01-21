@@ -1059,8 +1059,12 @@ databaseChangeLog:
             columns:
               - column:
                   name: test_order_id
-                  type: uuid
-                  remarks: Reference to original test_order.
+                  type: *idtype
+                  remarks: Reference to original test_order internal_id.
+                  valueComputed: (select internal_id from ${database.defaultSchemaName}.test_order Ord where Ord.test_event_id = internal_id)
+                  constraints:
+                    foreignKeyName: fk__test_event__test_order__internal_id
+                    referencedTableName: test_order
               - column:
                   name: correction_code
                   type: ${database.defaultSchemaName}.test_event_corrections_status
@@ -1071,25 +1075,36 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: prior_corrected_test_event_id
-                  type: uuid
-                  value: null
+                  type: *idtype
                   remarks: If this is a correction, this is the id the prior test_event being corrected.
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__prior_corrected_test_event_id__test_event
+                    referencedTableName: test_event
               - column:
                   name: reason_for_correction
                   type: text
                   remarks: User supplied comment when a correction happens.
-        - sql:
-            remarks: Copy the existing relationship from test_order to make it initally symetric.
-            sql: |
-              UPDATE ${database.defaultSchemaName}.test_event Evt
-              SET test_order_id = Ord.internal_id
-              FROM ${database.defaultSchemaName}.test_order Ord
-              WHERE Ord.test_event_id = Evt.internal_id;
-        - addForeignKeyConstraint:
-            remarks: Finally, after all the rows were updated using sql, now apply the constraints. Will fail if test_event rows aren't perfect.
-            constraintName: fk__test_event__test_order__internal_id
-            nullable: false
-            baseTableName: test_event
-            baseColumnNames: test_order_id
-            referencedTableName: test_order
-            referencedColumnNames: internal_id
+#        - sql:
+#            remarks: Copy the existing relationship from test_order to make it initially symmetric.
+#            sql: |
+#              UPDATE ${database.defaultSchemaName}.test_event Evt
+#              SET test_order_id = Ord.internal_id
+#              FROM ${database.defaultSchemaName}.test_order Ord
+#              WHERE Ord.test_event_id = Evt.internal_id;
+#        - addForeignKeyConstraint:
+#            remarks: Finally, after all the rows were updated using sql, now apply the constraints. Will fail if test_event rows aren't perfect.
+#            constraintName: fk__test_event__test_order__internal_id
+#            nullable: false
+#            baseTableName: test_event
+#            baseColumnNames: test_order_id
+#            referencedTableName: test_order
+#            referencedColumnNames: internal_id
+#        - addForeignKeyConstraint:
+#            remarks: Optional reference back to prior test_event if this is a correction.
+#            constraintName: fk__prior_corrected_test_event_id__test_event
+#            nullable: true
+#            baseTableName: test_event
+#            baseColumnNames: prior_corrected_test_event_id
+#            referencedTableName: test_event
+#            referencedColumnNames: internal_id
