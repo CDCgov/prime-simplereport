@@ -38,7 +38,7 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "uswds": "^2.9.0",
+    "uswds": "^2.10.0",
     "uuid": "^8.3.1"
   },
   "scripts": {

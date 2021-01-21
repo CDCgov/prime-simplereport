@@ -1,6 +1,8 @@
 import React from "react";
 import classnames from "classnames";
 import useUniqueIds from "./useUniqueIds";
+import Required from "../commonComponents/Required";
+import Optional from "../commonComponents/Optional";
 
 // Checkbox objects need a value and label but also can have intrinsic `input`
 // DOM properties such as `disabled`, `readonly`, `aria-xxx` etc.
@@ -21,6 +23,7 @@ interface Props {
   errorMessage?: string;
   validationStatus?: "error" | "success";
   onChange: React.ChangeEventHandler;
+  required?: boolean;
 }
 
 const Checkboxes = (props: Props) => {
@@ -33,20 +36,30 @@ const Checkboxes = (props: Props) => {
     legendSrOnly,
     validationStatus,
     errorMessage,
+    required,
   } = props;
   const checkboxIds = useUniqueIds("check", boxes.length);
 
   return (
     <fieldset
-      className={classnames("usa-fieldset prime-checkboxes", props.className)}
+      className={classnames(
+        "usa-fieldset prime-checkboxes",
+        validationStatus === "error" && "usa-form-group--error",
+        props.className
+      )}
     >
       <legend
-        className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
+        className={classnames(
+          "usa-legend",
+          validationStatus === "error" && "usa-label--error",
+          legendSrOnly && "usa-sr-only"
+        )}
       >
-        {legend}
+        {required ? <Required label={legend} /> : <Optional label={legend} />}
       </legend>
       {validationStatus === "error" && (
-        <div role="alert" className="usa-error-message">
+        <div className="usa-error-message" role="alert">
+          <span className="usa-sr-only">Error: </span>
           {errorMessage}
         </div>
       )}
