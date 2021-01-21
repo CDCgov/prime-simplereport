@@ -163,7 +163,10 @@ Modal.setAppElement("#root");
   AFAICT, there is no easy ISO -> datetime-local converter built into vanilla JS dates, so using moment
 
 */
-const isoDateToDatetimeLocal = (isoDateString: string) => {
+const isoDateToDatetimeLocal = (isoDateString: string | undefined) => {
+  if (!isoDateString) {
+    return undefined;
+  }
   let datetime = moment(isoDateString);
   let datetimeLocalString = datetime.format(moment.HTML5_FMT.DATETIME_LOCAL);
   return datetimeLocalString;
@@ -241,19 +244,42 @@ const QueueItem: any = ({
 
   const [isAoeModalOpen, updateIsAoeModalOpen] = useState(false);
   const [aoeAnswers, setAoeAnswers] = useState(askOnEntry);
-  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
-    dateTestedProp ? "false" : "true"
-  );
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
 
+  const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
+    dateTestedProp ? "false" : "true"
+  );
   // this is an ISO string
   // always assume the current date unless provided something else
-  const [dateTested, updateDateTested] = useState<string>(
-    dateTestedProp || new Date().toISOString()
+  const [dateTested, updateDateTested] = useState<string | undefined>(
+    dateTestedProp || undefined
   );
+
+  // helper method to work around the annoying string-booleans
+  function shouldUseCurrentDateTime() {
+    return useCurrentDateTime === "true";
+  }
+
+  function isValidCustomDateTested(customDate: string | undefined) {
+    if (!customDate) {
+      return false;
+    }
+    const dateTested = new Date(customDate); // local time, may be an invalid date
+
+    // if it is an invalid date
+    if (isNaN(dateTested.getTime())) {
+      return false;
+    }
+
+    // problem: user can manually input future dates and bypass the `max` attribute.
+    // this enforces the max future date to be 1 day from the time of submission, an arbitrary upper bound -- not sure if this is a good idea?
+    const MAX_TEST_DATE = new Date();
+    MAX_TEST_DATE.setDate(MAX_TEST_DATE.getDate() + 1);
+    return dateTested > EARLIEST_TEST_DATE && dateTested < MAX_TEST_DATE;
+  }
 
   const [testResultValue, updateTestResultValue] = useState<
     TestResult | undefined
@@ -288,7 +314,7 @@ const QueueItem: any = ({
           patientId: patient.internalId,
           deviceId: deviceId,
           result: testResultValue,
-          dateTested,
+          dateTested: shouldUseCurrentDateTime() ? null : dateTested,
         },
       })
         .then(testResultsSubmitted)
@@ -332,16 +358,10 @@ const QueueItem: any = ({
 
   const onDateTestedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const rawDateString = e.target.value; // local time
-    const dateTested = new Date(rawDateString); // local time
+    const isValidDate = isValidCustomDateTested(rawDateString);
 
-    // problem: user can manually input future dates and bypass the `max` attribute.
-    // this enforces the max future date to be 1 day from the time of submission, an arbitrary upper bound -- not sure if this is a good idea?
-    const MAX_TEST_DATE = new Date();
-    MAX_TEST_DATE.setDate(MAX_TEST_DATE.getDate() + 1);
-    const isValidDate =
-      dateTested > EARLIEST_TEST_DATE && dateTested < MAX_TEST_DATE;
     if (isValidDate) {
-      const isoDateTested = dateTested.toISOString(); // backend always expects ISO strings
+      const dateTested = new Date(rawDateString).toISOString(); // local time
 
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
@@ -349,10 +369,10 @@ const QueueItem: any = ({
       this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
-      updateDateTested(isoDateTested);
+      updateDateTested(dateTested);
       updateQueueItem({
         deviceId,
-        dateTested: isoDateTested,
+        dateTested: dateTested,
         result: testResultValue,
       });
     }
@@ -405,12 +425,12 @@ const QueueItem: any = ({
 
   const onUseCurrentDateChange = () => {
     // if we want to use a custom date
-    if (useCurrentDateTime === "true") {
+    if (shouldUseCurrentDateTime()) {
       updateUseCurrentDateTime("false");
     }
     // if we want to use the current date time
     else {
-      updateDateTested(new Date().toISOString());
+      updateDateTested(undefined);
       updateUseCurrentDateTime("true");
     }
   };
@@ -555,6 +575,10 @@ const QueueItem: any = ({
             <TestResultInputForm
               queueItemId={internalId}
               testResultValue={testResultValue}
+              isSubmitDisabled={
+                !shouldUseCurrentDateTime() &&
+                !isValidCustomDateTested(dateTested)
+              }
               onSubmit={onTestResultSubmit}
               onChange={onTestResultChange}
             />

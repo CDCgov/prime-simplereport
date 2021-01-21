@@ -8,6 +8,7 @@ import { TestResult } from "../testQueue/QueueItem";
 interface Props {
   queueItemId: string;
   testResultValue: TestResult | undefined;
+  isSubmitDisabled?: boolean;
   onChange: (value: TestResult | undefined) => void;
   onSubmit: () => void;
 }
@@ -15,6 +16,7 @@ interface Props {
 const TestResultInputForm: React.FC<Props> = ({
   queueItemId,
   testResultValue,
+  isSubmitDisabled,
   onSubmit,
   onChange,
 }) => {
@@ -65,7 +67,7 @@ const TestResultInputForm: React.FC<Props> = ({
           <Button
             onClick={onResultSubmit}
             type="submit"
-            disabled={!testResultValue}
+            disabled={!testResultValue || isSubmitDisabled}
             variant="outline"
             label="Submit"
           />
