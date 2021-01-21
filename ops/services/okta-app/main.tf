@@ -19,12 +19,10 @@ resource "okta_app_oauth" "app" {
     "id_token",
     "token"
   ]
-  login_uri = var.app_url
-  post_logout_redirect_uris = [
-    var.logout_redirect_uris
-  ]
-  hide_ios = false
-  hide_web = false
+  login_uri                 = var.app_url
+  post_logout_redirect_uris = var.logout_redirect_uris
+  hide_ios                  = false
+  hide_web                  = false
 
   lifecycle {
     ignore_changes = [

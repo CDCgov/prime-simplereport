@@ -58,6 +58,9 @@ jobs:
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
       - name: Run API
+        env: 
+          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         run: cd backend; ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
@@ -74,7 +77,4 @@ jobs:
       - name: Run frontend
         run: cd frontend; yarn start &> ../yarn-log.txt &
       - name: Run e2e tests
-        env: 
-          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
-          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         run: docker-compose -f frontend/e2e/docker-compose.yml --env-file frontend/e2e/.env run nightwatch ./nightwatch-entrypoint.bash;
