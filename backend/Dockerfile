@@ -12,6 +12,7 @@ COPY --chown=gradle:gradle ./*.gradle ./
 # COPY --chown=gradle:gradle ./.git ./.git
 COPY --chown=gradle:gradle ./config ./config
 COPY --chown=gradle:gradle ./src ./src
+COPY --chown=gradle:gradle gradle.properties gradle.properties
 
 RUN gradle --no-daemon classes testClasses assemble
 

@@ -22,7 +22,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderService> {
+public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     @Autowired
     private DeviceTypeRepository _deviceTypeRepo;

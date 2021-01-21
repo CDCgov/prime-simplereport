@@ -2,10 +2,13 @@
 name: Infra Checks
 
 on:
-  workflow_dispatch:
+  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
   pull_request:
-    paths:
-      - "ops/**"
+    branches:
+      - "**"
+  push:
+    branches:
+      - main
 
 defaults:
   run:
