@@ -67,7 +67,7 @@ const TestResultInputForm: React.FC<Props> = ({
           <Button
             onClick={onResultSubmit}
             type="submit"
-            disabled={!testResultValue || isSubmitDisabled}
+            disabled={!testResultValue || !!isSubmitDisabled}
             variant="outline"
             label="Submit"
           />
