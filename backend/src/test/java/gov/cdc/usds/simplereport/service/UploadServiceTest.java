@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +20,15 @@ import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
-class UploadServiceTest extends BaseServiceTestOrgUser<UploadService> {
+class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Autowired
     private PersonService _ps;
+
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
 
     @Test
     void testInsert() throws IOException {

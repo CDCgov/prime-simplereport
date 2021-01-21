@@ -3,12 +3,12 @@ name: Smoke Test Back-end API
 # Run this on pushes to any branch that change a backend file or the workflow definition
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  push:
+  pull_request:
     branches:
       - "**"
-    paths:
-      - "backend/**"
-      - .github/workflows/smoketestBackend.yml
+  push:
+    branches:
+      - main
 
 env:
   NODE_VERSION: 14
@@ -61,7 +61,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
-        run: ./gradlew jacocoTestReport
+        run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
         if: failure()
@@ -71,7 +71,7 @@ jobs:
           retention-days: 7
       - name: Sonar analysis
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ./gradlew sonarqube -Dsonar.projectBaseDir=${{ env.PROJECT_ROOT }} --info
   build-jar:

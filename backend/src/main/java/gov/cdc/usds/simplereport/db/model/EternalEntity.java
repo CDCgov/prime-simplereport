@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * the database rather than actually being deleted.
  */
 @MappedSuperclass
-public class EternalEntity extends AuditedEntity {
+public abstract class EternalEntity extends AuditedEntity {
 
     @Column
     private boolean isDeleted;

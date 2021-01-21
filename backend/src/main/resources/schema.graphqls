@@ -126,6 +126,7 @@ type User {
   lastName: String
   suffix: String
   email: String
+  isAdmin: Boolean
   organization: Organization
 }
 
@@ -196,6 +197,30 @@ type Mutation {
   createOrganization(
     name: String!
     externalId: String!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String
+    streetTwo: String
+    city: String
+    county: String
+    state: String
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String!
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String!
+    orderingProviderSuffix: String
+    orderingProviderNPI: String!
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+    orderingProviderState: String
+    orderingProviderZipCode: String!
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    defaultDevice: String!
   ): Organization
   addPatient(
     facilityId: String
@@ -245,8 +270,18 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): String
   setPatientIsDeleted(id: String!, deleted: Boolean!): Patient
-  addTestResult(deviceId: String!, result: String!, patientId: String!, dateTested: String): String
-  editQueueItem(id: String!, deviceId: String, result: String, dateTested: String): TestOrder
+  addTestResult(
+    deviceId: String!
+    result: String!
+    patientId: String!
+    dateTested: String
+  ): String
+  editQueueItem(
+    id: String!
+    deviceId: String
+    result: String
+    dateTested: String
+  ): TestOrder
   addPatientToQueue(
     facilityId: String!
     patientId: String!

@@ -10,14 +10,16 @@ public class User {
 	private Organization org;
 	private PersonName nameInfo;
 	private String email;
+	private Boolean isAdmin;
 
-	public User(ApiUser currentUser, Organization currentOrg) {
+	public User(ApiUser currentUser, Organization currentOrg, Boolean isAdmin) {
 		super();
 		this.id = currentUser.getInternalId().toString();
 		this.org = currentOrg;
 		this.nameInfo = currentUser.getNameInfo();
 		// Note: we assume a user's email and login username are the same thing.
 		this.email = currentUser.getLoginEmail();
+		this.isAdmin = isAdmin;
 	}
 
 	public String getId() {
@@ -46,5 +48,9 @@ public class User {
 
 	public String getEmail() {
 		return email;
+	}
+
+	public Boolean getIsAdmin() {
+		return isAdmin;
 	}
 }

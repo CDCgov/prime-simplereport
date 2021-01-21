@@ -50,6 +50,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         http
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
+                .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
                 .anyRequest()
