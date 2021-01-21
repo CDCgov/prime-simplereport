@@ -44,9 +44,6 @@ resource "okta_app_group_assignment" "users" {
 resource "okta_app_group_assignment" "prime_users" {
   app_id   = okta_app_oauth.app.id
   group_id = data.okta_group.cdc_users.id
-  profile = jsonencode({
-    simple_report_user = null
-  })
 }
 
 resource "okta_group" "simplereport_admins" {
