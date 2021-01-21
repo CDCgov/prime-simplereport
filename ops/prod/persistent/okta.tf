@@ -1,9 +1,8 @@
 module "okta" {
   source               = "../../services/okta-app"
   env                  = local.env
-  logout_redirect_uris = ["https://${local.env}.simplereport.gov"]
-  app_url              = "https://${local.env}.simplereport.gov/app"
-  redirect_urls        = []
+  app_url              = "https://simplereport.gov/app"
+  logout_redirect_uris = ["https://simplereport.cdc.gov", "https://simplereport.gov"]
 }
 
 // Create the Okta secrets
@@ -14,7 +13,8 @@ resource "azurerm_key_vault_secret" "okta_client_id" {
   value        = module.okta.client_id
 
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+    value]
   }
 }
 
@@ -24,6 +24,7 @@ resource "azurerm_key_vault_secret" "okta_client_secret" {
   value        = module.okta.client_secret
 
   lifecycle {
-    ignore_changes = [value]
+    ignore_changes = [
+    value]
   }
 }
