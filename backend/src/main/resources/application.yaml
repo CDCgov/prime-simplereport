@@ -32,7 +32,7 @@ okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
     client-id: ${OKTA_OAUTH2_CLIENT_ID}
-    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET}
+    client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:MISSING}
     groups-claim: ${simple-report.authorization.role-claim}
   client:
     org-url: https://hhs-prime.okta.com

@@ -45,7 +45,6 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
     }
 
     public User updateUser(
-            String Id,
             String firstName,
             String middleName,
             String lastName,
@@ -57,7 +56,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         if (!newEmail.equals(oldEmail)) {
             _us.assertEmailAvailable(newEmail);
         }
-        ApiUser apiUser = _us.updateUser(Id, newEmail, oldEmail, firstName, middleName, lastName, suffix);
+        ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
         Organization org = _os.getOrganizationForUser(apiUser);
         Boolean isAdmin = _us.isAdminUser(apiUser);
         return new User(apiUser, org, isAdmin);
