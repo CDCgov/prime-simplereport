@@ -1,5 +1,4 @@
 import React from "react";
-import { displayFullName } from "../../utils";
 import { useState } from "react";
 import {
   getSymptomList,
@@ -399,13 +398,6 @@ const AoEForm = ({
         {isModal && (
           <>
             {buttonGroup}
-            <h1 className="patient-name">
-              {displayFullName(
-                patient.firstName,
-                patient.middleName,
-                patient.lastName
-              )}
-            </h1>
           </>
         )}
         <FormGroup title="Symptoms">
