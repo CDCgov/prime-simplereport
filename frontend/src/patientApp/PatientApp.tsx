@@ -21,9 +21,7 @@ import ErrorPage from './ErrorPage';
 
 const PATIENT_LINK_QUERY = gql`
   query PatientLinkById($plid: String!) {
-    patientLink(internalId: $plid) {
-      internalId
-    }
+    patientLinkCurrent(internalId: $plid)
   }
 `;
 
@@ -43,7 +41,7 @@ const PatientApp = () => {
   useEffect(() => {
     if (!data) return;
 
-    dispatch(setInitialState({}));
+    dispatch(setInitialState({ data }));
     // eslint-disable-next-line
   }, [data]);
 

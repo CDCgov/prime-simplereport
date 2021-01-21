@@ -1,30 +1,42 @@
 package gov.cdc.usds.simplereport.db.model;
 
-import javax.persistence.AttributeOverride;
+import java.time.Instant;
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Immutable;
-
 @Entity
-@Immutable
-@AttributeOverride(name = "result", column = @Column(nullable = false))
 public class PatientLink extends EternalEntity {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "test_order_id", nullable = false)
-    private TestOrder order;
+    private TestOrder testOrder;
+
+    @Column
+    private Date refreshedAt;
 
     public PatientLink() {
     }
 
-    public PatientLink(TestOrder order) {
-        this.order = order;
+    public PatientLink(TestOrder testOrder) {
+        this.testOrder = testOrder;
     }
 
     public TestOrder getTestOrder() {
-        return order;
+        return testOrder;
+    }
+
+    public Date getRefreshedAt() {
+        if (refreshedAt == null) {
+            return getCreatedAt();
+        }
+        return refreshedAt;
+    }
+
+    public void refresh() {
+        this.refreshedAt = Date.from(Instant.now());
     }
 }
