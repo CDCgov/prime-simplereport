@@ -1,9 +1,9 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { getFacilityIdFromUrl } from '../../utils/url';
-import AoEForm from './AoEForm';
-import StepIndicator from '../../commonComponents/StepIndicator';
-import PatientProfile from './PatientProfile';
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
+import { getFacilityIdFromUrl } from "../../utils/url";
+import AoEForm from "./AoEForm";
+import StepIndicator from "../../commonComponents/StepIndicator";
+import PatientProfile from "./PatientProfile";
 
 interface Props {
   patientId: string;
@@ -38,8 +38,8 @@ const GET_PATIENT = gql`
 `;
 const AoEPatientFormContainer = ({ patientId, page }: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
-    variables: { id: patientId || '' },
-    fetchPolicy: 'no-cache',
+    variables: { id: patientId || "" },
+    fetchPolicy: "no-cache",
   });
 
   if (loading) {
@@ -50,24 +50,24 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
   }
 
   const residentCongregateSetting = data.patient.residentCongregateSetting
-    ? 'YES'
-    : 'NO';
+    ? "YES"
+    : "NO";
 
   const facilityId = getFacilityIdFromUrl();
-  const employedInHealthcare = data.patient.employedInHealthcare ? 'YES' : 'NO';
+  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
 
   const steps = [
     {
-      label: 'Profile information',
-      value: 'profile',
+      label: "Profile information",
+      value: "profile",
       order: 0,
-      isCurrent: page === 'profile',
+      isCurrent: page === "profile",
     },
     {
-      label: 'Symptoms and history',
-      value: 'symptoms',
+      label: "Symptoms and history",
+      value: "symptoms",
       order: 1,
-      isCurrent: page === 'symptoms',
+      isCurrent: page === "symptoms",
     },
   ];
 
@@ -75,7 +75,7 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
     <main className="patient-app patient-app--form padding-bottom-4">
       <div className="grid-container maxw-tablet">
         <StepIndicator steps={steps} />
-        {page === 'symptoms' && (
+        {page === "symptoms" && (
           <AoEForm
             patient={{
               ...data.patient,
@@ -88,7 +88,7 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
             noValidation={false}
           />
         )}
-        {page === 'profile' && (
+        {page === "profile" && (
           <PatientProfile
             patient={{
               ...data.patient,
