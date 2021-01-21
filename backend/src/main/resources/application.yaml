@@ -36,7 +36,7 @@ okta:
     groups-claim: ${simple-report.authorization.role-claim}
   client:
     org-url: https://hhs-prime.okta.com
-    token: ${OKTA_API_KEY}
+    token: ${OKTA_API_KEY:MISSING}
 simple-report:
   data-hub:
     # these are overridden by application-dev, -prod, -test, etc
