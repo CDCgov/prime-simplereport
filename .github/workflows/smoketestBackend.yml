@@ -3,12 +3,12 @@ name: Smoke Test Back-end API
 # Run this on pushes to any branch that change a backend file or the workflow definition
 on:
   workflow_dispatch: # because sometimes you just want to force a branch to have tests run
-  push:
+  pull_request:
     branches:
       - "**"
-    paths:
-      - "backend/**"
-      - .github/workflows/smoketestBackend.yml
+  push:
+    branches:
+      - main
 
 env:
   NODE_VERSION: 14

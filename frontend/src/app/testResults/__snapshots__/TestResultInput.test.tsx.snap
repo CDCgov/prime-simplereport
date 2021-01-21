@@ -16,6 +16,11 @@ exports[`TestResultInputForm should render with a value 1`] = `
       className="usa-legend usa-sr-only"
     >
       Test result
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
     </legend>
     <div
       className="usa-form-group"
@@ -116,6 +121,11 @@ exports[`TestResultInputForm should render without a value 1`] = `
       className="usa-legend usa-sr-only"
     >
       Test result
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
     </legend>
     <div
       className="usa-form-group"
