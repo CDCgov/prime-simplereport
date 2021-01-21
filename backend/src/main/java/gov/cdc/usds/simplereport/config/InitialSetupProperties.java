@@ -23,7 +23,6 @@ public class InitialSetupProperties {
     private List<? extends DeviceType> deviceTypes;
     private List<String> configuredDeviceTypes;
     private IdentityAttributes defaultUser;
-    private IdentityAttributes adminUser;
     private ConfigFacility facility;
 
     public InitialSetupProperties(Organization organization,
@@ -38,7 +37,6 @@ public class InitialSetupProperties {
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
         this.defaultUser = defaultUser;
-        this.adminUser = adminUser;
         this.facility = facility;
     }
 
@@ -69,10 +67,6 @@ public class InitialSetupProperties {
 
     public IdentityAttributes getDefaultUser() {
         return defaultUser;
-    }
-
-    public IdentityAttributes getAdminUser() {
-        return adminUser;
     }
 
     public static final class ConfigFacility {

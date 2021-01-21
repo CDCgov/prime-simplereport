@@ -20,9 +20,10 @@ data "azurerm_key_vault" "kv" {
 // Okta application
 
 module "okta" {
-  source  = "../../services/okta-app"
-  env     = var.env
-  app_url = local.app_url
+  source        = "../../services/okta-app"
+  env           = var.env
+  app_url       = local.app_url
+  redirect_urls = []
 }
 
 // Create the Okta secrets

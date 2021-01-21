@@ -2,11 +2,13 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,9 +17,10 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
+public class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // I'll have you know that I didn't actually mean to do this...
     private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
@@ -34,6 +37,11 @@ public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
     private Facility _site1;
     private Facility _site2;
 
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
+
     @Test
     public void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
@@ -47,7 +55,7 @@ public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
     }
 
     @Test
-    public void deletePatient() {
+    public void deletePatient_standardUser_error() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
@@ -59,6 +67,20 @@ public class PersonServiceTest extends BaseServiceTestOrgUser<PersonService> {
 
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
         assertEquals("Current User does not have permission for this action", exception.getMessage());
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    public void deletePatient_adminUser_success() {
+        Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
+                "123 Main",
+                "Apartment 3", "Hicksville", "NY",
+                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+
+        Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
+
+        assertEquals(0, _service.getPatients(null).size());
+        assertTrue(deletedPerson.isDeleted());
     }
 
     @Test

@@ -23,7 +23,7 @@ https://simplereport.cdc.gov/
 
 1. Install Docker and docker-compose
    - You can install docker hub directly: https://hub.docker.com/. This is the preferred solution and should come with docker-compose
-   - Alternatively, you can install docker and run it as a daemon: `brew install docker`.
+   - Alternatively, you can install docker and run it as a daemon: `brew install docker docker-compose`.
 
 ## Backend
 

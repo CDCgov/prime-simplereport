@@ -85,10 +85,8 @@
 }
 
 .prime-previous-test-display {
-  font-size: 90%;
-  margin-left: 0.5em;
-  border-left: 4px solid #ccc;
-  padding-left: 0.5em;
+  border-left: units(0.5) solid color("base-lighter");
+  padding-left: units(1.5);
 }
 
 // close button
@@ -424,4 +422,106 @@
 .usa-textarea,
 .usa-combo-box__input {
   max-width: none;
+}
+
+// Patient form
+.patient-app--form {
+  background-color: color("base-lightest");
+}
+
+.prime-formgroup {
+  @include u-padding($theme-card-padding-perimeter);
+  background: color("white");
+  border-width: units("2px");
+  border-color: color("base-lighter");
+  border-style: solid;
+  border-radius: units(0.5);
+
+  + .prime-formgroup {
+    margin-top: units(1.5);
+  }
+}
+
+.prime-formgroup-heading {
+  font-size: size("body", "lg");
+  margin-bottom: 0;
+  margin-top: 0;
+
+  + .usa-fieldset {
+    margin-top: units(3);
+  }
+}
+
+.usa-fieldset + .usa-fieldset {
+  margin-top: units(3);
+}
+
+.usa-step-indicator {
+  background-color: transparent;
+}
+
+.usa-step-indicator--counters-sm {
+  .usa-step-indicator__segment {
+    &:last-child {
+      // Display the last segment when counters appear
+      &:after {
+        display: block;
+      }
+    }
+  }
+
+  .usa-step-indicator__segment::before {
+    box-shadow: inset 0 0 0 units(0.5) color("base-lighter"),
+      0 0 0 0.25rem color("base-lightest");
+  }
+
+  .usa-step-indicator__segment--complete,
+  .usa-step-indicator__segment--current {
+    &::before {
+      box-shadow: 0 0 0 units(0.5) color("base-lightest");
+    }
+  }
+}
+
+.usa-step-indicator__segment-label {
+  // Show labels only at the min-width
+  @include at-media($theme-step-indicator-min-width) {
+    padding-right: units(2);
+  }
+}
+
+.usa-step-indicator__segment {
+  max-width: none;
+}
+
+.sr-time-of-test-footer {
+  margin-top: units(3);
+}
+
+.sr-time-of-test-buttons {
+  text-align: right;
+
+  button {
+    @include at-media("mobile-lg") {
+      margin-left: 1em;
+    }
+  }
+}
+
+.patient-app--landing {
+  [data-icon="check-circle"] {
+    font-size: units(5);
+
+    path {
+      fill: color("green-cool-50v");
+    }
+  }
+}
+
+.tag--new {
+  background-color: color("green-cool-50v");
+}
+
+.usa-form-group--error {
+  margin-top: units(3);
 }

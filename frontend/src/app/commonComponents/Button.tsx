@@ -20,7 +20,7 @@ interface Props {
     | "unstyled"
     | "secondary";
   className?: string;
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const Button = ({

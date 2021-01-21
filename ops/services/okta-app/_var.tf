@@ -16,6 +16,7 @@ variable "admin_groups" {
 }
 
 variable "redirect_urls" {
+  description = "Additional redirect URLs for Okta applications (defaults to dev URLs)"
   default = [
     "http://localhost:8080",
     "http://localhost:9090",

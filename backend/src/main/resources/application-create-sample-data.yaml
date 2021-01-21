@@ -1,0 +1,44 @@
+# configuration for dev and demo server startup on a blank DB
+simple-report-initialization:
+  organization:
+    org-name: Dis Organization
+    external-id: DIS_ORG
+  facility:
+    facility-name: Injection Site
+    clia-number: "000111222-3"
+    address:
+      street-1: 2797 N Cerrada de Beto
+  provider:
+    first-name: Fred
+    last-name: Flintstone
+    provider-id: PEBBLES
+    telephone: (202) 555-1212
+    address:
+      street-1: 123 Main Street
+      city: Oz
+      state: KS
+      postal-code: "12345"
+  configured-device-types:
+    - LumiraDX
+    - Quidel Sofia 2
+  device-types:
+    - name: Abbott IDNow
+      manufacturer: Abbott
+      model: ID Now
+      loinc-code: "94534-5"
+    - name: Abbott BinaxNow
+      manufacturer: Abbott
+      model: BinaxNOW COVID-19 Ag Card
+      loinc-code: "94558-4"
+    - name: Quidel Sofia 2
+      manufacturer: Quidel
+      model: Sofia 2 SARS Antigen FIA
+      loinc-code: "95209-3"
+    - name: BD Veritor
+      manufacturer: Becton, Dickinson and Company (BD)
+      model: "BD Veritor System for Rapid Detection of SARS-CoV-2*"
+      loinc-code: "94558-4"
+    - name: LumiraDX
+      manufacturer: LumiraDx UK Ltd.
+      model: LumiraDx SARS-CoV-2 Ag Test*
+      loinc-code: "95209-3"

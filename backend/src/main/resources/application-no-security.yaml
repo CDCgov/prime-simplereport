@@ -1,13 +1,14 @@
+spring:
+  autoconfigure:
+    exclude: # avoid running OAuth2 autoconfigure, even though we are setting some OAuth2 properties by default
+      - com.okta.spring.boot.oauth.OktaOAuth2AutoConfig
+      - com.okta.spring.boot.oauth.OktaOAuth2ResourceServerAutoConfig
+      - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
 simple-report-initialization.default-user:
   username: bob@example.com
   first-name: Bobbity
   middle-name: Bob
   last-name: Bobberoo
-simple-report-initialization.admin-user:
-  username: ruby@example.com
-  first-name: Ruby
-  middle-name: Raven
-  last-name: Reynolds
 simple-report:
   admin-emails:
     - ruby@example.com

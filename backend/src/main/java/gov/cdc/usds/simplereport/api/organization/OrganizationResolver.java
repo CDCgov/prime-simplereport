@@ -6,7 +6,6 @@ import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
@@ -19,7 +18,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 	private ApiUserService _userService;
 	private OrganizationService _organizationService;
 
-	public OrganizationResolver(OrganizationService os, ApiUserService users, OrganizationInitializingService initer) {
+    public OrganizationResolver(OrganizationService os, ApiUserService users) {
 		_organizationService = os;
 		_userService = users;
 	}

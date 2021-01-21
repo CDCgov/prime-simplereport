@@ -2,11 +2,10 @@ name: Deploy Demo Frontend Azure Resources
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main # TODO change to demo for branch based deploys
-    paths:
-      - "frontend/**"
+    env:
+      description: 'environment to deploy'
+      default: 'demo'
+      required: true
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}
