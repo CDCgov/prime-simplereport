@@ -1,5 +1,4 @@
 mutation updateUser(
-    $id: ID,
     $firstName: String,
     $middleName: String,
     $lastName: String!,
@@ -8,7 +7,6 @@ mutation updateUser(
     $oldEmail: String!,
     ){
   addPatient(
-    id: $id
     firstName: $firstName
     middleName: $middleName
     lastName: $lastName

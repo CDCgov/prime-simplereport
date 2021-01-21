@@ -50,7 +50,7 @@ public class ApiUserService {
     }
 
     @Transactional
-    public ApiUser updateUser(String Id, String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix) {
+    public ApiUser updateUser(String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix) {
         isAdminUser();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(oldUsername);
         if (!found.isPresent()) {
@@ -98,7 +98,9 @@ public class ApiUserService {
             return _apiUserRepo.save(user);
         } else {
             LOG.info("Initial login for {}: creating user record.", userIdentity.getUsername());
-            return _apiUserRepo.save(new ApiUser(userIdentity.getUsername(), userIdentity));
+            ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
+            user.updateLastSeen();
+            return _apiUserRepo.save(user);
         }
     }
 }

@@ -71,6 +71,7 @@ public class OrganizationService {
     }
 
     public List<Organization> getOrganizations() {
+        _apiUserService.isAdminUser();
         return _repo.findAll();
     }
 

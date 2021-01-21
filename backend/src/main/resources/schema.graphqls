@@ -233,12 +233,12 @@ type Mutation {
     organizationExternalId: String!
   ): User
   updateUser(
-    id: ID
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
     newEmail: String!
+    # oldEmail serves as the unique identifier for the user to be updated
     oldEmail: String!
   ): User
   addPatient(
