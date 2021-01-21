@@ -3,11 +3,13 @@ name: Smoke Test Client
 
 # Run this on pushes to any branch that change a frontend file or the workflow definition
 on:
+  workflow_dispatch: # because sometimes you just want to force a branch to have tests run
+  pull_request:
+    branches:
+      - "**"
   push:
-    branches: "**"
-    paths:
-      - "frontend/**"
-      - .github/workflows/smoketest.yml
+    branches:
+      - main
 
 defaults:
   run:
