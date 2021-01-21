@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
@@ -74,7 +75,24 @@ public abstract class BaseApiTest {
             GraphQLResponse response = _template.postForResource(queryFileName);
             assertTrue(response.isOk(), "Servlet response should be OK");
             JsonNode responseBody = response.readTree();
-            assertGraphQLSuccess(responseBody);
+            assertGraphQLOutcome(responseBody, null);
+            return (ObjectNode) responseBody.get("data");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Run the query in the given resource file, check if the response has the
+     * expected error (either none or a single specific error message), and return
+     * the {@code data} section of the response if the error was as expected.
+     */
+    protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
+        try {
+            GraphQLResponse response = _template.perform(queryFileName, variables);
+            assertTrue(response.isOk(), "Servlet response should be OK");
+            JsonNode responseBody = response.readTree();
+            assertGraphQLOutcome(responseBody, expectedError);
             return (ObjectNode) responseBody.get("data");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -82,15 +100,7 @@ public abstract class BaseApiTest {
     }
 
     protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
-        try {
-            GraphQLResponse response = _template.perform(queryFileName, variables);
-            assertTrue(response.isOk(), "Servlet response should be OK");
-            JsonNode responseBody = response.readTree();
-            assertGraphQLSuccess(responseBody);
-            return (ObjectNode) responseBody.get("data");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return runQuery(queryFileName, variables, null);
     }
 
     /**
@@ -99,20 +109,28 @@ public abstract class BaseApiTest {
      */
     protected static void assertGraphQLSuccess(GraphQLResponse resp) {
         try {
-            assertGraphQLSuccess(resp.readTree());
+            assertGraphQLOutcome(resp.readTree(), null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * Check if the given response body has an {@code errors} section, and if
-     * so, fail the test using the errors section as a failure message.
+     * Check if the given response body has an {@code errors} section. If so, if we
+     * have an expected error, check that the errors section contains it; if we do
+     * not, then fail the test.
+     * 
+     * @param expectedError if null, expect success; if not null, expect this error
+     *                      message
      */
-    protected static void assertGraphQLSuccess(JsonNode responseBody) {
+    protected static void assertGraphQLOutcome(JsonNode responseBody, String expectedError) {
         JsonNode errorNode = responseBody.path("errors");
-        if (!errorNode.isMissingNode()) {
-            fail(errorNode.toString());
+        if (null == expectedError) {
+            if (!errorNode.isMissingNode()) {
+                fail(errorNode.toString());
+            }
+        } else {
+            assertEquals(expectedError, errorNode.get(0).get("message").asText());
         }
     }
 }
