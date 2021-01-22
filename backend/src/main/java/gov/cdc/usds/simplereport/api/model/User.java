@@ -12,13 +12,13 @@ public class User {
 	private String email;
 	private Boolean isAdmin;
 
-	public User(ApiUser currentUser, Organization currentOrg, Boolean isAdmin) {
+	public User(ApiUser user, Organization org, Boolean isAdmin) {
 		super();
-		this.id = currentUser.getInternalId().toString();
-		this.org = currentOrg;
-		this.nameInfo = currentUser.getNameInfo();
+		this.id = user.getInternalId().toString();
+		this.org = org;
+		this.nameInfo = user.getNameInfo();
 		// Note: we assume a user's email and login username are the same thing.
-		this.email = currentUser.getLoginEmail();
+		this.email = user.getLoginEmail();
 		this.isAdmin = isAdmin;
 	}
 

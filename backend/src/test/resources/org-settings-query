@@ -1,6 +1,8 @@
 {
   organization {
     internalId
+    name
+    externalId
     testingFacility {
       cliaNumber
       name
