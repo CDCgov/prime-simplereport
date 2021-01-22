@@ -1065,11 +1065,7 @@ databaseChangeLog:
                   name: swab_type
                   type: *string
                   remarks: The swab type used for this device
-        - sql:
-            comment: set the swab type for existing devices to anterior nares swab code (445297001)
-            sql: |
-              UPDATE ${database.defaultSchemaName}.device_type
-              SET swab_type = '445297001'
+                  value: "445297001" # swab of internal nose
         - addNotNullConstraint:
             tableName: device_type
             columnName: swab_type
