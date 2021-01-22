@@ -6,7 +6,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.OktaService;
+import gov.cdc.usds.simplereport.service.OktaServiceImpl;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -32,7 +32,7 @@ import org.springframework.security.test.context.support.WithMockUser;
  * application context being created. This is not annotated with a Spring
  * stereotype because we very much do not want it to be picked up automatically!
  */
-@Import({ TestDataFactory.class, AuditingConfig.class, OktaService.class, ApiUserService.class, OrganizationInitializingService.class })
+@Import({ TestDataFactory.class, AuditingConfig.class, OktaServiceImpl.class, ApiUserService.class, OrganizationInitializingService.class })
 @EnableConfigurationProperties({InitialSetupProperties.class, OktaClientProperties.class, AuthorizationProperties.class, AdminEmailList.class, DataHubConfig.class})
 public class SliceTestConfiguration {
 
