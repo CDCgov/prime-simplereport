@@ -9,6 +9,15 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+logging:
+  level:
+    # NOTE: un-comment any of the below to turn on something interesting
+    # Hibernate SQL query logging: basically the same as hibernate.show_sql but through slf4j
+    # org.hibernate.SQL: DEBUG
+    # Hibernate input and output value logging: SUPER VERBOSE
+    # org.hibernate.type: TRACE
+    # Always have our own debug logging turned on in tests:
+    gov.cdc.usds: DEBUG
 simple-report-initialization:
   organization:
     org-name: Dis Organization
