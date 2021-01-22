@@ -67,6 +67,7 @@ const AoEModalForm = ({
         className="margin-top-205"
       />
       {modalView === "smartphone" && (
+        <>
         <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
           <div className="text-center">
             <p className="font-body-lg margin-y-0">
@@ -76,8 +77,12 @@ const AoEModalForm = ({
             <div className="margin-top-205">
               <QRCode value={qrCodeValue} size="190" />
             </div>
-          </div>
+          </div> 
         </section>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+          <Button label={saveButtonText} type={"submit"} />
+        </div>
+        </>
       )}
       {modalView === "verbal" && (
         <AoEForm
