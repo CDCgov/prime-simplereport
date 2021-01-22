@@ -65,24 +65,28 @@ const AoEModalForm = ({
         selectedRadio={modalView}
         className="margin-top-205"
       />
-      <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
-        <div className="text-center">
-          <p className="font-body-lg margin-y-0">
-            Point your camera at the QR code <br />
-            to access the questionnaire
-          </p>
-          <QRCode className="text-align-center" value={qrCodeValue} />
-        </div>
-      </section>
-      <AoEForm
-        saveButtonText="Continue"
-        onClose={onClose}
-        patient={patient}
-        facilityId={facilityId}
-        loadState={loadState}
-        saveCallback={saveCallback}
-        isModal={true}
-      />
+      {modalView === "smartphone" && (
+        <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
+          <div className="text-center">
+            <p className="font-body-lg margin-y-0">
+              Point your camera at the QR code <br />
+              to access the questionnaire
+            </p>
+            <QRCode className="text-align-center" value={qrCodeValue} />
+          </div>
+        </section>
+      )}
+      {modalView === "verbal" && (
+        <AoEForm
+          saveButtonText="Continue"
+          onClose={onClose}
+          patient={patient}
+          facilityId={facilityId}
+          loadState={loadState}
+          saveCallback={saveCallback}
+          isModal={true}
+        />
+      )}
     </Modal>
   );
 };
