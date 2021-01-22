@@ -43,8 +43,11 @@ const AoEModalForm = ({
             patient.lastName
           )}
         </h1>
-        <button class="usa-nav__close display-block margin-top-neg-2 margin-right-neg-205 margin-bottom-0">
-          <img src={iconClose} alt="Dot gov" />
+        <button
+          class="usa-nav__close display-block margin-top-neg-2 margin-right-neg-205 margin-bottom-0"
+          onClick={onClose}
+        >
+          <img src={iconClose} alt="Close" />
         </button>
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
