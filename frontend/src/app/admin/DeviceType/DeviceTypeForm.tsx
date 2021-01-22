@@ -1,0 +1,107 @@
+import React, { useState } from "react";
+import Button from "../../commonComponents/Button";
+import TextInput from "../../commonComponents/TextInput";
+import { Device } from "./DeviceTypeFormContainer";
+
+interface Props {
+  saveDeviceType: (device: Device) => void;
+}
+
+const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
+  const [device, updateDevice] = useState<Device>({
+    name: "",
+    manufacturer: "",
+    model: "",
+    loincCode: "",
+    swabType: "",
+  });
+  const [formChanged, updateFormChanged] = useState<boolean>(false);
+  const onChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    updateDevice({ ...device, [e.target.name]: e.target.value });
+    updateFormChanged(true);
+  };
+  return (
+    <main className="prime-home">
+      <div className="grid-container">
+        <div className="grid-row">
+          <div className="prime-container usa-card__container">
+            <div className="usa-card__header">
+              <div>
+                <h2>Device Type</h2>
+              </div>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Button
+                  type="button"
+                  onClick={() => saveDeviceType(device)}
+                  label="Save Changes"
+                  disabled={!formChanged}
+                />
+              </div>
+            </div>
+            <div className="usa-card__body">
+              <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Name"
+                    name="name"
+                    value={device.name}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Manufacturer"
+                    name="manufacturer"
+                    value={device.manufacturer}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Model"
+                    name="model"
+                    value={device.model}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Loinc Code"
+                    name="loincCode"
+                    value={device.loincCode}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="grid-row grid-gap">
+                <div className="tablet:grid-col">
+                  <TextInput
+                    label="Swab Type"
+                    name="swabType"
+                    value={device.swabType}
+                    onChange={onChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default DeviceTypeForm;

@@ -1053,3 +1053,23 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.test_order
               SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
               WHERE date_tested_backdate is not null;
+  - changeSet:
+      id: add-swab-type-to-device-type
+      author: tbest@cdc.gov
+      comment: add a property to store the swab type per device
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: swab_type
+                  type: *string
+                  remarks: The swab type used for this device
+        - sql:
+            comment: set the swab type for existing devices to anterior nares swab code (445297001)
+            sql: |
+              UPDATE ${database.defaultSchemaName}.device_type
+              SET swab_type = '445297001'
+        - addNotNullConstraint:
+            tableName: device_type
+            columnName: swab_type

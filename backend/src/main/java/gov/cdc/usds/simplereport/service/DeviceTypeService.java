@@ -44,7 +44,14 @@ public class DeviceTypeService {
     }
 
     @Transactional(readOnly = false)
-    public DeviceType updateDeviceType(UUID id, String name, String model, String manufacturer, String loincCode) {
+    public DeviceType updateDeviceType(
+        UUID id,
+        String name,
+        String model,
+        String manufacturer,
+        String loincCode,
+        String swabType
+    ) {
         _apiUserService.isAdminUser();
         DeviceType d = getDeviceType(id.toString());
         if (name != null) {
@@ -59,13 +66,22 @@ public class DeviceTypeService {
         if (loincCode != null) {
             d.setLoincCode(loincCode);
         }
+        if (swabType != null) {
+            d.setSwabType(swabType);
+        }
         return _repo.save(d);
     }
 
     @Transactional(readOnly = false)
-    public DeviceType createDeviceType(String name, String model, String manufacturer, String loincCode) {
+    public DeviceType createDeviceType(
+        String name,
+        String model,
+        String manufacturer,
+        String loincCode,
+        String swabType
+    ) {
         _apiUserService.isAdminUser();
-        return _repo.save(new DeviceType(name, manufacturer, model, loincCode));
+        return _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
     }
 
     public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {

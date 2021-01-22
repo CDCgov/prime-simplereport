@@ -60,7 +60,7 @@ public class InitialSetupProperties {
 
     public List<? extends DeviceType> getDeviceTypes() {
         return deviceTypes.stream()
-            .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode()))
+            .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode(), d.getSwabType()))
             .collect(Collectors.toList())
             ;
     }

@@ -42,6 +42,7 @@
     "uuid": "^8.3.1"
   },
   "scripts": {
+    "prestart": "rm -rf .eslintcache",
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
     "prebuild": "yarn compile-scss",

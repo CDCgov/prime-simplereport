@@ -21,8 +21,7 @@ import AddPatient from "./patients/AddPatient";
 import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
-import Admin from "./admin/Admin";
-import OrganizationFormContainer from "./admin/Organization/OrganizationFormContainer";
+import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 
 const WHOAMI_QUERY = gql`
@@ -157,22 +156,12 @@ const App = () => {
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
                 <Route path="/settings" component={SettingsRoutes} />
-                {data.whoami.isAdmin ? (
-                  <>
-                    <Route
-                      path={"/admin/create-organization"}
-                      render={() => <OrganizationFormContainer />}
-                    />
-                    <Route path={"/admin"} render={() => <Admin />} />
-                  </>
-                ) : (
-                  <Route
-                    path={"/admin"}
-                    render={({ location }) => (
-                      <Redirect to={{ ...location, pathname: "/queue" }} />
-                    )}
-                  />
-                )}
+                <Route
+                  path={"/admin"}
+                  render={({ match }) => (
+                    <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
+                  )}
+                />
               </Switch>
               <ToastContainer
                 autoClose={5000}
