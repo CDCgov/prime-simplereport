@@ -37,7 +37,10 @@ dependencies {
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
 //	Okta dependencies
-	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
+	implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+	implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
+	runtime 'com.okta.sdk:okta-sdk-impl:3.0.1'
+	runtime 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
 // App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
