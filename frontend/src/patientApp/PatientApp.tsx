@@ -20,6 +20,7 @@ import DOB from "./timeOfTest/DOB";
 import ErrorPage from "./ErrorPage";
 import PatientHeader from "./PatientHeader";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
+import PatientLanding from "./timeOfTest/PatientLanding";
 
 const PATIENT_LINK_QUERY = gql`
   query PatientLinkById($plid: String!) {
@@ -56,6 +57,7 @@ const PatientApp = () => {
           name: data.patientLinkCurrent.name,
         },
         facilities: data.patientLinkCurrent.testingFacility,
+        facility: data.patientLinkCurrent.testingFacility[0],
       })
     );
     // eslint-disable-next-line
@@ -99,8 +101,13 @@ const PatientApp = () => {
                   <Route path="/birth-date-confirmation" component={DOB} />
                   <Route
                     path="/patient-info-confirmation"
-                    component={AoEPatientFormContainer}
+                    render={(props) => (
+                      <AoEPatientFormContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
                   />
+                  <Route path="/success" component={PatientLanding} />
                 </Switch>
               </Router>
             )}

@@ -47,7 +47,7 @@ public class PatientLinkService {
     }
 
     public Person getPatientLinkVerify(String internalId, String birthDate) throws Exception {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
         if (patient.getBirthDate().equals(LocalDate.parse(birthDate, df))) {

@@ -8,12 +8,16 @@ import {
 } from "../../app/constants";
 
 import Button from "../../app/commonComponents/Button";
+import React, { useState } from "react";
+import { Redirect } from "react-router";
 
 interface Props {
   patient: any;
 }
 
 const PatientProfile = (props: Props) => {
+  const [nextPage, setNextPage] = useState(false);
+
   const fullName = formatFullName(props.patient);
   const race = RACE_VALUES.find((val) => val.value === props.patient.race)
     ?.label;
@@ -55,7 +59,7 @@ const PatientProfile = (props: Props) => {
   const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
-    console.log("saved");
+    setNextPage(true);
   };
 
   const buttonGroup = (
@@ -63,6 +67,18 @@ const PatientProfile = (props: Props) => {
       <Button label="Confirm and continue" onClick={savePatientAnswers} />
     </div>
   );
+
+  if (nextPage) {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/patient-info-confirmation",
+          state: { page: "symptoms" },
+        }}
+      />
+    );
+  }
 
   return (
     <>

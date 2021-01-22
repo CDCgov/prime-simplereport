@@ -5,14 +5,14 @@ import moment from "moment";
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { gql, useLazyQuery } from "@apollo/client";
-import { useDispatch, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { setPatient } from "../../app/store";
 import { Redirect } from "react-router";
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
   query PatientLinkVerify($plid: String!, $birthDate: String!) {
     patientLinkVerify(internalId: $plid, birthDate: $birthDate) {
-      lookupId
+      internalId
       firstName
       middleName
       lastName
@@ -39,6 +39,7 @@ const DOB = () => {
   const dispatch = useDispatch();
 
   const [birthDate, setBirthDate] = useState("");
+  const [formattedBirthDate, setFormattedBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [nextPage, setNextPage] = useState(false);
 
@@ -47,7 +48,7 @@ const DOB = () => {
   const [validateBirthDate, { called, loading, data }] = useLazyQuery(
     PATIENT_LINK_VALIDATION_QUERY,
     {
-      variables: { plid, birthDate },
+      variables: { plid, birthDate: formattedBirthDate },
       fetchPolicy: "no-cache",
     }
   );
@@ -55,14 +56,14 @@ const DOB = () => {
   useEffect(() => {
     if (!data) return;
 
-    dispatch(setPatient(data));
+    dispatch(setPatient(data.patientLinkVerify));
 
     setNextPage(true);
     // eslint-disable-next-line
   }, [data]);
 
   const isValidForm = () => {
-    const validDate = moment(birthDate.replace("/", ""), "MMDDDYYYY").isValid();
+    const validDate = moment(birthDate.replace("/", ""), "MMDDYYYY").isValid();
 
     if (validDate) {
       setBirthDateError("");
@@ -75,6 +76,9 @@ const DOB = () => {
 
   const confirmBirthDate = () => {
     if (isValidForm()) {
+      setFormattedBirthDate(
+        moment(birthDate.replace("/", ""), "MMDDYYYY").format("YYYY-MM-DD")
+      );
       validateBirthDate();
     }
   };
@@ -84,7 +88,15 @@ const DOB = () => {
   }
 
   if (nextPage) {
-    return <Redirect push to={"/pxp/patient-info-confirmation"} />;
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/patient-info-confirmation",
+          state: { page: "profile" },
+        }}
+      />
+    );
   }
 
   return (
@@ -125,4 +137,4 @@ const DOB = () => {
   );
 };
 
-export default DOB;
+export default connect()(DOB);

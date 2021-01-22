@@ -18,6 +18,7 @@ import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
 import "./AoEForm.scss";
+import { Redirect } from "react-router";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -287,6 +288,7 @@ const AoEForm = ({
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
+  const [nextPage, setNextPage] = useState(false);
 
   // form validation
   const [symptomError, setSymptomError] = useState(null);
@@ -376,7 +378,11 @@ const AoEForm = ({
         ...priorTest,
         pregnancy: pregnancyResponse,
       });
-      onClose();
+      if (isModal) {
+        onClose();
+      } else {
+        setNextPage(true);
+      }
     } else {
       e.preventDefault();
     }
@@ -390,6 +396,10 @@ const AoEForm = ({
       <Button label={saveButtonText} type={"submit"} />
     </div>
   );
+
+  if (nextPage) {
+    return <Redirect to={"/success"} />;
+  }
 
   return (
     <>
