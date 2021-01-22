@@ -8,7 +8,9 @@ public final class BeanProfiles {
 
     /** Profile for testing authentication and authorization */
     public static final String AUTHORIZATION_DEV = "auth-dev";
-    /** Profile for mocking and bypassing most security (DEV OR TEST ONLY) */
+    /** Profile for mocking and bypassing Okta management API (TEST OR DEMO ONLY) */
+    public static final String NO_OKTA_MGMT = "no-okta-mgmt";
+    /** Profile for mocking and bypassing most security (TEST OR DEMO ONLY) */
     public static final String NO_SECURITY = "no-security";
     /**
      * Profile where we assume there is a single tenant and do not check for roles

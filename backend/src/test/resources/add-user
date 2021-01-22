@@ -1,0 +1,17 @@
+mutation addUser(
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    $email: String!,
+    $organizationExternalId: String!,
+    ){
+  addPatient(
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+    email: $email
+    organizationExternalId: $organizationExternalId
+  )
+}

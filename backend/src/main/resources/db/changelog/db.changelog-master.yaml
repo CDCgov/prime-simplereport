@@ -836,7 +836,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.organization;
             expectedResult: 1
       changes:
         - sql:
@@ -1042,3 +1042,23 @@ databaseChangeLog:
               - column:
                   name: latest_recorded_timestamp
                   descending: true
+  - changeSet:
+      id: change-test-results-to-MST
+      author: neil.s.sharma@omb.eop.gov
+      comment: Change all existing backdated tests to be midnight MST instead of midnight UTC.
+      changes:
+        - sql:
+            comment: Update backdated test_orders from UTC to MST.
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order
+              SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
+              WHERE date_tested_backdate is not null;
+  - changeSet:
+      id: drop-not-null-last-seen-user
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Allow user's last seen timestamp to be null to allow for other people to create users
+      # Allows us to create a user without having to assign it a last-seen value (ie if user does not create themselves)
+      changes:
+        - dropNotNullConstraint:
+            tableName: api_user
+            columnName: last_seen

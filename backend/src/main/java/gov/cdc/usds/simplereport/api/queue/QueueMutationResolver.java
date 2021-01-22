@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-import java.time.ZoneId;
 import java.util.Date;
 
 import org.json.JSONException;
@@ -19,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import static gov.cdc.usds.simplereport.api.Translators.parseUserDateTime;
 
 /**
  * Mutations for creating and updating test queue entries.
@@ -35,21 +35,23 @@ public class QueueMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void addTestResult(String deviceID, String result, String patientID, String dateTested) {
+      Date isoDate = parseUserDateTime(dateTested);
       _tos.addTestResult(
         deviceID,
         TestResult.valueOf(result),
         patientID,
-        parseUserDate(dateTested) == null ? null : Date.from(parseUserDate(dateTested).atStartOfDay(ZoneId.systemDefault()).toInstant())
+        isoDate
       );
     }
 
     public ApiTestOrder editQueueItem(String id, String deviceId, String result, String dateTested) {
-        return new ApiTestOrder(_tos.editQueueItem(
-            id,
-            deviceId,
-            result,
-            parseUserDate(dateTested) == null ? null : Date.from(parseUserDate(dateTested).atStartOfDay(ZoneId.systemDefault()).toInstant())
-        ));
+      Date isoDate = parseUserDateTime(dateTested);
+      return new ApiTestOrder(_tos.editQueueItem(
+          id,
+          deviceId,
+          result,
+          isoDate
+      ));
     }
 
     public void addPatientToQueue(
