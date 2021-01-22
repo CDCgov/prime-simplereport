@@ -58,6 +58,9 @@ jobs:
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
       - name: Run API
+        env: 
+          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         run: cd backend; ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
