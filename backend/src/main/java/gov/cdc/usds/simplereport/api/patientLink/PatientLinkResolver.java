@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.patientLink;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -13,7 +14,7 @@ public class PatientLinkResolver implements GraphQLQueryResolver {
     @Autowired
     private PatientLinkService pls;
 
-    public Boolean getPatientLinkCurrent(String internalId) {
+    public Organization getPatientLinkCurrent(String internalId) {
         return pls.getPatientLinkCurrent(internalId);
     }
 

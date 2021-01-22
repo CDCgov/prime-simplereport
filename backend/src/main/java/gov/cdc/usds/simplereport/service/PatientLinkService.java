@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -33,19 +37,20 @@ public class PatientLinkService {
                 .orElseThrow(() -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
     }
 
-    public Boolean getPatientLinkCurrent(String internalId) {
+    public Organization getPatientLinkCurrent(String internalId) {
         PatientLink pl = getPatientLink(internalId);
         if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(24L, ChronoUnit.HOURS)))) {
-            return true;
+            return pl.getTestOrder().getOrganization();
         } else {
-            return false;
+            return null;
         }
     }
 
     public Person getPatientLinkVerify(String internalId, String birthDate) throws Exception {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
-        if (patient.getBirthDate().equals(LocalDate.parse(birthDate))) {
+        if (patient.getBirthDate().equals(LocalDate.parse(birthDate, df))) {
             return patient;
         } else {
             throw new Exception("Incorrect birth date");

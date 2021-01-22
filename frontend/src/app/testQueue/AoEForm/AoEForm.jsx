@@ -5,7 +5,7 @@ import {
   getSymptomList,
   getTestTypes,
   getPregnancyResponses,
-} from "./constants";
+} from "../../../patientApp/timeOfTest/constants";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -251,6 +251,7 @@ const AoEForm = ({
   loadState = {},
   saveCallback = {},
   isModal,
+  noValidation,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
@@ -292,6 +293,7 @@ const AoEForm = ({
   const [symptomOnsetError, setSymptomOnsetError] = useState(null);
 
   const isValidForm = () => {
+    if (noValidation) return true;
     const hasSymptoms = Object.keys(currentSymptoms).some(
       (key) => currentSymptoms[key]
     );

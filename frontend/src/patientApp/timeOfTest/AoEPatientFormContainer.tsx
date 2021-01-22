@@ -1,60 +1,24 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
-import { getFacilityIdFromUrl } from "../../utils/url";
-import AoEForm from "./AoEForm";
-import StepIndicator from "../../commonComponents/StepIndicator";
+import { getFacilityIdFromUrl } from "../../app/utils/url";
+import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
+import StepIndicator from "../../app/commonComponents/StepIndicator";
 import PatientProfile from "./PatientProfile";
+import { useSelector } from "react-redux";
 
 interface Props {
   patientId: string;
   page: string;
 }
 
-const GET_PATIENT = gql`
-  query GetPatientDetails($id: String!) {
-    patient(id: $id) {
-      internalId
-      lookupId
-      firstName
-      middleName
-      lastName
-      birthDate
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      telephone
-      role
-      email
-      county
-      race
-      ethnicity
-      gender
-      residentCongregateSetting
-      employedInHealthcare
-    }
-  }
-`;
 const AoEPatientFormContainer = ({ patientId, page }: Props) => {
-  const { data, loading, error } = useQuery(GET_PATIENT, {
-    variables: { id: patientId || "" },
-    fetchPolicy: "no-cache",
-  });
+  const patient = useSelector((state) => (state as any).patient as any);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-  if (error) {
-    return <p>error loading patient with id {patientId}...</p>;
-  }
-
-  const residentCongregateSetting = data.patient.residentCongregateSetting
+  const residentCongregateSetting = patient.residentCongregateSetting
     ? "YES"
     : "NO";
 
   const facilityId = getFacilityIdFromUrl();
-  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
+  const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
   const steps = [
     {
@@ -78,19 +42,20 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
         {page === "symptoms" && (
           <AoEForm
             patient={{
-              ...data.patient,
+              ...patient,
               residentCongregateSetting,
               employedInHealthcare,
             }}
             facilityId={facilityId}
             isModal={false}
             saveButtonText="Submit"
+            noValidation={false}
           />
         )}
         {page === "profile" && (
           <PatientProfile
             patient={{
-              ...data.patient,
+              ...patient,
               residentCongregateSetting,
               employedInHealthcare,
             }}

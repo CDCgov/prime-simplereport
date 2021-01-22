@@ -1,27 +1,35 @@
-import React, { useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { ToastContainer } from 'react-toastify';
-import { useDispatch, connect } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
+import React, { useEffect } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { ToastContainer } from "react-toastify";
+import { useDispatch, connect } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Redirect,
   Route,
   Switch,
   BrowserRouter as Router,
-} from 'react-router-dom';
-import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
-import { reactPlugin } from '../app/AppInsights';
+} from "react-router-dom";
+import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
+import { reactPlugin } from "../app/AppInsights";
 
-import PrimeErrorBoundary from '../app/PrimeErrorBoundary';
-import USAGovBanner from '../app/commonComponents/USAGovBanner';
-import { setInitialState } from '../app/store';
-import { getPatientLinkIdFromUrl } from '../app/utils/url';
-import TimeOfTest from './timeOfTest/TimeOfTest';
-import ErrorPage from './ErrorPage';
+import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
+import USAGovBanner from "../app/commonComponents/USAGovBanner";
+import { setInitialState } from "../app/store";
+import { getPatientLinkIdFromUrl } from "../app/utils/url";
+import DOB from "./timeOfTest/DOB";
+import ErrorPage from "./ErrorPage";
+import PatientHeader from "./PatientHeader";
+import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 
 const PATIENT_LINK_QUERY = gql`
   query PatientLinkById($plid: String!) {
-    patientLinkCurrent(internalId: $plid)
+    patientLinkCurrent(internalId: $plid) {
+      name
+      testingFacility {
+        id
+        name
+      }
+    }
   }
 `;
 
@@ -30,18 +38,26 @@ const PatientApp = () => {
 
   const plid = getPatientLinkIdFromUrl();
   if (plid == null) {
-    throw new Error('Patient Link ID from URL was null');
+    throw new Error("Patient Link ID from URL was null");
   }
 
   const { data, loading, error } = useQuery(PATIENT_LINK_QUERY, {
     variables: { plid },
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
     if (!data) return;
 
-    dispatch(setInitialState({ data }));
+    dispatch(
+      setInitialState({
+        plid,
+        organization: {
+          name: data.patientLinkCurrent.name,
+        },
+        facilities: data.patientLinkCurrent.testingFacility,
+      })
+    );
     // eslint-disable-next-line
   }, [data]);
 
@@ -62,6 +78,7 @@ const PatientApp = () => {
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
+            <PatientHeader />
             {error ? (
               <ErrorPage error={error} />
             ) : (
@@ -72,11 +89,18 @@ const PatientApp = () => {
                     exact
                     render={({ location }) => (
                       <Redirect
-                        to={{ ...location, pathname: '/time-of-test' }}
+                        to={{
+                          ...location,
+                          pathname: "/birth-date-confirmation",
+                        }}
                       />
                     )}
                   />
-                  <Route path="/time-of-test" component={TimeOfTest} />
+                  <Route path="/birth-date-confirmation" component={DOB} />
+                  <Route
+                    path="/patient-info-confirmation"
+                    component={AoEPatientFormContainer}
+                  />
                 </Switch>
               </Router>
             )}

@@ -1,9 +1,13 @@
 import moment from "moment";
 
-import { formatFullName } from "../../utils/user";
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
+import { formatFullName } from "../../app/utils/user";
+import {
+  RACE_VALUES,
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+} from "../../app/constants";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../app/commonComponents/Button";
 
 interface Props {
   patient: any;

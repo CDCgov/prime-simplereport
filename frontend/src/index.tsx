@@ -1,15 +1,15 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { Provider } from 'react-redux';
+import React from "react";
+import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 
-import App from './app/App';
-import PatientApp from './patientApp/PatientApp';
-import HealthChecks from './app/HealthChecks';
+import App from "./app/App";
+import PatientApp from "./patientApp/PatientApp";
+import HealthChecks from "./app/HealthChecks";
 
-import * as serviceWorker from './serviceWorker';
-import './styles/App.css';
-import { store } from './app/store';
-import { Switch, Route, BrowserRouter as Router } from 'react-router-dom';
+import * as serviceWorker from "./serviceWorker";
+import "./styles/App.css";
+import { store } from "./app/store";
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
@@ -17,27 +17,27 @@ import {
   ApolloLink,
   InMemoryCache,
   concat,
-} from '@apollo/client';
-import { onError } from '@apollo/client/link/error';
-import { showError } from './app/utils';
-import { toast } from 'react-toastify';
-import Modal from 'react-modal';
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+import { showError } from "./app/utils";
+import { toast } from "react-toastify";
+import Modal from "react-modal";
 
 // Define the root element for modals
-if (process.env.NODE_ENV !== 'test') {
-  Modal.setAppElement('#root');
+if (process.env.NODE_ENV !== "test") {
+  Modal.setAppElement("#root");
 }
 
 if (window.location.hash) {
   const params = new URLSearchParams(window.location.hash.slice(1));
-  const bearerToken = params.get('access_token');
+  const bearerToken = params.get("access_token");
   if (bearerToken) {
-    localStorage.setItem('access_token', bearerToken);
+    localStorage.setItem("access_token", bearerToken);
   }
   // We need to store the ID token in order for logout to work correctly.
-  const idToken = params.get('id_token');
+  const idToken = params.get("id_token");
   if (idToken) {
-    localStorage.setItem('id_token', idToken);
+    localStorage.setItem("id_token", idToken);
   }
 }
 
@@ -46,8 +46,8 @@ const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
     headers: {
-      'Access-Control-Request-Headers': 'Authorization',
-      Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+      "Access-Control-Request-Headers": "Authorization",
+      Authorization: `Bearer ${localStorage.getItem("access_token")}`,
     },
   });
   return forward(operation);
@@ -55,8 +55,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 
 const logoutLink = onError(({ networkError, graphQLErrors }) => {
   if (networkError && process.env.REACT_APP_OKTA_URL) {
-    console.error('network error', networkError);
-    console.log('redirecting to', process.env.REACT_APP_OKTA_URL);
+    console.error("network error", networkError);
+    console.log("redirecting to", process.env.REACT_APP_OKTA_URL);
     window.location.replace(process.env.REACT_APP_OKTA_URL);
   }
   if (graphQLErrors) {
@@ -66,8 +66,8 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       );
       return message;
     });
-    showError(toast, messages.join(' '));
-    console.error('graphql error', graphQLErrors);
+    showError(toast, messages.join(" "));
+    console.error("graphql error", graphQLErrors);
   }
 });
 
@@ -90,7 +90,7 @@ ReactDOM.render(
       </Provider>
     </React.StrictMode>
   </ApolloProvider>,
-  document.getElementById('root')
+  document.getElementById("root")
 );
 
 // If you want your app to work offline and load faster, you can change

@@ -145,7 +145,7 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
   whoami: User!
-  patientLinkCurrent(internalId: String!): Boolean
+  patientLinkCurrent(internalId: String!): Organization
   patientLinkVerify(internalId: String!, birthDate: String!): Patient
 }
 type Mutation {
