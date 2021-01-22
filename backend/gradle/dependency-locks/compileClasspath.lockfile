@@ -32,7 +32,6 @@ com.nimbusds:content-type:2.0
 com.nimbusds:lang-tag:1.4.4
 com.nimbusds:nimbus-jose-jwt:8.19
 com.nimbusds:oauth2-oidc-sdk:7.1.1
-<<<<<<< HEAD
 com.okta.commons:okta-commons-lang:1.2.3
 com.okta.commons:okta-config-check:1.2.3
 com.okta.commons:okta-http-api:1.2.3
@@ -40,15 +39,6 @@ com.okta.sdk:okta-sdk-api:1.6.0
 com.okta.spring:okta-spring-boot-starter:1.4.0
 com.okta.spring:okta-spring-sdk:1.4.0
 com.okta.spring:okta-spring-security-oauth2:1.4.0
-=======
-com.okta.commons:okta-commons-lang:1.2.4
-com.okta.commons:okta-config-check:1.2.4
-com.okta.commons:okta-http-api:1.2.4
-com.okta.sdk:okta-sdk-api:3.0.1
-com.okta.spring:okta-spring-boot-starter:2.0.0
-com.okta.spring:okta-spring-sdk:2.0.0
-com.okta.spring:okta-spring-security-oauth2:2.0.0
->>>>>>> main
 com.sun.istack:istack-commons-runtime:3.0.11
 com.sun.mail:javax.mail:1.6.1
 com.vladmihalcea:hibernate-types-52:2.10.0
