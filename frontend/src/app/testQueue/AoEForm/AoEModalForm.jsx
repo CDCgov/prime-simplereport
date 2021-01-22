@@ -1,4 +1,5 @@
 import { React, useState } from "react";
+import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -12,6 +13,7 @@ const AoEModalForm = ({
   facilityId,
   loadState = {},
   saveCallback,
+  qrCodeValue = "https://www.google.com",
 }) => {
   const [modalView, setModalView] = useState(null);
   const modalViewValues = [
@@ -69,7 +71,7 @@ const AoEModalForm = ({
             Point your camera at the QR code <br />
             to access the questionnaire
           </p>
-          <div className="margin-top-205">[ QR code placeholder ]</div>
+          <QRCode className="text-align-center" value={qrCodeValue} />
         </div>
       </section>
       <AoEForm
@@ -80,7 +82,7 @@ const AoEModalForm = ({
         loadState={loadState}
         saveCallback={saveCallback}
         isModal={true}
-      ></AoEForm>
+      />
     </Modal>
   );
 };
