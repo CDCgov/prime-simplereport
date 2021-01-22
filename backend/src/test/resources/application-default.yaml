@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security
+  profiles.include: no-security,local
   datasource:
     url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
   liquibase:

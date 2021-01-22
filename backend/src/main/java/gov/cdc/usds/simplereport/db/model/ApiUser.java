@@ -41,11 +41,12 @@ public class ApiUser {
 	@Temporal(TemporalType.TIMESTAMP)
 	@UpdateTimestamp
 	private Date updatedAt;
-	@Column(nullable = false, updatable = false)
-	@NaturalId
+	@Column(nullable = false, updatable = true, unique = true)
+	@NaturalId(mutable = true)
 	private String loginEmail;
 	@Embedded
 	private PersonName nameInfo;
+	@Column(nullable = true)
 	private Date lastSeen;
 
 	protected ApiUser() { /* for hibernate */ }
@@ -53,7 +54,7 @@ public class ApiUser {
 	public ApiUser(String email, PersonName name) {
 		loginEmail = email;
 		nameInfo = name;
-		lastSeen = new Date();
+		lastSeen = null;
 	}
 
 	public UUID getInternalId() {
@@ -70,6 +71,10 @@ public class ApiUser {
 
 	public String getLoginEmail() {
 		return loginEmail;
+	}
+
+	public void setLoginEmail(String newEmail) {
+		loginEmail = newEmail;
 	}
 
 	public Date getLastSeen() {

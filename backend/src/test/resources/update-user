@@ -1,0 +1,17 @@
+mutation updateUser(
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    $newEmail: String!,
+    $oldEmail: String!,
+    ){
+  addPatient(
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+    newEmail: $newEmail
+    oldEmail: $oldEmail
+  )
+}
