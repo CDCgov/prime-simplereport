@@ -77,6 +77,9 @@ public class OrganizationService {
 
     public Organization getOrganizationForUser(ApiUser apiUser) {
         String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
+        if (orgExternalId == null) {
+            return null;
+        }
         return getOrganization(orgExternalId);
     }
 
