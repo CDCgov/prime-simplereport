@@ -2,9 +2,9 @@ import { React, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
+import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
-import iconClose from "../../../../node_modules/uswds/dist/img/close.svg";
 
 const AoEModalForm = ({
   saveButtonText = "Save",
@@ -20,6 +20,12 @@ const AoEModalForm = ({
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
+  const buttonGroup = (
+    <div className="sr-time-of-test-buttons">
+      <Button variant="unstyled" label="Cancel" onClick={onClose} />
+      <Button label={saveButtonText} type={"submit"} />
+    </div>
+  );
   return (
     <Modal
       isOpen={true}
@@ -45,12 +51,7 @@ const AoEModalForm = ({
             patient.lastName
           )}
         </h1>
-        <button
-          class="usa-nav__close display-block margin-top-neg-2 margin-right-neg-205 margin-bottom-0"
-          onClick={onClose}
-        >
-          <img src={iconClose} alt="Close" />
-        </button>
+        {buttonGroup}
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
       <h2 className="font-heading-lg margin-top-205 margin-bottom-0">

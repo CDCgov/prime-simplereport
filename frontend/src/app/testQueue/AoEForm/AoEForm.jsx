@@ -381,9 +381,6 @@ const AoEForm = ({
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      {isModal && (
-        <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      )}
       <Button label={saveButtonText} type={"submit"} />
     </div>
   );
