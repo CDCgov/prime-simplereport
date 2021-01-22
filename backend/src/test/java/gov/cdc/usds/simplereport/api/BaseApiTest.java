@@ -25,7 +25,9 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
+import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
@@ -43,6 +45,8 @@ public abstract class BaseApiTest {
 
     @MockBean
     protected AuthorizationService _authService;
+    @MockBean
+    protected IdentitySupplier _supplier;
 
     protected void truncateDb() {
         _truncator.truncateAll();
@@ -52,6 +56,7 @@ public abstract class BaseApiTest {
     public void setup() {
         truncateDb();
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         _initService.initAll();
         when(_authService.findAllOrganizationRoles()).thenReturn(Collections.singletonList(DEFAULT_ORG));
     }
