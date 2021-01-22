@@ -395,11 +395,6 @@ const AoEForm = ({
           saveAnswers(e);
         }}
       >
-        {isModal && (
-          <>
-            {buttonGroup}
-          </>
-        )}
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
@@ -441,7 +436,9 @@ const AoEForm = ({
             />
           </FormGroup>
         )}
-        <div className="sr-time-of-test-footer">{buttonGroup}</div>
+        <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
+          {buttonGroup}
+        </div>
       </form>
     </>
   );

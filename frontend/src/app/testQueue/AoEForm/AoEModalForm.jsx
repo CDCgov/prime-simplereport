@@ -1,9 +1,10 @@
 import React from "react";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
-import RadioGroup from  "../../commonComponents/RadioGroup";
+import RadioGroup from "../../commonComponents/RadioGroup";
 import { useState } from "react";
 import { displayFullName } from "../../utils";
+import iconClose from "../../../../node_modules/uswds/dist/img/close.svg";
 
 const AoEModalForm = ({
   saveButtonText = "Save",
@@ -13,10 +14,11 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback,
 }) => {
-  const [modalView, setModalView] = useState(
-    null
-  );
-  const modalViewValues = [{label: "Complete on smartphone", value: "smartphone"}, {label: "Complete questionnaire verbally", value: "verbal"}]
+  const [modalView, setModalView] = useState(null);
+  const modalViewValues = [
+    { label: "Complete on smartphone", value: "smartphone" },
+    { label: "Complete questionnaire verbally", value: "verbal" },
+  ];
   return (
     <Modal
       isOpen={true}
@@ -34,14 +36,22 @@ const AoEModalForm = ({
       overlayClassName="prime-modal-overlay"
       contentLabel="Time of Test Questions"
     >
-      <h1 className="patient-name">
-        {displayFullName(
-          patient.firstName,
-          patient.middleName,
-          patient.lastName
-        )}
-      </h1>
-      <h2>Test questionnaire</h2>
+      <div className="display-flex flex-justify">
+        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+          {displayFullName(
+            patient.firstName,
+            patient.middleName,
+            patient.lastName
+          )}
+        </h1>
+        <button class="usa-nav__close display-block margin-top-neg-2 margin-right-neg-205 margin-bottom-0">
+          <img src={iconClose} alt="Dot gov" />
+        </button>
+      </div>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+      <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
+        Test questionnaire
+      </h2>
       <RadioGroup
         legend="How would you like to complete the questionnaire?"
         name="qr-code"
@@ -49,13 +59,19 @@ const AoEModalForm = ({
         onChange={(evt) => setModalView(evt.currentTarget.value)}
         buttons={modalViewValues}
         selectedRadio={modalView}
+        className="margin-top-205"
       />
-      <section className="border-top border-base-lighter">
-        <p className="font-body-lg">Point your camera at the QR code to access the questionnaire</p>
-        <img src="" alt="qr code"/>
+      <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
+        <div className="text-center">
+          <p className="font-body-lg margin-y-0">
+            Point your camera at the QR code <br />
+            to access the questionnaire
+          </p>
+          <div className="margin-top-205">[ QR code placeholder ]</div>
+        </div>
       </section>
       <AoEForm
-        saveButtonText="Save"
+        saveButtonText="Continue"
         onClose={onClose}
         patient={patient}
         facilityId={facilityId}
