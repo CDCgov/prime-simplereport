@@ -1,8 +1,7 @@
-import React from "react";
+import { React, useState } from "react";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { useState } from "react";
 import { displayFullName } from "../../utils";
 import iconClose from "../../../../node_modules/uswds/dist/img/close.svg";
 
