@@ -455,30 +455,6 @@
   margin-top: units(3);
 }
 
-
-// Two-column checkbox layout
-.symptom-checkboxes {
-  .usa-form-group {
-    column-count: 2;
-
-    .usa-checkbox:first-child {
-      .usa-checkbox__label {
-        margin-top: 0;
-      }
-    }
-  }
-
-  > .usa-checkbox {
-    .usa-checkbox__label {
-      margin-top: 0;
-    }
-  }
-
-  .usa-checkbox__label {
-    line-height: units(3);
-  }
-}
-
 // Modal form
 .ReactModal__Content {
   .prime-formgroup {
@@ -501,6 +477,31 @@
   .prime-formgroup-heading {
     + .usa-fieldset {
       margin-top: units(2);
+    }
+  }
+
+  // Two-column checkbox layout
+  @include at-media("mobile-lg") {
+    .symptom-checkboxes {
+      .usa-form-group {
+        column-count: 2;
+    
+        .usa-checkbox:first-child {
+          .usa-checkbox__label {
+            margin-top: 0;
+          }
+        }
+      }
+    
+      > .usa-checkbox {
+        .usa-checkbox__label {
+          margin-top: 0;
+        }
+      }
+    
+      .usa-checkbox__label {
+        line-height: units(3);
+      }
     }
   }
 }
