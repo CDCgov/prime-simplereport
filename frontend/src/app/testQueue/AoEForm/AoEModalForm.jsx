@@ -23,7 +23,7 @@ const AoEModalForm = ({
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      <Button label={saveButtonText} type={"submit"} />
+      <Button className="margin-right-0" label={saveButtonText} type={"submit"} />
     </div>
   );
   return (
@@ -80,7 +80,7 @@ const AoEModalForm = ({
           </div> 
         </section>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-          <Button label={saveButtonText} type={"submit"} />
+          <Button className="margin-right-205" label={saveButtonText} type={"submit"} />
         </div>
         </>
       )}
