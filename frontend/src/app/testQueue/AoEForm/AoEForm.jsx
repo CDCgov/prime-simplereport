@@ -53,11 +53,12 @@ const SymptomInputs = ({
         />
         {!noSymptoms && (
           <>
-            <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
+            <div className="border-top-1px border-base-lighter margin-y-2"></div>
             <Checkboxes
               legend="What are your symptoms?"
               legendSrOnly
               name="symptom_list"
+              className="symptom-checkboxes"
               onChange={symptomChange}
               boxes={symptomListConfig.map(({ label, value }) => ({
                 label,
@@ -410,18 +411,18 @@ const AoEForm = ({
 
         <FormGroup title="Test History">
           <div className="prime-formgroup__wrapper">
-          <PriorTestInputs
-            testTypeConfig={testConfig}
-            priorTestDate={priorTestDate}
-            setPriorTestDate={setPriorTestDate}
-            isFirstTest={isFirstTest}
-            setIsFirstTest={setIsFirstTest}
-            priorTestType={priorTestType}
-            setPriorTestType={setPriorTestType}
-            priorTestResult={priorTestResult}
-            setPriorTestResult={setPriorTestResult}
-            mostRecentTest={mostRecentTest}
-          />
+            <PriorTestInputs
+              testTypeConfig={testConfig}
+              priorTestDate={priorTestDate}
+              setPriorTestDate={setPriorTestDate}
+              isFirstTest={isFirstTest}
+              setIsFirstTest={setIsFirstTest}
+              priorTestType={priorTestType}
+              setPriorTestType={setPriorTestType}
+              priorTestResult={priorTestResult}
+              setPriorTestResult={setPriorTestResult}
+              mostRecentTest={mostRecentTest}
+            />
           </div>
         </FormGroup>
 

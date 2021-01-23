@@ -441,21 +441,6 @@
   }
 }
 
-// Two-column checkbox layout
-.prime-checkboxes {
-  column-count: 2;
-
-  > .usa-checkbox {
-    .usa-checkbox__label {
-      margin-top: 0;
-    }
-  }
-
-  .usa-checkbox__label {
-    line-height: units(3);
-  }
-}
-
 .prime-formgroup-heading {
   font-size: size("body", "lg");
   margin-bottom: 0;
@@ -468,6 +453,30 @@
 
 .usa-fieldset + .usa-fieldset {
   margin-top: units(3);
+}
+
+
+// Two-column checkbox layout
+.symptom-checkboxes {
+  .usa-form-group {
+    column-count: 2;
+
+    .usa-checkbox:first-child {
+      .usa-checkbox__label {
+        margin-top: 0;
+      }
+    }
+  }
+
+  > .usa-checkbox {
+    .usa-checkbox__label {
+      margin-top: 0;
+    }
+  }
+
+  .usa-checkbox__label {
+    line-height: units(3);
+  }
 }
 
 // Modal form
@@ -486,6 +495,12 @@
 
     > .usa-legend {
       margin-top: 0;
+    }
+  }
+
+  .prime-formgroup-heading {
+    + .usa-fieldset {
+      margin-top: units(2);
     }
   }
 }
