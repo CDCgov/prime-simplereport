@@ -465,7 +465,7 @@
 
   .prime-formgroup__wrapper {
     border: 1px solid color("base-lighter");
-    border-radius: units(.5);
+    border-radius: units(0.5);
     margin-top: units(2);
     padding: units(2.5);
 
@@ -485,20 +485,20 @@
     .symptom-checkboxes {
       .usa-form-group {
         column-count: 2;
-    
+
         .usa-checkbox:first-child {
           .usa-checkbox__label {
             margin-top: 0;
           }
         }
       }
-    
+
       > .usa-checkbox {
         .usa-checkbox__label {
           margin-top: 0;
         }
       }
-    
+
       .usa-checkbox__label {
         line-height: units(3);
       }

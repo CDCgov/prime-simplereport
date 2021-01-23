@@ -23,7 +23,11 @@ const AoEModalForm = ({
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      <Button className="margin-right-0" label={saveButtonText} type={"submit"} />
+      <Button
+        className="margin-right-0"
+        label={saveButtonText}
+        type={"submit"}
+      />
     </div>
   );
   return (
@@ -68,20 +72,24 @@ const AoEModalForm = ({
       />
       {modalView === "smartphone" && (
         <>
-        <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
-          <div className="text-center">
-            <p className="font-body-lg margin-y-0">
-              Point your camera at the QR code <br />
-              to access the questionnaire
-            </p>
-            <div className="margin-top-205">
-              <QRCode value={qrCodeValue} size="190" />
+          <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
+            <div className="text-center">
+              <p className="font-body-lg margin-y-0">
+                Point your camera at the QR code <br />
+                to access the questionnaire
+              </p>
+              <div className="margin-top-205">
+                <QRCode value={qrCodeValue} size="190" />
+              </div>
             </div>
+          </section>
+          <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+            <Button
+              className="margin-right-205"
+              label={saveButtonText}
+              type={"submit"}
+            />
           </div>
-        </section>
-        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-          <Button className="margin-right-205" label={saveButtonText} type={"submit"} />
-        </div>
         </>
       )}
       {modalView === "verbal" && (
