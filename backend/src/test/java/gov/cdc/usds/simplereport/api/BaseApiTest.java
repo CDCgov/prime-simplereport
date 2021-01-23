@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
@@ -135,7 +135,7 @@ public abstract class BaseApiTest {
                 fail(errorNode.toString());
             }
         } else {
-            assertEquals(expectedError, errorNode.get(0).get("message").asText());
+            assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
         }
     }
 }
