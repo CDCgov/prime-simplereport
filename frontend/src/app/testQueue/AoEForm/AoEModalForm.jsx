@@ -77,7 +77,7 @@ const AoEModalForm = ({
             <div className="margin-top-205">
               <QRCode value={qrCodeValue} size="190" />
             </div>
-          </div> 
+          </div>
         </section>
         <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <Button className="margin-right-205" label={saveButtonText} type={"submit"} />
