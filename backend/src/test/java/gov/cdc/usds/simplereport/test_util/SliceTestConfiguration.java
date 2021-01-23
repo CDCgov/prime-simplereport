@@ -17,6 +17,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -36,37 +38,34 @@ import org.springframework.security.test.context.support.WithMockUser;
 @EnableConfigurationProperties({InitialSetupProperties.class, OktaClientProperties.class, AuthorizationProperties.class, AdminEmailList.class, DataHubConfig.class})
 public class SliceTestConfiguration {
 
-    public static final String SITE_ADMIN_USER = "ruby@example.com";
-    public static final String STANDARD_USER = "bob@example.com";
-
-    private static final Map<String, IdentityAttributes> TEST_USERS = Map.of(
-            STANDARD_USER, new IdentityAttributes(STANDARD_USER, "Bobbity", "Bob", "Bobberoo", null),
-            SITE_ADMIN_USER, new IdentityAttributes(SITE_ADMIN_USER, "Ruby", "Raven", "Reynolds", null));
-
     @Bean
     public IdentitySupplier testIdentityProvider() {
+        final Map<String, IdentityAttributes> identityLookup = Stream.of(
+                TestUserIdentities.STANDARD_USER_ATTRIBUTES,
+                TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)
+                .collect(Collectors.toMap(IdentityAttributes::getUsername, i -> i));
         return () -> {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null) {
                 // needed for running the commandlinerunner that we don't actually need
-                return TEST_USERS.get(STANDARD_USER);
+                return TestUserIdentities.STANDARD_USER_ATTRIBUTES;
             }
             String username = auth.getName();
             LoggerFactory.getLogger(SliceTestConfiguration.class).warn("Found username {} for auth {}", username, auth);
-            return TEST_USERS.get(username);
+            return identityLookup.get(username);
         };
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.TYPE })
-    @WithMockUser(username = STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
+    @WithMockUser(username = TestUserIdentities.STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
     @Inherited
     public @interface WithSimpleReportStandardUser {
     }
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.TYPE })
-    @WithMockUser(username = SITE_ADMIN_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
+    @WithMockUser(username = TestUserIdentities.SITE_ADMIN_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
     @Inherited
     public @interface WithSimpleReportSiteAdminUser {
     }
