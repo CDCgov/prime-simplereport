@@ -23,7 +23,6 @@ public class DeviceManagementTest extends BaseApiTest {
     @Test
     void listDeviceTypes_orgUser_expectedDevices() {
         List<JsonNode> deviceRecords = fetchSorted();
-        assertEquals(5, deviceRecords.size());
         List<String> deviceNames = deviceRecords.stream().map(r -> r.get("name").asText()).collect(Collectors.toList());
         assertEquals(List.of("Abbott BinaxNow", "Abbott IDNow", "BD Veritor", "LumiraDX", "Quidel Sofia 2"),
                 deviceNames);
