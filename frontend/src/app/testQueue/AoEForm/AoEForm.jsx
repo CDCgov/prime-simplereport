@@ -409,6 +409,7 @@ const AoEForm = ({
         </FormGroup>
 
         <FormGroup title="Test History">
+          <div className="prime-formgroup__wrapper">
           <PriorTestInputs
             testTypeConfig={testConfig}
             priorTestDate={priorTestDate}
@@ -421,6 +422,7 @@ const AoEForm = ({
             setPriorTestResult={setPriorTestResult}
             mostRecentTest={mostRecentTest}
           />
+          </div>
         </FormGroup>
 
         {patient.gender !== "male" && (
