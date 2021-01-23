@@ -441,6 +441,21 @@
   }
 }
 
+// Two-column checkbox layout
+.prime-checkboxes {
+  column-count: 2;
+
+  > .usa-checkbox {
+    .usa-checkbox__label {
+      margin-top: 0;
+    }
+  }
+
+  .usa-checkbox__label {
+    line-height: units(3);
+  }
+}
+
 .prime-formgroup-heading {
   font-size: size("body", "lg");
   margin-bottom: 0;
