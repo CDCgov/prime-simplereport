@@ -34,8 +34,7 @@ public class OrganizationService {
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
-            ProviderRepository providerRepo,
-            ApiUserService apiUserService) {
+            ProviderRepository providerRepo) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
