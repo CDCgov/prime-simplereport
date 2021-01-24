@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
@@ -15,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -36,6 +35,8 @@ public abstract class BaseApiTest {
 
     private static final OrganizationRoles DEFAULT_ORG = new OrganizationRoles("DIS_ORG",
             Collections.singleton(OrganizationRole.USER));
+
+    protected static final String ACCESS_ERROR = "Current User does not have permission for this action";
 
     @Autowired
     private DbTruncator _truncator;
@@ -61,7 +62,6 @@ public abstract class BaseApiTest {
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         _initService.initAll();
         when(_authService.findAllOrganizationRoles()).thenReturn(Collections.singletonList(DEFAULT_ORG));
-        SecurityContextHolder.getContext().setAuthentication(new TestingAuthenticationToken("PLACEHOLDER", "yolo"));
     }
 
     @AfterEach
@@ -81,7 +81,7 @@ public abstract class BaseApiTest {
     protected ObjectNode runQuery(String queryFileName) {
         try {
             GraphQLResponse response = _template.postForResource(queryFileName);
-            assertTrue(response.isOk(), "Servlet response should be OK");
+            assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
             JsonNode responseBody = response.readTree();
             assertGraphQLOutcome(responseBody, null);
             return (ObjectNode) responseBody.get("data");
@@ -98,7 +98,7 @@ public abstract class BaseApiTest {
     protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
         try {
             GraphQLResponse response = _template.perform(queryFileName, variables);
-            assertTrue(response.isOk(), "Servlet response should be OK");
+            assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
             JsonNode responseBody = response.readTree();
             assertGraphQLOutcome(responseBody, expectedError);
             return (ObjectNode) responseBody.get("data");
@@ -109,6 +109,10 @@ public abstract class BaseApiTest {
 
     protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
         return runQuery(queryFileName, variables, null);
+    }
+
+    protected void useSuperUser() {
+        when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     }
 
     /**

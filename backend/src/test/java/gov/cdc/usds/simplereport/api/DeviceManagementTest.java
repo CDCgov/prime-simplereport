@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-
 public class DeviceManagementTest extends BaseApiTest {
-
-    private static final String ACCESS_ERROR = "Current User does not have permission for this action";
 
     @Test
     void listDeviceTypes_orgUser_expectedDevices() {
@@ -44,7 +39,7 @@ public class DeviceManagementTest extends BaseApiTest {
 
     @Test
     void createDeviceType_adminUser_success() {
-        when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+        useSuperUser();
         runQuery("device-type-add", sillyDeviceArgs());
     }
 
@@ -53,7 +48,7 @@ public class DeviceManagementTest extends BaseApiTest {
         ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
         ObjectNode variables = sillyDeviceArgs()
                 .put("id", someDeviceType.get("internalId").asText());
-        when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+        useSuperUser();
         runQuery("device-type-update", variables);
     }
 
