@@ -9,8 +9,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -34,22 +34,22 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     @Test
     public void createDeviceType_baseUser_error() {
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
             _service.createDeviceType("A", "B", "C", "D");
         });
     
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 
     @Test
     public void updateDeviceType_baseUser_error() {
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
             _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4");
         });
     
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 
 
@@ -57,11 +57,11 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     public void removeDeviceType_baseUser_eror() {
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
 
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        Exception exception = assertThrows(AccessDeniedException.class, () -> {
             _service.removeDeviceType(deviceType);
         });
     
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 
     @Test

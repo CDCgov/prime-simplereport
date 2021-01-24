@@ -35,6 +35,7 @@ public abstract class BaseServiceTest<T> {
     protected TestDataFactory _dataFactory;
     @Autowired
     protected T _service;
+    protected static final String SPRING_SECURITY_DENIED = "Access is denied";
 
     @BeforeEach
     public void clearDb() {

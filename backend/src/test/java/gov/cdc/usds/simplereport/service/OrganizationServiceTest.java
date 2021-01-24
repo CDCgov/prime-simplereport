@@ -43,7 +43,7 @@ public class OrganizationServiceTest extends BaseServiceTest<OrganizationService
                     addy, "123-456-7890", "test@foo.com", holder, bill, addy, "123-456-7890", "547329472");
         });
 
-        assertEquals("Access is denied", exception.getMessage());
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 
     @Test

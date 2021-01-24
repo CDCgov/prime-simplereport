@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
@@ -21,16 +22,14 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 public class DeviceTypeService {
 
     private DeviceTypeRepository _repo;
-    private ApiUserService _apiUserService;
 
-    public DeviceTypeService(DeviceTypeRepository repo, ApiUserService apiUserService) {
+    public DeviceTypeService(DeviceTypeRepository repo) {
         _repo = repo;
-        _apiUserService = apiUserService;
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public void removeDeviceType(DeviceType d) {
-        _apiUserService.isAdminUser();
         _repo.delete(d);
     }
 
@@ -44,8 +43,8 @@ public class DeviceTypeService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public DeviceType updateDeviceType(UUID id, String name, String model, String manufacturer, String loincCode) {
-        _apiUserService.isAdminUser();
         DeviceType d = getDeviceType(id.toString());
         if (name != null) {
             d.setName(name);
@@ -63,8 +62,8 @@ public class DeviceTypeService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public DeviceType createDeviceType(String name, String model, String manufacturer, String loincCode) {
-        _apiUserService.isAdminUser();
         return _repo.save(new DeviceType(name, manufacturer, model, loincCode));
     }
 
