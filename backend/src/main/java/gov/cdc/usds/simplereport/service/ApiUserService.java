@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -28,13 +27,6 @@ public class ApiUserService {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
         _admins = admins;
-    }
-
-    public void isAdminUser() {
-        IdentityAttributes userIdentity = _supplier.get();
-        if (!_admins.contains(userIdentity.getUsername())) {
-            throw new IllegalGraphqlArgumentException("Current User does not have permission for this action");
-        }
     }
 
     public Boolean isAdminUser(ApiUser user) {
