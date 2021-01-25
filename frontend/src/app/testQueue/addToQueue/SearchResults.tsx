@@ -17,7 +17,11 @@ const SearchResults = ({
   patientsInQueue,
 }: SearchResultsProps) => {
   const [dialogPatient, setDialogPatient] = useState(null);
+  const [canAddToQueue, setCanAddToQueue] = useState(false);
 
+  const canAddToTestQueue = (patientId = "") => {
+    return patientsInQueue.indexOf(patientId) === -1;
+  };
   if (patients.length === 0) {
     return <h3> No results </h3>;
   }
@@ -31,6 +35,7 @@ const SearchResults = ({
             onClose={() => setDialogPatient(null)}
             saveCallback={(a: any) => onAddToQueue(dialogPatient, a)}
             facilityId={facilityId}
+            canAddToTestQueue={canAddToQueue}
           />
         )}
         <table className="usa-table usa-table--borderless">
@@ -51,11 +56,14 @@ const SearchResults = ({
                 <td>{p.birthDate}</td>
                 <td>{p.lookupId}</td>
                 <td>
-                  {patientsInQueue.indexOf(p.internalId) === -1 ? (
+                  {canAddToTestQueue(p.internalId) ? (
                     <Button
                       variant="unstyled"
                       label="Begin Test"
-                      onClick={() => setDialogPatient(p)}
+                      onClick={() => {
+                        setDialogPatient(p);
+                        setCanAddToQueue(canAddToTestQueue(p.internalId));
+                      }}
                     />
                   ) : (
                     "Test in progress"

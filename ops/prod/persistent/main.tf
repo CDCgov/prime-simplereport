@@ -9,11 +9,6 @@ locals {
   }
 }
 
-module "all" {
-  source = "../../services/all-persistent"
-  env    = local.management_tags.environment
-}
-
 module "monitoring" {
   source        = "../../services/monitoring"
   env           = local.env

@@ -11,6 +11,7 @@ describe("TestResultInputForm", () => {
       <TestResultInputForm
         queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
         testResultValue="POSITIVE"
+        isSubmitDisabled={undefined}
         onChange={jest.fn()}
         onSubmit={jest.fn()}
       />
@@ -78,6 +79,40 @@ describe("TestResultInputForm", () => {
     fireEvent.click(screen.getByText("Submit"));
 
     expect(onSubmit).toHaveBeenCalledTimes(0);
+  });
+
+  it("should not submit when there is a value but isSubmit is disabled", () => {
+    const onSubmit = jest.fn();
+    render(
+      <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResultValue="POSITIVE"
+        isSubmitDisabled={true}
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
+      />
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    expect(onSubmit).toHaveBeenCalledTimes(0);
+  });
+
+  it("should submit when there is a value but isSubmit is enabled", () => {
+    const onSubmit = jest.fn();
+    render(
+      <TestResultInputForm
+        queueItemId={"5d315d18-82f8-4025-a051-1a509e15c880"}
+        testResultValue="POSITIVE"
+        isSubmitDisabled={false}
+        onChange={jest.fn()}
+        onSubmit={onSubmit}
+      />
+    );
+
+    fireEvent.click(screen.getByText("Submit"));
+
+    expect(onSubmit).toHaveBeenCalledTimes(1);
   });
 
   it("should submit when there is a value", () => {

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -9,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -19,6 +21,7 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.OktaService;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,18 +32,20 @@ public class OrganizationService {
     private ProviderRepository _providerRepo;
     private ApiUserService _apiUserService;
     private AuthorizationService _authService;
-
+    private OktaService _oktaService;
 
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            ApiUserService apiUserService) {
+            ApiUserService apiUserService,
+            OktaService oktaService) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
         _apiUserService = apiUserService;
+        _oktaService = oktaService;
     }
 
     public Organization getCurrentOrganization() {
@@ -54,6 +59,28 @@ public class OrganizationService {
         } else {
             throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
         }
+    }
+
+    public Organization getOrganization(String externalId) {
+        Optional<Organization> found = _repo.findByExternalId(externalId);
+        if (found.isEmpty()) {
+            throw new IllegalGraphqlArgumentException("Organization could not be found");
+        } else {
+            return found.get();
+        }
+    }
+
+    public List<Organization> getOrganizations() {
+        _apiUserService.isAdminUser();
+        return _repo.findAll();
+    }
+
+    public Organization getOrganizationForUser(ApiUser apiUser) {
+        String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
+        if (orgExternalId == null) {
+            return null;
+        }
+        return getOrganization(orgExternalId);
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -169,6 +196,7 @@ public class OrganizationService {
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
                 orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         _facilityRepo.save(facility);
+        _oktaService.createOrganization(name, externalId);
         return org;
     }
 

@@ -1,10 +1,12 @@
  query fetchFacilityQueue($facilityId: String!) {
     queue(facilityId: $facilityId) {
+      internalId
       patient {
         internalId
         birthDate
       }
       symptomOnset
       priorTestDate
+      dateTested
     }
 }

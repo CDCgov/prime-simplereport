@@ -21,6 +21,8 @@ import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 
+import com.okta.sdk.resource.ResourceException;
+
 @Service
 @Transactional
 public class OrganizationInitializingService {
@@ -37,12 +39,15 @@ public class OrganizationInitializingService {
 	private DeviceTypeRepository _deviceTypeRepo;
 	@Autowired
 	private FacilityRepository _facilityRepo;
+	@Autowired
+	private OktaService _oktaService;
 
 	public void initAll() {
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
 		if (probe.isPresent()) {
+			initOktaOrg(probe.get());
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -62,9 +67,20 @@ public class OrganizationInitializingService {
 		DeviceType defaultDeviceType = configured.get(0);
 		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
 		Organization realOrg = _orgRepo.save(emptyOrg);
+		// in the unlikely event DB and Okta fall out of sync
+		initOktaOrg(realOrg);
 		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
 		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
 		_facilityRepo.save(defaultFacility);
+	}
+
+	private void initOktaOrg(Organization org) {
+		try {
+			LOG.info("Creating organization {} in Okta", org.getOrganizationName());
+			_oktaService.createOrganization(org.getOrganizationName(), org.getExternalId());
+		} catch (ResourceException e) {
+			LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
+		}
 	}
 
 	public String getDefaultOrganizationId() {
