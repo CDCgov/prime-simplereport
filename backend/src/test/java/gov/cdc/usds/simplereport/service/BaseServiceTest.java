@@ -1,9 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.AccessDeniedException;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -35,7 +40,8 @@ public abstract class BaseServiceTest<T> {
     protected TestDataFactory _dataFactory;
     @Autowired
     protected T _service;
-    protected static final String SPRING_SECURITY_DENIED = "Access is denied";
+
+    private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
     @BeforeEach
     public void clearDb() {
@@ -48,5 +54,10 @@ public abstract class BaseServiceTest<T> {
 
     protected void reset() {
         _truncator.truncateAll();
+    }
+
+    protected static void assertSecurityError(Executable e) {
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 }
