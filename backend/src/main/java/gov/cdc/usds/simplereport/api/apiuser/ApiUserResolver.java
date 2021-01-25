@@ -28,6 +28,7 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 		ApiUser currentUser = _userService.getCurrentUser();
 		Organization currentOrg = _organizationService.getCurrentOrganization();
 		Boolean isAdmin = _userService.isAdminUser(currentUser);
+		List<UserType> userTypes = _userService.getUserTypes();
 		return new User(currentUser, currentOrg, isAdmin);
 	}
 }
