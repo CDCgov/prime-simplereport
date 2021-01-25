@@ -32,10 +32,10 @@ public class FacilityRepositoryTest extends BaseRepositoryTest {
     @Test
     public void smokeTestDeviceOperations() {
         List<DeviceType> configuredDevices = new ArrayList<>();
-        DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6");
+        DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
         configuredDevices.add(_devices.save(bill));
-        configuredDevices.add(_devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7")));
+        configuredDevices.add(_devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E")));
         Organization org = _orgs.save(new Organization("My Office", "650Mass"));
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         Facility saved = _repo.save(new Facility(org, "Third Floor", "123456", addy, "555-867-5309",

@@ -121,12 +121,12 @@ public class TestDataFactory {
         return e;
     }
 
-    public DeviceType createDeviceType(String name, String manufacturer, String model, String loincCode) {
-        return _deviceRepo.save(new DeviceType(name, manufacturer, model, loincCode));
+    public DeviceType createDeviceType(String name, String manufacturer, String model, String loincCode, String swabType) {
+        return _deviceRepo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
     }
 
     public DeviceType getGenericDevice() {
         return _deviceRepo.findAll().stream().filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
-                .orElseGet(() -> _deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM")));
+                .orElseGet(() -> _deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E")));
     }
 }

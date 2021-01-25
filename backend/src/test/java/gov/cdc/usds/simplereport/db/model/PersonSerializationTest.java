@@ -56,7 +56,7 @@ public class PersonSerializationTest {
                 "Male-ish", true, false);
         Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
         List<DeviceType> configuredDevices = new ArrayList<>();
-        DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6");
+        DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         configuredDevices.add(bill);
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         p.setFacility(new Facility(fakeOrg, "Nice Place", "YOUGOTHERE", addy, "555-867-5309", "facility@test.com",
