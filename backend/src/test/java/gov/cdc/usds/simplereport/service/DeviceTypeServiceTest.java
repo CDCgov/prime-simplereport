@@ -39,7 +39,7 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     @Test
     public void updateDeviceType_baseUser_error() {
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
-        assertSecurityError(() -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4"));
+        assertSecurityError(() -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
     }
 
 
