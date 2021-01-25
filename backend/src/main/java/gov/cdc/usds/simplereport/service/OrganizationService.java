@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,8 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 @Service
 @Transactional(readOnly = true)
 public class OrganizationService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(OrganizationService.class);
 
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
@@ -54,6 +59,7 @@ public class OrganizationService {
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
+            LOG.debug("Found {} organizations for user", validOrgs.size());
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
@@ -68,13 +74,13 @@ public class OrganizationService {
         return orgRole.getOrganization();
     }
 
-    public Organization getOrganization(String externalId) {
+    public Optional<Organization> getOrganization(String externalId) {
         Optional<Organization> found = _repo.findByExternalId(externalId);
         if (found.isEmpty()) {
-            throw new IllegalGraphqlArgumentException("Organization could not be found");
-        } else {
-            return found.get();
-        }
+            LOG.debug("Organization could not be found");
+        } 
+        
+        return found;
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -82,10 +88,10 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    public Organization getOrganizationForUser(ApiUser apiUser) {
+    public Optional<Organization> getOrganizationForUser(ApiUser apiUser) {
         String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
         if (orgExternalId == null) {
-            return null;
+            return Optional.empty();
         }
         return getOrganization(orgExternalId);
     }
@@ -102,7 +108,7 @@ public class OrganizationService {
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
-        Organization org = getCurrentOrganization();
+        Organization org = this.getCurrentOrganization();
         return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
                 .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
     }
@@ -220,7 +226,8 @@ public class OrganizationService {
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
-        Facility facility = new Facility(getCurrentOrganization(),
+        Organization org = this.getCurrentOrganization();
+        Facility facility = new Facility(org,
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,
             orderingProvider,

@@ -9,10 +9,10 @@ enum ResultValue {
   UNDETERMINED
 }
 
-enum UserType {
-  STANDARD
-  RESTRICTED
-  ADMIN
+enum UserPermission {
+  THIS
+  THAT
+  MORE
 }
 
 type DeviceType {
@@ -134,7 +134,7 @@ type User {
   suffix: String
   email: String
   isAdmin: Boolean
-  type: [UserType]
+  permissions: [UserPermission]
   organization: Organization
 }
 

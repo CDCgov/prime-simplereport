@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.Optional;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.api.model.UserPermission;
+import gov.cdc.usds.simplereport.config.authorization.AuthorizationPermissions;
+import gov.cdc.usds.simplereport.config.authorization.UserType;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -22,6 +27,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 public class ApiUserService {
 
     private AdminEmailList _admins;
+    private AuthorizationPermissions _permissions;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
     private OktaService _oktaService;
@@ -32,11 +38,13 @@ public class ApiUserService {
         ApiUserRepository apiUserRepo,
         IdentitySupplier supplier,
         AdminEmailList admins,
+        AuthorizationPermissions permissions,
         OktaService oktaService
     ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
         _admins = admins;
+        _permissions = permissions;
         _oktaService = oktaService;
     }
 
@@ -73,6 +81,16 @@ public class ApiUserService {
 
     public Boolean isAdminUser(ApiUser user) {
         return _admins.contains(user.getLoginEmail());
+    }
+
+    public UserType getUserType(ApiUser user) {
+        // ***TO-DO: fill in authorization here***
+        // ~Magic~
+        return UserType.STANDARD;
+    }
+
+    public List<UserPermission> getPermissions(ApiUser user) {
+        return _permissions.getOrDefault(getUserType(user), new ArrayList<UserPermission>());
     }
 
     public void assertEmailAvailable(String email) {
