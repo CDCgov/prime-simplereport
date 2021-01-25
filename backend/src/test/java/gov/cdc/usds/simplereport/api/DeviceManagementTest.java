@@ -65,7 +65,8 @@ public class DeviceManagementTest extends BaseApiTest {
                 .put("name", "Funny")
                 .put("manufacturer", "Acme")
                 .put("model", "Test-A-Lot")
-                .put("loincCode", "123456");
+                .put("loincCode", "123456")
+                .put("swabType", "abcdef");
         return variables;
     }
 

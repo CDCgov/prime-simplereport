@@ -66,7 +66,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
 
         _service.addTestResult(devA.getInternalId().toString(), TestResult.POSITIVE,
                 p.getInternalId().toString(), null);
@@ -85,7 +85,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
 
         _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
                 TestResult.POSITIVE.toString(), null);
