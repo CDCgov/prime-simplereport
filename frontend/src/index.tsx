@@ -12,11 +12,11 @@ import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
-  HttpLink,
   ApolloLink,
   InMemoryCache,
   concat,
 } from "@apollo/client";
+import {createUploadLink} from 'apollo-upload-client';
 import { onError } from "@apollo/client/link/error";
 import { showError } from "./app/utils";
 import { toast } from "react-toastify";
@@ -40,7 +40,7 @@ if (window.location.hash) {
   }
 }
 
-const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
+const httpLink = createUploadLink({uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`});
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({

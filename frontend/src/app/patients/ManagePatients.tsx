@@ -1,8 +1,9 @@
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
-import { displayFullName } from "../utils";
+import { displayFullName, showError, showNotification } from "../utils";
+import { toast } from "react-toastify";
 
 // this can't be the best way to handle this?
 import {
@@ -11,6 +12,14 @@ import {
 } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import Alert from "../commonComponents/Alert";
+
+
+const uploadPatients = gql`
+  mutation UploadPatients($patientList: Upload!) {
+    uploadPatients(patientList: $patientList)
+  }
+`;
 
 const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
@@ -50,7 +59,9 @@ interface Props {
 }
 
 const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
-  const { data, loading, error } = useQuery<Data, {}>(patientQuery, {
+  const [upload] = useMutation(uploadPatients);
+
+  const { data, loading, error, refetch } = useQuery<Data, {}>(patientQuery, {
     fetchPolicy: "no-cache",
     variables: {
       facilityId: activeFacilityId,
@@ -90,6 +101,32 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
     });
   };
 
+  const bulkUpload = async ({target: {files }}: React.ChangeEvent<HTMLInputElement>) => {
+    const fileList = files;
+    if (fileList === null) {
+      showError(toast, "Error", "File not found");
+      return;
+    } 
+    upload({variables: {patientList: fileList[0]}}).then(() => {
+      showNotification(
+        toast,
+        <Alert
+          type="success"
+          title={`Patients uploaded`}
+          body="Successfully uploaded patients."
+        />
+      );
+      refetch();
+    },
+    (_error) => {
+      showError(
+        toast,
+        `${PATIENT_TERM_CAP} Data Error`,
+        "Please check for missing data or typos."
+      );
+    });
+  }
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -97,7 +134,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
-              {canEditUser ? (
+              {canEditUser ? (<>
                 <NavLink
                   className="usa-button usa-button--outline"
                   to={`/add-patient/?facility=${activeFacilityId}`}
@@ -106,7 +143,14 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   <FontAwesomeIcon icon="plus" />
                   {` New ${PATIENT_TERM_CAP}`}
                 </NavLink>
+                              <input
+                              type="file"
+                              name="file"
+                              placeholder='UploadCSV...'
+                              onChange={bulkUpload}
+                            /></>
               ) : null}
+
             </div>
             <div className="usa-card__body">
               {error ? (

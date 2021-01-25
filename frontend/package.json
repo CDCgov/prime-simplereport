@@ -19,6 +19,7 @@
     "@testing-library/user-event": "^7.2.1",
     "@types/react-router-dom": "^5.1.6",
     "ajv": "^6.12.6",
+    "apollo-upload-client": "^14.1.3",
     "classnames": "^2.2.6",
     "graphql": "^15.4.0",
     "lodash": "^4.17.20",
@@ -57,12 +58,12 @@
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
     "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
-    "deploy-azure-dev": "REACT_APP_OKTA_URL=https://dev.simplereport.gov REACT_APP_APPINSIGHTS_KEY=29a75c50-8485-4d80-8e1b-41b1a091abb6 REACT_APP_BACKEND_URL=https://dev.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdevapp --destination-path '/app'",
-    "deploy-azure-test": "REACT_APP_OKTA_URL=https://test.simplereport.gov REACT_APP_BACKEND_URL=https://test.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestapp --destination-path '/app'",
-    "deploy-azure-pentest": "REACT_APP_OKTA_URL=https://pentest.simplereport.gov REACT_APP_BACKEND_URL=https://pentest.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportpentestapp --destination-path '/app'",
-    "deploy-azure-demo": "REACT_APP_OKTA_URL=https://demo.simplereport.gov REACT_APP_BACKEND_URL=https://demo.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdemoapp --destination-path '/app'",
-    "deploy-azure-stg": "REACT_APP_OKTA_URL=https://stg.simplereport.gov REACT_APP_BACKEND_URL=https://stg.simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportstgapp --destination-path '/app'",
-    "deploy-azure-prod": "REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b REACT_APP_OKTA_URL=https://simplereport.gov REACT_APP_BACKEND_URL=https://simplereport.gov/api/graphql PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportprodapp --destination-path '/app'",
+    "deploy-azure-dev": "REACT_APP_OKTA_URL=https://dev.simplereport.gov REACT_APP_APPINSIGHTS_KEY=29a75c50-8485-4d80-8e1b-41b1a091abb6 REACT_APP_BACKEND_URL=https://dev.simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdevapp --destination-path '/app'",
+    "deploy-azure-test": "REACT_APP_OKTA_URL=https://test.simplereport.gov REACT_APP_BACKEND_URL=https://test.simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttestapp --destination-path '/app'",
+    "deploy-azure-pentest": "REACT_APP_OKTA_URL=https://pentest.simplereport.gov REACT_APP_BACKEND_URL=https://pentest.simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportpentestapp --destination-path '/app'",
+    "deploy-azure-demo": "REACT_APP_OKTA_URL=https://demo.simplereport.gov REACT_APP_BACKEND_URL=https://demo.simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportdemoapp --destination-path '/app'",
+    "deploy-azure-stg": "REACT_APP_OKTA_URL=https://stg.simplereport.gov REACT_APP_BACKEND_URL=https://stg.simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportstgapp --destination-path '/app'",
+    "deploy-azure-prod": "REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b REACT_APP_OKTA_URL=https://simplereport.gov REACT_APP_BACKEND_URL=https://simplereport.gov/api PUBLIC_URL=/app/ yarn build && az storage blob upload-batch -s build/ -d '$web' --account-name simplereportprodapp --destination-path '/app'",
     "maintenance-azure-beta": "mkdir -p /tmp/maintenance && /bin/cp -f public/maintenance.html /tmp/maintenance/index.html && az storage blob upload-batch -s /tmp/maintenance/ -d '$web' --account-name usdssimplereportbeta --destination-path '/'"
   },
   "eslintConfig": {
@@ -95,6 +96,7 @@
     ]
   },
   "devDependencies": {
+    "@types/apollo-upload-client": "^14.1.0",
     "@types/classnames": "^2.2.11",
     "@types/jest": "^26.0.18",
     "@types/node": "^14.14.10",
