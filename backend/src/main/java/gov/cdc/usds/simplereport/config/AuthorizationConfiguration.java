@@ -6,15 +6,9 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-
-import gov.cdc.usds.simplereport.config.authorization.UserAuthorizationVerifier;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
-import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
  * Configuration (mostly static) for method-level or object-level security in
@@ -25,13 +19,12 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuthorizationConfiguration {
 
+    /**
+     * The name of the bean that is to be used in SPeL access-control annotations.
+     * Should be attached to a bean by way of the Bean or Component annotation;
+     * exactly one such bean must be present in the application context.
+     */
     public static final String AUTHORIZER_BEAN = "simpleReportAuthVerifier";
-
-    @Bean(AUTHORIZER_BEAN)
-    public UserAuthorizationVerifier getVerifier(AdminEmailList admins, IdentitySupplier supplier,
-            OrganizationService orgService) {
-        return new UserAuthorizationVerifier(admins, supplier, orgService);
-    }
 
     /**
      * Apply this annotation if the method should only be called by site-wide

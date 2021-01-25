@@ -36,7 +36,6 @@ public class OrganizationFacilityTest extends BaseApiTest {
     void createOrganization_siteAdminUser_ok() {
         useSuperUser();
         ObjectNode orgCreated = runQuery("organization-create", getDeviceArgs());
-        System.out.println(orgCreated.toPrettyString());
         assertEquals("New Org, New Org, a Wonderful Town",
                 orgCreated.path("createOrganization").path("name").asText());
 

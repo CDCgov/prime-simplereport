@@ -20,7 +20,7 @@ logging:
     gov.cdc.usds: DEBUG
 simple-report:
   authorization:
-    role-prefix: "SR-UNITTES-TENANT:"
+    role-prefix: "SR-UNITTEST-TENANT:"
 simple-report-initialization:
   organization:
     org-name: Dis Organization
