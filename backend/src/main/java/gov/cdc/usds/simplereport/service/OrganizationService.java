@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +30,8 @@ import gov.cdc.usds.simplereport.service.OktaService;
 @Transactional(readOnly = true)
 public class OrganizationService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(OrganizationService.class);
+
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
@@ -48,26 +53,27 @@ public class OrganizationService {
         _oktaService = oktaService;
     }
 
-    public Organization getCurrentOrganization() {
+    public Optional<Organization> getCurrentOrganization() {
         List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
                 .map(OrganizationRoles::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs.size() == 1) {
-            return validOrgs.get(0);
+            return Optional.of(validOrgs.get(0));
         } else {
-            throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
+            LOG.debug("Found {} organizations for user", validOrgs.size());
+            return Optional.empty();
         }
     }
 
-    public Organization getOrganization(String externalId) {
+    public Optional<Organization> getOrganization(String externalId) {
         Optional<Organization> found = _repo.findByExternalId(externalId);
         if (found.isEmpty()) {
-            throw new IllegalGraphqlArgumentException("Organization could not be found");
-        } else {
-            return found.get();
-        }
+            LOG.debug("Organization could not be found");
+        } 
+        
+        return found;
     }
 
     public List<Organization> getOrganizations() {
@@ -75,17 +81,21 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    public Organization getOrganizationForUser(ApiUser apiUser) {
+    public Optional<Organization> getOrganizationForUser(ApiUser apiUser) {
         String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
         if (orgExternalId == null) {
-            return null;
+            return Optional.empty();
         }
         return getOrganization(orgExternalId);
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
-        Organization org = this.getCurrentOrganization();
-        _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
+        Optional<Organization> org = this.getCurrentOrganization();
+        if (!org.isPresent()) {
+            throw new IllegalGraphqlArgumentException("Could not determine if facility name is available:" +
+                                                      " User is not in one valid organization");
+        }
+        _facilityRepo.findByOrganizationAndFacilityName(org.get(), testingFacilityName)
             .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
         ;
     }
@@ -95,8 +105,11 @@ public class OrganizationService {
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
-        Organization org = getCurrentOrganization();
-        return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
+        Optional<Organization> org = this.getCurrentOrganization();
+        if (!org.isPresent()) {
+            throw new IllegalGraphqlArgumentException("Facility could not be found: user is not in one valid organization");
+        }
+        return _facilityRepo.findByOrganizationAndInternalId(org.get(), facilityId)
                 .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
     }
 
@@ -202,9 +215,12 @@ public class OrganizationService {
 
     @Transactional(readOnly = false)
     public Organization updateOrganization(String name) {
-        Organization org = this.getCurrentOrganization();
-        org.setOrganizationName(name);
-        return _repo.save(org);
+        Optional<Organization> org = this.getCurrentOrganization();
+        if (!org.isPresent()) {
+            throw new IllegalGraphqlArgumentException("Cannot update organization name: user is not in valid organization");
+        }
+        org.get().setOrganizationName(name);
+        return _repo.save(org.get());
     }
 
     @Transactional(readOnly = false)
@@ -213,7 +229,11 @@ public class OrganizationService {
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
-        Facility facility = new Facility(getCurrentOrganization(),
+        Optional<Organization> org = this.getCurrentOrganization();
+        if (!org.isPresent()) {
+            throw new IllegalGraphqlArgumentException("Cannot create facility: user is not in valid organization");
+        }
+        Facility facility = new Facility(org.get(),
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,
             orderingProvider,

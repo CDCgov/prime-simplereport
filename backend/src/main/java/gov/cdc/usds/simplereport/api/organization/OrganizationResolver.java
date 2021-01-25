@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.organization;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -23,7 +24,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 		_userService = users;
 	}
 
-	public Organization getOrganization() {
+	public Optional<Organization> getOrganization() {
 		return _organizationService.getCurrentOrganization();
 	}
 
