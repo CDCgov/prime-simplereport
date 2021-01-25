@@ -35,6 +35,7 @@ const AoEModalForm = ({
         loadState={loadState}
         saveCallback={saveCallback}
         isModal={true}
+        noValidation={true}
       ></AoEForm>
     </Modal>
   );

@@ -22,3 +22,6 @@ simple-report:
   data-hub:
     upload-enabled: ${DATAHUB_UPLOAD_ENABLE:false}
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipSend"  # ValidatePayload, SkipSend, SkipInvalidItems
+okta:
+  oauth2:
+    client-id: 0oa61vdmqd56921Ka4h6

@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
+import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 
@@ -51,6 +52,9 @@ public abstract class BaseApiTest {
     @MockBean
     protected IdentitySupplier _supplier;
 
+    @Autowired
+    private OktaService _oktaService;
+
     protected void truncateDb() {
         _truncator.truncateAll();
     }
@@ -67,6 +71,7 @@ public abstract class BaseApiTest {
     @AfterEach
     public void cleanup() {
         truncateDb();
+        _oktaService.deleteOrganization(_initService.getDefaultOrganizationId());
     }
 
     /**

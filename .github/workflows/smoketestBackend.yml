@@ -61,6 +61,9 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
+        env: 
+          OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
+          OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
