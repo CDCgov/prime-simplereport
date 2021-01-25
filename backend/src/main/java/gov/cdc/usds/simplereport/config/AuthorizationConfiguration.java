@@ -16,6 +16,11 @@ import gov.cdc.usds.simplereport.config.authorization.UserAuthorizationVerifier;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
+/**
+ * Configuration (mostly static) for method-level or object-level security in
+ * the application (as opposed to request-level security, which lives in
+ * {@link SecurityConfiguration}).
+ */
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class AuthorizationConfiguration {

@@ -7,16 +7,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import graphql.GraphQLError;
 import graphql.kickstart.spring.error.ThrowableGraphQLError;
 
+/**
+ * The GraphQL version of a ControllerAdvice component: tells the GraphQL
+ * servlet which (presumably internal) exceptions should be caught and
+ * re-wrapped or otherwise post-processed before they are allowed to bubble up
+ * to the user.
+ */
 @Component
 public class ExceptionWrappingManager {
 
-    // this needs to be enabled and we have intentionally not done that yet so
-    // so we can get tests working on this stuff
-    // but at that point, set graphql.servlet.exception-handlers-enabled=true
     @ExceptionHandler(AccessDeniedException.class)
     public GraphQLError wrapSecurityExceptions(AccessDeniedException e) {
-        // FIXME don't capitalize User that's weird
-        return new ThrowableGraphQLError(e, "Current User does not have permission for this action");
+        return new ThrowableGraphQLError(e, "Current user does not have permission for this action");
     }
 
 }

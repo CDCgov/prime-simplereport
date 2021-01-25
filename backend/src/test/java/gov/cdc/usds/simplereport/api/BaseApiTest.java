@@ -36,7 +36,7 @@ public abstract class BaseApiTest {
     private static final OrganizationRoles DEFAULT_ORG = new OrganizationRoles("DIS_ORG",
             Collections.singleton(OrganizationRole.USER));
 
-    protected static final String ACCESS_ERROR = "Current User does not have permission for this action";
+    protected static final String ACCESS_ERROR = "Current user does not have permission for this action";
 
     @Autowired
     private DbTruncator _truncator;

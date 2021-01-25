@@ -27,7 +27,9 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
- * Created by nickrobison on 11/13/20
+ * Live (with Okta integration) request-level security configuration. Not to be
+ * confused with {@link AuthorizationConfiguration}, which is not
+ * environment-specific and handles method-level or object-level security.
  */
 @Configuration
 @Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
