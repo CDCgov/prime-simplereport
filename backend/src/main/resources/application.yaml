@@ -52,14 +52,21 @@ simple-report:
     role-prefix: "SR-DEV-TENANT:"
     permissions:
       RESTRICTED:
-        - THIS
+        - EDIT_PATIENT
       STANDARD:
-        - THIS
-        - THAT
+        - EDIT_PATIENT
+        - START_TEST
+        - UPDATE_TEST
+        - READ_PATIENT_LIST
+        - READ_RESULT_LIST
       ADMIN:
-        - THIS
-        - THAT
-        - MORE
+        - READ_PATIENT_LIST
+        - READ_RESULT_LIST
+        - EDIT_PATIENT
+        - EDIT_FACILITY
+        - EDIT_ORGANIZATION
+        - START_TEST
+        - UPDATE_TEST
 
 logging:
   pattern:
