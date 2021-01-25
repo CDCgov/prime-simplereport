@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.UserAuthorizationVerifier;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
@@ -28,9 +28,9 @@ public class AuthorizationConfiguration {
     public static final String AUTHORIZER_BEAN = "simpleReportAuthVerifier";
 
     @Bean(AUTHORIZER_BEAN)
-    public UserAuthorizationVerifier getVerifier(AdminEmailList admins, OrganizationExtractor extractor,
-            IdentitySupplier supplier) {
-        return new UserAuthorizationVerifier(admins, extractor, supplier);
+    public UserAuthorizationVerifier getVerifier(AdminEmailList admins, IdentitySupplier supplier,
+            OrganizationService orgService) {
+        return new UserAuthorizationVerifier(admins, supplier, orgService);
     }
 
     /**

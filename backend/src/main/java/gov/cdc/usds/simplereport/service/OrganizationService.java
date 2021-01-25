@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -21,6 +22,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
@@ -45,17 +47,25 @@ public class OrganizationService {
         _oktaService = oktaService;
     }
 
-    public Organization getCurrentOrganization() {
+    public Optional<CurrentOrganizationRoles> getCurrentOrganizationRoles() {
         List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
                 .map(OrganizationRoles::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
-        if (validOrgs.size() == 1) {
-            return validOrgs.get(0);
-        } else {
-            throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
+        if (validOrgs == null || validOrgs.size() != 1) {
+            return Optional.empty();
         }
+        Organization foundOrg = validOrgs.get(0);
+        OrganizationRoles foundRoles = orgRoles.stream()
+                .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
+                .findFirst().get();
+        return Optional.of(new CurrentOrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+    }
+
+    public Organization getCurrentOrganization() {
+        CurrentOrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+        return orgRole.getOrganization();
     }
 
     public Organization getOrganization(String externalId) {
