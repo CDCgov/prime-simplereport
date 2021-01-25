@@ -74,13 +74,13 @@ public class OrganizationService {
         return orgRole.getOrganization();
     }
 
-    public Optional<Organization> getOrganization(String externalId) {
+    public Organization getOrganization(String externalId) {
         Optional<Organization> found = _repo.findByExternalId(externalId);
         if (found.isEmpty()) {
-            LOG.debug("Organization could not be found");
+            throw new IllegalGraphqlArgumentException("An organization with that external ID does not exist");
         } 
         
-        return found;
+        return found.get();
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -93,7 +93,7 @@ public class OrganizationService {
         if (orgExternalId == null) {
             return Optional.empty();
         }
-        return getOrganization(orgExternalId);
+        return Optional.of(getOrganization(orgExternalId));
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {

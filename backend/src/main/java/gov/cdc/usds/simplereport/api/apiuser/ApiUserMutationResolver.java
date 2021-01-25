@@ -43,7 +43,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<Organization> org = _os.getOrganization(organizationExternalID);
+        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
         Boolean isAdmin = _us.isAdminUser(apiUser);
 		List<UserPermission> permissions = _us.getPermissions(apiUser);
 		return new User(apiUser, org, isAdmin, permissions);
