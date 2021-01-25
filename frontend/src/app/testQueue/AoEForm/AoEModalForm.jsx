@@ -5,6 +5,7 @@ import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
+import { getSymptomList } from "./constants";
 
 const AoEModalForm = ({
   saveButtonText = "Save",
@@ -14,22 +15,46 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback,
   qrCodeValue = "https://www.google.com",
+  canAddToTestQueue,
 }) => {
   const [modalView, setModalView] = useState(null);
   const modalViewValues = [
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
+
+  const symptomsResponse = {};
+  getSymptomList().forEach(({ value }) => {
+    symptomsResponse[value] = false;
+  });
+
+  const patientResponse = {
+    firstTest: false,
+    noSymptoms: false,
+    pregnancy: undefined,
+    priorTestDate: undefined,
+    priorTestResult: null,
+    priorTestType: undefined,
+    symptomOnset: undefined,
+    symptoms: JSON.stringify(symptomsResponse),
+  };
+
+  const continueModal = () => {
+    canAddToTestQueue ? saveCallback(patientResponse) : onClose();
+  };
+
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
       <Button
         className="margin-right-0"
         label={saveButtonText}
-        type={"submit"}
+        type={"button"}
+        onClick={() => continueModal()}
       />
     </div>
   );
+
   return (
     <Modal
       isOpen={true}
@@ -87,7 +112,8 @@ const AoEModalForm = ({
             <Button
               className="margin-right-205"
               label={saveButtonText}
-              type={"submit"}
+              type={"button"}
+              onClick={() => continueModal()}
             />
           </div>
         </>

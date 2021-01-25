@@ -516,6 +516,7 @@ const QueueItem: any = ({
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
                         facilityId={facilityId}
+                        canAddToTestQueue={false}
                       />
                     )}
                     <p>
