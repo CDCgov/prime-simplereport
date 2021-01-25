@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -12,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -60,13 +58,8 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
 
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.setIsDeleted(p.getInternalId(), true);
-        });
-
-
+        assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
     }
 
     @Test

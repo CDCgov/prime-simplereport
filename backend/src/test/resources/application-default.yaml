@@ -18,6 +18,9 @@ logging:
     # org.hibernate.type: TRACE
     # Always have our own debug logging turned on in tests:
     gov.cdc.usds: DEBUG
+simple-report:
+  authorization:
+    role-prefix: "SR-UNITTEST-TENANT:"
 simple-report-initialization:
   organization:
     org-name: Dis Organization

@@ -16,8 +16,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
-import gov.cdc.usds.simplereport.service.OktaService;
-
 public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     private static final IdentityAttributes AMOS = new IdentityAttributes("aquint@gmail.com", "Amos", null, "Quint", null);

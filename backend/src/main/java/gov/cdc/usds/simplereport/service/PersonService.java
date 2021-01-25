@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -27,10 +28,14 @@ public class PersonService {
 
     private OrganizationService _os;
     private PersonRepository _repo;
-    private ApiUserService _apiUserService;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
+
+    public PersonService(OrganizationService os, PersonRepository repo) {
+        _os = os;
+        _repo = repo;
+    }
 
     private void updatePersonFacility(Person person, UUID facilityId) {
         Facility facility = null;
@@ -40,16 +45,6 @@ public class PersonService {
             facility = _os.getFacilityInCurrentOrg(facilityId);
         }
         person.setFacility(facility);
-    }
-
-    public PersonService(
-        OrganizationService os,
-        PersonRepository repo,
-        ApiUserService apiUserService
-    ) {
-        _os = os;
-        _repo = repo;
-        _apiUserService = apiUserService;
     }
 
     public List<Person> getPatients(UUID facilityId) {
@@ -175,8 +170,8 @@ public class PersonService {
         return _repo.save(patientToUpdate);
     }
 
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Person setIsDeleted(UUID id, boolean deleted) {
-        _apiUserService.isAdminUser();
         Person person = this.getPatient(id.toString());
         person.setIsDeleted(deleted);
         return _repo.save(person);

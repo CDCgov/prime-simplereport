@@ -3,14 +3,12 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -35,34 +33,20 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     @Test
     public void createDeviceType_baseUser_error() {
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.createDeviceType("A", "B", "C", "D", "E");
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertSecurityError(() -> _service.createDeviceType("A", "B", "C", "D", "E"));
     }
 
     @Test
     public void updateDeviceType_baseUser_error() {
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
-
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5");
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertSecurityError(() -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
     }
 
 
     @Test
     public void removeDeviceType_baseUser_eror() {
         DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
-
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.removeDeviceType(deviceType);
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertSecurityError(() -> _service.removeDeviceType(deviceType));
     }
 
     @Test

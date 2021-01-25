@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -20,8 +22,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
-import gov.cdc.usds.simplereport.service.OktaService;
 
 @Service
 @Transactional(readOnly = true)
@@ -30,7 +32,6 @@ public class OrganizationService {
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
-    private ApiUserService _apiUserService;
     private AuthorizationService _authService;
     private OktaService _oktaService;
 
@@ -38,27 +39,33 @@ public class OrganizationService {
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            ApiUserService apiUserService,
             OktaService oktaService) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
-        _apiUserService = apiUserService;
         _oktaService = oktaService;
     }
 
-    public Organization getCurrentOrganization() {
+    public Optional<CurrentOrganizationRoles> getCurrentOrganizationRoles() {
         List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
                 .map(OrganizationRoles::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
-        if (validOrgs.size() == 1) {
-            return validOrgs.get(0);
-        } else {
-            throw new RuntimeException("Expected one non-archived organization, but found " + validOrgs.size());
+        if (validOrgs == null || validOrgs.size() != 1) {
+            return Optional.empty();
         }
+        Organization foundOrg = validOrgs.get(0);
+        OrganizationRoles foundRoles = orgRoles.stream()
+                .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
+                .findFirst().get();
+        return Optional.of(new CurrentOrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+    }
+
+    public Organization getCurrentOrganization() {
+        CurrentOrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+        return orgRole.getOrganization();
     }
 
     public Organization getOrganization(String externalId) {
@@ -70,8 +77,8 @@ public class OrganizationService {
         }
     }
 
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public List<Organization> getOrganizations() {
-        _apiUserService.isAdminUser();
         return _repo.findAll();
     }
 
@@ -186,10 +193,10 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
             String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
-        _apiUserService.isAdminUser();
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
