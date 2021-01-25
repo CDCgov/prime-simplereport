@@ -15,6 +15,7 @@ type DeviceType {
   manufacturer: String
   model: String
   loincCode: String
+  swabType: String
 }
 type Patient {
   internalId: ID
@@ -331,6 +332,7 @@ type Mutation {
     manufacturer: String!
     model: String!
     loincCode: String!
+    swabType: String!
   ): DeviceType
   updateDeviceType(
     id: String!
@@ -338,5 +340,6 @@ type Mutation {
     manufacturer: String
     model: String
     loincCode: String
+    swabType: String
   ): DeviceType
 }

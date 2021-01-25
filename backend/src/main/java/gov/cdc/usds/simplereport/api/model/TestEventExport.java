@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -29,6 +30,7 @@ public class TestEventExport {
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Facility facility;
+	private DeviceType device;
 
 	public TestEventExport(TestEvent testEvent) {
 		super();
@@ -37,13 +39,13 @@ public class TestEventExport {
 		this.survey = testEvent.getTestOrder().getAskOnEntrySurvey().getSurvey();
 		this.provider = testEvent.getProviderData();
 		this.facility = testEvent.getFacility();
+		this.device = testEvent.getDeviceType();
 	}
 
 	private String testResultStatusFinal = "F";
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
-	private String anteriorNaresSwabCode = "445297001";
 	private String nasopharyngealStructureCode = "71836000";
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
 	private Map<String, String> genderMap = Map.of(
@@ -395,7 +397,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordered_test_code")
 	public String getOrderedTestCode() {
-		return testEvent.getDeviceType().getLoincCode();
+		return device.getLoincCode();
 	}
 
 	@JsonProperty("Specimen_source_site_code")
@@ -405,17 +407,17 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return anteriorNaresSwabCode;
+		return device.getSwabType();
 	}
 
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
-		return testEvent.getDeviceType().getInternalId().toString();
+		return device.getInternalId().toString();
 	}
 
 	@JsonProperty("Device_ID")
 	public String getDeviceID() {
-		return testEvent.getDeviceType().getModel();
+		return device.getModel();
 	}
 
 	@JsonProperty("Test_date")
