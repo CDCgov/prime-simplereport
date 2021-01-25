@@ -9,6 +9,12 @@ enum ResultValue {
   UNDETERMINED
 }
 
+enum UserType {
+  STANDARD
+  RESTRICTED
+  ADMIN
+}
+
 type DeviceType {
   internalId: ID
   name: String
@@ -128,6 +134,7 @@ type User {
   suffix: String
   email: String
   isAdmin: Boolean
+  type: [UserType]
   organization: Organization
 }
 
