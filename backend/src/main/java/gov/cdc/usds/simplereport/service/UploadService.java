@@ -32,9 +32,9 @@ public class UploadService {
     private final PersonService _ps;
 
     private Map<String, String> ethnicityMap = Map.of(
-        // "Hispanic", "hispanic",
-        "Hispanic or Latino", "hispanic",
-        "Not Hispanic", "not_hispanic"
+        "hispanic", "hispanic",
+        "hispanic or hatino", "hispanic",
+        "not hispanic", "not_hispanic"
     );
 
     private Map<String, Boolean> yesNoMap = Map.of(
@@ -86,7 +86,7 @@ public class UploadService {
                 row.get("Email"),
                 row.get("County"),
                 row.get("Race").toLowerCase(),
-                ethnicityMap.get(row.get("Ethnicity")),
+                ethnicityMap.get(row.get("Ethnicity").toLowerCase()),
                 row.get("Gender").toLowerCase(),
                 yesNoMap.get(row.get("residentCongregateSetting").toLowerCase()),
                 yesNoMap.get(row.get("employedInHealthcare").toLowerCase())
