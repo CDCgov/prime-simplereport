@@ -59,7 +59,9 @@ public class OrganizationService {
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
-            LOG.debug("Found {} organizations for user", validOrgs.size());
+            Integer numOrgs = (validOrgs == null) ? 0
+                                                  : validOrgs.size();
+            LOG.debug("Found {} organizations for user", numOrgs);
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
