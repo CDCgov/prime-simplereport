@@ -42,10 +42,4 @@ public class AuthorizationConfiguration {
     @PreAuthorize("@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()")
     public @interface RequireGlobalAdminUser {
     }
-
-    @Retention(RUNTIME)
-    @Target(METHOD)
-    @PreAuthorize("@" + AUTHORIZER_BEAN + ".userHasOrgAdminRole()")
-    public @interface RequireOrganizationAdminUser {
-    }
 }
