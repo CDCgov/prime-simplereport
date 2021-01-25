@@ -5,5 +5,6 @@ query listDevices {
         manufacturer
         model
         loincCode
+        swabType
     }
 }
