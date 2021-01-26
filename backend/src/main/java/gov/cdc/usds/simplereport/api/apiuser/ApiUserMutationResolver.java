@@ -3,11 +3,13 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.api.model.UserPermission;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -45,8 +47,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
         Optional<Organization> org = _os.getOrganizationForUser(apiUser);
         Boolean isAdmin = _us.isAdminUser(apiUser);
-		List<UserPermission> permissions = _us.getPermissions(apiUser);
-		return new User(apiUser, org, isAdmin, permissions);
+        return new User(apiUser, org, isAdmin, getDefaultPermissions());
     }
 
     public User updateUser(
@@ -64,8 +65,11 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
         Optional<Organization> org = _os.getOrganizationForUser(apiUser);
         Boolean isAdmin = _us.isAdminUser(apiUser);
-		List<UserPermission> permissions = _us.getPermissions(apiUser);
-		return new User(apiUser, org, isAdmin, permissions);
+        return new User(apiUser, org, isAdmin, getDefaultPermissions());
+    }
+
+    private List<UserPermission> getDefaultPermissions() {
+        return new ArrayList<>(OrganizationRole.USER.getGrantedPermissions());
     }
 }
 
