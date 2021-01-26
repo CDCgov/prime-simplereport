@@ -42,7 +42,7 @@ public abstract class BaseApiTest {
     @Autowired
     private DbTruncator _truncator;
     @Autowired
-    private OrganizationInitializingService _initService;
+    protected OrganizationInitializingService _initService;
 
     @Autowired
     protected GraphQLTestTemplate _template; // screw delegation

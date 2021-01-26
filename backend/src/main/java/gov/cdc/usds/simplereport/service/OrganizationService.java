@@ -228,7 +228,7 @@ public class OrganizationService {
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
-        Organization org = this.getCurrentOrganization();
+        Organization org = getCurrentOrganization();
         Facility facility = new Facility(org,
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,

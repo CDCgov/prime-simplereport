@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.config.authorization;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Interface for an object that returns a set (usually a singleton) of
@@ -15,12 +16,13 @@ public interface PermissionHolder {
 
     default Set<UserPermission> getGrantedPermissions() {
         Set<OrganizationRole> roles = getGrantedRoles();
+        Set<UserPermission> permissions = new HashSet<>();
         for (OrganizationRole r : Arrays.asList(OrganizationRole.ADMIN, OrganizationRole.ENTRY_ONLY,
                 OrganizationRole.USER)) {
             if (roles.contains(r)) {
-                return r.getGrantedPermissions();
+                permissions.addAll(r.getGrantedPermissions());
             }
         }
-        return Collections.emptySet();
+        return permissions;
     }
 }

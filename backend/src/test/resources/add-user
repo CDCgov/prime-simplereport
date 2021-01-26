@@ -13,5 +13,16 @@ mutation addUser(
     suffix: $suffix
     email: $email
     organizationExternalId: $organizationExternalId
-  )
+  ) {
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      organization {
+        name
+        externalId
+      }
+    }
 }
