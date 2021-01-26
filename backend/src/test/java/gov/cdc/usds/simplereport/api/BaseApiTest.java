@@ -41,8 +41,6 @@ import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.group.Group;
 
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
 
