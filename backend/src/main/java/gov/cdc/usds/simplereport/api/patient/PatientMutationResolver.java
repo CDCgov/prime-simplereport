@@ -1,10 +1,15 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
+import static gov.cdc.usds.simplereport.api.Translators.parseGender;
+import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.io.InputStream;
-import java.time.LocalDate;
 import java.util.UUID;
 import javax.servlet.http.Part;
 
@@ -35,7 +40,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     }
 
     public void addPatient(
-        String facilityId,
+        UUID facilityId,
         String lookupId,
         String firstName,
         String middleName,
@@ -57,34 +62,33 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-      LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.addPatient(
-            facilityId == null ? null : UUID.fromString(facilityId),
-            lookupId,
-            firstName,
-            middleName,
-            lastName,
-            suffix,
-            localBirthDateDate,
-            street,
-            street2,
-            city,
-            state,
-            zipCode,
+            facilityId,
+            parseString(lookupId),
+            parseString(firstName),
+            parseString(middleName),
+            parseString(lastName),
+            parseString(suffix),
+            parseUserDate(birthDate),
+            parseString(street),
+            parseString(street2),
+            parseString(city),
+            parseString(state),
+            parseString(zipCode),
             parsePhoneNumber(telephone),
-            role,
-            email,
-            county,
-            race,
-            ethnicity,
-            gender,
+            parsePersonRole(role),
+            parseEmail(email),
+            parseString(county),
+            parseRace(race),
+            parseEthnicity(ethnicity),
+            parseGender(gender),
             residentCongregateSetting,
             employedInHealthcare
         );
     }
 
     public void updatePatient(
-      String facilityId,
+      UUID facilityId,
       String patientId,
       String lookupId,
       String firstName,
@@ -107,28 +111,27 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare
   ) {
-      LocalDate localBirthDateDate = parseUserDate(birthDate);
       _ps.updatePatient(
-          facilityId == null ? null : UUID.fromString(facilityId),
+          facilityId,
           patientId,
-          lookupId,
-          firstName,
-          middleName,
-          lastName,
-          suffix,
-          localBirthDateDate,
-          street,
-          street2,
-          city,
-          state,
-          zipCode,
+          parseString(lookupId),
+          parseString(firstName),
+          parseString(middleName),
+          parseString(lastName),
+          parseString(suffix),
+          parseUserDate(birthDate),
+          parseString(street),
+          parseString(street2),
+          parseString(city),
+          parseString(state),
+          parseString(zipCode),
           parsePhoneNumber(telephone),
-          role,
-          email,
-          county,
-          race,
-          ethnicity,
-          gender,
+          parsePersonRole(role),
+          parseEmail(email),
+          parseString(county),
+          parseRace(race),
+          parseEthnicity(ethnicity),
+          parseGender(gender),
           residentCongregateSetting,
           employedInHealthcare
       );

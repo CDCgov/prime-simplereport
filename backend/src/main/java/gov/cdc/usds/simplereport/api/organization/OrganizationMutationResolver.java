@@ -62,7 +62,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
-        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), email, deviceTypes,
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes,
             providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
         return new ApiFacility(created);
     }
@@ -104,7 +104,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           state,
           zipCode,
           Translators.parsePhoneNumber(phone),
-          email,
+          Translators.parseEmail(email),
           orderingProviderFirstName,
           orderingProviderMiddleName,
           orderingProviderLastName,
@@ -139,7 +139,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName,
                 orderingProviderLastName, orderingProviderSuffix);
         return _os.createOrganization(name, externalId, testingFacilityName, cliaNumber, facilityAddress,
-                Translators.parsePhoneNumber(phone), email, deviceTypes, providerName, providerAddress,
+                Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes, providerName, providerAddress,
                 orderingProviderTelephone, orderingProviderNPI);
     }
 

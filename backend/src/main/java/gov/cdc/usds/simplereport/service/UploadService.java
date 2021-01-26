@@ -1,6 +1,15 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
+import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
+import static gov.cdc.usds.simplereport.api.Translators.parseGender;
+import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
+import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
+import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
 
 import com.fasterxml.jackson.databind.MappingIterator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
@@ -17,7 +26,6 @@ import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by nickrobison on 11/21/20
@@ -25,25 +33,10 @@ import java.util.UUID;
 @Service
 @Transactional
 public class UploadService {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
-
     private static final CsvSchema PERSON_SCHEMA = personSchema();
     private static final String FACILITY_ID = "facilityId";
 
     private final PersonService _ps;
-
-    private Map<String, String> ethnicityMap = Map.of(
-        "hispanic", "hispanic",
-        "hispanic or hatino", "hispanic",
-        "not hispanic", "not_hispanic"
-    );
-
-    private Map<String, Boolean> yesNoMap = Map.of(
-        "y", true,
-        "yes", true,
-        "n", false,
-        "no", false
-    );
 
     public UploadService(PersonService ps) {
         this._ps = ps;
@@ -77,32 +70,30 @@ public class UploadService {
             final Map<String, String> row = valueIterator.next();
             rowNumber++;
             try {
-                final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-                final String phone = parsePhoneNumber(row.get("PhoneNumber"));
                 _ps.addPatient(
-                    row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
-                    null,
-                    row.get("FirstName"),
-                    row.get("MiddleName"),
-                    row.get("LastName"),
-                    row.get("Suffix"),
-                    patientDOB,
-                    row.get("Street"),
-                    row.get("Street2"),
-                    row.get("City"),
-                    row.get("State"),
-                    row.get("ZipCode"),
-                    phone,
-                    row.get("Role").toUpperCase(),
-                    row.get("Email"),
-                    row.get("County"),
-                    row.get("Race").toLowerCase(),
-                    ethnicityMap.get(row.get("Ethnicity").toLowerCase()),
-                    row.get("Gender").toLowerCase(),
-                    yesNoMap.get(row.get("residentCongregateSetting").toLowerCase()),
-                    yesNoMap.get(row.get("employedInHealthcare").toLowerCase())
+                    parseUUID(row.get(FACILITY_ID)),
+                    null, // lookupID. this field is deprecated
+                    parseString(row.get("FirstName")),
+                    parseString(row.get("MiddleName")),
+                    parseString(row.get("LastName")),
+                    parseString(row.get("Suffix")),
+                    parseUserShortDate(row.get("DOB")),
+                    parseString(row.get("Street")),
+                    parseString(row.get("Street2")),
+                    parseString(row.get("City")),
+                    parseString(row.get("State")),
+                    parseString(row.get("ZipCode")),
+                    parsePhoneNumber(row.get("PhoneNumber")),
+                    parsePersonRole(row.get("Role")),
+                    parseEmail(row.get("Email")),
+                    parseString(row.get("County")),
+                    parseRace(row.get("Race")),
+                    parseEthnicity(row.get("Ethnicity")),
+                    parseGender(row.get("Gender")),
+                    parseYesNo(row.get("residentCongregateSetting")),
+                    parseYesNo(row.get("employedInHealthcare"))
                 );
-            } catch (Exception e) {
+            } catch (IllegalGraphqlArgumentException e) {
                 throw new IllegalGraphqlArgumentException("Error on row "+ rowNumber+ "; " + e.getMessage());
             }
         }
