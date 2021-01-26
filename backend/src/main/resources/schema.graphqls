@@ -136,11 +136,11 @@ type User {
   id: ID
   firstName: String
   middleName: String
-  lastName: String
+  lastName: String!
   suffix: String
-  email: String
+  email: String!
   isAdmin: Boolean
-  permissions: [UserPermission]
+  permissions: [UserPermission!]!
   organization: Organization
 }
 

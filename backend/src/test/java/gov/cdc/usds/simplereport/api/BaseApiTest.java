@@ -42,10 +42,7 @@ import com.okta.sdk.resource.group.Group;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-                properties = {
-                    "simple-report.authorization.role-prefix=TEST-TENANT:",
-})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseApiTest {
 
