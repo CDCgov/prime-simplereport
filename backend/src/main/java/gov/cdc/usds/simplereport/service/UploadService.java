@@ -114,7 +114,7 @@ public class UploadService {
     }
 
     private static String normalizePhoneNumber(String suppliedNumber) {
-        if (suppliedNumber == null) {
+        if (suppliedNumber == null || suppliedNumber == "") {
             return null;
         }
 
