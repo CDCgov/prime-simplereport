@@ -24,6 +24,7 @@ resource "azurerm_app_service" "service" {
   site_config {
     linux_fx_version = var.docker_image_uri
     always_on        = "true"
+    min_tls_version  = "1.2"
   }
 
   app_settings = merge(var.app_settings, {
