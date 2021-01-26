@@ -161,6 +161,8 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
+        const patientLinkId = res;
+        return patientLinkId;
       })
       .catch((error) => {
         updateMutationError(error);

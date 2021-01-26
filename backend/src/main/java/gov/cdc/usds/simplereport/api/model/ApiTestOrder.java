@@ -7,10 +7,10 @@ import java.time.LocalDate;
 import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-
 
 public class ApiTestOrder {
 
@@ -42,7 +42,7 @@ public class ApiTestOrder {
     public String getSymptoms() {
         Map<String, Boolean> s = survey.getSymptoms();
         JSONObject obj = new JSONObject();
-        for (Map.Entry<String,Boolean> entry : s.entrySet()) {
+        for (Map.Entry<String, Boolean> entry : s.entrySet()) {
             obj.put(entry.getKey(), entry.getValue().toString());
         }
         return obj.toString();
@@ -85,5 +85,9 @@ public class ApiTestOrder {
 
     public Date getDateTested() {
         return order.getDateTested();
+    }
+
+    public PatientLink getPatientLink() {
+        return order.getPatientLink();
     }
 }

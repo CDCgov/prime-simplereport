@@ -101,6 +101,7 @@ type TestOrder {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  patientLink: PatientLink
 }
 type TestResult {
   internalId: ID

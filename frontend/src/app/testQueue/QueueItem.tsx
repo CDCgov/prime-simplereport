@@ -27,6 +27,7 @@ import Checkboxes from "../commonComponents/Checkboxes";
 import moment from "moment";
 
 import "./QueueItem.scss";
+import { getUrl } from "../utils/url";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
@@ -196,6 +197,7 @@ interface QueueItemProps {
   dateTestedProp: string;
   refetchQueue: () => void;
   facilityId: string;
+  patientLinkId: string;
 }
 
 interface updateQueueItemProps {
@@ -215,6 +217,7 @@ const QueueItem: any = ({
   refetchQueue,
   facilityId,
   dateTestedProp,
+  patientLinkId,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -517,6 +520,7 @@ const QueueItem: any = ({
                         saveCallback={saveAoeCallback}
                         facilityId={facilityId}
                         canAddToTestQueue={false}
+                        qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
                       />
                     )}
                     <p>

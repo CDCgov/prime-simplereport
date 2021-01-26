@@ -11,6 +11,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Type;
@@ -23,7 +24,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 public class TestOrder extends BaseTestInfo {
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "patient_answers_id" )
+	@JoinColumn(name = "patient_answers_id")
 	private PatientAnswers askOnEntrySurvey;
 	@Column
 	private LocalDate dateTested; // REMOVE THIS COLUMN
@@ -34,15 +35,19 @@ public class TestOrder extends BaseTestInfo {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 	@OneToOne(optional = true)
-	@JoinColumn(name="test_event_id")
+	@JoinColumn(name = "test_event_id")
 	private TestEvent testEvent;
+	@OneToOne(mappedBy = "testOrder")
+	private PatientLink patientLink;
 
-	protected TestOrder() { /* for hibernate */ }
+	protected TestOrder() {
+		/* for hibernate */ }
 
 	public TestOrder(Person patient, Facility facility) {
 		super(patient, facility);
 		this.orderStatus = OrderStatus.PENDING;
 	}
+
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
@@ -60,7 +65,7 @@ public class TestOrder extends BaseTestInfo {
 	}
 
 	public Date getDateTested() {
-		if (dateTestedBackdate == null && getTestEvent() !=null) {
+		if (dateTestedBackdate == null && getTestEvent() != null) {
 			return getTestEvent().getCreatedAt();
 		}
 		return dateTestedBackdate;
@@ -74,9 +79,9 @@ public class TestOrder extends BaseTestInfo {
 		super.setTestResult(finalResult);
 	}
 
-    public void markComplete() {
-        orderStatus = OrderStatus.COMPLETED;
-    }
+	public void markComplete() {
+		orderStatus = OrderStatus.COMPLETED;
+	}
 
 	public void cancelOrder() {
 		orderStatus = OrderStatus.CANCELED;
@@ -85,6 +90,7 @@ public class TestOrder extends BaseTestInfo {
 	public TestEvent getTestEvent() {
 		return testEvent;
 	}
+
 	public void setTestEvent(TestEvent testEvent) {
 		this.testEvent = testEvent;
 	}
@@ -96,7 +102,7 @@ public class TestOrder extends BaseTestInfo {
 	public String getSymptoms() {
 		Map<String, Boolean> s = askOnEntrySurvey.getSurvey().getSymptoms();
 		JSONObject obj = new JSONObject();
-		for (Map.Entry<String,Boolean> entry : s.entrySet()) {
+		for (Map.Entry<String, Boolean> entry : s.entrySet()) {
 			obj.put(entry.getKey(), entry.getValue().toString());
 		}
 		return obj.toString();
@@ -129,5 +135,9 @@ public class TestOrder extends BaseTestInfo {
 
 	public void setDeviceType(DeviceType deviceType) {
 		super.setDeviceType(deviceType);
+	}
+
+	public PatientLink getPatientLink() {
+		return patientLink;
 	}
 }

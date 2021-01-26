@@ -5,7 +5,7 @@ import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
-import { getSymptomList } from "./constants";
+import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
 
 const AoEModalForm = ({
   saveButtonText = "Save",

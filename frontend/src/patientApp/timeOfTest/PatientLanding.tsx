@@ -1,6 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { connect, useSelector } from 'react-redux';
-import { formatFullName } from '../../app/utils/user';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { connect, useSelector } from "react-redux";
+import { formatFullName } from "../../app/utils/user";
 
 const PatientLanding = () => {
   const patient = useSelector((state) => (state as any).patient as any);
@@ -16,7 +16,7 @@ const PatientLanding = () => {
           <h2 className="font-heading-lg">Test questionnaire</h2>
           <div className="usa-media-block">
             <FontAwesomeIcon
-              icon={'check-circle'}
+              icon={"check-circle"}
               className="usa-media-block__img margin-right-2"
             />
             <div className="usa-mmedia-block__body usa-prose">
