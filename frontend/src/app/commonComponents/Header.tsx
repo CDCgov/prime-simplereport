@@ -117,19 +117,25 @@ const Header: React.FC<{}> = () => {
                 Results
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/patients/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                {PATIENT_TERM_PLURAL_CAP}
-              </NavLink>
-            </li>
+            {/* once we see a few more examples, a generalized solution could work. 
+              Google CASL
+              or https://stackoverflow.com/questions/56004504/how-to-implement-role-based-restrictions-permissions-in-react-redux-app
+            */}
+            {user.permissions?.includes("edit_patient") ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/patients/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  {PATIENT_TERM_PLURAL_CAP}
+                </NavLink>
+              </li>
+            ) : null}
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user-circle"}
@@ -151,18 +157,20 @@ const Header: React.FC<{}> = () => {
               </ul>
             </li>
 
-            <li className="usa-nav__primary-item prime-settings-hidden">
-              <NavLink
-                to={`/settings/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                <FontAwesomeIcon icon={"cog"} /> Settings
-              </NavLink>
-            </li>
+            {user.type === "admin" ? (
+              <li className="usa-nav__primary-item prime-settings-hidden">
+                <NavLink
+                  to={`/settings/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  <FontAwesomeIcon icon={"cog"} /> Settings
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
         </nav>
 
@@ -261,18 +269,20 @@ const Header: React.FC<{}> = () => {
                 </ul>
               </div>
             </li>
-            <li className="usa-nav__primary-item nav__primary-item-icon">
-              <NavLink
-                to={`/settings/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                <FontAwesomeIcon icon={"cog"} />
-              </NavLink>
-            </li>
+            {user.type === "admin" ? (
+              <li className="usa-nav__primary-item nav__primary-item-icon">
+                <NavLink
+                  to={`/settings/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  <FontAwesomeIcon icon={"cog"} />
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
         </nav>
       </div>

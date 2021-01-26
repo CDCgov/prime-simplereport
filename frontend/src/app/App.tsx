@@ -92,6 +92,8 @@ const App = () => {
           suffix: data.whoami.suffix,
           email: data.whoami.email,
           isAdmin: data.whoami.isAdmin,
+          type: data.whoami.type,
+          permissions: data.whoami.permissions,
         },
       })
     );
@@ -155,7 +157,9 @@ const App = () => {
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
+                {data.whoami.type === "admin" ? ( // TODO: created a generalized protected route component
+                  <Route path="/settings" component={SettingsRoutes} />
+                ) : null}
                 <Route
                   path={"/admin"}
                   render={({ match }) => (
