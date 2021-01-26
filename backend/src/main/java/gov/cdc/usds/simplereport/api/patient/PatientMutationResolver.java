@@ -29,9 +29,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         _us = us;
     }
 
-    public void uploadPatients(Part part) throws Exception{
+    public String uploadPatients(Part part) throws Exception {
         InputStream people = part.getInputStream();
-        _us.processPersonCSV(people);
+        return _us.processPersonCSV(people);
     }
 
     public void addPatient(

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,50 +49,64 @@ public class UploadService {
         this._ps = ps;
     }
 
-    @AuthorizationConfiguration.RequirePermissionExportTestEvent
-    @Transactional
-    public void processPersonCSV(InputStream csvStream) throws IOException {
-        final MappingIterator<Map<String, String>> valueIterator = new CsvMapper()
+    private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream) throws IllegalGraphqlArgumentException {
+        try {
+            return new CsvMapper()
                 .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
                 .readerFor(Map.class)
                 .with(PERSON_SCHEMA)
                 .readValues(csvStream);
+        } catch (IOException e) {
+            throw new IllegalGraphqlArgumentException(e.getMessage());
+        }
+    }
+
+    @AuthorizationConfiguration.RequirePermissionExportTestEvent
+    @Transactional
+    public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
+        final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
 
         // Since the CSV parser won't fail when give a single string, we simple check to see if it has any parsed values
         // If not, we throw an error assuming the user didn't actually want to submit something empty.
         if (!valueIterator.hasNext()) {
-            throw new IllegalArgumentException("Empty or invalid CSV submitted");
+            throw new IllegalGraphqlArgumentException("Empty or invalid CSV submitted");
         }
 
+        int rowNumber = 0;
         while (valueIterator.hasNext()) {
             final Map<String, String> row = valueIterator.next();
-
-            final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
-            final String phone = parsePhoneNumber(row.get("PhoneNumber"));
-            _ps.addPatient(
-                row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
-                null,
-                row.get("FirstName"),
-                row.get("MiddleName"),
-                row.get("LastName"),
-                row.get("Suffix"),
-                patientDOB,
-                row.get("Street"),
-                row.get("Street2"),
-                row.get("City"),
-                row.get("State"),
-                row.get("ZipCode"),
-                phone,
-                row.get("Role").toUpperCase(),
-                row.get("Email"),
-                row.get("County"),
-                row.get("Race").toLowerCase(),
-                ethnicityMap.get(row.get("Ethnicity").toLowerCase()),
-                row.get("Gender").toLowerCase(),
-                yesNoMap.get(row.get("residentCongregateSetting").toLowerCase()),
-                yesNoMap.get(row.get("employedInHealthcare").toLowerCase())
-            );
+            rowNumber++;
+            try {
+                final LocalDate patientDOB = LocalDate.parse(row.get("DOB"), DATE_FORMATTER);
+                final String phone = parsePhoneNumber(row.get("PhoneNumber"));
+                _ps.addPatient(
+                    row.get(FACILITY_ID).equals("") ? null : UUID.fromString(row.get(FACILITY_ID)),
+                    null,
+                    row.get("FirstName"),
+                    row.get("MiddleName"),
+                    row.get("LastName"),
+                    row.get("Suffix"),
+                    patientDOB,
+                    row.get("Street"),
+                    row.get("Street2"),
+                    row.get("City"),
+                    row.get("State"),
+                    row.get("ZipCode"),
+                    phone,
+                    row.get("Role").toUpperCase(),
+                    row.get("Email"),
+                    row.get("County"),
+                    row.get("Race").toLowerCase(),
+                    ethnicityMap.get(row.get("Ethnicity").toLowerCase()),
+                    row.get("Gender").toLowerCase(),
+                    yesNoMap.get(row.get("residentCongregateSetting").toLowerCase()),
+                    yesNoMap.get(row.get("employedInHealthcare").toLowerCase())
+                );
+            } catch (Exception e) {
+                throw new IllegalGraphqlArgumentException("Error on row "+ rowNumber+ "; " + e.getMessage());
+            }
         }
+        return "Successfully uploaded " + rowNumber + " record(s)";
     }
 
     private static CsvSchema personSchema() {
