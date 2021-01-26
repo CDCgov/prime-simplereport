@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
+import static org.mockito.Mockito.when;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +40,8 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void createUser() {
         useSuperUser();
+        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
+            .thenReturn(_initService.getDefaultOrganizationId());
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
             .put("firstName", "Rhonda")
             .put("middleName", "Janet")
@@ -69,6 +73,11 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void updateUser() {
         useSuperUser();
+        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
+            .thenReturn(_initService.getDefaultOrganizationId());
+        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(1)))
+            .thenReturn(_initService.getDefaultOrganizationId());
+
         ObjectNode addVariables = JsonNodeFactory.instance.objectNode()
             .put("firstName", "Rhonda")
             .put("middleName", "Janet")

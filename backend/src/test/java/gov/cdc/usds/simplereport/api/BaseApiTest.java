@@ -28,6 +28,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
+import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -42,10 +43,7 @@ import com.okta.sdk.resource.group.Group;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-                properties = {
-                    "simple-report.authorization.role-prefix=TEST-TENANT:",
-})
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseApiTest {
 
@@ -62,15 +60,17 @@ public abstract class BaseApiTest {
     @Autowired
     protected GraphQLTestTemplate _template; // screw delegation
 
-    @MockBean
-    protected AuthorizationService _authService;
-    @MockBean
-    protected IdentitySupplier _supplier;
-
     @Autowired
     protected AuthorizationProperties _authorizationProperties;
     @Autowired
     private OktaClientProperties _oktaClientProperties;
+
+    @MockBean
+    protected AuthorizationService _authService;
+    @MockBean
+    protected IdentitySupplier _supplier;
+    @MockBean
+    protected OktaService _oktaService;
 
     protected Client _oktaClient;
 

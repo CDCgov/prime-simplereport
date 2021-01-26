@@ -59,9 +59,9 @@ public class OrganizationService {
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
-            Integer numOrgs = (validOrgs == null) ? 0
-                                                  : validOrgs.size();
-            LOG.debug("Found {} organizations for user", numOrgs);
+            int numOrgs = (validOrgs == null) ? 0
+                                              : validOrgs.size();
+            LOG.warn("Found {} organizations for user", numOrgs);
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
@@ -78,11 +78,7 @@ public class OrganizationService {
 
     public Organization getOrganization(String externalId) {
         Optional<Organization> found = _repo.findByExternalId(externalId);
-        if (found.isEmpty()) {
-            throw new IllegalGraphqlArgumentException("An organization with that external ID does not exist");
-        } 
-        
-        return found.get();
+        return found.orElseThrow(()->new IllegalGraphqlArgumentException("An organization with that external ID does not exist"));
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -95,11 +91,11 @@ public class OrganizationService {
         if (orgExternalId == null) {
             return Optional.empty();
         }
-        return Optional.of(getOrganization(orgExternalId));
+        return Optional.ofNullable(getOrganization(orgExternalId));
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
-        Organization org = this.getCurrentOrganization();
+        Organization org = getCurrentOrganization();
         _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
             .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
         ;
