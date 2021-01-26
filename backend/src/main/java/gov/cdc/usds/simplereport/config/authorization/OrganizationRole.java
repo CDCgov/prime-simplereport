@@ -9,7 +9,7 @@ public enum OrganizationRole {
             EnumSet.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),
     USER("Users",
             EnumSet.of(UserPermission.READ_PATIENT_LIST, UserPermission.READ_RESULT_LIST, UserPermission.EDIT_PATIENT,
-                    UserPermission.START_TEST, UserPermission.UPDATE_TEST)),
+                    UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),
     ADMIN("Admins", EnumSet.allOf(UserPermission.class));
 
     private String description;
