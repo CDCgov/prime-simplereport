@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.model;
 import java.util.Optional;
 import java.util.List;
 
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;

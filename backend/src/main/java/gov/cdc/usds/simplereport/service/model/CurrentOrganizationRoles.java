@@ -4,9 +4,10 @@ import java.util.EnumSet;
 import java.util.Set;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 
-public class CurrentOrganizationRoles {
+public class CurrentOrganizationRoles implements PermissionHolder {
 
     private Organization _organization;
     private Set<OrganizationRole> _roles;

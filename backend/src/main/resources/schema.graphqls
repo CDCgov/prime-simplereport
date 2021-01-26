@@ -17,6 +17,7 @@ enum UserPermission {
   EDIT_ORGANIZATION
   START_TEST
   UPDATE_TEST
+  SUBMIT_TEST
 }
 
 type DeviceType {

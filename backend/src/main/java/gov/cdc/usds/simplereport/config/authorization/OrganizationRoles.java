@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class OrganizationRoles {
+public class OrganizationRoles implements PermissionHolder {
 
     private String organizationExternalId;
     private Set<OrganizationRole> grantedRoles;

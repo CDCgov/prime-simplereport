@@ -34,8 +34,8 @@ public class UserAuthorizationVerifier {
         return id != null && _admins.contains(id.getUsername());
     }
 
-    public boolean userHasOrgAdminRole() {
+    public boolean userHasPermission(UserPermission permission) {
         Optional<CurrentOrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
-        return orgRoles.isPresent() && orgRoles.get().getGrantedRoles().contains(OrganizationRole.ADMIN);
+        return orgRoles.isPresent() && orgRoles.get().getGrantedPermissions().contains(permission);
     }
 }
