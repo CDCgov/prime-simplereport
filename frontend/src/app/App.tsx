@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
+import ProtectedRoute from "./commonComponents/ProtectedRoute";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
@@ -93,7 +94,8 @@ const App = () => {
           email: data.whoami.email,
           isAdmin: data.whoami.isAdmin,
           type: data.whoami.type,
-          permissions: data.whoami.permissions,
+          permissions: ["edit_facility", "edit_organization"],
+          // permissions: data.whoami.permissions,
         },
       })
     );
@@ -157,9 +159,13 @@ const App = () => {
                   )}
                 />
                 <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                {data.whoami.type === "admin" ? ( // TODO: created a generalized protected route component
-                  <Route path="/settings" component={SettingsRoutes} />
-                ) : null}
+                <ProtectedRoute
+                  path="/settings"
+                  component={SettingsRoutes}
+                  requiredPermissions={["edit_organization", "edit_facility"]}
+                  userPermissions={["edit_organization", "edit_facility"]}
+                  // userPermissions={data.whoami.permissions}
+                />
                 <Route
                   path={"/admin"}
                   render={({ match }) => (
