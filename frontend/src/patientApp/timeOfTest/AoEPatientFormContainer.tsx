@@ -1,8 +1,11 @@
 import React from "react";
+import { useState } from "react";
 import { getFacilityIdFromUrl } from "../../app/utils/url";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import StepIndicator from "../../app/commonComponents/StepIndicator";
 import PatientProfile from "./PatientProfile";
+import PatientForm from "../../app/patients/PatientForm";
+import Button from "../../app/commonComponents/Button";
 import { connect, useSelector } from "react-redux";
 import { gql, useMutation } from "@apollo/client";
 
@@ -48,7 +51,7 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
     ? "YES"
     : "NO";
 
-  let facilityId = getFacilityIdFromUrl();
+  let facilityId = getFacilityIdFromUrl() || "";
   if (!facilityId && facility) {
     facilityId = facility.id;
   }
@@ -68,6 +71,8 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
       isCurrent: page === "symptoms",
     },
   ];
+
+  const [isProfileEdit, setProfileEdit] = useState(false);
 
   const [submitMutation] = useMutation(PATIENT_LINK_SUBMIT_MUTATION);
   const saveCallback = (args: any) => {
@@ -99,13 +104,37 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
           />
         )}
         {page === "profile" && (
-          <PatientProfile
-            patient={{
-              ...patient,
-              residentCongregateSetting,
-              employedInHealthcare,
-            }}
-          />
+          <>
+            {!isProfileEdit && (
+              <>
+                <PatientProfile
+                  patient={{
+                    ...patient,
+                    residentCongregateSetting,
+                    employedInHealthcare,
+                  }}
+                />
+                <Button
+                  variant="outline"
+                  label="Edit information"
+                  onClick={() => {
+                    setProfileEdit(true);
+                  }}
+                />
+              </>
+            )}
+            {isProfileEdit && (
+              <PatientForm
+                patient={{
+                  ...patient,
+                  residentCongregateSetting,
+                  employedInHealthcare,
+                }}
+                activeFacilityId={facilityId}
+                patientId={patient.internalId}
+              />
+            )}
+          </>
         )}
       </div>
     </main>
