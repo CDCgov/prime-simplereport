@@ -1,7 +1,8 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
-import java.util.Set;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Set;
 
 /**
  * Interface for an object that returns a set (usually a singleton) of
@@ -14,16 +15,14 @@ public interface PermissionHolder {
 
     default Set<UserPermission> getGrantedPermissions() {
         Set<OrganizationRole> roles = getGrantedRoles();
-        // Even though this is clunkier than a for-loop, 
-        // it makes the permission check order super-explicit, as it should be
-        if (roles.contains(OrganizationRole.ADMIN)) {
-            return OrganizationRole.ADMIN.getGrantedPermissions();
-        } else if (roles.contains(OrganizationRole.ENTRY_ONLY)) {
-            return OrganizationRole.ENTRY_ONLY.getGrantedPermissions();
-        } else if (roles.contains(OrganizationRole.USER)) {
-            return OrganizationRole.USER.getGrantedPermissions();
-        } else {
-            return Collections.emptySet();
+        /* Find the highest-precedence role that the user has, and return the
+         * permissions for that role */
+        for (OrganizationRole r : Arrays.asList(OrganizationRole.ADMIN, OrganizationRole.ENTRY_ONLY,
+                OrganizationRole.USER)) {
+            if (roles.contains(r)) {
+                return r.getGrantedPermissions();
+            }
         }
+        return Collections.emptySet();
     }
 }

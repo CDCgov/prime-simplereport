@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
+/**
+ * Permissions that a user may hold, usually via their {@link OrganizationRole}.
+ */
 public enum UserPermission {
     READ_PATIENT_LIST,
     READ_RESULT_LIST,
