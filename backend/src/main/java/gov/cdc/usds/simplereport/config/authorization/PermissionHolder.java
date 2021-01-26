@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 
