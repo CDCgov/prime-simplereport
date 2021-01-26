@@ -110,7 +110,7 @@ public class OrganizationService {
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
-        Organization org = this.getCurrentOrganization();
+        Organization org = getCurrentOrganization();
         return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
                 .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
     }
