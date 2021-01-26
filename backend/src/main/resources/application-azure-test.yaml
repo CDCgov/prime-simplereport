@@ -1,10 +1,11 @@
 spring:
-  profiles.include: okta-dev, auth-dev
+  profiles.include: okta-test, auth-test
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-test.azurewebsites.net
     - https://simple-report-test.azureedge.net
     - https://test.simplereport.gov
+simple-report:
   admin-emails:
     - bwarfield@cdc.gov
     - tim.best@usds.dhs.gov
