@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
@@ -31,7 +34,20 @@ import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+import com.okta.spring.boot.sdk.config.OktaClientProperties;
+import com.okta.sdk.authc.credentials.TokenClientCredentials;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
+import com.okta.sdk.resource.user.User;
+import com.okta.sdk.resource.group.Group;
+
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+                properties = {
+                    "simple-report.authorization.role-prefix=TEST-TENANT:",
+})
+@EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseApiTest {
 
     private static final OrganizationRoles DEFAULT_ORG = new OrganizationRoles("DIS_ORG",
@@ -53,10 +69,46 @@ public abstract class BaseApiTest {
     protected IdentitySupplier _supplier;
 
     @Autowired
-    private OktaService _oktaService;
+    protected AuthorizationProperties _authorizationProperties;
+    @Autowired
+    private OktaClientProperties _oktaClientProperties;
+
+    protected Client _oktaClient;
 
     protected void truncateDb() {
         _truncator.truncateAll();
+    }
+
+    public void initOkta() {
+        _oktaClient = Clients.builder()
+                .setOrgUrl(_oktaClientProperties.getOrgUrl())
+                .setClientCredentials(new TokenClientCredentials(_oktaClientProperties.getToken()))
+                .build();
+        clearOktaUsers();
+        clearOktaGroups();
+    }
+
+    // Override this in any derived Test class that creates Okta users
+    protected Set<String> getOktaTestUsernames() {
+        return new HashSet<String>();
+    }
+    
+    protected void clearOktaUsers() {
+        for (User u : _oktaClient.listUsers()) {
+            if (getOktaTestUsernames().contains(u.getProfile().getLogin())) {
+                u.deactivate();
+                u.delete();
+            }
+        }
+    }
+
+    protected void clearOktaGroups() {
+        for (Group g : _oktaClient.listGroups()) {
+            String groupName = g.getProfile().getName();
+            if (groupName.startsWith(_authorizationProperties.getRolePrefix())) {
+                g.delete();
+            }
+        }
     }
 
     @BeforeEach
@@ -64,6 +116,7 @@ public abstract class BaseApiTest {
         truncateDb();
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        initOkta();
         _initService.initAll();
         when(_authService.findAllOrganizationRoles()).thenReturn(Collections.singletonList(DEFAULT_ORG));
     }
@@ -71,7 +124,8 @@ public abstract class BaseApiTest {
     @AfterEach
     public void cleanup() {
         truncateDb();
-        _oktaService.deleteOrganization(_initService.getDefaultOrganizationId());
+        clearOktaUsers();
+        clearOktaGroups();
     }
 
     /**
