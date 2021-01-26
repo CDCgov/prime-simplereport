@@ -3,8 +3,6 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
-  instance_tier  = "PremiumV2"
-  instance_size  = "P1v2"
   instance_count = 1
 
   resource_group_location = data.azurerm_resource_group.rg.location

@@ -38,6 +38,8 @@ jobs:
           terraform fmt -check demo/persistent
           terraform fmt -check stg
           terraform fmt -check stg/persistent
+          terraform fmt -check prod
+          terraform fmt -check stg/persistent
 
       - name: Terraform Init
         run: |
@@ -48,6 +50,8 @@ jobs:
           cd ../../demo && terraform init
           cd persistent && terraform init
           cd ../../stg && terraform init
+          cd persistent && terraform init
+          cd ../../prod && terraform init
           cd persistent && terraform init
           cd ../../global && terraform init
 
@@ -61,5 +65,7 @@ jobs:
           cd ../../demo && terraform validate -no-color
           cd persistent && terraform validate -no-color
           cd ../../stg && terraform validate -no-color
+          cd persistent && terraform validate -no-color
+          cd ../../prod && terraform validate -no-color
           cd persistent && terraform validate -no-color
           cd ../../global && terraform validate -no-color
