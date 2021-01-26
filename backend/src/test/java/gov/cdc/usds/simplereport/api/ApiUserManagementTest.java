@@ -7,8 +7,6 @@ import java.util.Iterator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
-import java.io.IOException;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
