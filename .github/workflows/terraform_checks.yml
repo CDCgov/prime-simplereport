@@ -39,7 +39,7 @@ jobs:
           terraform fmt -check stg
           terraform fmt -check stg/persistent
           terraform fmt -check prod
-          terraform fmt -check stg/persistent
+          terraform fmt -check prod/persistent
 
       - name: Terraform Init
         run: |
