@@ -115,6 +115,7 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
                   }}
                 />
                 <Button
+                  className="margin-top-1"
                   variant="outline"
                   label="Edit information"
                   onClick={() => {

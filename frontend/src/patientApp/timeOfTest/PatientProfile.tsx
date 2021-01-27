@@ -82,14 +82,6 @@ const PatientProfile = (props: Props) => {
 
   return (
     <>
-      <div className="usa-alert usa-alert--info margin-bottom-3">
-        <div className="usa-alert__body">
-          <p className="usa-alert__text">
-            Confirm that your profile info is correct. If it’s incorrect, tell
-            the test administrator.
-          </p>
-        </div>
-      </div>
       <div className="prime-formgroup usa-prose">
         <h2 className="prime-formgroup-heading font-heading-lg">
           General information
