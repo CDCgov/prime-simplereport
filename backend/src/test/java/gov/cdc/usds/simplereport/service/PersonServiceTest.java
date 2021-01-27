@@ -104,7 +104,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     void addPatient_entryOnlyUser_error() {
         assertSecurityError(
                 () -> _service.addPatient(null, null, "Fred", null, "Flintstone", "Jr.", LocalDate.of(1950, 1, 1), null,
-                        null, "Bedrock", "AZ", "87654", null, "RESIDENT", null, null, null, null, null, false, false));
+                        null, "Bedrock", "AZ", "87654", null, PersonRole.RESIDENT, null, null, null, null, null, false, false));
     }
 
     private void makedata() {

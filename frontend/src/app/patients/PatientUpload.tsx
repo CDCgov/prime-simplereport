@@ -17,14 +17,14 @@ interface Props {
 }
 
 const PatientUpload = ({ onSuccess }: Props) => {
+  const [upload] = useMutation(uploadPatients);
+
   const isGlobalAdmin = useSelector(
     (state) => (state as any)?.user?.isAdmin as boolean
   );
   if (!isGlobalAdmin) {
-    return;
+    return null;
   }
-  // TODO: only show if USDS admin
-  const [upload] = useMutation(uploadPatients);
 
   const bulkUpload = async ({
     target: { files },

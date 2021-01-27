@@ -24,14 +24,15 @@ public class Translators {
     private static DateTimeFormatter US_SLASHDATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
-    public static final LocalDate parseUserShortDate(String date) {
+    public static final LocalDate parseUserShortDate(String d) {
+        String date = parseString(d);
         if (date == null) {
             return null;
         }
         try {
             return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalGraphqlArgumentException("[" + date + "] is not a valid date.");
+            throw new IllegalGraphqlArgumentException("[" + d + "] is not a valid date.");
         }
     }
 
@@ -79,7 +80,14 @@ public class Translators {
     }
 
     public static UUID parseUUID(String uuid) {
-        return uuid == null || uuid == "" ? null : UUID.fromString(uuid);
+        if (uuid == null || uuid == "") {
+            return null;
+        }
+        try {
+            return UUID.fromString(uuid);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalGraphqlArgumentException("\""+uuid+"\" is not a valid UUID.");
+        }
     }
 
     public static PersonRole parsePersonRole(String r) {
