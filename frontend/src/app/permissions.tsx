@@ -57,64 +57,23 @@ interface AppPermissions {
 
 const appPermissions: AppPermissions = {
   settings: {
-    canView: ["edit_organization", "edit_facility"], // can view the settings page
+    canView: ["EDIT_ORGANIZATION", "EDIT_FACILITY"], // can view the settings page
     // for the time being, only admins can view, but they also have edit options. Finer granularity here is not needed
     // canEditFacility: ["edit_facility"],
-    // canEditOrganization: ["edit_organization"]
+    // canEditOrganization: ["EDIT_ORGANIZATION"]
   },
   people: {
-    canView: ["read_patient_list"], // TODO: test_only users should be able to make the query, but not view this page. This is all wrapped under a single permission tho.
-    canEdit: ["edit_patient"],
+    canView: ["READ_PATIENT_LIST"], // TODO: test_only users should be able to make the query, but not view this page. This is all wrapped under a single permission tho.
+    canEdit: ["EDIT_PATIENT"],
   },
   results: {
-    canView: ["read_result_list"],
+    canView: ["READ_RESULT_LIST"],
   },
   tests: {
-    canStart: ["start_test"],
-    canUpdate: ["update_test"],
-    canSubmit: ["submit_test"],
+    canStart: ["START_TEST"],
+    canUpdate: ["UPDATE_TEST"],
+    canSubmit: ["SUBMIT_TEST"],
   },
 };
 
 export { hasPermission, appPermissions };
-
-// People Tab:
-// - header: only show link if has ["read_patient_list"]
-// - route: only support route if has ["read_patient_list"]
-// - query: fetching people must have ["read_patient_list"]
-// - add button: hide button unless ["edit_patient"]
-// - edit patient: must have ["edit_patient"], otherwise remove link
-
-// Test Results:
-// - header: only show if has ["READ_RESULT_LIST"]
-// - route: only support route if has ["READ_RESULT_LIST"]
-
-// Queue:
-// - ￼￼￼
-
-// type UserPermission =
-//   | "read_patient_list"
-//   | "read_result_list"
-//   | "edit_patient"
-//   | "edit_facility"
-//   | "edit_organization"
-//   | "start_test"
-//   | "update_test"
-//   | "submit_test";
-
-// xx READ_PATIENT_LIST,
-// xx READ_RESULT_LIST,
-// xx EDIT_PATIENT,
-// EDIT_FACILITY,
-// EDIT_ORGANIZATION,
-// START_TEST,
-// UPDATE_TEST,
-// SUBMIT_TEST
-
-// ROLES + PERMISSIONS:
-//  ENTRY_ONLY("Test-entry users",
-//             EnumSet.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),
-// USER("Users",
-//             EnumSet.of(UserPermission.READ_PATIENT_LIST, UserPermission.READ_RESULT_LIST, UserPermission.EDIT_PATIENT,
-//                     UserPermission.START_TEST, UserPermission.UPDATE_TEST)),
-// ADMIN("Admins", EnumSet.allOf(UserPermission.class));

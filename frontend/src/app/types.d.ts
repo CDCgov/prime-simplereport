@@ -1,11 +1,11 @@
 type UserType = "standard" | "restricted" | "admin";
 
 type UserPermission =
-  | "read_patient_list"
-  | "read_result_list"
-  | "edit_patient"
-  | "edit_facility"
-  | "edit_organization"
-  | "start_test"
-  | "update_test"
-  | "submit_test";
+  | "READ_PATIENT_LIST"
+  | "READ_RESULT_LIST"
+  | "EDIT_PATIENT"
+  | "EDIT_FACILITY"
+  | "EDIT_ORGANIZATION"
+  | "START_TEST"
+  | "UPDATE_TEST"
+  | "SUBMIT_TEST";

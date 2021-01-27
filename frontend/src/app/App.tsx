@@ -36,6 +36,7 @@ const WHOAMI_QUERY = gql`
       suffix
       email
       isAdmin
+      permissions
       organization {
         name
         testingFacility {
@@ -78,15 +79,6 @@ const App = () => {
 
   useEffect(() => {
     if (!data) return;
-
-    // TODO: Don't forget to delete me
-    data.whoami.permissions = [
-      "edit_facility",
-      "edit_organization",
-      "read_patient_list",
-      "read_result_list",
-      "edit_patient",
-    ];
 
     dispatch(
       setInitialState({
@@ -162,7 +154,7 @@ const App = () => {
                   render={() => {
                     return <ManagePatientsContainer />;
                   }}
-                  requiredPermissions={appPermissions.settings.canView}
+                  requiredPermissions={appPermissions.people.canView}
                   userPermissions={data.whoami.permissions}
                 />
                 <ProtectedRoute
