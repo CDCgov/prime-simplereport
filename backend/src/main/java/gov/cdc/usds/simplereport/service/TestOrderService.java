@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -127,7 +128,8 @@ public class TestOrderService {
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
     TestOrder savedOrder = _repo.save(newOrder);
-    _pls.createPatientLink(savedOrder.getInternalId());
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    savedOrder.setPatientLink(patientLink);
     return savedOrder;
   }
 
