@@ -307,7 +307,7 @@ const PatientForm = (props: Props) => {
             required
           />
           <TextInput
-            label="Middle Name (optional)"
+            label="Middle Name"
             name="middleName"
             value={patient.middleName}
             onChange={onChange}
@@ -322,13 +322,13 @@ const PatientForm = (props: Props) => {
         </div>
         <div className="prime-form-line">
           <TextInput
-            label="Lookup ID (optional)"
+            label="Lookup ID"
             name="lookupId"
             value={patient.lookupId}
             onChange={onChange}
           />
           <Dropdown
-            label="Role (optional)"
+            label="Role"
             name="role"
             selectedValue={patient.role}
             onChange={onChange}
