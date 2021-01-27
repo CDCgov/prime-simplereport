@@ -74,6 +74,14 @@ public class SliceTestConfiguration {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ ElementType.METHOD, ElementType.TYPE })
+    @WithMockUser(username = TestUserIdentities.STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER",
+            "TEST-TENANT:DIS_ORG:ENTRY_ONLY" })
+    @Inherited
+    public @interface WithSimpleReportEntryOnlyUser {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.METHOD, ElementType.TYPE })
     @WithMockUser(username = TestUserIdentities.SITE_ADMIN_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
     @Inherited
     public @interface WithSimpleReportSiteAdminUser {

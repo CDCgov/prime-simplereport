@@ -47,6 +47,7 @@ public class PersonService {
         person.setFacility(facility);
     }
 
+    @AuthorizationConfiguration.RequirePermissionSearchPatients
     public List<Person> getPatients(UUID facilityId) {
         Organization org = _os.getCurrentOrganization();
         if (facilityId == null) {
@@ -56,6 +57,7 @@ public class PersonService {
         return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person getPatient(String id) {
         return getPatient(id, _os.getCurrentOrganization());
     }
@@ -66,6 +68,7 @@ public class PersonService {
             .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person addPatient(
         UUID facilityId,
         String lookupId,
@@ -121,6 +124,7 @@ public class PersonService {
         return _repo.save(newPatient);
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person updatePatient(
         UUID facilityId,
         String patientId,

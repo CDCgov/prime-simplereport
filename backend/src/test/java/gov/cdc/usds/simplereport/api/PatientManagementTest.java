@@ -63,6 +63,22 @@ public class PatientManagementTest extends BaseApiTest {
     }
 
     @Test
+    public void createPatient_adminUser_ok() throws Exception {
+        useOrgAdmin();
+        String firstName = "Sansa";
+        doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+    }
+
+    @Test
+    public void createPatient_entryUser_fail() throws Exception {
+        useOrgEntryOnly();
+        String firstName = "Sansa";
+        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME",
+                "notbitter");
+        assertGraphQLOutcome(mutandem.readTree(), ACCESS_ERROR);
+    }
+
+    @Test
     public void failsOnInvalidPhoneNumber() throws Exception {
         GraphQLResponse resp = executeAddPersonMutation("a", "b", "12/29/2020", "d", "e");
         JsonNode errors = resp.readTree().get("errors");
