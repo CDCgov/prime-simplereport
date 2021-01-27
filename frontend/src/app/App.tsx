@@ -84,7 +84,8 @@ const App = () => {
       "edit_facility",
       "edit_organization",
       "read_patient_list",
-      // "read_result_list",
+      "read_result_list",
+      "edit_patient",
     ];
 
     dispatch(
@@ -164,13 +165,20 @@ const App = () => {
                   requiredPermissions={appPermissions.settings.canView}
                   userPermissions={data.whoami.permissions}
                 />
-                <Route
+                <ProtectedRoute
                   path={`/patient/:patientId`}
-                  render={({ match }) => (
+                  render={({ match }: any) => (
                     <EditPatientContainer patientId={match.params.patientId} />
                   )}
+                  requiredPermissions={appPermissions.people.canEdit}
+                  userPermissions={data.whoami.permissions}
                 />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
+                <ProtectedRoute
+                  path={`/add-patient/`}
+                  render={() => <AddPatient />}
+                  requiredPermissions={appPermissions.people.canEdit}
+                  userPermissions={data.whoami.permissions}
+                />
                 <ProtectedRoute
                   path="/settings"
                   component={SettingsRoutes}
