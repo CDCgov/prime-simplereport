@@ -95,7 +95,6 @@ const App = () => {
           suffix: data.whoami.suffix,
           email: data.whoami.email,
           isAdmin: data.whoami.isAdmin,
-          type: data.whoami.type,
           permissions: data.whoami.permissions,
         },
       })
