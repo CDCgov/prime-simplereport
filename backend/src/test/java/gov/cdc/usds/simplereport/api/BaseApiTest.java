@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -69,10 +70,13 @@ public abstract class BaseApiTest {
     protected Client _oktaClient;
 
     private static final List<OrganizationRoles> USER_ORG_ROLES = 
-            List.of(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
+            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
     private static final List<OrganizationRoles> ADMIN_ORG_ROLES = 
-            List.of(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
-                                                            OrganizationRole.ADMIN)));
+            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                                              OrganizationRole.ADMIN)));
+    private static final List<OrganizationRoles> ENTRY_ONLY_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                                              OrganizationRole.ENTRY_ONLY)));
 
     protected void truncateDb() {
         _truncator.truncateAll();
@@ -119,6 +123,11 @@ public abstract class BaseApiTest {
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
+    }
+
+    protected void useOrgEntryOnly() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org entry-only");
+        when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
     }
 
     protected void useSuperUser() {

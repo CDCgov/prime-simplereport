@@ -230,6 +230,7 @@ public class DataHubUploaderService {
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
     @Transactional
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
             this.init();

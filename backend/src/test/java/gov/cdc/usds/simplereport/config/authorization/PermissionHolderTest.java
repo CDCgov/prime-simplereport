@@ -33,6 +33,12 @@ class PermissionHolderTest {
     }
 
     @Test
+    void getGrantedPermissions_noRoles_noPermissions() {
+        Set<UserPermission> permissions = convertToPermissions(EnumSet.noneOf(OrganizationRole.class));
+        assertEquals(EnumSet.noneOf(UserPermission.class), permissions);
+    }
+
+    @Test
     void getGrantedPermissions_restrictedUser_restrictedPermissions() {
         Set<UserPermission> permissions = convertToPermissions(
                 EnumSet.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.USER));
@@ -42,6 +48,11 @@ class PermissionHolderTest {
     }
 
     private Set<UserPermission> convertToPermissions(Collection<OrganizationRole> grantedRoles) {
-        return new OrganizationRoles("IGNORE", grantedRoles).getGrantedPermissions();
+        return makeHolder(grantedRoles).getGrantedPermissions();
     }
+
+    private PermissionHolder makeHolder(Collection<OrganizationRole> roles) {
+        return () -> Set.copyOf(roles);
+    }
+
 }
