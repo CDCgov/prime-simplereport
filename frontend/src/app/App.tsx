@@ -37,6 +37,7 @@ const WHOAMI_QUERY = gql`
       email
       isAdmin
       permissions
+      roleDescription
       organization {
         name
         testingFacility {
@@ -94,6 +95,7 @@ const App = () => {
           lastName: data.whoami.lastName,
           suffix: data.whoami.suffix,
           email: data.whoami.email,
+          roleDescription: data.whoami.roleDescription,
           isAdmin: data.whoami.isAdmin,
           permissions: data.whoami.permissions,
         },

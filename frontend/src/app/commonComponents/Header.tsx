@@ -171,6 +171,12 @@ const Header: React.FC<{}> = () => {
                 <li className="usa-sidenav__item span-full-name">
                   {formatFullName(user)}
                 </li>
+                <li className="usa-sidenav__item">
+                  <span>
+                    <strong>Role: </strong>
+                    {user.roleDescription}
+                  </span>
+                </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
                 <li className="usa-sidenav__item">
                   <Button variant="unstyled" label="Log out" onClick={logout} />
@@ -284,6 +290,12 @@ const Header: React.FC<{}> = () => {
                 <ul className="usa-sidenav__sublist">
                   <li className="usa-sidenav__item span-full-name">
                     {formatFullName(user)}
+                  </li>
+                  <li className="usa-sidenav__item">
+                    <span>
+                      <strong>Role: </strong>
+                      {user.roleDescription}
+                    </span>
                   </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
