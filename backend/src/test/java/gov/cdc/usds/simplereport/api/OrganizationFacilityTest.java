@@ -16,7 +16,8 @@ public class OrganizationFacilityTest extends BaseApiTest {
     private DeviceTypeService _deviceService;
 
     @Test
-    void createFacility_orgUser_success() {
+    void createFacility_orgAdmin_success() {
+        useOrgAdmin();
         runQuery("facility-create", getDeviceArgs());
     }
 

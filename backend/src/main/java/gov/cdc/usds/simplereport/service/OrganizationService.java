@@ -112,6 +112,7 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequirePermissionEditFacility
     public Facility updateFacility(
         UUID facilityId,
         String testingFacilityName,
@@ -212,6 +213,7 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequirePermissionEditOrganization
     public Organization updateOrganization(String name) {
         Organization org = this.getCurrentOrganization();
         org.setOrganizationName(name);
@@ -219,6 +221,7 @@ public class OrganizationService {
     }
 
     @Transactional(readOnly = false)
+    @AuthorizationConfiguration.RequirePermissionEditFacility
     public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
             DeviceTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {

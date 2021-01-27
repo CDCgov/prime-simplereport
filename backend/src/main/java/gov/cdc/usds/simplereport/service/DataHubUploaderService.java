@@ -215,6 +215,7 @@ public class DataHubUploaderService {
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
+    @AuthorizationConfiguration.RequirePermissionExportTestEvent
     public String createTestCSVForDataHub(String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);

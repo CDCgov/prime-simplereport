@@ -9,6 +9,8 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.format.DateTimeFormatter;
@@ -43,6 +45,7 @@ public class UploadService {
         this._ps = ps;
     }
 
+    @AuthorizationConfiguration.RequirePermissionExportTestEvent
     public void processPersonCSV(InputStream csvStream) throws IOException {
         final MappingIterator<Map<String, String>> valueIterator = new CsvMapper()
                 .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)

@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
 import java.util.Set;
-import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
@@ -22,8 +21,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class ApiUserManagementTest extends BaseApiTest {
 
-    private static final List<String> USERNAMES = Arrays.asList("rjj@gmail.com", 
-                                                                "rjjones@gmail.com");
+    private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
+                                                          "rjjones@gmail.com");
 
     @Override
     protected Set<String> getOktaTestUsernames() {
@@ -40,9 +39,9 @@ public class ApiUserManagementTest extends BaseApiTest {
 
     @Test
     void whoami_entryOnlyUser_okPermissions() {
-        setRoles(Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+        useOrgEntryOnly();
         Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.SUBMIT_TEST,
-                UserPermission.UPDATE_TEST);
+                UserPermission.UPDATE_TEST, UserPermission.READ_PATIENT_LIST);
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals(expected, extractPermissionsFromUser(who));
@@ -50,7 +49,7 @@ public class ApiUserManagementTest extends BaseApiTest {
 
     @Test
     void whoami_orgAdminUser_okPermissions() {
-        setRoles(Set.of(OrganizationRole.USER, OrganizationRole.ADMIN));
+        useOrgAdmin();
         Set<UserPermission> expected = EnumSet.allOf(UserPermission.class);
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");

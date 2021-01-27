@@ -6,7 +6,8 @@ import java.util.Set;
 
 public enum OrganizationRole {
     ENTRY_ONLY("Test-entry users",
-            EnumSet.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),
+            EnumSet.of(UserPermission.READ_PATIENT_LIST, UserPermission.START_TEST, UserPermission.UPDATE_TEST, 
+                    UserPermission.SUBMIT_TEST)),
     USER("Users",
             EnumSet.of(UserPermission.READ_PATIENT_LIST, UserPermission.READ_RESULT_LIST, UserPermission.EDIT_PATIENT,
                     UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),

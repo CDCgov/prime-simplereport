@@ -18,6 +18,7 @@ enum UserPermission {
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
+  EXPORT_TEST_EVENT
 }
 
 type DeviceType {

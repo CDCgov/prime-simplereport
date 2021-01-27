@@ -11,5 +11,6 @@ public enum UserPermission {
     EDIT_ORGANIZATION,
     START_TEST,
     UPDATE_TEST,
-    SUBMIT_TEST;
+    SUBMIT_TEST,
+    EXPORT_TEST_EVENT;
 }
