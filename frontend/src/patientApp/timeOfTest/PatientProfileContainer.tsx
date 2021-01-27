@@ -1,18 +1,25 @@
 import moment from "moment";
 
-import { formatFullName } from "../../utils/user";
-import { formatAddress } from "../../utils/address";
-import { capitalizeText } from "../../utils/text";
+import { formatFullName } from "../../app/utils/user";
+import PatientForm from "../../app/patients/PatientForm";
 
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
+import {
+  RACE_VALUES,
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+} from "../../app/constants";
 
-import Button from "../../commonComponents/Button";
+import Button from "../../app/commonComponents/Button";
+import React, { useState } from "react";
+import { Redirect } from "react-router";
 
 interface Props {
   patient: any;
 }
 
-const PatientProfile = (props: Props) => {
+const PatientProfileContainer = (props: Props) => {
+  const [nextPage, setNextPage] = useState(false);
+
   const fullName = formatFullName(props.patient);
   const race = RACE_VALUES.find((val) => val.value === props.patient.race)
     ?.label;
@@ -22,34 +29,68 @@ const PatientProfile = (props: Props) => {
   const gender = GENDER_VALUES.find((val) => val.value === props.patient.gender)
     ?.label;
 
+  const formattedAddress = () => {
+    const lastAddressLine = `${props.patient.city}${
+      props.patient.state && props.patient.city ? "," : ""
+    }${props.patient.city ? " " : ""}${props.patient.state}${
+      props.patient.state ? " " : ""
+    }${props.patient.zipCode}`;
+
+    let result = props.patient.street;
+    result += `${
+      result.length > 0
+        ? "\n" + props.patient.streetTwo
+        : props.patient.streetTwo
+    }`;
+    result += `${result.length > 0 ? "\n" + lastAddressLine : lastAddressLine}`;
+    return result;
+  };
+
   const newLineSpan = ({ text = "" }) => {
     return text
       .split("\n")
       .map((str) => <span className="display-block">{str}</span>);
   };
 
-  const address = formatAddress({
-    street: props.patient.street,
-    streetTwo: props.patient.streetTwo,
-    city: props.patient.city,
-    county: props.patient.county,
-    state: props.patient.state,
-    zipCode: props.patient.zipCode,
-  });
+  const capitalize = ({ text = "" }) => {
+    const answer = text.toLowerCase();
+    return answer.charAt(0).toUpperCase() + answer.slice(1);
+  };
+
+  const address = formattedAddress();
   const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
-    console.log("saved");
+    setNextPage(true);
   };
 
   const buttonGroup = (
-    <div className="margin-top-3">
-      <Button label="Confirm and continue" onClick={savePatientAnswers} />
-    </div>
+    <>
+      <div className="margin-top-3">
+        <Button label="Confirm and continue" onClick={savePatientAnswers} />
+      </div>
+      <div className="margin-top-3">
+        <Button label="Edit information" onClick={savePatientAnswers} />
+      </div>
+    </>
   );
+
+  if (nextPage) {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/patient-info-confirmation",
+          state: { page: "symptoms" },
+        }}
+      />
+    );
+  }
 
   return (
     <>
+      {/* <PatientForm
+      activeFacilityId={loadSta}/> */}
       <div className="usa-alert usa-alert--info margin-bottom-3">
         <div className="usa-alert__body">
           <p className="usa-alert__text">
@@ -95,13 +136,13 @@ const PatientProfile = (props: Props) => {
         </h3>
         <p>
           {props.patient.residentCongregateSetting
-            ? capitalizeText(props.patient.residentCongregateSetting)
+            ? capitalize({ text: props.patient.residentCongregateSetting })
             : notProvided}
         </p>
         <h3 className="font-heading-sm">Employed in healthcare</h3>
         <p>
           {props.patient.employedInHealthcare
-            ? capitalizeText(props.patient.employedInHealthcare)
+            ? capitalize({ text: props.patient.employedInHealthcare })
             : notProvided}
         </p>
       </div>
@@ -110,4 +151,4 @@ const PatientProfile = (props: Props) => {
   );
 };
 
-export default PatientProfile;
+export default PatientProfileContainer;
