@@ -469,6 +469,7 @@ const PatientForm = (props: Props) => {
             { label: "No", value: "NO" },
           ]}
           selectedRadio={patient.residentCongregateSetting}
+          hintText="For example: nursing home, group home, penal institution, military"
           onChange={onChange}
           required
         />
