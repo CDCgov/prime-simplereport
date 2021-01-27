@@ -345,17 +345,19 @@ const PatientForm = (props: Props) => {
               { label: "Visitor", value: "VISITOR" },
             ]}
           />
-          <Dropdown
-            label="Facility"
-            name="currentFacilityId"
-            selectedValue={currentFacilityId}
-            onChange={(e) => {
-              setCurrentFacilityId(e.target.value);
-              setFormChanged(true);
-            }}
-            options={facilityList}
-            required
-          />
+          {!props.isPxpView && (
+            <Dropdown
+              label="Facility"
+              name="currentFacilityId"
+              selectedValue={currentFacilityId}
+              onChange={(e) => {
+                setCurrentFacilityId(e.target.value);
+                setFormChanged(true);
+              }}
+              options={facilityList}
+              required
+            />
+          )}
         </div>
         <div className="prime-form-line">
           <TextInput
