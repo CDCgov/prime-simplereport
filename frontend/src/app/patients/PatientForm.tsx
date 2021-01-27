@@ -25,6 +25,7 @@ import { displayFullName, showError, showNotification } from "../utils";
 import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 import FormGroup from "../commonComponents/FormGroup";
+import Button from "../../app/commonComponents/Button";
 import { useSelector } from "react-redux";
 
 const ADD_PATIENT = gql`
@@ -130,6 +131,7 @@ interface Props {
   patientId?: string;
   patient?: any; //TODO: TYPES
   isPxpView: boolean;
+  backCallback?: any;
 }
 
 const PatientForm = (props: Props) => {
@@ -527,14 +529,18 @@ const PatientForm = (props: Props) => {
         </FormGroup>
       )}
       <div className="display-flex flex-justify-end margin-top-2">
-        <button
-          className="usa-button prime-save-patient-changes margin-right-0"
+        <Button
+          className={"prime-save-patient-changes margin-right-0"}
           disabled={!formChanged}
           onClick={savePatientData}
-        >
-          {!props.isPxpView && "Save Changes"}
-          {props.isPxpView && "Save and continue"}
-        </button>
+          label={props.isPxpView ? "Save and continue" : "Save Changes"}
+        />
+        {props.isPxpView && (<Button
+          className="margin-top-1"
+          variant="outline"
+          label={"Back"}
+          onClick={props.backCallback}
+        />)}
       </div>
     </main>
   );

@@ -84,17 +84,10 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
     });
   };
 
-  const profileButton = (
-    <Button
-      className="margin-top-1"
-      variant="outline"
-      label={isProfileEdit ? "Back" : "Edit information"}
-      onClick={() => {
-        window.scrollTo(0, 0);
-        setProfileEdit(!isProfileEdit);
-      }}
-    />
-  );
+  const setProfileView = () => {
+    window.scrollTo(0, 0);
+    setProfileEdit(!isProfileEdit);
+  }
 
   return (
     <main className="patient-app patient-app--form padding-bottom-4">
@@ -125,7 +118,12 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
                     employedInHealthcare,
                   }}
                 />
-                {profileButton}
+                <Button
+                  className="margin-top-1"
+                  variant="outline"
+                  label={"Edit information"}
+                  onClick={setProfileView}
+                />
               </>
             )}
             {isProfileEdit && (
@@ -139,8 +137,8 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
                   activeFacilityId={facilityId}
                   patientId={patient.internalId}
                   isPxpView={true}
+                  backCallback={setProfileView}
                 />
-                {profileButton}
               </div>
             )}
           </>
