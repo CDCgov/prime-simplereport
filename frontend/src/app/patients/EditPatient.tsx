@@ -60,16 +60,20 @@ const EditPatient = (props: Props) => {
     : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
-    <PatientForm
-      patient={{
-        ...data.patient,
-        residentCongregateSetting,
-        employedInHealthcare,
-      }}
-      patientId={props.patientId}
-      activeFacilityId={props.facilityId}
-      isPxpView={false}
-    />
+    <div className="bg-base-lightest">
+      <div className="grid-container">
+        <PatientForm
+          patient={{
+            ...data.patient,
+            residentCongregateSetting,
+            employedInHealthcare,
+          }}
+          patientId={props.patientId}
+          activeFacilityId={props.facilityId}
+          isPxpView={false}
+        />
+      </div>
+    </div>
   );
 };
 

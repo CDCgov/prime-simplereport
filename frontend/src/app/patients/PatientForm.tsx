@@ -515,7 +515,7 @@ const PatientForm = (props: Props) => {
       <div className="prime-edit-patient-heading">
         <div></div>
         <button
-          className="usa-button prime-save-patient-changes"
+          className="usa-button prime-save-patient-changes margin-right-0"
           disabled={!formChanged}
           onClick={savePatientData}
         >
