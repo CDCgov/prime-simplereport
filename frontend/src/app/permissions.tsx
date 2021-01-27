@@ -1,6 +1,4 @@
-// type UserType = "standard" | "restricted" | "admin";
-
-type UserPermission =
+export type UserPermission =
   | "READ_PATIENT_LIST"
   | "READ_RESULT_LIST"
   | "EDIT_PATIENT"
