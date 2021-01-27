@@ -18,6 +18,7 @@ class PermissionHolderTest {
         Set<UserPermission> permissions = convertToPermissions(EnumSet.of(OrganizationRole.USER));
         Set<UserPermission> expected = EnumSet.of(
                 UserPermission.READ_PATIENT_LIST,
+                UserPermission.SEARCH_PATIENTS,
                 UserPermission.READ_RESULT_LIST,
                 UserPermission.EDIT_PATIENT,
                 UserPermission.START_TEST,
@@ -43,7 +44,7 @@ class PermissionHolderTest {
         Set<UserPermission> permissions = convertToPermissions(
                 EnumSet.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.USER));
         Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST,
-                UserPermission.SUBMIT_TEST, UserPermission.READ_PATIENT_LIST);
+                UserPermission.SUBMIT_TEST, UserPermission.SEARCH_PATIENTS);
         assertEquals(expected, permissions);
     }
 
