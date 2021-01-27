@@ -8,4 +8,5 @@ type UserPermission =
   | "EDIT_ORGANIZATION"
   | "START_TEST"
   | "UPDATE_TEST"
-  | "SUBMIT_TEST";
+  | "SUBMIT_TEST"
+  | "SEARCH_PATIENTS";

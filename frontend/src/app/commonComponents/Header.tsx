@@ -49,6 +49,11 @@ const Header: React.FC<{}> = () => {
     appPermissions.results.canView
   );
 
+  const canViewTestQueue = hasPermission(
+    user.permissions,
+    appPermissions.tests.canView
+  );
+
   const logout = () => {
     // Fetch the id_token from local storage
     const id_token = localStorage.getItem("id_token");
@@ -107,19 +112,21 @@ const Header: React.FC<{}> = () => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/queue/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Conduct Test
-              </NavLink>
-            </li>
+            {canViewTestQueue ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/queue/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Conduct Test
+                </NavLink>
+              </li>
+            ) : null}
             {canViewResults ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
                 <NavLink
@@ -190,20 +197,22 @@ const Header: React.FC<{}> = () => {
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/queue/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="conduct-test-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Conduct Test
-              </NavLink>
-            </li>
+            {canViewTestQueue ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/queue/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="conduct-test-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Conduct Test
+                </NavLink>
+              </li>
+            ) : null}
             {canViewResults ? (
               <li className="usa-nav__primary-item">
                 <NavLink
