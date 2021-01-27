@@ -258,7 +258,19 @@ const PatientForm = (props: Props) => {
   };
   // after the submit was success, redirect back to the List page
   if (submitted) {
-    return <Redirect to={`/patients/?facility=${props.activeFacilityId}`} />;
+    if (!props.isPxpView) {
+      return <Redirect to={`/patients/?facility=${props.activeFacilityId}`} />;
+    } else {
+      return (
+        <Redirect
+          push
+          to={{
+            pathname: "/patient-info-confirmation",
+            state: { page: "symptoms" },
+          }}
+        />
+      );
+    }
   }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
@@ -521,12 +533,8 @@ const PatientForm = (props: Props) => {
           disabled={!formChanged}
           onClick={savePatientData}
         >
-          {!props.isPxpView && (
-            "Save Changes"
-          )}
-          {props.isPxpView && (
-            "Save and continue"
-          )}
+          {!props.isPxpView && "Save Changes"}
+          {props.isPxpView && "Save and continue"}
         </button>
         {/* <button
           className="usa-button usa-button--outline prime-save-patient-changes margin-right-0"
