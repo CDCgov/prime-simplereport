@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,6 +106,11 @@ public abstract class BaseApiTest {
                 g.delete();
             }
         }
+    }
+
+    protected void setRoles(Set<OrganizationRole> roles) {
+        List<OrganizationRoles> orgRoles = Collections.singletonList(new OrganizationRoles("DIS_ORG", roles));
+        when(_authService.findAllOrganizationRoles()).thenReturn(orgRoles);
     }
 
     @BeforeEach

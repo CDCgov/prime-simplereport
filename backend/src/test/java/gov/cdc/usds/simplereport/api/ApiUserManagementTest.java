@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import java.util.Set;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -30,11 +31,30 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void fetchFakeUserData() {
+    public void whoami_standardUser_okResponses() {
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(who));
+    }
+
+    @Test
+    void whoami_entryOnlyUser_okPermissions() {
+        setRoles(Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+        Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.SUBMIT_TEST,
+                UserPermission.UPDATE_TEST);
+        ObjectNode resp = runQuery("current-user-query");
+        ObjectNode who = (ObjectNode) resp.get("whoami");
+        assertEquals(expected, extractPermissionsFromUser(who));
+    }
+
+    @Test
+    void whoami_orgAdminUser_okPermissions() {
+        setRoles(Set.of(OrganizationRole.USER, OrganizationRole.ADMIN));
+        Set<UserPermission> expected = EnumSet.allOf(UserPermission.class);
+        ObjectNode resp = runQuery("current-user-query");
+        ObjectNode who = (ObjectNode) resp.get("whoami");
+        assertEquals(expected, extractPermissionsFromUser(who));
     }
 
     @Test
