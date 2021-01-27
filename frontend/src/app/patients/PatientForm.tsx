@@ -526,8 +526,7 @@ const PatientForm = (props: Props) => {
           )}
         </FormGroup>
       )}
-      <div className="prime-edit-patient-heading">
-        <div></div>
+      <div className="display-flex flex-justify-end margin-top-2">
         <button
           className="usa-button prime-save-patient-changes margin-right-0"
           disabled={!formChanged}
@@ -536,13 +535,6 @@ const PatientForm = (props: Props) => {
           {!props.isPxpView && "Save Changes"}
           {props.isPxpView && "Save and continue"}
         </button>
-        {/* <button
-          className="usa-button usa-button--outline prime-save-patient-changes margin-right-0"
-          disabled={!formChanged}
-          onClick={savePatientData}
-        >
-          Back
-        </button> */}
       </div>
     </main>
   );
