@@ -521,8 +521,20 @@ const PatientForm = (props: Props) => {
           disabled={!formChanged}
           onClick={savePatientData}
         >
-          Save Changes
+          {!props.isPxpView && (
+            "Save Changes"
+          )}
+          {props.isPxpView && (
+            "Save and continue"
+          )}
         </button>
+        {/* <button
+          className="usa-button usa-button--outline prime-save-patient-changes margin-right-0"
+          disabled={!formChanged}
+          onClick={savePatientData}
+        >
+          Back
+        </button> */}
       </div>
     </main>
   );
