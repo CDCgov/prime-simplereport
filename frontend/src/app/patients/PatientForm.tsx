@@ -530,15 +530,15 @@ const PatientForm = (props: Props) => {
           )}
         </FormGroup>
       )}
-      <div className="display-flex flex-justify-end margin-top-2">
+      <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
         <Button
-          className={"prime-save-patient-changes margin-right-0"}
+          className={"prime-save-patient-changes"}
           disabled={!formChanged}
           onClick={savePatientData}
           label={props.isPxpView ? "Save and continue" : "Save Changes"}
         />
         {props.isPxpView && (<Button
-          className="margin-top-1"
+          className="margin-top-1 mobile-lg:margin-top-0"
           variant="outline"
           label={"Back"}
           onClick={props.backCallback}
