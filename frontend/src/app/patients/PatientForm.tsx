@@ -538,7 +538,7 @@ const PatientForm = (props: Props) => {
           label={props.isPxpView ? "Save and continue" : "Save Changes"}
         />
         {props.isPxpView && (<Button
-          className="margin-top-1 mobile-lg:margin-top-0"
+          className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
           variant="outline"
           label={"Back"}
           onClick={props.backCallback}
