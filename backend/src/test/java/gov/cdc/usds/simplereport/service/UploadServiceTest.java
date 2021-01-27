@@ -15,8 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -67,8 +65,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
                 "patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
             final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
                     () -> this._service.processPersonCSV(bis), "CSV parsing should fail");
-            assertEquals(e.getMessage(), "Not enough column values: expected 21, found 1");
-            assertTrue(e.getMessage().contains("Not enough column values: expected 21, found 1"),
+            assertEquals("Not enough column values: expected 20, found 1", e.getMessage());
+            assertTrue(e.getMessage().contains("Not enough column values: expected 20, found 1"),
                     "Should have correct error message");
         }
     }

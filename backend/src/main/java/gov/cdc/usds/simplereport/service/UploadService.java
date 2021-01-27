@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
@@ -88,7 +89,7 @@ public class UploadService {
                     parseString(row.get("Street")),
                     parseString(row.get("Street2")),
                     parseString(row.get("City")),
-                    parseString(row.get("State")),
+                    parseState(row.get("State")),
                     parseString(row.get("ZipCode")),
                     parsePhoneNumber(row.get("PhoneNumber")),
                     parsePersonRole(row.get("Role")),

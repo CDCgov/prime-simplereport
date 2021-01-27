@@ -6,6 +6,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
@@ -75,7 +76,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             parseString(street),
             parseString(street2),
             parseString(city),
-            parseString(state),
+            parseState(state),
             parseString(zipCode),
             parsePhoneNumber(telephone),
             parsePersonRole(role),
@@ -125,7 +126,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           parseString(street),
           parseString(street2),
           parseString(city),
-          parseString(state),
+          parseState(state),
           parseString(zipCode),
           parsePhoneNumber(telephone),
           parsePersonRole(role),

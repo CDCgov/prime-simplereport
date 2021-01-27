@@ -23,7 +23,6 @@ public class Translators {
 
     private static DateTimeFormatter US_SLASHDATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
-    private static DateTimeFormatter ISO_INSTANT_FORMATTER = DateTimeFormatter.ISO_INSTANT;
 
     public static final LocalDate parseUserShortDate(String date) {
         if (date == null) {
@@ -154,24 +153,41 @@ public class Translators {
         throw new IllegalGraphqlArgumentException("\""+g+"\" is not a valid gender.");
     }
 
-    private static final Map<String, Boolean> yesNoMap = Map.of(
+    private static final Map<String, Boolean> YES_NO = Map.of(
         "y", true,
         "yes", true,
         "n", false,
         "no", false
     );
 
-
     public static Boolean parseYesNo(String v) {
         String stringValue = parseString(v);
         if (stringValue == null) {
             return null;
         }
-        Boolean boolValue = yesNoMap.get(stringValue.toLowerCase());
+        Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
         if (boolValue == null) {
             throw new IllegalGraphqlArgumentException("\""+v+"\" is not a valid value.");
         }
         return boolValue;
     }
 
+    private static final Set<String> STATE_CODES = Set.of(
+        "AK", "AL", "AR", "AS", "AZ", "CA", "CO", "CT", "DC", "DE", "FL", "GA", "GU", "HI", "IA",
+        "ID", "IL", "IN", "KS", "KY", "LA", "MA", "MD", "ME", "MI", "MN", "MO", "MS", "MT", "NC",
+        "ND", "NE", "NH", "NJ", "NM", "NV", "NY", "OH", "OK", "OR", "PA", "PR", "RI", "SC", "SD",
+        "TN", "TX", "UT", "VA", "VI", "VT", "WA", "WI", "WV", "WY"
+    );
+
+    public static String parseState(String s) {
+        String state = parseString(s);
+        if (state == null) {
+            return null;
+        }
+        state = state.toUpperCase();
+        if (STATE_CODES.contains(state)) {
+            return state;
+        }
+        throw new IllegalGraphqlArgumentException("\""+s+"\" is not a valid state.");
+    }
 }
