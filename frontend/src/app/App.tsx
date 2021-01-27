@@ -6,6 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "./AppInsights";
+import ProtectedRoute from "./commonComponents/ProtectedRoute";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
@@ -23,6 +24,7 @@ import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesConta
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
+import { appPermissions } from "./permissions";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -34,6 +36,7 @@ const WHOAMI_QUERY = gql`
       suffix
       email
       isAdmin
+      permissions
       organization {
         name
         testingFacility {
@@ -92,6 +95,7 @@ const App = () => {
           suffix: data.whoami.suffix,
           email: data.whoami.email,
           isAdmin: data.whoami.isAdmin,
+          permissions: data.whoami.permissions,
         },
       })
     );
@@ -136,26 +140,42 @@ const App = () => {
                     <Redirect to={{ ...location, pathname: "/queue" }} />
                   )}
                 />
-                <Route
+                <ProtectedRoute
                   path="/results"
                   render={() => {
                     return <TestResultsListContainer />;
                   }}
+                  requiredPermissions={appPermissions.results.canView}
+                  userPermissions={data.whoami.permissions}
                 />
-                <Route
+                <ProtectedRoute
                   path={`/patients`}
                   render={() => {
                     return <ManagePatientsContainer />;
                   }}
+                  requiredPermissions={appPermissions.people.canView}
+                  userPermissions={data.whoami.permissions}
                 />
-                <Route
+                <ProtectedRoute
                   path={`/patient/:patientId`}
-                  render={({ match }) => (
+                  render={({ match }: any) => (
                     <EditPatientContainer patientId={match.params.patientId} />
                   )}
+                  requiredPermissions={appPermissions.people.canEdit}
+                  userPermissions={data.whoami.permissions}
                 />
-                <Route path={`/add-patient/`} render={() => <AddPatient />} />
-                <Route path="/settings" component={SettingsRoutes} />
+                <ProtectedRoute
+                  path={`/add-patient/`}
+                  render={() => <AddPatient />}
+                  requiredPermissions={appPermissions.people.canEdit}
+                  userPermissions={data.whoami.permissions}
+                />
+                <ProtectedRoute
+                  path="/settings"
+                  component={SettingsRoutes}
+                  requiredPermissions={appPermissions.settings.canView}
+                  userPermissions={data.whoami.permissions}
+                />
                 <Route
                   path={"/admin"}
                   render={({ match }) => (

@@ -46,9 +46,10 @@ interface Data {
 
 interface Props {
   activeFacilityId: string;
+  canEditUser: boolean;
 }
 
-const ManagePatients = ({ activeFacilityId }: Props) => {
+const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
   const { data, loading, error } = useQuery<Data, {}>(patientQuery, {
     fetchPolicy: "no-cache",
     variables: {
@@ -57,28 +58,36 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
   });
 
   const patientRows = (patients: Patient[]) => {
-    return patients.map((patient: Patient) => (
-      <tr key={patient.internalId}>
-        <th scope="row">
-          <NavLink
-            to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
-          >
-            {displayFullName(
-              patient.firstName,
-              patient.middleName,
-              patient.lastName
-            )}
-          </NavLink>
-        </th>
-        <td>{patient.lookupId}</td>
-        <td> {patient.birthDate}</td>
-        <td>
-          {patient.lastTest
-            ? `${daysSince(moment(patient.lastTest.dateAdded))}`
-            : "N/A"}
-        </td>
-      </tr>
-    ));
+    return patients.map((patient: Patient) => {
+      let fullName = displayFullName(
+        patient.firstName,
+        patient.middleName,
+        patient.lastName
+      );
+
+      let editUserLink = canEditUser ? (
+        <NavLink
+          to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
+        >
+          {fullName}
+        </NavLink>
+      ) : (
+        <span>{fullName}</span>
+      );
+
+      return (
+        <tr key={patient.internalId}>
+          <th scope="row">{editUserLink}</th>
+          <td>{patient.lookupId}</td>
+          <td> {patient.birthDate}</td>
+          <td>
+            {patient.lastTest
+              ? `${daysSince(moment(patient.lastTest.dateAdded))}`
+              : "N/A"}
+          </td>
+        </tr>
+      );
+    });
   };
 
   return (
@@ -88,14 +97,16 @@ const ManagePatients = ({ activeFacilityId }: Props) => {
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
-              <NavLink
-                className="usa-button usa-button--outline"
-                to={`/add-patient/?facility=${activeFacilityId}`}
-                id="add-patient-button"
-              >
-                <FontAwesomeIcon icon="plus" />
-                {` New ${PATIENT_TERM_CAP}`}
-              </NavLink>
+              {canEditUser ? (
+                <NavLink
+                  className="usa-button usa-button--outline"
+                  to={`/add-patient/?facility=${activeFacilityId}`}
+                  id="add-patient-button"
+                >
+                  <FontAwesomeIcon icon="plus" />
+                  {` New ${PATIENT_TERM_CAP}`}
+                </NavLink>
+              ) : null}
             </div>
             <div className="usa-card__body">
               {error ? (
