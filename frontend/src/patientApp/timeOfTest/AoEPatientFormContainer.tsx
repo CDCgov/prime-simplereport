@@ -73,7 +73,6 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
   ];
 
   const [isProfileEdit, setProfileEdit] = useState(false);
-
   const [submitMutation] = useMutation(PATIENT_LINK_SUBMIT_MUTATION);
   const saveCallback = (args: any) => {
     submitMutation({
@@ -125,15 +124,18 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
               </>
             )}
             {isProfileEdit && (
-              <PatientForm
-                patient={{
-                  ...patient,
-                  residentCongregateSetting,
-                  employedInHealthcare,
-                }}
-                activeFacilityId={facilityId}
-                patientId={patient.internalId}
-              />
+              <div className={"class-name-here"}>
+                <PatientForm
+                  patient={{
+                    ...patient,
+                    residentCongregateSetting,
+                    employedInHealthcare,
+                  }}
+                  activeFacilityId={facilityId}
+                  patientId={patient.internalId}
+                  isPxpView={true}
+                />
+              </div>
             )}
           </>
         )}

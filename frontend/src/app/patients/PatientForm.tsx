@@ -129,6 +129,7 @@ interface Props {
   activeFacilityId: string;
   patientId?: string;
   patient?: any; //TODO: TYPES
+  isPxpView: boolean;
 }
 
 const PatientForm = (props: Props) => {
@@ -268,35 +269,39 @@ const PatientForm = (props: Props) => {
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
-      <Breadcrumbs
-        crumbs={[
-          {
-            link: `/patients/?facility=${props.activeFacilityId}`,
-            text: PATIENT_TERM_PLURAL_CAP,
-          },
-          {
-            link: "",
-            text: !props.patientId
-              ? `Create New ${PATIENT_TERM_CAP}`
-              : fullName,
-          },
-        ]}
-      />
-      <div className="prime-edit-patient-heading">
-        <div>
-          <h1>
-            {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
-          </h1>
-          <RequiredMessage />
-        </div>
-        <button
-          className="usa-button prime-save-patient-changes"
-          disabled={!formChanged}
-          onClick={savePatientData}
-        >
-          Save Changes
-        </button>
-      </div>
+      {!props.isPxpView && (
+        <>
+          <Breadcrumbs
+            crumbs={[
+              {
+                link: `/patients/?facility=${props.activeFacilityId}`,
+                text: PATIENT_TERM_PLURAL_CAP,
+              },
+              {
+                link: "",
+                text: !props.patientId
+                  ? `Create New ${PATIENT_TERM_CAP}`
+                  : fullName,
+              },
+            ]}
+          />
+          <div className="prime-edit-patient-heading">
+            <div>
+              <h1>
+                {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
+              </h1>
+              <RequiredMessage />
+            </div>
+            <button
+              className="usa-button prime-save-patient-changes"
+              disabled={!formChanged}
+              onClick={savePatientData}
+            >
+              Save Changes
+            </button>
+          </div>
+        </>
+      )}
       <FormGroup title="General info">
         <div className="prime-form-line">
           <TextInput
@@ -485,26 +490,28 @@ const PatientForm = (props: Props) => {
           required
         />
       </FormGroup>
-      <FormGroup title="Test History">
-        {patient.testResults && patient.testResults.length !== 0 && (
-          <table className="usa-table usa-table--borderless">
-            <thead>
-              <tr>
-                <th scope="col">Date of Test</th>
-                <th scope="col">Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patient.testResults.map((r: any, i: number) => (
-                <tr key={i}>
-                  <td>{moment(r.dateTested).format("lll")}</td>
-                  <td>{r.result}</td>
+      {!props.isPxpView && (
+        <FormGroup title="Test History">
+          {patient.testResults && patient.testResults.length !== 0 && (
+            <table className="usa-table usa-table--borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Date of Test</th>
+                  <th scope="col">Result</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </FormGroup>
+              </thead>
+              <tbody>
+                {patient.testResults.map((r: any, i: number) => (
+                  <tr key={i}>
+                    <td>{moment(r.dateTested).format("lll")}</td>
+                    <td>{r.result}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </FormGroup>
+      )}
       <div className="prime-edit-patient-heading">
         <div></div>
         <button
