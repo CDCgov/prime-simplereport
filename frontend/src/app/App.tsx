@@ -24,6 +24,7 @@ import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesConta
 import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
+import { appPermissions } from "./permissions";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -78,6 +79,13 @@ const App = () => {
   useEffect(() => {
     if (!data) return;
 
+    // TODO: Don't forget to delete me
+    data.whoami.permissions = [
+      "edit_facility",
+      "edit_organization",
+      "read_patient_list",
+    ];
+
     dispatch(
       setInitialState({
         organization: {
@@ -94,8 +102,7 @@ const App = () => {
           email: data.whoami.email,
           isAdmin: data.whoami.isAdmin,
           type: data.whoami.type,
-          permissions: ["edit_facility", "edit_organization"],
-          // permissions: data.whoami.permissions,
+          permissions: data.whoami.permissions,
         },
       })
     );
@@ -146,11 +153,13 @@ const App = () => {
                     return <TestResultsListContainer />;
                   }}
                 />
-                <Route
+                <ProtectedRoute
                   path={`/patients`}
                   render={() => {
                     return <ManagePatientsContainer />;
                   }}
+                  requiredPermissions={appPermissions.people.canView}
+                  userPermissions={data.whoami.permissions}
                 />
                 <Route
                   path={`/patient/:patientId`}
@@ -162,9 +171,8 @@ const App = () => {
                 <ProtectedRoute
                   path="/settings"
                   component={SettingsRoutes}
-                  requiredPermissions={["edit_organization", "edit_facility"]}
-                  userPermissions={["edit_organization", "edit_facility"]}
-                  // userPermissions={data.whoami.permissions}
+                  requiredPermissions={appPermissions.settings.canView}
+                  userPermissions={data.whoami.permissions}
                 />
                 <Route
                   path={"/admin"}

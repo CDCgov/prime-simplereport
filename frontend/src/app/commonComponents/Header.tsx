@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import Button from "./Button";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
+import { hasPermission, appPermissions } from "../permissions";
 
 const Header: React.FC<{}> = () => {
   const organization = useSelector(
@@ -33,17 +34,14 @@ const Header: React.FC<{}> = () => {
     window.location.href = `${window.location.pathname}?facility=${id}`;
   };
 
-  /* TODO: once we see a few more examples, a generalized solution could work. Some options:
-    - CASL
-    - or https://stackoverflow.com/questions/56004504/how-to-implement-role-based-restrictions-permissions-in-react-redux-app
-    - or even just a single-source-of-truth mapping from UI-setting to permissions (ie: isSettingsEnabled: ["edit_facility", "edit_organization"])
-  */
-  const settingsPermissions: UserPermission[] = [
-    "edit_organization",
-    "edit_facility",
-  ];
-  const canEditSettings = settingsPermissions.every((requiredPermission) =>
-    user.permissions?.includes(requiredPermission)
+  const canViewSettings = hasPermission(
+    user.permissions,
+    appPermissions.settings.canView
+  );
+
+  const canViewPeople = hasPermission(
+    user.permissions,
+    appPermissions.people.canView
   );
 
   const logout = () => {
@@ -130,19 +128,21 @@ const Header: React.FC<{}> = () => {
                 Results
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/patients/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                {PATIENT_TERM_PLURAL_CAP}
-              </NavLink>
-            </li>
+            {canViewPeople ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/patients/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  {PATIENT_TERM_PLURAL_CAP}
+                </NavLink>
+              </li>
+            ) : null}
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user-circle"}
@@ -164,7 +164,7 @@ const Header: React.FC<{}> = () => {
               </ul>
             </li>
 
-            {canEditSettings ? (
+            {canViewSettings ? (
               <li className="usa-nav__primary-item prime-settings-hidden">
                 <NavLink
                   to={`/settings/?facility=${facility.id}`}
@@ -211,20 +211,22 @@ const Header: React.FC<{}> = () => {
                 Results
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/patients/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="patient-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                {PATIENT_TERM_PLURAL_CAP}
-              </NavLink>
-            </li>
+            {canViewPeople ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/patients/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="patient-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  {PATIENT_TERM_PLURAL_CAP}
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
           <div className="prime-facility-select">
             <Dropdown
@@ -276,7 +278,7 @@ const Header: React.FC<{}> = () => {
                 </ul>
               </div>
             </li>
-            {canEditSettings ? (
+            {canViewSettings ? (
               <li className="usa-nav__primary-item nav__primary-item-icon">
                 <NavLink
                   to={`/settings/?facility=${facility.id}`}

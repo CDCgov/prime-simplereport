@@ -5,7 +5,7 @@ interface Props {
   requiredPermissions: UserPermission[];
   userPermissions: UserPermission[] | undefined;
   path: string;
-  component: React.FC<any>;
+  component?: React.FC<any>;
   render?: any;
 }
 const ProtectedRoute: React.FC<Props> = ({
