@@ -68,6 +68,7 @@ const EditPatient = (props: Props) => {
       }}
       patientId={props.patientId}
       activeFacilityId={props.facilityId}
+      isPxpView={false}
     />
   );
 };
