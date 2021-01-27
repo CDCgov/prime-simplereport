@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
 import java.util.Set;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Iterator;
 import java.util.HashSet;
@@ -21,8 +20,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 public class ApiUserManagementTest extends BaseApiTest {
 
-    private static final List<String> USERNAMES = Arrays.asList("rjj@gmail.com", 
-                                                                "rjjones@gmail.com");
+    private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
+                                                          "rjjones@gmail.com");
 
     @Override
     protected Set<String> getOktaTestUsernames() {

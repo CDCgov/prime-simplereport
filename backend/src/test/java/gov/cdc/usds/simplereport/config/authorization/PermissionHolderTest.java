@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.Collection;
 import java.util.EnumSet;

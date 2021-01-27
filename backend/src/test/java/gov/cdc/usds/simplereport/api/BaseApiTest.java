@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -70,10 +69,10 @@ public abstract class BaseApiTest {
     protected Client _oktaClient;
 
     private static final List<OrganizationRoles> USER_ORG_ROLES = 
-            Arrays.asList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
+            List.of(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
     private static final List<OrganizationRoles> ADMIN_ORG_ROLES = 
-            Arrays.asList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
-                                                                  OrganizationRole.ADMIN)));
+            List.of(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                            OrganizationRole.ADMIN)));
 
     protected void truncateDb() {
         _truncator.truncateAll();
