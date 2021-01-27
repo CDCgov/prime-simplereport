@@ -119,4 +119,15 @@ public class AuthorizationConfiguration {
     @PreAuthorize(SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")")
     public @interface RequirePermissionSubmitTest {
     }
+
+    /**
+     * Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "EXPORT_TEST_EVENT" + ")")
+    public @interface RequirePermissionExportTestEvent {
+    }
+    
 }

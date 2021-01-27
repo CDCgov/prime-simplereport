@@ -20,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
@@ -57,6 +58,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void addTestResult() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
@@ -76,6 +78,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void editTestResult() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
@@ -97,6 +100,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void fetchTestResults() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);

@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PersonServiceTest extends BaseServiceTest<PersonService> {
@@ -41,6 +42,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
@@ -53,6 +55,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void deletePatient_standardUser_error() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
@@ -77,6 +80,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportSiteAdminUser
     public void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(null);
@@ -84,6 +88,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportSiteAdminUser
     public void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(_site1.getInternalId());

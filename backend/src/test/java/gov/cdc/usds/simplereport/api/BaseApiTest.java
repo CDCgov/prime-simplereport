@@ -6,7 +6,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
-import java.util.Collections;
+import java.util.List;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.HashSet;
 
@@ -44,9 +45,6 @@ import com.okta.sdk.resource.group.Group;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
 
-    private static final OrganizationRoles DEFAULT_ORG = new OrganizationRoles("DIS_ORG",
-            Collections.singleton(OrganizationRole.USER));
-
     protected static final String ACCESS_ERROR = "Current user does not have permission for this action";
 
     @Autowired
@@ -70,6 +68,12 @@ public abstract class BaseApiTest {
     protected OktaService _oktaService;
 
     protected Client _oktaClient;
+
+    private static final List<OrganizationRoles> USER_ORG_ROLES = 
+            Arrays.asList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoles> ADMIN_ORG_ROLES = 
+            Arrays.asList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                                  OrganizationRole.ADMIN)));
 
     protected void truncateDb() {
         _truncator.truncateAll();
@@ -107,14 +111,28 @@ public abstract class BaseApiTest {
         }
     }
 
+    protected void useOrgUser() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
+    }
+
+    protected void useOrgAdmin() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
+        when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
+    }
+
+    protected void useSuperUser() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for super user");
+        when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+    }
+
     @BeforeEach
     public void setup() {
         truncateDb();
-        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock");
-        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        useOrgUser();
         initOkta();
         _initService.initAll();
-        when(_authService.findAllOrganizationRoles()).thenReturn(Collections.singletonList(DEFAULT_ORG));
     }
 
     @AfterEach
@@ -164,10 +182,6 @@ public abstract class BaseApiTest {
 
     protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
         return runQuery(queryFileName, variables, null);
-    }
-
-    protected void useSuperUser() {
-        when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     }
 
     /**

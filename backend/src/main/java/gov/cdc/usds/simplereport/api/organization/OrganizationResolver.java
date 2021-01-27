@@ -24,9 +24,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 
 	public Optional<Organization> getOrganization() {
 		Optional<CurrentOrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
-		return roles.isPresent()
-					? Optional.of(roles.get().getOrganization())
-					: Optional.empty();
+		return roles.map(CurrentOrganizationRoles::getOrganization);
 	}
 
     public List<Organization> getOrganizations() {

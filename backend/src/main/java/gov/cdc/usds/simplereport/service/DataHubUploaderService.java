@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -214,6 +215,7 @@ public class DataHubUploaderService {
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
+    @AuthorizationConfiguration.RequirePermissionExportTestEvent
     public String createTestCSVForDataHub(String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);
