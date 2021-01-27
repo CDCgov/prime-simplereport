@@ -488,6 +488,7 @@ const PatientForm = (props: Props) => {
           buttons={[
             { label: "Yes", value: "YES" },
             { label: "No", value: "NO" },
+            { label: "Unknown", value: "Unknown" },
           ]}
           selectedRadio={patient.residentCongregateSetting}
           hintText="For example: nursing home, group home, penal institution, military"
@@ -500,6 +501,7 @@ const PatientForm = (props: Props) => {
           buttons={[
             { label: "Yes", value: "YES" },
             { label: "No", value: "NO" },
+            { label: "Unknown", value: "Unknown" },
           ]}
           selectedRadio={patient.employedInHealthcare}
           onChange={onChange}
