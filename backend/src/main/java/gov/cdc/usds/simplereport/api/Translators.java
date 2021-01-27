@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
@@ -164,16 +163,15 @@ public class Translators {
 
 
     public static Boolean parseYesNo(String v) {
-        String value = parseString(v);
-        if (value == null) {
+        String stringValue = parseString(v);
+        if (stringValue == null) {
             return null;
         }
-        value = value.toLowerCase();
-        try {
-            return yesNoMap.get(value);
-        } catch (Exception e) {
+        Boolean boolValue = yesNoMap.get(stringValue.toLowerCase());
+        if (boolValue == null) {
             throw new IllegalGraphqlArgumentException("\""+v+"\" is not a valid value.");
         }
+        return boolValue;
     }
 
 }

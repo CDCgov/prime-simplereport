@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
@@ -47,10 +48,10 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     public void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
-                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
         _service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main", null,
                 "Hicksville", "NY",
-                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
         List<Person> all = _service.getPatients(null);
         assertEquals(2, all.size());
     }
@@ -60,7 +61,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     public void deletePatient_standardUser_error() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
-                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
@@ -72,7 +73,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
                 "123 Main",
                 "Apartment 3", "Hicksville", "NY",
-                "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
 

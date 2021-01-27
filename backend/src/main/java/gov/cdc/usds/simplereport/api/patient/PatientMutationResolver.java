@@ -15,6 +15,7 @@ import javax.servlet.http.Part;
 
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
@@ -34,6 +35,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         _us = us;
     }
 
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public String uploadPatients(Part part) throws Exception {
         InputStream people = part.getInputStream();
         return _us.processPersonCSV(people);

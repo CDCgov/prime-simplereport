@@ -12,6 +12,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -23,8 +24,6 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.format.DateTimeFormatter;
-import java.time.LocalDate;
 import java.util.Map;
 
 /**
@@ -54,6 +53,14 @@ public class UploadService {
         }
     }
 
+    private Map<String, String> getNextRow(MappingIterator<Map<String, String>> valueIterator) throws IllegalGraphqlArgumentException {
+        try {
+            return valueIterator.next();
+        } catch (RuntimeJsonMappingException e) {
+            throw new IllegalGraphqlArgumentException(e.getMessage());
+        }
+    }
+
     @AuthorizationConfiguration.RequirePermissionExportTestEvent
     @Transactional
     public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
@@ -67,7 +74,7 @@ public class UploadService {
 
         int rowNumber = 0;
         while (valueIterator.hasNext()) {
-            final Map<String, String> row = valueIterator.next();
+            final Map<String, String> row = getNextRow(valueIterator);
             rowNumber++;
             try {
                 _ps.addPatient(

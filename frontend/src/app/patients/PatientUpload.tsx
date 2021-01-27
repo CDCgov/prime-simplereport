@@ -13,7 +13,7 @@ const uploadPatients = gql`
 `;
 
 interface Props {
-    onSuccess: () => void;
+  onSuccess: () => void;
 }
 
 const PatientUpload = ({ onSuccess }: Props) => {
@@ -21,18 +21,20 @@ const PatientUpload = ({ onSuccess }: Props) => {
     (state) => (state as any)?.user?.isAdmin as boolean
   );
   if (!isGlobalAdmin) {
-      return 
+    return;
   }
   // TODO: only show if USDS admin
   const [upload] = useMutation(uploadPatients);
 
-  const bulkUpload = async ({target: {files }}: React.ChangeEvent<HTMLInputElement>) => {
+  const bulkUpload = async ({
+    target: { files },
+  }: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = files;
     if (fileList === null) {
       showError(toast, "Error", "File not found");
       return;
-    } 
-    upload({variables: {patientList: fileList[0]}}).then((response) => {
+    }
+    upload({ variables: { patientList: fileList[0] } }).then((response) => {
       showNotification(
         toast,
         <Alert
@@ -43,14 +45,14 @@ const PatientUpload = ({ onSuccess }: Props) => {
       );
       onSuccess();
     });
-  }
+  };
 
   return (
     <input
-    type="file"
-    name="file"
-    placeholder='UploadCSV...'
-    onChange={bulkUpload}
+      type="file"
+      name="file"
+      placeholder="UploadCSV..."
+      onChange={bulkUpload}
     />
   );
 };

@@ -2,7 +2,7 @@ import { gql, useQuery } from "@apollo/client";
 import React from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
-import { displayFullName} from "../utils";
+import { displayFullName } from "../utils";
 
 import {
   PATIENT_TERM_CAP,
@@ -131,7 +131,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
               )}
             </div>
           </div>
-          <PatientUpload onSuccess={refetch}/>
+          <PatientUpload onSuccess={refetch} />
         </div>
       </div>
     </main>
