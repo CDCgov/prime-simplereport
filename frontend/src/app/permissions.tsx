@@ -31,9 +31,9 @@ const hasPermission = (
 };
 
 /*
-    Maps a UX feature to the required list of professions
-    - a UX feature could be a link that needs to be disabled, a button that needs to be hidden, a query that needs to be rejected, etc
-      a single UX feauture may need gating at multiple parts in the app
+    Maps a user functionality to the required list of professions
+    - a user functionality could be a link that needs to be disabled, a button that needs to be hidden, a query that needs to be rejected, etc
+        - a single UX functionality may need gating at multiple parts in the app
     - permissions are defined in the backend and returned in the whoami query
 */
 
@@ -42,6 +42,10 @@ interface AppPermissions {
     canView: UserPermission[];
   };
   people: {
+    canView: UserPermission[];
+    canEdit: UserPermission[];
+  };
+  results: {
     canView: UserPermission[];
   };
   tests: {
@@ -55,11 +59,16 @@ const appPermissions: AppPermissions = {
   settings: {
     canView: ["edit_organization", "edit_facility"], // can view the settings page
     // for the time being, only admins can view, but they also have edit options. Finer granularity here is not needed
+    // canEditFacility: ["edit_facility"],
+    // canEditOrganization: ["edit_organization"]
   },
   people: {
     canView: ["read_patient_list"], // TODO: test_only users should be able to make the query, but not view this page. This is all wrapped under a single permission tho.
+    canEdit: ["edit_patient"],
   },
-  //   results: {},
+  results: {
+    canView: ["read_result_list"],
+  },
   tests: {
     canStart: ["start_test"],
     canUpdate: ["update_test"],

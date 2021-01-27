@@ -44,6 +44,11 @@ const Header: React.FC<{}> = () => {
     appPermissions.people.canView
   );
 
+  const canViewResults = hasPermission(
+    user.permissions,
+    appPermissions.results.canView
+  );
+
   const logout = () => {
     // Fetch the id_token from local storage
     const id_token = localStorage.getItem("id_token");
@@ -115,19 +120,21 @@ const Header: React.FC<{}> = () => {
                 Conduct Test
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/results/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Results
-              </NavLink>
-            </li>
+            {canViewResults ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/results/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Results
+                </NavLink>
+              </li>
+            ) : null}
             {canViewPeople ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
                 <NavLink
@@ -197,20 +204,22 @@ const Header: React.FC<{}> = () => {
                 Conduct Test
               </NavLink>
             </li>
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/results/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="results-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Results
-              </NavLink>
-            </li>
+            {canViewResults ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/results/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="results-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Results
+                </NavLink>
+              </li>
+            ) : null}
             {canViewPeople ? (
               <li className="usa-nav__primary-item">
                 <NavLink

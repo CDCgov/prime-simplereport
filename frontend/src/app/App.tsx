@@ -84,6 +84,7 @@ const App = () => {
       "edit_facility",
       "edit_organization",
       "read_patient_list",
+      // "read_result_list",
     ];
 
     dispatch(
@@ -147,18 +148,20 @@ const App = () => {
                     <Redirect to={{ ...location, pathname: "/queue" }} />
                   )}
                 />
-                <Route
+                <ProtectedRoute
                   path="/results"
                   render={() => {
                     return <TestResultsListContainer />;
                   }}
+                  requiredPermissions={appPermissions.results.canView}
+                  userPermissions={data.whoami.permissions}
                 />
                 <ProtectedRoute
                   path={`/patients`}
                   render={() => {
                     return <ManagePatientsContainer />;
                   }}
-                  requiredPermissions={appPermissions.people.canView}
+                  requiredPermissions={appPermissions.settings.canView}
                   userPermissions={data.whoami.permissions}
                 />
                 <Route
