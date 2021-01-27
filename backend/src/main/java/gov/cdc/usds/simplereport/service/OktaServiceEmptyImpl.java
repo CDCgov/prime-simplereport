@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 import gov.cdc.usds.simplereport.config.BeanProfiles;
-
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 /**
@@ -23,6 +25,10 @@ public class OktaServiceEmptyImpl implements OktaService {
     public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {}
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {}
+
+    public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role) {
+        return List.of();
+    }
 
     public void createOrganization(String name, String externalId) {
     }

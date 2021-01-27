@@ -15,10 +15,17 @@ enum UserPermission {
   EDIT_PATIENT
   EDIT_FACILITY
   EDIT_ORGANIZATION
+  MANAGE_USER_LIST
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
   EXPORT_TEST_EVENT
+}
+
+enum OrganizationRole {
+  USER
+  ADMIN
+  ENTRY_ONLY
 }
 
 type DeviceType {
@@ -143,6 +150,7 @@ type User {
   isAdmin: Boolean
   permissions: [UserPermission!]!
   organization: Organization
+  roles: [OrganzationRole!]
 }
 
 type Query {
@@ -153,6 +161,7 @@ type Query {
   organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
+  users: [User]!
   whoami: User!
 }
 type Mutation {

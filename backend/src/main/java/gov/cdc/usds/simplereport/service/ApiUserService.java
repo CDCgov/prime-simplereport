@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

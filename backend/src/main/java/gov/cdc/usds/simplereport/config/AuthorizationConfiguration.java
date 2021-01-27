@@ -91,6 +91,16 @@ public class AuthorizationConfiguration {
     }
 
     /**
+     * Require the current user to have the {@link UserPermission#MANAGE_USER_LIST}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USER_LIST" + ")")
+    public @interface RequirePermissionManageUserList {
+    }
+    
+    /**
      * Require the current user to have the {@link UserPermission#START_TEST}
      * permission.
      */

@@ -2,7 +2,10 @@ package gov.cdc.usds.simplereport.api.model;
 
 import java.util.Optional;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collection;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -17,7 +20,10 @@ public class User {
 	private Boolean isAdmin;
 	private List<UserPermission> permissions;
 
-	public User(ApiUser user, Optional<Organization> org, Boolean isAdmin, List<UserPermission> permissions) {
+	public User(ApiUser user, 
+				Optional<Organization> org, 
+				Boolean isAdmin, 
+				Collection<OrganizationRole> roles) {
 		super();
 		this.id = user.getInternalId().toString();
 		this.org = org;
@@ -25,7 +31,8 @@ public class User {
 		// Note: we assume a user's email and login username are the same thing.
 		this.email = user.getLoginEmail();
 		this.isAdmin = isAdmin;
-		this.permissions = permissions;
+		this.permissions = new ArrayList<>(permissions);
+		this.roles =
 	}
 
 	public String getId() {

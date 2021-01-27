@@ -4,6 +4,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map; 
 import java.util.HashMap; 
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.client.Client;
@@ -76,6 +78,18 @@ public class OktaServiceImpl implements OktaService {
                 .setProfileProperties(userProfileMap)
                 .setGroups(group.getId())
                 .buildAndCreate(_client);
+    }
+
+    public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role) {
+        String groupName = generateGroupName(externalId, role);
+        GroupList groups = _client.listGroups(groupName, null, null);
+        if (!groups.iterator().hasNext()) {
+            throw new IllegalGraphqlArgumentException("Cannot get usernames for nonexistent Okta group");
+        }
+        Group group = groups.single();
+        return group.listUsers().stream()
+                .map(u -> u.getProfile().getEmail())
+                .collect(Collectors.toList());
     }
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {

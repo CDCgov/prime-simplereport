@@ -40,7 +40,6 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String lastName,
             String suffix,
             String email,
-            // may want to replace with an Organization object in the future
             String organizationExternalID
                 ) {
         _us.assertEmailAvailable(email);
