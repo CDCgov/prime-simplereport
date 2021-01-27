@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security,local
+  profiles.include: no-security,no-okta-mgmt,local
   datasource:
     url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
   liquibase:
@@ -18,6 +18,9 @@ logging:
     # org.hibernate.type: TRACE
     # Always have our own debug logging turned on in tests:
     gov.cdc.usds: DEBUG
+simple-report:
+  authorization:
+    role-prefix: "SR-UNITTEST-TENANT:"
 simple-report-initialization:
   organization:
     org-name: Dis Organization

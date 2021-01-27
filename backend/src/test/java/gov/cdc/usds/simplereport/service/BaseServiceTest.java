@@ -1,13 +1,19 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import java.util.Set;
 import java.util.HashSet;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.function.Executable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
@@ -57,6 +63,8 @@ public abstract class BaseServiceTest<T> {
     private OktaClientProperties _oktaClientProperties;
 
     protected Client _oktaClient;
+
+    private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
     @BeforeEach
     protected void before() {
@@ -112,5 +120,10 @@ public abstract class BaseServiceTest<T> {
 
     protected void reset() {
         _truncator.truncateAll();
+    }
+
+    protected static void assertSecurityError(Executable e) {
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 }
