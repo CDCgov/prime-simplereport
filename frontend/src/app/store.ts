@@ -22,6 +22,7 @@ const initialState = {
     lastName: "",
     suffix: "",
     email: "",
+    permissions: [],
   },
 };
 
