@@ -23,6 +23,7 @@ const initialState = {
     suffix: "",
     email: "",
     permissions: [],
+    roleDescription: "",
   },
 };
 
