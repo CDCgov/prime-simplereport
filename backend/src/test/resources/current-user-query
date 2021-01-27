@@ -6,6 +6,7 @@
     lastName
     suffix
     email
+    permissions
     organization {
       testingFacility {
         name

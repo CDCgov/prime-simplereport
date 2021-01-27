@@ -6,12 +6,23 @@ mutation addUser(
     $email: String!,
     $organizationExternalId: String!,
     ){
-  addPatient(
+  addUser(
     firstName: $firstName
     middleName: $middleName
     lastName: $lastName
     suffix: $suffix
     email: $email
     organizationExternalId: $organizationExternalId
-  )
+  ) {
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      organization {
+        name
+        externalId
+      }
+    }
 }

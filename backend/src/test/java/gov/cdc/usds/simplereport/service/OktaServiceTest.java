@@ -1,10 +1,11 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 
 import java.util.Set;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.okta.sdk.resource.user.User;
@@ -47,6 +48,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         return USERNAMES;
     }
 
+    @Disabled
     @Test
     public void createOrganizationAndUser() {
 
@@ -78,6 +80,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         assertTrue(userInExpectedGroup);
     }
 
+    @Disabled
     @Test
     public void updateUser() {
 
@@ -112,6 +115,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         assertFalse(oldUserExists);
     }
 
+    @Disabled
     @Test
     public void getOrganizationExternalIdForUser() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
@@ -120,6 +124,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         assertEquals(_service.getOrganizationExternalIdForUser(CHARLES.getUsername()),GHI.getExternalId());
     }
 
+    @Disabled
     @Test
     public void createUser_duplicateUsernames() {
         _service.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
@@ -142,6 +147,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         assertFalse(duplicateUserExists);
     }
 
+    @Disabled
     @Test
     public void createOrganization_duplicateExternalIds() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
