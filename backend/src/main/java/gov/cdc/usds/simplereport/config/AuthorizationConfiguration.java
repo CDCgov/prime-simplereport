@@ -91,6 +91,16 @@ public class AuthorizationConfiguration {
     }
 
     /**
+     * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "SEARCH_PATIENTS" + ")")
+    public @interface RequirePermissionSearchPatients {
+    }
+
+    /**
      * Require the current user to have the {@link UserPermission#START_TEST}
      * permission.
      */

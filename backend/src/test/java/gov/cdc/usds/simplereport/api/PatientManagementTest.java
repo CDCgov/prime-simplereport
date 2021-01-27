@@ -9,8 +9,6 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +63,22 @@ public class PatientManagementTest extends BaseApiTest {
     }
 
     @Test
+    public void createPatient_adminUser_ok() throws Exception {
+        useOrgAdmin();
+        String firstName = "Sansa";
+        doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+    }
+
+    @Test
+    public void createPatient_entryUser_fail() throws Exception {
+        useOrgEntryOnly();
+        String firstName = "Sansa";
+        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME",
+                "notbitter");
+        assertGraphQLOutcome(mutandem.readTree(), ACCESS_ERROR);
+    }
+
+    @Test
     public void failsOnInvalidPhoneNumber() throws Exception {
         GraphQLResponse resp = executeAddPersonMutation("a", "b", "12/29/2020", "d", "e");
         JsonNode errors = resp.readTree().get("errors");
@@ -88,21 +102,5 @@ public class PatientManagementTest extends BaseApiTest {
 
     private JsonNode fetchPatientsWithFacility() {
         return (JsonNode) runQuery("person-with-facility-query").get("patients");
-    }
-
-    private GraphQLResponse executeAddPersonMutation(
-            String firstName,
-            String lastName,
-            String birthDate,
-            String phone,
-            String lookupId
-    ) throws IOException {
-        ObjectNode variables = JsonNodeFactory.instance.objectNode()
-                .put("firstName", firstName)
-                .put("lastName", lastName)
-                .put("birthDate", birthDate)
-                .put("telephone", phone)
-                .put("lookupId", lookupId);
-        return _template.perform("add-person", variables);
     }
 }

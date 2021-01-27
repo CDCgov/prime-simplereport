@@ -41,7 +41,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     void whoami_entryOnlyUser_okPermissions() {
         useOrgEntryOnly();
         Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.SUBMIT_TEST,
-                UserPermission.UPDATE_TEST, UserPermission.READ_PATIENT_LIST);
+                UserPermission.UPDATE_TEST, UserPermission.SEARCH_PATIENTS);
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals(expected, extractPermissionsFromUser(who));

@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
@@ -221,5 +222,17 @@ public abstract class BaseApiTest {
         } else {
             assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
         }
+    }
+
+    protected GraphQLResponse executeAddPersonMutation(String firstName, String lastName, String birthDate,
+            String phone, String lookupId)
+            throws IOException {
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+                .put("firstName", firstName)
+                .put("lastName", lastName)
+                .put("birthDate", birthDate)
+                .put("telephone", phone)
+                .put("lookupId", lookupId);
+        return _template.perform("add-person", variables);
     }
 }
