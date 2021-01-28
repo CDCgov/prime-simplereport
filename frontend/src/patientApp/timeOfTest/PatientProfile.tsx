@@ -1,17 +1,17 @@
-import moment from 'moment';
+import moment from "moment";
 
-import { formatFullName } from '../../app/utils/user';
-import { formatAddress } from '../../app/utils/address';
-import { capitalizeText } from '../../app/utils/text';
+import { formatFullName } from "../../app/utils/user";
+import { formatAddress } from "../../app/utils/address";
+import { capitalizeText } from "../../app/utils/text";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
-} from '../../app/constants';
+} from "../../app/constants";
 
-import Button from '../../app/commonComponents/Button';
-import React, { useState } from 'react';
-import { Redirect } from 'react-router';
+import Button from "../../app/commonComponents/Button";
+import React, { useState } from "react";
+import { Redirect } from "react-router";
 
 interface Props {
   patient: any;
@@ -29,9 +29,9 @@ const PatientProfile = (props: Props) => {
   const gender = GENDER_VALUES.find((val) => val.value === props.patient.gender)
     ?.label;
 
-  const newLineSpan = ({ text = '' }) => {
+  const newLineSpan = ({ text = "" }) => {
     return text
-      .split('\n')
+      .split("\n")
       .map((str) => <span className="display-block">{str}</span>);
   };
 
@@ -43,7 +43,7 @@ const PatientProfile = (props: Props) => {
     state: props.patient.state,
     zipCode: props.patient.zipCode,
   });
-  const notProvided = 'Not provided';
+  const notProvided = "Not provided";
 
   const savePatientAnswers = () => {
     setNextPage(true);
@@ -60,8 +60,8 @@ const PatientProfile = (props: Props) => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-confirmation',
-          state: { page: 'symptoms' },
+          pathname: "/patient-info-confirmation",
+          state: { page: "symptoms" },
         }}
       />
     );
@@ -86,7 +86,7 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">Date of birth</h3>
         <p>
           {props.patient.birthDate
-            ? moment(props.patient.birthDate).format('MM/DD/yyyy')
+            ? moment(props.patient.birthDate).format("MM/DD/yyyy")
             : notProvided}
         </p>
         <h3 className="font-heading-sm">Phone number</h3>
