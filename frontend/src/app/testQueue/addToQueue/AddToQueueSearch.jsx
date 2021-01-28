@@ -161,30 +161,30 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestDate,
       priorTestType,
     },
-    createOrUpdate = 'create'
+    createOrUpdate = "create"
   ) => {
     updateSuggestions([]);
     setQueryString("");
     trackAddPatientToQueue();
     let callback;
     const variables = {
-        patientId: patient.internalId,
-        noSymptoms,
-        symptoms,
-        symptomOnset,
-        pregnancy,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-      };
-    if (createOrUpdate === 'create') {
+      patientId: patient.internalId,
+      noSymptoms,
+      symptoms,
+      symptomOnset,
+      pregnancy,
+      firstTest,
+      priorTestDate,
+      priorTestType,
+      priorTestResult,
+    };
+    if (createOrUpdate === "create") {
       callback = addPatientToQueue;
       variables.facilityId = facilityId;
     } else {
       callback = updateAoe;
     }
-    return callback({variables})
+    return callback({ variables })
       .then((res) => {
         let { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
@@ -194,7 +194,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
-        if (createOrUpdate === 'create') {
+        if (createOrUpdate === "create") {
           const patientLinkId = res.data.addPatientToQueue;
           return patientLinkId;
         }

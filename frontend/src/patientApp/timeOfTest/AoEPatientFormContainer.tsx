@@ -87,7 +87,7 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
   const setProfileView = () => {
     window.scrollTo(0, 0);
     setProfileEdit(!isProfileEdit);
-  }
+  };
 
   return (
     <main className="patient-app patient-app--form padding-bottom-4">

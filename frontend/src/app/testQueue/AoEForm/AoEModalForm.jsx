@@ -53,7 +53,7 @@ const AoEModalForm = ({
   const chooseModalView = async (view) => {
     if (view === "smartphone") {
       const patientLinkId = await saveCallback(patientResponse);
-      setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`)
+      setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`);
     }
     setModalView(view);
   };
@@ -109,6 +109,7 @@ const AoEModalForm = ({
         buttons={modalViewValues}
         selectedRadio={modalView}
         className="margin-top-205"
+        hideOptional={true}
       />
       {modalView === "smartphone" && (
         <>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import Button from '../../commonComponents/Button';
-import AoeModalForm from '../AoEForm/AoEModalForm';
-import { displayFullName } from '../../utils';
+import React, { useState } from "react";
+import Button from "../../commonComponents/Button";
+import AoeModalForm from "../AoEForm/AoEModalForm";
+import { displayFullName } from "../../utils";
 
 interface SearchResultsProps {
   patients: any[]; //TODO TYPE: Patient
@@ -21,7 +21,7 @@ const SearchResults = ({
   const [dialogPatient, setDialogPatient] = useState(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
 
-  const canAddToTestQueue = (patientId = '') => {
+  const canAddToTestQueue = (patientId = "") => {
     return patientsInQueue.indexOf(patientId) === -1;
   };
   let results;
@@ -60,7 +60,7 @@ const SearchResults = ({
                         }}
                       />
                     ) : (
-                      'Test in progress'
+                      "Test in progress"
                     )}
                   </td>
                 </tr>
@@ -82,7 +82,7 @@ const SearchResults = ({
             setDialogPatient(null);
           }}
           saveCallback={(a: any) =>
-            onAddToQueue(dialogPatient, a, canAddToQueue ? 'create' : 'update')
+            onAddToQueue(dialogPatient, a, canAddToQueue ? "create" : "update")
           }
           facilityId={facilityId}
           canAddToTestQueue={canAddToQueue}
