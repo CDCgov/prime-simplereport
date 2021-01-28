@@ -27,7 +27,8 @@ public class TestOrder extends BaseTestInfo {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_answers_id" )
 	private PatientAnswers askOnEntrySurvey;
-
+	@Column(name = "patient_answers_id", columnDefinition = "uuid", insertable = false, updatable = false)
+	private UUID patientAnswersId;    // id used directly when copying to TestEvent.
 	@Column
 	private LocalDate dateTested; // REMOVE THIS COLUMN
 	@Column
@@ -149,7 +150,7 @@ public class TestOrder extends BaseTestInfo {
 	}
 
     public UUID getPatientAnswersId() {
-        return (askOnEntrySurvey != null) ? askOnEntrySurvey.getInternalId() : null;
+        return patientAnswersId;
     }
 
     // this will eventually be used when corrections are put back into the queue to be corrected
