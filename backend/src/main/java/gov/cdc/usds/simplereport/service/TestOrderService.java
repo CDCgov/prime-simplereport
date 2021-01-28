@@ -25,7 +25,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import gov.cdc.usds.simplereport.service.PatientLinkService;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device
