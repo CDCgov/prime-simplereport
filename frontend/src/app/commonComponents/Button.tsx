@@ -1,31 +1,31 @@
-import React from 'react';
-import classnames from 'classnames';
+import React from "react";
+import classnames from "classnames";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import '../../styles/fontAwesome';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "../../styles/fontAwesome";
 
 interface Props {
-  type?: 'button' | 'submit';
+  type?: "button" | "submit";
   icon?: any;
   label?: string;
   children?: React.ReactNode;
   disabled?: boolean;
   variant?:
-    | 'accent-cool'
-    | 'accent-warm'
-    | 'base'
-    | 'big'
-    | 'inverse'
-    | 'outline'
-    | 'unstyled'
-    | 'secondary';
+    | "accent-cool"
+    | "accent-warm"
+    | "base"
+    | "big"
+    | "inverse"
+    | "outline"
+    | "unstyled"
+    | "secondary";
   className?: string;
   id: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
 const Button = ({
-  type = 'button',
+  type = "button",
   icon,
   disabled,
   label,
@@ -39,9 +39,9 @@ const Button = ({
     type={type}
     disabled={disabled}
     className={classnames(
-      'usa-button',
+      "usa-button",
       variant && `usa-button--${variant}`,
-      disabled && 'usa-button-disabled',
+      disabled && "usa-button-disabled",
       className
     )}
     id={id}

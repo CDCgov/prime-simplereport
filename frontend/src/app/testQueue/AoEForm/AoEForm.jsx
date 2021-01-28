@@ -390,7 +390,11 @@ const AoEForm = ({
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      <Button id="aoe-form-save-button" label={saveButtonText} type={"submit"} />
+      <Button
+        id="aoe-form-save-button"
+        label={saveButtonText}
+        type={"submit"}
+      />
     </div>
   );
 
