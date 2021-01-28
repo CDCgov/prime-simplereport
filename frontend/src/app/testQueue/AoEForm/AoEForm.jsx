@@ -18,6 +18,7 @@ import { useQuery } from "@apollo/client";
 import moment from "moment";
 import "./AoEForm.scss";
 import { Redirect } from "react-router";
+import classnames from "classnames";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -389,8 +390,15 @@ const AoEForm = ({
   };
 
   const buttonGroup = (
-    <div className="sr-time-of-test-buttons">
-      <Button label={saveButtonText} type={"submit"} />
+    <div className="display-flex flex-justify-end">
+      <Button
+        label={saveButtonText}
+        type={"submit"}
+        className={classnames(
+          !isModal && "margin-right-0",
+          isModal && "margin-right-205"
+        )}
+      />
     </div>
   );
 
@@ -448,7 +456,12 @@ const AoEForm = ({
             />
           </FormGroup>
         )}
-        <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
+        <div
+          className={classnames(
+            "margin-top-4",
+            isModal && "padding-top-205 border-top border-base-lighter margin-x-neg-205"
+          )}
+        >
           {buttonGroup}
         </div>
       </form>
