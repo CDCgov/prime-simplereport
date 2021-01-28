@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 public class TestOrder extends BaseTestInfo {
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "patient_answers_id" )
+	@JoinColumn(name = "patient_answers_id")
 	private PatientAnswers askOnEntrySurvey;
 	@Column(name = "patient_answers_id", columnDefinition = "uuid", insertable = false, updatable = false)
 	private UUID patientAnswersId;    // id used directly when copying to TestEvent.
@@ -62,6 +62,10 @@ public class TestOrder extends BaseTestInfo {
 
 	public void setAskOnEntrySurvey(PatientAnswers askOnEntrySurvey) {
 		this.askOnEntrySurvey = askOnEntrySurvey;
+		// the ID field is a shortcut for TestEvents are created.
+		// The field is read-only and loaded from the db; however, when we create
+		// a new TestOrder, we must set it ourselves.
+		this.patientAnswersId = askOnEntrySurvey.getInternalId();
 	}
 
 	public PatientAnswers getAskOnEntrySurvey() {

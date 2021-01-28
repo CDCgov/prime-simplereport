@@ -19,6 +19,7 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -68,6 +69,9 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         assertEquals(startingOrder.getInternalId(), startingEvent.getTestOrderId());
         assertEquals(TestCorrectionStatus.ORIGINAL ,startingEvent.getCorrectionStatus());
         assertNull(startingEvent.getPriorCorrectedTestEventId());
+        assertNotNull(startingOrder.getPatientAnswersId());
+        assertNotNull(startingEvent.getPatientAnswersId());
+        assertEquals(startingOrder.getPatientAnswersId().toString(), startingEvent.getPatientAnswersId().toString());
 
         // repo level test. Higher level tests done in TestOrderServiceTest
         String reason = "Unit Test Correction " + LocalDateTime.now().toString();

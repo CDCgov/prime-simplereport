@@ -27,7 +27,7 @@ public class TestEvent extends BaseTestInfo {
 	@Type(type = "jsonb")
 	private Provider providerData;
 
-	@Column(columnDefinition = "uuid", insertable = false, updatable = false)
+	@Column(columnDefinition = "uuid")
 	private UUID patientAnswersId;
 
 	@ManyToOne(optional = false)
