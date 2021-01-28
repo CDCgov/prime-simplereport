@@ -161,4 +161,8 @@ public class TestOrder extends BaseTestInfo {
 	public void setCorrectionStatus(TestCorrectionStatus newCorrectionStatus) {
 		super.setCorrectionStatus(newCorrectionStatus);
 	}
+
+	public void setReasonForCorrection(String reasonForCorrection) {
+		super.setReasonForCorrection(reasonForCorrection);
+	}
 }

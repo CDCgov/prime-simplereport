@@ -89,7 +89,8 @@ public abstract class BaseTestInfo extends AuditedEntity
 		return result;
 	}
 
-	// FYI Setters shouldn't be allowed in TestEvent, but these are inherited.
+	// FYI Setters shouldn't be allowed in TestEvent, so they are always *protected* in this base class
+	// and exposed only in TestOrder.
 	protected void setTestResult(TestResult newResult) {
 		result = newResult;
 	}
@@ -110,7 +111,7 @@ public abstract class BaseTestInfo extends AuditedEntity
 		return reasonForCorrection;
 	}
 
-	public void setReasonForCorrection(String reasonForCorrection) {
+	protected void setReasonForCorrection(String reasonForCorrection) {
 		this.reasonForCorrection = reasonForCorrection;
 	}
 
