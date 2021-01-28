@@ -80,7 +80,7 @@ public class Translators {
     }
 
     public static UUID parseUUID(String uuid) {
-        if (uuid == null || uuid == "") {
+        if (uuid == null || "".equals(uuid)) {
             return null;
         }
         try {

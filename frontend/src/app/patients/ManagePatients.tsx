@@ -107,7 +107,6 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   {` New ${PATIENT_TERM_CAP}`}
                 </NavLink>
               ) : null}
-
             </div>
             <div className="usa-card__body">
               {error ? (
