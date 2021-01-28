@@ -34,6 +34,7 @@ interface Props {
   inputMode?: string;
   ariaDescribedBy?: string;
   hintText?: string;
+  hideOptional?: boolean;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -56,6 +57,7 @@ export const TextInput = ({
   inputMode,
   ariaDescribedBy,
   hintText,
+  hideOptional,
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -80,7 +82,14 @@ export const TextInput = ({
         htmlFor={widgetId}
         aria-describedby={ariaDescribedBy}
       >
-        {required ? <Required label={label} /> : <Optional label={label} />}
+        {required ? (
+          <Required label={label} />
+        ) : (
+          <Optional
+            className={hideOptional ? "display-none" : ""}
+            label={label}
+          />
+        )}
       </label>
       {validationStatus === "error" && (
         <span className="usa-error-message" id={errorId} role="alert">
