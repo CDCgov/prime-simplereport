@@ -20,7 +20,7 @@ interface Props {
     | "unstyled"
     | "secondary";
   className?: string;
-  id: string;
+  id?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
