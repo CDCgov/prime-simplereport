@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -23,8 +24,11 @@ public class User {
         this.permissions = new ArrayList<>();
         this.isAdmin = isAdmin;
         if (orgwrapper.isPresent()) {
-            permissions.addAll(orgwrapper.get().getGrantedPermissions());
-            roleDescription = orgwrapper.get().getEffectiveRole().get().getDescription();
+            CurrentOrganizationRoles orgRoles = orgwrapper.get();
+            permissions.addAll(orgRoles.getGrantedPermissions());
+            roleDescription = orgRoles.getEffectiveRole()
+                    .orElseThrow(MisconfiguredUserException::new)
+                    .getDescription();
         }
         if (isAdmin) {
             if (roleDescription == null) {
@@ -32,6 +36,8 @@ public class User {
             } else {
                 roleDescription = roleDescription + " (SU)";
             }
+        } else if (roleDescription == null) {
+            roleDescription = "Misconfigured user";
         }
     }
 
