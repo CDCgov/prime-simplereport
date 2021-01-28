@@ -40,7 +40,7 @@ const PatientUpload = ({ onSuccess }: Props) => {
         <Alert
           type="success"
           title={`Patients uploaded`}
-          body="Successfully uploaded patients."
+          body={response.data.uploadPatients}
         />
       );
       onSuccess();

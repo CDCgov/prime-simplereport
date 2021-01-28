@@ -62,7 +62,7 @@ public class UploadService {
         }
     }
 
-    @AuthorizationConfiguration.RequirePermissionExportTestEvent
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     @Transactional
     public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
         final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
