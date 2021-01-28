@@ -1,10 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -23,31 +23,29 @@ public class User {
         this.org = orgwrapper.map(CurrentOrganizationRoles::getOrganization);
         this.permissions = new ArrayList<>();
         this.isAdmin = isAdmin;
-        if (orgwrapper.isPresent()) {
-            CurrentOrganizationRoles orgRoles = orgwrapper.get();
-            permissions.addAll(orgRoles.getGrantedPermissions());
-            roleDescription = orgRoles.getEffectiveRole()
-                    .orElseThrow(MisconfiguredUserException::new)
-                    .getDescription();
-        }
-        if (isAdmin) {
-            if (roleDescription == null) {
-                roleDescription = "Super Admin";
-            } else {
-                roleDescription = roleDescription + " (SU)";
-            }
-        } else if (roleDescription == null) {
-            roleDescription = "Misconfigured user";
-        }
+        Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(CurrentOrganizationRoles::getEffectiveRole);
+        this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
+        effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
     }
 
-    public User(ApiUser user, Optional<Organization> org, Boolean isAdmin, List<UserPermission> permissions) {
-		super();
+    public User(ApiUser user, Optional<Organization> org, boolean isAdmin, Optional<OrganizationRole> role) {
         this.wrapped = user;
-		this.org = org;
-		this.isAdmin = isAdmin;
-		this.permissions = permissions;
-	}
+        this.org = org;
+        this.isAdmin = isAdmin;
+        this.permissions = new ArrayList<>();
+        role.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
+        this.roleDescription = buildRoleDescription(role, isAdmin);
+
+    }
+
+    private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
+        if (role.isPresent()) {
+            String desc = role.get().getDescription();
+            return isAdmin ? desc + " (SU)" : desc;
+        } else {
+            return isAdmin ? "Super Admin" : "Misconfigured user";
+        }
+    }
 
 	public String getId() {
         return wrapped.getInternalId().toString();
