@@ -19,7 +19,7 @@ public class Translators {
 	private static DateTimeFormatter ISO_INSTANT_FORMATTER = DateTimeFormatter.ISO_INSTANT;
 
 	public static final LocalDate parseUserDate(String userSuppliedDateString) {
-		if (userSuppliedDateString == null) {
+		if (userSuppliedDateString == null || userSuppliedDateString.trim().isEmpty()) {
 			return null;
 		}
 		if (userSuppliedDateString.contains("/")) {
