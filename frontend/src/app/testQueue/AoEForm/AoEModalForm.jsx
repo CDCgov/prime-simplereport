@@ -75,16 +75,12 @@ const AoEModalForm = ({
       isOpen={true}
       style={{
         content: {
-          inset: "3em auto auto auto",
-          overflow: "auto",
           maxHeight: "90vh",
-          width: "50%",
-          minWidth: "20em",
-          marginRight: "50%",
-          transform: "translate(50%, 0)",
+          width: "38em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Time of Test Questions"
     >
       <div className="display-flex flex-justify">
