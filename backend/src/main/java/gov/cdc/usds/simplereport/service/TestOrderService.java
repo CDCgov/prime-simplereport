@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.Date;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +34,7 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 @Service
 @Transactional(readOnly = false)
 public class TestOrderService {
+    private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private OrganizationService _os;
   private PersonService _ps;
   private DeviceTypeService _dts;
@@ -60,10 +64,16 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  public List<TestOrder> getTestResults(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+  public List<TestOrder> getTestResults(UUID facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
     return _repo.getTestResults(fac.getOrganization(), fac);
   }
+
+    @Transactional(readOnly = true)
+    public List<TestEvent> getTestEventsResults(String facilityId) {
+        Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+        return _terepo.getTestEventResults(fac.getOrganization(), fac);
+    }
 
   @Transactional(readOnly = true)
   public List<TestEvent> getTestResults(Person patient) {
@@ -190,6 +200,58 @@ public class TestOrderService {
   public int cancelAll() {
 	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
   }
+
+    @Transactional
+    public TestEvent correctTestMarkAsError(String testEventIdStr, String reasonForCorrection) {
+        // The client sends us a TestEvent, we need to map back to the Order.
+        UUID testEventId = UUID.fromString(testEventIdStr);
+        Optional<TestEvent> loadExistingEvent = _terepo.findById(testEventId);
+        if (loadExistingEvent.isEmpty()) {
+            // should this throw?
+            LOG.error("Failed to load TestEvent by id {}", testEventId);
+            return null;
+        }
+        TestEvent event = loadExistingEvent.get();
+        if (event.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+            LOG.error("TestEvent to be corrected must be in the 'TestCorrectionStatus.ORIGINAL' testEventId {}", testEventId);
+            return null;
+        }
+
+        // todo: should we verify reasonForCorrection is NOT empty? Do we trim()?
+
+        TestOrder order = _repo.findByTestEventId(event.getOrganization(), testEventId);
+        if (order == null) {
+            LOG.error("TestEvent: {} could not load the parent order", testEventId);
+            return null;
+        }
+
+        if (!testEventId.equals(order.getTestEventId())) {
+            LOG.error("TestEvent: parent order {} points to a different TestEvent. Order's TestEventId {} expected {}",
+                    order.getInternalId(), order.getTestEventId(), testEventId);
+            return null;
+        }
+
+        // generate a duplicate test_event that just has a status of REMOVED and the reason
+        TestEvent newRemoveEvent = new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
+        _terepo.save(newRemoveEvent);
+
+        // order having reason text is way more useful when we allow actual corrections not just deletes.
+        order.setReasonForCorrection(reasonForCorrection);
+        order.setTestEvent(newRemoveEvent);
+
+        // order.setOrderStatus(OrderStatus.CANCELED); NO: this makes it disappear.
+
+        // We currently don't do anything special with this CorrectionStatus on the order, but in the next
+        // refactor, we will set this to TestCorrectionStatus.CORRECTED and it will go back into the queue to
+        // be corrected.
+        order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+
+        // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to fix the
+        // TestOrder.dateTestedBackdate field, it may not be NULL and will override the correction date!
+        _repo.save(order);
+
+        return newRemoveEvent;
+    }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
 	return new IllegalGraphqlArgumentException("No active test order was found for that patient");

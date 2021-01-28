@@ -1,11 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,14 +108,40 @@ public class TestOrderServiceTest extends BaseServiceTestOrgUser<TestOrderServic
 
         // Count queries with one order
         hibernateQueryInterceptor.startQueryCount();
-        _service.getTestResults(facility.getInternalId().toString());
+        _service.getTestResults(facility.getInternalId());
         assertEquals(7, hibernateQueryInterceptor.getQueryCount());
 
         // Count queries with three order
         TestEvent _e1 = _dataFactory.createTestEvent(p, facility);
         TestEvent _e2 = _dataFactory.createTestEvent(p, facility);
         hibernateQueryInterceptor.startQueryCount();
-        _service.getTestResults(facility.getInternalId().toString());
+        _service.getTestResults(facility.getInternalId());
         assertEquals(7, hibernateQueryInterceptor.getQueryCount());
+    }
+
+    @Test
+    public void correctionsTest() {
+        Organization org = _organizationService.getCurrentOrganization();
+        Facility facility = _organizationService.getFacilities(org).get(0);
+        Person p = _dataFactory.createFullPerson(org);
+        TestEvent _e = _dataFactory.createTestEvent(p, facility);
+        TestOrder _o = _e.getTestOrder();
+
+        String reasonMsg = "Testing correction marking as error " + LocalDateTime.now().toString();
+        TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId().toString(), reasonMsg);
+        assertNotNull(deleteMarkerEvent);
+
+        assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
+        assertEquals(reasonMsg, deleteMarkerEvent.getReasonForCorrection());
+
+        assertEquals(_e.getTestOrder().getInternalId().toString(), _e.getTestOrderId().toString());
+
+        // verify the original order was updated
+        List<TestOrder> savedOrders = _service.getTestResults(facility.getInternalId());
+        assertEquals(1, savedOrders.size());
+        TestOrder onlySavedOrder = savedOrders.get(0);
+        assertEquals(reasonMsg, onlySavedOrder.getReasonForCorrection());
+        assertEquals(deleteMarkerEvent.getInternalId().toString(), onlySavedOrder.getTestEventId().toString());
+        assertEquals(TestCorrectionStatus.REMOVED, onlySavedOrder.getCorrectionStatus());
     }
 }

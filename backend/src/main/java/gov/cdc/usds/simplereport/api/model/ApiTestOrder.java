@@ -86,4 +86,10 @@ public class ApiTestOrder {
     public Date getDateTested() {
         return order.getDateTested();
     }
+
+    public String getCorrectionStatus() { return order.getCorrectionStatus().toString(); }
+
+    public String getReasonForCorrection() {
+        return order.getReasonForCorrection() == null ? "" : order.getReasonForCorrection();
+    }
 }

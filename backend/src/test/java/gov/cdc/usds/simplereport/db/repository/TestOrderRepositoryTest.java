@@ -67,11 +67,21 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         TestOrder order = _repo.save(new TestOrder(hoya, site));
         assertNotNull(order);
         flush();
-        TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site));
+        TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site, order));
         assertNotNull(ev);
         order.setTestEvent(ev);
         _repo.save(order);
         flush();
+
+        assertNotNull(_repo.findByTestEventId(gtown, ev.getInternalId()));
+        assertEquals(ev.getInternalId(), order.getTestEventId());
+
+        // LocalDate.now() makes it random.
+        String unitTestCorrectionStr = "Correction unit test: " + LocalDate.now().toString();
+        order.setReasonForCorrection(unitTestCorrectionStr);
+        _repo.save(order);
+        flush();
+        assertEquals(unitTestCorrectionStr, _repo.findByTestEventId(gtown, ev.getInternalId()).getReasonForCorrection());
     }
 
     @Test
@@ -120,7 +130,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         TestOrder order1 = new TestOrder(patient0, site);
         _repo.save(order1);
         flush();
-        TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site));
+        TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site, order1));
         order1.setTestEvent(didit);
         order1.setResult(didit.getResult());
         order1.markComplete();
@@ -191,6 +201,10 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         order.setTestEvent(event);
         order.markComplete();
         _repo.save(order);
+        flush();
+        TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
+        assertNotNull(lookuporder);
+        assertEquals(lookuporder.getInternalId(), order.getInternalId());
     }
 
     private static void pause() {

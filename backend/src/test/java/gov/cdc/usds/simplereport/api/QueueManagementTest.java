@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 
@@ -81,7 +82,7 @@ public class QueueManagementTest extends BaseApiTest {
         TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
         assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
         assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
-        assertEquals(updatedTestOrder.getTestEvent(), null);
+        assertNull(updatedTestOrder.getTestEventId());
     }
 
     @Test

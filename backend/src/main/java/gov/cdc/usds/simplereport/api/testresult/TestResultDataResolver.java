@@ -81,4 +81,8 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
     public Date getDateTested(TestEvent testEvent) {
         return testEvent.getTestOrder().getDateTested();
     }
+
+    public String getCorrectionStatus(TestEvent testEvent) { return testEvent.getCorrectionStatus().toString(); }
+
+    public String getReasonForCorrection(TestEvent testEvent) { return testEvent.getReasonForCorrection(); }
 }

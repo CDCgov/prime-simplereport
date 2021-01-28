@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 /**
@@ -23,7 +24,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
  * DataHubUploaderService.CSV_API_VERSION. This is only used for debugging issues, but it's a good practice.
  */
 public class TestEventExport {
-
+	public static final String CSV_API_VERSION = "27Jan2021";  // last time we changed something
 	private TestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
@@ -39,7 +40,6 @@ public class TestEventExport {
 		this.facility = testEvent.getFacility();
 	}
 
-	private String testResultStatusFinal = "F";
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
@@ -218,9 +218,30 @@ public class TestEventExport {
 		return testEvent.getInternalId().toString();
 	}
 
+	// 27Jan2021 Added
+	@JsonProperty("Corrected_result_ID")
+	public String getCorrectedResultId() {
+		if (testEvent.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+			return testEvent.getPriorCorrectedTestEventId().toString();
+		}
+		return "";
+	}
+
+	// 27Jan2021 Updated to handle deleted tests
 	@JsonProperty("Test_result_status")
 	public String getTestResultStatus() {
-		return testResultStatusFinal;
+		// F Final results
+		// X No results available; Order canceled
+		// C Corrected, final (not yet supported
+		switch(testEvent.getCorrectionStatus()) {
+			case REMOVED:
+				return "X";
+			case CORRECTED:
+				return "C";
+			case ORIGINAL:
+			default:
+				return "F";
+		}
 	}
 
 	@JsonProperty("Test_result_code")
@@ -433,4 +454,5 @@ public class TestEventExport {
 		// order_test_date = test_date for antigen testing
 		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
 	}
+
 }
