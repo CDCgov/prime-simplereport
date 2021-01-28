@@ -144,7 +144,7 @@ public class OktaServiceImpl implements OktaService {
     }
 
     private String generateGroupDescription(String orgName, OrganizationRole role) {
-        return String.format("%s - %s", orgName, role.getDescription());
+        return String.format("%s - %ss", orgName, role.getDescription());
     }
 
     private String generateRoleSuffix(OrganizationRole role) {
