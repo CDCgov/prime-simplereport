@@ -26,9 +26,6 @@ public class User {
             permissions.addAll(orgwrapper.get().getGrantedPermissions());
             roleDescription = orgwrapper.get().getEffectiveRole().get().getDescription();
         }
-        if (isAdmin) {
-            roleDescription = "Super Admin";
-        }
     }
 
     public User(ApiUser user, Optional<Organization> org, Boolean isAdmin, List<UserPermission> permissions) {
