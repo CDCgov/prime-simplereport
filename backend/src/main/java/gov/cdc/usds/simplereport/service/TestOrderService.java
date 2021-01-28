@@ -79,16 +79,9 @@ public class TestOrderService {
     return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  <<<<<<<HEAD
-
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
   public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
     TestOrder order = this.getTestOrder(id);
-=======
-
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
-    public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
-        TestOrder order = this.getTestOrder(id);
->>>>>>> main
 
     if (deviceId != null) {
       DeviceType deviceType = _dts.getDeviceType(deviceId);
