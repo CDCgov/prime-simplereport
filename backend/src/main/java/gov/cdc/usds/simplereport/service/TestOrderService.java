@@ -53,9 +53,9 @@ public class TestOrderService {
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
-}
+  }
 
-@AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTest
   public List<TestOrder> getQueue(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.fetchQueue(fac.getOrganization(), fac);
@@ -71,32 +71,33 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultList
   public List<TestEvent> getTestResults(Person patient) {
-      return _terepo.findAllByPatient(patient);
+    assertPatientInCurrentOrg(patient.getLookupId());
+    return _terepo.findAllByPatient(patient);
   }
 
-    @Transactional(readOnly = true)
-    public TestOrder getTestOrder(String id) {
-        Organization org = _os.getCurrentOrganization();
-        return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+  @Transactional(readOnly = true)
+  public TestOrder getTestOrder(String id) {
+    Organization org = _os.getCurrentOrganization();
+    return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
+    TestOrder order = this.getTestOrder(id);
+
+    if (deviceId != null) {
+        DeviceType deviceType = _dts.getDeviceType(deviceId);
+        order.setDeviceType(deviceType);
     }
 
-    @AuthorizationConfiguration.RequirePermissionUpdateTest
-    public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
-        TestOrder order = this.getTestOrder(id);
+    order.setResult(result == null? null :TestResult.valueOf(result));
 
-        if (deviceId != null) {
-            DeviceType deviceType = _dts.getDeviceType(deviceId);
-            order.setDeviceType(deviceType);
-        }
+    order.setDateTestedBackdate(dateTested);
 
-        order.setResult(result == null? null :TestResult.valueOf(result));
+    return _repo.save(order);
+  }
 
-        order.setDateTestedBackdate(dateTested);
-
-        return _repo.save(order);
-    }
-
-    @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -190,10 +191,17 @@ public class TestOrderService {
     _repo.save(order);
   }
 
+  private void assertPatientInCurrentOrg(String patientId) {
+    // Confirm patient is in current organization
+    if (_ps.getPatient(patientId, _os.getCurrentOrganization()) == null) {
+      throw new IllegalGraphqlArgumentException("No patient with that ID was found in this organization");
+    }
+  }      
+
   private TestOrder retrieveTestOrder(String patientId) {
-	Organization org = _os.getCurrentOrganization();
-	Person patient = _ps.getPatient(patientId, org);
-	return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
+    Organization org = _os.getCurrentOrganization();
+    Person patient = _ps.getPatient(patientId, org);
+    return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
