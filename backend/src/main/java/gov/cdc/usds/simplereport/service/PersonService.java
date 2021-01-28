@@ -57,7 +57,7 @@ public class PersonService {
         return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
     }
 
-    @AuthorizationConfiguration.RequirePermissionEditPatient
+    // NO PERMISSION CHECK (make sure the caller has one!)
     public Person getPatient(String id) {
         return getPatient(id, _os.getCurrentOrganization());
     }

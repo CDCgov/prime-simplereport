@@ -136,6 +136,16 @@ public abstract class BaseApiTest {
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     }
 
+    protected void setRoles(Set<OrganizationRole> roles) {
+        List<OrganizationRoles> orgRoles;
+        if (roles != null && !roles.isEmpty()) {
+            orgRoles = Collections.singletonList(new OrganizationRoles("DIS_ORG", roles));
+        } else {
+            orgRoles = Collections.emptyList();
+        }
+        when(_authService.findAllOrganizationRoles()).thenReturn(orgRoles);
+    }
+
     @BeforeEach
     public void setup() {
         truncateDb();

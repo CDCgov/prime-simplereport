@@ -66,7 +66,8 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
+  @AuthorizationConfiguration.RequirePermissionStartTest // Incorrect permission:
+                                                         // https://github.com/CDCgov/prime-simplereport/issues/677
   public List<TestOrder> getTestResults(UUID facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId);
     return _repo.getTestResults(fac.getOrganization(), fac);

@@ -1,15 +1,11 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Organization;
 
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
@@ -34,16 +30,7 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 	public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
 		Optional<CurrentOrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
-        Optional<Organization> currentOrg;
-        List<UserPermission> permissions = new ArrayList<>();
-        if (currentOrgRoles.isPresent()) {
-            CurrentOrganizationRoles orgRoles = currentOrgRoles.get();
-            currentOrg = Optional.of(orgRoles.getOrganization());
-            permissions.addAll(orgRoles.getGrantedPermissions());
-        } else {
-            currentOrg = Optional.empty();
-        }
 		Boolean isAdmin = _userService.isAdminUser(currentUser);
-        return new User(currentUser, currentOrg, isAdmin, permissions);
+        return new User(currentUser, currentOrgRoles, isAdmin);
 	}
 }
