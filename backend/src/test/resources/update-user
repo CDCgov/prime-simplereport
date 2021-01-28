@@ -1,0 +1,28 @@
+mutation updateUser(
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    $newEmail: String!,
+    $oldEmail: String!,
+    ){
+  updateUser(
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+    newEmail: $newEmail
+    oldEmail: $oldEmail
+  ) {
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      organization {
+        name
+        externalId
+      }
+    }
+}

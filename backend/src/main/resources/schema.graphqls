@@ -9,6 +9,19 @@ enum ResultValue {
   UNDETERMINED
 }
 
+enum UserPermission {
+  READ_PATIENT_LIST
+  READ_RESULT_LIST
+  EDIT_PATIENT
+  EDIT_FACILITY
+  EDIT_ORGANIZATION
+  SEARCH_PATIENTS
+  START_TEST
+  UPDATE_TEST
+  SUBMIT_TEST
+  EXPORT_TEST_EVENT
+}
+
 enum TestCorrectionStatus {
   ORIGINAL
   CORRECTED
@@ -21,6 +34,7 @@ type DeviceType {
   manufacturer: String
   model: String
   loincCode: String
+  swabType: String
 }
 type Patient {
   internalId: ID
@@ -81,6 +95,7 @@ type Provider {
 type Organization {
   internalId: ID
   name: String
+  externalId: String
   testingFacility: [Facility]
 }
 # When starting from the patient, take a more limited view
@@ -133,10 +148,11 @@ type User {
   id: ID
   firstName: String
   middleName: String
-  lastName: String
+  lastName: String!
   suffix: String
-  email: String
+  email: String!
   isAdmin: Boolean
+  permissions: [UserPermission!]!
   organization: Organization
 }
 
@@ -145,6 +161,7 @@ type Query {
   patients(facilityId: String): [Patient]
   patient(id: String!): Patient
   organization: Organization
+  organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
   whoami: User!
@@ -232,6 +249,23 @@ type Mutation {
     deviceTypes: [String]!
     defaultDevice: String!
   ): Organization
+  addUser(
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+    organizationExternalId: String!
+  ): User
+  updateUser(
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    newEmail: String!
+    # oldEmail serves as the unique identifier for the user to be updated
+    oldEmail: String!
+  ): User
   addPatient(
     facilityId: String
     lookupId: String
@@ -326,6 +360,7 @@ type Mutation {
     manufacturer: String!
     model: String!
     loincCode: String!
+    swabType: String!
   ): DeviceType
   updateDeviceType(
     id: String!
@@ -333,5 +368,6 @@ type Mutation {
     manufacturer: String
     model: String
     loincCode: String
+    swabType: String
   ): DeviceType
 }

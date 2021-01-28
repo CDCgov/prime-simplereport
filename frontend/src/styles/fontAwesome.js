@@ -3,6 +3,7 @@ import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowRight,
   faBook,
+  faCheckCircle,
   faComments,
   faDatabase,
   faEnvelope,
@@ -29,6 +30,7 @@ import {
 library.add(
   faArrowRight,
   faBook,
+  faCheckCircle,
   faComments,
   faDatabase,
   faEnvelope,

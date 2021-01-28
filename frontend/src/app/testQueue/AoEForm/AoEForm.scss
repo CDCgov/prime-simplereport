@@ -1,0 +1,19 @@
+div.usa-form-group--error {
+  .usa-form-group--error {
+    border-left-width: 0;
+    padding-left: 0;
+
+    @media screen and (min-width: 1024px) {
+      border-left-width: 0.25rem;
+      padding-left: 1rem;
+    }
+  }
+}
+
+.prime-checkboxes {
+  .usa-error-message {
+    + .usa-form-group--error {
+      margin-top: 0;
+    }
+  }
+}

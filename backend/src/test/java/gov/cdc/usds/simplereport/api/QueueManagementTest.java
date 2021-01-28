@@ -72,10 +72,12 @@ public class QueueManagementTest extends BaseApiTest {
         String orderId = o.getInternalId().toString();
         DeviceType d = _dataFactory.getGenericDevice();
         String deviceId = d.getInternalId().toString();
+        String dateTested = "2020-12-31T14:30:30Z";
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
                 .put("id", orderId)
                 .put("deviceId", deviceId)
-                .put("result", TestResult.POSITIVE.toString());
+                .put("result", TestResult.POSITIVE.toString())
+                .put("dateTested", dateTested);
 
         performQueueUpdateMutation(variables);
 
@@ -83,6 +85,13 @@ public class QueueManagementTest extends BaseApiTest {
         assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
         assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
         assertNull(updatedTestOrder.getTestEventId());
+        assertEquals(updatedTestOrder.getDateTested().toInstant().toString(), dateTested);
+
+        ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
+        assertEquals(orderId, singleQueueEntry.get("internalId").asText());
+        assertEquals(p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
+        assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());
+
     }
 
     @Test

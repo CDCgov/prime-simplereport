@@ -32,8 +32,10 @@ com.nimbusds:content-type:2.0
 com.nimbusds:lang-tag:1.4.4
 com.nimbusds:nimbus-jose-jwt:8.19
 com.nimbusds:oauth2-oidc-sdk:7.1.1
-com.okta.commons:okta-commons-lang:1.2.2
-com.okta.commons:okta-config-check:1.2.2
+com.okta.commons:okta-commons-lang:1.2.3
+com.okta.commons:okta-config-check:1.2.3
+com.okta.commons:okta-http-api:1.2.3
+com.okta.sdk:okta-sdk-api:1.6.0
 com.okta.spring:okta-spring-boot-starter:1.4.0
 com.okta.spring:okta-spring-sdk:1.4.0
 com.okta.spring:okta-spring-security-oauth2:1.4.0

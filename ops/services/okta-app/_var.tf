@@ -16,6 +16,7 @@ variable "admin_groups" {
 }
 
 variable "redirect_urls" {
+  description = "Additional redirect URLs for Okta applications (defaults to dev URLs)"
   default = [
     "http://localhost:8080",
     "http://localhost:9090",
@@ -23,7 +24,8 @@ variable "redirect_urls" {
     "https://simple-report-qa.app.cloud.gov/",
     "https://simple-report-qa-api.app.cloud.gov/",
     "https://staging.simplereport.org/app",
-    "https://simplereport.cdc.gov/app"
+    "https://simplereport.cdc.gov/app",
+    "https://simplereport.gov/app"
   ]
 }
 
@@ -32,5 +34,5 @@ variable "app_url" {
 }
 
 variable "logout_redirect_uris" {
-  default = "https://simplereport.cdc.gov"
+  default = ["https://simplereport.cdc.gov"]
 }

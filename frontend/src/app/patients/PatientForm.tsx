@@ -14,6 +14,8 @@ import {
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../config/constants";
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
+
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -282,9 +284,9 @@ const PatientForm = (props: Props) => {
       />
       <div className="prime-edit-patient-heading">
         <div>
-          <h2>
+          <h1>
             {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
-          </h2>
+          </h1>
           <RequiredMessage />
         </div>
         <button
@@ -436,97 +438,51 @@ const PatientForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Demographics">
-        <div>
-          <RadioGroup
-            legend="Race"
-            name="race"
-            buttons={[
-              {
-                value: "native",
-                label: "American Indian or Alaskan Native",
-              },
-              {
-                value: "asian",
-                label: "Asian",
-              },
-              {
-                value: "black",
-                label: "Black or African American",
-              },
-              {
-                value: "pacific",
-                label: "Native Hawaiian or other Pacific Islander",
-              },
-              {
-                value: "white",
-                label: "White",
-              },
-              {
-                value: "unknown",
-                label: "Unknown",
-              },
-              {
-                value: "refused",
-                label: "Refused to Answer",
-              },
-            ]}
-            selectedRadio={patient.race}
-            onChange={onChange}
-          />
-        </div>
-        <div>
-          <RadioGroup
-            legend="Ethnicity"
-            name="ethnicity"
-            buttons={[
-              { label: "Hispanic or Latino", value: "hispanic" },
-              { label: "Not Hispanic", value: "not_hispanic" },
-            ]}
-            selectedRadio={patient.ethnicity}
-            onChange={onChange}
-          />
-        </div>
-        <div>
-          <RadioGroup
-            legend="Biological Sex"
-            name="gender"
-            buttons={[
-              { label: "Male", value: "male" },
-              { label: "Female", value: "female" },
-              { label: "Other", value: "other" },
-            ]}
-            selectedRadio={patient.gender}
-            onChange={onChange}
-          />
-        </div>
+        <RadioGroup
+          legend="Race"
+          name="race"
+          buttons={RACE_VALUES}
+          selectedRadio={patient.race}
+          onChange={onChange}
+        />
+        <RadioGroup
+          legend="Ethnicity"
+          name="ethnicity"
+          buttons={ETHNICITY_VALUES}
+          selectedRadio={patient.ethnicity}
+          onChange={onChange}
+        />
+        <RadioGroup
+          legend="Biological Sex"
+          name="gender"
+          buttons={GENDER_VALUES}
+          selectedRadio={patient.gender}
+          onChange={onChange}
+        />
       </FormGroup>
       <FormGroup title="Other">
-        <div>
-          <RadioGroup
-            legend="Resident in congregate care/living setting?"
-            name="residentCongregateSetting"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
-            selectedRadio={patient.residentCongregateSetting}
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div>
-          <RadioGroup
-            legend="Work in Healthcare?"
-            name="employedInHealthcare"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
-            selectedRadio={patient.employedInHealthcare}
-            onChange={onChange}
-            required
-          />
-        </div>
+        <RadioGroup
+          legend="Resident in congregate care/living setting?"
+          name="residentCongregateSetting"
+          buttons={[
+            { label: "Yes", value: "YES" },
+            { label: "No", value: "NO" },
+          ]}
+          selectedRadio={patient.residentCongregateSetting}
+          onChange={onChange}
+          required
+        />
+        <RadioGroup
+          legend="Work in Healthcare?"
+          name="employedInHealthcare"
+          buttons={[
+            { label: "Yes", value: "YES" },
+            { label: "No", value: "NO" },
+          ]}
+          selectedRadio={patient.employedInHealthcare}
+          onChange={onChange}
+          required
+        />
       </FormGroup>
       <FormGroup title="Test History">
         {patient.testResults && patient.testResults.length !== 0 && (

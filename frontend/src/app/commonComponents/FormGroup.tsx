@@ -1,5 +1,4 @@
 import React from "react";
-import "./FormGroup.scss";
 
 interface Props {
   title: string;
@@ -8,7 +7,7 @@ interface Props {
 
 const FormGroup = (props: Props) => (
   <div className="prime-formgroup">
-    <h3>{props.title}</h3>
+    <h2 className="prime-formgroup-heading">{props.title}</h2>
     {props.children}
   </div>
 );
