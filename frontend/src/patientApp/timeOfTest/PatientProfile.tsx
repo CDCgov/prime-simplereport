@@ -1,15 +1,17 @@
-import moment from "moment";
+import moment from 'moment';
 
-import { formatFullName } from "../../app/utils/user";
+import { formatFullName } from '../../app/utils/user';
+import { formatAddress } from '../../app/utils/address';
+import { capitalizeText } from '../../app/utils/text';
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
-} from "../../app/constants";
+} from '../../app/constants';
 
-import Button from "../../app/commonComponents/Button";
-import React, { useState } from "react";
-import { Redirect } from "react-router";
+import Button from '../../app/commonComponents/Button';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router';
 
 interface Props {
   patient: any;
@@ -27,36 +29,21 @@ const PatientProfile = (props: Props) => {
   const gender = GENDER_VALUES.find((val) => val.value === props.patient.gender)
     ?.label;
 
-  const formattedAddress = () => {
-    const lastAddressLine = `${props.patient.city}${
-      props.patient.state && props.patient.city ? "," : ""
-    }${props.patient.city ? " " : ""}${props.patient.state}${
-      props.patient.state ? " " : ""
-    }${props.patient.zipCode}`;
-
-    let result = props.patient.street;
-    result += `${
-      result.length > 0
-        ? "\n" + props.patient.streetTwo
-        : props.patient.streetTwo
-    }`;
-    result += `${result.length > 0 ? "\n" + lastAddressLine : lastAddressLine}`;
-    return result;
-  };
-
-  const newLineSpan = ({ text = "" }) => {
+  const newLineSpan = ({ text = '' }) => {
     return text
-      .split("\n")
+      .split('\n')
       .map((str) => <span className="display-block">{str}</span>);
   };
 
-  const capitalize = ({ text = "" }) => {
-    const answer = text.toLowerCase();
-    return answer.charAt(0).toUpperCase() + answer.slice(1);
-  };
-
-  const address = formattedAddress();
-  const notProvided = "Not provided";
+  const address = formatAddress({
+    street: props.patient.street,
+    streetTwo: props.patient.streetTwo,
+    city: props.patient.city,
+    county: props.patient.county,
+    state: props.patient.state,
+    zipCode: props.patient.zipCode,
+  });
+  const notProvided = 'Not provided';
 
   const savePatientAnswers = () => {
     setNextPage(true);
@@ -73,8 +60,8 @@ const PatientProfile = (props: Props) => {
       <Redirect
         push
         to={{
-          pathname: "/patient-info-confirmation",
-          state: { page: "symptoms" },
+          pathname: '/patient-info-confirmation',
+          state: { page: 'symptoms' },
         }}
       />
     );
@@ -99,7 +86,7 @@ const PatientProfile = (props: Props) => {
         <h3 className="font-heading-sm">Date of birth</h3>
         <p>
           {props.patient.birthDate
-            ? moment(props.patient.birthDate).format("MM/DD/yyyy")
+            ? moment(props.patient.birthDate).format('MM/DD/yyyy')
             : notProvided}
         </p>
         <h3 className="font-heading-sm">Phone number</h3>
@@ -127,13 +114,13 @@ const PatientProfile = (props: Props) => {
         </h3>
         <p>
           {props.patient.residentCongregateSetting
-            ? capitalize({ text: props.patient.residentCongregateSetting })
+            ? capitalizeText(props.patient.residentCongregateSetting)
             : notProvided}
         </p>
         <h3 className="font-heading-sm">Employed in healthcare</h3>
         <p>
           {props.patient.employedInHealthcare
-            ? capitalize({ text: props.patient.employedInHealthcare })
+            ? capitalizeText(props.patient.employedInHealthcare)
             : notProvided}
         </p>
       </div>

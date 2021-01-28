@@ -6,6 +6,9 @@
     lastName
     suffix
     email
+    permissions
+    roleDescription
+    isAdmin
     organization {
       testingFacility {
         name

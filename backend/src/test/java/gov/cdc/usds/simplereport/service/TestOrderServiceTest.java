@@ -20,6 +20,8 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
@@ -57,6 +59,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void addTestResult() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
@@ -66,7 +69,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
 
         _service.addTestResult(devA.getInternalId().toString(), TestResult.POSITIVE,
                 p.getInternalId().toString(), null);
@@ -76,7 +79,8 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
-    public void editTestResult() {
+    @WithSimpleReportStandardUser
+    public void editTestResult_standardUser_ok() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.",
@@ -85,7 +89,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
+        DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
 
         _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
                 TestResult.POSITIVE.toString(), null);
@@ -97,7 +101,27 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
-    public void fetchTestResults() {
+    @WithSimpleReportEntryOnlyUser
+    public void editTestResult_entryOnlyUser_ok() {
+        Organization org = _organizationService.getCurrentOrganization();
+        Facility facility = _organizationService.getFacilities(org).get(0);
+        Person p = _dataFactory.createFullPerson(org);
+        TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
+                Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
+                TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+        DeviceType devA = _dataFactory.getGenericDevice();
+
+        _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
+                TestResult.POSITIVE.toString(), null);
+
+        List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
+        assertEquals(1, queue.size());
+        assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
+        assertEquals(devA.getInternalId(), queue.get(0).getDeviceType().getInternalId());
+    }
+    @Test
+    @WithSimpleReportStandardUser
+    public void fetchTestResults_standardUser_ok() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _dataFactory.createFullPerson(org);
@@ -106,13 +130,27 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         // Count queries with one order
         hibernateQueryInterceptor.startQueryCount();
         _service.getTestResults(facility.getInternalId().toString());
-        assertEquals(7, hibernateQueryInterceptor.getQueryCount());
+        assertEquals(9, hibernateQueryInterceptor.getQueryCount());
 
         // Count queries with three order
         TestEvent _e1 = _dataFactory.createTestEvent(p, facility);
         TestEvent _e2 = _dataFactory.createTestEvent(p, facility);
         hibernateQueryInterceptor.startQueryCount();
         _service.getTestResults(facility.getInternalId().toString());
-        assertEquals(7, hibernateQueryInterceptor.getQueryCount());
+        assertEquals(9, hibernateQueryInterceptor.getQueryCount());
+    }
+
+    @Test
+    @WithSimpleReportEntryOnlyUser
+    void fetchTestResults_entryOnlyUser_error() {
+        Organization org = _organizationService.getCurrentOrganization();
+        Facility facility = _organizationService.getFacilities(org).get(0);
+        Person p = _dataFactory.createFullPerson(org);
+        _dataFactory.createTestEvent(p, facility);
+
+        // https://github.com/CDCgov/prime-simplereport/issues/677
+        // assertSecurityError(() ->
+        // _service.getTestResults(facility.getInternalId().toString()));
+        assertSecurityError(() -> _service.getTestResults(p));
     }
 }
