@@ -317,7 +317,7 @@ const PatientForm = (props: Props) => {
         </>
       )}
       <FormGroup title="General info">
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             label="First Name"
             name="firstName"
@@ -339,7 +339,7 @@ const PatientForm = (props: Props) => {
             required
           />
         </div>
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             label="Lookup ID"
             name="lookupId"
@@ -373,7 +373,7 @@ const PatientForm = (props: Props) => {
             />
           )}
         </div>
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             type="date"
             label="Date of Birth (mm/dd/yyyy)"
@@ -385,77 +385,79 @@ const PatientForm = (props: Props) => {
         </div>
       </FormGroup>
       <FormGroup title="Contact Information">
-        <div className="prime-form-line">
-          <TextInput
-            type="tel"
-            label="Phone Number"
-            name="telephone"
-            value={patient.telephone}
-            className="sr-width-md"
-            onChange={onChange}
-            required
-          />
+        <div className="usa-form">
+          <div className="grid-row grid-gap">
+            <div className="mobile-lg:grid-col-6">
+              <TextInput
+                type="tel"
+                label="Phone Number"
+                name="telephone"
+                value={patient.telephone}
+                onChange={onChange}
+                required
+              />
+            </div>
+          </div>
           <TextInput
             type="email"
             label="Email Address"
             name="email"
             value={patient.email}
-            className="sr-width-lg"
             onChange={onChange}
           />
         </div>
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             label="Street address 1"
             name="street"
             value={patient.street}
-            className="sr-width-xl"
             onChange={onChange}
             required
           />
         </div>
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             label="Street address 2"
             name="streetTwo"
             value={patient.streetTwo}
-            className="sr-width-xl"
             onChange={onChange}
           />
         </div>
-        <div className="prime-form-line">
+        <div className="usa-form">
           <TextInput
             label="City"
             name="city"
             value={patient.city}
-            className="sr-width-md"
             onChange={onChange}
           />
           <TextInput
             label="County"
             name="county"
             value={patient.county}
-            className="sr-width-md"
             onChange={onChange}
           />
-          <Dropdown
-            label="State"
-            name="state"
-            selectedValue={patient.state}
-            options={stateCodes.map((c) => ({ label: c, value: c }))}
-            defaultSelect
-            className="sr-width-sm"
-            onChange={onChange}
-            required
-          />
-          <TextInput
-            label="Zip"
-            name="zipCode"
-            value={patient.zipCode}
-            className="sr-width-sm"
-            onChange={onChange}
-            required
-          />
+          <div className="grid-row grid-gap">
+            <div className="mobile-lg:grid-col-6">
+              <Dropdown
+                label="State"
+                name="state"
+                selectedValue={patient.state}
+                options={stateCodes.map((c) => ({ label: c, value: c }))}
+                defaultSelect
+                onChange={onChange}
+                required
+              />
+            </div>
+            <div className="mobile-lg:grid-col-6">
+              <TextInput
+                label="Zip"
+                name="zipCode"
+                value={patient.zipCode}
+                onChange={onChange}
+                required
+              />
+            </div>
+          </div>
         </div>
       </FormGroup>
       <FormGroup title="Demographics">
