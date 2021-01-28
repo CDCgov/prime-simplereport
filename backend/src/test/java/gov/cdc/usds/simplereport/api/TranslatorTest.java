@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
+@SuppressWarnings("checkstyle:MagicNumber")
 public class TranslatorTest {
     @Test
     public void testEmptyShortDate() {

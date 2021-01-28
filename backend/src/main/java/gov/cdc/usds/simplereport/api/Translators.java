@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.lang.IllegalArgumentException;
 
 /**
  * Static package for utilities to translate things to or from wireline format in non copy-paste ways.
