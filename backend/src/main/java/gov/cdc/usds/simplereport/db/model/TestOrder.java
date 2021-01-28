@@ -140,4 +140,8 @@ public class TestOrder extends BaseTestInfo {
 	public PatientLink getPatientLink() {
 		return patientLink;
 	}
+
+	public void setPatientLink(PatientLink patientLink) {
+		this.patientLink = patientLink;
+	}
 }

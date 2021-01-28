@@ -6,6 +6,7 @@ import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
 import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
+import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
   saveButtonText = "Save",
@@ -14,10 +15,11 @@ const AoEModalForm = ({
   facilityId,
   loadState = {},
   saveCallback,
-  qrCodeValue = "https://www.google.com",
+  qrCodeValue = `${getUrl()}pxp`,
   canAddToTestQueue,
 }) => {
   const [modalView, setModalView] = useState(null);
+  const [patientLink, setPatientLink] = useState(qrCodeValue);
   const modalViewValues = [
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
@@ -40,7 +42,20 @@ const AoEModalForm = ({
   };
 
   const continueModal = () => {
-    canAddToTestQueue ? saveCallback(patientResponse) : onClose();
+    if (canAddToTestQueue) {
+      saveCallback(patientResponse);
+      onClose();
+    } else {
+      onClose();
+    }
+  };
+
+  const chooseModalView = async (view) => {
+    if (view === "smartphone") {
+      const patientLinkId = await saveCallback(patientResponse);
+      setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`)
+    }
+    setModalView(view);
   };
 
   const buttonGroup = (
@@ -90,7 +105,7 @@ const AoEModalForm = ({
         legend="How would you like to complete the questionnaire?"
         name="qr-code"
         type="radio"
-        onChange={(evt) => setModalView(evt.currentTarget.value)}
+        onChange={(evt) => chooseModalView(evt.currentTarget.value)}
         buttons={modalViewValues}
         selectedRadio={modalView}
         className="margin-top-205"
@@ -104,7 +119,7 @@ const AoEModalForm = ({
                 to access the questionnaire
               </p>
               <div className="margin-top-205">
-                <QRCode value={qrCodeValue} size="190" />
+                <QRCode value={patientLink} size="190" />
               </div>
             </div>
           </section>
