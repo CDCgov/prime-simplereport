@@ -9,7 +9,7 @@ import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
-  saveButtonText = "Save",
+  saveButtonText = "Continue",
   onClose,
   patient,
   facilityId,
