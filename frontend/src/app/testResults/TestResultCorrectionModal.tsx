@@ -13,6 +13,7 @@ export const testQuery = gql`
     testResult(id: $id) {
       dateTested
       result
+      correctionStatus
       deviceType {
         name
       }
