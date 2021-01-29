@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import React, { useState } from "react";
 import moment from "moment";
-
+import classnames from "classnames";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
 import TestResultPrintModal from "./TestResultPrintModal";
@@ -12,8 +12,6 @@ import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "./TestResultsList.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-
-const FEATURE_PRINT_ENABLED = false;
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -73,9 +71,22 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
       if (a.dateTested < b.dateTested) return 1;
       return -1;
     };
+
+    // When printing is enabled add this menu item
+    // <MenuItem onClick={() => setPrintModalId(r.internalId)}>
+    //   Print result
+    // </MenuItem>
+
     // `sort` mutates the array, so make a copy
     return [...testResults].sort(byDateTested).map((r) => (
-      <tr key={r.internalId} className="sr-test-result-row">
+      <tr
+        key={r.internalId}
+        title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
+        className={classnames(
+          "sr-test-result-row",
+          r.correctionStatus === "REMOVED" && "sr-test-result-row--removed"
+        )}
+      >
         <th scope="row">
           {displayFullName(
             r.patient.firstName,
@@ -88,23 +99,20 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
         <td>{r.result}</td>
         <td>{r.deviceType.name}</td>
         <td>
-          <Menu
-            menuButton={
-              <MenuButton className="sr-modal-menu-button">
-                <FontAwesomeIcon icon={faEllipsisH} size="2x" />
-                <span className="usa-sr-only">More actions</span>
-              </MenuButton>
-            }
-          >
-            {FEATURE_PRINT_ENABLED && (
-              <MenuItem onClick={() => setPrintModalId(r.internalId)}>
-                Print result
+          {r.correctionStatus !== "REMOVED" && (
+            <Menu
+              menuButton={
+                <MenuButton className="sr-modal-menu-button">
+                  <FontAwesomeIcon icon={faEllipsisH} size="2x" />
+                  <span className="usa-sr-only">More actions</span>
+                </MenuButton>
+              }
+            >
+              <MenuItem onClick={() => setMarkErrorId(r.internalId)}>
+                Mark as error
               </MenuItem>
-            )}
-            <MenuItem onClick={() => setMarkErrorId(r.internalId)}>
-              Mark as error
-            </MenuItem>
-          </Menu>
+            </Menu>
+          )}
         </td>
       </tr>
     ));

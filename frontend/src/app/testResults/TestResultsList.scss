@@ -7,13 +7,21 @@
   }
 }
 
+.sr-test-result-row--removed {
+  text-decoration: line-through;
+}
+
+.rc-menu-button {
+  padding: 0;
+}
+
 /* reset white background on usa-table so we can hover */
 .usa-table .sr-test-result-row {
   td,
   th {
     background-color: inherit;
   }
-}
-.sr-test-result-row:hover {
-  background-color: #e1f3f8;
+  &:hover {
+    background-color: #e1f3f8;
+  }
 }
