@@ -43,12 +43,12 @@ jobs:
 
       - name: Terraform Init
         run: |
-          pushd dev; pushd persistent; terraform init; popd; terraform init; popd
-          pushd test; pushd persistent; terraform init; popd; terraform init; popd
-          pushd demo; pushd persistent; terraform init; popd; terraform init; popd
-          pushd stg; pushd persistent; terraform init; popd; terraform init; popd
-          pushd prod; pushd persistent; terraform init; popd; terraform init; popd
-          pushd global; terraform init;
+          pushd dev; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd test; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd demo; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd stg; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd prod; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd global; echo $PWD && terraform init;
 
       - name: Terraform Validate
         run: |
