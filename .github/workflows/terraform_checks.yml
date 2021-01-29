@@ -38,6 +38,7 @@ jobs:
           pushd demo; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
           pushd stg; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
           pushd prod; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd pentest; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
           pushd global; echo $PWD && terraform init;
 
       - name: Terraform Validate
@@ -47,4 +48,5 @@ jobs:
           pushd demo; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
           pushd stg; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
           pushd prod; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd pentest; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
           pushd global; echo $PWD && terraform validate -no-color;
