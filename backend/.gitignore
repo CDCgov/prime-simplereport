@@ -9,6 +9,7 @@ build/
 
 # Local properties for Spring Boot--can be a .properties file or .yml/.yaml
 /src/main/resources/application-local.*
+/src/test/resources/application-local.*
 
 ### STS ###
 .apt_generated

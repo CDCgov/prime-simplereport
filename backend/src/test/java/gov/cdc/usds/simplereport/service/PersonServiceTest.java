@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -12,12 +11,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PersonServiceTest extends BaseServiceTest<PersonService> {
@@ -43,6 +43,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
@@ -55,18 +56,14 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportStandardUser
     public void deletePatient_standardUser_error() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", "STAFF", null, "Nassau", null, null, null, false, false);
 
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.setIsDeleted(p.getInternalId(), true);
-        });
-
-
+        assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
     }
 
     @Test
@@ -84,6 +81,7 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportSiteAdminUser
     public void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(null);
@@ -91,12 +89,21 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
     }
 
     @Test
+    @WithSimpleReportSiteAdminUser
     public void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(_site1.getInternalId());
         assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
         patients = _service.getPatients(_site2.getInternalId());
         assertPatientList(patients, FRANK, BRAD, DEXTER, AMOS);
+    }
+
+    @Test
+    @WithSimpleReportEntryOnlyUser
+    void addPatient_entryOnlyUser_error() {
+        assertSecurityError(
+                () -> _service.addPatient(null, null, "Fred", null, "Flintstone", "Jr.", LocalDate.of(1950, 1, 1), null,
+                        null, "Bedrock", "AZ", "87654", null, "RESIDENT", null, null, null, null, null, false, false));
     }
 
     private void makedata() {

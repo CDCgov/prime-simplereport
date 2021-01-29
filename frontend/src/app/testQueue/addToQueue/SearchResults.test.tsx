@@ -33,6 +33,7 @@ describe("SearchResults", () => {
         patientsInQueue={[]}
         facilityId={"1234-5678"}
         onAddToQueue={jest.fn()}
+        shouldShowSuggestions={true}
       />
     );
 
@@ -46,6 +47,7 @@ describe("SearchResults", () => {
         patientsInQueue={[]}
         facilityId={"1234-5678"}
         onAddToQueue={jest.fn()}
+        shouldShowSuggestions={true}
       />
     );
 
@@ -60,6 +62,7 @@ describe("SearchResults", () => {
         patientsInQueue={["a123", "c789"]}
         facilityId={"1234-5678"}
         onAddToQueue={addToQueue}
+        shouldShowSuggestions={true}
       />
     );
 

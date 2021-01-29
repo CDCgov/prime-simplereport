@@ -1,9 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -31,6 +29,8 @@ public class PatientLinkService {
     @Autowired
     private TestOrderRepository torepo;
 
+    public static final long oneDay = 24L;
+
     public PatientLink getPatientLink(String internalId) {
         UUID actualId = UUID.fromString(internalId);
         return plrepo.findById(actualId)
@@ -39,7 +39,8 @@ public class PatientLinkService {
 
     public Organization getPatientLinkCurrent(String internalId) {
         PatientLink pl = getPatientLink(internalId);
-        if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(24L, ChronoUnit.HOURS)))) {
+
+        if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
             return pl.getTestOrder().getOrganization();
         } else {
             return null;

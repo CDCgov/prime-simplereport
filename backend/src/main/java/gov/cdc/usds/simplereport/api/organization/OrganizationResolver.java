@@ -3,9 +3,10 @@ package gov.cdc.usds.simplereport.api.organization;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
@@ -16,15 +17,14 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 public class OrganizationResolver implements GraphQLQueryResolver {
 
 	private OrganizationService _organizationService;
-	private ApiUserService _userService;
 
-    public OrganizationResolver(OrganizationService os, ApiUserService users) {
+    public OrganizationResolver(OrganizationService os) {
 		_organizationService = os;
-		_userService = users;
 	}
 
-	public Organization getOrganization() {
-		return _organizationService.getCurrentOrganization();
+	public Optional<Organization> getOrganization() {
+		Optional<CurrentOrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
+		return roles.map(CurrentOrganizationRoles::getOrganization);
 	}
 
     public List<Organization> getOrganizations() {
