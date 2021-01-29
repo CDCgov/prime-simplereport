@@ -37,6 +37,8 @@ const SymptomInputs = ({
   setOnsetDate,
   symptomError,
   symptomOnsetError,
+  symptomRef,
+  symptomOnsetRef,
 }) => {
   const symptomChange = (e) => {
     setSymptoms({ ...currentSymptoms, [e.target.value]: e.target.checked });
@@ -53,6 +55,7 @@ const SymptomInputs = ({
           required
           errorMessage={symptomError}
           validationStatus={symptomError ? "error" : undefined}
+          inputRef={symptomRef}
         />
         {!noSymptoms && (
           <>
@@ -86,6 +89,7 @@ const SymptomInputs = ({
           )}
           errorMessage={symptomOnsetError}
           validationStatus={symptomOnsetError ? "error" : null}
+          inputRef={symptomOnsetRef}
         />
       )}
     </>
@@ -295,6 +299,8 @@ const AoEForm = ({
   // form validation
   const [symptomError, setSymptomError] = useState(null);
   const [symptomOnsetError, setSymptomOnsetError] = useState(null);
+  const symptomRef = React.createRef();
+  const symptomOnsetRef = React.createRef();
 
   const isValidForm = () => {
     if (noValidation) return true;
@@ -304,6 +310,7 @@ const AoEForm = ({
     if (!noSymptoms && !hasSymptoms) {
       setSymptomError("Select your symptoms");
       setSymptomOnsetError(null);
+      symptomRef.current.focus();
       return false;
     }
 
@@ -316,6 +323,7 @@ const AoEForm = ({
     if (hasSymptoms && !onsetDate) {
       setSymptomError(null);
       setSymptomOnsetError("Enter the date of symptom onset");
+      symptomOnsetRef.current.focus();
       return false;
     }
 
@@ -427,6 +435,8 @@ const AoEForm = ({
             onsetDate={onsetDate}
             symptomError={symptomError}
             symptomOnsetError={symptomOnsetError}
+            symptomRef={symptomRef}
+            symptomOnsetRef={symptomOnsetRef}
           />
         </FormGroup>
 

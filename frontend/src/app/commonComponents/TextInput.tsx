@@ -35,6 +35,7 @@ interface Props {
   ariaDescribedBy?: string;
   hintText?: string;
   hideOptional?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -58,6 +59,7 @@ export const TextInput = ({
   ariaDescribedBy,
   hintText,
   hideOptional,
+  inputRef,
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -113,6 +115,7 @@ export const TextInput = ({
         size={size}
         pattern={pattern}
         inputMode={inputMode}
+        ref={inputRef}
         {...inputProps}
         {...(validationStatus === "error"
           ? { "aria-describedby": errorId }
