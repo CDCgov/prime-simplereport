@@ -77,11 +77,17 @@ public class TestOrderService {
     @AuthorizationConfiguration.RequirePermissionReadResultList
     public List<TestEvent> getTestEventsResults(String facilityId) {
         Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
-        return _terepo.getTestEventResults(fac.getOrganization(), fac);
+        return _terepo.getTestEventResults(fac.getInternalId());
     }
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultList
+  public TestEvent getTestResult(UUID id) {
+    Organization org = _os.getCurrentOrganization();
+    return _terepo.findFirst1ByOrganizationAndInternalId(org, id);
+  }
+
+  @Transactional(readOnly = true)
   public List<TestEvent> getTestResults(Person patient) {
       return _terepo.findAllByPatient(patient);
   }
@@ -215,9 +221,8 @@ public class TestOrderService {
 
     @Transactional
     @AuthorizationConfiguration.RequirePermissionUpdateTest
-    public TestEvent correctTestMarkAsError(String testEventIdStr, String reasonForCorrection) {
+    public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
         // The client sends us a TestEvent, we need to map back to the Order.
-        UUID testEventId = UUID.fromString(testEventIdStr);
         Optional<TestEvent> loadExistingEvent = _terepo.findById(testEventId);
         if (loadExistingEvent.isEmpty()) {
             // should this throw?
@@ -225,23 +230,16 @@ public class TestOrderService {
             return null;
         }
         TestEvent event = loadExistingEvent.get();
-        if (event.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
-            LOG.error("TestEvent to be corrected must be in the 'TestCorrectionStatus.ORIGINAL' testEventId {}", testEventId);
-            return null;
+        if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
+            LOG.error("TestEvent to be corrected cannot be in TestCorrectionStatus.REMOVED state testEventId {}", testEventId);
+            throw new IllegalGraphqlArgumentException("Can not correct removed test event");
         }
 
         // todo: should we verify reasonForCorrection is NOT empty? Do we trim()?
 
         TestOrder order = _repo.findByTestEventId(event.getOrganization(), testEventId);
         if (order == null) {
-            LOG.error("TestEvent: {} could not load the parent order", testEventId);
-            return null;
-        }
-
-        if (!testEventId.equals(order.getTestEventId())) {
-            LOG.error("TestEvent: parent order {} points to a different TestEvent. Order's TestEventId {} expected {}",
-                    order.getInternalId(), order.getTestEventId(), testEventId);
-            return null;
+            throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
         }
 
         // generate a duplicate test_event that just has a status of REMOVED and the reason

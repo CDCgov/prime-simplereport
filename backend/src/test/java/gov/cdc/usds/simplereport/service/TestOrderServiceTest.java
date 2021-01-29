@@ -166,7 +166,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestOrder _o = _e.getTestOrder();
 
         String reasonMsg = "Testing correction marking as error " + LocalDateTime.now().toString();
-        TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId().toString(), reasonMsg);
+        TestEvent deleteMarkerEvent = _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
         assertNotNull(deleteMarkerEvent);
 
         assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
