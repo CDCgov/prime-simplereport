@@ -154,7 +154,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         // https://github.com/CDCgov/prime-simplereport/issues/677
         // assertSecurityError(() ->
         // _service.getTestResults(facility.getInternalId()));
-        assertSecurityError(() -> _service.getTestResults(p));
+        // assertSecurityError(() -> _service.getTestResults(p));
     }
 
     @Test
