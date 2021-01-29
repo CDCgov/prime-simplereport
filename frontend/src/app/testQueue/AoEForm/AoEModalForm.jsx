@@ -76,7 +76,7 @@ const AoEModalForm = ({
       style={{
         content: {
           maxHeight: "90vh",
-          width: "38em",
+          width: "40em",
           position: "initial",
         },
       }}

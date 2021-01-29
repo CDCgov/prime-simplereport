@@ -13,6 +13,7 @@ import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import FormGroup from "../../commonComponents/FormGroup";
 import Optional from "../../commonComponents/Optional";
+import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
@@ -411,6 +412,10 @@ const AoEForm = ({
           saveAnswers(e);
         }}
       >
+        {isModal && (
+          <div className="margin-top-4 border-top border-base-lighter" />
+        )}
+        <RequiredMessage />
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}

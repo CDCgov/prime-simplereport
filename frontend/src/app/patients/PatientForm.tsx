@@ -329,6 +329,7 @@ const PatientForm = (props: Props) => {
             </div>
           </>
         )}
+        <RequiredMessage />
         <FormGroup title="General info">
           <div className="usa-form">
             <TextInput
