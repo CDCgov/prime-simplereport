@@ -17,17 +17,6 @@ import ManagedUsers from "./ManageUsers";
 //   }
 // `;
 
-const dummyUsers = [
-  { id: "123", name: "Peter Parker", role: "Admin", email: "spider@hero.com" },
-  { id: "456", name: "Carol Danvers", role: "User", email: "marvel@hero.com" },
-  {
-    id: "789",
-    name: "Natasha Romanoff",
-    role: "Admin",
-    email: "widow@hero.com",
-  },
-];
-
 const ManageUsersContainer: any = () => {
   //   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
   //     fetchPolicy: "no-cache",
@@ -44,7 +33,7 @@ const ManageUsersContainer: any = () => {
   //     return <p>Error: Users not found</p>;
   //   }
 
-  return <ManagedUsers users={dummyUsers} />;
+  return <ManagedUsers users={[]} />;
 };
 
 export default ManageUsersContainer;
