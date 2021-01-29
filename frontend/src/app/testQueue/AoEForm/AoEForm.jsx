@@ -392,6 +392,7 @@ const AoEForm = ({
   const buttonGroup = (
     <div className="display-flex flex-justify-end">
       <Button
+        id="aoe-form-save-button"
         label={saveButtonText}
         type={"submit"}
         className={classnames(isModal ? "margin-right-205" : "margin-right-0")}

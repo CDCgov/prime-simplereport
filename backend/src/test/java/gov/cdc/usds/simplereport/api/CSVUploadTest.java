@@ -25,6 +25,7 @@ class CSVUploadTest extends BaseApiTest {
 
     @Test
     void testPersonUpload() throws Exception {
+        useOrgAdmin();
         try (InputStream inputStream = CSVUploadTest.class.getClassLoader().getResourceAsStream("test-upload.csv")) {
             assertNotNull(inputStream);
             byte[] targetArray = new byte[inputStream.available()];

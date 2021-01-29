@@ -1,13 +1,18 @@
 package gov.cdc.usds.simplereport.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Set;
 import java.util.HashSet;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.function.Executable;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
@@ -15,7 +20,6 @@ import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupType;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -59,6 +63,8 @@ public abstract class BaseServiceTest<T> {
 
     protected Client _oktaClient;
 
+    private static final String SPRING_SECURITY_DENIED = "Access is denied";
+
     @BeforeEach
     protected void before() {
         clearDb();
@@ -101,8 +107,7 @@ public abstract class BaseServiceTest<T> {
     protected void clearOktaGroups() {
         for (Group g : _oktaClient.listGroups()) {
             String groupName = g.getProfile().getName();
-            if (g.getType() == GroupType.OKTA_GROUP &&
-                        groupName.startsWith(_authorizationProperties.getRolePrefix())) {
+            if (groupName.startsWith(_authorizationProperties.getRolePrefix())) {
                 g.delete();
             }
         }
@@ -114,5 +119,10 @@ public abstract class BaseServiceTest<T> {
 
     protected void reset() {
         _truncator.truncateAll();
+    }
+
+    protected static void assertSecurityError(Executable e) {
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
+        assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
     }
 }

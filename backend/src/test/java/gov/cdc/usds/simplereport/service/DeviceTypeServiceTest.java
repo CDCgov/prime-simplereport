@@ -3,14 +3,12 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -22,7 +20,7 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     @Test
     public void fetchDeviceTypes() {
-        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
+        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
 
         DeviceType deviceType = _service.fetchDeviceTypes().get(0);
     
@@ -30,45 +28,32 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
         assertEquals(deviceType.getManufacturer(), "B");
         assertEquals(deviceType.getModel(), "C");
         assertEquals(deviceType.getLoincCode(), "D");
+        assertEquals(deviceType.getSwabType(), "E");
     }
 
     @Test
     public void createDeviceType_baseUser_error() {
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.createDeviceType("A", "B", "C", "D");
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        assertSecurityError(() -> _service.createDeviceType("A", "B", "C", "D", "E"));
     }
 
     @Test
     public void updateDeviceType_baseUser_error() {
-        DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
-
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4");
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
+        assertSecurityError(() -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
     }
 
 
     @Test
     public void removeDeviceType_baseUser_eror() {
-        DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D"));
-
-        Exception exception = assertThrows(IllegalGraphqlArgumentException.class, () -> {
-            _service.removeDeviceType(deviceType);
-        });
-    
-        assertEquals("Current User does not have permission for this action", exception.getMessage());
+        DeviceType deviceType = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
+        assertSecurityError(() -> _service.removeDeviceType(deviceType));
     }
 
     @Test
     @WithSimpleReportSiteAdminUser
     public void createAndDeleteDeviceTypes_adminUser_success() {
-        DeviceType devA = _service.createDeviceType("A", "B", "C", "DUMMY");
-        DeviceType devB = _service.createDeviceType("D", "E", "F", "DUMMY");
+        DeviceType devA = _service.createDeviceType("A", "B", "C", "D", "E");
+        DeviceType devB = _service.createDeviceType("F", "G", "H", "I", "J");
         assertNotNull(devA);
         assertNotNull(devB);
         assertNotEquals(devA.getInternalId(), devB.getInternalId());
@@ -82,14 +67,15 @@ public class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     @Test
     @WithSimpleReportSiteAdminUser
     public void updateDeviceTypeName_adminUser_success() {
-        DeviceType device = _service.createDeviceType("A", "B", "C", "D");
+        DeviceType device = _service.createDeviceType("A", "B", "C", "D", "E");
 
-        DeviceType updatedDevice = _service.updateDeviceType(device.getInternalId(), "Tim", null, null, null);
+        DeviceType updatedDevice = _service.updateDeviceType(device.getInternalId(), "Tim", null, null, null, null);
 
         assertEquals(updatedDevice.getInternalId(), device.getInternalId());
         assertEquals(updatedDevice.getName(), "Tim");
         assertEquals(updatedDevice.getModel(), "B");
         assertEquals(updatedDevice.getManufacturer(), "C");
         assertEquals(updatedDevice.getLoincCode(), "D");
+        assertEquals(updatedDevice.getSwabType(), "E");
     }
 }

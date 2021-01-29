@@ -58,7 +58,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           backend/db-setup/create-db.sh
       - name: Run API
-        env: 
+        env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
         run: cd backend; ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
@@ -76,5 +76,7 @@ jobs:
         run: cd frontend; yarn
       - name: Run frontend
         run: cd frontend; yarn start &> ../yarn-log.txt &
+      - name: Build e2e container images
+        run: cd frontend/e2e; docker-compose build
       - name: Run e2e tests
-        run: docker-compose -f frontend/e2e/docker-compose.yml --env-file frontend/e2e/.env run nightwatch ./nightwatch-entrypoint.bash;
+        run: cd frontend/e2e; docker-compose run nightwatch ./nightwatch-entrypoint.bash;

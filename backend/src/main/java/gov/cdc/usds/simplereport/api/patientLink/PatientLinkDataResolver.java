@@ -4,7 +4,6 @@ import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import graphql.kickstart.tools.GraphQLResolver;
 
 @Component

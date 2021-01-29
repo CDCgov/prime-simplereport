@@ -22,9 +22,10 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
         String name,
         String manufacturer,
         String model,
-        String loincCode
+        String loincCode,
+        String swabType
     ) throws IllegalGraphqlArgumentException {
-        return _dts.createDeviceType(name, model, manufacturer, loincCode);
+        return _dts.createDeviceType(name, model, manufacturer, loincCode, swabType);
     }
 
     public DeviceType updateDeviceType(
@@ -32,8 +33,9 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
         String name,
         String manufacturer,
         String model,
-        String loincCode
+        String loincCode,
+        String swabType
     ) throws IllegalGraphqlArgumentException {
-        return _dts.updateDeviceType(id, name, model, manufacturer, loincCode);
+        return _dts.updateDeviceType(id, name, model, manufacturer, loincCode, swabType);
     }
 }

@@ -9,12 +9,26 @@ enum ResultValue {
   UNDETERMINED
 }
 
+enum UserPermission {
+  READ_PATIENT_LIST
+  READ_RESULT_LIST
+  EDIT_PATIENT
+  EDIT_FACILITY
+  EDIT_ORGANIZATION
+  SEARCH_PATIENTS
+  START_TEST
+  UPDATE_TEST
+  SUBMIT_TEST
+  EXPORT_TEST_EVENT
+}
+
 type DeviceType {
   internalId: ID
   name: String
   manufacturer: String
   model: String
   loincCode: String
+  swabType: String
 }
 type Patient {
   internalId: ID
@@ -125,10 +139,12 @@ type User {
   id: ID
   firstName: String
   middleName: String
-  lastName: String
+  lastName: String!
   suffix: String
-  email: String
+  email: String!
   isAdmin: Boolean
+  roleDescription: String!
+  permissions: [UserPermission!]!
   organization: Organization
 }
 
@@ -341,6 +357,7 @@ type Mutation {
     manufacturer: String!
     model: String!
     loincCode: String!
+    swabType: String!
   ): DeviceType
   updateDeviceType(
     id: String!
@@ -348,6 +365,7 @@ type Mutation {
     manufacturer: String
     model: String
     loincCode: String
+    swabType: String
   ): DeviceType
   refreshPatientLink(internalId: String!): PatientLink
   patientLinkSubmit(

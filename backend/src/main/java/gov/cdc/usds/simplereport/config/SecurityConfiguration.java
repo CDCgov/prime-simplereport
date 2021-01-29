@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,11 +27,12 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
- * Created by nickrobison on 11/13/20
+ * Live (with Okta integration) request-level security configuration. Not to be
+ * confused with {@link AuthorizationConfiguration}, which is not
+ * environment-specific and handles method-level or object-level security.
  */
 @Configuration
 @Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
-@EnableGlobalMethodSecurity(prePostEnabled = true)
 @ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
@@ -63,7 +63,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new HttpSessionRequestCache() {
             @Override
             public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-                final String referrer = request.getHeader("referer");
+				final String referrer = request.getHeader("referer");
                 if (referrer != null) {
                     request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
                 }

@@ -9,13 +9,13 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
-import gov.cdc.usds.simplereport.service.OktaService;
 
 @Service
 @Transactional(readOnly = false)
@@ -41,8 +41,8 @@ public class ApiUserService {
     }
 
     @Transactional
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
-        isAdminUser();
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
         _oktaService.createUser(userIdentity, organizationExternalId);
@@ -50,8 +50,8 @@ public class ApiUserService {
     }
 
     @Transactional
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public ApiUser updateUser(String newUsername, String oldUsername, String firstName, String middleName, String lastName, String suffix) {
-        isAdminUser();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(oldUsername);
         if (!found.isPresent()) {
             throw new IllegalGraphqlArgumentException("Cannot update User whose email does not exist");
@@ -69,13 +69,6 @@ public class ApiUserService {
             _oktaService.updateUser(oldUsername, userIdentity);
         }
         return user;
-    }
-
-    public void isAdminUser() {
-        IdentityAttributes userIdentity = _supplier.get();
-        if (!_admins.contains(userIdentity.getUsername())) {
-            throw new IllegalGraphqlArgumentException("Current User does not have permission for this action");
-        }
     }
 
     public Boolean isAdminUser(ApiUser user) {
@@ -97,7 +90,8 @@ public class ApiUserService {
             user.updateLastSeen();
             return _apiUserRepo.save(user);
         } else {
-            LOG.info("Initial login for {}: creating user record.", userIdentity.getUsername());
+            // Assumes user already has a corresponding Okta entity; otherwise, they couldn't log in :)
+            LOG.info("Initial login for user: creating user record.");
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
             return _apiUserRepo.save(user);

@@ -1053,6 +1053,7 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.test_order
               SET date_tested_backdate = date_tested_backdate + interval '7' HOUR
               WHERE date_tested_backdate is not null;
+
   - changeSet:
       id: drop-not-null-last-seen-user
       author: jeremy.a.zitomer@omb.eop.gov
@@ -1062,6 +1063,22 @@ databaseChangeLog:
         - dropNotNullConstraint:
             tableName: api_user
             columnName: last_seen
+  - changeSet:
+      id: add-swab-type-to-device-type
+      author: tbest@cdc.gov
+      comment: add a property to store the swab type per device
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: swab_type
+                  type: *string
+                  remarks: The swab type used for this device
+                  value: "445297001" # swab of internal nose
+        - addNotNullConstraint:
+            tableName: device_type
+            columnName: swab_type
   - changeSet:
       id: add-patient-link-table
       author: nclyde@skylight.digital

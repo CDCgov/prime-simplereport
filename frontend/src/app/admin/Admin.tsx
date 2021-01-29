@@ -13,9 +13,18 @@ const Admin = () => {
               </div>
             </div>
             <div className="usa-card__body">
-              <Link to="/admin/create-organization">
-                Create new organization
-              </Link>
+              <div>
+                {" "}
+                <Link to="/admin/create-organization">
+                  Create new organization
+                </Link>
+              </div>
+              <div>
+                {" "}
+                <Link to="/admin/create-device-type">
+                  Create new device type
+                </Link>
+              </div>
             </div>
           </div>
         </div>
