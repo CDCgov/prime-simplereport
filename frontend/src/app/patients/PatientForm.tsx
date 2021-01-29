@@ -281,11 +281,13 @@ const PatientForm = (props: Props) => {
       className={classnames(
         "prime-edit-patient prime-home",
         props.isPxpView && "padding-top-0"
-    )}>
+      )}
+    >
       <div
         className={classnames(
           !props.isPxpView && "grid-container margin-bottom-4"
-      )}>
+        )}
+      >
         <Prompt
           when={formChanged}
           message={(location) =>
@@ -395,7 +397,7 @@ const PatientForm = (props: Props) => {
             />
           </div>
         </FormGroup>
-        <FormGroup title="Contact Information">
+        <FormGroup title="Contact information">
           <div className="usa-form">
             <div className="grid-row grid-gap">
               <div className="mobile-lg:grid-col-6">
