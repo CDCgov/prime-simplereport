@@ -50,7 +50,8 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 		Set<String> admins = new HashSet<>(_organizationService.getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
 		Set<String> entryOnly = new HashSet<>(_organizationService.getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
 		return users.stream().map(u -> {
-			Set<OrganizationRole> roles = Set.of(OrganizationRole.USER);
+			Set<OrganizationRole> roles = new HashSet<>();
+			roles.add(OrganizationRole.USER);
 			String email = u.getLoginEmail();
 			if (admins.contains(email)) {
 				roles.add(OrganizationRole.ADMIN);
