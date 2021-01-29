@@ -12,6 +12,8 @@ import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
+import java.util.Date;
+
 @MappedSuperclass
 public abstract class BaseTestInfo extends AuditedEntity
 		implements OrganizationScoped {
@@ -36,6 +38,9 @@ public abstract class BaseTestInfo extends AuditedEntity
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
+
+	@Column
+	private Date dateTestedBackdate;
 
 	@Column
 	@Type(type = "pg_enum")
@@ -91,6 +96,15 @@ public abstract class BaseTestInfo extends AuditedEntity
 
 	// FYI Setters shouldn't be allowed in TestEvent, so they are always *protected* in this base class
 	// and exposed only in TestOrder.
+
+	public Date getDateTestedBackdate() {
+		return dateTestedBackdate;
+	}
+
+	protected void setDateTestedBackdate(Date dateTestedBackdate) {
+		this.dateTestedBackdate = dateTestedBackdate;
+	}
+
 	protected void setTestResult(TestResult newResult) {
 		result = newResult;
 	}

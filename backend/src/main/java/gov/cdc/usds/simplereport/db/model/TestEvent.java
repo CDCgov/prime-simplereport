@@ -12,6 +12,7 @@ import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -46,6 +47,7 @@ public class TestEvent extends BaseTestInfo {
 		this.providerData = getFacility().getOrderingProvider();
 		this.order = order;
 		this.patientAnswersId = order.getPatientAnswersId();  // Note: this is NOT a copy of the data like patient amd provider
+		super.setDateTestedBackdate(order.getDateTestedBackdate());
 	}
 
 	public TestEvent(TestOrder order) {
@@ -59,14 +61,23 @@ public class TestEvent extends BaseTestInfo {
 		this.order = event.getTestOrder();
 		this.patientData = event.getPatient();
 		this.providerData = event.getProviderData();
-		this.patientAnswersId = event.getPatientAnswersId();  // Note: this is NOT a copy of the data like patient amd provider
 		this.order = event.getTestOrder();
+		this.patientAnswersId = event.getPatientAnswersId();  // Note: this is NOT a copy of the data like patient amd provider
+		super.setDateTestedBackdate(order.getDateTestedBackdate());
 
 		this.priorCorrectedTestEventId = event.getInternalId();
 	}
 
 	public Person getPatientData() {
 		return patientData;
+	}
+
+	public Date getDateTested() {
+		if ( getDateTestedBackdate() != null) {
+			return getDateTestedBackdate();
+		} else {
+			return getCreatedAt();
+		}
 	}
 
 	public Provider getProviderData() {

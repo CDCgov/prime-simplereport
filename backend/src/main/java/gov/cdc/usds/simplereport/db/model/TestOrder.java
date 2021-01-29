@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -31,8 +32,6 @@ public class TestOrder extends BaseTestInfo {
 	private UUID patientAnswersId;    // id used directly when copying to TestEvent.
 	@Column
 	private LocalDate dateTested; // REMOVE THIS COLUMN
-	@Column
-	private Date dateTestedBackdate;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
@@ -43,12 +42,13 @@ public class TestOrder extends BaseTestInfo {
     @Column(columnDefinition = "uuid")
     private UUID testEventId;    // id used directly without needing to load
 
-    // joing with test_event to access created_at
+    // join with test_event just to access created_at. Cannot figure out how just get one column
+	// It's separate from testEventId because we eventually want to get rid of it.
 	@Transient
-    @JoinColumn(
-            table = "test_event", referencedColumnName = "created_at",
+	@OneToOne
+    @JoinColumn(table = "test_event", name="test_event_id",
             updatable = false, insertable = false, nullable = true)
-    private Date testEventCreatedAt;
+    private TestEvent testEvent;
 
 	protected TestOrder() { /* for hibernate */ }
 
@@ -73,15 +73,8 @@ public class TestOrder extends BaseTestInfo {
 	}
 
 	public void setDateTestedBackdate(Date date) {
-		dateTestedBackdate = date;
+		super.setDateTestedBackdate(date);
 	}
-
-    public Date getDateTested() {
-        if (dateTestedBackdate == null && testEventCreatedAt != null) {
-            return testEventCreatedAt;
-        }
-        return dateTestedBackdate;
-    }
 
 	public TestResult getTestResult() {
 		return getResult();

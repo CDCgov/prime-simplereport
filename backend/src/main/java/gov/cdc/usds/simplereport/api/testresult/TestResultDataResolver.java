@@ -79,7 +79,7 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
     }
 
     public Date getDateTested(TestEvent testEvent) {
-        return testEvent.getTestOrder().getDateTested();
+        return testEvent.getDateTested();
     }
 
     public String getCorrectionStatus(TestEvent testEvent) { return testEvent.getCorrectionStatus().toString(); }

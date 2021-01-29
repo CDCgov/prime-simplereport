@@ -84,7 +84,10 @@ public class ApiTestOrder {
     }
 
     public Date getDateTested() {
-        return order.getDateTested();
+        if (order.getDateTestedBackdate() != null) {
+            return order.getDateTestedBackdate();
+        }
+        return null;    // only TestEvents have a DateTested
     }
 
     public String getCorrectionStatus() { return order.getCorrectionStatus().toString(); }

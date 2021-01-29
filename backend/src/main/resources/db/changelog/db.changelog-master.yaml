@@ -1114,6 +1114,10 @@ databaseChangeLog:
                   remarks: The questions asked at order entry or at test time.
                   type: *idtype
               - column:
+                  name: date_tested_backdate
+                  type: DATETIME
+                  remarks: Timestamp to store a user correction to when the test was ordered. Copied from TestOrder. Null if not backdated.
+              - column:
                   name: test_order_id
                   type: *idtype
                   remarks: Reference to original test_order internal_id.
@@ -1136,10 +1140,12 @@ databaseChangeLog:
         - sql:
             remarks: Copy the existing test_order_id and patient_answers_id from test_order.
             sql: |
-              UPDATE ${database.defaultSchemaName}.test_event Evt
-              SET test_order_id = Ord.internal_id, patient_answers_id = Ord.patient_answers_id
-              FROM ${database.defaultSchemaName}.test_order Ord
-              WHERE Ord.test_event_id = Evt.internal_id;
+              UPDATE ${database.defaultSchemaName}.test_event TestEvent
+              SET test_order_id = TestOrder.internal_id,
+                  patient_answers_id = TestOrder.patient_answers_id,
+                  date_tested_backdate = TestOrder.date_tested_backdate
+              FROM ${database.defaultSchemaName}.test_order TestOrder
+              WHERE TestOrder.test_event_id = TestEvent.internal_id;
         - addForeignKeyConstraint:
             remarks: Finally, after all the rows were updated using sql, now apply the constraints.
             constraintName: fk__test_event__patient_answers_id
