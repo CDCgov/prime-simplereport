@@ -6,12 +6,23 @@ mutation updateUser(
     $newEmail: String!,
     $oldEmail: String!,
     ){
-  addPatient(
+  updateUser(
     firstName: $firstName
     middleName: $middleName
     lastName: $lastName
     suffix: $suffix
     newEmail: $newEmail
     oldEmail: $oldEmail
-  )
+  ) {
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      organization {
+        name
+        externalId
+      }
+    }
 }

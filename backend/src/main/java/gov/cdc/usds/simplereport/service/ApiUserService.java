@@ -90,7 +90,8 @@ public class ApiUserService {
             user.updateLastSeen();
             return _apiUserRepo.save(user);
         } else {
-            LOG.info("Initial login for {}: creating user record.", userIdentity.getUsername());
+            // Assumes user already has a corresponding Okta entity; otherwise, they couldn't log in :)
+            LOG.info("Initial login for user: creating user record.");
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
             return _apiUserRepo.save(user);

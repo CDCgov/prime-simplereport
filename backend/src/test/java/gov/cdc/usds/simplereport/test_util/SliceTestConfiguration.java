@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+
 import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,6 +62,22 @@ public class SliceTestConfiguration {
     @WithMockUser(username = TestUserIdentities.STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER" })
     @Inherited
     public @interface WithSimpleReportStandardUser {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.METHOD, ElementType.TYPE })
+    @WithMockUser(username = TestUserIdentities.STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER",
+                                                                               "TEST-TENANT:DIS_ORG:ADMIN" })
+    @Inherited
+    public @interface WithSimpleReportOrgAdminUser {
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target({ ElementType.METHOD, ElementType.TYPE })
+    @WithMockUser(username = TestUserIdentities.STANDARD_USER, authorities = { "TEST-TENANT:DIS_ORG:USER",
+            "TEST-TENANT:DIS_ORG:ENTRY_ONLY" })
+    @Inherited
+    public @interface WithSimpleReportEntryOnlyUser {
     }
 
     @Retention(RetentionPolicy.RUNTIME)

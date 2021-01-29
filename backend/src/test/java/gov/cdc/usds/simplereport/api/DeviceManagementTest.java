@@ -45,10 +45,10 @@ public class DeviceManagementTest extends BaseApiTest {
 
     @Test
     void updateDeviceType_adminUser_success() {
+        useSuperUser();
         ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
         ObjectNode variables = sillyDeviceArgs()
                 .put("id", someDeviceType.get("internalId").asText());
-        useSuperUser();
         runQuery("device-type-update", variables);
     }
 

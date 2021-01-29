@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -54,18 +55,22 @@ public class TestOrderService {
     _terepo = terepo;
 }
 
+@AuthorizationConfiguration.RequirePermissionStartTest
   public List<TestOrder> getQueue(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionStartTest // Incorrect permission:
+                                                         // https://github.com/CDCgov/prime-simplereport/issues/677
   public List<TestOrder> getTestResults(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.getTestResults(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultList
   public List<TestEvent> getTestResults(Person patient) {
       return _terepo.findAllByPatient(patient);
   }
@@ -76,6 +81,7 @@ public class TestOrderService {
         return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
     }
 
+    @AuthorizationConfiguration.RequirePermissionUpdateTest
     public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
         TestOrder order = this.getTestOrder(id);
 
@@ -91,6 +97,7 @@ public class TestOrderService {
         return _repo.save(order);
     }
 
+    @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -109,6 +116,7 @@ public class TestOrderService {
     _repo.save(order);
   }
 
+  @AuthorizationConfiguration.RequirePermissionStartTest
   public TestOrder addPatientToQueue(
     UUID facilityId,
     Person patient,
@@ -147,6 +155,7 @@ public class TestOrderService {
     return _repo.save(newOrder);
   }
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void updateTimeOfTestQuestions(
     String patientId,
     String pregnancy,
@@ -175,18 +184,20 @@ public class TestOrderService {
   }
 
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void removePatientFromQueue(String patientId) {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _repo.save(order);
   }
 
-  public TestOrder retrieveTestOrder(String patientId) {
+  private TestOrder retrieveTestOrder(String patientId) {
 	Organization org = _os.getCurrentOrganization();
 	Person patient = _ps.getPatient(patientId, org);
 	return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public int cancelAll() {
 	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
   }

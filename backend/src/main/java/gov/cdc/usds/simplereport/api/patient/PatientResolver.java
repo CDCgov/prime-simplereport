@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PersonService;
 
@@ -23,6 +24,7 @@ public class PatientResolver implements GraphQLQueryResolver {
         return ps.getPatients(facilityId);
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person getPatient(String id) {
         return ps.getPatient(id);
     }

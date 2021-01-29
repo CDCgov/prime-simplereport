@@ -16,14 +16,8 @@ public class OrganizationFacilityTest extends BaseApiTest {
     private DeviceTypeService _deviceService;
 
     @Test
-    public void fetchFakeUserData() {
-        ObjectNode resp = runQuery("current-user-query");
-        ObjectNode who = (ObjectNode) resp.get("whoami");
-        assertEquals("Bobbity", who.get("firstName").asText());
-    }
-
-    @Test
-    void createFacility_orgUser_success() {
+    void createFacility_orgAdmin_success() {
+        useOrgAdmin();
         runQuery("facility-create", getDeviceArgs());
     }
 

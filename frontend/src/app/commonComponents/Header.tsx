@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import Button from "./Button";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
+import { hasPermission, appPermissions } from "../permissions";
 
 const Header: React.FC<{}> = () => {
   const organization = useSelector(
@@ -32,6 +33,26 @@ const Header: React.FC<{}> = () => {
     const id = (e.target as HTMLSelectElement).value;
     window.location.href = `${window.location.pathname}?facility=${id}`;
   };
+
+  const canViewSettings = hasPermission(
+    user.permissions,
+    appPermissions.settings.canView
+  );
+
+  const canViewPeople = hasPermission(
+    user.permissions,
+    appPermissions.people.canView
+  );
+
+  const canViewResults = hasPermission(
+    user.permissions,
+    appPermissions.results.canView
+  );
+
+  const canViewTestQueue = hasPermission(
+    user.permissions,
+    appPermissions.tests.canView
+  );
 
   const logout = () => {
     // Fetch the id_token from local storage
@@ -91,45 +112,51 @@ const Header: React.FC<{}> = () => {
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/queue/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Conduct Test
-              </NavLink>
-            </li>
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/results/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Results
-              </NavLink>
-            </li>
-            <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-              <NavLink
-                to={`/patients/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                {PATIENT_TERM_PLURAL_CAP}
-              </NavLink>
-            </li>
+            {canViewTestQueue ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/queue/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Conduct Test
+                </NavLink>
+              </li>
+            ) : null}
+            {canViewResults ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/results/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Results
+                </NavLink>
+              </li>
+            ) : null}
+            {canViewPeople ? (
+              <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
+                <NavLink
+                  to={`/patients/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  {PATIENT_TERM_PLURAL_CAP}
+                </NavLink>
+              </li>
+            ) : null}
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
                 icon={"user-circle"}
@@ -144,6 +171,12 @@ const Header: React.FC<{}> = () => {
                 <li className="usa-sidenav__item span-full-name">
                   {formatFullName(user)}
                 </li>
+                <li className="usa-sidenav__item">
+                  <span>
+                    <strong>Role: </strong>
+                    {user.roleDescription}
+                  </span>
+                </li>
                 <li className="usa-sidenav__item">{facility.name}</li>
                 <li className="usa-sidenav__item">
                   <Button variant="unstyled" label="Log out" onClick={logout} />
@@ -151,65 +184,73 @@ const Header: React.FC<{}> = () => {
               </ul>
             </li>
 
-            <li className="usa-nav__primary-item prime-settings-hidden">
-              <NavLink
-                to={`/settings/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                <FontAwesomeIcon icon={"cog"} /> Settings
-              </NavLink>
-            </li>
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item prime-settings-hidden">
+                <NavLink
+                  to={`/settings/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  <FontAwesomeIcon icon={"cog"} /> Settings
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
         </nav>
 
         <nav aria-label="Primary navigation" className="usa-nav prime-nav">
           <ul className="usa-nav__primary usa-accordion">
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/queue/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="conduct-test-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Conduct Test
-              </NavLink>
-            </li>
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/results/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="results-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                Results
-              </NavLink>
-            </li>
-            <li className="usa-nav__primary-item">
-              <NavLink
-                to={`/patients/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                className="prime-nav-link"
-                id="patient-nav-link"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                {PATIENT_TERM_PLURAL_CAP}
-              </NavLink>
-            </li>
+            {canViewTestQueue ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/queue/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="conduct-test-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Conduct Test
+                </NavLink>
+              </li>
+            ) : null}
+            {canViewResults ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/results/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="results-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  Results
+                </NavLink>
+              </li>
+            ) : null}
+            {canViewPeople ? (
+              <li className="usa-nav__primary-item">
+                <NavLink
+                  to={`/patients/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  className="prime-nav-link"
+                  id="patient-nav-link"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  {PATIENT_TERM_PLURAL_CAP}
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
           <div className="prime-facility-select">
             <Dropdown
@@ -250,6 +291,12 @@ const Header: React.FC<{}> = () => {
                   <li className="usa-sidenav__item span-full-name">
                     {formatFullName(user)}
                   </li>
+                  <li className="usa-sidenav__item">
+                    <span>
+                      <strong>Role: </strong>
+                      {user.roleDescription}
+                    </span>
+                  </li>
                   <li className="usa-sidenav__item">{facility.name}</li>
                   <li className="usa-sidenav__item">
                     <Button
@@ -261,18 +308,20 @@ const Header: React.FC<{}> = () => {
                 </ul>
               </div>
             </li>
-            <li className="usa-nav__primary-item nav__primary-item-icon">
-              <NavLink
-                to={`/settings/?facility=${facility.id}`}
-                onClick={() => setMenuVisible(false)}
-                activeClassName="active-nav-item"
-                activeStyle={{
-                  color: "white",
-                }}
-              >
-                <FontAwesomeIcon icon={"cog"} />
-              </NavLink>
-            </li>
+            {canViewSettings ? (
+              <li className="usa-nav__primary-item nav__primary-item-icon">
+                <NavLink
+                  to={`/settings/?facility=${facility.id}`}
+                  onClick={() => setMenuVisible(false)}
+                  activeClassName="active-nav-item"
+                  activeStyle={{
+                    color: "white",
+                  }}
+                >
+                  <FontAwesomeIcon icon={"cog"} />
+                </NavLink>
+              </li>
+            ) : null}
           </ul>
         </nav>
       </div>
