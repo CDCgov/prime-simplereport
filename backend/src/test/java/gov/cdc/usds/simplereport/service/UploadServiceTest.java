@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
 class UploadServiceTest extends BaseServiceTest<UploadService> {
 
@@ -31,7 +31,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testInsert() throws IOException {
         // Read the test CSV file
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
@@ -47,7 +47,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testNotCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
                 "this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
@@ -59,7 +59,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testMalformedCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
                 "patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
@@ -71,7 +71,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testInvalidPhoneNumber() throws Exception {
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
                 .getResourceAsStream("test-upload-invalid-phone.csv")) {
