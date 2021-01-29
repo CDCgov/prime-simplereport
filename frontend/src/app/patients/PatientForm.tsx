@@ -277,274 +277,277 @@ const PatientForm = (props: Props) => {
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main className="prime-edit-patient prime-home">
-      <Prompt
-        when={formChanged}
-        message={(location) =>
-          "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
-        }
-      />
-      {!props.isPxpView && (
-        <>
-          <Breadcrumbs
-            crumbs={[
-              {
-                link: `/patients/?facility=${props.activeFacilityId}`,
-                text: PATIENT_TERM_PLURAL_CAP,
-              },
-              {
-                link: "",
-                text: !props.patientId
-                  ? `Create New ${PATIENT_TERM_CAP}`
-                  : fullName,
-              },
-            ]}
-          />
-          <div className="prime-edit-patient-heading">
-            <div>
-              <h1>
-                {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
-              </h1>
-              <RequiredMessage />
+      <div className="grid-containerx">
+        <Prompt
+          when={formChanged}
+          message={(location) =>
+            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
+          }
+        />
+        {!props.isPxpView && (
+          <>
+            <Breadcrumbs
+              crumbs={[
+                {
+                  link: `/patients/?facility=${props.activeFacilityId}`,
+                  text: PATIENT_TERM_PLURAL_CAP,
+                },
+                {
+                  link: "",
+                  text: !props.patientId
+                    ? `Create New ${PATIENT_TERM_CAP}`
+                    : fullName,
+                },
+              ]}
+            />
+            <div className="prime-edit-patient-heading">
+              <div>
+                <h1>
+                  {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
+                </h1>
+                <RequiredMessage />
+              </div>
+              <button
+                className="usa-button prime-save-patient-changes"
+                disabled={!formChanged}
+                onClick={savePatientData}
+              >
+                Save Changes
+              </button>
             </div>
-            <button
-              className="usa-button prime-save-patient-changes"
-              disabled={!formChanged}
-              onClick={savePatientData}
-            >
-              Save Changes
-            </button>
-          </div>
-        </>
-      )}
-      <FormGroup title="General info">
-        <div className="usa-form">
-          <TextInput
-            label="First Name"
-            name="firstName"
-            value={patient.firstName}
-            onChange={onChange}
-            required
-          />
-          <TextInput
-            label="Middle Name"
-            name="middleName"
-            value={patient.middleName}
-            onChange={onChange}
-          />
-          <TextInput
-            label="Last Name"
-            name="lastName"
-            value={patient.lastName}
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div className="usa-form">
-          <TextInput
-            label="Lookup ID"
-            name="lookupId"
-            value={patient.lookupId}
-            onChange={onChange}
-          />
-          <Dropdown
-            label="Role"
-            name="role"
-            selectedValue={patient.role}
-            onChange={onChange}
-            options={[
-              { label: "-Select-", value: "" },
-              { label: "Staff", value: "STAFF" },
-              { label: "Resident", value: "RESIDENT" },
-              { label: "Student", value: "STUDENT" },
-              { label: "Visitor", value: "VISITOR" },
-            ]}
-          />
-          {!props.isPxpView && (
-            <Dropdown
-              label="Facility"
-              name="currentFacilityId"
-              selectedValue={currentFacilityId}
-              onChange={(e) => {
-                setCurrentFacilityId(e.target.value);
-                setFormChanged(true);
-              }}
-              options={facilityList}
+          </>
+        )}
+        <FormGroup title="General info">
+          <div className="usa-form">
+            <TextInput
+              label="First Name"
+              name="firstName"
+              value={patient.firstName}
+              onChange={onChange}
               required
+            />
+            <TextInput
+              label="Middle Name"
+              name="middleName"
+              value={patient.middleName}
+              onChange={onChange}
+            />
+            <TextInput
+              label="Last Name"
+              name="lastName"
+              value={patient.lastName}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div className="usa-form">
+            <TextInput
+              label="Lookup ID"
+              name="lookupId"
+              value={patient.lookupId}
+              onChange={onChange}
+            />
+            <Dropdown
+              label="Role"
+              name="role"
+              selectedValue={patient.role}
+              onChange={onChange}
+              options={[
+                { label: "-Select-", value: "" },
+                { label: "Staff", value: "STAFF" },
+                { label: "Resident", value: "RESIDENT" },
+                { label: "Student", value: "STUDENT" },
+                { label: "Visitor", value: "VISITOR" },
+              ]}
+            />
+            {!props.isPxpView && (
+              <Dropdown
+                label="Facility"
+                name="currentFacilityId"
+                selectedValue={currentFacilityId}
+                onChange={(e) => {
+                  setCurrentFacilityId(e.target.value);
+                  setFormChanged(true);
+                }}
+                options={facilityList}
+                required
+              />
+            )}
+          </div>
+          <div className="usa-form">
+            <TextInput
+              type="date"
+              label="Date of Birth (mm/dd/yyyy)"
+              name="birthDate"
+              value={patient.birthDate}
+              onChange={onChange}
+              required
+            />
+          </div>
+        </FormGroup>
+        <FormGroup title="Contact Information">
+          <div className="usa-form">
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <TextInput
+                  type="tel"
+                  label="Phone Number"
+                  name="telephone"
+                  value={patient.telephone}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+            </div>
+            <TextInput
+              type="email"
+              label="Email Address"
+              name="email"
+              value={patient.email}
+              onChange={onChange}
+            />
+          </div>
+          <div className="usa-form">
+            <TextInput
+              label="Street address 1"
+              name="street"
+              value={patient.street}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div className="usa-form">
+            <TextInput
+              label="Street address 2"
+              name="streetTwo"
+              value={patient.streetTwo}
+              onChange={onChange}
+            />
+          </div>
+          <div className="usa-form">
+            <TextInput
+              label="City"
+              name="city"
+              value={patient.city}
+              onChange={onChange}
+            />
+            <TextInput
+              label="County"
+              name="county"
+              value={patient.county}
+              onChange={onChange}
+            />
+            <div className="grid-row grid-gap">
+              <div className="mobile-lg:grid-col-6">
+                <Dropdown
+                  label="State"
+                  name="state"
+                  selectedValue={patient.state}
+                  options={stateCodes.map((c) => ({ label: c, value: c }))}
+                  defaultSelect
+                  onChange={onChange}
+                  required
+                />
+              </div>
+              <div className="mobile-lg:grid-col-6">
+                <TextInput
+                  label="Zip"
+                  name="zipCode"
+                  value={patient.zipCode}
+                  onChange={onChange}
+                  required
+                />
+              </div>
+            </div>
+          </div>
+        </FormGroup>
+        <FormGroup title="Demographics">
+          <a className="usa-link display-block margin-top-105 margin-bottom-3" href="#0">Why are we asking for this information?</a>
+          <RadioGroup
+            legend="Race"
+            name="race"
+            buttons={RACE_VALUES}
+            selectedRadio={patient.race}
+            onChange={onChange}
+          />
+          <RadioGroup
+            legend="Ethnicity"
+            name="ethnicity"
+            buttons={ETHNICITY_VALUES}
+            selectedRadio={patient.ethnicity}
+            onChange={onChange}
+          />
+          <RadioGroup
+            legend="Biological Sex"
+            name="gender"
+            buttons={GENDER_VALUES}
+            selectedRadio={patient.gender}
+            onChange={onChange}
+          />
+        </FormGroup>
+        <FormGroup title="Other">
+          <RadioGroup
+            legend="Resident in congregate care/living setting?"
+            name="residentCongregateSetting"
+            buttons={[
+              { label: "Yes", value: "YES" },
+              { label: "No", value: "NO" },
+            ]}
+            selectedRadio={patient.residentCongregateSetting}
+            hintText="For example: nursing home, group home, penal institution, military"
+            onChange={onChange}
+            required
+          />
+          <RadioGroup
+            legend="Work in Healthcare?"
+            name="employedInHealthcare"
+            buttons={[
+              { label: "Yes", value: "YES" },
+              { label: "No", value: "NO" },
+            ]}
+            selectedRadio={patient.employedInHealthcare}
+            onChange={onChange}
+            required
+          />
+        </FormGroup>
+        {!props.isPxpView && (
+          <FormGroup title="Test History">
+            {patient.testResults && patient.testResults.length !== 0 && (
+              <table className="usa-table usa-table--borderless">
+                <thead>
+                  <tr>
+                    <th scope="col">Date of Test</th>
+                    <th scope="col">Result</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patient.testResults.map((r: any, i: number) => (
+                    <tr key={i}>
+                      <td>{moment(r.dateTested).format("lll")}</td>
+                      <td>{r.result}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </FormGroup>
+        )}
+        <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
+          <Button
+            className={"prime-save-patient-changes"}
+            disabled={!formChanged}
+            onClick={savePatientData}
+            label={props.isPxpView ? "Save and continue" : "Save Changes"}
+          />
+          {props.isPxpView && (
+            <Button
+              className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
+              variant="outline"
+              label={"Back"}
+              onClick={props.backCallback}
             />
           )}
         </div>
-        <div className="usa-form">
-          <TextInput
-            type="date"
-            label="Date of Birth (mm/dd/yyyy)"
-            name="birthDate"
-            value={patient.birthDate}
-            onChange={onChange}
-            required
-          />
-        </div>
-      </FormGroup>
-      <FormGroup title="Contact Information">
-        <div className="usa-form">
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <TextInput
-                type="tel"
-                label="Phone Number"
-                name="telephone"
-                value={patient.telephone}
-                onChange={onChange}
-                required
-              />
-            </div>
-          </div>
-          <TextInput
-            type="email"
-            label="Email Address"
-            name="email"
-            value={patient.email}
-            onChange={onChange}
-          />
-        </div>
-        <div className="usa-form">
-          <TextInput
-            label="Street address 1"
-            name="street"
-            value={patient.street}
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div className="usa-form">
-          <TextInput
-            label="Street address 2"
-            name="streetTwo"
-            value={patient.streetTwo}
-            onChange={onChange}
-          />
-        </div>
-        <div className="usa-form">
-          <TextInput
-            label="City"
-            name="city"
-            value={patient.city}
-            onChange={onChange}
-          />
-          <TextInput
-            label="County"
-            name="county"
-            value={patient.county}
-            onChange={onChange}
-          />
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Dropdown
-                label="State"
-                name="state"
-                selectedValue={patient.state}
-                options={stateCodes.map((c) => ({ label: c, value: c }))}
-                defaultSelect
-                onChange={onChange}
-                required
-              />
-            </div>
-            <div className="mobile-lg:grid-col-6">
-              <TextInput
-                label="Zip"
-                name="zipCode"
-                value={patient.zipCode}
-                onChange={onChange}
-                required
-              />
-            </div>
-          </div>
-        </div>
-      </FormGroup>
-      <FormGroup title="Demographics">
-        <RadioGroup
-          legend="Race"
-          name="race"
-          buttons={RACE_VALUES}
-          selectedRadio={patient.race}
-          onChange={onChange}
-        />
-        <RadioGroup
-          legend="Ethnicity"
-          name="ethnicity"
-          buttons={ETHNICITY_VALUES}
-          selectedRadio={patient.ethnicity}
-          onChange={onChange}
-        />
-        <RadioGroup
-          legend="Biological Sex"
-          name="gender"
-          buttons={GENDER_VALUES}
-          selectedRadio={patient.gender}
-          onChange={onChange}
-        />
-      </FormGroup>
-      <FormGroup title="Other">
-        <RadioGroup
-          legend="Resident in congregate care/living setting?"
-          name="residentCongregateSetting"
-          buttons={[
-            { label: "Yes", value: "YES" },
-            { label: "No", value: "NO" },
-          ]}
-          selectedRadio={patient.residentCongregateSetting}
-          hintText="For example: nursing home, group home, penal institution, military"
-          onChange={onChange}
-          required
-        />
-        <RadioGroup
-          legend="Work in Healthcare?"
-          name="employedInHealthcare"
-          buttons={[
-            { label: "Yes", value: "YES" },
-            { label: "No", value: "NO" },
-          ]}
-          selectedRadio={patient.employedInHealthcare}
-          onChange={onChange}
-          required
-        />
-      </FormGroup>
-      {!props.isPxpView && (
-        <FormGroup title="Test History">
-          {patient.testResults && patient.testResults.length !== 0 && (
-            <table className="usa-table usa-table--borderless">
-              <thead>
-                <tr>
-                  <th scope="col">Date of Test</th>
-                  <th scope="col">Result</th>
-                </tr>
-              </thead>
-              <tbody>
-                {patient.testResults.map((r: any, i: number) => (
-                  <tr key={i}>
-                    <td>{moment(r.dateTested).format("lll")}</td>
-                    <td>{r.result}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </FormGroup>
-      )}
-      <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
-        <Button
-          className={"prime-save-patient-changes"}
-          disabled={!formChanged}
-          onClick={savePatientData}
-          label={props.isPxpView ? "Save and continue" : "Save Changes"}
-        />
-        {props.isPxpView && (
-          <Button
-            className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
-            variant="outline"
-            label={"Back"}
-            onClick={props.backCallback}
-          />
-        )}
       </div>
     </main>
   );
