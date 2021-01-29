@@ -148,7 +148,7 @@ type User {
   lastName: String!
   suffix: String
   email: String!
-  isSiteAdmin: Boolean
+  isAdmin: Boolean
   roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization

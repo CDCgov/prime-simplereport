@@ -72,7 +72,7 @@ public class ApiUserService {
         return user;
     }
 
-    public Boolean isSiteAdmin(ApiUser user) {
+    public Boolean isAdmin(ApiUser user) {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 

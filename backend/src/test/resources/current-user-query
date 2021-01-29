@@ -8,7 +8,7 @@
     email
     permissions
     roleDescription
-    isSiteAdmin
+    isAdmin
     organization {
       testingFacility {
         name

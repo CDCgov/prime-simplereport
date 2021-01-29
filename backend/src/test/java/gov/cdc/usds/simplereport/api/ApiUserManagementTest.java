@@ -38,7 +38,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
-        assertFalse(who.get("isSiteAdmin").asBoolean());
+        assertFalse(who.get("isAdmin").asBoolean());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(who));
     }
 
@@ -50,7 +50,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Test-entry user", who.get("roleDescription").asText());
-        assertFalse(who.get("isSiteAdmin").asBoolean());
+        assertFalse(who.get("isAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
     }
 
@@ -61,7 +61,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Admin user", who.get("roleDescription").asText());
-        assertFalse(who.get("isSiteAdmin").asBoolean());
+        assertFalse(who.get("isAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
     }
 
@@ -73,7 +73,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Super Admin", who.get("roleDescription").asText());
-        assertTrue(who.get("isSiteAdmin").asBoolean());
+        assertTrue(who.get("isAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
 
     }

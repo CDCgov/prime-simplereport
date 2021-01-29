@@ -14,24 +14,24 @@ public class User {
 
     private ApiUser wrapped;
 	private Optional<Organization> org;
-	private Boolean isSiteAdmin;
+	private Boolean isAdmin;
     private String roleDescription;
     private List<UserPermission> permissions;
     private List<OrganizationRole> roles;
 
 
-    public User(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isSiteAdmin) {
+    public User(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin) {
         this.wrapped = user;
         this.org = orgwrapper.map(OrganizationRoles::getOrganization);
         this.permissions = new ArrayList<>();
         this.roles = new ArrayList<>();
-        this.isSiteAdmin = isSiteAdmin;
+        this.isAdmin = isAdmin;
         if (orgwrapper.isPresent()) {
             permissions.addAll(orgwrapper.get().getGrantedPermissions());
             roleDescription = orgwrapper.get().getEffectiveRole().get().getDescription();
             roles.addAll(orgwrapper.get().getGrantedRoles());
         }
-        if (isSiteAdmin) {
+        if (isAdmin) {
             if (roleDescription == null) {
                 roleDescription = "Super Admin";
             } else {
@@ -69,8 +69,8 @@ public class User {
         return wrapped.getLoginEmail();
 	}
 
-	public Boolean getisSiteAdmin() {
-		return isSiteAdmin;
+	public Boolean getisAdmin() {
+		return isAdmin;
 	}
 
 	public List<UserPermission> getPermissions() {

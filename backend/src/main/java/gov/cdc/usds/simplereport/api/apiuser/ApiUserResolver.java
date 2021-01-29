@@ -40,8 +40,8 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 	public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
 		Optional<OrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
-		Boolean isSiteAdmin = _userService.isSiteAdmin(currentUser);
-        return new User(currentUser, currentOrgRoles, isSiteAdmin);
+		Boolean isAdmin = _userService.isAdmin(currentUser);
+        return new User(currentUser, currentOrgRoles, isAdmin);
 	}
 
 	public List<User> getUsers() {
@@ -60,7 +60,7 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 				roles.add(OrganizationRole.ENTRY_ONLY);
 			}
 			OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
-			return new User(u, Optional.of(orgRoles), _userService.isSiteAdmin(u));
+			return new User(u, Optional.of(orgRoles), _userService.isAdmin(u));
 		}).collect(Collectors.toList());
 	}
 }

@@ -35,7 +35,7 @@ const WHOAMI_QUERY = gql`
       lastName
       suffix
       email
-      isSiteAdmin
+      isAdmin
       permissions
       roleDescription
       organization {
@@ -96,7 +96,7 @@ const App = () => {
           suffix: data.whoami.suffix,
           email: data.whoami.email,
           roleDescription: data.whoami.roleDescription,
-          isSiteAdmin: data.whoami.isSiteAdmin,
+          isAdmin: data.whoami.isAdmin,
           permissions: data.whoami.permissions,
         },
       })
@@ -181,7 +181,7 @@ const App = () => {
                 <Route
                   path={"/admin"}
                   render={({ match }) => (
-                    <AdminRoutes match={match} isSiteAdmin={data.whoami.isSiteAdmin} />
+                    <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
                   )}
                 />
               </Switch>
