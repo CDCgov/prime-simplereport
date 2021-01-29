@@ -303,7 +303,9 @@ const PatientForm = (props: Props) => {
             <div className="prime-edit-patient-heading">
               <div>
                 <h1>
-                  {!props.patientId ? `Create New ${PATIENT_TERM_CAP}` : fullName}
+                  {!props.patientId
+                    ? `Create New ${PATIENT_TERM_CAP}`
+                    : fullName}
                 </h1>
                 <RequiredMessage />
               </div>
@@ -462,7 +464,12 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
-          <a className="usa-link display-block margin-top-105 margin-bottom-3" href="#0">Why are we asking for this information?</a>
+          <a
+            className="usa-link display-block margin-top-105 margin-bottom-3"
+            href="#0"
+          >
+            Why are we asking for this information?
+          </a>
           <RadioGroup
             legend="Race"
             name="race"

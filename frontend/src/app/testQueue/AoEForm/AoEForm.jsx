@@ -394,9 +394,7 @@ const AoEForm = ({
       <Button
         label={saveButtonText}
         type={"submit"}
-        className={classnames(
-          isModal ? "margin-right-205" : "margin-right-0"
-        )}
+        className={classnames(isModal ? "margin-right-205" : "margin-right-0")}
       />
     </div>
   );
@@ -457,7 +455,9 @@ const AoEForm = ({
         )}
         <div
           className={classnames(
-            isModal ? "margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205" : "margin-top-3"
+            isModal
+              ? "margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205"
+              : "margin-top-3"
           )}
         >
           {buttonGroup}
