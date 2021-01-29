@@ -48,6 +48,21 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
+    void testInsertOneBadRow() throws IOException {
+        // Read the test CSV file
+        try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
+                .getResourceAsStream("test-upload-one-invalid-row.csv")) {
+                    final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream), "Should fail to parse");
+
+            final List<Person> patients = this._ps.getPatients(null);
+            assertEquals(0, patients.size());
+        }
+
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
     void testNotCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
                 "this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
