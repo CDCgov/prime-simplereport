@@ -10,5 +10,5 @@ simple-report-initialization.default-user:
   middle-name: Bob
   last-name: Bobberoo
 simple-report:
-  admin-emails:
+  site-admin-emails:
     - ruby@example.com

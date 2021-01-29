@@ -17,7 +17,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 
 @Component
 public class OrganizationExtractor
-        implements Converter<Collection<? extends GrantedAuthority>, List<OrganizationRoles>> {
+        implements Converter<Collection<? extends GrantedAuthority>, List<AuthorityBasedOrganizationRoles>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(OrganizationExtractor.class);
 
@@ -28,7 +28,7 @@ public class OrganizationExtractor
     }
 
     @Override
-    public List<OrganizationRoles> convert(Collection<? extends GrantedAuthority> source) {
+    public List<AuthorityBasedOrganizationRoles> convert(Collection<? extends GrantedAuthority> source) {
         Map<String, EnumSet<OrganizationRole>> rolesFound = new HashMap<>();
         for (GrantedAuthority granted : source) {
             String claimed = granted.getAuthority();
@@ -54,7 +54,7 @@ public class OrganizationExtractor
             LOG.error("No tenant organization roles found!");
         }
         return rolesFound.entrySet().stream()
-                .map(e -> new OrganizationRoles(e.getKey(), e.getValue()))
+                .map(e -> new AuthorityBasedOrganizationRoles(e.getKey(), e.getValue()))
                 .collect(Collectors.toList());
     }
 

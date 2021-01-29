@@ -7,4 +7,7 @@ interface User {
   lastName: string;
   suffix: string;
   email: string;
+  type?: UserType; // TODO: remove optional prop
+  permissions?: UserPermission[]; // TODO: remove optional prop
+  roleDescription: string;
 }

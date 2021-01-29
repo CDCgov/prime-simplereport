@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
 
-public class OrganizationRoles implements PermissionHolder {
+public class AuthorityBasedOrganizationRoles implements PermissionHolder {
 
     private String organizationExternalId;
     private Set<OrganizationRole> grantedRoles;
 
-    public OrganizationRoles(String organizationExternalId, Collection<OrganizationRole> grantedRoles) {
+    public AuthorityBasedOrganizationRoles(String organizationExternalId, Collection<OrganizationRole> grantedRoles) {
         super();
         this.organizationExternalId = organizationExternalId;
         this.grantedRoles = EnumSet.copyOf(grantedRoles);

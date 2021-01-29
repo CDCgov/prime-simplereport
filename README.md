@@ -119,7 +119,7 @@ Useful local settings
 - make the default user an admin
 ```
 simple-report:
-  admin-emails:
+  site-admin-emails:
     - bob@example.com
 ```
 - make SQL pretty

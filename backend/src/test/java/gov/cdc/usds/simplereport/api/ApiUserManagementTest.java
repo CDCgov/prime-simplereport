@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 import static org.mockito.Mockito.when;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -34,26 +37,45 @@ public class ApiUserManagementTest extends BaseApiTest {
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
+        assertEquals("Standard user", who.get("roleDescription").asText());
+        assertFalse(who.get("isSiteAdmin").asBoolean());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(who));
     }
 
     @Test
-    void whoami_entryOnlyUser_okPermissions() {
+    void whoami_entryOnlyUser_okPermissionsAndRoleDescription() {
         useOrgEntryOnly();
         Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.SUBMIT_TEST,
-                UserPermission.UPDATE_TEST, UserPermission.READ_PATIENT_LIST);
+                UserPermission.UPDATE_TEST, UserPermission.SEARCH_PATIENTS);
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
+        assertEquals("Test-entry user", who.get("roleDescription").asText());
+        assertFalse(who.get("isSiteAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
     }
 
     @Test
-    void whoami_orgAdminUser_okPermissions() {
+    void whoami_orgAdminUser_okPermissionsAndRoleDescription() {
         useOrgAdmin();
         Set<UserPermission> expected = EnumSet.allOf(UserPermission.class);
         ObjectNode resp = runQuery("current-user-query");
         ObjectNode who = (ObjectNode) resp.get("whoami");
+        assertEquals("Admin user", who.get("roleDescription").asText());
+        assertFalse(who.get("isSiteAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
+    }
+
+    @Test
+    void whoami_superuser_okResponses() {
+        useSuperUser();
+        setRoles(null);
+        Set<UserPermission> expected = EnumSet.noneOf(UserPermission.class);
+        ObjectNode resp = runQuery("current-user-query");
+        ObjectNode who = (ObjectNode) resp.get("whoami");
+        assertEquals("Super Admin", who.get("roleDescription").asText());
+        assertTrue(who.get("isSiteAdmin").asBoolean());
+        assertEquals(expected, extractPermissionsFromUser(who));
+
     }
 
     @Test

@@ -5,6 +5,7 @@ package gov.cdc.usds.simplereport.config.authorization;
  */
 public enum UserPermission {
     READ_PATIENT_LIST,
+    SEARCH_PATIENTS,
     READ_RESULT_LIST,
     EDIT_PATIENT,
     EDIT_FACILITY,

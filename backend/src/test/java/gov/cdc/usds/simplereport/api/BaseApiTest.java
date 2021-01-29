@@ -21,13 +21,14 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -69,13 +70,13 @@ public abstract class BaseApiTest {
 
     protected Client _oktaClient;
 
-    private static final List<OrganizationRoles> USER_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
-    private static final List<OrganizationRoles> ADMIN_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<AuthorityBasedOrganizationRoles> USER_ORG_ROLES = 
+            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<AuthorityBasedOrganizationRoles> ADMIN_ORG_ROLES = 
+            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ADMIN)));
-    private static final List<OrganizationRoles> ENTRY_ONLY_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<AuthorityBasedOrganizationRoles> ENTRY_ONLY_ORG_ROLES = 
+            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ENTRY_ONLY)));
 
     protected void truncateDb() {
@@ -133,6 +134,16 @@ public abstract class BaseApiTest {
     protected void useSuperUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+    }
+
+    protected void setRoles(Set<OrganizationRole> roles) {
+        List<AuthorityBasedOrganizationRoles> orgRoles;
+        if (roles != null && !roles.isEmpty()) {
+            orgRoles = Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", roles));
+        } else {
+            orgRoles = Collections.emptyList();
+        }
+        when(_authService.findAllOrganizationRoles()).thenReturn(orgRoles);
     }
 
     @BeforeEach
@@ -221,5 +232,17 @@ public abstract class BaseApiTest {
         } else {
             assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
         }
+    }
+
+    protected GraphQLResponse executeAddPersonMutation(String firstName, String lastName, String birthDate,
+            String phone, String lookupId)
+            throws IOException {
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+                .put("firstName", firstName)
+                .put("lastName", lastName)
+                .put("birthDate", birthDate)
+                .put("telephone", phone)
+                .put("lookupId", lookupId);
+        return _template.perform("add-person", variables);
     }
 }

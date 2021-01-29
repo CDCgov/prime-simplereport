@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -22,7 +22,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-    private AdminEmailList _admins;
+    private SiteAdminEmailList _siteAdmins;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
     private OktaService _oktaService;
@@ -32,12 +32,12 @@ public class ApiUserService {
     public ApiUserService(
         ApiUserRepository apiUserRepo,
         IdentitySupplier supplier,
-        AdminEmailList admins,
+        SiteAdminEmailList admins,
         OktaService oktaService
     ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
-        _admins = admins;
+        _siteAdmins = admins;
         _oktaService = oktaService;
     }
 
@@ -72,8 +72,8 @@ public class ApiUserService {
         return user;
     }
 
-    public Boolean isAdminUser(ApiUser user) {
-        return _admins.contains(user.getLoginEmail());
+    public Boolean isSiteAdmin(ApiUser user) {
+        return _siteAdmins.contains(user.getLoginEmail());
     }
 
     public void assertEmailAvailable(String email) {
@@ -87,12 +87,13 @@ public class ApiUserService {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
         if (found.isPresent()) {
+            LOG.info("User has logged in before: retrieving user record.");
             ApiUser user = found.get();
             user.updateLastSeen();
             return _apiUserRepo.save(user);
         } else {
             // Assumes user already has a corresponding Okta entity; otherwise, they couldn't log in :)
-            LOG.info("Initial login for {}: creating user record.", userIdentity.getUsername());
+            LOG.info("Initial login for user: creating user record.");
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
             return _apiUserRepo.save(user);

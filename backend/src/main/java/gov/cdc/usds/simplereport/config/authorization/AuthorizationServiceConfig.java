@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import java.util.Collections;
+import java.util.Set;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,9 +26,9 @@ public class AuthorizationServiceConfig {
     @Profile(BeanProfiles.SINGLE_TENANT)
     public AuthorizationService getDummyAuthorizer(InitialSetupProperties setupProps,
             OrganizationInitializingService initService) {
-        final OrganizationRoles defaultOrg = new OrganizationRoles(
+        final AuthorityBasedOrganizationRoles defaultOrg = new AuthorityBasedOrganizationRoles(
                 setupProps.getOrganization().getExternalId(),
-                Collections.singleton(OrganizationRole.USER));
+                Set.of(OrganizationRole.USER, OrganizationRole.ADMIN));
         return () -> Collections.singletonList(defaultOrg);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 
 /**
  * Real-world implementation of AuthorizationService: should eventually be able
@@ -22,7 +22,7 @@ public class LoggedInAuthorizationService implements AuthorizationService {
     }
 
     @Override
-    public List<OrganizationRoles> findAllOrganizationRoles() {
+    public List<AuthorityBasedOrganizationRoles> findAllOrganizationRoles() {
         Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
         if (currentAuth == null) {
             throw new RuntimeException("Nobody is currently authenticated");

@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
@@ -95,6 +96,14 @@ public class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
         patients = _service.getPatients(_site2.getInternalId());
         assertPatientList(patients, FRANK, BRAD, DEXTER, AMOS);
+    }
+
+    @Test
+    @WithSimpleReportEntryOnlyUser
+    void addPatient_entryOnlyUser_error() {
+        assertSecurityError(
+                () -> _service.addPatient(null, null, "Fred", null, "Flintstone", "Jr.", LocalDate.of(1950, 1, 1), null,
+                        null, "Bedrock", "AZ", "87654", null, "RESIDENT", null, null, null, null, null, false, false));
     }
 
     private void makedata() {

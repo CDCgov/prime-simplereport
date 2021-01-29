@@ -16,6 +16,7 @@ enum UserPermission {
   EDIT_FACILITY
   EDIT_ORGANIZATION
   MANAGE_USER_LIST
+  SEARCH_PATIENTS
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
@@ -23,9 +24,9 @@ enum UserPermission {
 }
 
 enum OrganizationRole {
+  ENTRY_ONLY
   USER
   ADMIN
-  ENTRY_ONLY
 }
 
 type DeviceType {
@@ -147,10 +148,11 @@ type User {
   lastName: String!
   suffix: String
   email: String!
-  isAdmin: Boolean
+  isSiteAdmin: Boolean
+  roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization
-  roles: [OrganzationRole!]
+  roles: [OrganizationRole!]
 }
 
 type Query {

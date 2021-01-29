@@ -7,11 +7,11 @@ import Admin from "./Admin";
 
 interface Props {
   match: { url: string };
-  isAdmin: boolean;
+  isSiteAdmin: boolean;
 }
 
-const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
-  if (!isAdmin) {
+const AdminRoutes: React.FC<Props> = ({ match, isSiteAdmin }) => {
+  if (!isSiteAdmin) {
     return (
       <Route
         path={match.url}

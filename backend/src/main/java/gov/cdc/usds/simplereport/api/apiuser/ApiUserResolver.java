@@ -11,13 +11,14 @@ import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
@@ -38,18 +39,9 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 
 	public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
-		Optional<CurrentOrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
-        Optional<Organization> currentOrg;
-        List<UserPermission> permissions = new ArrayList<>();
-        if (currentOrgRoles.isPresent()) {
-            CurrentOrganizationRoles orgRoles = currentOrgRoles.get();
-            currentOrg = Optional.of(orgRoles.getOrganization());
-            permissions.addAll(orgRoles.getGrantedPermissions());
-        } else {
-            currentOrg = Optional.empty();
-        }
-		Boolean isAdmin = _userService.isAdminUser(currentUser);
-        return new User(currentUser, currentOrg, isAdmin, permissions);
+		Optional<OrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
+		Boolean isSiteAdmin = _userService.isSiteAdmin(currentUser);
+        return new User(currentUser, currentOrgRoles, isSiteAdmin);
 	}
 
 	public List<User> getUsers() {
@@ -58,20 +50,16 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 		Set<String> admins = new HashSet<>(_organizationService.getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
 		Set<String> entryOnly = new HashSet<>(_organizationService.getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
 		return users.stream().map(u -> {
-				String email = u.getLoginEmail();
-				Set<OrganizationRole> roles = Set.of(OrganizationRole.USER);
-				if (admins.contains(email)) {
-					roles.add(OrganizationRole.ADMIN);
-				}
-				if (entryOnly.contains(email)) {
-					roles.add(OrganizationRole.ENTRY_ONLY);
-				}
-				OrganizationRoles orgRoles = new OrganizationRoles(org.getExternalId(), roles);
-				Set<UserPermission> permissions = orgRoles.getGrantedPermissions();
-				return new User(u, 
-							Optional.of(org), 
-							_userService.isAdminUser(u), 
-							permissions);				   
-			}).collect(Collectors.toList());
+			Set<OrganizationRole> roles = Set.of(OrganizationRole.USER);
+			String email = u.getLoginEmail();
+			if (admins.contains(email)) {
+				roles.add(OrganizationRole.ADMIN);
+			}
+			if (entryOnly.contains(email)) {
+				roles.add(OrganizationRole.ENTRY_ONLY);
+			}
+			OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
+			return new User(u, Optional.of(orgRoles), _userService.isSiteAdmin(u));
+		}).collect(Collectors.toList());
 	}
 }

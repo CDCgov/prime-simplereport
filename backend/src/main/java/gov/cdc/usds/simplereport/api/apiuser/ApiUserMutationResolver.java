@@ -6,12 +6,14 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -45,8 +47,12 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
         Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultPermissions());
+        Boolean isSiteAdmin = _us.isSiteAdmin(apiUser);
+        // This assumption doesn't hold for admins, but when creating another user, it's not terribly important yet.
+        Optional<OrganizationRoles> orgRoles = org.isPresent() 
+                ? Optional.of(new OrganizationRoles(org.get(), Set.of(OrganizationRole.USER)))
+                : Optional.empty();
+        return new User(apiUser, orgRoles, isSiteAdmin);
     }
 
     public User updateUser(
@@ -63,12 +69,12 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         }
         ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
         Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultPermissions());
-    }
-
-    private List<UserPermission> getDefaultPermissions() {
-        return new ArrayList<>(OrganizationRole.USER.getGrantedPermissions());
+        Boolean isSiteAdmin = _us.isSiteAdmin(apiUser);
+        // This assumption doesn't hold for admins, but when updating another user, it's not terribly important yet.
+        Optional<OrganizationRoles> orgRoles = org.isPresent() 
+                ? Optional.of(new OrganizationRoles(org.get(), Set.of(OrganizationRole.USER)))
+                : Optional.empty();
+        return new User(apiUser, orgRoles, isSiteAdmin);
     }
 }
 

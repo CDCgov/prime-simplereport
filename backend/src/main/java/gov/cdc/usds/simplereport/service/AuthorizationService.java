@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 
 @FunctionalInterface
 public interface AuthorizationService {
@@ -13,6 +13,6 @@ public interface AuthorizationService {
      * up to the caller to determine which if any of these claims applies to the
      * actual data model of the current API instance.
      */
-    List<OrganizationRoles> findAllOrganizationRoles();
+    List<AuthorityBasedOrganizationRoles> findAllOrganizationRoles();
 
 }

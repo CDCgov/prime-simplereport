@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 
@@ -19,7 +19,7 @@ import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 // Adding any configuration here should probably be added to SliceTestConfiguration &/or SliceTestConfigurationAdmin
 @EnableConfigurationProperties({
         InitialSetupProperties.class,
-        AdminEmailList.class,
+        SiteAdminEmailList.class,
         AuthorizationProperties.class,
         DataHubConfig.class,
 })

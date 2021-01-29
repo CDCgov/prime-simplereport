@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 public interface ApiUserRepository extends Repository<ApiUser, UUID> {
 
 	public static final String FIND_BY_USERNAME_QUERY = "from #{#entityName} u "
-			+ "where u.login_email in (:usernames)";
+			+ "where u.loginEmail in (:usernames)";
 
 	public ApiUser save(ApiUser entity);
 

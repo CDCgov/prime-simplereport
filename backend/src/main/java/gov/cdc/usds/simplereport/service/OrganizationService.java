@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -27,7 +27,7 @@ import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
@@ -57,10 +57,10 @@ public class OrganizationService {
         _oktaService = oktaService;
     }
 
-    public Optional<CurrentOrganizationRoles> getCurrentOrganizationRoles() {
-        List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
+    public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
+        List<AuthorityBasedOrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
-                .map(OrganizationRoles::getOrganizationExternalId)
+                .map(AuthorityBasedOrganizationRoles::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
@@ -70,14 +70,14 @@ public class OrganizationService {
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
-        OrganizationRoles foundRoles = orgRoles.stream()
+        AuthorityBasedOrganizationRoles foundRoles = orgRoles.stream()
                 .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
                 .findFirst().get();
-        return Optional.of(new CurrentOrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+        return Optional.of(new OrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
     }
 
     public Organization getCurrentOrganization() {
-        CurrentOrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+        OrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
         return orgRole.getOrganization();
     }
 
