@@ -324,7 +324,7 @@ const PatientForm = (props: Props) => {
                 disabled={!formChanged}
                 onClick={savePatientData}
               >
-                Save Changes
+                Save changes
               </button>
             </div>
           </>
@@ -332,20 +332,20 @@ const PatientForm = (props: Props) => {
         <FormGroup title="General info">
           <div className="usa-form">
             <TextInput
-              label="First Name"
+              label="First name"
               name="firstName"
               value={patient.firstName}
               onChange={onChange}
               required
             />
             <TextInput
-              label="Middle Name"
+              label="Middle name"
               name="middleName"
               value={patient.middleName}
               onChange={onChange}
             />
             <TextInput
-              label="Last Name"
+              label="Last name"
               name="lastName"
               value={patient.lastName}
               onChange={onChange}
@@ -389,7 +389,7 @@ const PatientForm = (props: Props) => {
           <div className="usa-form">
             <TextInput
               type="date"
-              label="Date of Birth (mm/dd/yyyy)"
+              label="Date of birth (mm/dd/yyyy)"
               name="birthDate"
               value={patient.birthDate}
               onChange={onChange}
@@ -403,7 +403,7 @@ const PatientForm = (props: Props) => {
               <div className="mobile-lg:grid-col-6">
                 <TextInput
                   type="tel"
-                  label="Phone Number"
+                  label="Phone number"
                   name="telephone"
                   value={patient.telephone}
                   onChange={onChange}
@@ -413,7 +413,7 @@ const PatientForm = (props: Props) => {
             </div>
             <TextInput
               type="email"
-              label="Email Address"
+              label="Email address"
               name="email"
               value={patient.email}
               onChange={onChange}
@@ -463,7 +463,7 @@ const PatientForm = (props: Props) => {
               </div>
               <div className="mobile-lg:grid-col-6">
                 <TextInput
-                  label="Zip"
+                  label="Zip code"
                   name="zipCode"
                   value={patient.zipCode}
                   onChange={onChange}
@@ -495,7 +495,7 @@ const PatientForm = (props: Props) => {
             onChange={onChange}
           />
           <RadioGroup
-            legend="Biological Sex"
+            legend="Biological sex"
             name="gender"
             buttons={GENDER_VALUES}
             selectedRadio={patient.gender}
@@ -516,7 +516,7 @@ const PatientForm = (props: Props) => {
             required
           />
           <RadioGroup
-            legend="Work in Healthcare?"
+            legend="Employed in healthcare?"
             name="employedInHealthcare"
             buttons={[
               { label: "Yes", value: "YES" },
@@ -528,12 +528,12 @@ const PatientForm = (props: Props) => {
           />
         </FormGroup>
         {!props.isPxpView && (
-          <FormGroup title="Test History">
+          <FormGroup title="Test history">
             {patient.testResults && patient.testResults.length !== 0 && (
               <table className="usa-table usa-table--borderless">
                 <thead>
                   <tr>
-                    <th scope="col">Date of Test</th>
+                    <th scope="col">Date of test</th>
                     <th scope="col">Result</th>
                   </tr>
                 </thead>
@@ -554,7 +554,7 @@ const PatientForm = (props: Props) => {
             className={"prime-save-patient-changes"}
             disabled={!formChanged}
             onClick={savePatientData}
-            label={props.isPxpView ? "Save and continue" : "Save Changes"}
+            label={props.isPxpView ? "Save and continue" : "Save changes"}
           />
           {props.isPxpView && (
             <Button
