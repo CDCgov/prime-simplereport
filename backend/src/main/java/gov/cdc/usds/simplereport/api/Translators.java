@@ -125,7 +125,7 @@ public class Translators {
         if (RACES.contains(race)) {
             return race;
         }
-        throw new IllegalGraphqlArgumentException("\""+r+"\" is not a valid race.");
+        throw new IllegalGraphqlArgumentException("\""+r+"\" must be one of [" + String.join(", ", RACES) + "].");
     }
 
     private static final Set<String> ETHNICITIES = Set.of(
@@ -141,7 +141,7 @@ public class Translators {
         if (ETHNICITIES.contains(ethnicity)) {
             return ethnicity;
         }
-        throw new IllegalGraphqlArgumentException("\""+e+"\" is not a valid ethnicity.");
+        throw new IllegalGraphqlArgumentException("\""+e+"\" must be one of [" + String.join(", ", ETHNICITIES) + "].");
     }
 
     private static final Set<String> GENDERS = Set.of(
@@ -157,7 +157,7 @@ public class Translators {
         if (GENDERS.contains(gender)) {
             return gender;
         }
-        throw new IllegalGraphqlArgumentException("\""+g+"\" is not a valid gender.");
+        throw new IllegalGraphqlArgumentException("\""+g+"\" must be one of [" + String.join(", ", GENDERS) + "].");
     }
 
     private static final Map<String, Boolean> YES_NO = Map.of(
