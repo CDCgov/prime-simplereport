@@ -161,6 +161,21 @@ resource "azurerm_application_gateway" "load_balancer" {
     key_vault_secret_id = data.azurerm_key_vault_certificate.wildcard_simplereport_gov.secret_id
   }
 
+  ssl_policy {
+    policy_name          = "${var.env}-ssl"
+    policy_type          = "Custom"
+    min_protocol_version = "TLSv1_2"
+    cipher_suites = [
+      "TLS_RSA_WITH_AES_256_CBC_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+      "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_RSA_WITH_AES_128_CBC_SHA256"
+    ]
+  }
+
   # ------- Routing -------------------------
   request_routing_rule {
     name                        = local.redirect_rule
@@ -191,12 +206,14 @@ resource "azurerm_application_gateway" "load_balancer" {
     name                               = "${var.env}-urlmap"
     default_backend_address_pool_name  = local.static_backend_pool
     default_backend_http_settings_name = local.static_backend_https_setting
+    //    default_rewrite_rule_set_name      = "simple-report-routing"
 
     path_rule {
       name                       = "api"
       paths                      = ["/api/*", "/api"]
       backend_address_pool_name  = local.api_backend_pool
       backend_http_settings_name = local.api_backend_https_setting
+      //      rewrite_rule_set_name      = "simple-report-routing"
     }
 
     path_rule {
@@ -206,6 +223,33 @@ resource "azurerm_application_gateway" "load_balancer" {
       backend_http_settings_name = local.static_backend_https_setting
     }
   }
+
+  //  rewrite_rule_set {
+  //    name = "simple-report-routing"
+  //    rewrite_rule {
+  //      name          = "api-wildcard"
+  //      rule_sequence = 100
+  //
+  //      condition {
+  //        ignore_case = true
+  //        negate      = false
+  //        pattern     = ".*api/(.*)"
+  //        variable    = "var_uri_path"
+  //      }
+  //    }
+  //
+  //    rewrite_rule {
+  //      name          = "react-app"
+  //      rule_sequence = 105
+  //
+  //      condition {
+  //        ignore_case = true
+  //        negate      = false
+  //        pattern     = ".*app/(.*)"
+  //        variable    = "var_uri_path"
+  //      }
+  //    }
+  //  }
 
   autoscale_configuration {
     min_capacity = var.autoscale_min

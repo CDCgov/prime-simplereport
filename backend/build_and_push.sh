@@ -13,5 +13,5 @@ echo "Tagged $ACR_TAG"
 
 # Log in to ACR
 # Uncomment for user login
-# az acr login --name simplereportacr
+az acr login --name simplereportacr
 docker push $ACR_TAG
