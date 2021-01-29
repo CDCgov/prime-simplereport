@@ -174,6 +174,9 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
         assertEquals(_e.getTestOrder().getInternalId().toString(), _e.getTestOrderId().toString());
 
+        List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId());
+        assertEquals(1, events_before.size());
+
         // verify the original order was updated
         List<TestOrder> savedOrders = _service.getTestResults(facility.getInternalId());
         assertEquals(1, savedOrders.size());
@@ -181,5 +184,10 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         assertEquals(reasonMsg, onlySavedOrder.getReasonForCorrection());
         assertEquals(deleteMarkerEvent.getInternalId().toString(), onlySavedOrder.getTestEventId().toString());
         assertEquals(TestCorrectionStatus.REMOVED, onlySavedOrder.getCorrectionStatus());
+
+        // make sure the original item is removed from the result and ONLY the "corrected" removed one is shown
+        List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId());
+        assertEquals(1, events_after.size());
+        assertEquals(deleteMarkerEvent.getInternalId().toString(), events_after.get(0).getInternalId().toString());
     }
 }

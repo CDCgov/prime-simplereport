@@ -18,7 +18,7 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     @Autowired
     private TestOrderService tos;
 
-    public List<TestEvent> getTestResults(String facilityId) {
+    public List<TestEvent> getTestResults(UUID facilityId) {
         return tos.getTestEventsResults(facilityId);
     }
 

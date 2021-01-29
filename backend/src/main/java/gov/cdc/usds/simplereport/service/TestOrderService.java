@@ -75,8 +75,8 @@ public class TestOrderService {
 
     @Transactional(readOnly = true)
     @AuthorizationConfiguration.RequirePermissionReadResultList
-    public List<TestEvent> getTestEventsResults(String facilityId) {
-        Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+    public List<TestEvent> getTestEventsResults(UUID facilityId) {
+        Facility fac = _os.getFacilityInCurrentOrg(facilityId);
         return _terepo.getTestEventResults(fac.getInternalId());
     }
 
