@@ -25,6 +25,7 @@ import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
+import ManageUsersContainer from "./Settings/Users/ManageUsersContainer";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -69,6 +70,7 @@ const SettingsRoutes = ({ match }: any) => (
         <FacilityFormContainer facilityId={match.params.facilityId} />
       )}
     />
+    <Route path={match.url + "/users"} component={ManageUsersContainer} />
   </>
 );
 
