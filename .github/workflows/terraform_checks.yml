@@ -43,18 +43,12 @@ jobs:
 
       - name: Terraform Init
         run: |
-          cd dev && terraform init
-          cd persistent && terraform init
-          cd ../../test && terraform init
-          cd persistent && terraform init
-          cd ../../demo && terraform init
-          cd persistent && terraform init
-          cd ../../stg && terraform init
-          cd persistent && terraform init
-          cd ../../prod && terraform init
-          cd persistent && terraform init
-          cd ../../global && terraform init
-
+          pushd dev; pushd persistent; terraform init; popd; terraform init; popd
+          pushd test; pushd persistent; terraform init; popd; terraform init; popd
+          pushd demo; pushd persistent; terraform init; popd; terraform init; popd
+          pushd stg; pushd persistent; terraform init; popd; terraform init; popd
+          pushd prod; pushd persistent; terraform init; popd; terraform init; popd
+          pushd global; terraform init;
 
       - name: Terraform Validate
         run: |
