@@ -123,7 +123,7 @@ public class TestOrderService {
     TestEvent testEvent = new TestEvent(order);
     _terepo.save(testEvent);
 
-    order.setTestEvent(testEvent);
+    order.setTestEventRef(testEvent);
     _repo.save(order);
   }
 
@@ -250,7 +250,7 @@ public class TestOrderService {
 
         // order having reason text is way more useful when we allow actual corrections not just deletes.
         order.setReasonForCorrection(reasonForCorrection);
-        order.setTestEvent(newRemoveEvent);
+        order.setTestEventRef(newRemoveEvent);
 
         // order.setOrderStatus(OrderStatus.CANCELED); NO: this makes it disappear.
 

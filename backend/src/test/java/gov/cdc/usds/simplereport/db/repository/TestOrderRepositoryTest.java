@@ -69,7 +69,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         flush();
         TestEvent ev = _events.save(new TestEvent(TestResult.POSITIVE, device, hoya, site, order));
         assertNotNull(ev);
-        order.setTestEvent(ev);
+        order.setTestEventRef(ev);
         _repo.save(order);
         flush();
 
@@ -131,7 +131,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         _repo.save(order1);
         flush();
         TestEvent didit = _events.save(new TestEvent(TestResult.NEGATIVE, site.getDefaultDeviceType(), patient0, site, order1));
-        order1.setTestEvent(didit);
+        order1.setTestEventRef(didit);
         order1.setResult(didit.getResult());
         order1.markComplete();
         _repo.save(order1);
@@ -198,7 +198,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     private void doTest(TestOrder order, TestResult result) {
         order.setResult(result);
         TestEvent event = _events.save(new TestEvent(order));
-        order.setTestEvent(event);
+        order.setTestEventRef(event);
         order.markComplete();
         _repo.save(order);
         flush();

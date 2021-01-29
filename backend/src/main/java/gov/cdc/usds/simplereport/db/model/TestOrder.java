@@ -72,6 +72,7 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey;
 	}
 
+	@Override
 	public void setDateTestedBackdate(Date date) {
 		super.setDateTestedBackdate(date);
 	}
@@ -92,16 +93,12 @@ public class TestOrder extends BaseTestInfo {
 		orderStatus = OrderStatus.CANCELED;
 	}
 
-    public void setTestEvent(TestEvent testEvent) {
+    public void setTestEventRef(TestEvent testEvent) {
         this.testEventId = testEvent.getInternalId();
     }
 
     public UUID getTestEventId() {
         return testEventId;
-    }
-
-    public void setTestEventId(UUID testEventId) {
-        this.testEventId = testEventId;
     }
 
 	public String getPregnancy() {
@@ -142,6 +139,7 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey.getSurvey().getNoSymptoms();
 	}
 
+	@Override
 	public void setDeviceType(DeviceType deviceType) {
 		super.setDeviceType(deviceType);
 	}
@@ -151,10 +149,12 @@ public class TestOrder extends BaseTestInfo {
     }
 
     // this will eventually be used when corrections are put back into the queue to be corrected
+	@Override
 	public void setCorrectionStatus(TestCorrectionStatus newCorrectionStatus) {
 		super.setCorrectionStatus(newCorrectionStatus);
 	}
 
+	@Override
 	public void setReasonForCorrection(String reasonForCorrection) {
 		super.setReasonForCorrection(reasonForCorrection);
 	}
