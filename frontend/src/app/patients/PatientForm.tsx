@@ -27,6 +27,7 @@ import Alert from "../commonComponents/Alert";
 import FormGroup from "../commonComponents/FormGroup";
 import Button from "../../app/commonComponents/Button";
 import { useSelector } from "react-redux";
+import classnames from "classnames";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -276,8 +277,15 @@ const PatientForm = (props: Props) => {
   }
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
-    <main className="prime-edit-patient prime-home">
-      <div className="grid-containerx">
+    <main
+      className={classnames(
+        "prime-edit-patient prime-home",
+        props.isPxpView && "padding-top-0"
+    )}>
+      <div
+        className={classnames(
+          !props.isPxpView && "grid-container margin-bottom-4"
+      )}>
         <Prompt
           when={formChanged}
           message={(location) =>
