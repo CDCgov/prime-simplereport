@@ -1,5 +1,5 @@
 spring:
-  profiles.include: okta-test, auth-test
+  profiles.include: okta-test, auth-dev
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-test.azurewebsites.net
