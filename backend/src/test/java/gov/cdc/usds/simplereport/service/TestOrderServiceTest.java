@@ -158,7 +158,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     }
 
     @Test
-    public void correctionsTest() {
+    void correctionsTest() {
         Organization org = _organizationService.getCurrentOrganization();
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _dataFactory.createFullPerson(org);

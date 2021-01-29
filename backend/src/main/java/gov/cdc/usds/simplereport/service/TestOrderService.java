@@ -231,7 +231,6 @@ public class TestOrderService {
         }
         TestEvent event = loadExistingEvent.get();
         if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
-            LOG.error("TestEvent to be corrected cannot be in TestCorrectionStatus.REMOVED state testEventId {}", testEventId);
             throw new IllegalGraphqlArgumentException("Can not correct removed test event");
         }
 
