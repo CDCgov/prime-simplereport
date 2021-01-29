@@ -317,7 +317,6 @@ const PatientForm = (props: Props) => {
                     ? `Create New ${PATIENT_TERM_CAP}`
                     : fullName}
                 </h1>
-                <RequiredMessage />
               </div>
               <button
                 className="usa-button prime-save-patient-changes"
