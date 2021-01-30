@@ -6,11 +6,14 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.UUID;
@@ -19,6 +22,7 @@ import java.util.UUID;
 @Immutable
 @AttributeOverride(name = "result", column = @Column(nullable = false))
 public class TestEvent extends BaseTestInfo {
+	private static final Logger LOG = LoggerFactory.getLogger(TestEvent.class);
 
 	@Column
 	@Type(type = "jsonb")
@@ -28,8 +32,9 @@ public class TestEvent extends BaseTestInfo {
 	@Type(type = "jsonb")
 	private Provider providerData;
 
-	@Column(columnDefinition = "uuid")
-	private UUID patientAnswersId;
+	@Column
+	@Type(type = "jsonb")
+	private AskOnEntrySurvey patientAnswersData;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name="test_order_id")
@@ -46,8 +51,14 @@ public class TestEvent extends BaseTestInfo {
 		this.patientData = getPatient();
 		this.providerData = getFacility().getOrderingProvider();
 		this.order = order;
-		this.patientAnswersId = order.getPatientAnswersId();  // Note: this is NOT a copy of the data like patient amd provider
 		super.setDateTestedBackdate(order.getDateTestedBackdate());
+		PatientAnswers answers = order.getAskOnEntrySurvey();
+		if (answers != null) {
+			this.patientAnswersData = order.getAskOnEntrySurvey().getSurvey();  // Note: this is NOT a copy of the data like patient amd provider
+		} else {
+			// this can happen during unit tests, but never in prod.
+			LOG.error("Order {} missing PatientAnswers", order.getInternalId());
+		}
 	}
 
 	public TestEvent(TestOrder order) {
@@ -62,14 +73,18 @@ public class TestEvent extends BaseTestInfo {
 		this.patientData = event.getPatient();
 		this.providerData = event.getProviderData();
 		this.order = event.getTestOrder();
-		this.patientAnswersId = event.getPatientAnswersId();  // Note: this is NOT a copy of the data like patient amd provider
+		// this.patient_answers_data =
+		this.patientAnswersData = event.getPatientAnswersData();
 		super.setDateTestedBackdate(order.getDateTestedBackdate());
-
 		this.priorCorrectedTestEventId = event.getInternalId();
 	}
 
 	public Person getPatientData() {
 		return patientData;
+	}
+
+	public AskOnEntrySurvey getPatientAnswersData() {
+		return patientAnswersData;
 	}
 
 	public Date getDateTested() {
@@ -90,12 +105,8 @@ public class TestEvent extends BaseTestInfo {
 
 	public UUID getTestOrderId() { return order.getInternalId(); }
 
-	public UUID patientAnswersId() { return patientAnswersId; }
-
 	public UUID getPriorCorrectedTestEventId() {
 		return priorCorrectedTestEventId;
 	}
-
-	public UUID getPatientAnswersId() { return patientAnswersId; }
 
 }

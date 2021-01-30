@@ -28,8 +28,6 @@ public class TestOrder extends BaseTestInfo {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_answers_id")
 	private PatientAnswers askOnEntrySurvey;
-	@Column(name = "patient_answers_id", columnDefinition = "uuid", insertable = false, updatable = false)
-	private UUID patientAnswersId;    // id used directly when copying to TestEvent.
 	@Column
 	private LocalDate dateTested; // REMOVE THIS COLUMN
 	@Column(nullable = false)
@@ -62,10 +60,6 @@ public class TestOrder extends BaseTestInfo {
 
 	public void setAskOnEntrySurvey(PatientAnswers askOnEntrySurvey) {
 		this.askOnEntrySurvey = askOnEntrySurvey;
-		// the ID field is a shortcut for TestEvents are created.
-		// The field is read-only and loaded from the db; however, when we create
-		// a new TestOrder, we must set it ourselves.
-		this.patientAnswersId = askOnEntrySurvey.getInternalId();
 	}
 
 	public PatientAnswers getAskOnEntrySurvey() {
@@ -143,10 +137,6 @@ public class TestOrder extends BaseTestInfo {
 	public void setDeviceType(DeviceType deviceType) {
 		super.setDeviceType(deviceType);
 	}
-
-    public UUID getPatientAnswersId() {
-        return patientAnswersId;
-    }
 
     // this will eventually be used when corrections are put back into the queue to be corrected
 	@Override

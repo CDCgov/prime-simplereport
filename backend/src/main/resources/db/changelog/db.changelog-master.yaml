@@ -1110,9 +1110,9 @@ databaseChangeLog:
             tableName: test_event
             columns:
               - column:
-                  name: patient_answers_id
-                  remarks: The questions asked at order entry or at test time.
-                  type: *idtype
+                  name: patient_answers_data
+                  type: jsonb
+                  remarks: The patient's demographics and address at the time the test was administered.
               - column:
                   name: date_tested_backdate
                   type: DATETIME
@@ -1138,21 +1138,16 @@ databaseChangeLog:
                   type: text
                   remarks: User supplied comment when a correction happens.
         - sql:
-            remarks: Copy the existing test_order_id and patient_answers_id from test_order.
+            remarks: Copy the existing test_order_id from test_order.
             sql: |
               UPDATE ${database.defaultSchemaName}.test_event TestEvent
               SET test_order_id = TestOrder.internal_id,
-                  patient_answers_id = TestOrder.patient_answers_id,
+                  patient_answers_data = PatientAnswers.ask_on_entry,
                   date_tested_backdate = TestOrder.date_tested_backdate
               FROM ${database.defaultSchemaName}.test_order TestOrder
+                   INNER JOIN ${database.defaultSchemaName}.patient_answers PatientAnswers
+                   ON TestOrder.patient_answers_id = PatientAnswers.internal_id
               WHERE TestOrder.test_event_id = TestEvent.internal_id;
-        - addForeignKeyConstraint:
-            remarks: Finally, after all the rows were updated using sql, now apply the constraints.
-            constraintName: fk__test_event__patient_answers_id
-            baseTableName: test_event
-            baseColumnNames: patient_answers_id
-            referencedTableName: patient_answers
-            referencedColumnNames: internal_id
         - addForeignKeyConstraint:
             remarks: Finally, after all the rows were updated using sql, now apply the constraints. Will fail if test_event rows aren't perfect.
             constraintName: fk__test_event__test_order__internal_id

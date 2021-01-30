@@ -37,7 +37,7 @@ public class TestEventExport {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
-		this.survey = testEvent.getTestOrder().getAskOnEntrySurvey().getSurvey();  // ugh
+		this.survey = testEvent.getPatientAnswersData();
 		this.provider = testEvent.getProviderData();
 		this.facility = testEvent.getFacility();
 		this.device = testEvent.getDeviceType();

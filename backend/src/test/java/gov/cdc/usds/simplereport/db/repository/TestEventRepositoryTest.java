@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -65,13 +66,25 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         testTestEventUnitTests(order, first);  // just leverage existing order, event to test on newer columns
     }
 
+    private void compareAskOnEntrySurvey(AskOnEntrySurvey a1, AskOnEntrySurvey a2) {
+        assertEquals(a1.getFirstTest(), a2.getFirstTest());
+        assertEquals(a1.getNoSymptoms(), a2.getNoSymptoms());
+        assertEquals(a1.getFirstTest(), a2.getFirstTest());
+        assertEquals(a1.getPregnancy(), a2.getPregnancy());
+        assertEquals(a1.getPriorTestDate(), a2.getPriorTestDate());
+        assertEquals(a1.getPriorTestResult(), a2.getPriorTestResult());
+        assertEquals(a1.getPriorTestType(), a2.getPriorTestType());
+        assertEquals(a1.getSymptomOnsetDate(), a2.getSymptomOnsetDate());
+    }
+
     private void testTestEventUnitTests(TestOrder startingOrder, TestEvent startingEvent) {
         assertEquals(startingOrder.getInternalId(), startingEvent.getTestOrderId());
         assertEquals(TestCorrectionStatus.ORIGINAL ,startingEvent.getCorrectionStatus());
         assertNull(startingEvent.getPriorCorrectedTestEventId());
-        assertNotNull(startingOrder.getPatientAnswersId());
-        assertNotNull(startingEvent.getPatientAnswersId());
-        assertEquals(startingOrder.getPatientAnswersId().toString(), startingEvent.getPatientAnswersId().toString());
+        assertNotNull(startingOrder.getAskOnEntrySurvey().getSurvey());
+        assertNotNull(startingEvent.getPatientData());
+
+        compareAskOnEntrySurvey(startingOrder.getAskOnEntrySurvey().getSurvey(), startingEvent.getPatientAnswersData());
 
         // repo level test. Higher level tests done in TestOrderServiceTest
         String reason = "Unit Test Correction " + LocalDateTime.now().toString();
@@ -81,6 +94,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         Optional<TestEvent> eventReloadOptional = _repo.findById(correctionEvent.getInternalId());
         assertTrue(eventReloadOptional.isPresent());
         TestEvent eventReloaded = eventReloadOptional.get();
+
         assertEquals(reason, eventReloaded.getReasonForCorrection());
         assertEquals(TestCorrectionStatus.REMOVED, eventReloaded.getCorrectionStatus());
         assertEquals(startingEvent.getInternalId(), eventReloaded.getPriorCorrectedTestEventId());
@@ -91,6 +105,6 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         assertEquals(startingEvent.getResult(), eventReloaded.getResult());
         assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
         assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
-        assertEquals(startingEvent.patientAnswersId(), eventReloaded.patientAnswersId());
+        compareAskOnEntrySurvey(startingEvent.getPatientAnswersData(), eventReloaded.getPatientAnswersData());
     }
 }
