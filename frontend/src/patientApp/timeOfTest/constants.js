@@ -20,14 +20,29 @@ const globalSymptomDefinitions = [
 ];
 
 export const getSymptomList = () => globalSymptomDefinitions;
+
 export const getTestTypes = () => [
   { label: "Molecular", value: "1" },
   { label: "Antigen", value: "2" },
   { label: "Antibody/Serology", value: "3" },
   { label: "Unknown", value: "4" },
 ];
+
 export const getPregnancyResponses = () => [
   { label: "Yes", value: "77386006" },
   { label: "No", value: "60001007" },
   { label: "Would not state", value: "261665006" },
+];
+
+export const getTimeOfTestSteps = () => [
+  {
+    label: "Profile information",
+    value: "profile",
+    order: 0,
+  },
+  {
+    label: "Symptoms and history",
+    value: "symptoms",
+    order: 1,
+  },
 ];

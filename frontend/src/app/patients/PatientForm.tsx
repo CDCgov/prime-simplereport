@@ -8,7 +8,6 @@ import {
 import moment from "moment";
 import { Prompt } from "react-router-dom";
 import { Redirect } from "react-router";
-
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
@@ -132,7 +131,8 @@ interface Props {
   patientId?: string;
   patient?: any; //TODO: TYPES
   isPxpView: boolean;
-  backCallback?: any;
+  backCallback?: () => void;
+  saveCallback?: () => void;
 }
 
 const PatientForm = (props: Props) => {
@@ -264,15 +264,17 @@ const PatientForm = (props: Props) => {
     if (!props.isPxpView) {
       return <Redirect to={`/patients/?facility=${props.activeFacilityId}`} />;
     } else {
-      return (
-        <Redirect
-          push
-          to={{
-            pathname: "/patient-info-confirmation",
-            state: { page: "symptoms" },
-          }}
-        />
-      );
+      const patientInfoConfirmRedirect = () => {
+        return (
+          <Redirect
+            push
+            to={{
+              pathname: "/patient-info-confirm",
+            }}
+          />
+        );
+      };
+      props.saveCallback ? props.saveCallback() : patientInfoConfirmRedirect();
     }
   }
   //TODO: when to save initial data? What if name isn't filled? required fields?

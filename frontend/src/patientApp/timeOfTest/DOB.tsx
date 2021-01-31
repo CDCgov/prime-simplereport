@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router";
+import { gql, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
-import { gql, useLazyQuery } from "@apollo/client";
-import { connect, useDispatch, useSelector } from "react-redux";
 import { setPatient } from "../../app/store";
-import { Redirect } from "react-router";
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
   query PatientLinkVerify($plid: String!, $birthDate: String!) {
@@ -37,12 +36,11 @@ const PATIENT_LINK_VALIDATION_QUERY = gql`
 
 const DOB = () => {
   const dispatch = useDispatch();
-
   const [birthDate, setBirthDate] = useState("");
   const [formattedBirthDate, setFormattedBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [nextPage, setNextPage] = useState(false);
-
+  const dobRef = React.createRef() as any;
   const plid = useSelector((state) => (state as any).plid as String);
 
   const [validateBirthDate, { called, loading, data }] = useLazyQuery(
@@ -55,8 +53,17 @@ const DOB = () => {
 
   useEffect(() => {
     if (!data) return;
+    const patient = data.patientLinkVerify;
+    const residentCongregateSetting = patient.residentCongregateSetting
+      ? "YES"
+      : "NO";
+    const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
-    dispatch(setPatient(data.patientLinkVerify));
+    dispatch(setPatient({
+          ...patient,
+          residentCongregateSetting,
+          employedInHealthcare,
+        }));
 
     setNextPage(true);
     // eslint-disable-next-line
@@ -69,6 +76,7 @@ const DOB = () => {
       setBirthDateError("");
       return true;
     } else {
+      dobRef.current.focus();
       setBirthDateError("Enter your date of birth");
       return false;
     }
@@ -92,8 +100,7 @@ const DOB = () => {
       <Redirect
         push
         to={{
-          pathname: "/patient-info-confirmation",
-          state: { page: "profile" },
+          pathname: "/patient-info-confirm",
         }}
       />
     );
@@ -108,10 +115,7 @@ const DOB = () => {
           </p>
           <form
             className="usa-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              confirmBirthDate();
-            }}
+            onSubmit={confirmBirthDate}
           >
             <TextInput
               label={"Date of birth"}
@@ -128,6 +132,7 @@ const DOB = () => {
               hideOptional={true}
               validationStatus={birthDateError ? "error" : undefined}
               onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+              inputRef={dobRef}
             />
             <Button label={"Continue"} type={"submit"} />
           </form>
