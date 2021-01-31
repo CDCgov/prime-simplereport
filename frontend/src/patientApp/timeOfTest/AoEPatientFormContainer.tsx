@@ -40,7 +40,9 @@ const AoEPatientFormContainer = () => {
   const [prevPage, setPrevPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const facility = useSelector((state) => (state as any).facility as any);
-  const plid = useSelector((state) => (state as any).plid as String) || getPatientLinkIdFromUrl();
+  const plid =
+    useSelector((state) => (state as any).plid as String) ||
+    getPatientLinkIdFromUrl();
   const history = useHistory();
   const [submitMutation] = useMutation(PATIENT_LINK_SUBMIT_MUTATION);
 
@@ -50,8 +52,8 @@ const AoEPatientFormContainer = () => {
         ...args,
         plid,
         birthDate: patient.birthDate,
-      }
-    })
+      },
+    });
   };
 
   history.listen((loc, action) => {

@@ -76,9 +76,7 @@ const PatientProfileContainer = () => {
 
   return (
     <PatientTimeOfTestContainer currentPage={"profile"}>
-      <PatientProfile
-        patient={patient}
-      />
+      <PatientProfile patient={patient} />
       {buttonGroup}
     </PatientTimeOfTestContainer>
   );

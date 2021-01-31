@@ -30,6 +30,14 @@ const PATIENT_LINK_VALIDATION_QUERY = gql`
       gender
       residentCongregateSetting
       employedInHealthcare
+      pregnancy
+      symptoms
+      firstTest
+      priorTestDate
+      priorTestType
+      priorTestResult
+      symptomOnset
+      noSymptoms
     }
   }
 `;
@@ -59,11 +67,13 @@ const DOB = () => {
       : "NO";
     const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
-    dispatch(setPatient({
-          ...patient,
-          residentCongregateSetting,
-          employedInHealthcare,
-        }));
+    dispatch(
+      setPatient({
+        ...patient,
+        residentCongregateSetting,
+        employedInHealthcare,
+      })
+    );
 
     setNextPage(true);
     // eslint-disable-next-line
@@ -113,10 +123,7 @@ const DOB = () => {
           <p className="margin-top-3">
             Enter your date of birth to access your COVID-19 Testing Portal.
           </p>
-          <form
-            className="usa-form"
-            onSubmit={confirmBirthDate}
-          >
+          <form className="usa-form" onSubmit={confirmBirthDate}>
             <TextInput
               label={"Date of birth"}
               name={"birthDate"}
