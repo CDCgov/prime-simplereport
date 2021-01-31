@@ -65,6 +65,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <tbody>
                 <tr
                   class="sr-test-result-row"
+                  title=""
                 >
                   <th
                     scope="row"
@@ -116,6 +117,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </tr>
                 <tr
                   class="sr-test-result-row"
+                  title=""
                 >
                   <th
                     scope="row"
