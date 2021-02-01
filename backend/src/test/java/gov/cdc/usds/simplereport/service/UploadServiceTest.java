@@ -15,11 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.RuntimeJsonMappingException;
-
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
 class UploadServiceTest extends BaseServiceTest<UploadService> {
 
@@ -32,7 +31,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testInsert() throws IOException {
         // Read the test CSV file
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
@@ -40,7 +39,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
             this._service.processPersonCSV(inputStream);
         }
 
-        final StreetAddress address = new StreetAddress("123 Main Street", "", "Washington", "DC", "20008", "");
+        final StreetAddress address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
         final List<Person> patients = this._ps.getPatients(null);
         assertAll(() -> assertEquals(1, patients.size()),
                 () -> assertEquals("Best", patients.get(0).getFirstName()),
@@ -48,11 +47,26 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
+    void testInsertOneBadRow() throws IOException {
+        // Read the test CSV file
+        try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
+                .getResourceAsStream("test-upload-one-invalid-row.csv")) {
+                    final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
+            () -> this._service.processPersonCSV(inputStream), "Should fail to parse");
+
+            final List<Person> patients = this._ps.getPatients(null);
+            assertEquals(0, patients.size());
+        }
+
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
     void testNotCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
                 "this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
-            final IllegalArgumentException e = assertThrows(IllegalArgumentException.class,
+            final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
                     () -> this._service.processPersonCSV(bis), "Should fail to parse");
             assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
             assertEquals(0, this._ps.getPatients(null).size(), "Should not have any patients");
@@ -60,19 +74,19 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testMalformedCSV() throws IOException {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(
                 "patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
-            final RuntimeJsonMappingException e = assertThrows(RuntimeJsonMappingException.class,
+            final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
                     () -> this._service.processPersonCSV(bis), "CSV parsing should fail");
-            assertTrue(e.getMessage().contains("Not enough column values: expected 21, found 1"),
+            assertTrue(e.getMessage().contains("Not enough column values: expected 20, found 1"),
                     "Should have correct error message");
         }
     }
 
     @Test
-    @WithSimpleReportOrgAdminUser
+    @WithSimpleReportSiteAdminUser
     void testInvalidPhoneNumber() throws Exception {
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
                 .getResourceAsStream("test-upload-invalid-phone.csv")) {

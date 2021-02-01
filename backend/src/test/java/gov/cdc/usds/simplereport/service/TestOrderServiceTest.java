@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -48,7 +49,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.",
                 LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Syracuse", "NY", "11801",
-                "8883334444", "STAFF", null, "Nassau", null, null, null, false, false);
+                "8883334444", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
@@ -65,7 +66,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.",
                 LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Syracuse", "NY", "11801",
-                "8883334444", "STAFF", null, "Nassau", null, null, null, false, false);
+                "8883334444", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
         _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
@@ -85,7 +86,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         Facility facility = _organizationService.getFacilities(org).get(0);
         Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.",
                 LocalDate.of(1865, 12, 25), "123 Main", "Apartment 3", "Syracuse", "NY", "11801",
-                "8883334444", "STAFF", null, "Nassau", null, null, null, false, false);
+                "8883334444", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
         TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
