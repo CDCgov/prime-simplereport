@@ -30,14 +30,6 @@ const PATIENT_LINK_VALIDATION_QUERY = gql`
       gender
       residentCongregateSetting
       employedInHealthcare
-      pregnancy
-      symptoms
-      firstTest
-      priorTestDate
-      priorTestType
-      priorTestResult
-      symptomOnset
-      noSymptoms
     }
   }
 `;
