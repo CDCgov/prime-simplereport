@@ -68,6 +68,10 @@ configurations {
 	}
 }
 
+checkstyleTest {
+   configFile = file("config/checkstyle/checkstyleTest.xml")
+}
+
 jacocoTestReport {
 	reports {
 		xml.enabled = true
