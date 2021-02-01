@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,7 +20,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     private TestOrderService tos;
 
     public List<TestEvent> getTestResults(UUID facilityId) {
-        return tos.getTestEventsResults(facilityId);
+        // get all
+        return tos.getTestEventsResults(facilityId, new Date(0));
     }
 
     public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {

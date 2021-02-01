@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -174,7 +175,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
         assertEquals(_e.getTestOrder().getInternalId().toString(), _e.getTestOrderId().toString());
 
-        List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId());
+        List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId(), new Date(0));
         assertEquals(1, events_before.size());
 
         // verify the original order was updated
@@ -186,7 +187,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         assertEquals(TestCorrectionStatus.REMOVED, onlySavedOrder.getCorrectionStatus());
 
         // make sure the original item is removed from the result and ONLY the "corrected" removed one is shown
-        List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId());
+        List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId(), new Date(0));
         assertEquals(1, events_after.size());
         assertEquals(deleteMarkerEvent.getInternalId().toString(), events_after.get(0).getInternalId().toString());
     }

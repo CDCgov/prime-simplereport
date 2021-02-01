@@ -75,9 +75,9 @@ public class TestOrderService {
 
     @Transactional(readOnly = true)
     @AuthorizationConfiguration.RequirePermissionReadResultList
-    public List<TestEvent> getTestEventsResults(UUID facilityId) {
+    public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
         Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-        return _terepo.getTestEventResults(fac.getInternalId());
+        return _terepo.getTestEventResults(fac.getInternalId(), newerThanDate);
     }
 
   @Transactional(readOnly = true)
@@ -88,6 +88,7 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultList
   public List<TestEvent> getTestResults(Person patient) {
       return _terepo.findAllByPatient(patient);
   }
@@ -114,7 +115,7 @@ public class TestOrderService {
         return _repo.save(order);
     }
 
-    @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -222,21 +223,20 @@ public class TestOrderService {
     @Transactional
     @AuthorizationConfiguration.RequirePermissionUpdateTest
     public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
+        Organization org = _os.getCurrentOrganization();  // always check against org
         // The client sends us a TestEvent, we need to map back to the Order.
-        Optional<TestEvent> loadExistingEvent = _terepo.findById(testEventId);
-        if (loadExistingEvent.isEmpty()) {
+        TestEvent event = _terepo.findFirst1ByOrganizationAndInternalId(org, testEventId);
+        if (event == null) {
             // should this throw?
-            LOG.error("Failed to load TestEvent by id {}", testEventId);
-            return null;
+            throw new IllegalGraphqlArgumentException("Cannot find TestResult");
         }
-        TestEvent event = loadExistingEvent.get();
         if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
             throw new IllegalGraphqlArgumentException("Can not correct removed test event");
         }
 
         // todo: should we verify reasonForCorrection is NOT empty? Do we trim()?
 
-        TestOrder order = _repo.findByTestEventId(event.getOrganization(), testEventId);
+        TestOrder order = event.getTestOrder();
         if (order == null) {
             throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
         }
@@ -256,8 +256,10 @@ public class TestOrderService {
         // be corrected.
         order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
 
-        // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to fix the
-        // TestOrder.dateTestedBackdate field, it may not be NULL and will override the correction date!
+        // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to think about the
+        // TestOrder.dateTestedBackdate field.
+        // For example: when viewing the list of past TestEvents, and you see a correction,
+        // what date should be shown if the original test being corrected was backdated?
         _repo.save(order);
 
         return newRemoveEvent;

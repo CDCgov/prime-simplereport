@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -24,16 +23,14 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 	public TestEvent findFirst1ByOrganizationAndInternalId(Organization o, UUID id);
 
 	// Need to control how this query is built. "between" is too vague.
+	// This is across all Orgs/facilities because datahub uploader users
 	@Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC ")
 	public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after);
 
-	@Query( value = "SELECT * FROM " +
-			"    (SELECT MAX(created_at) each_created_at " +
-			"        FROM simple_report.test_event inner_evt " +
-			"        WHERE inner_evt.facility_id = :facility_id " +
-			"     GROUP BY test_order_id) AS latest_events " +
-			"INNER JOIN simple_report.test_event events " +
-			"ON events.created_at = latest_events.each_created_at " +
-			"ORDER BY created_at", nativeQuery = true)
-	public List<TestEvent> getTestEventResults(@Param("facility_id")UUID facility_id);
+	@Query( value = "SELECT DISTINCT ON (test_order_id) * " +
+					" FROM {h-schema}test_event te " +
+					" WHERE te.facility_id = :facilityId " +
+					" AND te.created_at > :newerThanDate" +
+					" ORDER BY te.test_order_id, te.created_at desc", nativeQuery = true)
+	public List<TestEvent> getTestEventResults(UUID facilityId, Date newerThanDate);
 }

@@ -34,7 +34,7 @@ public class TestEvent extends BaseTestInfo {
 
 	@Column
 	@Type(type = "jsonb")
-	private AskOnEntrySurvey patientAnswersData;
+	private AskOnEntrySurvey surveyData;
 
 	@ManyToOne(optional = false)
 	@JoinColumn(name="test_order_id")
@@ -54,7 +54,7 @@ public class TestEvent extends BaseTestInfo {
 		super.setDateTestedBackdate(order.getDateTestedBackdate());
 		PatientAnswers answers = order.getAskOnEntrySurvey();
 		if (answers != null) {
-			this.patientAnswersData = order.getAskOnEntrySurvey().getSurvey();
+			this.surveyData = order.getAskOnEntrySurvey().getSurvey();
 		} else {
 			// this can happen during unit tests, but never in prod.
 			LOG.error("Order {} missing PatientAnswers", order.getInternalId());
@@ -74,7 +74,7 @@ public class TestEvent extends BaseTestInfo {
 		this.providerData = event.getProviderData();
 		this.order = event.getTestOrder();
 		// this.patient_answers_data =
-		this.patientAnswersData = event.getPatientAnswersData();
+		this.surveyData = event.getSurveyData();
 		super.setDateTestedBackdate(order.getDateTestedBackdate());
 		this.priorCorrectedTestEventId = event.getInternalId();
 	}
@@ -83,8 +83,8 @@ public class TestEvent extends BaseTestInfo {
 		return patientData;
 	}
 
-	public AskOnEntrySurvey getPatientAnswersData() {
-		return patientAnswersData;
+	public AskOnEntrySurvey getSurveyData() {
+		return surveyData;
 	}
 
 	public Date getDateTested() {

@@ -84,7 +84,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         assertNotNull(startingOrder.getAskOnEntrySurvey().getSurvey());
         assertNotNull(startingEvent.getPatientData());
 
-        compareAskOnEntrySurvey(startingOrder.getAskOnEntrySurvey().getSurvey(), startingEvent.getPatientAnswersData());
+        compareAskOnEntrySurvey(startingOrder.getAskOnEntrySurvey().getSurvey(), startingEvent.getSurveyData());
 
         // repo level test. Higher level tests done in TestOrderServiceTest
         String reason = "Unit Test Correction " + LocalDateTime.now().toString();
@@ -105,6 +105,6 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         assertEquals(startingEvent.getResult(), eventReloaded.getResult());
         assertEquals(startingEvent.getProviderData(), eventReloaded.getProviderData());
         assertEquals(startingEvent.getPatientData(), eventReloaded.getPatientData());
-        compareAskOnEntrySurvey(startingEvent.getPatientAnswersData(), eventReloaded.getPatientAnswersData());
+        compareAskOnEntrySurvey(startingEvent.getSurveyData(), eventReloaded.getSurveyData());
     }
 }

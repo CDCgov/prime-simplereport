@@ -27,7 +27,7 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
     public TestOrderService _svc;
 
     private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
-        return testEvent.getPatientAnswersData();
+        return testEvent.getSurveyData();
     }
 
     public UUID getId(TestEvent testEvent) {

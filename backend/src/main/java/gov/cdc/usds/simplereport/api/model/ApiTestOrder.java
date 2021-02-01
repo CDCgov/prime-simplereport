@@ -96,6 +96,6 @@ public class ApiTestOrder {
     }
 
     public String getReasonForCorrection() {
-        return order.getReasonForCorrection() == null ? "" : order.getReasonForCorrection();
+        return order.getReasonForCorrection();
     }
 }
