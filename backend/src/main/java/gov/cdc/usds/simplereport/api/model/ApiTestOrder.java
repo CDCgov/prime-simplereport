@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Map;
 import java.time.LocalDate;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.json.JSONObject;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -90,7 +91,9 @@ public class ApiTestOrder {
         return null;    // only TestEvents have a DateTested
     }
 
-    public String getCorrectionStatus() { return order.getCorrectionStatus().toString(); }
+    public TestCorrectionStatus getCorrectionStatus() {
+        return order.getCorrectionStatus();
+    }
 
     public String getReasonForCorrection() {
         return order.getReasonForCorrection() == null ? "" : order.getReasonForCorrection();

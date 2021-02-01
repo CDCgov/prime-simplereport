@@ -12,8 +12,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Type;
@@ -39,14 +37,6 @@ public class TestOrder extends BaseTestInfo {
     // but this is kept up-to-date with the latest one.
     @Column(columnDefinition = "uuid")
     private UUID testEventId;    // id used directly without needing to load
-
-    // join with test_event just to access created_at. Cannot figure out how just get one column
-	// It's separate from testEventId because we eventually want to get rid of it.
-	@Transient
-	@OneToOne
-    @JoinColumn(table = "test_event", name="test_event_id",
-            updatable = false, insertable = false, nullable = true)
-    private TestEvent testEvent;
 
 	protected TestOrder() { /* for hibernate */ }
 

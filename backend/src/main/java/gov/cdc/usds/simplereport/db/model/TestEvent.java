@@ -54,7 +54,7 @@ public class TestEvent extends BaseTestInfo {
 		super.setDateTestedBackdate(order.getDateTestedBackdate());
 		PatientAnswers answers = order.getAskOnEntrySurvey();
 		if (answers != null) {
-			this.patientAnswersData = order.getAskOnEntrySurvey().getSurvey();  // Note: this is NOT a copy of the data like patient amd provider
+			this.patientAnswersData = order.getAskOnEntrySurvey().getSurvey();
 		} else {
 			// this can happen during unit tests, but never in prod.
 			LOG.error("Order {} missing PatientAnswers", order.getInternalId());
