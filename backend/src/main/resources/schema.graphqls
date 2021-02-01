@@ -159,7 +159,7 @@ type Query {
   whoami: User!
 }
 type Mutation {
-  uploadPatients(patientList: Upload): String
+  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: String!
     testingFacilityName: String!
