@@ -57,7 +57,7 @@ const AoEPatientFormContainer = () => {
   };
 
   history.listen((loc, action) => {
-    if (action == "POP") {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });

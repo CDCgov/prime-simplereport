@@ -15,7 +15,7 @@ const PatientProfileContainer = () => {
   const patient = useSelector((state) => (state as any).patient as any);
 
   history.listen((loc, action) => {
-    if (action == "POP") {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });

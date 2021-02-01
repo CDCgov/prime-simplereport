@@ -14,7 +14,7 @@ const StepIndicator = ({
   steps,
   currentStepValue,
 }: Props): React.ReactElement => {
-  const currentStep = steps.find(({ value }) => value == currentStepValue) || {
+  const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
     label: "",
   };
@@ -30,12 +30,12 @@ const StepIndicator = ({
             key={step.value}
             className={classnames(
               "usa-step-indicator__segment",
-              step.value == currentStepValue &&
+              step.value === currentStepValue &&
                 "usa-step-indicator__segment--current",
               currentStep.order > step.order &&
                 "usa-step-indicator__segment--complete"
             )}
-            aria-current={step.value == currentStepValue}
+            aria-current={step.value === currentStepValue}
           >
             <span className="usa-step-indicator__segment-label">
               {step.label} <span className="usa-sr-only">completed</span>
