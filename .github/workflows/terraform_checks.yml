@@ -29,37 +29,24 @@ jobs:
 
       - name: Terraform fmt
         run: |
-          terraform fmt -check dev
-          terraform fmt -check dev/persistent
-          terraform fmt -check global
-          terraform fmt -check test
-          terraform fmt -check test/persistent
-          terraform fmt -check demo
-          terraform fmt -check demo/persistent
-          terraform fmt -check stg
-          terraform fmt -check stg/persistent
+          terraform fmt -check -recursive
 
       - name: Terraform Init
         run: |
-          cd dev && terraform init
-          cd persistent && terraform init
-          cd ../../test && terraform init
-          cd persistent && terraform init
-          cd ../../demo && terraform init
-          cd persistent && terraform init
-          cd ../../stg && terraform init
-          cd persistent && terraform init
-          cd ../../global && terraform init
-
+          pushd dev; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd test; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd demo; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd stg; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd prod; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd pentest; pushd persistent; echo $PWD && terraform init; popd; echo $PWD && terraform init; popd
+          pushd global; echo $PWD && terraform init;
 
       - name: Terraform Validate
         run: |
-          cd dev && terraform validate -no-color
-          cd persistent && terraform validate -no-color
-          cd ../../test && terraform validate -no-color
-          cd persistent && terraform validate -no-color
-          cd ../../demo && terraform validate -no-color
-          cd persistent && terraform validate -no-color
-          cd ../../stg && terraform validate -no-color
-          cd persistent && terraform validate -no-color
-          cd ../../global && terraform validate -no-color
+          pushd dev; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd test; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd demo; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd stg; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd prod; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd pentest; pushd persistent; echo $PWD && terraform validate -no-color; popd; echo $PWD && terraform validate -no-color; popd
+          pushd global; echo $PWD && terraform validate -no-color;
