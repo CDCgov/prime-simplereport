@@ -22,6 +22,7 @@ public class Translators {
 
     private static DateTimeFormatter US_SLASHDATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     private static DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private static final int MAX_STRING_LENGTH = 500;
 
     public static final LocalDate parseUserShortDate(String d) {
         String date = parseString(d);
@@ -75,7 +76,15 @@ public class Translators {
     }
 
     public static String parseString(String value) {
-        return value == null || "".equals(value) ? null : value.trim();
+        if (value == null || "".equals(value)) {
+            return null;
+        }
+        if (value.length() >= MAX_STRING_LENGTH) {
+            throw new IllegalGraphqlArgumentException(
+                "Value received exceeds field length limit of " + MAX_STRING_LENGTH + " characters"
+            );
+        }
+        return value.trim();
     }
 
     public static UUID parseUUID(String uuid) {

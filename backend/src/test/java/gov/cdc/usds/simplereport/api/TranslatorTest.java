@@ -75,6 +75,15 @@ public class TranslatorTest {
     }
 
     @Test
+    public void testParseStringWithLongString() {
+        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+            parseString(
+                "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vestibulum lacus vitae condimentum ultricies. Phasellus sed velit a urna aliquam tempus. Nulla nunc ex, porta eget tristique vel, cursus eu enim. Sed malesuada turpis at rhoncus aliquam. Nullam blandit turpis ac pharetra lobortis. Ut bibendum ligula ex. Curabitur fermentum condimentum erat, in tristique justo maximus eu. Fusce posuere cursus enim, a ullamcorper augue bibendum eget. In eu nunc vitae est molestie mollis. Sed mollis fermentum ante vel bibendum. Fusce vel elit risus."
+            );
+        });
+    }
+
+    @Test
     public void testEmptyUUID() {
         assertEquals(null, parseUUID(""));
     }
