@@ -476,12 +476,6 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
-          <a
-            className="usa-link display-block margin-top-105 margin-bottom-3"
-            href="#0"
-          >
-            Why are we asking for this information?
-          </a>
           <RadioGroup
             legend="Race"
             name="race"
