@@ -58,10 +58,6 @@ public class PatientLinkService {
         }
     }
 
-    public List<PatientLink> fetchPatientLinks() {
-        return plrepo.findAll();
-    }
-
     public PatientLink createPatientLink(UUID testOrderUuid) {
         TestOrder to = torepo.findById(testOrderUuid)
                 .orElseThrow(() -> new IllegalGraphqlArgumentException("No test order with that ID was found"));
