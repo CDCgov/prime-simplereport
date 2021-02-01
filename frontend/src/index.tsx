@@ -41,7 +41,7 @@ if (window.location.hash) {
 }
 
 const httpLink = createUploadLink({
-  uri: `${process.env.REACT_APP_BACKEND_URL}/graphql`,
+  uri: `${process.env.REACT_APP_BACKEND_URL}`,
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
