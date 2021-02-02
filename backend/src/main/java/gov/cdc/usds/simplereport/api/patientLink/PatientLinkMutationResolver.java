@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -25,6 +26,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private TestOrderService tos;
 
+    @Value("${feature-flags.patient-links:false}")
+    private boolean patientLinksEnabled;
+
     public PatientLink refreshPatientLink(String internalId) {
         return pls.refreshPatientLink(internalId);
     }
@@ -32,6 +36,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     public String patientLinkSubmit(String internalId, String birthDate, String pregnancy, String symptoms,
             boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult, String symptomOnset,
             boolean noSymptoms) throws Exception {
+        if (!patientLinksEnabled) {
+            throw new Exception("Patient links not enabled");
+        }
         Person patient = pls.getPatientLinkVerify(internalId, birthDate);
         String patientID = patient.getInternalId().toString();
         LocalDate localPriorTestDate = parseUserDate(priorTestDate);
