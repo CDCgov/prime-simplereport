@@ -307,7 +307,7 @@ const PatientForm = (props: Props) => {
                 {
                   link: "",
                   text: !props.patientId
-                    ? `Create New ${PATIENT_TERM_CAP}`
+                    ? `Add New ${PATIENT_TERM_CAP}`
                     : fullName,
                 },
               ]}
@@ -316,7 +316,7 @@ const PatientForm = (props: Props) => {
               <div>
                 <h1>
                   {!props.patientId
-                    ? `Create New ${PATIENT_TERM_CAP}`
+                    ? `Add New ${PATIENT_TERM_CAP}`
                     : fullName}
                 </h1>
               </div>
@@ -529,7 +529,7 @@ const PatientForm = (props: Props) => {
               <table className="usa-table usa-table--borderless">
                 <thead>
                   <tr>
-                    <th scope="col">Date of test</th>
+                    <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                   </tr>
                 </thead>

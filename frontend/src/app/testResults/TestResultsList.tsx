@@ -103,7 +103,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
                   <tr>
                     <th scope="col">{PATIENT_TERM_CAP} Name</th>
                     <th scope="col">Unique ID</th>
-                    <th scope="col">Date of Test</th>
+                    <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
                   </tr>

@@ -104,7 +104,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   id="add-patient-button"
                 >
                   <FontAwesomeIcon icon="plus" />
-                  {` New ${PATIENT_TERM_CAP}`}
+                  {` Add ${PATIENT_TERM_CAP}`}
                 </NavLink>
               ) : null}
             </div>
