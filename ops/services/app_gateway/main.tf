@@ -162,8 +162,8 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   ssl_policy {
-    policy_name          = "AppGwSslPolicy20170401S"
-    policy_type          = "Predefined"
+    policy_name = "AppGwSslPolicy20170401S"
+    policy_type = "Predefined"
   }
 
   # ------- Routing -------------------------
