@@ -136,14 +136,14 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 // Count queries with one order
                 hibernateQueryInterceptor.startQueryCount();
                 _service.getTestResults(facility.getInternalId());
-                assertEquals(9, hibernateQueryInterceptor.getQueryCount());
+                assertEquals(10, hibernateQueryInterceptor.getQueryCount());
 
                 // Count queries with three order
                 TestEvent _e1 = _dataFactory.createTestEvent(p, facility);
                 TestEvent _e2 = _dataFactory.createTestEvent(p, facility);
                 hibernateQueryInterceptor.startQueryCount();
                 _service.getTestResults(facility.getInternalId());
-                assertEquals(9, hibernateQueryInterceptor.getQueryCount());
+                assertEquals(12, hibernateQueryInterceptor.getQueryCount());
         }
 
         @Test
