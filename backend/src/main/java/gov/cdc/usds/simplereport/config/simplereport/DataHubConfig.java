@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @ConfigurationProperties(prefix = "simple-report.data-hub")
-@ConstructorBinding
 public final class DataHubConfig {
 
     private final boolean uploadEnabled;
@@ -13,6 +12,7 @@ public final class DataHubConfig {
     private final String apiKey;
     private final String secretSlackNotifyWebhookUrl;
 
+    @ConstructorBinding
     public DataHubConfig(boolean uploadEnabled, String uploadUrl, int maxCsvRows, String apiKey,
                          String secretSlackNotifyWebhookUrl) {
         this.uploadEnabled = uploadEnabled;
