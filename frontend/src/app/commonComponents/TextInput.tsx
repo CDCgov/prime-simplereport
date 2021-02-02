@@ -2,6 +2,8 @@ import React from "react";
 import classnames from "classnames";
 import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
+import Optional from "./Optional";
+
 interface Props {
   id?: string;
   name: string;
@@ -17,13 +19,21 @@ interface Props {
     | "text"
     | "time"
     | "url"
-    | "week";
+    | "week"
+    | "bday";
   label: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
+  required?: boolean;
   errorMessage?: React.ReactNode;
   groupClassName?: string;
   validationStatus?: "error" | "success";
+  autoComplete?: string;
+  size?: number;
+  pattern?: string;
+  inputMode?: string;
+  ariaDescribedBy?: string;
+  hintText?: string;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -40,6 +50,12 @@ export const TextInput = ({
   className,
   required,
   validationStatus,
+  autoComplete,
+  size,
+  pattern,
+  inputMode,
+  ariaDescribedBy,
+  hintText,
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -62,14 +78,17 @@ export const TextInput = ({
           validationStatus === "error" && "usa-label--error"
         )}
         htmlFor={widgetId}
+        aria-describedby={ariaDescribedBy}
       >
-        {required ? <Required label={label} /> : label}
+        {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {validationStatus === "error" && (
-        <span role="alert" className="usa-error-message" id={errorId}>
+        <span className="usa-error-message" id={errorId} role="alert">
+          <span className="usa-sr-only">Error: </span>
           {errorMessage}
         </span>
       )}
+      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
       <input
         className={classnames(
           "usa-input",
@@ -79,7 +98,12 @@ export const TextInput = ({
         name={name}
         value={value || ""}
         type={type || "text"}
+        aria-required={required || "false"}
         onChange={onChange}
+        autoComplete={autoComplete}
+        size={size}
+        pattern={pattern}
+        inputMode={inputMode}
         {...inputProps}
         {...(validationStatus === "error"
           ? { "aria-describedby": errorId }

@@ -9,7 +9,7 @@ data "terraform_remote_state" "global" {
 }
 
 # Resource Groups
-data "azurerm_resource_group" "rg_global" {
+data "azurerm_resource_group" "global" {
   name = "${local.project}-${local.name}-management"
 }
 
@@ -22,12 +22,12 @@ data "azurerm_client_config" "current" {}
 # Vaults
 data "azurerm_key_vault" "global" {
   name                = "simple-report-global"
-  resource_group_name = data.azurerm_resource_group.rg_global.name
+  resource_group_name = data.azurerm_resource_group.global.name
 }
 
 data "azurerm_key_vault" "db_keys" {
   name                = "simple-report-db-keys"
-  resource_group_name = data.azurerm_resource_group.rg_global.name
+  resource_group_name = data.azurerm_resource_group.global.name
 }
 
 data "azurerm_key_vault_key" "db_encryption_key" {

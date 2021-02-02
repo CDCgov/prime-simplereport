@@ -1,4 +1,4 @@
-name: Deploy [Test] Backend Azure Resources
+name: Deploy Test Backend Azure Resources
 
 on:
   workflow_dispatch:

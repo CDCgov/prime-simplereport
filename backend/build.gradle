@@ -38,6 +38,9 @@ dependencies {
 
 //	Okta dependencies
 	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
+	implementation 'com.okta.sdk:okta-sdk-api:1.6.0'
+	runtime 'com.okta.sdk:okta-sdk-impl:1.6.0'
+	runtime 'com.okta.sdk:okta-sdk-httpclient:1.6.0'
 
 // App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
@@ -63,6 +66,10 @@ configurations {
 	runtimeClasspath {
 		resolutionStrategy.activateDependencyLocking()
 	}
+}
+
+checkstyleTest {
+   configFile = file("config/checkstyle/checkstyleTest.xml")
 }
 
 jacocoTestReport {

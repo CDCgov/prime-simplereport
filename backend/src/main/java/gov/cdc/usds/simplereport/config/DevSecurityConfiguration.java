@@ -7,9 +7,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
@@ -20,21 +21,21 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @ConditionalOnWebApplication
 public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    private static final Logger logger = LoggerFactory.getLogger(DevSecurityConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
     @Autowired
-    private InitialSetupProperties _setupProps;
+    private DemoUserConfiguration _demoUsers;
 
     @Override
-    public void configure(WebSecurity web) {
-        logger.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
-        web
-                .ignoring()
-                .antMatchers("/**");
+    public void configure(HttpSecurity http) throws Exception {
+        LOG.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
+        http.authorizeRequests().antMatchers("/**").permitAll()
+                .and().csrf().disable()
+                ;
     }
 
-	@Bean
-	public IdentitySupplier getDummyIdentity() {
-		return _setupProps::getDefaultUser;
-	}
+    @Bean
+    public IdentitySupplier getDemoIdentitySupplier() {
+        return () -> _demoUsers.getDefaultUser().getIdentity();
+    }
 }

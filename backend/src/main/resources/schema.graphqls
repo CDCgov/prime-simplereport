@@ -2,11 +2,31 @@
 scalar DateTime
 # java.time.LocalDate
 scalar LocalDate
+scalar Upload
 
 enum ResultValue {
   POSITIVE
   NEGATIVE
   UNDETERMINED
+}
+
+enum UserPermission {
+  READ_PATIENT_LIST
+  READ_RESULT_LIST
+  EDIT_PATIENT
+  EDIT_FACILITY
+  EDIT_ORGANIZATION
+  SEARCH_PATIENTS
+  START_TEST
+  UPDATE_TEST
+  SUBMIT_TEST
+  EXPORT_TEST_EVENT
+}
+
+enum TestCorrectionStatus {
+  ORIGINAL
+  CORRECTED
+  REMOVED
 }
 
 type DeviceType {
@@ -15,6 +35,7 @@ type DeviceType {
   manufacturer: String
   model: String
   loincCode: String
+  swabType: String
 }
 type Patient {
   internalId: ID
@@ -75,6 +96,7 @@ type Provider {
 type Organization {
   internalId: ID
   name: String
+  externalId: String
   testingFacility: [Facility]
 }
 # When starting from the patient, take a more limited view
@@ -100,9 +122,12 @@ type TestOrder {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  correctionStatus: String
+  reasonForCorrection: String
 }
 type TestResult {
   internalId: ID
+  facility: Facility
   patient: Patient
   dateAdded: String
   pregnancy: String
@@ -116,6 +141,8 @@ type TestResult {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  correctionStatus: String
+  reasonForCorrection: String
 }
 
 # Note: we assume a user's email and login username are the same thing.
@@ -123,10 +150,12 @@ type User {
   id: ID
   firstName: String
   middleName: String
-  lastName: String
+  lastName: String!
   suffix: String
-  email: String
+  email: String!
   isAdmin: Boolean
+  roleDescription: String!
+  permissions: [UserPermission!]!
   organization: Organization
 }
 
@@ -135,11 +164,14 @@ type Query {
   patients(facilityId: String): [Patient]
   patient(id: String!): Patient
   organization: Organization
+  organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
+  testResult(id: String!): TestResult
   whoami: User!
 }
 type Mutation {
+  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: String!
     testingFacilityName: String!
@@ -222,6 +254,23 @@ type Mutation {
     deviceTypes: [String]!
     defaultDevice: String!
   ): Organization
+  addUser(
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+    organizationExternalId: String!
+  ): User
+  updateUser(
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    newEmail: String!
+    # oldEmail serves as the unique identifier for the user to be updated
+    oldEmail: String!
+  ): User
   addPatient(
     facilityId: String
     lookupId: String
@@ -282,6 +331,10 @@ type Mutation {
     result: String
     dateTested: String
   ): TestOrder
+  correctTestMarkAsError(
+    id: String!
+    reason: String
+  ): TestResult
   addPatientToQueue(
     facilityId: String!
     patientId: String!
@@ -312,6 +365,7 @@ type Mutation {
     manufacturer: String!
     model: String!
     loincCode: String!
+    swabType: String!
   ): DeviceType
   updateDeviceType(
     id: String!
@@ -319,5 +373,6 @@ type Mutation {
     manufacturer: String
     model: String
     loincCode: String
+    swabType: String
   ): DeviceType
 }

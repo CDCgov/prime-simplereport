@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -27,10 +28,14 @@ public class PersonService {
 
     private OrganizationService _os;
     private PersonRepository _repo;
-    private ApiUserService _apiUserService;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
+
+    public PersonService(OrganizationService os, PersonRepository repo) {
+        _os = os;
+        _repo = repo;
+    }
 
     private void updatePersonFacility(Person person, UUID facilityId) {
         Facility facility = null;
@@ -42,16 +47,7 @@ public class PersonService {
         person.setFacility(facility);
     }
 
-    public PersonService(
-        OrganizationService os,
-        PersonRepository repo,
-        ApiUserService apiUserService
-    ) {
-        _os = os;
-        _repo = repo;
-        _apiUserService = apiUserService;
-    }
-
+    @AuthorizationConfiguration.RequirePermissionSearchPatients
     public List<Person> getPatients(UUID facilityId) {
         Organization org = _os.getCurrentOrganization();
         if (facilityId == null) {
@@ -61,6 +57,7 @@ public class PersonService {
         return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
     }
 
+    // NO PERMISSION CHECK (make sure the caller has one!)
     public Person getPatient(String id) {
         return getPatient(id, _os.getCurrentOrganization());
     }
@@ -71,6 +68,7 @@ public class PersonService {
             .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person addPatient(
         UUID facilityId,
         String lookupId,
@@ -85,7 +83,7 @@ public class PersonService {
         String state,
         String zipCode,
         String telephone,
-        String role,
+        PersonRole role,
         String email,
         String county,
         String race,
@@ -94,14 +92,6 @@ public class PersonService {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-        final PersonRole personRole;
-
-        if (role == null || "".equals(role)) {
-            personRole = PersonRole.UNKNOWN;
-        } else {
-            personRole = PersonRole.valueOf(role.toUpperCase());
-        }
-
         StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
         Person newPatient = new Person(
             _os.getCurrentOrganization(),
@@ -113,7 +103,7 @@ public class PersonService {
             birthDate,
             patientAddress,
             telephone,
-            personRole,
+            role,
             email,
             race,
             ethnicity,
@@ -126,6 +116,7 @@ public class PersonService {
         return _repo.save(newPatient);
     }
 
+    @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person updatePatient(
         UUID facilityId,
         String patientId,
@@ -141,7 +132,7 @@ public class PersonService {
         String state,
         String zipCode,
         String telephone,
-        String role,
+        PersonRole role,
         String email,
         String county,
         String race,
@@ -150,7 +141,6 @@ public class PersonService {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-        final PersonRole personRole = PersonRole.valueOf(role);
         StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
         Person patientToUpdate = this.getPatient(patientId);
         patientToUpdate.updatePatient(
@@ -162,7 +152,7 @@ public class PersonService {
             birthDate,
             patientAddress,
             telephone,
-            personRole,
+            role,
             email,
             race,
             ethnicity,
@@ -175,8 +165,8 @@ public class PersonService {
         return _repo.save(patientToUpdate);
     }
 
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Person setIsDeleted(UUID id, boolean deleted) {
-        _apiUserService.isAdminUser();
         Person person = this.getPatient(id.toString());
         person.setIsDeleted(deleted);
         return _repo.save(person);

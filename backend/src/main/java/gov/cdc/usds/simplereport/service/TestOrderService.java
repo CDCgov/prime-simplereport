@@ -7,10 +7,12 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.Date;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -54,18 +56,36 @@ public class TestOrderService {
     _terepo = terepo;
 }
 
+@AuthorizationConfiguration.RequirePermissionStartTest
   public List<TestOrder> getQueue(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
-  public List<TestOrder> getTestResults(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+  @AuthorizationConfiguration.RequirePermissionStartTest // Incorrect permission:
+                                                         // https://github.com/CDCgov/prime-simplereport/issues/677
+  public List<TestOrder> getTestResults(UUID facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
     return _repo.getTestResults(fac.getOrganization(), fac);
   }
 
+    @Transactional(readOnly = true)
+    @AuthorizationConfiguration.RequirePermissionReadResultList
+    public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
+        Facility fac = _os.getFacilityInCurrentOrg(facilityId);
+        return _terepo.getTestEventResults(fac.getInternalId(), newerThanDate);
+    }
+
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultList
+  public TestEvent getTestResult(UUID id) {
+    Organization org = _os.getCurrentOrganization();
+    return _terepo.findByOrganizationAndInternalId(org, id);
+  }
+
+  @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultList
   public List<TestEvent> getTestResults(Person patient) {
       return _terepo.findAllByPatient(patient);
   }
@@ -76,6 +96,7 @@ public class TestOrderService {
         return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
     }
 
+    @AuthorizationConfiguration.RequirePermissionUpdateTest
     public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
         TestOrder order = this.getTestOrder(id);
 
@@ -91,6 +112,7 @@ public class TestOrderService {
         return _repo.save(order);
     }
 
+  @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -105,10 +127,11 @@ public class TestOrderService {
     TestEvent testEvent = new TestEvent(order);
     _terepo.save(testEvent);
 
-    order.setTestEvent(testEvent);
+    order.setTestEventRef(testEvent);
     _repo.save(order);
   }
 
+  @AuthorizationConfiguration.RequirePermissionStartTest
   public TestOrder addPatientToQueue(
     UUID facilityId,
     Person patient,
@@ -147,6 +170,7 @@ public class TestOrderService {
     return _repo.save(newOrder);
   }
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void updateTimeOfTestQuestions(
     String patientId,
     String pregnancy,
@@ -175,21 +199,66 @@ public class TestOrderService {
   }
 
 
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void removePatientFromQueue(String patientId) {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _repo.save(order);
   }
 
-  public TestOrder retrieveTestOrder(String patientId) {
+  private TestOrder retrieveTestOrder(String patientId) {
 	Organization org = _os.getCurrentOrganization();
 	Person patient = _ps.getPatient(patientId, org);
 	return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
+  @AuthorizationConfiguration.RequireGlobalAdminUser
   public int cancelAll() {
 	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
   }
+
+    @Transactional
+    @AuthorizationConfiguration.RequirePermissionUpdateTest
+    public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
+        Organization org = _os.getCurrentOrganization();  // always check against org
+        // The client sends us a TestEvent, we need to map back to the Order.
+        TestEvent event = _terepo.findByOrganizationAndInternalId(org, testEventId);
+        if (event == null) {
+            // should this throw?
+            throw new IllegalGraphqlArgumentException("Cannot find TestResult");
+        }
+        if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
+            throw new IllegalGraphqlArgumentException("Can not correct removed test event");
+        }
+
+        TestOrder order = event.getTestOrder();
+        if (order == null) {
+            throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
+        }
+
+        // generate a duplicate test_event that just has a status of REMOVED and the reason
+        TestEvent newRemoveEvent = new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
+        _terepo.save(newRemoveEvent);
+
+        // order having reason text is way more useful when we allow actual corrections not just deletes.
+        order.setReasonForCorrection(reasonForCorrection);
+        order.setTestEventRef(newRemoveEvent);
+
+        // order.setOrderStatus(OrderStatus.CANCELED); NO: this makes it disappear.
+
+        // We currently don't do anything special with this CorrectionStatus on the order, but in the next
+        // refactor, we will set this to TestCorrectionStatus.CORRECTED and it will go back into the queue to
+        // be corrected.
+        order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
+
+        // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to think about the
+        // TestOrder.dateTestedBackdate field.
+        // For example: when viewing the list of past TestEvents, and you see a correction,
+        // what date should be shown if the original test being corrected was backdated?
+        _repo.save(order);
+
+        return newRemoveEvent;
+    }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
 	return new IllegalGraphqlArgumentException("No active test order was found for that patient");

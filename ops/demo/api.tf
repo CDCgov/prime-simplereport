@@ -3,9 +3,6 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
-  instance_tier = "Standard"
-  instance_size = "S1"
-
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
@@ -14,7 +11,7 @@ module "simple_report_api" {
   tenant_id        = data.azurerm_client_config.current.tenant_id
 
   app_settings = {
-    SPRING_PROFILES_ACTIVE                         = "azure-demo,no-security"
+    SPRING_PROFILES_ACTIVE                         = "azure-demo,no-security,no-okta-mgmt"
     SPRING_LIQUIBASE_ENABLED                       = "true"
     SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
     SPRING_DATASOURCE_URL                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"

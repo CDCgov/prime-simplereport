@@ -61,6 +61,11 @@ data "azurerm_key_vault_secret" "sr_dev_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "okta_api_key" {
+  name         = "okta-api-key"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_key_vault_secret" "okta_client_id" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
   name         = "okta-${local.env}-client-id"

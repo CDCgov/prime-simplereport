@@ -20,11 +20,11 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
                 + "and q.organization.isDeleted = false "
                 + "and q.patient.isDeleted = false ";
     public static final String FACILITY_QUERY = BASE_ORG_QUERY + " and q.facility = :facility ";
-    public static final String IS_PENDING = " and q.orderStatus = 'PENDING' "; 
+    public static final String IS_PENDING = " and q.orderStatus = 'PENDING' ";
     public static final String IS_COMPLETED = " and q.orderStatus = 'COMPLETED' ";
-    public static final String HAS_EVENT = " and q.testEvent IS NOT NULL ";
-    public static final String ORDER_CREATION_ORDER = " order by q.createdAt ";
-    public static final String RESULT_RECENT_ORDER = " order by q.testEvent.createdAt desc ";
+    public static final String HAS_EVENT = " and q.testEventId IS NOT NULL ";
+    public static final String ORDER_CREATION_ORDER = " order by q.updatedAt ";
+    public static final String RESULT_RECENT_ORDER = " order by updatedAt desc ";
 
     @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)
     @EntityGraph(attributePaths = "patient")
@@ -47,6 +47,11 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
     public int cancelAllPendingOrders(Organization org);
 
     @Query(FACILITY_QUERY + IS_COMPLETED + HAS_EVENT)
-    @EntityGraph(attributePaths = "testEvent")
-    public List<TestOrder> getTestResults(Organization org, Facility facility);
+    @EntityGraph(attributePaths = "patient")
+    List<TestOrder> getTestResults(Organization org, Facility facility);
+
+    @Query( "from #{#entityName} q " +
+            " where q.organization = :org " +
+            " and q.testEventId = :testEventId")
+    TestOrder findByTestEventId(Organization org, UUID testEventId);
 }

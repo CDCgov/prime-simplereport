@@ -1,0 +1,9 @@
+# Bean profile to be included in deployment-specific profiles
+# for TEST deployments.
+okta:
+  oauth2:
+    client-id: 0oa6fl5n8ARasjheq4h6
+simple-report:
+  authorization:
+    role-claim: test_roles
+    role-prefix: "SR-TEST-TENANT:"

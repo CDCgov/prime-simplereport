@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 
@@ -71,17 +72,25 @@ public class QueueManagementTest extends BaseApiTest {
         String orderId = o.getInternalId().toString();
         DeviceType d = _dataFactory.getGenericDevice();
         String deviceId = d.getInternalId().toString();
+        String dateTested = "2020-12-31T14:30:30Z";
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
                 .put("id", orderId)
                 .put("deviceId", deviceId)
-                .put("result", TestResult.POSITIVE.toString());
+                .put("result", TestResult.POSITIVE.toString())
+                .put("dateTested", dateTested);
 
         performQueueUpdateMutation(variables);
 
         TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
         assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
         assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
-        assertEquals(updatedTestOrder.getTestEvent(), null);
+        assertNull(updatedTestOrder.getTestEventId());
+
+        ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
+        assertEquals(orderId, singleQueueEntry.get("internalId").asText());
+        assertEquals(p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
+        assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());
+
     }
 
     @Test

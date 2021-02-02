@@ -3,8 +3,6 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
-  instance_tier  = "PremiumV2"
-  instance_size  = "P1v2"
   instance_count = 1
 
   resource_group_location = data.azurerm_resource_group.rg.location
@@ -21,6 +19,7 @@ module "simple_report_api" {
     SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
     SPRING_DATASOURCE_URL                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
     OKTA_OAUTH2_CLIENT_SECRET                      = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
+    OKTA_API_KEY                                   = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_api_key.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING          = "InstrumentationKey=${data.azurerm_application_insights.app_insights.instrumentation_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
     DATAHUB_API_KEY                                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
     SECRET_SLACK_NOTIFY_WEBHOOK_URL                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.slack_notify_webhook_url.id})"

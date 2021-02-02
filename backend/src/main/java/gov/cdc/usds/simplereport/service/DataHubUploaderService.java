@@ -4,6 +4,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -45,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional
 public class DataHubUploaderService {
-    private static final String CSV_API_VERSION = "3";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
 
     private final DataHubConfig _config;
@@ -205,7 +205,7 @@ public class DataHubUploaderService {
             headers.setContentType(new MediaType("text", "csv"));
             headers.add("x-functions-key", apiKey);
             headers.add("client", "simple_report");
-            headers.add("x-api-version", CSV_API_VERSION);
+            headers.add("x-api-version", TestEventExport.CSV_API_VERSION);
             return execution.execute(request, body);
         })).build();
 
@@ -214,6 +214,7 @@ public class DataHubUploaderService {
         _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
     }
 
+    @AuthorizationConfiguration.RequirePermissionExportTestEvent
     public String createTestCSVForDataHub(String lastEndCreateOn) {
         try {
             this.createTestEventCSV(lastEndCreateOn);
@@ -228,6 +229,7 @@ public class DataHubUploaderService {
     // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
     @Transactional
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
             this.init();

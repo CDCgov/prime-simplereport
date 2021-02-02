@@ -12,7 +12,6 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 @ConfigurationProperties(prefix = "simple-report-initialization")
 @ConstructorBinding
@@ -22,21 +21,17 @@ public class InitialSetupProperties {
     private Provider provider;
     private List<? extends DeviceType> deviceTypes;
     private List<String> configuredDeviceTypes;
-    private IdentityAttributes defaultUser;
     private ConfigFacility facility;
 
     public InitialSetupProperties(Organization organization,
             ConfigFacility facility,
             Provider provider,
             List<DeviceType> deviceTypes,
-            List<String> configuredDeviceTypes,
-            IdentityAttributes defaultUser,
-            IdentityAttributes adminUser) {
+            List<String> configuredDeviceTypes) {
         this.organization = organization;
         this.provider = provider;
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
-        this.defaultUser = defaultUser;
         this.facility = facility;
     }
 
@@ -60,13 +55,9 @@ public class InitialSetupProperties {
 
     public List<? extends DeviceType> getDeviceTypes() {
         return deviceTypes.stream()
-            .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode()))
+            .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode(), d.getSwabType()))
             .collect(Collectors.toList())
             ;
-    }
-
-    public IdentityAttributes getDefaultUser() {
-        return defaultUser;
     }
 
     public static final class ConfigFacility {

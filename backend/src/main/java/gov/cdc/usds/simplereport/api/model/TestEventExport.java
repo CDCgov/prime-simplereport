@@ -8,11 +8,13 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 /**
@@ -23,27 +25,27 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
  * DataHubUploaderService.CSV_API_VERSION. This is only used for debugging issues, but it's a good practice.
  */
 public class TestEventExport {
-
+	public static final String CSV_API_VERSION = "27Jan2021";  // last time we changed something
 	private TestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Facility facility;
+	private DeviceType device;
 
 	public TestEventExport(TestEvent testEvent) {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
-		this.survey = testEvent.getTestOrder().getAskOnEntrySurvey().getSurvey();
+		this.survey = testEvent.getSurveyData();
 		this.provider = testEvent.getProviderData();
 		this.facility = testEvent.getFacility();
+		this.device = testEvent.getDeviceType();
 	}
 
-	private String testResultStatusFinal = "F";
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
-	private String anteriorNaresSwabCode = "445297001";
 	private String nasopharyngealStructureCode = "71836000";
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
 	private Map<String, String> genderMap = Map.of(
@@ -218,9 +220,30 @@ public class TestEventExport {
 		return testEvent.getInternalId().toString();
 	}
 
+	// 27Jan2021 Added
+	@JsonProperty("Corrected_result_ID")
+	public String getCorrectedResultId() {
+		if (testEvent.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+			return testEvent.getPriorCorrectedTestEventId().toString();
+		}
+		return "";
+	}
+
+	// 27Jan2021 Updated to handle deleted tests
 	@JsonProperty("Test_result_status")
 	public String getTestResultStatus() {
-		return testResultStatusFinal;
+		// F Final results
+		// X No results available; Order canceled
+		// C Corrected, final (not yet supported
+		switch(testEvent.getCorrectionStatus()) {
+			case REMOVED:
+				return "X";
+			case CORRECTED:
+				return "C";
+			case ORIGINAL:
+			default:
+				return "F";
+		}
 	}
 
 	@JsonProperty("Test_result_code")
@@ -230,7 +253,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -296,6 +319,12 @@ public class TestEventExport {
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
 		return getOrderingFacilityCity();
+	}
+
+	@JsonProperty("Processing_mode_code")
+	public String getFacilityProcessingModeCode() {
+		// todo: this should check a facility attribute to see what mode it's in. (or a separate table of prod-ready fac)
+		return "P";    	// D:Debugging P:Production T:Training
 	}
 
 	@JsonProperty("Ordering_facility_city")
@@ -395,7 +424,7 @@ public class TestEventExport {
 
 	@JsonProperty("Ordered_test_code")
 	public String getOrderedTestCode() {
-		return testEvent.getDeviceType().getLoincCode();
+		return device.getLoincCode();
 	}
 
 	@JsonProperty("Specimen_source_site_code")
@@ -405,22 +434,22 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return anteriorNaresSwabCode;
+		return device.getSwabType();
 	}
 
 	@JsonProperty("Instrument_ID")
 	public String getInstrumentID() {
-		return testEvent.getDeviceType().getInternalId().toString();
+		return device.getInternalId().toString();
 	}
 
 	@JsonProperty("Device_ID")
 	public String getDeviceID() {
-		return testEvent.getDeviceType().getModel();
+		return device.getModel();
 	}
 
 	@JsonProperty("Test_date")
 	public String getTestDate() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
 
 	@JsonProperty("Date_result_released")
@@ -431,6 +460,7 @@ public class TestEventExport {
 	@JsonProperty("Order_test_date")
 	public String getOrderTestDate() {
 		// order_test_date = test_date for antigen testing
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
+
 }

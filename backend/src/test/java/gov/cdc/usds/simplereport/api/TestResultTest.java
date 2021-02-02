@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,8 +14,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class TestResultTest extends BaseApiTest {
@@ -53,6 +58,30 @@ public class TestResultTest extends BaseApiTest {
 
     private ArrayNode fetchTestResults(ObjectNode variables) {
         return (ArrayNode) runQuery("test-result-query", variables).get("testResults");
+    }
+    
+    @Test
+    public void submitTestResult() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        DeviceType d = _dataFactory.getGenericDevice();
+        TestOrder to = _dataFactory.createTestOrder(p, _site);
+        String dateTested = "2020-12-31T14:30:30.001Z";
+
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+            .put("deviceId", d.getInternalId().toString())
+            .put("patientId", p.getInternalId().toString())
+            .put("result", TestResult.NEGATIVE.toString())
+            .put("dateTested", dateTested);
+        submitTestResult(variables);
+
+        ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+
+        assertTrue(testResults.has(0), "Has at least one submitted test result=");
+        assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+    }
+
+    private ObjectNode submitTestResult(ObjectNode variables) {
+        return runQuery("add-test-result-mutation", variables);
     }
 
 }

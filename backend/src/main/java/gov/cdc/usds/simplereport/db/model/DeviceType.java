@@ -19,16 +19,20 @@ public class DeviceType extends EternalEntity {
     private String manufacturer;
     @Column(nullable = false)
     private String model;
+    @Column(nullable = false)
+    private String swabType;
+
 
     protected DeviceType() { /* no-op for hibernate */ }
 
     @ConstructorBinding
-    public DeviceType(String name, String manufacturer, String model, String loincCode) {
+    public DeviceType(String name, String manufacturer, String model, String loincCode, String swabType) {
         super();
         this.name = name;
         this.manufacturer = manufacturer;
         this.model = model;
         this.loincCode = loincCode;
+        this.swabType = swabType;
     }
 
     public String getName() {
@@ -61,5 +65,13 @@ public class DeviceType extends EternalEntity {
 
     public void setLoincCode(String loincCode) {
         this.loincCode = loincCode;
+    }
+
+    public String getSwabType() {
+        return swabType;
+    }
+
+    public void setSwabType(String swabType) {
+        this.swabType = swabType;
     }
 }

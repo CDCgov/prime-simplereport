@@ -31,4 +31,8 @@ public class OrganizationDataResolver implements GraphQLResolver<Organization> {
 	public String getName(Organization o) {
 		return o.getOrganizationName();
 	}
+
+	public String getExternalId(Organization o) {
+		return o.getExternalId();
+	}
 }
