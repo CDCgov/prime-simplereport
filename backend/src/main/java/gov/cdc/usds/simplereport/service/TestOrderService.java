@@ -35,7 +35,6 @@ import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 @Service
 @Transactional(readOnly = false)
 public class TestOrderService {
-    private static final Logger LOG = LoggerFactory.getLogger(TestOrderService.class);
   private OrganizationService _os;
   private PersonService _ps;
   private DeviceTypeService _dts;
@@ -233,9 +232,7 @@ public class TestOrderService {
         if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
             throw new IllegalGraphqlArgumentException("Can not correct removed test event");
         }
-
-        // todo: should we verify reasonForCorrection is NOT empty? Do we trim()?
-
+        
         TestOrder order = event.getTestOrder();
         if (order == null) {
             throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
