@@ -162,18 +162,8 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   ssl_policy {
-    policy_name          = "${var.env}-ssl"
-    policy_type          = "Custom"
-    min_protocol_version = "TLSv1_2"
-    cipher_suites = [
-      "TLS_RSA_WITH_AES_256_CBC_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
-      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-      "TLS_DHE_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_RSA_WITH_AES_128_CBC_SHA256"
-    ]
+    policy_name          = "AppGwSslPolicy20170401S"
+    policy_type          = "Predefined"
   }
 
   # ------- Routing -------------------------
