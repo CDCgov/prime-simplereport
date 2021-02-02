@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.queue;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
+import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -51,14 +52,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     LocalDate localPriorTestDate = parseUserDate(priorTestDate);
     LocalDate localSymptomOnset = parseUserDate(symptomOnset);
 
-    Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
-    JSONObject symptomsJSONObject = new JSONObject(symptoms);
-    Iterator<?> keys = symptomsJSONObject.keys();
-    while (keys.hasNext()) {
-      String key = (String) keys.next();
-      Boolean value = symptomsJSONObject.getBoolean(key);
-      symptomsMap.put(key, value);
-    }
+    Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     TestOrder to = _tos.addPatientToQueue(UUID.fromString(facilityID), _ps.getPatient(patientID), pregnancy,
         symptomsMap, firstTest, localPriorTestDate, priorTestType,
@@ -80,14 +74,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     LocalDate localPriorTestDate = parseUserDate(priorTestDate);
     LocalDate localSymptomOnset = parseUserDate(symptomOnset);
 
-    Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
-    JSONObject symptomsJSONObject = new JSONObject(symptoms);
-    Iterator<?> keys = symptomsJSONObject.keys();
-    while (keys.hasNext()) {
-      String key = (String) keys.next();
-      Boolean value = symptomsJSONObject.getBoolean(key);
-      symptomsMap.put(key, value);
-    }
+    Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     _tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, firstTest, localPriorTestDate, priorTestType,
         priorTestResult == null ? null : TestResult.valueOf(priorTestResult), localSymptomOnset, noSymptoms);
