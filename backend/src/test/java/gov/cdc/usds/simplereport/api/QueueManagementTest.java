@@ -130,7 +130,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     private ObjectNode performPatientLinkCurrent(ObjectNode variables) {
-        return (ObjectNode) runQuery("patient-link-current", variables).get("patientLinkCurrent");
+        return (ObjectNode) runQuery("patient-link-current-query", variables).get("patientLinkCurrent");
     }
 
     private void performEnqueueMutation(ObjectNode variables) throws IOException {
