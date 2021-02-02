@@ -156,7 +156,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         // https://github.com/CDCgov/prime-simplereport/issues/677
         // assertSecurityError(() ->
         // _service.getTestResults(facility.getInternalId()));
-        // assertSecurityError(() -> _service.getTestResults(p));
+        assertSecurityError(() -> _service.getTestResults(p));
     }
 
     @Test
@@ -174,7 +174,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         assertEquals(TestCorrectionStatus.REMOVED, deleteMarkerEvent.getCorrectionStatus());
         assertEquals(reasonMsg, deleteMarkerEvent.getReasonForCorrection());
 
-        assertEquals(_e.getTestOrder().getInternalId().toString(), _e.getTestOrderId().toString());
+        assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
         List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId(), new Date(0));
         assertEquals(1, events_before.size());

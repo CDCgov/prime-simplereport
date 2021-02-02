@@ -8,8 +8,6 @@ import java.util.UUID;
 import java.util.Date;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +81,7 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionReadResultList
   public TestEvent getTestResult(UUID id) {
     Organization org = _os.getCurrentOrganization();
-    return _terepo.findFirst1ByOrganizationAndInternalId(org, id);
+    return _terepo.findByOrganizationAndInternalId(org, id);
   }
 
   @Transactional(readOnly = true)
@@ -224,7 +222,7 @@ public class TestOrderService {
     public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
         Organization org = _os.getCurrentOrganization();  // always check against org
         // The client sends us a TestEvent, we need to map back to the Order.
-        TestEvent event = _terepo.findFirst1ByOrganizationAndInternalId(org, testEventId);
+        TestEvent event = _terepo.findByOrganizationAndInternalId(org, testEventId);
         if (event == null) {
             // should this throw?
             throw new IllegalGraphqlArgumentException("Cannot find TestResult");
@@ -232,7 +230,7 @@ public class TestOrderService {
         if (event.getCorrectionStatus() == TestCorrectionStatus.REMOVED) {
             throw new IllegalGraphqlArgumentException("Can not correct removed test event");
         }
-        
+
         TestOrder order = event.getTestOrder();
         if (order == null) {
             throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");

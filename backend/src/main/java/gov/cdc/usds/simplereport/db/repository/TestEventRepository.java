@@ -20,7 +20,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
-	public TestEvent findFirst1ByOrganizationAndInternalId(Organization o, UUID id);
+	public TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
 
 	// Need to control how this query is built. "between" is too vague.
 	// This is across all Orgs/facilities because datahub uploader users
