@@ -77,7 +77,23 @@ public class QueueManagementTest extends BaseApiTest {
         assertNotNull(patientLinkId);
         ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
         ObjectNode plOrg = performPatientLinkCurrent(plVariables);
-        assertEquals(plOrg.get("internalId"), _org.getInternalId().toString());
+        String plOrgId = plOrg.get("internalId").asText();
+        String orgId = _org.getInternalId().toString();
+        assertEquals(plOrgId, orgId);
+        plVariables.put("birthDate", p.getBirthDate().toString());
+        ObjectNode plPatient = performPatientLinkVerify(plVariables);
+        String plPatientId = plPatient.get("internalId").asText();
+        String patientId = p.getInternalId().toString();
+        assertEquals(plPatientId, patientId);
+        plVariables.put("previousTestDate", "05/15/2020").put("symptomOnsetDate", "11/30/2020").put("symptoms", "{}");
+        performPatientLinkSubmitMutation(plVariables);
+        queueData = fetchQueue();
+        assertEquals(1, queueData.size());
+        queueEntry = queueData.get(0);
+        String symptomOnset = queueEntry.get("symptomOnset").asText();
+        String priorTest = queueEntry.get("priorTestDate").asText();
+        assertEquals("2020-11-30", symptomOnset);
+        assertEquals("2020-05-15", priorTest);
     }
 
     @Test
@@ -131,6 +147,14 @@ public class QueueManagementTest extends BaseApiTest {
 
     private ObjectNode performPatientLinkCurrent(ObjectNode variables) {
         return (ObjectNode) runQuery("patient-link-current-query", variables).get("patientLinkCurrent");
+    }
+
+    private ObjectNode performPatientLinkVerify(ObjectNode variables) {
+        return (ObjectNode) runQuery("patient-link-verify-query", variables).get("patientLinkVerify");
+    }
+
+    private void performPatientLinkSubmitMutation(ObjectNode variables) throws IOException {
+        assertGraphQLSuccess(_template.perform("patient-link-submit", variables));
     }
 
     private void performEnqueueMutation(ObjectNode variables) throws IOException {
