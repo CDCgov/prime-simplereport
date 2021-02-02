@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
@@ -48,9 +49,7 @@ public class QueueManagementTest extends BaseApiTest {
     public void enqueueOnePatient() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments()
-                .put("id", personId)
-                .put("previousTestDate", "05/15/2020")
+        ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "05/15/2020")
                 .put("symptomOnsetDate", "11/30/2020");
         performEnqueueMutation(variables);
         ArrayNode queueData = fetchQueue();
@@ -66,6 +65,22 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
+    public void updateViaPatientLink() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        String personId = p.getInternalId().toString();
+        ObjectNode variables = getFacilityScopedArguments().put("id", personId);
+        performEnqueueMutation(variables);
+        ArrayNode queueData = fetchQueue();
+        assertEquals(1, queueData.size());
+        JsonNode queueEntry = queueData.get(0);
+        String patientLinkId = queueEntry.get("patientLink").get("internalId").asText();
+        assertNotNull(patientLinkId);
+        ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
+        ObjectNode plOrg = performPatientLinkCurrent(plVariables);
+        assertEquals(plOrg.get("internalId"), _org.getInternalId());
+    }
+
+    @Test
     public void updateItemInQueue() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         TestOrder o = _dataFactory.createTestOrder(p, _site);
@@ -73,11 +88,8 @@ public class QueueManagementTest extends BaseApiTest {
         DeviceType d = _dataFactory.getGenericDevice();
         String deviceId = d.getInternalId().toString();
         String dateTested = "2020-12-31T14:30:30Z";
-        ObjectNode variables = JsonNodeFactory.instance.objectNode()
-                .put("id", orderId)
-                .put("deviceId", deviceId)
-                .put("result", TestResult.POSITIVE.toString())
-                .put("dateTested", dateTested);
+        ObjectNode variables = JsonNodeFactory.instance.objectNode().put("id", orderId).put("deviceId", deviceId)
+                .put("result", TestResult.POSITIVE.toString()).put("dateTested", dateTested);
 
         performQueueUpdateMutation(variables);
 
@@ -97,9 +109,7 @@ public class QueueManagementTest extends BaseApiTest {
     public void enqueueOnePatientIsoDate() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments()
-                .put("id", personId)
-                .put("previousTestDate", "2020-05-15")
+        ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "2020-05-15")
                 .put("symptomOnsetDate", "2020-11-30");
         performEnqueueMutation(variables);
         ArrayNode queueData = fetchQueue();
@@ -112,12 +122,15 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     private ObjectNode getFacilityScopedArguments() {
-        return JsonNodeFactory.instance.objectNode()
-                .put("facilityId", _site.getInternalId().toString());
+        return JsonNodeFactory.instance.objectNode().put("facilityId", _site.getInternalId().toString());
     }
 
     private ArrayNode fetchQueue() {
         return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
+    }
+
+    private ObjectNode performPatientLinkCurrent(ObjectNode variables) {
+        return (ObjectNode) runQuery("patient-link-current", variables).get("patientLinkCurrent");
     }
 
     private void performEnqueueMutation(ObjectNode variables) throws IOException {
