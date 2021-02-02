@@ -77,7 +77,7 @@ public class QueueManagementTest extends BaseApiTest {
         assertNotNull(patientLinkId);
         ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
         ObjectNode plOrg = performPatientLinkCurrent(plVariables);
-        assertEquals(plOrg.get("internalId"), _org.getInternalId());
+        assertEquals(plOrg.get("internalId"), _org.getInternalId().toString());
     }
 
     @Test
