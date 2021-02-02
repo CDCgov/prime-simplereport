@@ -24,7 +24,7 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
                 className="usa-button usa-button--inverse"
                 to="/settings/add-facility/"
               >
-                + New Facility
+                + Add Facility
               </NavLink>
             </div>
             <div className="usa-card__body">
