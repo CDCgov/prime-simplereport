@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
@@ -36,8 +37,8 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", "STAFF", null,
-                                "Nassau", null, null, null, false, false);
+                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", PersonRole.STAFF,
+                                null, "Nassau", null, null, null, false, false);
 
                 TestOrder to = _testOrderService.addPatientToQueue(facility.getInternalId(), p, "",
                                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
@@ -53,8 +54,8 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", "STAFF", null,
-                                "Nassau", null, null, null, false, false);
+                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", PersonRole.STAFF,
+                                null, "Nassau", null, null, null, false, false);
 
                 TestOrder to = _testOrderService.addPatientToQueue(facility.getInternalId(), p, "",
                                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
@@ -70,8 +71,8 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", "STAFF", null,
-                                "Nassau", null, null, null, false, false);
+                                "123 Main", "Apartment 3", "Syracuse", "NY", "11801", "8883334444", PersonRole.STAFF,
+                                null, "Nassau", null, null, null, false, false);
 
                 TestOrder to = _testOrderService.addPatientToQueue(facility.getInternalId(), p, "",
                                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
