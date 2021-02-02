@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import liquibase.pro.packaged.T;
 
 /**
  * For latest supported values, see:
@@ -319,6 +320,12 @@ public class TestEventExport {
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
 		return getOrderingFacilityCity();
+	}
+
+	@JsonProperty("Processing_mode_code")
+	public String getFacilityProcessingModeCode() {
+		// todo: this should check a facility attribute to see what mode it's in. (or a separate table of prod-ready fac)
+		return "P";    	// D:Debugging P:Production T:Training
 	}
 
 	@JsonProperty("Ordering_facility_city")
