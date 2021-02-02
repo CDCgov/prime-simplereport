@@ -1,4 +1,6 @@
 spring:
+  config:
+    use-legacy-processing: true
   main:
     banner-mode: "OFF"
   datasource:

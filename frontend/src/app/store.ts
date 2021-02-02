@@ -25,6 +25,7 @@ const initialState = {
     email: "",
     permissions: [],
     roleDescription: "",
+    isAdmin: false,
   },
 };
 

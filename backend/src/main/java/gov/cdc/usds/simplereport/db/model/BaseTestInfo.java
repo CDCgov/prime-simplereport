@@ -7,9 +7,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Type;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+
+import java.util.Date;
 
 @MappedSuperclass
 public abstract class BaseTestInfo extends AuditedEntity
@@ -36,6 +39,17 @@ public abstract class BaseTestInfo extends AuditedEntity
 	@Enumerated(EnumType.STRING)
 	private TestResult result;
 
+	@Column
+	private Date dateTestedBackdate;
+
+	@Column
+	@Type(type = "pg_enum")
+	@Enumerated(EnumType.STRING)
+	private TestCorrectionStatus correctionStatus;
+
+	@Column(nullable = true)
+	private String reasonForCorrection;
+
 	protected BaseTestInfo() {
 		super();
 	}
@@ -47,12 +61,18 @@ public abstract class BaseTestInfo extends AuditedEntity
 		this.organization = facility.getOrganization();
 		this.deviceType = deviceType;
 		this.result = result;
+		this.correctionStatus = TestCorrectionStatus.ORIGINAL;
 	}
 
 	protected BaseTestInfo(Person patient, Facility facility) {
 		this(patient, facility, facility.getDefaultDeviceType(), null);
 	}
 
+	protected BaseTestInfo(BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+		this(cloneInfo.patient, cloneInfo.facility, cloneInfo.deviceType, cloneInfo.result);
+		this.reasonForCorrection = reasonForCorrection;
+		this.correctionStatus = correctionStatus;
+	}
 	public Person getPatient() {
 		return patient;
 	}
@@ -74,6 +94,17 @@ public abstract class BaseTestInfo extends AuditedEntity
 		return result;
 	}
 
+	// FYI Setters shouldn't be allowed in TestEvent, so they are always *protected* in this base class
+	// and exposed only in TestOrder.
+
+	public Date getDateTestedBackdate() {
+		return dateTestedBackdate;
+	}
+
+	protected void setDateTestedBackdate(Date dateTestedBackdate) {
+		this.dateTestedBackdate = dateTestedBackdate;
+	}
+
 	protected void setTestResult(TestResult newResult) {
 		result = newResult;
 	}
@@ -81,4 +112,21 @@ public abstract class BaseTestInfo extends AuditedEntity
 	protected void setDeviceType(DeviceType deviceType) {
 		this.deviceType = deviceType;
 	}
+
+	public TestCorrectionStatus getCorrectionStatus() {
+		return correctionStatus;
+	}
+
+	protected void setCorrectionStatus(TestCorrectionStatus correctionStatus) {
+		this.correctionStatus = correctionStatus;
+	}
+
+	public String getReasonForCorrection() {
+		return reasonForCorrection;
+	}
+
+	protected void setReasonForCorrection(String reasonForCorrection) {
+		this.reasonForCorrection = reasonForCorrection;
+	}
+
 }

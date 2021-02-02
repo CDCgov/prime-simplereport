@@ -1,5 +1,5 @@
 plugins {
-	id 'org.springframework.boot' version '2.3.5.RELEASE'
+	id 'org.springframework.boot' version '2.4.1'
 	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
 	id 'java'
 	id 'checkstyle'
@@ -36,11 +36,11 @@ dependencies {
 	implementation 'org.json:json:20201115'
 	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
-//	Okta dependencies
-	implementation 'com.okta.spring:okta-spring-boot-starter:1.4.0'
-	implementation 'com.okta.sdk:okta-sdk-api:1.6.0'
-	runtime 'com.okta.sdk:okta-sdk-impl:1.6.0'
-	runtime 'com.okta.sdk:okta-sdk-httpclient:1.6.0'
+	//	Okta dependencies
+	implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+	implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
+	runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
+	runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
 // App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
@@ -66,6 +66,10 @@ configurations {
 	runtimeClasspath {
 		resolutionStrategy.activateDependencyLocking()
 	}
+}
+
+checkstyleTest {
+   configFile = file("config/checkstyle/checkstyleTest.xml")
 }
 
 jacocoTestReport {

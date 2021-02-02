@@ -13,6 +13,7 @@ import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupList;
+import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 
@@ -44,16 +45,21 @@ public class OktaServiceImpl implements OktaService {
 
     public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {
         // need to validate fields before adding them because Maps don't like nulls
-        // Note: the version of Okta SDK we use does not accommodate middle names or suffixes
         Map<String,Object> userProfileMap = new HashMap<String, Object>();
         if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
             userProfileMap.put("firstName", userIdentity.getFirstName());
+        }
+        if (userIdentity.getMiddleName() != null && !userIdentity.getMiddleName().isEmpty()) {
+            userProfileMap.put("middleName", userIdentity.getMiddleName());
         }
         if (userIdentity.getLastName() != null && !userIdentity.getLastName().isEmpty()) {
             userProfileMap.put("lastName", userIdentity.getLastName());
         } else {
             // last name is required
             throw new IllegalGraphqlArgumentException("Cannot create Okta user without last name");
+        }
+        if (userIdentity.getSuffix() != null && !userIdentity.getSuffix().isEmpty()) {
+            userProfileMap.put("honorificSuffix", userIdentity.getSuffix());
         }
         if (userIdentity.getUsername() != null && !userIdentity.getUsername().isEmpty()) {
             // we assume login == email
@@ -85,7 +91,11 @@ public class OktaServiceImpl implements OktaService {
         }
         User user = users.single();
         user.getProfile().setFirstName(userIdentity.getFirstName());
+        user.getProfile().setMiddleName(userIdentity.getMiddleName());
         user.getProfile().setLastName(userIdentity.getLastName());
+        // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they 
+        // don't have regular suffix? You decide.
+        user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
         // We assume login == email
         user.getProfile().setEmail(userIdentity.getUsername());
         user.getProfile().setLogin(userIdentity.getUsername());
@@ -123,7 +133,8 @@ public class OktaServiceImpl implements OktaService {
         for (Group g : user.listGroups()) {
             String groupName = g.getProfile().getName();
             // We assume that a user is only a member of one user group
-            if (groupName.startsWith(_rolePrefix) &&
+            if (g.getType() == GroupType.OKTA_GROUP &&
+                    groupName.startsWith(_rolePrefix) &&
                     groupName.endsWith(generateRoleSuffix(OrganizationRole.USER))) {
                 return getOrganizationExternalIdFromGroupName(groupName, 
                                                               OrganizationRole.USER);
