@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -12,6 +12,10 @@ import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "./TestResultsList.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
+import {
+  useAppInsightsContext,
+  useTrackEvent,
+} from "@microsoft/applicationinsights-react-js";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -43,6 +47,19 @@ interface Props {
 export const DetachedTestResultsList: any = ({ data }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
+  const [showAll, setShowAll] = useState(false);
+  const showMoreButton = useRef<HTMLButtonElement>(null);
+
+  const showCompleteResults = () => {
+    if (showMoreButton.current) {
+      showMoreButton.current.disabled = true;
+    }
+    // Act like it's taking a while
+    setTimeout(() => {
+      // TODO: report click with appInsights
+      setShowAll(true);
+    }, 200);
+  };
 
   if (printModalId) {
     return (
@@ -61,6 +78,22 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     );
   }
 
+  // TODO: different "no results" message if filtered!!!!!!!!1
+  // TODO V0 TEMP: only get current and past day
+  let thereAreMore = false;
+  let recentResults = [...data.testResults];
+  if (!showAll) {
+    const now = moment();
+    now.subtract(1, "day");
+    const targetDate = now.format("YYYY-MM-DD") + "T00:00:00";
+    console.log(targetDate);
+    recentResults = recentResults.filter(
+      (r: any) => r.dateTested >= targetDate
+    );
+    thereAreMore = recentResults.length < data.testResults.length;
+  }
+  // END TODO TEMP
+
   const testResultRows = (testResults: any) => {
     if (testResults.length === 0) {
       return;
@@ -78,7 +111,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     // </MenuItem>
 
     // `sort` mutates the array, so make a copy
-    return [...testResults].sort(byDateTested).map((r) => (
+    return recentResults.sort(byDateTested).map((r) => (
       <tr
         key={r.internalId}
         title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
@@ -118,14 +151,15 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     ));
   };
 
-  let rows = testResultRows(data.testResults);
   return (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> Test Results </h2>
+              <h2>
+                Test Results {thereAreMore ? "(yesterday and today)" : "(all)"}
+              </h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -139,9 +173,20 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>{rows}</tbody>
+                <tbody>{testResultRows}</tbody>
               </table>
             </div>
+            {thereAreMore && (
+              <div className="sr-more-test-results">
+                <button
+                  className="usa-button"
+                  ref={showMoreButton}
+                  onClick={showCompleteResults}
+                >
+                  See all results
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
