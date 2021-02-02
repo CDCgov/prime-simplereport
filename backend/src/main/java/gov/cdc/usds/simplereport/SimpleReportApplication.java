@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 
 @SpringBootApplication
@@ -22,6 +23,7 @@ import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
         AdminEmailList.class,
         AuthorizationProperties.class,
         DataHubConfig.class,
+        DemoUserConfiguration.class,
 })
 @EnableScheduling
 public class SimpleReportApplication {

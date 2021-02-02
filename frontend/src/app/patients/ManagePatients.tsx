@@ -4,13 +4,13 @@ import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
 
-// this can't be the best way to handle this?
 import {
   PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import PatientUpload from "./PatientUpload";
 
 const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
@@ -50,7 +50,7 @@ interface Props {
 }
 
 const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
-  const { data, loading, error } = useQuery<Data, {}>(patientQuery, {
+  const { data, loading, error, refetch } = useQuery<Data, {}>(patientQuery, {
     fetchPolicy: "no-cache",
     variables: {
       facilityId: activeFacilityId,
@@ -130,6 +130,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
               )}
             </div>
           </div>
+          <PatientUpload onSuccess={refetch} />
         </div>
       </div>
     </main>

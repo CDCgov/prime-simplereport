@@ -7,10 +7,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import gov.cdc.usds.simplereport.config.BeanProfiles;
-import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
-import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 
 @Configuration
 public class AuthorizationServiceConfig {
@@ -23,11 +22,8 @@ public class AuthorizationServiceConfig {
 
     @Bean
     @Profile(BeanProfiles.SINGLE_TENANT)
-    public AuthorizationService getDummyAuthorizer(InitialSetupProperties setupProps,
-            OrganizationInitializingService initService) {
-        final OrganizationRoles defaultOrg = new OrganizationRoles(
-                setupProps.getOrganization().getExternalId(),
-                Collections.singleton(OrganizationRole.USER));
+    public AuthorizationService getDemoAuthorizer(DemoUserConfiguration configProps) {
+        final OrganizationRoles defaultOrg = configProps.getDefaultUser().getAuthorization();
         return () -> Collections.singletonList(defaultOrg);
     }
 }

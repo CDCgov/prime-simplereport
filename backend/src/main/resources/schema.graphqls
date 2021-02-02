@@ -2,6 +2,7 @@
 scalar DateTime
 # java.time.LocalDate
 scalar LocalDate
+scalar Upload
 
 enum ResultValue {
   POSITIVE
@@ -170,6 +171,7 @@ type Query {
   whoami: User!
 }
 type Mutation {
+  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: String!
     testingFacilityName: String!
