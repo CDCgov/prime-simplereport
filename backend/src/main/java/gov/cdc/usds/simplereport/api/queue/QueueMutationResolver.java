@@ -4,14 +4,11 @@ import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Date;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;

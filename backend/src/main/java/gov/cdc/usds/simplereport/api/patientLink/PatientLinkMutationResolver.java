@@ -4,11 +4,8 @@ import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
