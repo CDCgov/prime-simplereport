@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.UUID;
 
+import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,21 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 
 
 @Component
-public class TestResultResolver implements GraphQLQueryResolver {
+public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
 
     @Autowired
     private TestOrderService tos;
 
-    public List<TestEvent> getTestResults(String facilityId) {
-        return tos.getTestResults(facilityId).stream()
-            .map(o -> o.getTestEvent())
-            .collect(Collectors.toList());
+    public List<TestEvent> getTestResults(UUID facilityId) {
+        // get all
+        return tos.getTestEventsResults(facilityId, new Date(0));
+    }
+
+    public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
+        return tos.correctTestMarkAsError(testEventId, reasonForCorrection);
+    }
+
+    public TestEvent getTestResult(UUID id) {
+        return tos.getTestResult(id);
     }
 }

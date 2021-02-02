@@ -1885,6 +1885,11 @@
     "@svgr/plugin-svgo" "^5.4.0"
     loader-utils "^2.0.0"
 
+"@szhsin/react-menu@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/@szhsin/react-menu/-/react-menu-1.5.0.tgz#b55afd57d2eb6be1d420fc636c8fa8fd8f6785d8"
+  integrity sha512-FQo/6y/CsfNRkdTYUnoCd84oQIY7kuZscx5Q0HAtzJdbgC15pTGMJ9gv2zH6bBSyq4MHj6AIOxHtt2V1kpiiHw==
+
 "@testing-library/dom@^7.28.1":
   version "7.29.0"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-7.29.0.tgz#60b18065bab50a5cde21fe80275a47a43024d9cc"

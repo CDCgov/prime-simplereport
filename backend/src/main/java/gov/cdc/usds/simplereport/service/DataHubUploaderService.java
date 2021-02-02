@@ -46,7 +46,6 @@ import java.util.concurrent.TimeUnit;
 @Service
 @Transactional
 public class DataHubUploaderService {
-    private static final String CSV_API_VERSION = "3";
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
 
     private final DataHubConfig _config;
@@ -206,7 +205,7 @@ public class DataHubUploaderService {
             headers.setContentType(new MediaType("text", "csv"));
             headers.add("x-functions-key", apiKey);
             headers.add("client", "simple_report");
-            headers.add("x-api-version", CSV_API_VERSION);
+            headers.add("x-api-version", TestEventExport.CSV_API_VERSION);
             return execution.execute(request, body);
         })).build();
 

@@ -102,7 +102,7 @@ public class Translators {
         String role = parseString(r);
         if (role == null) {
             return PersonRole.UNKNOWN;
-        } 
+        }
         try {
             return PersonRole.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e){
@@ -114,7 +114,7 @@ public class Translators {
         String email = parseString(e);
         if (email == null) {
             return null;
-        } 
+        }
         if (email.contains("@")) {
             return email;
         }
