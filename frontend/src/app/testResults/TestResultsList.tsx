@@ -11,11 +11,10 @@ import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "./TestResultsList.scss";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+  InjectedQueryWrapperProps,
+  QueryWrapper,
+} from "../commonComponents/QueryWrapper";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -42,6 +41,7 @@ export const testResultQuery = gql`
 interface Props {
   activeFacilityId: string;
   data: any;
+  trackAction: () => void;
 }
 
 export const DetachedTestResultsList: any = ({ data }: Props) => {
@@ -94,10 +94,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
   }
   // END TODO TEMP
 
-  const testResultRows = (testResults: any) => {
-    if (testResults.length === 0) {
-      return;
-    }
+  const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
       // ISO string dates sort nicely
       if (a.dateTested === b.dateTested) return 0;
@@ -105,6 +102,9 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
       return -1;
     };
 
+    if (recentResults.length === 0) {
+      return <tr>"No results"</tr>;
+    }
     // When printing is enabled add this menu item
     // <MenuItem onClick={() => setPrintModalId(r.internalId)}>
     //   Print result
@@ -155,7 +155,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container">
+          <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
                 Test Results {thereAreMore ? "(yesterday and today)" : "(all)"}
@@ -173,7 +173,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>{testResultRows}</tbody>
+                <tbody>{testResultRows()}</tbody>
               </table>
             </div>
             {thereAreMore && (
@@ -194,10 +194,13 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
   );
 };
 
-const TestResultsList = (props: Omit<Props, "data">) => (
+const TestResultsList = (props: Omit<Props, InjectedQueryWrapperProps>) => (
   <QueryWrapper<Props>
     query={testResultQuery}
-    queryOptions={{ variables: { facilityId: props.activeFacilityId } }}
+    queryOptions={{
+      variables: { facilityId: props.activeFacilityId },
+      pollInterval: 10_000,
+    }}
     Component={DetachedTestResultsList}
     componentProps={{ ...props }}
   />
