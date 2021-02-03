@@ -212,6 +212,11 @@ public class TestOrderService {
             throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
         }
 
+        // sanity check that two different users can't deleting the same event and delete it twice.
+        if (!testEventId.equals(order.getTestEventId())) {
+            throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
+        }
+
         // generate a duplicate test_event that just has a status of REMOVED and the reason
         TestEvent newRemoveEvent = new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
         _terepo.save(newRemoveEvent);
