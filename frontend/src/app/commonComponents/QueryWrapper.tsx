@@ -14,7 +14,7 @@ export type InjectedQueryWrapperProps =
 
 const defaultQueryOptions: QueryHookOptions = {
   variables: {},
-  fetchPolicy: "network-only",
+  fetchPolicy: "no-cache",
 };
 
 export function QueryWrapper<ComponentProps>({
