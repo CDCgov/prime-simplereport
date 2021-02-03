@@ -98,11 +98,11 @@ const AoEModalForm = ({
         {buttonGroup}
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-      <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
-        Test questionnaire
-      </h2>
       {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
         <>
+          <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
+            Test questionnaire
+          </h2>
           <RadioGroup
             legend="How would you like to complete the questionnaire?"
             name="qr-code"
