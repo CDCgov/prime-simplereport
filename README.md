@@ -1,6 +1,6 @@
 # Simple Report
 
-https://simplereport.cdc.gov/
+https://simplereport.gov/
 
 ## Table of Contents
 
@@ -66,7 +66,7 @@ Running spring app locally and db in docker on port 5433
 
 ### Restart & Clean
 
-When there are DB schema changes the backend may throw and error and fail to start.
+When there are DB schema changes the backend may throw an error and fail to start.
 
 Restarting the docker way:
 
