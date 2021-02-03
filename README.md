@@ -9,6 +9,7 @@ https://simplereport.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
+    - [Updating user role](#updating-user-role)
     - [Restart & Clean](#restart--clean)
     - [API Testing](#api-testing)
     - [Tests](#tests)
@@ -63,6 +64,26 @@ Running spring app locally and db in docker on port 5433
 1. Run ` docker-compose --env-file .env.development up db`
 1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
+
+### Updating user role
+
+By default the local test user is an admin role. If you need to change this value to test out other permissions.
+It can be set in `application-local.yaml`. If you have not created one run:
+
+bash
+```
+touch backend/src/main/resources/application-local.yaml
+```
+
+Then add:
+```
+simple-report:
+  demo-users:
+    default-user:
+      authorization:
+        granted-roles: ADMIN
+```
+current role types are `ADMIN`, `USER`, and `ENTRY_ONLY`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
 
 ### Restart & Clean
 
