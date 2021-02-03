@@ -1,27 +1,27 @@
-.sr-modal-menu-button {
-  border: none;
-  color: #162e51;
-  background: inherit;
-  &:hover {
+.sr-test-results-list {
+  .sr-more-test-results {
+    display: flex;
+    justify-content: center;
+    margin: 1em 0;
+  }
+
+  .sr-test-result-row th,
+  .sr-test-result-row td {
+    /* override USWDS force-white */
     background: inherit;
   }
-}
 
-.sr-test-result-row--removed {
-  text-decoration: line-through;
-}
-
-.rc-menu-button {
-  padding: 0;
-}
-
-/* reset white background on usa-table so we can hover */
-.usa-table .sr-test-result-row {
-  td,
-  th {
-    background-color: inherit;
+  .sr-test-result-row:hover {
+    background: #f4f4f4;
   }
-  &:hover {
-    background-color: #e1f3f8;
+
+  .sr-test-result-row--removed {
+    text-decoration: line-through;
+  }
+
+  .rc-menu-button {
+    background: inherit;
+    padding: 0;
+    border: 0;
   }
 }
