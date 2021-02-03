@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -42,24 +42,12 @@ interface Props {
   activeFacilityId: string;
   data: any;
   trackAction: () => void;
+  refetch: () => void;
 }
 
-export const DetachedTestResultsList: any = ({ data }: Props) => {
+export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
-  const [showAll, setShowAll] = useState(false);
-  const showMoreButton = useRef<HTMLButtonElement>(null);
-
-  const showCompleteResults = () => {
-    if (showMoreButton.current) {
-      showMoreButton.current.disabled = true;
-    }
-    // Act like it's taking a while
-    setTimeout(() => {
-      // TODO: report click with appInsights
-      setShowAll(true);
-    }, 200);
-  };
 
   if (printModalId) {
     return (
@@ -73,26 +61,15 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     return (
       <TestResultCorrectionModal
         testResultId={markErrorId}
-        closeModal={() => setMarkErrorId(undefined)}
+        closeModal={() => {
+          setMarkErrorId(undefined);
+          refetch();
+        }}
       />
     );
   }
 
-  // TODO: different "no results" message if filtered!!!!!!!!1
-  // TODO V0 TEMP: only get current and past day
-  let thereAreMore = false;
-  let recentResults = [...data.testResults];
-  if (!showAll) {
-    const now = moment();
-    now.subtract(1, "day");
-    const targetDate = now.format("YYYY-MM-DD") + "T00:00:00";
-    console.log(targetDate);
-    recentResults = recentResults.filter(
-      (r: any) => r.dateTested >= targetDate
-    );
-    thereAreMore = recentResults.length < data.testResults.length;
-  }
-  // END TODO TEMP
+  const testResults = data.testResults;
 
   const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
@@ -102,7 +79,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
       return -1;
     };
 
-    if (recentResults.length === 0) {
+    if (testResults.length === 0) {
       return <tr>"No results"</tr>;
     }
     // When printing is enabled add this menu item
@@ -111,7 +88,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     // </MenuItem>
 
     // `sort` mutates the array, so make a copy
-    return recentResults.sort(byDateTested).map((r) => (
+    return [...testResults].sort(byDateTested).map((r) => (
       <tr
         key={r.internalId}
         title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
@@ -157,9 +134,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>
-                Test Results {thereAreMore ? "(yesterday and today)" : "(all)"}
-              </h2>
+              <h2>Test Results</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -176,17 +151,6 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
                 <tbody>{testResultRows()}</tbody>
               </table>
             </div>
-            {thereAreMore && (
-              <div className="sr-more-test-results">
-                <button
-                  className="usa-button"
-                  ref={showMoreButton}
-                  onClick={showCompleteResults}
-                >
-                  See all results
-                </button>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -199,7 +163,6 @@ const TestResultsList = (props: Omit<Props, InjectedQueryWrapperProps>) => (
     query={testResultQuery}
     queryOptions={{
       variables: { facilityId: props.activeFacilityId },
-      pollInterval: 10_000,
     }}
     Component={DetachedTestResultsList}
     componentProps={{ ...props }}
