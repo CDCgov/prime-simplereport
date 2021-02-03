@@ -119,7 +119,8 @@ const ManageDevices: React.FC<Props> = ({
         <Button
           onClick={onAddDevice}
           variant="outline"
-          label="+ Add Device"
+          label=" Add Device"
+          icon="plus"
           disabled={_getRemainingDeviceOptions().length === 0}
         />
       </div>
