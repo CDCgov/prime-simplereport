@@ -98,42 +98,57 @@ const AoEModalForm = ({
         {buttonGroup}
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-      <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
-        Test questionnaire
-      </h2>
-      <RadioGroup
-        legend="How would you like to complete the questionnaire?"
-        name="qr-code"
-        type="radio"
-        onChange={(evt) => chooseModalView(evt.currentTarget.value)}
-        buttons={modalViewValues}
-        selectedRadio={modalView}
-        className="margin-top-205"
-      />
-      {modalView === "smartphone" && (
+      {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
         <>
-          <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
-            <div className="text-center">
-              <p className="font-body-lg margin-y-0">
-                Point your camera at the QR code <br />
-                to access the questionnaire
-              </p>
-              <div className="margin-top-205">
-                <QRCode value={patientLink} size="190" />
+          <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
+            Test questionnaire
+          </h2>
+          <RadioGroup
+            legend="How would you like to complete the questionnaire?"
+            name="qr-code"
+            type="radio"
+            onChange={(evt) => chooseModalView(evt.currentTarget.value)}
+            buttons={modalViewValues}
+            selectedRadio={modalView}
+            className="margin-top-205"
+          />
+          {modalView === "smartphone" && (
+            <>
+              <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
+                <div className="text-center">
+                  <p className="font-body-lg margin-y-0">
+                    Point your camera at the QR code <br />
+                    to access the questionnaire
+                  </p>
+                  <div className="margin-top-205">
+                    <QRCode value={patientLink} size="190" />
+                  </div>
+                </div>
+              </section>
+              <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+                <Button
+                  className="margin-right-205"
+                  label={saveButtonText}
+                  type={"button"}
+                  onClick={() => continueModal()}
+                />
               </div>
-            </div>
-          </section>
-          <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-            <Button
-              className="margin-right-205"
-              label={saveButtonText}
-              type={"button"}
-              onClick={() => continueModal()}
+            </>
+          )}
+          {modalView === "verbal" && (
+            <AoEForm
+              saveButtonText="Continue"
+              onClose={onClose}
+              patient={patient}
+              facilityId={facilityId}
+              loadState={loadState}
+              saveCallback={saveCallback}
+              isModal={true}
+              noValidation={true}
             />
-          </div>
+          )}
         </>
-      )}
-      {modalView === "verbal" && (
+      ) : (
         <AoEForm
           saveButtonText="Continue"
           onClose={onClose}
