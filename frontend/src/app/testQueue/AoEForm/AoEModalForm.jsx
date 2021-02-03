@@ -1,15 +1,15 @@
-import { React, useState } from 'react';
-import QRCode from 'react-qr-code';
-import Modal from 'react-modal';
-import AoEForm from './AoEForm';
-import Button from '../../commonComponents/Button';
-import RadioGroup from '../../commonComponents/RadioGroup';
-import { displayFullName } from '../../utils';
-import { getSymptomList } from '../../../patientApp/timeOfTest/constants';
-import { getUrl } from '../../utils/url';
+import { React, useState } from "react";
+import QRCode from "react-qr-code";
+import Modal from "react-modal";
+import AoEForm from "./AoEForm";
+import Button from "../../commonComponents/Button";
+import RadioGroup from "../../commonComponents/RadioGroup";
+import { displayFullName } from "../../utils";
+import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
+import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
-  saveButtonText = 'Save',
+  saveButtonText = "Save",
   onClose,
   patient,
   facilityId,
@@ -21,8 +21,8 @@ const AoEModalForm = ({
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState(qrCodeValue);
   const modalViewValues = [
-    { label: 'Complete on smartphone', value: 'smartphone' },
-    { label: 'Complete questionnaire verbally', value: 'verbal' },
+    { label: "Complete on smartphone", value: "smartphone" },
+    { label: "Complete questionnaire verbally", value: "verbal" },
   ];
 
   const symptomsResponse = {};
@@ -51,7 +51,7 @@ const AoEModalForm = ({
   };
 
   const chooseModalView = async (view) => {
-    if (view === 'smartphone') {
+    if (view === "smartphone") {
       const patientLinkId = await saveCallback(patientResponse);
       setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`);
     }
@@ -64,7 +64,7 @@ const AoEModalForm = ({
       <Button
         className="margin-right-0"
         label={saveButtonText}
-        type={'button'}
+        type={"button"}
         onClick={() => continueModal()}
       />
     </div>
@@ -75,13 +75,13 @@ const AoEModalForm = ({
       isOpen={true}
       style={{
         content: {
-          inset: '3em auto auto auto',
-          overflow: 'auto',
-          maxHeight: '90vh',
-          width: '50%',
-          minWidth: '20em',
-          marginRight: '50%',
-          transform: 'translate(50%, 0)',
+          inset: "3em auto auto auto",
+          overflow: "auto",
+          maxHeight: "90vh",
+          width: "50%",
+          minWidth: "20em",
+          marginRight: "50%",
+          transform: "translate(50%, 0)",
         },
       }}
       overlayClassName="prime-modal-overlay"
@@ -101,7 +101,7 @@ const AoEModalForm = ({
       <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
         Test questionnaire
       </h2>
-      {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === 'true' ? (
+      {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
         <>
           <RadioGroup
             legend="How would you like to complete the questionnaire?"
@@ -112,7 +112,7 @@ const AoEModalForm = ({
             selectedRadio={modalView}
             className="margin-top-205"
           />
-          {modalView === 'smartphone' && (
+          {modalView === "smartphone" && (
             <>
               <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
                 <div className="text-center">
@@ -129,13 +129,13 @@ const AoEModalForm = ({
                 <Button
                   className="margin-right-205"
                   label={saveButtonText}
-                  type={'button'}
+                  type={"button"}
                   onClick={() => continueModal()}
                 />
               </div>
             </>
           )}
-          {modalView === 'verbal' && (
+          {modalView === "verbal" && (
             <AoEForm
               saveButtonText="Continue"
               onClose={onClose}
