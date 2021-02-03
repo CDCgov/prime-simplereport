@@ -1,0 +1,5 @@
+ query patientLinkVerify($internalId: String!, $birthDate: String!) {
+    patientLinkVerify(internalId: $internalId, birthDate: $birthDate) {
+      internalId
+    }
+}

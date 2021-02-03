@@ -1,0 +1,5 @@
+ query patientLinkCurrent($internalId: String!) {
+    patientLinkCurrent(internalId: $internalId) {
+      internalId
+    }
+}

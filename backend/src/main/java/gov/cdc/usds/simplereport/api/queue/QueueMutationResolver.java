@@ -1,16 +1,14 @@
 package gov.cdc.usds.simplereport.api.queue;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
+import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.Date;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
@@ -51,14 +49,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     LocalDate localPriorTestDate = parseUserDate(priorTestDate);
     LocalDate localSymptomOnset = parseUserDate(symptomOnset);
 
-    Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
-    JSONObject symptomsJSONObject = new JSONObject(symptoms);
-    Iterator<?> keys = symptomsJSONObject.keys();
-    while (keys.hasNext()) {
-      String key = (String) keys.next();
-      Boolean value = symptomsJSONObject.getBoolean(key);
-      symptomsMap.put(key, value);
-    }
+    Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     TestOrder to = _tos.addPatientToQueue(UUID.fromString(facilityID), _ps.getPatient(patientID), pregnancy,
         symptomsMap, firstTest, localPriorTestDate, priorTestType,
@@ -80,14 +71,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     LocalDate localPriorTestDate = parseUserDate(priorTestDate);
     LocalDate localSymptomOnset = parseUserDate(symptomOnset);
 
-    Map<String, Boolean> symptomsMap = new HashMap<String, Boolean>();
-    JSONObject symptomsJSONObject = new JSONObject(symptoms);
-    Iterator<?> keys = symptomsJSONObject.keys();
-    while (keys.hasNext()) {
-      String key = (String) keys.next();
-      Boolean value = symptomsJSONObject.getBoolean(key);
-      symptomsMap.put(key, value);
-    }
+    Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
     _tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, firstTest, localPriorTestDate, priorTestType,
         priorTestResult == null ? null : TestResult.valueOf(priorTestResult), localSymptomOnset, noSymptoms);

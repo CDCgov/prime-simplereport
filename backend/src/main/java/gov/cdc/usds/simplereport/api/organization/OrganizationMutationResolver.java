@@ -58,16 +58,16 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                 ) {
         _os.assertFacilityNameAvailable(testingFacilityName);
         DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
-        StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
-        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), email, deviceTypes,
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes,
             providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
         return new ApiFacility(created);
     }
 
-    public ApiFacility updateFacility(String facilityId,
+    public ApiFacility updateFacility(UUID facilityId,
                                    String testingFacilityName,
                                    String cliaNumber,
                                    String street,
@@ -94,17 +94,17 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String defaultDeviceId) throws Exception {
         DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         Facility facility = _os.updateFacility(
-          UUID.fromString(facilityId),
+          facilityId,
           testingFacilityName,
           cliaNumber,
           street,
           streetTwo,
           city,
           county,
-          state,
+          Translators.parseState(state),
           zipCode,
           Translators.parsePhoneNumber(phone),
-          email,
+          Translators.parseEmail(email),
           orderingProviderFirstName,
           orderingProviderMiddleName,
           orderingProviderLastName,
@@ -114,9 +114,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           orderingProviderStreetTwo,
           orderingProviderCity,
           orderingProviderCounty,
-          orderingProviderState,
+          Translators.parseState(orderingProviderState),
           orderingProviderZipCode,
-          orderingProviderTelephone,
+          Translators.parsePhoneNumber(orderingProviderTelephone),
           deviceTypes.getConfiguredDeviceTypes(),
           deviceTypes.getDefaultDeviceType()
         );
@@ -133,14 +133,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String defaultDeviceId) {
         _os.assertFacilityNameAvailable(testingFacilityName);
         DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
-        StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
+        StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
-                orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
+                orderingProviderCity, Translators.parseState(orderingProviderState), orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName,
                 orderingProviderLastName, orderingProviderSuffix);
         return _os.createOrganization(name, externalId, testingFacilityName, cliaNumber, facilityAddress,
-                Translators.parsePhoneNumber(phone), email, deviceTypes, providerName, providerAddress,
-                orderingProviderTelephone, orderingProviderNPI);
+                Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes, providerName, providerAddress,
+                Translators.parsePhoneNumber(orderingProviderTelephone), orderingProviderNPI);
     }
 
     public void updateOrganization(String name) {

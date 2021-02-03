@@ -1,13 +1,17 @@
-import { gql, useQuery } from "@apollo/client";
-import React, { useEffect } from "react";
+import { gql } from "@apollo/client";
+import React, { useState } from "react";
 import moment from "moment";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
-
+import classnames from "classnames";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
+import TestResultPrintModal from "./TestResultPrintModal";
+import TestResultCorrectionModal from "./TestResultCorrectionModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import "@szhsin/react-menu/dist/index.css";
+import "./TestResultsList.scss";
+import { QueryWrapper } from "../commonComponents/QueryWrapper";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -15,6 +19,7 @@ export const testResultQuery = gql`
       internalId
       dateTested
       result
+      correctionStatus
       deviceType {
         internalId
         name
@@ -32,32 +37,28 @@ export const testResultQuery = gql`
 
 interface Props {
   activeFacilityId: string;
+  data: any;
 }
 
-const TestResultsList: any = ({ activeFacilityId }: Props) => {
-  const appInsights = useAppInsightsContext();
-  const trackFetchTestResults = useTrackEvent(
-    appInsights,
-    "Fetch Test Results",
-    {}
-  );
+export const DetachedTestResultsList: any = ({ data }: Props) => {
+  const [printModalId, setPrintModalId] = useState(undefined);
+  const [markErrorId, setMarkErrorId] = useState(undefined);
 
-  useEffect(() => {
-    trackFetchTestResults({});
-  }, [trackFetchTestResults]);
-  const { data, loading, error } = useQuery(testResultQuery, {
-    variables: { facilityId: activeFacilityId },
-    fetchPolicy: "no-cache",
-  });
-
-  if (loading) {
-    return <p>Loading</p>;
+  if (printModalId) {
+    return (
+      <TestResultPrintModal
+        testResultId={printModalId}
+        closeModal={() => setPrintModalId(undefined)}
+      />
+    );
   }
-  if (error) {
-    appInsights.trackEvent({
-      name: "Failed Fetching Tests Results",
-    });
-    return error;
+  if (markErrorId) {
+    return (
+      <TestResultCorrectionModal
+        testResultId={markErrorId}
+        closeModal={() => setMarkErrorId(undefined)}
+      />
+    );
   }
 
   const testResultRows = (testResults: any) => {
@@ -70,9 +71,22 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
       if (a.dateTested < b.dateTested) return 1;
       return -1;
     };
+
+    // When printing is enabled add this menu item
+    // <MenuItem onClick={() => setPrintModalId(r.internalId)}>
+    //   Print result
+    // </MenuItem>
+
     // `sort` mutates the array, so make a copy
     return [...testResults].sort(byDateTested).map((r) => (
-      <tr key={r.internalId}>
+      <tr
+        key={r.internalId}
+        title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
+        className={classnames(
+          "sr-test-result-row",
+          r.correctionStatus === "REMOVED" && "sr-test-result-row--removed"
+        )}
+      >
         <th scope="row">
           {displayFullName(
             r.patient.firstName,
@@ -84,6 +98,22 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
         <td>{moment(r.dateTested).format("lll")}</td>
         <td>{r.result}</td>
         <td>{r.deviceType.name}</td>
+        <td>
+          {r.correctionStatus !== "REMOVED" && (
+            <Menu
+              menuButton={
+                <MenuButton className="sr-modal-menu-button">
+                  <FontAwesomeIcon icon={faEllipsisH} size="2x" />
+                  <span className="usa-sr-only">More actions</span>
+                </MenuButton>
+              }
+            >
+              <MenuItem onClick={() => setMarkErrorId(r.internalId)}>
+                Mark as error
+              </MenuItem>
+            </Menu>
+          )}
+        </td>
       </tr>
     ));
   };
@@ -106,6 +136,7 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
                     <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>{rows}</tbody>
@@ -117,5 +148,14 @@ const TestResultsList: any = ({ activeFacilityId }: Props) => {
     </main>
   );
 };
+
+const TestResultsList = (props: Omit<Props, "data">) => (
+  <QueryWrapper<Props>
+    query={testResultQuery}
+    queryOptions={{ variables: { facilityId: props.activeFacilityId } }}
+    Component={DetachedTestResultsList}
+    componentProps={{ ...props }}
+  />
+);
 
 export default TestResultsList;

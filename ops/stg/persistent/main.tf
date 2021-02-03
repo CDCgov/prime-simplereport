@@ -12,7 +12,7 @@ locals {
 module "monitoring" {
   source        = "../../services/monitoring"
   env           = local.env
-  management_rg = data.azurerm_resource_group.rg_global.name
+  management_rg = data.azurerm_resource_group.global.name
   rg_location   = data.azurerm_resource_group.stg.location
   rg_name       = data.azurerm_resource_group.stg.name
 

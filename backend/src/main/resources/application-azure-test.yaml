@@ -1,0 +1,20 @@
+spring:
+  profiles.include: okta-test, auth-dev
+graphql.servlet.cors:
+  allowed-origins:
+    - https://simple-report-api-test.azurewebsites.net
+    - https://simple-report-test.azureedge.net
+    - https://test.simplereport.gov
+simple-report:
+  admin-emails:
+    - bwarfield@cdc.gov
+    - tim.best@usds.dhs.gov
+    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
+    - jonathan.eskew@cms.hhs.gov
+    - neil.s.sharma@omb.eop.gov
+    - wsullivan@cdc.gov
+    - jeremy.a.zitomer@omb.eop.gov
+    - eapau@cdc.gov
+    - qrk8@cdc.gov # Sparkle
+    - David.w.methvin@omb.eop.gov
+    - thomas.a.nielsen@omb.eop.gov

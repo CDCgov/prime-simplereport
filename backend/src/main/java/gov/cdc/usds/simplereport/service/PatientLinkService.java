@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class PatientLinkService {
 
     public static final long oneDay = 24L;
 
-    public PatientLink getPatientLink(String internalId) {
+    private PatientLink getPatientLink(String internalId) {
         UUID actualId = UUID.fromString(internalId);
         return plrepo.findById(actualId)
                 .orElseThrow(() -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
@@ -56,10 +55,6 @@ public class PatientLinkService {
         } else {
             throw new Exception("Incorrect birth date");
         }
-    }
-
-    public List<PatientLink> fetchPatientLinks() {
-        return plrepo.findAll();
     }
 
     public PatientLink createPatientLink(UUID testOrderUuid) {

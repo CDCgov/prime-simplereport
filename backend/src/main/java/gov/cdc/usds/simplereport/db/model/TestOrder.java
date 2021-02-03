@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
@@ -27,15 +29,17 @@ public class TestOrder extends BaseTestInfo {
 	private PatientAnswers askOnEntrySurvey;
 	@Column
 	private LocalDate dateTested; // REMOVE THIS COLUMN
-	@Column
-	private Date dateTestedBackdate;
 	@Column(nullable = false)
 	@Type(type = "pg_enum")
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
-	@OneToOne(optional = true)
-	@JoinColumn(name = "test_event_id")
-	private TestEvent testEvent;
+
+	// strictly speaking, this is no longer OneToOne since corrections could have
+	// more than one,
+	// but this is kept up-to-date with the latest one.
+	@Column(columnDefinition = "uuid")
+	private UUID testEventId; // id used directly without needing to load
+
 	@OneToOne(mappedBy = "testOrder")
 	private PatientLink patientLink;
 
@@ -59,15 +63,9 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey;
 	}
 
+	@Override
 	public void setDateTestedBackdate(Date date) {
-		dateTestedBackdate = date;
-	}
-
-	public Date getDateTested() {
-		if (dateTestedBackdate == null && getTestEvent() != null) {
-			return getTestEvent().getCreatedAt();
-		}
-		return dateTestedBackdate;
+		super.setDateTestedBackdate(date);
 	}
 
 	public TestResult getTestResult() {
@@ -86,12 +84,12 @@ public class TestOrder extends BaseTestInfo {
 		orderStatus = OrderStatus.CANCELED;
 	}
 
-	public TestEvent getTestEvent() {
-		return testEvent;
+	public void setTestEventRef(TestEvent testEvent) {
+		this.testEventId = testEvent.getInternalId();
 	}
 
-	public void setTestEvent(TestEvent testEvent) {
-		this.testEvent = testEvent;
+	public UUID getTestEventId() {
+		return testEventId;
 	}
 
 	public String getPregnancy() {
@@ -132,8 +130,21 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey.getSurvey().getNoSymptoms();
 	}
 
+	@Override
 	public void setDeviceType(DeviceType deviceType) {
 		super.setDeviceType(deviceType);
+	}
+
+	// this will eventually be used when corrections are put back into the queue to
+	// be corrected
+	@Override
+	public void setCorrectionStatus(TestCorrectionStatus newCorrectionStatus) {
+		super.setCorrectionStatus(newCorrectionStatus);
+	}
+
+	@Override
+	public void setReasonForCorrection(String reasonForCorrection) {
+		super.setReasonForCorrection(reasonForCorrection);
 	}
 
 	public PatientLink getPatientLink() {

@@ -1,0 +1,72 @@
+{"properties": [
+  {
+    "name": "simple-report-initialization.organization.org-name",
+    "type": "java.lang.String",
+    "description": "The human-readable name for the organization"
+  },
+  {
+    "name": "simple-report-initialization.organization.external-id",
+    "type": "java.lang.String",
+    "description": "Durable external ID (for authorization management) of the organization"
+  },
+  {
+    "name": "simple-report-initialization.configured-device-types",
+    "type": "java.util.List<java.lang.String>",
+    "description": "The devices to be configured at the default facility"
+  },
+  {
+    "name": "simple-report-initialization.provider",
+    "type": "gov.cdc.usds.simplereport.db.model.Provider",
+    "description": "The ordering provider'"
+  },
+  {
+    "name": "simple-report-initialization.facility.address",
+    "type": "gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress",
+    "description": "facility address'"
+  },
+  {
+    "name": "simple-report-initialization.provider.address",
+    "type": "gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress",
+    "description": "The street address of the ordering provider"
+  },
+  {
+    "name": "simple-report-initialization.device-types",
+    "type": "java.util.List<gov.cdc.usds.simplereport.db.model.DeviceType>",
+    "description": "A description for 'simple-report-initialization.device-types'"
+  },
+  {
+    "name": "simple-report.authorization.role-claim",
+    "type": "java.lang.String",
+    "description": "A description for 'simple-report.authorization.role-claim'"
+  },
+  {
+    "name": "simple-report.data-hub",
+    "type": "gov.cdc.usds.simplereport.config.simplereport.DataHubConfig",
+    "description": "Configuration for data hub communications"
+  },
+  {
+    "name": "simple-report.authorization",
+    "type": "gov.cdc.usds.simplereport.config.AuthorizationConfiguration",
+    "description": "A description for 'simple-report.authorization.superuser-claim'"
+  },
+  {
+    "name": "graphql.datetime.scalars",
+    "type": "java.util.Map<java.lang.String, java.util.Map<java.lang.String,java.lang.String>>",
+    "description": "Definitions of graphql scalar types implemented by graphql-datetime"
+  },
+  {
+    "name": "simple-report.admin-emails",
+    "type": "java.util.List<java.lang.String>",
+    "description": "The e-mails of admin users for the application."
+  },
+  {
+    "name": "simple-report.data-hub",
+    "type": "gov.cdc.usds.simplereport.config.simplereport.DataHubConfig",
+    "description": "A description for 'simple-report.data-hub.upload-enabled'"
+  },
+  {
+    "name": "simple-report.demo-users",
+    "type": "gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration",
+    "description": "A description for 'simple-report.demo-users.default-user.authorization.granted-roles'"
+  }
+]}

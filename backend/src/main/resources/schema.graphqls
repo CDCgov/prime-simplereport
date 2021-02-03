@@ -2,6 +2,7 @@
 scalar DateTime
 # java.time.LocalDate
 scalar LocalDate
+scalar Upload
 
 enum ResultValue {
   POSITIVE
@@ -20,6 +21,12 @@ enum UserPermission {
   UPDATE_TEST
   SUBMIT_TEST
   EXPORT_TEST_EVENT
+}
+
+enum TestCorrectionStatus {
+  ORIGINAL
+  CORRECTED
+  REMOVED
 }
 
 type DeviceType {
@@ -115,10 +122,13 @@ type TestOrder {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  correctionStatus: String
+  reasonForCorrection: String
   patientLink: PatientLink
 }
 type TestResult {
   internalId: ID
+  facility: Facility
   patient: Patient
   dateAdded: String
   pregnancy: String
@@ -132,6 +142,8 @@ type TestResult {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  correctionStatus: String
+  reasonForCorrection: String
 }
 
 # Note: we assume a user's email and login username are the same thing.
@@ -163,11 +175,13 @@ type Query {
   organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!): [TestResult]
+  testResult(id: String!): TestResult
   whoami: User!
   patientLinkCurrent(internalId: String!): Organization
   patientLinkVerify(internalId: String!, birthDate: String!): Patient
 }
 type Mutation {
+  uploadPatients(patientList: Upload!): String
   updateFacility(
     facilityId: String!
     testingFacilityName: String!
@@ -327,6 +341,7 @@ type Mutation {
     result: String
     dateTested: String
   ): TestOrder
+  correctTestMarkAsError(id: String!, reason: String): TestResult
   addPatientToQueue(
     facilityId: String!
     patientId: String!

@@ -1,11 +1,11 @@
-name: Deploy [Test] Backend Azure Resources
+name: Deploy Test Backend Azure Resources
 
 on:
   workflow_dispatch:
-#    env:
-#      description: 'environment to deploy'
-#      default: 'test'
-#      required: true
+    env:
+      description: 'environment to deploy'
+      default: 'test'
+      required: true
 
 defaults:
   run:

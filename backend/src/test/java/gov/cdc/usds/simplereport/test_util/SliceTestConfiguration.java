@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OktaServiceImpl;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -36,7 +37,14 @@ import org.springframework.security.test.context.support.WithMockUser;
  * stereotype because we very much do not want it to be picked up automatically!
  */
 @Import({ TestDataFactory.class, AuditingConfig.class, OktaServiceImpl.class, ApiUserService.class, OrganizationInitializingService.class })
-@EnableConfigurationProperties({InitialSetupProperties.class, OktaClientProperties.class, AuthorizationProperties.class, AdminEmailList.class, DataHubConfig.class})
+@EnableConfigurationProperties({
+        InitialSetupProperties.class,
+        OktaClientProperties.class,
+        AuthorizationProperties.class,
+        AdminEmailList.class,
+        DataHubConfig.class,
+        DemoUserConfiguration.class,
+})
 public class SliceTestConfiguration {
 
     @Bean
