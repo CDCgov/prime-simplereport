@@ -71,7 +71,7 @@ public class TestOrderService {
     @AuthorizationConfiguration.RequirePermissionReadResultList
     public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
         Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-        return _terepo.getTestEventResults(fac.getInternalId(), newerThanDate);
+        return _terepo.getTestEventResults(fac.getInternalId(), (newerThanDate != null) ? newerThanDate: new Date(0));
     }
 
   @Transactional(readOnly = true)

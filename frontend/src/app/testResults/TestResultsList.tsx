@@ -11,7 +11,10 @@ import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import "@szhsin/react-menu/dist/index.css";
 import "./TestResultsList.scss";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
+import {
+  InjectedQueryWrapperProps,
+  QueryWrapper,
+} from "../commonComponents/QueryWrapper";
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!) {
@@ -38,9 +41,11 @@ export const testResultQuery = gql`
 interface Props {
   activeFacilityId: string;
   data: any;
+  trackAction: () => void;
+  refetch: () => void;
 }
 
-export const DetachedTestResultsList: any = ({ data }: Props) => {
+export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
 
@@ -56,15 +61,17 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     return (
       <TestResultCorrectionModal
         testResultId={markErrorId}
-        closeModal={() => setMarkErrorId(undefined)}
+        closeModal={() => {
+          setMarkErrorId(undefined);
+          refetch();
+        }}
       />
     );
   }
 
-  const testResultRows = (testResults: any) => {
-    if (testResults.length === 0) {
-      return;
-    }
+  const testResults = data.testResults;
+
+  const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
       // ISO string dates sort nicely
       if (a.dateTested === b.dateTested) return 0;
@@ -72,6 +79,9 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
       return -1;
     };
 
+    if (testResults.length === 0) {
+      return <tr>"No results"</tr>;
+    }
     // When printing is enabled add this menu item
     // <MenuItem onClick={() => setPrintModalId(r.internalId)}>
     //   Print result
@@ -118,14 +128,13 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
     ));
   };
 
-  let rows = testResultRows(data.testResults);
   return (
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container">
+          <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2> Test Results </h2>
+              <h2>Test Results</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -139,7 +148,7 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>{rows}</tbody>
+                <tbody>{testResultRows()}</tbody>
               </table>
             </div>
           </div>
@@ -149,10 +158,12 @@ export const DetachedTestResultsList: any = ({ data }: Props) => {
   );
 };
 
-const TestResultsList = (props: Omit<Props, "data">) => (
+const TestResultsList = (props: Omit<Props, InjectedQueryWrapperProps>) => (
   <QueryWrapper<Props>
     query={testResultQuery}
-    queryOptions={{ variables: { facilityId: props.activeFacilityId } }}
+    queryOptions={{
+      variables: { facilityId: props.activeFacilityId },
+    }}
     Component={DetachedTestResultsList}
     componentProps={{ ...props }}
   />

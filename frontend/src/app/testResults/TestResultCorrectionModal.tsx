@@ -4,7 +4,10 @@ import Modal from "react-modal";
 import Button from "../commonComponents/Button";
 import { displayFullName, showNotification } from "../utils";
 import "./TestResultCorrectionModal.scss";
-import { QueryWrapper } from "../commonComponents/QueryWrapper";
+import {
+  InjectedQueryWrapperProps,
+  QueryWrapper,
+} from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
 import { toast } from "react-toastify";
 
@@ -106,7 +109,9 @@ export const DetachedTestResultCorrectionModal = ({
   );
 };
 
-const TestResultCorrectionModal = (props: Omit<Props, "data">) => (
+const TestResultCorrectionModal = (
+  props: Omit<Props, InjectedQueryWrapperProps>
+) => (
   <QueryWrapper<Props>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
