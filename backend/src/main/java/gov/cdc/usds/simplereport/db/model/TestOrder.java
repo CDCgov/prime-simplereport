@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Type;
@@ -33,17 +34,23 @@ public class TestOrder extends BaseTestInfo {
 	@Enumerated(EnumType.STRING)
 	private OrderStatus orderStatus;
 
-    // strictly speaking, this is no longer OneToOne since corrections could have more than one,
-    // but this is kept up-to-date with the latest one.
-    @Column(columnDefinition = "uuid")
-    private UUID testEventId;    // id used directly without needing to load
+	// strictly speaking, this is no longer OneToOne since corrections could have
+	// more than one,
+	// but this is kept up-to-date with the latest one.
+	@Column(columnDefinition = "uuid")
+	private UUID testEventId; // id used directly without needing to load
 
-	protected TestOrder() { /* for hibernate */ }
+	@OneToOne(mappedBy = "testOrder")
+	private PatientLink patientLink;
+
+	protected TestOrder() {
+		/* for hibernate */ }
 
 	public TestOrder(Person patient, Facility facility) {
 		super(patient, facility);
 		this.orderStatus = OrderStatus.PENDING;
 	}
+
 	public OrderStatus getOrderStatus() {
 		return orderStatus;
 	}
@@ -69,21 +76,21 @@ public class TestOrder extends BaseTestInfo {
 		super.setTestResult(finalResult);
 	}
 
-    public void markComplete() {
-        orderStatus = OrderStatus.COMPLETED;
-    }
+	public void markComplete() {
+		orderStatus = OrderStatus.COMPLETED;
+	}
 
 	public void cancelOrder() {
 		orderStatus = OrderStatus.CANCELED;
 	}
 
-    public void setTestEventRef(TestEvent testEvent) {
-        this.testEventId = testEvent.getInternalId();
-    }
+	public void setTestEventRef(TestEvent testEvent) {
+		this.testEventId = testEvent.getInternalId();
+	}
 
-    public UUID getTestEventId() {
-        return testEventId;
-    }
+	public UUID getTestEventId() {
+		return testEventId;
+	}
 
 	public String getPregnancy() {
 		return askOnEntrySurvey.getSurvey().getPregnancy();
@@ -92,7 +99,7 @@ public class TestOrder extends BaseTestInfo {
 	public String getSymptoms() {
 		Map<String, Boolean> s = askOnEntrySurvey.getSurvey().getSymptoms();
 		JSONObject obj = new JSONObject();
-		for (Map.Entry<String,Boolean> entry : s.entrySet()) {
+		for (Map.Entry<String, Boolean> entry : s.entrySet()) {
 			obj.put(entry.getKey(), entry.getValue().toString());
 		}
 		return obj.toString();
@@ -128,7 +135,8 @@ public class TestOrder extends BaseTestInfo {
 		super.setDeviceType(deviceType);
 	}
 
-    // this will eventually be used when corrections are put back into the queue to be corrected
+	// this will eventually be used when corrections are put back into the queue to
+	// be corrected
 	@Override
 	public void setCorrectionStatus(TestCorrectionStatus newCorrectionStatus) {
 		super.setCorrectionStatus(newCorrectionStatus);
@@ -137,5 +145,13 @@ public class TestOrder extends BaseTestInfo {
 	@Override
 	public void setReasonForCorrection(String reasonForCorrection) {
 		super.setReasonForCorrection(reasonForCorrection);
+	}
+
+	public PatientLink getPatientLink() {
+		return patientLink;
+	}
+
+	public void setPatientLink(PatientLink patientLink) {
+		this.patientLink = patientLink;
 	}
 }

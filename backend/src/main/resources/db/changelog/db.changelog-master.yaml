@@ -1157,3 +1157,38 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: test_event
             columnName: test_order_id
+  - changeSet:
+      id: add-patient-link-table
+      author: nclyde@skylight.digital
+      comment: The patient link table stores time-sensitive UUIDs granting patients access to answer time of test questions
+      changes:
+        - createTable:
+            tableName: patient_link
+            remarks: Time-sensitive UUIDs granting patients access to answer time of test questions
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: test_order_id
+                  remarks: The test order this link was generated for
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__patient_link__test_order
+                    references: test_order
+  - changeSet:
+      id: add-refreshed-at-to-patient-link-table
+      author: nclyde@skylight.digital
+      comment: The patient link table stores time-sensitive UUIDs granting patients access to answer time of test questions
+      changes:
+        - addColumn:
+            tableName: patient_link
+            columns:
+              - column:
+                  name: refreshed_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent refresh of this entity.

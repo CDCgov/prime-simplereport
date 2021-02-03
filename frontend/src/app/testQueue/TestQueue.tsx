@@ -49,6 +49,9 @@ const queueQuery = gql`
       }
       result
       dateTested
+      patientLink {
+        internalId
+      }
     }
     organization {
       testingFacility {
@@ -89,6 +92,9 @@ interface QueueItemData {
   result: string;
   symptomOnset: string;
   dateTested: string;
+  patientLink: {
+    internalId: string;
+  };
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
@@ -130,6 +136,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patient,
             result,
             dateTested,
+            patientLink,
             ...questions
           }) => (
             <QueueItem
@@ -144,6 +151,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
               refetchQueue={refetchQueue}
               facilityId={activeFacilityId}
               dateTestedProp={dateTested}
+              patientLinkId={patientLink?.internalId || null}
             />
           )
         )
