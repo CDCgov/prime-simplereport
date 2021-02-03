@@ -3,6 +3,7 @@ import Nav from "../Nav";
 import Button from "../../commonComponents/Button";
 import Dropdown from "../../commonComponents/Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import ConditionalWrap from "../../commonComponents/ConditionalWrap";
 
 interface Props {
   users: any[]; // TODO
@@ -29,6 +30,8 @@ const dummyUsers = {
     isCurrentUser: true,
   },
 };
+
+// const ActiveNav: React.FC<Props> = (children) => {};
 
 const ManageUsers: React.FC<Props> = ({ users }) => {
   // TODO: this is all garbage code
@@ -58,6 +61,34 @@ const ManageUsers: React.FC<Props> = ({ users }) => {
       "456": false,
       "789": false,
     });
+  };
+
+  const sideNavItems = Object.values(usersState).map((user: any) => {
+    return (
+      <li className="usa-sidenav__item">
+        <ConditionalWrap
+          condition={user.isCurrentUser}
+          wrap={(children) => (
+            <a href="" className="usa-current">
+              {children}
+            </a>
+          )}
+        >
+          {user.name}
+          <br />
+          {user.email}
+        </ConditionalWrap>
+      </li>
+    );
+  });
+
+  const userDetail = (user: any) => {
+    return (
+      <div>
+        <span className="usa-tag">YOU</span>
+        <h2> {user.name} </h2>
+      </div>
+    );
   };
 
   const userRows = Object.values(usersState).map((user: any) => {
@@ -103,28 +134,33 @@ const ManageUsers: React.FC<Props> = ({ users }) => {
   return (
     <main className="prime-home">
       <div className="grid-container">
-        <Nav />
-        <div className="grid-row">
-          <div className="prime-container usa-card__container">
-            <div className="usa-card__header">
-              <h2>Manage Users</h2>
-              <Button
-                type="button"
-                onClick={onSaveChanges}
-                label="Save Changes"
-              />
-            </div>
-            <div className="usa-card__body">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Role</th>
-                  </tr>
-                </thead>
-                <tbody>{userRows}</tbody>
-              </table>
+        <div className="prime-container usa-card__container">
+          <div className="usa-card__header">
+            <h2>Manage Users</h2>
+            <Button
+              type="button"
+              onClick={onSaveChanges}
+              label="Save Changes"
+            />
+          </div>
+          <div className="usa-card__body">
+            <div className="grid-row">
+              <div className="display-block">
+                <h3>Users</h3>
+                <ul className="usa-sidenav">{sideNavItems}</ul>
+              </div>
+              <div className="display-block">
+                <table className="usa-table usa-table--borderless width-full">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Email</th>
+                      <th scope="col">Role</th>
+                    </tr>
+                  </thead>
+                  <tbody>{userRows}</tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
