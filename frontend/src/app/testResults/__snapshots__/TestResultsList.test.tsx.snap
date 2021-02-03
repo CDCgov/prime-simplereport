@@ -43,7 +43,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Date of Test
+                    Test date
                   </th>
                   <th
                     scope="col"
