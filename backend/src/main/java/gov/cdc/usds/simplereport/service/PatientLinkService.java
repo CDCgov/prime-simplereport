@@ -30,7 +30,7 @@ public class PatientLinkService {
 
     public static final long oneDay = 24L;
 
-    public PatientLink getPatientLink(String internalId) {
+    private PatientLink getPatientLink(String internalId) {
         UUID actualId = UUID.fromString(internalId);
         return plrepo.findById(actualId)
                 .orElseThrow(() -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));

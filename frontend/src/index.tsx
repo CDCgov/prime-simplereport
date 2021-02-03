@@ -78,8 +78,6 @@ const client = new ApolloClient({
   link: logoutLink.concat(concat(authMiddleware, httpLink)),
 });
 
-console.log(process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED);
-
 ReactDOM.render(
   <ApolloProvider client={client}>
     <React.StrictMode>
