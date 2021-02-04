@@ -210,6 +210,7 @@
 
   a {
     color: #555;
+    font-size: font-size($theme-navigation-font-family, "sm");
     padding-bottom: 5px;
     &.active,
     &:hover {

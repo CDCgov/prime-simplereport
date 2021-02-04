@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import javax.persistence.AttributeOverride;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
@@ -36,7 +37,7 @@ public class TestEvent extends BaseTestInfo {
 	@Type(type = "jsonb")
 	private AskOnEntrySurvey surveyData;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name="test_order_id")
 	private TestOrder order;
 
@@ -70,7 +71,7 @@ public class TestEvent extends BaseTestInfo {
 		super(event, correctionStatus, reasonForCorrection);
 
 		this.order = event.getTestOrder();
-		this.patientData = event.getPatient();
+		this.patientData = event.getPatientData();
 		this.providerData = event.getProviderData();
 		this.order = event.getTestOrder();
 		// this.patient_answers_data =
