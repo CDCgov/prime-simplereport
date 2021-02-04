@@ -2,6 +2,9 @@
   border-right: 1px solid #dfe1e2; // color("text-base-lighter");
 }
 
+.users-sidenav-item:hover {
+  cursor: pointer;
+}
 .user-header {
   border-bottom: 1px solid #dfe1e2;
   padding: 0em 1em;
@@ -14,4 +17,13 @@
 .reset-button {
   display: block;
   margin: 1em auto;
+}
+
+.sidenav-user-name {
+  color: #171717; // color($theme-color-prime-gray-light)
+}
+
+.sidenav-user-email {
+  font-weight: normal;
+  font-size: 0.8em;
 }
