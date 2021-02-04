@@ -7,7 +7,7 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 import java.util.UUID;
 
-public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID> {
+public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID>, AdvisoryLockManager {
 
     public DataHubUpload save(DataHubUpload entity);
 
