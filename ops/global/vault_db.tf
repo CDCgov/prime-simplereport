@@ -30,37 +30,3 @@ resource "azurerm_key_vault_key" "db_encryption_keys" {
     "wrapKey",
   ]
 }
-
-
-# Devops Team Permissions
-resource "azurerm_key_vault_access_policy" "team_db_access" {
-  count        = length(var.infra_team)
-  key_vault_id = azurerm_key_vault.db_keys.id
-  object_id    = var.infra_team[count.index]
-  tenant_id    = data.azurerm_client_config.current.tenant_id
-
-  key_permissions = [
-    "backup",
-    "create",
-    "decrypt",
-    "delete",
-    "encrypt",
-    "get",
-    "import",
-    "list",
-    "purge",
-    "recover",
-    "restore",
-    "sign",
-    "unwrapKey",
-    "update",
-    "verify",
-    "wrapKey",
-  ]
-
-  secret_permissions = ["get", ]
-
-  certificate_permissions = ["get", ]
-
-  storage_permissions = ["get", ]
-}
