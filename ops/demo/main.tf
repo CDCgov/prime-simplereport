@@ -61,8 +61,6 @@ module "app_gateway" {
   subnet_id         = data.terraform_remote_state.persistent_demo.outputs.subnet_lbs_id
   key_vault_id      = data.azurerm_key_vault.global.id
   log_workspace_uri = data.azurerm_log_analytics_workspace.log_analytics.id
-  action_group_id   = data.azurerm_monitor_action_group.admin_group.id
-
 
   fqdns = [
     module.simple_report_api.app_hostname

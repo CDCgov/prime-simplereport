@@ -1,7 +1,11 @@
 locals {
+  project = "prime"
+  name    = "simple-report"
+  env     = "global"
   management_tags = {
-    prime-app         = "simple-report"
-    prime-environment = "global"
+    prime-app      = local.name
+    environment    = local.env
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
   storage_account_name = "usdssimplereportglobal"
 }
@@ -41,20 +45,4 @@ module "insights" {
   rg_location   = data.azurerm_resource_group.rg.location
   rg_name       = data.azurerm_resource_group.rg.name
   tags          = local.management_tags
-}
-
-// Alert routing configuration
-module "alerting" {
-  source           = "../services/alerting"
-  rg_location      = data.azurerm_resource_group.rg.location
-  rg_name          = data.azurerm_resource_group.rg.name
-  function_app     = "definition.json"
-  storage_account  = local.storage_account_name
-  key_vault_id     = azurerm_key_vault.sr.id
-  app_insights_key = module.insights.app_insights_instrumentation_key
-  log_workspace_id = module.insights.log_analytics_workspace_id
-
-  depends_on = [
-    azurerm_key_vault_secret.slack_webhook
-  ]
 }

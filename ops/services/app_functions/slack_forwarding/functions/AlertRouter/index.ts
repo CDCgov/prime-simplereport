@@ -1,14 +1,14 @@
 import {AlertSchema, isAlertSchema} from './schema';
 import {AzureFunction, Context, HttpRequest} from '@azure/functions';
 const fetch = require('node-fetch');
+const util = require('util')
 
-
-const BASE_URL = 'https://portal.azure.com/#blade/Microsoft_Azure_Monitoring/AlertDetailsTemplateBlade/alertId/';
+let APP_INSIGHT_URL = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/overview';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('HTTP trigger function processed a request.');
-    context.log('I have a request: ', req.body);
-
+    context.log('Alert received:: ', util.inspect(req.body, {showHidden: false, depth: null}));
+    context.log(JSON.stringify(req.body))
     const webhook = process.env["SLACK_WEBHOOK"];
     console.log("Connecting to: ", webhook);
     if (webhook === undefined) {
@@ -22,7 +22,7 @@ const httpTrigger: AzureFunction = async function (context: Context, req: HttpRe
     if (req.body !== undefined && isAlertSchema(req.body)) {
         // I'm not really sure why the type guards aren't working correctly, but this is pretty simple
         // Send to Slack
-        context.log("I have an alert, sending to slack");
+        context.log("sending to slack");
         const res = await sendToSlack(webhook, req.body);
 
         context.res = {
@@ -57,7 +57,20 @@ function generateSlackMessage(alert: AlertSchema): any {
     }
 
     // Generate the heading text
-    const headerText = `${alert.data.essentials.severity} Alert ${alert.data.essentials.monitorCondition}`;
+    let alert_type;
+    if (alert.data.alertContext.conditionType === 'WebtestLocationAvailabilityCriteria'){
+        alert_type = "Ping Availability"
+        APP_INSIGHT_URL = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/availability'
+    }
+
+    let alert_type_emoji;
+    if(alert.data.essentials.severity === 'Sev1'){
+        alert_type_emoji = ':rotating-light-red-siren:'
+    } else {
+        alert_type_emoji = ':warning:'
+    }
+    let alertName= alert.data.essentials.alertRule.slice(0, alert.data.essentials.alertRule.indexOf('-prime-simple-report-global-insights'));
+    const headerText = `${alert_type_emoji} ${alert_type}: ${alertName} ${alert.data.essentials.monitorCondition}`;
 
     return {
         blocks: [
@@ -72,14 +85,7 @@ function generateSlackMessage(alert: AlertSchema): any {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: `${alert.data.essentials.alertRule}\n${alert.data.essentials.description}\nDetails here:\n${BASE_URL + encodeURIComponent(alert.data.essentials.alertId)}.`
-                }
-            },
-            {
-                type: 'section',
-                text: {
-                    type: 'plain_text',
-                    text: `${alert.data.essentials.monitorCondition} @ ${notificationTime}`
+                    text: `Details here:\n${APP_INSIGHT_URL}.`
                 }
             }
         ]

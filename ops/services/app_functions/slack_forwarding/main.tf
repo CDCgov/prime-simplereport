@@ -74,6 +74,11 @@ resource "azurerm_monitor_diagnostic_setting" "logs" {
 
   log {
     category = "FunctionAppLogs"
+    enabled  = true
+    retention_policy {
+      days    = 7
+      enabled = true
+    }
   }
 
   metric {

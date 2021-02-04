@@ -72,8 +72,3 @@ data "azurerm_application_insights" "app_insights" {
   name                = "prime-simple-report-${local.env}-insights"
   resource_group_name = data.azurerm_resource_group.rg.name
 }
-
-data "azurerm_monitor_action_group" "admin_group" {
-  name                = "prime-simple-report-global-admins"
-  resource_group_name = data.azurerm_resource_group.rg_global.name
-}
