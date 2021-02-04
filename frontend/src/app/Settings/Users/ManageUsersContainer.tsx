@@ -33,7 +33,7 @@ const ManageUsersContainer: any = () => {
   //     return <p>Error: Users not found</p>;
   //   }
 
-  return <ManagedUsers users={[]} />;
+  return <ManagedUsers users={[]} currentUser={{ id: "123", isAdmin: true }} />;
 };
 
 export default ManageUsersContainer;
