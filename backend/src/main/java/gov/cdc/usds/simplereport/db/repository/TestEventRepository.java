@@ -33,4 +33,8 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 					" AND te.created_at > :newerThanDate" +
 					" ORDER BY te.test_order_id, te.created_at desc", nativeQuery = true)
 	public List<TestEvent> getTestEventResults(UUID facilityId, Date newerThanDate);
+
+//	@Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt > :newerThanDate ORDER BY q.createdAt DESC")
+//	@EntityGraph(attributePaths = {"patient", "order", "order.patientLink"})
+//	public List<TestEvent> getTestEventResults(Facility facility, Date newerThanDate);
 }
