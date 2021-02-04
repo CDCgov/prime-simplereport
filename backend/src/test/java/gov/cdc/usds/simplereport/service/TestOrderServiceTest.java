@@ -147,6 +147,28 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         }
 
         @Test
+        @WithSimpleReportStandardUser
+        public void fetchTestEventsResults_standardUser_ok() {
+                Organization org = _organizationService.getCurrentOrganization();
+                Facility facility = _organizationService.getFacilities(org).get(0);
+                Person p = _dataFactory.createFullPerson(org);
+                TestEvent _e = _dataFactory.createTestEvent(p, facility);
+
+                // Count queries with one order
+                hibernateQueryInterceptor.startQueryCount();
+                _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+                long startQueryCount = hibernateQueryInterceptor.getQueryCount();
+
+                // Count queries with three order
+                TestEvent _e1 = _dataFactory.createTestEvent(p, facility);
+                TestEvent _e2 = _dataFactory.createTestEvent(p, facility);
+                hibernateQueryInterceptor.startQueryCount();
+                _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+                long endQueryCount = hibernateQueryInterceptor.getQueryCount();
+                assertEquals(endQueryCount, startQueryCount);
+        }
+
+        @Test
         @WithSimpleReportEntryOnlyUser
         void fetchTestResults_entryOnlyUser_error() {
                 Organization org = _organizationService.getCurrentOrganization();
