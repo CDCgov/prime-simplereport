@@ -484,26 +484,28 @@ const PatientForm = (props: Props) => {
           required
         />
       </FormGroup>
-      <FormGroup title="Test History">
-        {patient.testResults && patient.testResults.length !== 0 && (
-          <table className="usa-table usa-table--borderless">
-            <thead>
-              <tr>
-                <th scope="col">Date of Test</th>
-                <th scope="col">Result</th>
-              </tr>
-            </thead>
-            <tbody>
-              {patient.testResults.map((r: any, i: number) => (
-                <tr key={i}>
-                  <td>{moment(r.dateTested).format("lll")}</td>
-                  <td>{r.result}</td>
+      {patient.testResults && (
+        <FormGroup title="Test History">
+          {patient.testResults.length !== 0 && (
+            <table className="usa-table usa-table--borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Date of Test</th>
+                  <th scope="col">Result</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </FormGroup>
+              </thead>
+              <tbody>
+                {patient.testResults.map((r: any, i: number) => (
+                  <tr key={i}>
+                    <td>{moment(r.dateTested).format("lll")}</td>
+                    <td>{r.result}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </FormGroup>
+      )}
       <div className="prime-edit-patient-heading">
         <div></div>
         <button
