@@ -1,11 +1,10 @@
 import React from "react";
-import { displayFullName } from "../../utils";
 import { useState } from "react";
 import {
   getSymptomList,
   getTestTypes,
   getPregnancyResponses,
-} from "./constants";
+} from "../../../patientApp/timeOfTest/constants";
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -18,6 +17,7 @@ import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
 import moment from "moment";
 import "./AoEForm.scss";
+import { Redirect } from "react-router";
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -54,11 +54,12 @@ const SymptomInputs = ({
         />
         {!noSymptoms && (
           <>
-            <div className="border-top-1px border-base-lighter margin-top-2 margin-bottom-05"></div>
+            <div className="border-top-1px border-base-lighter margin-y-2"></div>
             <Checkboxes
               legend="What are your symptoms?"
               legendSrOnly
               name="symptom_list"
+              className="symptom-checkboxes"
               onChange={symptomChange}
               boxes={symptomListConfig.map(({ label, value }) => ({
                 label,
@@ -287,6 +288,7 @@ const AoEForm = ({
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
+  const [nextPage, setNextPage] = useState(false);
 
   // form validation
   const [symptomError, setSymptomError] = useState(null);
@@ -376,7 +378,11 @@ const AoEForm = ({
         ...priorTest,
         pregnancy: pregnancyResponse,
       });
-      onClose();
+      if (isModal) {
+        onClose();
+      } else {
+        setNextPage(true);
+      }
     } else {
       e.preventDefault();
     }
@@ -384,12 +390,17 @@ const AoEForm = ({
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      {isModal && (
-        <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      )}
-      <Button label={saveButtonText} type={"submit"} />
+      <Button
+        id="aoe-form-save-button"
+        label={saveButtonText}
+        type={"submit"}
+      />
     </div>
   );
+
+  if (nextPage) {
+    return <Redirect to={"/success"} />;
+  }
 
   return (
     <>
@@ -398,18 +409,6 @@ const AoEForm = ({
           saveAnswers(e);
         }}
       >
-        {isModal && (
-          <>
-            {buttonGroup}
-            <h1 className="patient-name">
-              {displayFullName(
-                patient.firstName,
-                patient.middleName,
-                patient.lastName
-              )}
-            </h1>
-          </>
-        )}
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
@@ -425,18 +424,20 @@ const AoEForm = ({
         </FormGroup>
 
         <FormGroup title="Test History">
-          <PriorTestInputs
-            testTypeConfig={testConfig}
-            priorTestDate={priorTestDate}
-            setPriorTestDate={setPriorTestDate}
-            isFirstTest={isFirstTest}
-            setIsFirstTest={setIsFirstTest}
-            priorTestType={priorTestType}
-            setPriorTestType={setPriorTestType}
-            priorTestResult={priorTestResult}
-            setPriorTestResult={setPriorTestResult}
-            mostRecentTest={mostRecentTest}
-          />
+          <div className="prime-formgroup__wrapper">
+            <PriorTestInputs
+              testTypeConfig={testConfig}
+              priorTestDate={priorTestDate}
+              setPriorTestDate={setPriorTestDate}
+              isFirstTest={isFirstTest}
+              setIsFirstTest={setIsFirstTest}
+              priorTestType={priorTestType}
+              setPriorTestType={setPriorTestType}
+              priorTestResult={priorTestResult}
+              setPriorTestResult={setPriorTestResult}
+              mostRecentTest={mostRecentTest}
+            />
+          </div>
         </FormGroup>
 
         {patient.gender !== "male" && (
@@ -451,7 +452,9 @@ const AoEForm = ({
             />
           </FormGroup>
         )}
-        <div className="sr-time-of-test-footer">{buttonGroup}</div>
+        <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
+          {buttonGroup}
+        </div>
       </form>
     </>
   );

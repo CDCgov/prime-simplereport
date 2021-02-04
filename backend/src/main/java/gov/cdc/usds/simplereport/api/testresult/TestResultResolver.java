@@ -19,9 +19,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     @Autowired
     private TestOrderService tos;
 
-    public List<TestEvent> getTestResults(UUID facilityId) {
-        // get all
-        return tos.getTestEventsResults(facilityId, new Date(0));
+    public List<TestEvent> getTestResults(UUID facilityId, Date newerThanDate) {
+        return tos.getTestEventsResults(facilityId, newerThanDate);
     }
 
     public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {

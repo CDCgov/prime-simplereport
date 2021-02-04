@@ -17,6 +17,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -27,8 +28,8 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
 /**
- * Service for fetching the device-type reference list (<i>not</i> the device types available for a
- * specific facility or organization).
+ * Service for fetching the device-type reference list (<i>not</i> the device
+ * types available for a specific facility or organization).
  */
 @Service
 @Transactional(readOnly = false)
@@ -39,24 +40,20 @@ public class TestOrderService {
   private TestOrderRepository _repo;
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
+  private PatientLinkService _pls;
 
-  public TestOrderService(
-    OrganizationService os,
-    DeviceTypeService dts,
-    TestOrderRepository repo,
-    PatientAnswersRepository parepo,
-    TestEventRepository terepo,
-          PersonService ps
-  ) {
+  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo,
+      PatientAnswersRepository parepo, TestEventRepository terepo, PersonService ps, PatientLinkService pls) {
     _os = os;
     _ps = ps;
     _dts = dts;
     _repo = repo;
     _parepo = parepo;
     _terepo = terepo;
-}
+    _pls = pls;
+  }
 
-@AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTest
   public List<TestOrder> getQueue(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
     return _repo.fetchQueue(fac.getOrganization(), fac);
@@ -73,8 +70,8 @@ public class TestOrderService {
     @Transactional(readOnly = true)
     @AuthorizationConfiguration.RequirePermissionReadResultList
     public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
-        Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-        return _terepo.getTestEventResults(fac.getInternalId(), newerThanDate);
+        Facility fac = _os.getFacilityInCurrentOrg(facilityId);  // security.
+        return _terepo.getTestEventResults(fac.getInternalId(), (newerThanDate != null) ? newerThanDate: new Date(0));
     }
 
   @Transactional(readOnly = true)
@@ -87,38 +84,37 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultList
   public List<TestEvent> getTestResults(Person patient) {
-      return _terepo.findAllByPatient(patient);
+    return _terepo.findAllByPatient(patient);
   }
 
-    @Transactional(readOnly = true)
-    public TestOrder getTestOrder(String id) {
-        Organization org = _os.getCurrentOrganization();
-        return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+  @Transactional(readOnly = true)
+  public TestOrder getTestOrder(String id) {
+    Organization org = _os.getCurrentOrganization();
+    return _repo.fetchQueueItemById(org, UUID.fromString(id)).orElseThrow(TestOrderService::noSuchOrderFound);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
+    TestOrder order = this.getTestOrder(id);
+
+    if (deviceId != null) {
+      DeviceType deviceType = _dts.getDeviceType(deviceId);
+      order.setDeviceType(deviceType);
     }
 
-    @AuthorizationConfiguration.RequirePermissionUpdateTest
-    public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
-        TestOrder order = this.getTestOrder(id);
+    order.setResult(result == null ? null : TestResult.valueOf(result));
 
-        if (deviceId != null) {
-            DeviceType deviceType = _dts.getDeviceType(deviceId);
-            order.setDeviceType(deviceType);
-        }
+    order.setDateTestedBackdate(dateTested);
 
-        order.setResult(result == null? null :TestResult.valueOf(result));
-
-        order.setDateTestedBackdate(dateTested);
-
-        return _repo.save(order);
-    }
+    return _repo.save(order);
+  }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
-    TestOrder order = _repo.fetchQueueItem(org, person)
-		.orElseThrow(TestOrderService::noSuchOrderFound);
+    TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(deviceType);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
@@ -132,21 +128,15 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTest
-  public TestOrder addPatientToQueue(
-    UUID facilityId,
-    Person patient,
-    String pregnancy,
-    Map<String, Boolean> symptoms,
-    Boolean firstTest,
-    LocalDate priorTestDate,
-    String priorTestType,
-    TestResult priorTestResult,
-    LocalDate symptomOnsetDate,
-    Boolean noSymptoms
-  ) {
-    // Check if there is an existing queue entry for the patient. If there is one, throw an exception.
-    // If there is more than one, we throw a different exception: handling that case "elegantly" does not
-    // seem worth extra code given that it should never happen (and will result in an exception either way)
+  public TestOrder addPatientToQueue(UUID facilityId, Person patient, String pregnancy, Map<String, Boolean> symptoms,
+      Boolean firstTest, LocalDate priorTestDate, String priorTestType, TestResult priorTestResult,
+      LocalDate symptomOnsetDate, Boolean noSymptoms) {
+    // Check if there is an existing queue entry for the patient. If there is one,
+    // throw an exception.
+    // If there is more than one, we throw a different exception: handling that case
+    // "elegantly" does not
+    // seem worth extra code given that it should never happen (and will result in
+    // an exception either way)
     Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
       throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
@@ -154,34 +144,21 @@ public class TestOrderService {
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
-    AskOnEntrySurvey survey = new AskOnEntrySurvey(
-      pregnancy,
-      symptoms,
-      noSymptoms,
-      symptomOnsetDate,
-      firstTest,
-      priorTestDate,
-      priorTestType,
-      priorTestResult
-    );
+    AskOnEntrySurvey survey = new AskOnEntrySurvey(pregnancy, symptoms, noSymptoms, symptomOnsetDate, firstTest,
+        priorTestDate, priorTestType, priorTestResult);
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
-    return _repo.save(newOrder);
+    TestOrder savedOrder = _repo.save(newOrder);
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    savedOrder.setPatientLink(patientLink);
+    return savedOrder;
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTest
-  public void updateTimeOfTestQuestions(
-    String patientId,
-    String pregnancy,
-    Map<String, Boolean> symptoms,
-    Boolean firstTest,
-    LocalDate priorTestDate,
-    String priorTestType,
-    TestResult priorTestResult,
-    LocalDate symptomOnsetDate,
-    Boolean noSymptoms
-  ) {
+  public void updateTimeOfTestQuestions(String patientId, String pregnancy, Map<String, Boolean> symptoms,
+      Boolean firstTest, LocalDate priorTestDate, String priorTestType, TestResult priorTestResult,
+      LocalDate symptomOnsetDate, Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
 
     PatientAnswers answers = order.getAskOnEntrySurvey();
@@ -198,7 +175,6 @@ public class TestOrderService {
     _parepo.save(answers);
   }
 
-
   @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void removePatientFromQueue(String patientId) {
     TestOrder order = retrieveTestOrder(patientId);
@@ -207,14 +183,14 @@ public class TestOrderService {
   }
 
   private TestOrder retrieveTestOrder(String patientId) {
-	Organization org = _os.getCurrentOrganization();
-	Person patient = _ps.getPatient(patientId, org);
-	return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
+    Organization org = _os.getCurrentOrganization();
+    Person patient = _ps.getPatient(patientId, org);
+    return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public int cancelAll() {
-	  return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
+    return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
   }
 
     @Transactional
@@ -234,6 +210,11 @@ public class TestOrderService {
         TestOrder order = event.getTestOrder();
         if (order == null) {
             throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
+        }
+
+        // sanity check that two different users can't deleting the same event and delete it twice.
+        if (!testEventId.equals(order.getTestEventId())) {
+            throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
         }
 
         // generate a duplicate test_event that just has a status of REMOVED and the reason
@@ -261,6 +242,6 @@ public class TestOrderService {
     }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
-	return new IllegalGraphqlArgumentException("No active test order was found for that patient");
+    return new IllegalGraphqlArgumentException("No active test order was found for that patient");
   }
 }

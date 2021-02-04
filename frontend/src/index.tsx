@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
 import App from "./app/App";
+import PatientApp from "./patientApp/PatientApp";
 import HealthChecks from "./app/HealthChecks";
 
 import * as serviceWorker from "./serviceWorker";
@@ -84,6 +85,9 @@ ReactDOM.render(
         <Router basename={process.env.PUBLIC_URL}>
           <Switch>
             <Route path="/health" component={HealthChecks} />
+            {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
+              <Route path="/pxp" component={PatientApp} />
+            ) : null}
             <Route path="/" component={App} />
           </Switch>
         </Router>

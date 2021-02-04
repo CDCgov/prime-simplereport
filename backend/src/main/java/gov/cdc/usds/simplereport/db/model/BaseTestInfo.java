@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -18,7 +19,7 @@ import java.util.Date;
 public abstract class BaseTestInfo extends AuditedEntity
 		implements OrganizationScoped {
 
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false, fetch = FetchType.LAZY)
 	@JoinColumn(name = "patient_id", updatable = false)
 	private Person patient;
 

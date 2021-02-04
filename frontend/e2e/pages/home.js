@@ -15,6 +15,11 @@ function conductTest(patientName) {
   this.expect.section('@modal').to.be.visible;
   this.expect
     .section('@modal')
+    .to.contain.text('Complete questionnaire verbally');
+  this.section.modal.expect.element('@verbalRadio').to.be.visible;
+  this.section.modal.click('@verbalRadio');
+  this.expect
+    .section('@modal')
     .to.contain.text('Are you experiencing any of the following symptoms?');
   this.section.modal.expect.element('@noSymptoms').to.be.visible;
   this.section.modal.click('@noSymptoms');
@@ -73,10 +78,11 @@ module.exports = {
     modal: {
       selector: '.ReactModal__Content',
       elements: {
-        noSymptoms: 'input[name="symptom_list"]:first-of-type+label',
-        firstTest: 'input[name="prior_test_flag"]:first-of-type+label',
-        pregnant: 'input[name="pregnancy"]:first-of-type+label',
-        continueButton: '.sr-time-of-test-buttons button:last-of-type',
+        verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
+        noSymptoms: 'input[name="symptom_list"][value="no"]+label',
+        firstTest: 'input[name="prior_test_flag"][value="yes"]+label',
+        pregnant: 'input[name="pregnancy"][value="60001007"]+label',
+        continueButton: '#aoe-form-save-button',
       },
     },
     cardContainer: {

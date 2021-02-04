@@ -431,7 +431,7 @@
 .prime-formgroup {
   @include u-padding($theme-card-padding-perimeter);
   background: color("white");
-  border-width: units("2px");
+  border-width: units("1px");
   border-color: color("base-lighter");
   border-style: solid;
   border-radius: units(0.5);
@@ -453,6 +453,57 @@
 
 .usa-fieldset + .usa-fieldset {
   margin-top: units(3);
+}
+
+// Modal form
+.ReactModal__Content {
+  .prime-formgroup {
+    border-width: 0;
+    margin-top: units(4);
+    padding: 0;
+  }
+
+  .prime-formgroup__wrapper {
+    border: 1px solid color("base-lighter");
+    border-radius: units(0.5);
+    margin-top: units(2);
+    padding: units(2.5);
+
+    > .usa-legend {
+      margin-top: 0;
+    }
+  }
+
+  .prime-formgroup-heading {
+    + .usa-fieldset {
+      margin-top: units(2);
+    }
+  }
+
+  // Two-column checkbox layout
+  @include at-media("mobile-lg") {
+    .symptom-checkboxes {
+      .usa-form-group {
+        column-count: 2;
+
+        .usa-checkbox:first-child {
+          .usa-checkbox__label {
+            margin-top: 0;
+          }
+        }
+      }
+
+      > .usa-checkbox {
+        .usa-checkbox__label {
+          margin-top: 0;
+        }
+      }
+
+      .usa-checkbox__label {
+        line-height: units(3);
+      }
+    }
+  }
 }
 
 .usa-step-indicator {
