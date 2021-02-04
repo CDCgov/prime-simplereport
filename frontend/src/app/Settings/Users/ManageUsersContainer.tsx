@@ -1,6 +1,7 @@
 import React from "react";
 // import { gql, useQuery } from "@apollo/client";
 import ManagedUsers from "./ManageUsers";
+import { UserRole } from "../../permissions";
 
 // TODO this hasn't been implemented yet in the backend
 // const GET_USERS = gql`
@@ -16,6 +17,31 @@ import ManagedUsers from "./ManageUsers";
 //     }
 //   }
 // `;
+
+const dummyUsers = [
+  {
+    id: "123",
+    name: "Peter Parker",
+    role: "admin" as UserRole,
+    isAdmin: true,
+    email: "spiderman-or-deadpool@hero.com",
+  },
+  {
+    id: "456",
+    name: "Carol Danvers",
+    role: "entry-only" as UserRole,
+    isAdmin: false,
+    email: "marvel@hero.com",
+  },
+  {
+    id: "789",
+    name: "Natasha Romanoff",
+    role: "admin" as UserRole,
+    isAdmin: true,
+    email: "widow@hero.com",
+    isCurrentUser: true,
+  },
+];
 
 const ManageUsersContainer: any = () => {
   //   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
@@ -33,7 +59,12 @@ const ManageUsersContainer: any = () => {
   //     return <p>Error: Users not found</p>;
   //   }
 
-  return <ManagedUsers users={[]} currentUser={{ id: "123", isAdmin: true }} />;
+  return (
+    <ManagedUsers
+      users={dummyUsers}
+      currentUser={{ id: "123", isAdmin: true }}
+    />
+  );
 };
 
 export default ManageUsersContainer;

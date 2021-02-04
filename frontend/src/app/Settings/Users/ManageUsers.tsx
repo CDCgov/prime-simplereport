@@ -1,45 +1,36 @@
 import React, { useState } from "react";
-import Nav from "../Nav";
 import Button from "../../commonComponents/Button";
-import Dropdown from "../../commonComponents/Dropdown";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import Dropdown from "../../commonComponents/Dropdown";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
-import Checkboxes from "../../commonComponents/Checkboxes";
+// import Checkboxes from "../../commonComponents/Checkboxes";
 import Alert from "../../commonComponents/Alert";
 import "./ManageUsers.scss";
 import { UserRole } from "../../permissions";
 import { showNotification } from "../../utils";
 import { toast } from "react-toastify";
+import InProgressModal from "./InProgerssModal";
+import RadioGroup from "../../commonComponents/RadioGroup";
 
-interface Props {
-  currentUser: any;
-  users: any[]; // TODO
+interface RoleButton {
+  value: UserRole;
+  label: string;
 }
 
-const dummyUsers = {
-  "123": {
-    id: "123",
-    name: "Peter Parker",
-    role: "admin",
-    isAdmin: true,
-    email: "spider@hero.com",
+const ROLES: RoleButton[] = [
+  {
+    value: "admin",
+    label: "Admin",
   },
-  "456": {
-    id: "456",
-    name: "Carol Danvers",
-    role: "user",
-    isAdmin: false,
-    email: "marvel@hero.com",
+  {
+    value: "user",
+    label: "User",
   },
-  "789": {
-    id: "789",
-    name: "Natasha Romanoff",
-    role: "admin",
-    isAdmin: true,
-    email: "widow@hero.com",
-    isCurrentUser: true,
+  {
+    value: "entry-only",
+    label: "Entry Only",
   },
-} as SettingsUsers;
+];
 
 interface SettingsUser {
   id: string;
@@ -48,16 +39,30 @@ interface SettingsUser {
   email: string;
   isAdmin: boolean;
   isEdited?: boolean;
-  isCurrentUser?: boolean;
+}
+
+interface Props {
+  currentUser: any; // TODO: this is a subset of the whoami user
+  users: SettingsUser[];
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
 
 const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
-  const [usersState, updateUsersState] = useState<SettingsUsers>(dummyUsers);
+  let settingsUsers: SettingsUsers = users.reduce(
+    (acc: SettingsUsers, user: SettingsUser) => {
+      acc[user.id] = user;
+      return acc;
+    },
+    {}
+  );
+
+  const [usersState, updateUsersState] = useState<SettingsUsers>(settingsUsers);
   const [activeUser, updateActiveUser] = useState<any>(
-    Object.keys(dummyUsers)[0]
+    Object.keys(settingsUsers)[0]
   ); // pick the first user
+  const [nextActiveUser, updateNextActiveUser] = useState<string | null>(null);
+  const [showInProgressModal, updateShowInProgressModal] = useState(false);
 
   // const onDropdownChange = (
   //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -72,17 +77,16 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   //   });
   // };
 
-  const changeIsAdmin = (
+  const changeRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     userId: string
   ) => {
-    // let role = e.target.value as UserRole;
-    let isAdmin = usersState[userId].isAdmin;
+    let role = e.target.value as UserRole;
     updateUsersState({
       ...usersState,
       [userId]: {
         ...usersState[userId],
-        isAdmin: !isAdmin,
+        role: role,
         isEdited: true,
       },
     });
@@ -102,7 +106,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
     let successAlert = (
       <Alert
         type="success"
-        title="Updated User"
+        title="Changes Saved"
         body={`${usersState[userId].name}'s settings have been saved`}
       />
     );
@@ -112,23 +116,23 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
 
   const onChangeActiveUser = (nextActiveUserId: string) => {
     if (usersState[activeUser].isEdited) {
-      let warningAlert = (
-        <Alert
-          type="warning"
-          title={`${usersState[activeUser].name}'s settings have changed`}
-          body={`Please save or reset changes to continue`}
-        />
-      );
-      showNotification(toast, warningAlert);
+      updateNextActiveUser(nextActiveUserId);
+      updateShowInProgressModal(true);
     } else {
       updateActiveUser(nextActiveUserId);
     }
   };
 
+  const onContinueChangeActiveUser = (currentActiveUserId: string) => {
+    updateShowInProgressModal(false);
+    updateActiveUser(nextActiveUser);
+    resetUser(currentActiveUserId);
+  };
+
   const sideNavItems = Object.values(usersState).map((user: any) => {
     return (
       <li
-        className="usa-sidenav__item"
+        className="usa-sidenav__item users-sidenav-item"
         onClick={() => onChangeActiveUser(user.id)}
       >
         <ConditionalWrap
@@ -136,9 +140,9 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           wrap={(children) => <div className="usa-current">{children}</div>}
         >
           <a className="padding-left-2 padding-right-2">
-            {user.name}
+            <span className="sidenav-user-name">{user.name}</span>
             <br />
-            {user.email}
+            <span className="sidenav-user-email">{user.email}</span>
           </a>
         </ConditionalWrap>
       </li>
@@ -148,7 +152,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   const resetUser = (userId: string) => {
     updateUsersState({
       ...usersState,
-      [userId]: dummyUsers[userId],
+      [userId]: settingsUsers[userId],
     });
   };
 
@@ -157,7 +161,10 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
     return (
       <React.Fragment>
         <div className="user-header">
-          <h2 className="display-inline-block"> {user.name} </h2>{" "}
+          <h2 className="display-inline-block margin-top-2 margin-bottom-105">
+            {" "}
+            {user.name}{" "}
+          </h2>{" "}
           {user.id === currentUser.id ? (
             <span className="usa-tag margin-left-1">YOU</span>
           ) : null}
@@ -166,7 +173,18 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           <p>
             Permissions to manage settings and users are limited to admins only
           </p>
-          <Checkboxes
+          <RadioGroup
+            legend="Roles"
+            // required
+            legendSrOnly
+            name="role"
+            buttons={ROLES}
+            selectedRadio={user.role}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              changeRole(e, user.id)
+            }
+          />
+          {/* <Checkboxes
             boxes={[
               {
                 value: "admin",
@@ -182,22 +200,30 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
               changeIsAdmin(e, user.id)
             }
             disabled={!currentUser.isAdmin}
-          />
+          /> */}
           <div className="float-right">
             <Button
               type="button"
               onClick={() => onSaveChanges(user.id)}
-              label="Save Changes"
+              label="Save changes"
               disabled={!currentUser.isAdmin || !usersState[user.id].isEdited}
             />
-            <Button
+            {/* <Button
               variant="unstyled"
               className="reset-button"
               onClick={() => resetUser(user.id)}
               label="Reset"
-            />
+            /> */}
           </div>
         </div>
+        {showInProgressModal ? (
+          <InProgressModal
+            onClose={() => updateShowInProgressModal(false)}
+            onContinue={() => onContinueChangeActiveUser(user.id)}
+            // overlayClassName="prime-modal-overlay"
+            // contentLabel="Time of Test Questions"
+          ></InProgressModal>
+        ) : null}
       </React.Fragment>
     );
   };
@@ -252,7 +278,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           <div className="usa-card__body">
             <div className="grid-row">
               <div className="display-block users-sidenav">
-                <h2>Users</h2>
+                <h3>Users</h3>
                 <ul className="usa-sidenav">{sideNavItems}</ul>
               </div>
               <div className="tablet:grid-col">
