@@ -9,6 +9,8 @@ export type UserPermission =
   | "SUBMIT_TEST"
   | "SEARCH_PATIENTS";
 
+export type UserRole = "admin" | "user" | "entry-only";
+
 /* 
     TODO: this is a quick v0
 
