@@ -9,7 +9,6 @@ locals {
   https_listener               = "${var.name}-https"
   frontend_config              = "${var.name}-config"
   redirect_rule                = "${var.name}-redirect"
-  is_prod                      = var.env == "prod"
 }
 
 resource "azurerm_public_ip" "static_gateway" {
@@ -105,16 +104,6 @@ resource "azurerm_application_gateway" "load_balancer" {
   }
 
   backend_http_settings {
-    name                                = local.api_backend_https_setting
-    cookie_based_affinity               = "Disabled"
-    port                                = 443
-    protocol                            = "Https"
-    request_timeout                     = 20
-    pick_host_name_from_backend_address = true
-    probe_name                          = "backend-https"
-  }
-
-  backend_http_settings {
     name                                = local.api_backend_http_setting
     cookie_based_affinity               = "Disabled"
     port                                = 80
@@ -123,33 +112,13 @@ resource "azurerm_application_gateway" "load_balancer" {
     pick_host_name_from_backend_address = true
   }
 
-  # Add custom healthcheck probe to ping the Spring health endpoint
-  probe {
-    name                                      = "api-http"
-    interval                                  = 10
-    path                                      = "/actuator/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Http"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      status_code = ["200-399"]
-    }
-  }
-
-  probe {
-    name                                      = "api-https"
-    interval                                  = 10
-    path                                      = "/actuator/health"
-    pick_host_name_from_backend_http_settings = true
-    protocol                                  = "Https"
-    timeout                                   = 10
-    unhealthy_threshold                       = 3
-
-    match {
-      status_code = ["200-399"]
-    }
+  backend_http_settings {
+    name                                = local.api_backend_https_setting
+    cookie_based_affinity               = "Disabled"
+    port                                = 443
+    protocol                            = "Https"
+    request_timeout                     = 20
+    pick_host_name_from_backend_address = true
   }
 
   # ------- Listeners -------------------------
@@ -301,9 +270,8 @@ resource "azurerm_application_gateway" "load_balancer" {
       identity,
       rewrite_rule_set,
       url_path_map,
-      probe,
       # comment if you are creating the gateway for the first time
-      request_routing_rule
+      request_routing_rule,
     ]
   }
 }

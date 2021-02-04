@@ -38,8 +38,3 @@ variable "log_workspace_uri" {
   description = "Full URI of log workspace to report to"
   type        = string
 }
-
-variable "action_group_id" {
-  description = "Alert group to route results to"
-  type        = string
-}
