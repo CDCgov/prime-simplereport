@@ -54,7 +54,6 @@ interface SettingsUser {
 type SettingsUsers = { [id: string]: SettingsUser };
 
 const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
-  // TODO: this is all garbage code
   const [usersState, updateUsersState] = useState<SettingsUsers>(dummyUsers);
   const [activeUser, updateActiveUser] = useState<any>(
     Object.keys(dummyUsers)[0]
@@ -104,7 +103,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
       <Alert
         type="success"
         title="Updated User"
-        body={`${usersState[userId].name} has been saved`}
+        body={`${usersState[userId].name}'s settings have been saved`}
       />
     );
 
@@ -116,8 +115,8 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
       let warningAlert = (
         <Alert
           type="warning"
-          title={`${usersState[activeUser].name} information has changed`}
-          body={`Please confirm or cancel changes`}
+          title={`${usersState[activeUser].name}'s settings have changed`}
+          body={`Please save or reset changes to continue`}
         />
       );
       showNotification(toast, warningAlert);
@@ -136,7 +135,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           condition={activeUser === user.id}
           wrap={(children) => <div className="usa-current">{children}</div>}
         >
-          <a className="padding-2">
+          <a className="padding-left-2 padding-right-2">
             {user.name}
             <br />
             {user.email}
@@ -146,36 +145,60 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
     );
   });
 
+  const resetUser = (userId: string) => {
+    updateUsersState({
+      ...usersState,
+      [userId]: dummyUsers[userId],
+    });
+  };
+
   const userDetail = (user: SettingsUser, currentUser: any) => {
     // TODO update currentUser type
     return (
-      <div>
-        <h2 className="display-inline-block"> {user.name} </h2>{" "}
-        {user.id === currentUser.id ? (
-          <span className="usa-tag margin-left-1">YOU</span>
-        ) : null}
-        <Checkboxes
-          boxes={[
-            {
-              value: "admin",
-              label: "Admin",
-              checked: user.isAdmin,
-            },
-          ]}
-          legend={"Select Role"}
-          name="user role"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            changeIsAdmin(e, user.id)
-          }
-          disabled={!currentUser.isAdmin}
-        />
-        <Button
-          type="button"
-          onClick={() => onSaveChanges(user.id)}
-          label="Save Changes"
-          disabled={!currentUser.isAdmin}
-        />
-      </div>
+      <React.Fragment>
+        <div className="user-header">
+          <h2 className="display-inline-block"> {user.name} </h2>{" "}
+          {user.id === currentUser.id ? (
+            <span className="usa-tag margin-left-1">YOU</span>
+          ) : null}
+        </div>
+        <div className="user-content">
+          <p>
+            Permissions to manage settings and users are limited to admins only
+          </p>
+          <Checkboxes
+            boxes={[
+              {
+                value: "admin",
+                label: "Admin",
+                checked: user.isAdmin,
+              },
+            ]}
+            legend="Set default"
+            legendSrOnly
+            required={false}
+            name="user role"
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              changeIsAdmin(e, user.id)
+            }
+            disabled={!currentUser.isAdmin}
+          />
+          <div className="float-right">
+            <Button
+              type="button"
+              onClick={() => onSaveChanges(user.id)}
+              label="Save Changes"
+              disabled={!currentUser.isAdmin || !usersState[user.id].isEdited}
+            />
+            <Button
+              variant="unstyled"
+              className="reset-button"
+              onClick={() => resetUser(user.id)}
+              label="Reset"
+            />
+          </div>
+        </div>
+      </React.Fragment>
     );
   };
 
@@ -229,14 +252,10 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           <div className="usa-card__body">
             <div className="grid-row">
               <div className="display-block users-sidenav">
-                <h3>Users</h3>
+                <h2>Users</h2>
                 <ul className="usa-sidenav">{sideNavItems}</ul>
               </div>
-              <div className="display-block">
-                <p>
-                  Permissions to manage settings and users are limited to admins
-                  only
-                </p>
+              <div className="tablet:grid-col">
                 {userDetail(usersState[activeUser], currentUser)}
               </div>
             </div>
