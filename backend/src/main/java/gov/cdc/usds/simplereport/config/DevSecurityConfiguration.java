@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
@@ -23,7 +24,7 @@ public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private static final Logger LOG = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
     @Autowired
-    private InitialSetupProperties _setupProps;
+    private DemoUserConfiguration _demoUsers;
 
     @Override
     public void configure(HttpSecurity http) throws Exception {
@@ -33,8 +34,8 @@ public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 ;
     }
 
-	@Bean
-	public IdentitySupplier getDummyIdentity() {
-		return _setupProps::getDefaultUser;
-	}
+    @Bean
+    public IdentitySupplier getDemoIdentitySupplier() {
+        return () -> _demoUsers.getDefaultUser().getIdentity();
+    }
 }

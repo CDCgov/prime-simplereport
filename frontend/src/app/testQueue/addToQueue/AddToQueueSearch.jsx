@@ -57,6 +57,32 @@ const ADD_PATIENT_TO_QUEUE = gql`
   }
 `;
 
+const UPDATE_AOE = gql`
+  mutation UpdateAOE(
+    $patientId: String!
+    $symptoms: String
+    $symptomOnset: String
+    $pregnancy: String
+    $firstTest: Boolean
+    $priorTestDate: String
+    $priorTestType: String
+    $priorTestResult: String
+    $noSymptoms: Boolean
+  ) {
+    updateTimeOfTestQuestions(
+      patientId: $patientId
+      pregnancy: $pregnancy
+      symptoms: $symptoms
+      noSymptoms: $noSymptoms
+      firstTest: $firstTest
+      priorTestDate: $priorTestDate
+      priorTestType: $priorTestType
+      priorTestResult: $priorTestResult
+      symptomOnset: $symptomOnset
+    )
+  }
+`;
+
 const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
@@ -71,6 +97,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
 
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
+  const [updateAoe] = useMutation(UPDATE_AOE);
   const [queryString, setQueryString] = useState("");
   const [suggestions, updateSuggestions] = useState([]);
 
@@ -133,25 +160,31 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestResult,
       priorTestDate,
       priorTestType,
-    }
+    },
+    createOrUpdate = "create"
   ) => {
     updateSuggestions([]);
     setQueryString("");
     trackAddPatientToQueue();
-    addPatientToQueue({
-      variables: {
-        facilityId: facilityId,
-        patientId: patient.internalId,
-        noSymptoms,
-        symptoms,
-        symptomOnset,
-        pregnancy,
-        firstTest,
-        priorTestDate,
-        priorTestType,
-        priorTestResult,
-      },
-    })
+    let callback;
+    const variables = {
+      patientId: patient.internalId,
+      noSymptoms,
+      symptoms,
+      symptomOnset,
+      pregnancy,
+      firstTest,
+      priorTestDate,
+      priorTestType,
+      priorTestResult,
+    };
+    if (createOrUpdate === "create") {
+      callback = addPatientToQueue;
+      variables.facilityId = facilityId;
+    } else {
+      callback = updateAoe;
+    }
+    return callback({ variables })
       .then((res) => {
         let { type, title, body } = {
           ...ALERT_CONTENT[QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS](
@@ -161,6 +194,10 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
+        if (createOrUpdate === "create") {
+          const patientLinkId = res.data.addPatientToQueue;
+          return patientLinkId;
+        }
       })
       .catch((error) => {
         updateMutationError(error);
@@ -175,14 +212,13 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         queryString={queryString}
         disabled={!shouldShowSuggestions}
       />
-      {shouldShowSuggestions && (
-        <SearchResults
-          patients={suggestions}
-          onAddToQueue={onAddToQueue}
-          facilityId={facilityId}
-          patientsInQueue={patientsInQueue}
-        />
-      )}
+      <SearchResults
+        patients={suggestions}
+        onAddToQueue={onAddToQueue}
+        facilityId={facilityId}
+        patientsInQueue={patientsInQueue}
+        shouldShowSuggestions={shouldShowSuggestions}
+      />
     </React.Fragment>
   );
 };

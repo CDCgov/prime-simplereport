@@ -83,7 +83,7 @@ public class PersonService {
         String state,
         String zipCode,
         String telephone,
-        String role,
+        PersonRole role,
         String email,
         String county,
         String race,
@@ -92,14 +92,6 @@ public class PersonService {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-        final PersonRole personRole;
-
-        if (role == null || "".equals(role)) {
-            personRole = PersonRole.UNKNOWN;
-        } else {
-            personRole = PersonRole.valueOf(role.toUpperCase());
-        }
-
         StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
         Person newPatient = new Person(
             _os.getCurrentOrganization(),
@@ -111,7 +103,7 @@ public class PersonService {
             birthDate,
             patientAddress,
             telephone,
-            personRole,
+            role,
             email,
             race,
             ethnicity,
@@ -140,7 +132,7 @@ public class PersonService {
         String state,
         String zipCode,
         String telephone,
-        String role,
+        PersonRole role,
         String email,
         String county,
         String race,
@@ -149,7 +141,6 @@ public class PersonService {
         Boolean residentCongregateSetting,
         Boolean employedInHealthcare
     ) {
-        final PersonRole personRole = PersonRole.valueOf(role);
         StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
         Person patientToUpdate = this.getPatient(patientId);
         patientToUpdate.updatePatient(
@@ -161,7 +152,7 @@ public class PersonService {
             birthDate,
             patientAddress,
             telephone,
-            personRole,
+            role,
             email,
             race,
             ethnicity,

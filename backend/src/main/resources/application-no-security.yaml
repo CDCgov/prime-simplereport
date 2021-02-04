@@ -4,11 +4,16 @@ spring:
       - com.okta.spring.boot.oauth.OktaOAuth2AutoConfig
       - com.okta.spring.boot.oauth.OktaOAuth2ResourceServerAutoConfig
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
-simple-report-initialization.default-user:
-  username: bob@example.com
-  first-name: Bobbity
-  middle-name: Bob
-  last-name: Bobberoo
+      - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
 simple-report:
   admin-emails:
     - ruby@example.com
+  demo-users:
+    default-user:
+      identity:
+        username: bob@bobby.bob
+        first-name: Bob
+        last-name: Bobberoo
+      authorization:
+        organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
+        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}

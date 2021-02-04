@@ -1,6 +1,4 @@
 spring:
-  # create-sample-data is currently subtly supporting single-tenant, because single-tenant assumes
-  # that simple-report-initialization.organization.external-id is set
   profiles.include: no-security, single-tenant, create-sample-data
 graphql.servlet.cors:
   allowed-origins:

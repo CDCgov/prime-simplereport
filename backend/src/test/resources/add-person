@@ -7,7 +7,7 @@ mutation createPersonEntry(
     $street: String = "Top Floor",
     $streetTwo: String,
     $city: String = "Winterfell",
-    $state: String = "The North",
+    $state: String = "NY",
     $zipCode: String = "00000",
     $telephone: String = "(900)-GOT-STUBBLE",
     $role: String = "staff",

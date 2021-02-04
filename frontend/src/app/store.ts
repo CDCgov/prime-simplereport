@@ -3,6 +3,7 @@ import { createStore } from "redux";
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 const UPDATE_FACILITY = "UPDATE_FACILITY";
+const SET_PATIENT = "SET_PATIENT";
 
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
@@ -24,6 +25,7 @@ const initialState = {
     email: "",
     permissions: [],
     roleDescription: "",
+    isAdmin: false,
   },
 };
 
@@ -47,6 +49,13 @@ const reducers = (state = initialState, action: any) => {
         ...state,
         facility: {
           ...state.facility,
+          ...action.payload,
+        },
+      };
+    case SET_PATIENT:
+      return {
+        ...state,
+        patient: {
           ...action.payload,
         },
       };
@@ -76,8 +85,20 @@ export const updateFacility = (facility: any) => {
   };
 };
 
+export const setPatient = (patient: any) => {
+  return {
+    type: SET_PATIENT,
+    payload: patient,
+  };
+};
+
 const configureStore = () => {
-  return createStore(reducers, initialState);
+  return createStore(
+    reducers,
+    initialState,
+    (window as any).__REDUX_DEVTOOLS_EXTENSION__ &&
+      (window as any).__REDUX_DEVTOOLS_EXTENSION__()
+  );
 };
 
 export const store = configureStore();

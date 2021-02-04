@@ -67,13 +67,13 @@ data "azurerm_key_vault_secret" "okta_api_key" {
 }
 
 data "azurerm_key_vault_secret" "okta_client_id" {
-  name         = "okta-dev-client-id"
+  name         = "okta-${local.env}-client-id"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
 data "azurerm_key_vault_secret" "okta_client_secret" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
-  name         = "okta-dev-client-secret"
+  name         = "okta-${local.env}-client-secret"
 }
 
 # logs

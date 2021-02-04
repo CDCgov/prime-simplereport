@@ -1,0 +1,178 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TestResultsList should render a list of tests 1`] = `
+<div>
+  <main
+    class="prime-home"
+  >
+    <div
+      class="grid-container"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="prime-container usa-card__container sr-test-results-list"
+        >
+          <div
+            class="usa-card__header"
+          >
+            <h2>
+              Test Results
+            </h2>
+          </div>
+          <div
+            class="usa-card__body"
+          >
+            <table
+              class="usa-table usa-table--borderless width-full"
+            >
+              <thead>
+                <tr>
+                  <th
+                    scope="col"
+                  >
+                    Person
+                     Name
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Unique ID
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Date of Test
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Result
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Device
+                  </th>
+                  <th
+                    scope="col"
+                  >
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  class="sr-test-result-row"
+                  title=""
+                >
+                  <th
+                    scope="row"
+                  >
+                    Davis Melvin
+                  </th>
+                  <td />
+                  <td>
+                    Jan 12, 2021 5:56 PM
+                  </td>
+                  <td>
+                    NEGATIVE
+                  </td>
+                  <td>
+                    LumiraDX
+                  </td>
+                  <td>
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="rc-menu-button sr-modal-menu-button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                        data-icon="ellipsis-h"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <span
+                        class="usa-sr-only"
+                      >
+                        More actions
+                      </span>
+                    </button>
+                    <div
+                      class="rc-menu-container"
+                      role="presentation"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="sr-test-result-row"
+                  title=""
+                >
+                  <th
+                    scope="row"
+                  >
+                    Cheez Whizzz
+                  </th>
+                  <td />
+                  <td>
+                    Jan 4, 2021 12:00 AM
+                  </td>
+                  <td>
+                    UNDETERMINED
+                  </td>
+                  <td>
+                    LumiraDX
+                  </td>
+                  <td>
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="rc-menu-button sr-modal-menu-button"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                        data-icon="ellipsis-h"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <span
+                        class="usa-sr-only"
+                      >
+                        More actions
+                      </span>
+                    </button>
+                    <div
+                      class="rc-menu-container"
+                      role="presentation"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+`;
