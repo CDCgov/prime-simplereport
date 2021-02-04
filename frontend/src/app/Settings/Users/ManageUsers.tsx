@@ -4,8 +4,15 @@ import Button from "../../commonComponents/Button";
 import Dropdown from "../../commonComponents/Dropdown";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
+import Checkboxes from "../../commonComponents/Checkboxes";
+import Alert from "../../commonComponents/Alert";
+import "./ManageUsers.scss";
+import { UserRole } from "../../permissions";
+import { showNotification } from "../../utils";
+import { toast } from "react-toastify";
 
 interface Props {
+  currentUser: any;
   users: any[]; // TODO
 }
 
@@ -13,123 +20,204 @@ const dummyUsers = {
   "123": {
     id: "123",
     name: "Peter Parker",
-    role: "Admin",
+    role: "admin",
+    isAdmin: true,
     email: "spider@hero.com",
   },
   "456": {
     id: "456",
     name: "Carol Danvers",
-    role: "User",
+    role: "user",
+    isAdmin: false,
     email: "marvel@hero.com",
   },
   "789": {
     id: "789",
     name: "Natasha Romanoff",
-    role: "Admin",
+    role: "admin",
+    isAdmin: true,
     email: "widow@hero.com",
     isCurrentUser: true,
   },
-};
+} as SettingsUsers;
 
-// const ActiveNav: React.FC<Props> = (children) => {};
+interface SettingsUser {
+  id: string;
+  name: string;
+  role: UserRole;
+  email: string;
+  isAdmin: boolean;
+  isEdited?: boolean;
+  isCurrentUser?: boolean;
+}
 
-const ManageUsers: React.FC<Props> = ({ users }) => {
+type SettingsUsers = { [id: string]: SettingsUser };
+
+const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   // TODO: this is all garbage code
-  const [usersState, updateUsersState] = useState<any>(dummyUsers);
-  const [isUserEditable, updateIsUserEditable] = useState<any>({
-    "123": false,
-    "456": false,
-    "789": false,
-  });
+  const [usersState, updateUsersState] = useState<SettingsUsers>(dummyUsers);
+  const [activeUser, updateActiveUser] = useState<any>(
+    Object.keys(dummyUsers)[0]
+  ); // pick the first user
 
-  const onDropdownChange = (
+  // const onDropdownChange = (
+  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  //   userId: string
+  // ) => {
+  //   updateUsersState({
+  //     ...usersState,
+  //     [userId]: {
+  //       ...usersState[userId],
+  //       role: e.target.value,
+  //     },
+  //   });
+  // };
+
+  const changeIsAdmin = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     userId: string
   ) => {
+    // let role = e.target.value as UserRole;
+    let isAdmin = usersState[userId].isAdmin;
     updateUsersState({
       ...usersState,
       [userId]: {
         ...usersState[userId],
-        role: e.target.value,
+        isAdmin: !isAdmin,
+        isEdited: true,
       },
     });
   };
 
-  const onSaveChanges = () => {
-    updateIsUserEditable({
-      "123": false,
-      "456": false,
-      "789": false,
+  const onSaveChanges = (userId: string) => {
+    // TODO: make graphql mututation to save query
+
+    updateUsersState({
+      ...usersState,
+      [userId]: {
+        ...usersState[userId],
+        isEdited: false,
+      },
     });
+
+    let successAlert = (
+      <Alert
+        type="success"
+        title="Updated User"
+        body={`${usersState[userId].name} has been saved`}
+      />
+    );
+
+    showNotification(toast, successAlert);
+  };
+
+  const onChangeActiveUser = (nextActiveUserId: string) => {
+    if (usersState[activeUser].isEdited) {
+      let warningAlert = (
+        <Alert
+          type="warning"
+          title={`${usersState[activeUser].name} information has changed`}
+          body={`Please confirm or cancel changes`}
+        />
+      );
+      showNotification(toast, warningAlert);
+    } else {
+      updateActiveUser(nextActiveUserId);
+    }
   };
 
   const sideNavItems = Object.values(usersState).map((user: any) => {
     return (
-      <li className="usa-sidenav__item">
+      <li
+        className="usa-sidenav__item"
+        onClick={() => onChangeActiveUser(user.id)}
+      >
         <ConditionalWrap
-          condition={user.isCurrentUser}
-          wrap={(children) => (
-            <a href="" className="usa-current">
-              {children}
-            </a>
-          )}
+          condition={activeUser === user.id}
+          wrap={(children) => <div className="usa-current">{children}</div>}
         >
-          {user.name}
-          <br />
-          {user.email}
+          <a className="padding-2">
+            {user.name}
+            <br />
+            {user.email}
+          </a>
         </ConditionalWrap>
       </li>
     );
   });
 
-  const userDetail = (user: any) => {
+  const userDetail = (user: SettingsUser, currentUser: any) => {
+    // TODO update currentUser type
     return (
       <div>
-        <span className="usa-tag">YOU</span>
-        <h2> {user.name} </h2>
+        <h2 className="display-inline-block"> {user.name} </h2>{" "}
+        {user.id === currentUser.id ? (
+          <span className="usa-tag margin-left-1">YOU</span>
+        ) : null}
+        <Checkboxes
+          boxes={[
+            {
+              value: "admin",
+              label: "Admin",
+              checked: user.isAdmin,
+            },
+          ]}
+          legend={"Select Role"}
+          name="user role"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            changeIsAdmin(e, user.id)
+          }
+          disabled={!currentUser.isAdmin}
+        />
+        <Button
+          type="button"
+          onClick={() => onSaveChanges(user.id)}
+          label="Save Changes"
+          disabled={!currentUser.isAdmin}
+        />
       </div>
     );
   };
 
-  const userRows = Object.values(usersState).map((user: any) => {
-    let role = isUserEditable[user.id] ? (
-      <Dropdown
-        selectedValue={user.role}
-        onChange={(e) => onDropdownChange(e, user.id)}
-        options={[
-          { label: "Admin", value: "Admin" },
-          { label: "User", value: "User" },
-          { label: "Entry Only", value: "Entry Only" },
-        ]}
-      />
-    ) : user.isCurrentUser ? (
-      <div>
-        <span>{user.role} </span>
-        <span className="usa-tag">YOU</span>
-      </div>
-    ) : (
-      <span>{user.role}</span>
-    );
+  // const userRows = Object.values(usersState).map((user: any) => {
+  //   let role = isUserEditable[user.id] ? (
+  //     <Dropdown
+  //       selectedValue={user.role}
+  //       onChange={(e) => onDropdownChange(e, user.id)}
+  //       options={[
+  //         { label: "Admin", value: "Admin" },
+  //         { label: "User", value: "User" },
+  //         { label: "Entry Only", value: "Entry Only" },
+  //       ]}
+  //     />
+  //   ) : user.isCurrentUser ? (
+  //     <div>
+  //       <span>{user.role} </span>
+  //       <span className="usa-tag">YOU</span>
+  //     </div>
+  //   ) : (
+  //     <span>{user.role}</span>
+  //   );
 
-    return (
-      <tr key={user.id}>
-        <td>{user.name}</td>
-        <td>{user.email}</td>
-        <td>{role}</td>
-        <td>
-          {!user.isCurrentUser ? (
-            <div
-              onClick={() => {
-                updateIsUserEditable({ ...isUserEditable, [user.id]: true });
-              }}
-            >
-              <FontAwesomeIcon icon={"edit"} />
-            </div>
-          ) : null}
-        </td>
-      </tr>
-    );
-  });
+  //   return (
+  //     <tr key={user.id}>
+  //       <td>{user.name}</td>
+  //       <td>{user.email}</td>
+  //       <td>{role}</td>
+  //       <td>
+  //         {!user.isCurrentUser ? (
+  //           <div
+  //             onClick={() => {
+  //               updateIsUserEditable({ ...isUserEditable, [user.id]: true });
+  //             }}
+  //           >
+  //             <FontAwesomeIcon icon={"edit"} />
+  //           </div>
+  //         ) : null}
+  //       </td>
+  //     </tr>
+  //   );
+  // });
 
   return (
     <main className="prime-home">
@@ -137,29 +225,19 @@ const ManageUsers: React.FC<Props> = ({ users }) => {
         <div className="prime-container usa-card__container">
           <div className="usa-card__header">
             <h2>Manage Users</h2>
-            <Button
-              type="button"
-              onClick={onSaveChanges}
-              label="Save Changes"
-            />
           </div>
           <div className="usa-card__body">
             <div className="grid-row">
-              <div className="display-block">
+              <div className="display-block users-sidenav">
                 <h3>Users</h3>
                 <ul className="usa-sidenav">{sideNavItems}</ul>
               </div>
               <div className="display-block">
-                <table className="usa-table usa-table--borderless width-full">
-                  <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">Email</th>
-                      <th scope="col">Role</th>
-                    </tr>
-                  </thead>
-                  <tbody>{userRows}</tbody>
-                </table>
+                <p>
+                  Permissions to manage settings and users are limited to admins
+                  only
+                </p>
+                {userDetail(usersState[activeUser], currentUser)}
               </div>
             </div>
           </div>
