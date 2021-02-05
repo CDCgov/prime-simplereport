@@ -94,7 +94,13 @@ const DOB = () => {
   };
 
   if (called && loading) {
-    return <p>Validating birth date...</p>;
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p className="margin-top-3">Validating birth date...</p>
+        </div>
+      </main>
+    );
   }
 
   if (nextPage) {
