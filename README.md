@@ -130,6 +130,11 @@ spring:
       hibernate:
         format_sql: true
 ```
+- enable the patient links QR code feature flag
+```
+feature-flags:
+  patient-links: true
+```
 
 ### SchemaSpy
 
