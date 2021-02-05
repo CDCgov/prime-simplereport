@@ -27,10 +27,10 @@ public class ScheduledTasksService {
     }
 
     // see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html
-    // Try to pick times where most of the US is on the same calendar date.
-    @Scheduled(cron = "0 0 11 * * *", zone="America/New_York")
-    public void runDaily() {
-        LOG.info("Daily Cron: Start");
+    // @Scheduled(cron = "0 0 5-17/2 * * *", zone="America/New_York")  // ever 2hrs between 5am-5pm EST
+    @Scheduled(cron = "0 0/15 * * * *", zone="America/New_York")    // every 15min on the clock 1:00, 1:15, 1:30, etc
+    public void runCron() {
+        LOG.info("Cron: Start");
         _dataHubUploaderService.dataHubUploaderTask();
     }
 }
