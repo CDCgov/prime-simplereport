@@ -144,7 +144,7 @@ public class DataHubUploaderService {
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
             restTemplate.put(_config.getSlackNotifyWebhookUrl(), entity);
         } catch (RestClientException | JSONException err) {
-            LOG.error("sendSlackChannelMessage failed ", err.toString());
+            LOG.error("sendSlackChannelMessage failed {}", err.toString());
         }
     }
 
