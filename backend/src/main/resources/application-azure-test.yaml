@@ -18,3 +18,5 @@ simple-report:
     - qrk8@cdc.gov # Sparkle
     - David.w.methvin@omb.eop.gov
     - thomas.a.nielsen@omb.eop.gov
+feature-flags:
+  patient-links: true
