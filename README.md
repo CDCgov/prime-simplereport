@@ -10,6 +10,8 @@ https://simplereport.gov/
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
     - [Updating user role](#updating-user-role)
+      - [Organization roles](#organization-roles)
+      - [Site roles](#site-roles)
     - [Restart & Clean](#restart--clean)
     - [API Testing](#api-testing)
     - [Tests](#tests)
@@ -67,7 +69,7 @@ Running spring app locally and db in docker on port 5433
 
 ### Updating user role
 
-By default the local test user is an admin role. If you need to change this value to test out other permissions.
+By default the local test user is an organization admin role. If you need to change this value to test out other permissions.
 It can be set in `application-local.yaml`. If you have not created one run:
 
 bash
@@ -75,7 +77,9 @@ bash
 touch backend/src/main/resources/application-local.yaml
 ```
 
-Then add:
+#### Organization roles
+
+Organization roles can be set by adding the following to `application-local.yaml`:
 ```
 simple-report:
   demo-users:
@@ -84,6 +88,22 @@ simple-report:
         granted-roles: ADMIN
 ```
 current role types are `ADMIN`, `USER`, and `ENTRY_ONLY`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
+
+`ADMIN` - an organization admin with full access to their organization
+`USER` - a site user the has access to everything in their organization but the gear icon
+`ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
+
+#### Site roles
+
+You can make the default user a site admin by adding the following to `application-local.yaml`:
+
+```
+simple-report:
+  admin-emails:
+    - bob@bobby.bob
+```
+
+Site admins can access the `/admin` paths and site admin APIs
 
 ### Restart & Clean
 
