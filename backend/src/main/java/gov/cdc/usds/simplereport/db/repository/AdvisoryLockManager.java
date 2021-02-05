@@ -9,13 +9,23 @@ import org.springframework.data.jpa.repository.query.Procedure;
  */
 public interface AdvisoryLockManager {
 
+    /**
+     * The "scope" constant that defines the category of all postgresql advisory
+     * locks this application should obtain. To be used as the first argument to
+     * postgresql two-argument lock functions.
+     */
     int CORE_API_LOCK_SCOPE = 110506458; // some arbitrary 32-bit number that defines "our" locks
+
     /**
      * Take the advisory lock defined by the two arguments, waiting until the lock
      * is available and releasing it at the end of the current transaction.
      *
-     * @param lockCategory
-     * @param lock
+     * @param lockCategory the high-level group of locks that contains the lock we
+     *                     are trying to obtain (in this case, almost always
+     *                     {{@link #CORE_API_LOCK_SCOPE}).
+     * @param lock         the specific lock we are trying to obtain (usually a
+     *                     constant in the implementing repository or the service
+     *                     that calls it).
      */
     @Query(nativeQuery = true,
             // can't tell hibernate that Types.OTHER is a "void" result in this case:
@@ -29,8 +39,12 @@ public interface AdvisoryLockManager {
      * current transaction. If the lock is not available, return {@code false}
      * immediately.
      *
-     * @param lockCategory
-     * @param lock
+     * @param lockCategory the high-level group of locks that contains the lock we
+     *                     are trying to obtain (in this case, almost always
+     *                     {{@link #CORE_API_LOCK_SCOPE}).
+     * @param lock         the specific lock we are trying to obtain (usually a
+     *                     constant in the implementing repository or the service
+     *                     that calls it).
      * @return true if the lock was obtained, false otherwise
      */
     @Procedure("pg_try_advisory_xact_lock")
