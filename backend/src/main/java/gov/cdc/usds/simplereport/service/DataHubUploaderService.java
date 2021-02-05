@@ -275,7 +275,6 @@ public class DataHubUploaderService {
         }
     }
 
-    @Transactional
     public void dataHubUploaderTask() {
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
@@ -283,8 +282,8 @@ public class DataHubUploaderService {
             return;
         }
 
-        if (!_dataHubUploadRepo.tryUploadLock()) {   // lock auto released when we leave transaction
-            LOG.info("Db lock not grabbed. Another instance already running.");
+        if (!_dataHubUploadRepo.tryUploadLock()) {   // take the advisory lock for this process. auto released after transaction
+            LOG.info("Data hub upload locked out by mutex: aborting");
             return;
         }
 
@@ -301,11 +300,7 @@ public class DataHubUploaderService {
             sendSlackChannelMessage("DataHubUploader not run", msgs, true);
             return;
         }
-
-        if (!_dataHubUploadRepo.tryUploadLock()) { // take the advisory lock for this process
-            LOG.info("Data hub upload locked out by mutex: aborting");
-            return;
-        }
+        
         DataHubUpload newUpload = new DataHubUpload();
         try {
             // The start date is the last end date. Can be null for empty database.
