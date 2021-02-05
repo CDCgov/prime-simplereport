@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.query.Procedure;
  * advisory locks.
  */
 public interface AdvisoryLockManager {
+
+    int CORE_API_LOCK_SCOPE = 110506458; // some arbitrary 32-bit number that defines "our" locks
     /**
      * Take the advisory lock defined by the two arguments, waiting until the lock
      * is available and releasing it at the end of the current transaction.

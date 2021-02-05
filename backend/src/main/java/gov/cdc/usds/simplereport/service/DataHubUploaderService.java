@@ -293,6 +293,10 @@ public class DataHubUploaderService {
             return;
         }
 
+        if (!_dataHubUploadRepo.tryUploadLock()) { // take the advisory lock for this process
+            LOG.info("Data hub upload locked out by mutex: aborting");
+            return;
+        }
         DataHubUpload newUpload = new DataHubUpload();
         try {
             // The start date is the last end date. Can be null for empty database.
