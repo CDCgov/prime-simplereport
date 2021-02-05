@@ -12,7 +12,6 @@ const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
   patient,
-  facilityId,
   loadState = {},
   saveCallback,
   qrCodeValue = `${getUrl()}pxp`,
@@ -140,7 +139,6 @@ const AoEModalForm = ({
               saveButtonText="Continue"
               onClose={onClose}
               patient={patient}
-              facilityId={facilityId}
               loadState={loadState}
               saveCallback={saveCallback}
               isModal={true}
@@ -153,7 +151,6 @@ const AoEModalForm = ({
           saveButtonText="Continue"
           onClose={onClose}
           patient={patient}
-          facilityId={facilityId}
           loadState={loadState}
           saveCallback={saveCallback}
           isModal={true}

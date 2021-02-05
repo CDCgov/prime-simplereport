@@ -1,5 +1,5 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import { gql } from "@apollo/client";
 import {
   getSymptomList,
   getTestTypes,
@@ -8,13 +8,31 @@ import {
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button";
 import FormGroup from "../../commonComponents/FormGroup";
-import { testResultQuery } from "../../testResults/TestResultsList";
 import { useQuery } from "@apollo/client";
-import moment from "moment";
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
 import { Redirect } from "react-router";
+
+interface Data {
+  patient: {
+    lastTest: {
+      dateTested: string;
+      result: string;
+    };
+  };
+}
+
+const lastTestQuery = gql`
+  query GetPatientsLastResult($patientId: String!) {
+    patient(id: $patientId) {
+      lastTest {
+        dateTested
+        result
+      }
+    }
+  }
+`;
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -30,7 +48,6 @@ interface Props {
     internalId: string;
     gender: string;
   };
-  facilityId: string | null;
   loadState?: {
     noSymptoms: boolean;
     symptoms: string;
@@ -59,7 +76,6 @@ const AoEForm: React.FC<Props> = ({
   saveButtonText,
   onClose,
   patient,
-  facilityId,
   loadState = {},
   saveCallback,
   isModal,
@@ -140,22 +156,13 @@ const AoEForm: React.FC<Props> = ({
   };
 
   // TODO: only get most recent test from the backend
-  const { data, loading, error } = useQuery(testResultQuery, {
+  const { data, loading, error } = useQuery<Data, {}>(lastTestQuery, {
     fetchPolicy: "no-cache",
-    variables: { facilityId },
+    variables: { patientId: patient.internalId },
   });
   if (loading) return null;
   if (error) throw error;
-  const mostRecentFirst = (a: any, b: any) => {
-    const ma = moment(a.dateTested);
-    const mb = moment(b.dateTested);
-    if (ma && ma.isAfter(mb)) return -1;
-    if (ma && ma.isBefore(mb)) return 1;
-    return 0;
-  };
-  const mostRecentTest = data.testResults
-    .filter((r: any) => r.patient.internalId === patient.internalId)
-    .sort(mostRecentFirst)[0];
+  const mostRecentTest = data?.patient.lastTest;
 
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();

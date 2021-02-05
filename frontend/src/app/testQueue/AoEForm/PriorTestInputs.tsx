@@ -17,10 +17,12 @@ interface Props {
   setPriorTestResult: (priorTestResult: string | undefined) => void;
   priorTestType: string | undefined;
   setPriorTestType: (priorTestType: string | undefined) => void;
-  mostRecentTest: {
-    dateTested: string;
-    result: string;
-  };
+  mostRecentTest:
+    | {
+        dateTested: string;
+        result: string;
+      }
+    | undefined;
 }
 
 const PriorTestInputs: React.FC<Props> = ({
@@ -39,6 +41,7 @@ const PriorTestInputs: React.FC<Props> = ({
   const filledPriorTest =
     priorTestDate &&
     recentDate === priorTestDate &&
+    mostRecentTest &&
     mostRecentTest.result === priorTestResult;
   const [mostRecentTestAnswer, setMostRecentTestAnswer] = useState(
     !priorTestDate || isFirstTest === undefined
