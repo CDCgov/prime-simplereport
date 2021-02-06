@@ -23,7 +23,8 @@ services:
       - dev-net
   api:
     build:
-      context: .
+      context: ..
+      dockerfile: backend/Dockerfile
     image: simple-report-api-build
     command: bootRun
     environment:

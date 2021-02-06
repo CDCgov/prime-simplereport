@@ -2,8 +2,8 @@ version: "3.2"
 services:
   api:
     build:
-      context: .
-      dockerfile: Dockerfile.prod
+      context: ..
+      dockerfile: backend/Dockerfile.prod
     image: simple-report-api-build
     ports:
       - "8080:8080"
