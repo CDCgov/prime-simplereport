@@ -1,0 +1,162 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PriorTestInputs snapshot 1`] = `
+Array [
+  <div
+    className="usa-legend"
+  >
+    Is this your first COVID-19 test?
+    <span
+      className="usa-hint"
+    >
+       (optional)
+    </span>
+  </div>,
+  <div
+    className="prime-previous-test-display margin-top-2"
+  >
+    SimpleReport did not find any previous test data
+  </div>,
+  <fieldset
+    className="usa-fieldset prime-radios"
+  >
+    <legend
+      className="usa-legend usa-sr-only"
+    >
+      Is this your first covid test?
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </legend>
+    <div
+      className="usa-form-group prime-radio--horizontal"
+    >
+      <div
+        className="usa-radio prime-radio--horizontal__container"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          disabled={false}
+          id="radio-test-1_yes_0"
+          name="prior_test_flag"
+          onChange={[Function]}
+          type="radio"
+          value="yes"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_yes_0"
+        >
+          Yes
+        </label>
+      </div>
+      <div
+        className="usa-radio prime-radio--horizontal__container"
+      >
+        <input
+          checked={true}
+          className="usa-radio__input"
+          disabled={false}
+          id="radio-test-1_no_1"
+          name="prior_test_flag"
+          onChange={[Function]}
+          type="radio"
+          value="no"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_no_1"
+        >
+          No
+        </label>
+      </div>
+    </div>
+  </fieldset>,
+  <div
+    className="usa-form-group"
+  >
+    <label
+      className="usa-label"
+      htmlFor="text-test-1"
+    >
+      Date of Most Recent Test
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </label>
+    <input
+      aria-required="false"
+      className="usa-input"
+      id="text-test-1"
+      max="2021-02-06"
+      min="2020-02-01"
+      name="prior_test_date"
+      onChange={[Function]}
+      type="date"
+      value=""
+    />
+  </div>,
+  <div
+    className="usa-form-group prime-dropdown "
+  >
+    <label
+      className="usa-label"
+      htmlFor="drop-test-1"
+    >
+      Type of Prior Test
+    </label>
+    <select
+      className="usa-select"
+      id="drop-test-1"
+      name="prior_test_type"
+      onChange={[Function]}
+      value=""
+    >
+      <option>
+        - Select -
+      </option>
+    </select>
+  </div>,
+  <div
+    className="usa-form-group prime-dropdown "
+  >
+    <label
+      className="usa-label"
+      htmlFor="drop-test-1"
+    >
+      Result of Prior Test
+    </label>
+    <select
+      className="usa-select"
+      id="drop-test-1"
+      name="prior_test_result"
+      onChange={[Function]}
+      value=""
+    >
+      <option>
+        - Select -
+      </option>
+      <option
+        value="POSITIVE"
+      >
+        Positive
+      </option>
+      <option
+        value="NEGATIVE"
+      >
+        Negative
+      </option>
+      <option
+        value="UNDETERMINED"
+      >
+        Inconclusive
+      </option>
+    </select>
+  </div>,
+]
+`;

@@ -23,7 +23,7 @@ interface Data {
   };
 }
 
-const lastTestQuery = gql`
+export const LAST_TEST_QUERY = gql`
   query GetPatientsLastResult($patientId: String!) {
     patient(id: $patientId) {
       lastTest {
@@ -156,7 +156,7 @@ const AoEForm: React.FC<Props> = ({
   };
 
   // TODO: only get most recent test from the backend
-  const { data, loading, error } = useQuery<Data, {}>(lastTestQuery, {
+  const { data, loading, error } = useQuery<Data, {}>(LAST_TEST_QUERY, {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
   });

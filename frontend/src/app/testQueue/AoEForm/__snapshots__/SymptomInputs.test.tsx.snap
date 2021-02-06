@@ -1,0 +1,98 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SymptomInputs snapshot 1`] = `
+Array [
+  <div
+    className="usa-fieldset"
+  >
+    <fieldset
+      className="usa-fieldset prime-checkboxes"
+    >
+      <legend
+        className="usa-legend"
+      >
+        Are you experiencing any of the following symptoms?
+        <span
+          className="usa-sr-only"
+        >
+          Required
+        </span>
+        <span
+          className="usa-hint--required"
+        >
+           *
+        </span>
+      </legend>
+      <div
+        className="usa-form-group"
+      >
+        <div
+          className="usa-checkbox"
+        >
+          <input
+            checked={false}
+            className="usa-checkbox__input"
+            id="check-test-1"
+            name="symptom_list"
+            onChange={[Function]}
+            type="checkbox"
+            value="no"
+          />
+          <label
+            className="usa-checkbox__label"
+            htmlFor="check-test-1"
+          >
+            No Symptoms
+          </label>
+        </div>
+      </div>
+    </fieldset>
+    <div
+      className="border-top-1px border-base-lighter margin-y-2"
+    />
+    <fieldset
+      className="usa-fieldset prime-checkboxes symptom-checkboxes"
+    >
+      <legend
+        className="usa-legend usa-sr-only"
+      >
+        What are your symptoms?
+        <span
+          className="usa-hint"
+        >
+           (optional)
+        </span>
+      </legend>
+      <div
+        className="usa-form-group"
+      />
+    </fieldset>
+  </div>,
+  <div
+    className="usa-form-group"
+  >
+    <label
+      className="usa-label"
+      htmlFor="text-test-1"
+    >
+      Date of symptom onset
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </label>
+    <input
+      aria-required="false"
+      className="usa-input"
+      id="text-test-1"
+      max="2021-02-06"
+      min="2020-02-01"
+      name="symptom_onset"
+      onChange={[Function]}
+      type="date"
+      value=""
+    />
+  </div>,
+]
+`;
