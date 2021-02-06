@@ -30,11 +30,17 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 	@Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC ")
 	public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after);
 
-	@Query( value = "SELECT DISTINCT ON (test_order_id) * " +
-					" FROM {h-schema}test_event te " +
-					" WHERE te.facility_id = :facilityId " +
-					" AND te.created_at > :newerThanDate" +
-					" ORDER BY te.test_order_id, te.created_at desc", nativeQuery = true)
+    @Query(value = "WITH FILTEREDEVENTS AS (" +
+            " SELECT DISTINCT ON (test_order_id) * " +
+            " FROM {h-schema}test_event te " +
+            " WHERE te.facility_id = :facilityId " +
+            " ORDER BY test_order_id, te.created_at desc" +
+            ") " +
+            " SELECT * FROM FILTEREDEVENTS " +
+            " WHERE created_at > :newerThanDate " + // technically this could be in the CTE but then when we make it
+                                                    // more complicated somebody will break it
+            " ORDER BY created_at DESC ",
+            nativeQuery = true)
 	public List<TestEvent> getTestEventResults(UUID facilityId, Date newerThanDate);
 
 //	@Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt > :newerThanDate ORDER BY q.createdAt DESC")
