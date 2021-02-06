@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -173,13 +174,14 @@ public class DataHubUploaderService {
 
     private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
             throws IOException, DateTimeParseException {
-        List<TestEvent> events = _testReportEventsRepo.queryMatchAllBetweenDates(earlistCreatedAt, latestCreateOn);
+        List<TestEvent> events = _testReportEventsRepo.queryMatchAllBetweenDates(earlistCreatedAt, latestCreateOn,
+                PageRequest.of(0, _config.getMaxCsvRows()));
         if (events.size() == 0) {
             // next end timerange stays the same as the last. NOTE: This will not change until there are new events
             this._nextTimestamp = dateToUTCString(earlistCreatedAt);
             return;
-        } else if (events.size() >= _config.getMaxCsvRows()) {
-            this._warnMessage += "More rows were found than can be uploaded in a single batch. Needs to be more than once.";
+        } else if (events.size() == _config.getMaxCsvRows()) {
+            this._warnMessage += "More rows were found than can be uploaded in a single batch.";
         }
 
         // timestamp of highest matched entry, used for the next query.
