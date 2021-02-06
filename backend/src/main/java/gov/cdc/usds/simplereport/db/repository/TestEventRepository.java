@@ -4,6 +4,8 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
@@ -20,6 +22,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	public TestEvent findFirst1ByPatientOrderByCreatedAtDesc(Person p);
 
+    @EntityGraph(attributePaths = { "patient", "order" })
 	public TestEvent findByOrganizationAndInternalId(Organization o, UUID id);
 
 	// Need to control how this query is built. "between" is too vague.

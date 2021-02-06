@@ -66,6 +66,37 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         testTestEventUnitTests(order, first);  // just leverage existing order, event to test on newer columns
     }
 
+    @Test
+    public void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
+        Organization org = _dataFactory.createValidOrg();
+        Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
+        Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
+        Person charlie = _dataFactory.createMinimalPerson(org, null, "Charles", "C.", "Crankypants", "3rd");
+        Facility facility = _dataFactory.createValidFacility(org);
+
+        
+        TestOrder charlieOrder = _dataFactory.createTestOrder(charlie, facility);
+        pause();
+        TestOrder adamOrder = _dataFactory.createTestOrder(adam, facility);
+        pause();
+        TestOrder bradleyOrder = _dataFactory.createTestOrder(brad, facility);
+
+        List<TestEvent> results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+        assertEquals(0, results.size());
+
+        _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
+        pause();
+        _dataFactory.doTest(charlieOrder, TestResult.POSITIVE);
+        pause();
+        _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
+
+        results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+        assertEquals(3, results.size());
+        assertEquals("Adam", results.get(0).getPatient().getFirstName());
+        assertEquals("Charles", results.get(1).getPatient().getFirstName());
+        assertEquals("Bradley", results.get(2).getPatient().getFirstName());
+    }
+
     private void compareAskOnEntrySurvey(AskOnEntrySurvey a1, AskOnEntrySurvey a2) {
         assertEquals(a1.getFirstTest(), a2.getFirstTest());
         assertEquals(a1.getNoSymptoms(), a2.getNoSymptoms());
