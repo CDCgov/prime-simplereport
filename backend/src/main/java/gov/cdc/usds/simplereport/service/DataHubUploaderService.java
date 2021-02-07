@@ -45,7 +45,7 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class DataHubUploaderService {
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
 
@@ -55,7 +55,7 @@ public class DataHubUploaderService {
     private final UploadTrackingService _trackingService;
 
     private String _fileContents;
-    private String _nextTimestamp;
+    private Date _nextTimestamp;
     private String _warnMessage;
     private String _resultJson;
     private int _rowCount;
@@ -88,7 +88,7 @@ public class DataHubUploaderService {
     private void init() {
         // because we are a service these need to be reset each time through.
         // this needs a refactor. This is ONLY here until we can get rid of running the schedule via a webaddress
-        _nextTimestamp = "";
+        _nextTimestamp = null;
         _warnMessage = "";
         _resultJson = "{}";
         _rowCount = 0;
@@ -182,14 +182,14 @@ public class DataHubUploaderService {
                 PageRequest.of(0, _config.getMaxCsvRows()));
         if (events.size() == 0) {
             // next end timerange stays the same as the last. NOTE: This will not change until there are new events
-            this._nextTimestamp = dateToUTCString(earlistCreatedAt);
+            this._nextTimestamp = earlistCreatedAt;
             return;
         } else if (events.size() == _config.getMaxCsvRows()) {
             this._warnMessage += "More rows were found than can be uploaded in a single batch.";
         }
 
         // timestamp of highest matched entry, used for the next query.
-        this._nextTimestamp = dateToUTCString(events.get(0).getCreatedAt());
+        this._nextTimestamp = events.get(0).getCreatedAt();
         this._rowCount = events.size();
 
         List<TestEventExport> eventsToExport = new ArrayList<>();
@@ -234,9 +234,7 @@ public class DataHubUploaderService {
         }
     }
 
-    // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
-    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
@@ -252,7 +250,7 @@ public class DataHubUploaderService {
                 if (this._rowCount == 0) {
                     LOG.warn("No rows were found for uploadTestEventCSVToDataHub.");
                 } else {
-                    _trackingService.markRowCount(upload, _rowCount, utcStringToDate(_nextTimestamp));
+                    _trackingService.markRowCount(upload, _rowCount, _nextTimestamp);
                     try {
                         this.uploadCSVDocument(apiKey);
                         _trackingService.markSucceeded(upload, _resultJson, _warnMessage);
@@ -267,7 +265,7 @@ public class DataHubUploaderService {
 
             return Map.of(
                     "result", "ok",
-                    "lastTimestamp", this._nextTimestamp,
+                    "lastTimestamp", dateToUTCString(this._nextTimestamp),
                     "rowsSent", String.valueOf(this._rowCount),
                     "uploadResultId", this._resultJson,
                     "message", this._warnMessage);
@@ -317,12 +315,12 @@ public class DataHubUploaderService {
             }
             _trackingService.startUpload(lastTimestamp);
 
-            // end range is back 1 minute, this is to avoid selecting transactions that
-            // may still be rolled back.
+            // end range is back 1 minute, to avoid complications involving open
+            // transactions
             Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
 
             this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
-            _trackingService.markRowCount(newUpload, _rowCount, utcStringToDate(_nextTimestamp));
+            _trackingService.markRowCount(newUpload, _rowCount, _nextTimestamp);
 
             if (_rowCount > 0) {
                 this.uploadCSVDocument(_config.getApiKey());
