@@ -1,36 +1,41 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.ScheduledFuture;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.TaskScheduler;
+import org.springframework.scheduling.Trigger;
+import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.stereotype.Service;
 
-import javax.management.timer.Timer;
+import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 
 
 @Service
 public class ScheduledTasksService {
+
     private static final Logger LOG = LoggerFactory.getLogger(ScheduledTasksService.class);
+
+    private final TaskScheduler _scheduler;
     private final DataHubUploaderService _dataHubUploaderService;
 
-    ScheduledTasksService(DataHubUploaderService dataHubUploaderService) {
+    public ScheduledTasksService(DataHubUploaderService dataHubUploaderService, TaskScheduler scheduler) {
         _dataHubUploaderService = dataHubUploaderService;
+        _scheduler = scheduler;
     }
 
-    // Example of how to run periodically, save for future use (and testing)
-    private static final long FIXED_DELAY_MS = Timer.ONE_MINUTE * 120;
-
-    @Scheduled(fixedDelay = FIXED_DELAY_MS, initialDelay = FIXED_DELAY_MS)
-    public void runOnDelay() {
-        LOG.info("Delay periodic run: Start");
-        // _dataHubUploaderService.dataHubUploaderTask();
-    }
-
-    // see https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/support/CronExpression.html
-    // @Scheduled(cron = "0 0 5-17/2 * * *", zone="America/New_York")  // ever 2hrs between 5am-5pm EST
-    @Scheduled(cron = "0 0/15 * * * *", zone="America/New_York")    // every 15min on the clock 1:00, 1:15, 1:30, etc
-    public void runCron() {
-        LOG.info("Cron: Start");
-        _dataHubUploaderService.dataHubUploaderTask();
+    public Map<String, ScheduledFuture<?>> scheduleUploads(DataHubConfig config) {
+        Map<String, ScheduledFuture<?>> futures = new HashMap<>();
+        TimeZone tz = config.getUploadTimezone();
+        for (String cron : config.getUploadSchedule()) {
+            LOG.info("Scheduling data hub upload to run on cron schedule '{}' in time zone {}", cron, tz.getID());
+            Trigger cronTrigger = new CronTrigger(cron, tz);
+            futures.put(cron, _scheduler.schedule(_dataHubUploaderService::dataHubUploaderTask, cronTrigger));
+        }
+        return futures;
     }
 }
