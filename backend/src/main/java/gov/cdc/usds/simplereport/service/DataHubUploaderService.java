@@ -52,6 +52,7 @@ public class DataHubUploaderService {
     private final DataHubConfig _config;
     private final TestEventRepository _testReportEventsRepo;
     private final DataHubUploadRespository _dataHubUploadRepo;
+    private final UploadTrackingService _trackingService;
 
     private String _fileContents;
     private String _nextTimestamp;
@@ -59,11 +60,14 @@ public class DataHubUploaderService {
     private String _resultJson;
     private int _rowCount;
 
+
     public DataHubUploaderService(DataHubConfig config,
-                                  TestEventRepository testReportEventsRepo,
-                                  DataHubUploadRespository dataHubUploadRepo) {
+            TestEventRepository testReportEventsRepo,
+            DataHubUploadRespository dataHubUploadRepo,
+            UploadTrackingService trackingService) {
         _config = config;
         _testReportEventsRepo = testReportEventsRepo;
+        _trackingService = trackingService;
         _dataHubUploadRepo = dataHubUploadRepo;
 
         LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
@@ -241,21 +245,20 @@ public class DataHubUploaderService {
             // This is important for first-ever-run and then if the webpage is run again after the db is initialized
             Date lastTimestamp = getLatestRecordedTimestamp();
             if (lastTimestamp == null) {
+                DataHubUpload upload = _trackingService.startUpload(utcStringToDate(lastEndCreateOn));
+                LOG.info("Added {} to data_hub_upload table", upload.getInternalId());
                 // database has no entries. FIRST EVER RUN.
                 this.createTestEventCSV(lastEndCreateOn);
                 if (this._rowCount == 0) {
                     LOG.warn("No rows were found for uploadTestEventCSVToDataHub.");
                 } else {
-                    this.uploadCSVDocument(apiKey);
-                    DataHubUpload newUpload = new DataHubUpload();
-                    newUpload.setJobStatus(DataHubUploadStatus.SUCCESS)
-                            .setEarliestRecordedTimestamp(utcStringToDate(lastEndCreateOn))
-                            .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp))
-                            .setRecordsProcessed(_rowCount)
-                            .setResponseData(_resultJson)
-                            .setErrorMessage(_warnMessage);
-                    _dataHubUploadRepo.save(newUpload);
-                    LOG.info("Added {} to data_hub_upload table", newUpload.getInternalId());
+                    _trackingService.markRowCount(upload, _rowCount, utcStringToDate(_nextTimestamp));
+                    try {
+                        this.uploadCSVDocument(apiKey);
+                        _trackingService.markSucceeded(upload, _resultJson, _warnMessage);
+                    } catch (RestClientException e) {
+                        _trackingService.markFailed(upload, this._resultJson, e.toString());
+                    }
                 }
             } else {
                 // run the new code and ignore the lastEndCreateOn passed in.
@@ -312,34 +315,23 @@ public class DataHubUploaderService {
                 LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
                 return;
             }
-            newUpload.setEarliestRecordedTimestamp(lastTimestamp);
-            _dataHubUploadRepo.save(newUpload);
+            _trackingService.startUpload(lastTimestamp);
 
             // end range is back 1 minute, this is to avoid selecting transactions that
             // may still be rolled back.
             Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
 
             this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
-            _dataHubUploadRepo.save(newUpload
-                    .setRecordsProcessed(_rowCount)
-                    .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp)));
+            _trackingService.markRowCount(newUpload, _rowCount, utcStringToDate(_nextTimestamp));
 
             if (_rowCount > 0) {
                 this.uploadCSVDocument(_config.getApiKey());
             }
 
             // todo: parse json run sanity checks like total records processed matches what we sent.
-
-            _dataHubUploadRepo.save(newUpload
-                    .setResponseData(_resultJson)
-                    .setJobStatus(DataHubUploadStatus.SUCCESS));
-
+            _trackingService.markSucceeded(newUpload, _resultJson, _warnMessage);
         } catch (RestClientException | IOException err) {
-            _dataHubUploadRepo.save(newUpload
-                    .setResponseData(_resultJson)
-                    .setJobStatus(DataHubUploadStatus.FAIL)
-                    .setErrorMessage(err.toString()));
-            LOG.error("DataHubUploaderService Error '{}'", err.toString());
+            _trackingService.markFailed(newUpload, _resultJson, err);
         }
 
         if (_rowCount > 0) {
