@@ -96,7 +96,7 @@ public class UploadService {
                     parseString(row.get("County")),
                     parseRace(row.get("Race")),
                     parseEthnicity(row.get("Ethnicity")),
-                    parseGender(row.get("Gender")),
+                    parseGender(row.get("biologicalSex")),
                     parseYesNo(row.get("residentCongregateSetting")),
                     parseYesNo(row.get("employedInHealthcare"))
                 );
@@ -115,7 +115,7 @@ public class UploadService {
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
                 .addColumn("Race", CsvSchema.ColumnType.STRING)
                 .addColumn("DOB", CsvSchema.ColumnType.STRING)
-                .addColumn("Gender", CsvSchema.ColumnType.STRING)
+                .addColumn("biologicalSex", CsvSchema.ColumnType.STRING)
                 .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
                 .addColumn("Street", CsvSchema.ColumnType.STRING)
                 .addColumn("Street2", CsvSchema.ColumnType.STRING)
