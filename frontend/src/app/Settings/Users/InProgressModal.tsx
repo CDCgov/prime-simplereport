@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import Modal from "react-modal";
 import Button from "../../commonComponents/Button";
-import RadioGroup from "../../commonComponents/RadioGroup";
 
 interface Props {
   onClose: () => void;
@@ -15,22 +14,21 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
       style={{
         content: {
           inset: "3em auto auto auto",
-          overflow: "auto",
-          margin: "0 auto",
+          margin: "auto auto",
           display: "block",
           width: "30%",
+          height: "25%",
+          minHeight: "10em",
           minWidth: "10em",
         },
       }}
       overlayClassName="prime-modal-overlay"
       contentLabel="Time of Test Questions"
     >
-      <div className="display-flex flex-align-center flex-justify-center">
-        <div className="flex-column flex-wrap">
-          <h3> You have unsaved changes, are you sure you want to proceed? </h3>
-        </div>
+      <div className="display-flex flex-column flex-align-center text-center">
+        <h3> You have unsaved changes, are you sure you want to proceed? </h3>
 
-        <div className="flex-column flex-wrap">
+        <div className="margin-top-3">
           <Button onClick={onClose} label="Go back" />
           <Button onClick={onContinue} label="Continue anyway" />
         </div>
