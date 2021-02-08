@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +54,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK).permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+                .requestMatchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()
                 .anyRequest()
                 .authenticated();
         Okta.configureResourceServer401ResponseBody(http);
@@ -63,7 +65,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new HttpSessionRequestCache() {
             @Override
             public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-				final String referrer = request.getHeader("referer");
+                final String referrer = request.getHeader("referer");
                 if (referrer != null) {
                     request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
                 }

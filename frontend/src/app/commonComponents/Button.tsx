@@ -20,6 +20,7 @@ interface Props {
     | "unstyled"
     | "secondary";
   className?: string;
+  id?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
 }
 
@@ -32,6 +33,7 @@ const Button = ({
   variant,
   className,
   onClick,
+  id,
 }: Props) => (
   <button
     type={type}
@@ -42,6 +44,7 @@ const Button = ({
       disabled && "usa-button-disabled",
       className
     )}
+    id={id}
     onClick={onClick}
   >
     {icon && <FontAwesomeIcon icon={icon} />}

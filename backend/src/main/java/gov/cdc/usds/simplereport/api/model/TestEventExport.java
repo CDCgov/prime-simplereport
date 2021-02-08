@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
 /**
@@ -24,7 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
  * DataHubUploaderService.CSV_API_VERSION. This is only used for debugging issues, but it's a good practice.
  */
 public class TestEventExport {
-
+	public static final String CSV_API_VERSION = "27Jan2021";  // last time we changed something
 	private TestEvent testEvent;
 	private Person patient;
 	private AskOnEntrySurvey survey;
@@ -36,13 +37,12 @@ public class TestEventExport {
 		super();
 		this.testEvent = testEvent;
 		this.patient = testEvent.getPatientData();
-		this.survey = testEvent.getTestOrder().getAskOnEntrySurvey().getSurvey();
+		this.survey = testEvent.getSurveyData();
 		this.provider = testEvent.getProviderData();
 		this.facility = testEvent.getFacility();
 		this.device = testEvent.getDeviceType();
 	}
 
-	private String testResultStatusFinal = "F";
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
@@ -220,9 +220,30 @@ public class TestEventExport {
 		return testEvent.getInternalId().toString();
 	}
 
+	// 27Jan2021 Added
+	@JsonProperty("Corrected_result_ID")
+	public String getCorrectedResultId() {
+		if (testEvent.getCorrectionStatus() != TestCorrectionStatus.ORIGINAL) {
+			return testEvent.getPriorCorrectedTestEventId().toString();
+		}
+		return "";
+	}
+
+	// 27Jan2021 Updated to handle deleted tests
 	@JsonProperty("Test_result_status")
 	public String getTestResultStatus() {
-		return testResultStatusFinal;
+		// F Final results
+		// X No results available; Order canceled
+		// C Corrected, final (not yet supported
+		switch(testEvent.getCorrectionStatus()) {
+			case REMOVED:
+				return "X";
+			case CORRECTED:
+				return "C";
+			case ORIGINAL:
+			default:
+				return "F";
+		}
 	}
 
 	@JsonProperty("Test_result_code")
@@ -232,7 +253,7 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_collection_date_time")
 	public String getSpecimenCollectionDateTime() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
 
 	@JsonProperty("Ordering_provider_ID")
@@ -298,6 +319,12 @@ public class TestEventExport {
 	@JsonProperty("Testing_lab_city")
 	public String getTestingLabCity() {
 		return getOrderingFacilityCity();
+	}
+
+	@JsonProperty("Processing_mode_code")
+	public String getFacilityProcessingModeCode() {
+		// todo: this should check a facility attribute to see what mode it's in. (or a separate table of prod-ready fac)
+		return "P";    	// D:Debugging P:Production T:Training
 	}
 
 	@JsonProperty("Ordering_facility_city")
@@ -422,7 +449,7 @@ public class TestEventExport {
 
 	@JsonProperty("Test_date")
 	public String getTestDate() {
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
 
 	@JsonProperty("Date_result_released")
@@ -433,6 +460,7 @@ public class TestEventExport {
 	@JsonProperty("Order_test_date")
 	public String getOrderTestDate() {
 		// order_test_date = test_date for antigen testing
-		return dateToHealthCareString(convertToLocalDate(testEvent.getTestOrder().getDateTested()));
+		return dateToHealthCareString(convertToLocalDate(testEvent.getDateTested()));
 	}
+
 }

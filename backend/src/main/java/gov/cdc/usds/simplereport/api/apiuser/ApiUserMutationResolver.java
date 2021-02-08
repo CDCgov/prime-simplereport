@@ -1,16 +1,10 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -28,8 +22,6 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
     private final OrganizationService _os;
     private final ApiUserService _us;
-
-    private static final Logger logger = LoggerFactory.getLogger(ApiUserMutationResolver.class);
 
     public ApiUserMutationResolver(OrganizationService os, ApiUserService us) {
         _os = os;

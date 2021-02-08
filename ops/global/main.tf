@@ -1,14 +1,19 @@
 locals {
+  project = "prime"
+  name    = "simple-report"
+  env     = "global"
   management_tags = {
-    prime-app         = "simple-report"
-    prime-environment = "global"
+    prime-app      = local.name
+    environment    = local.env
+    resource_group = "${local.project}-${local.name}-${local.env}"
   }
+  storage_account_name = "usdssimplereportglobal"
 }
 
 // Storage container for terraform state
 resource "azurerm_storage_container" "state_container" {
   name                 = "sr-tfstate"
-  storage_account_name = "usdssimplereportglobal"
+  storage_account_name = local.storage_account_name
 
   lifecycle {
     prevent_destroy = true
@@ -30,4 +35,14 @@ resource "azurerm_log_analytics_workspace" "sr" {
 // Okta configuration
 module "okta" {
   source = "../services/okta-global"
+}
+
+// App Insights for Azure Functions
+module "insights" {
+  source        = "../services/monitoring"
+  env           = "global"
+  management_rg = data.azurerm_resource_group.rg.name
+  rg_location   = data.azurerm_resource_group.rg.location
+  rg_name       = data.azurerm_resource_group.rg.name
+  tags          = local.management_tags
 }

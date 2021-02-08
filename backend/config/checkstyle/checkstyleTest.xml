@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC
+    "-//Puppy Crawl//DTD Check Configuration 1.3//EN"
+     "https://checkstyle.org/dtds/configuration_1_3.dtd">
+<module name="Checker">
+  <module name="SuppressWarningsFilter" />
+  <module name="FileTabCharacter"/>
+  <module name="TreeWalker">
+    <property name="tabWidth" value="4" />
+	<module name="SuppressWarningsHolder" />
+    <module name="UnusedImports">
+      <property name="processJavadoc" value="true" />
+    </module>
+    <module name="EmptyStatement"/>
+    <module name="EqualsAvoidNull"/>
+    <module name="MultipleVariableDeclarations"/>
+    <module name="TodoComment">
+      <property name="format" value="(TODO)|(FIXME)"/>
+    </module>
+    <module name="PackageName">
+      <property name="severity" value="error"/>
+    </module>
+    <module name="RequireThis">
+      <property name="severity" value="warning"/>
+    </module>
+    <module name="PackageDeclaration">
+      <property name="severity" value="error"/>
+    </module>
+    <module name="IllegalCatch">
+      <property name="severity" value="error"/>
+    </module>
+  </module>
+</module>

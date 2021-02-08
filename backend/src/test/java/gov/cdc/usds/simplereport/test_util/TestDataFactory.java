@@ -115,7 +115,7 @@ public class TestDataFactory {
         o.setResult(TestResult.NEGATIVE);
 
         TestEvent e = _testEventRepo.save(new TestEvent(o));
-        o.setTestEvent(e);
+        o.setTestEventRef(e);
         o.markComplete();
         _testOrderRepo.save(o);
         return e;

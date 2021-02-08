@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import java.util.Set;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
@@ -45,8 +46,7 @@ public class ApiUserManagementTest extends BaseApiTest {
 
     @Test
     public void whoami_standardUser_okResponses() {
-        ObjectNode resp = runQuery("current-user-query");
-        ObjectNode who = (ObjectNode) resp.get("whoami");
+        ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
         assertFalse(who.get("isAdmin").asBoolean());
@@ -58,8 +58,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         useOrgEntryOnly();
         Set<UserPermission> expected = EnumSet.of(UserPermission.START_TEST, UserPermission.SUBMIT_TEST,
                 UserPermission.UPDATE_TEST, UserPermission.SEARCH_PATIENTS);
-        ObjectNode resp = runQuery("current-user-query");
-        ObjectNode who = (ObjectNode) resp.get("whoami");
+        ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Test-entry user", who.get("roleDescription").asText());
         assertFalse(who.get("isAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
@@ -69,8 +68,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     void whoami_orgAdminUser_okPermissionsAndRoleDescription() {
         useOrgAdmin();
         Set<UserPermission> expected = EnumSet.allOf(UserPermission.class);
-        ObjectNode resp = runQuery("current-user-query");
-        ObjectNode who = (ObjectNode) resp.get("whoami");
+        ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Admin user", who.get("roleDescription").asText());
         assertFalse(who.get("isAdmin").asBoolean());
         assertEquals(expected, extractPermissionsFromUser(who));
@@ -80,13 +78,19 @@ public class ApiUserManagementTest extends BaseApiTest {
     void whoami_superuser_okResponses() {
         useSuperUser();
         setRoles(null);
-        Set<UserPermission> expected = EnumSet.noneOf(UserPermission.class);
-        ObjectNode resp = runQuery("current-user-query");
-        ObjectNode who = (ObjectNode) resp.get("whoami");
+        ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Super Admin", who.get("roleDescription").asText());
         assertTrue(who.get("isAdmin").asBoolean());
-        assertEquals(expected, extractPermissionsFromUser(who));
+        assertEquals(Collections.emptySet(), extractPermissionsFromUser(who));
+    }
 
+    @Test
+    void whoami_nobody_okResponses() {
+        setRoles(null);
+        ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+        assertEquals("Misconfigured user", who.get("roleDescription").asText());
+        assertFalse(who.get("isAdmin").asBoolean());
+        assertEquals(Collections.emptySet(), extractPermissionsFromUser(who));
     }
 
     @Test

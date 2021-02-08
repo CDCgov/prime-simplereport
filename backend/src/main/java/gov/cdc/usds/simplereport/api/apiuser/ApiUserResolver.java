@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;

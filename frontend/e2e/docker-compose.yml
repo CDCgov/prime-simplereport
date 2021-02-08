@@ -20,31 +20,15 @@ services:
       - HUB_PORT=4444
       - START_XFVB=FALSE
 
-  chrome:
-    image: selenium/node-chrome
-    command: bash -c "sudo chown -R seluser:seluser /app && /opt/bin/entry_point.sh"
-    network_mode: "host"
-    volumes:
-      - /dev/shm:/dev/shm
-      - downloads:/app/downloads
-    depends_on:
-      - selenium-hub
-    environment:
-      - HUB_HOST=localhost
-      - HUB_PORT=4444
-      - NODE_PORT=5556
-      - START_XFVB=FALSE
-
   nightwatch:
     image: gitlab-dev.bespinmobile.cloud:4567/gearfit/gearfit/nightwatch:latest
     build: .
     network_mode: "host"
     depends_on:
       - firefox
-      - chrome
     volumes:
       - /dev/shm:/dev/shm
-      - "${E2E_DIR}:/app/e2e"
+      - ".:/app/e2e"
       - downloads:/app/downloads
 
 volumes:

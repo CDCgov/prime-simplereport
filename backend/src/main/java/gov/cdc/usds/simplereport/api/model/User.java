@@ -25,18 +25,19 @@ public class User {
         this.org = orgwrapper.map(OrganizationRoles::getOrganization);
         this.permissions = new ArrayList<>();
         this.roles = new ArrayList<>();
+        orgwrapper.map(OrganizationRoles::getGrantedRoles).map(roles::addAll);
+        Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(OrganizationRoles::getEffectiveRole);
+        this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
+        effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
         this.isAdmin = isAdmin;
-        if (orgwrapper.isPresent()) {
-            permissions.addAll(orgwrapper.get().getGrantedPermissions());
-            roleDescription = orgwrapper.get().getEffectiveRole().get().getDescription();
-            roles.addAll(orgwrapper.get().getGrantedRoles());
-        }
-        if (isAdmin) {
-            if (roleDescription == null) {
-                roleDescription = "Super Admin";
-            } else {
-                roleDescription = roleDescription + " (SU)";
-            }
+    }
+
+    private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
+        if (role.isPresent()) {
+            String desc = role.get().getDescription();
+            return isAdmin ? desc + " (SU)" : desc;
+        } else {
+            return isAdmin ? "Super Admin" : "Misconfigured user";
         }
     }
 

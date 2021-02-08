@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
 import App from "./app/App";
+import PatientApp from "./patientApp/PatientApp";
 import HealthChecks from "./app/HealthChecks";
 
 import * as serviceWorker from "./serviceWorker";
@@ -12,11 +13,11 @@ import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
-  HttpLink,
   ApolloLink,
   InMemoryCache,
   concat,
 } from "@apollo/client";
+import { createUploadLink } from "apollo-upload-client";
 import { onError } from "@apollo/client/link/error";
 import { showError } from "./app/utils";
 import { toast } from "react-toastify";
@@ -40,7 +41,9 @@ if (window.location.hash) {
   }
 }
 
-const httpLink = new HttpLink({ uri: process.env.REACT_APP_BACKEND_URL });
+const httpLink = createUploadLink({
+  uri: `${process.env.REACT_APP_BACKEND_URL}`,
+});
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   operation.setContext({
@@ -82,6 +85,9 @@ ReactDOM.render(
         <Router basename={process.env.PUBLIC_URL}>
           <Switch>
             <Route path="/health" component={HealthChecks} />
+            {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
+              <Route path="/pxp" component={PatientApp} />
+            ) : null}
             <Route path="/" component={App} />
           </Switch>
         </Router>

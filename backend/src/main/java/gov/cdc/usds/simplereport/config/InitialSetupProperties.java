@@ -24,7 +24,6 @@ public class InitialSetupProperties {
     private Provider provider;
     private List<? extends DeviceType> deviceTypes;
     private List<String> configuredDeviceTypes;
-    private IdentityAttributes defaultUser;
     private ConfigFacility facility;
     private Map<IdentityAttributes, List<OrganizationRole>> userRolesMap;
 
@@ -33,14 +32,11 @@ public class InitialSetupProperties {
             Provider provider,
             List<DeviceType> deviceTypes,
             List<String> configuredDeviceTypes,
-            IdentityAttributes defaultUser,
-            IdentityAttributes adminUser,
             Map<IdentityAttributes, List<OrganizationRole>> userRolesMap) {
         this.organization = organization;
         this.provider = provider;
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
-        this.defaultUser = defaultUser;
         this.facility = facility;
         this.userRolesMap = userRolesMap;
     }
@@ -68,10 +64,6 @@ public class InitialSetupProperties {
             .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode(), d.getSwabType()))
             .collect(Collectors.toList())
             ;
-    }
-
-    public IdentityAttributes getDefaultUser() {
-        return defaultUser;
     }
 
     public Map<IdentityAttributes, List<OrganizationRole>> getUserRolesMap() {

@@ -1,4 +1,4 @@
-version: "3.2"
+version: "3.5"
 services:
   db:
     image: postgres:12-alpine
@@ -23,7 +23,8 @@ services:
       - dev-net
   api:
     build:
-      context: .
+      context: ..
+      dockerfile: backend/Dockerfile
     image: simple-report-api-build
     command: bootRun
     environment:

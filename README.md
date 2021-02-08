@@ -1,6 +1,6 @@
 # Simple Report
 
-https://simplereport.cdc.gov/
+https://simplereport.gov/
 
 ## Table of Contents
 
@@ -9,6 +9,9 @@ https://simplereport.cdc.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
+    - [Updating user role](#updating-user-role)
+      - [Organization roles](#organization-roles)
+      - [Site roles](#site-roles)
     - [Restart & Clean](#restart--clean)
     - [API Testing](#api-testing)
     - [Tests](#tests)
@@ -64,9 +67,47 @@ Running spring app locally and db in docker on port 5433
 1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
+### Updating user role
+
+By default the local test user is an organization admin role. If you need to change this value to test out other permissions.
+It can be set in `application-local.yaml`. If you have not created one run:
+
+bash
+```
+touch backend/src/main/resources/application-local.yaml
+```
+
+#### Organization roles
+
+Organization roles can be set by adding the following to `application-local.yaml`:
+```
+simple-report:
+  demo-users:
+    default-user:
+      authorization:
+        granted-roles: ADMIN
+```
+current role types are `ADMIN`, `USER`, and `ENTRY_ONLY`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
+
+`ADMIN` - an organization admin with full access to their organization
+`USER` - a site user the has access to everything in their organization but the gear icon
+`ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
+
+#### Site roles
+
+You can make the default user a site admin by adding the following to `application-local.yaml`:
+
+```
+simple-report:
+  admin-emails:
+    - bob@bobby.bob
+```
+
+Site admins can access the `/admin` paths and site admin APIs
+
 ### Restart & Clean
 
-When there are DB schema changes the backend may throw and error and fail to start.
+When there are DB schema changes the backend may throw an error and fail to start.
 
 Restarting the docker way:
 

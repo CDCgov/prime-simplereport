@@ -1,0 +1,9 @@
+mutation patientLinkSubmit($internalId: String!, $birthDate: String!, $symptoms: String!, $previousTestDate: String!, $symptomOnsetDate: String!) {
+    patientLinkSubmit(
+      internalId: $internalId, 
+      birthDate: $birthDate,
+      symptoms: $symptoms,
+      priorTestDate: $previousTestDate,
+      symptomOnset: $symptomOnsetDate
+    )
+  }
