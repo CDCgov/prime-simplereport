@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21

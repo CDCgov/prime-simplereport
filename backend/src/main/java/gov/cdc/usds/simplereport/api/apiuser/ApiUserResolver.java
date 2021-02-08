@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;

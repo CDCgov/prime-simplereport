@@ -16,7 +16,7 @@ import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 
 @SpringBootApplication
-// Adding any configuration here should probably be added to SliceTestConfiguration &/or SliceTestConfigurationAdmin
+// Adding any configuration here should probably be added to SliceTestConfiguration
 @EnableConfigurationProperties({
         InitialSetupProperties.class,
         SiteAdminEmailList.class,

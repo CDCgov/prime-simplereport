@@ -43,11 +43,6 @@ public class ApiUserManagementTest extends BaseApiTest {
                                                 Set.of(OrganizationRole.USER,
                                                        OrganizationRole.ENTRY_ONLY));
 
-    @Override
-    protected Set<String> getOktaTestUsernames() {
-        return USERNAMES.stream().collect(Collectors.toSet());
-    }
-
     @Test
     public void whoami_standardUser_okResponses() {
         ObjectNode resp = runQuery("current-user-query");
