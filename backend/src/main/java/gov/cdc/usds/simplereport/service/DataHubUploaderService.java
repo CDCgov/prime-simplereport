@@ -306,17 +306,16 @@ public class DataHubUploaderService {
             return;
         }
         
-        DataHubUpload newUpload = new DataHubUpload();
-        try {
-            // The start date is the last end date. Can be null for empty database.
-            Date lastTimestamp = getLatestRecordedTimestamp();
-            if (lastTimestamp == null) {
-                // this happens if EVERYTHING in the db would be matched.
-                LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
-                return;
-            }
-            _trackingService.startUpload(lastTimestamp);
+        // The start date is the last end date. Can be null for empty database.
+        Date lastTimestamp = getLatestRecordedTimestamp();
+        if (lastTimestamp == null) {
+            // this happens if EVERYTHING in the db would be matched.
+            LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
+            return;
+        }
 
+        DataHubUpload newUpload = _trackingService.startUpload(lastTimestamp);
+        try {
             // end range is back 1 minute, to avoid complications involving open
             // transactions
             Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
