@@ -5,6 +5,7 @@ const getFacilityIdFromUrl = () => {
   const queryParams = new URLSearchParams(window.location.search);
   return queryParams.has("facility") ? queryParams.get("facility") : null;
 };
+
 const SettingsNav = () => {
   return (
     <nav className="prime-secondary-nav" aria-label="Secondary navigation">
@@ -18,7 +19,7 @@ const SettingsNav = () => {
           >
             Manage Organization
           </NavLink>
-        </li>{" "}
+        </li>
         <li className="usa-nav__secondary-item">
           <NavLink
             to={`/settings/facilities/?facility=${getFacilityIdFromUrl()}`}
@@ -28,15 +29,17 @@ const SettingsNav = () => {
             Manage facilities
           </NavLink>
         </li>
-        <li className="usa-nav__secondary-item">
-          <NavLink
-            to={`/settings/users/?facility=${getFacilityIdFromUrl()}`}
-            onClick={() => 4}
-            activeClassName="active"
-          >
-            Manage users
-          </NavLink>
-        </li>
+        {process.env.REACT_APP_V1_ACCESS_CONTROL_ENABLED === "true" ? (
+          <li className="usa-nav__secondary-item">
+            <NavLink
+              to={`/settings/users/?facility=${getFacilityIdFromUrl()}`}
+              onClick={() => 4}
+              activeClassName="active"
+            >
+              Manage users
+            </NavLink>
+          </li>
+        ) : null}
       </ul>
     </nav>
   );
