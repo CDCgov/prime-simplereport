@@ -48,6 +48,8 @@ simple-report:
     max-csv-rows: 999
     api-key: ${DATAHUB_API_KEY:MISSING}
     secret-slack-notify-webhook-url: ${SECRET_SLACK_NOTIFY_WEBHOOK_URL:MISSING}
+    upload-schedule: "0 0 11 * * *" # Daily at 11:00 AM Eastern Time
+    upload-timezone: America/New_York
   authorization:    
     # these are overridden by application-dev, -prod, -test, etc
     role-claim: dev_roles

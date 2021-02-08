@@ -7,7 +7,13 @@ import org.springframework.data.repository.Repository;
 import java.util.List;
 import java.util.UUID;
 
-public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID> {
+public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID>, AdvisoryLockManager {
+
+    /**
+     * The lock identifier for the advisory lock for the scheduled upload task. (Use
+     * as the second argument to the postgresql two-argument locking functions.)
+     */
+    int SCHEDULED_UPLOAD_LOCK = 66037627; // arbitrary 32-bit integer for our lock
 
     public DataHubUpload save(DataHubUpload entity);
 
@@ -16,4 +22,14 @@ public interface DataHubUploadRespository extends Repository<DataHubUpload, UUID
 
     // used by unit tests
     public List<DataHubUpload> findAll();
+
+    /**
+     * Try to obtain the lock for the scheduled upload task. (It will be released
+     * automatically when the current transaction closes.)
+     * 
+     * @return true if the lock was obtained, false otherwise.
+     */
+    default boolean tryUploadLock() {
+        return tryLock(CORE_API_LOCK_SCOPE, SCHEDULED_UPLOAD_LOCK);
+    }
 }

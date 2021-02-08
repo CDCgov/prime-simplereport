@@ -4,6 +4,8 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
@@ -24,8 +26,8 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	// Need to control how this query is built. "between" is too vague.
 	// This is across all Orgs/facilities because datahub uploader users
-	@Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC ")
-	public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after);
+    @Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
+    public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
 
 	@Query( value = "SELECT DISTINCT ON (test_order_id) * " +
 					" FROM {h-schema}test_event te " +

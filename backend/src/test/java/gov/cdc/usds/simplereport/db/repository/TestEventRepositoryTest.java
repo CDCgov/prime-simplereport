@@ -11,6 +11,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -48,7 +50,8 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
     public void testLatestTestEventForPerson() {
         Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
         final Date DATE_1MIN_FUTURE = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
-        List<TestEvent> foundTestReports1 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE);
+        List<TestEvent> foundTestReports1 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE,
+                PageRequest.of(0, 100));
         Organization org = _dataFactory.createValidOrg();
         Facility place = _dataFactory.createValidFacility(org);
         Person patient = _dataFactory.createMinimalPerson(org);
@@ -60,7 +63,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
         flush();
         TestEvent found = _repo.findFirst1ByPatientOrderByCreatedAtDesc(patient);
         assertEquals(second.getResult(), TestResult.UNDETERMINED);
-        List<TestEvent> foundTestReports2 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE);
+        List<TestEvent> foundTestReports2 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE, Pageable.unpaged());
         assertEquals(2, foundTestReports2.size() - foundTestReports1.size());
 
         testTestEventUnitTests(order, first);  // just leverage existing order, event to test on newer columns

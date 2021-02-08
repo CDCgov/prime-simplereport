@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +16,7 @@ import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
+import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 
 @SpringBootApplication
 // Adding any configuration here should probably be added to SliceTestConfiguration
@@ -36,5 +38,11 @@ public class SimpleReportApplication {
     @Profile(BeanProfiles.CREATE_SAMPLE_DATA)
     public CommandLineRunner initDataOnStartup(OrganizationInitializingService initService) {
         return args -> initService.initAll();
+    }
+
+    @Bean
+    @ConditionalOnProperty("simple-report.data-hub.upload-enabled")
+    public CommandLineRunner scheduleUploads(DataHubConfig config, ScheduledTasksService scheduler) {
+        return args -> scheduler.scheduleUploads(config);
     }
 }
