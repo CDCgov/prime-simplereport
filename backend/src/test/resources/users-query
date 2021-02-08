@@ -1,4 +1,4 @@
-query getUsers {
+{
   users {
     firstName
     middleName

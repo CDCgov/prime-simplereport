@@ -20,7 +20,6 @@ import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupType;
 
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
@@ -108,8 +107,7 @@ public abstract class BaseServiceTest<T> {
     protected void clearOktaGroups() {
         for (Group g : _oktaClient.listGroups()) {
             String groupName = g.getProfile().getName();
-            if (g.getType() == GroupType.OKTA_GROUP &&
-                        groupName.startsWith(_authorizationProperties.getRolePrefix())) {
+            if (groupName.startsWith(_authorizationProperties.getRolePrefix())) {
                 g.delete();
             }
         }

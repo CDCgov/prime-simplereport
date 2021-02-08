@@ -25,20 +25,17 @@ public class InitialSetupProperties {
     private List<? extends DeviceType> deviceTypes;
     private List<String> configuredDeviceTypes;
     private ConfigFacility facility;
-    private Map<IdentityAttributes, List<OrganizationRole>> userRolesMap;
 
     public InitialSetupProperties(Organization organization,
             ConfigFacility facility,
             Provider provider,
             List<DeviceType> deviceTypes,
-            List<String> configuredDeviceTypes,
-            Map<IdentityAttributes, List<OrganizationRole>> userRolesMap) {
+            List<String> configuredDeviceTypes) {
         this.organization = organization;
         this.provider = provider;
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
         this.facility = facility;
-        this.userRolesMap = userRolesMap;
     }
 
     public ConfigFacility getFacility() {
@@ -64,10 +61,6 @@ public class InitialSetupProperties {
             .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode(), d.getSwabType()))
             .collect(Collectors.toList())
             ;
-    }
-
-    public Map<IdentityAttributes, List<OrganizationRole>> getUserRolesMap() {
-        return userRolesMap;
     }
 
     public static final class ConfigFacility {

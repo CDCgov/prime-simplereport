@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
@@ -64,11 +63,6 @@ public abstract class BaseApiTest {
 
     protected void truncateDb() {
         _truncator.truncateAll();
-    }
-
-    // Override this in any derived Test class that creates Okta users
-    protected Set<String> getOktaTestUsernames() {
-        return new HashSet<String>();
     }
 
     protected void useOrgUser() {

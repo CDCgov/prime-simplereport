@@ -32,17 +32,6 @@ public class ApiUserManagementTest extends BaseApiTest {
                                                           "rjjones@gmail.com",
                                                           "jaredholler@msn.com",
                                                           "janicek90@yahoo.com");
-    private final AuthorityBasedOrganizationRoles orgRolesUser =
-            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
-                                                Set.of(OrganizationRole.USER));
-    private final AuthorityBasedOrganizationRoles orgRolesAdmin =
-            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
-                                                Set.of(OrganizationRole.USER,
-                                                       OrganizationRole.ADMIN));
-    private final AuthorityBasedOrganizationRoles orgRolesEntryOnly =
-            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
-                                                Set.of(OrganizationRole.USER,
-                                                       OrganizationRole.ENTRY_ONLY));
 
     @Test
     public void whoami_standardUser_okResponses() {
@@ -96,8 +85,9 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void createUser_adminUser_success() {
         useSuperUser();
+        useOrgAdmin();
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         ObjectNode resp = runQuery("add-user", variables);
@@ -119,16 +109,17 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void updateUser_adminUser_success() {
         useSuperUser();
+        useOrgAdmin();
 
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", addVariables);
 
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
                 USERNAMES.get(1), USERNAMES.get(0));
@@ -142,9 +133,10 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void updateUser_orgUser_failure() {
         useSuperUser();
+        useOrgAdmin();
 
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
@@ -153,7 +145,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         useOrgUser();
 
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
                 USERNAMES.get(1), USERNAMES.get(0));
@@ -163,12 +155,14 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void getUsers_adminUser_success() {
         useSuperUser();
+        useOrgAdmin();
+
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
         List<ObjectNode> usersAdded = List.of(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
@@ -211,12 +205,14 @@ public class ApiUserManagementTest extends BaseApiTest {
     @Test
     public void getUsers_orgUser_failure() {
         useSuperUser();
+        useOrgAdmin();
+
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
-                .thenReturn(Optional.of(orgRolesUser));
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
         List<ObjectNode> usersAdded = List.of(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
@@ -232,6 +228,14 @@ public class ApiUserManagementTest extends BaseApiTest {
         useOrgUser();
         
         runQuery("users-query", ACCESS_ERROR);
+    }
+
+    private AuthorityBasedOrganizationRoles getOrgRoles(OrganizationRole role) {
+        Set<OrganizationRole> roles = new HashSet<>();
+        roles.add(OrganizationRole.USER);
+        roles.add(role);
+        return new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
+                                                   roles);
     }
 
     private ObjectNode getAddUserVariables(String firstName, 

@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Profile;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAlternateUser;
 import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OktaServiceImpl;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -31,16 +33,14 @@ public class OktaServiceConfig {
 
     @Bean
     @Profile(BeanProfiles.NO_OKTA_MGMT)
-    public OktaService getDummyOktaService(InitialSetupProperties setupProps) {
+    public OktaService getDummyOktaService(InitialSetupProperties setupProps, DemoUserConfiguration demoUsers) {
         Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap = new HashMap<>();
-        for (Entry<IdentityAttributes, List<OrganizationRole>> userRole : setupProps.getUserRolesMap().entrySet()) {
-            IdentityAttributes user = userRole.getKey();
+        for (DemoAlternateUser altUser : demoUsers.getAlternateUsers()) {
+            IdentityAttributes user = altUser.getIdentity();
             String username = user.getUsername();
-            System.out.print("USERNAME " + username);
-            System.out.print("ORG " + setupProps.getOrganization().getExternalId());
             AuthorityBasedOrganizationRoles orgRoles = 
                     new AuthorityBasedOrganizationRoles(setupProps.getOrganization().getExternalId(),
-                                                        userRole.getValue());
+                                                        altUser.getRoles());
             usernameRolesMap.put(username, orgRoles);
         }
         return new OktaServiceEmptyImpl(usernameRolesMap);

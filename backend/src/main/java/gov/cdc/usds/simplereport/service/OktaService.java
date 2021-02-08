@@ -14,7 +14,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  * 
  * Handles all user/organization management in Okta
  */
-@Service
 public interface OktaService {
 
     public void createUser(IdentityAttributes userIdentity, String organizationExternalId);

@@ -6,7 +6,7 @@ spring:
       - org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration
       - org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration
 simple-report:
-  admin-emails:
+  site-admin-emails:
     - ruby@example.com
   demo-users:
     default-user:

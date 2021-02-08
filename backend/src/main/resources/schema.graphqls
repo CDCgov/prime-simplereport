@@ -184,7 +184,7 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!, newerThanDate: DateTime): [TestResult]
   testResult(id: String!): TestResult
-  users: [User]!
+  users: [User]
   whoami: User!
   patientLinkCurrent(internalId: String!): Organization
   patientLinkVerify(internalId: String!, birthDate: String!): Patient

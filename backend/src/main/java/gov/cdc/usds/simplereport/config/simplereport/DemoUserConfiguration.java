@@ -1,9 +1,13 @@
 package gov.cdc.usds.simplereport.config.simplereport;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 /**
@@ -14,23 +18,29 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 @ConstructorBinding
 public class DemoUserConfiguration {
 
-    private DemoUser defaultUser;
+    private DemoCurrentUser defaultUser;
+    private List<DemoAlternateUser> alternateUsers;
 
-    public DemoUserConfiguration(DemoUser defaultUser) {
+    public DemoUserConfiguration(DemoCurrentUser defaultUser, List<DemoAlternateUser> alternateUsers) {
         super();
         this.defaultUser = defaultUser;
+        this.alternateUsers = alternateUsers;
     }
 
-    public DemoUser getDefaultUser() {
+    public DemoCurrentUser getDefaultUser() {
         return defaultUser;
     }
 
+    public List<DemoAlternateUser> getAlternateUsers() {
+        return alternateUsers;
+    }
+
     @ConstructorBinding
-    public static class DemoUser {
+    public static class DemoCurrentUser {
         private AuthorityBasedOrganizationRoles authorization;
         private IdentityAttributes identity;
 
-        public DemoUser(AuthorityBasedOrganizationRoles authorization, IdentityAttributes identity) {
+        public DemoCurrentUser(AuthorityBasedOrganizationRoles authorization, IdentityAttributes identity) {
             super();
             this.authorization = authorization;
             this.identity = identity;
@@ -38,6 +48,26 @@ public class DemoUserConfiguration {
 
         public AuthorityBasedOrganizationRoles getAuthorization() {
             return authorization;
+        }
+
+        public IdentityAttributes getIdentity() {
+            return identity;
+        }
+    }
+
+    @ConstructorBinding
+    public static class DemoAlternateUser {
+        private List<OrganizationRole> roles;
+        private IdentityAttributes identity;
+
+        public DemoAlternateUser(List<OrganizationRole> roles, IdentityAttributes identity) {
+            super();
+            this.roles = roles;
+            this.identity = identity;
+        }
+
+        public List<OrganizationRole> getRoles() {
+            return roles;
         }
 
         public IdentityAttributes getIdentity() {
