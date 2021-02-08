@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.stereotype.Component;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.HashMap;
@@ -83,14 +81,12 @@ public class OktaServiceImpl implements OktaService {
         // Okta SDK's way of getting a group by group name
         String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
 
-        // EXTRACT
         GroupList groups = _client.listGroups(groupName, null, null);
         if (!groups.iterator().hasNext()) {
             throw new IllegalGraphqlArgumentException("Cannot add Okta user to nonexistent group");
         }
         Group group = groups.single();
 
-        // EXTRACT
         UserBuilder.instance()
                 .setProfileProperties(userProfileMap)
                 .setGroups(group.getId())
@@ -99,20 +95,20 @@ public class OktaServiceImpl implements OktaService {
 
     public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role) {
         String groupName = generateGroupName(externalId, role);
-        // EXTRACT
+
         GroupList groups = _client.listGroups(groupName, null, null);
         if (!groups.iterator().hasNext()) {
             throw new IllegalGraphqlArgumentException("Cannot get usernames for nonexistent Okta group");
         }
         Group group = groups.single();
-        // EXTRACT
+
         return group.listUsers().stream()
                 .map(u -> u.getProfile().getEmail())
                 .collect(Collectors.toList());
     }
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {
-        // EXTRACT
+
         UserList users = _client.listUsers(oldUsername, null, null, null, null);
         if (!users.iterator().hasNext()) {
             throw new IllegalGraphqlArgumentException("Cannot update Okta user with unrecognized username");
@@ -152,7 +148,7 @@ public class OktaServiceImpl implements OktaService {
 
     // returns the external ID of the organization the specified user belongs to
     public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username) {
-        // EXTRACT
+
         UserList users = _client.listUsers(username, null, null, null, null);
         if (!users.iterator().hasNext()) {
             throw new IllegalGraphqlArgumentException("Cannot get org external ID for nonexistent user");
@@ -162,7 +158,6 @@ public class OktaServiceImpl implements OktaService {
         Set<String> orgExternalIds = new HashSet<>();
         Set<OrganizationRole> roles = new HashSet<>();
 
-        // EXTRACT
         for (Group g : user.listGroups()) {
             String groupName = g.getProfile().getName();
             for (OrganizationRole role : OrganizationRole.values()) {

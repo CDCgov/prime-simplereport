@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
-import org.springframework.stereotype.Component;
-
 import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;

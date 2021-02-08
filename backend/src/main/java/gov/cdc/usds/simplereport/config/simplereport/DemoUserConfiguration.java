@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.config.simplereport;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;

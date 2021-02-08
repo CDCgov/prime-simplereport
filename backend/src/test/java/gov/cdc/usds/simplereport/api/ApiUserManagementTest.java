@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Iterator;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
 

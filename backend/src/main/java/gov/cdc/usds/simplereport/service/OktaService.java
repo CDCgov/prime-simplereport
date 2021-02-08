@@ -3,8 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-
 import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;

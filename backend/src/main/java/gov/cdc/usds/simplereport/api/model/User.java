@@ -70,7 +70,7 @@ public class User {
         return wrapped.getLoginEmail();
 	}
 
-	public Boolean getisAdmin() {
+	public Boolean getIsAdmin() {
 		return isAdmin;
 	}
 

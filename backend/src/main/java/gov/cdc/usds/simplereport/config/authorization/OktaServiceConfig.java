@@ -2,8 +2,6 @@ package gov.cdc.usds.simplereport.config.authorization;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
-import java.util.Map.Entry;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
