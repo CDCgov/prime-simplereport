@@ -27,6 +27,7 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
   window_size         = "PT5M"
+  severity            = var.severity
   enabled             = var.enabled
 
   criteria {
