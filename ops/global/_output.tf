@@ -9,3 +9,7 @@ output "acr_simeplereport_admin_name" {
 output "acr_simeplereport_admin_password" {
   value = azurerm_container_registry.sr.admin_password
 }
+
+output "slack_alert_action_id" {
+  value = module.alerting.monitor_group_id
+}
