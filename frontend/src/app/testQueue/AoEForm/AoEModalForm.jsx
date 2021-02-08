@@ -5,7 +5,7 @@ import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
-import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
+import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
@@ -25,7 +25,7 @@ const AoEModalForm = ({
   ];
 
   const symptomsResponse = {};
-  getSymptomList().forEach(({ value }) => {
+  globalSymptomDefinitions.forEach(({ value }) => {
     symptomsResponse[value] = false;
   });
 

@@ -1,4 +1,7 @@
 import React from "react";
+
+import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
+
 import Checkboxes from "../../commonComponents/Checkboxes";
 import TextInput from "../../commonComponents/TextInput";
 
@@ -7,10 +10,6 @@ interface Symptoms {
 }
 
 interface Props {
-  symptomListConfig: {
-    label: string;
-    value: string;
-  }[];
   noSymptoms: boolean;
   setNoSymptoms: (noSymptoms: boolean) => void;
   currentSymptoms: Symptoms;
@@ -22,7 +21,6 @@ interface Props {
 }
 
 const SymptomInputs: React.FC<Props> = ({
-  symptomListConfig,
   noSymptoms,
   setNoSymptoms,
   currentSymptoms,
@@ -36,7 +34,7 @@ const SymptomInputs: React.FC<Props> = ({
     <>
       <div className={symptomError ? "usa-form-group--error" : "usa-fieldset"}>
         <Checkboxes
-          name="symptom_list"
+          name="no_symptoms"
           legend="Are you experiencing any of the following symptoms?"
           onChange={(e) => setNoSymptoms(e.target.checked)}
           boxes={[{ value: "no", label: "No Symptoms", checked: noSymptoms }]}
@@ -58,7 +56,7 @@ const SymptomInputs: React.FC<Props> = ({
                   [e.target.value]: e.target.checked,
                 })
               }
-              boxes={symptomListConfig.map(({ label, value }) => ({
+              boxes={globalSymptomDefinitions.map(({ label, value }) => ({
                 label,
                 value,
                 checked: currentSymptoms[value],

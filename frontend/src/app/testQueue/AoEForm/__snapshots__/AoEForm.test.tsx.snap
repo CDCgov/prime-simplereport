@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AoEForm snapshot 1`] = `
+exports[`AoEForm on data loaded renders 1`] = `
 <form
   onSubmit={[Function]}
 >
@@ -43,7 +43,7 @@ exports[`AoEForm snapshot 1`] = `
               checked={false}
               className="usa-checkbox__input"
               id="check-test-1"
-              name="symptom_list"
+              name="no_symptoms"
               onChange={[Function]}
               type="checkbox"
               value="no"
@@ -80,7 +80,7 @@ exports[`AoEForm snapshot 1`] = `
             className="usa-checkbox"
           >
             <input
-              checked={false}
+              checked={true}
               className="usa-checkbox__input"
               id="check-test-1"
               name="symptom_list"
@@ -411,13 +411,18 @@ exports[`AoEForm snapshot 1`] = `
       >
         Date of symptom onset
         <span
-          className="usa-hint"
+          className="usa-sr-only"
         >
-           (optional)
+          Required
+        </span>
+        <span
+          className="usa-hint--required"
+        >
+           *
         </span>
       </label>
       <input
-        aria-required="false"
+        aria-required={true}
         className="usa-input"
         id="text-test-1"
         max="2021-02-06"
@@ -529,93 +534,6 @@ exports[`AoEForm snapshot 1`] = `
         </div>
       </fieldset>
     </div>
-  </div>
-  <div
-    className="prime-formgroup"
-  >
-    <h2
-      className="prime-formgroup-heading"
-    >
-      Pregnancy
-    </h2>
-    <fieldset
-      className="usa-fieldset prime-radios"
-    >
-      <legend
-        className="usa-legend"
-      >
-        Currently pregnant?
-        <span
-          className="usa-hint"
-        >
-           (optional)
-        </span>
-      </legend>
-      <div
-        className="usa-form-group"
-      >
-        <div
-          className="usa-radio"
-        >
-          <input
-            checked={false}
-            className="usa-radio__input"
-            disabled={false}
-            id="radio-test-1_77386006_0"
-            name="pregnancy"
-            onChange={[Function]}
-            type="radio"
-            value="77386006"
-          />
-          <label
-            className="usa-radio__label"
-            htmlFor="radio-test-1_77386006_0"
-          >
-            Yes
-          </label>
-        </div>
-        <div
-          className="usa-radio"
-        >
-          <input
-            checked={false}
-            className="usa-radio__input"
-            disabled={false}
-            id="radio-test-1_60001007_1"
-            name="pregnancy"
-            onChange={[Function]}
-            type="radio"
-            value="60001007"
-          />
-          <label
-            className="usa-radio__label"
-            htmlFor="radio-test-1_60001007_1"
-          >
-            No
-          </label>
-        </div>
-        <div
-          className="usa-radio"
-        >
-          <input
-            checked={false}
-            className="usa-radio__input"
-            disabled={false}
-            id="radio-test-1_261665006_2"
-            name="pregnancy"
-            onChange={[Function]}
-            type="radio"
-            value="261665006"
-          />
-          <label
-            className="usa-radio__label"
-            htmlFor="radio-test-1_261665006_2"
-          >
-            Would not state
-          </label>
-        </div>
-      </div>
-    </fieldset>
   </div>
   <div
     className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205"

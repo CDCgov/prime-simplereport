@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { gql } from "@apollo/client";
 import {
-  getSymptomList,
+  globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
 } from "../../../patientApp/timeOfTest/constants";
@@ -84,7 +84,7 @@ const AoEForm: React.FC<Props> = ({
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
   const testConfig = getTestTypes();
-  const symptomConfig = getSymptomList();
+  const symptomConfig = globalSymptomDefinitions;
   const initialSymptoms: { [key: string]: boolean } = {};
   if (loadState.symptoms) {
     const loadedSymptoms: { [key: string]: string | boolean } = JSON.parse(
@@ -233,7 +233,6 @@ const AoEForm: React.FC<Props> = ({
             setNoSymptoms={setNoSymptoms}
             currentSymptoms={currentSymptoms}
             setSymptoms={setSymptoms}
-            symptomListConfig={symptomConfig}
             setOnsetDate={setOnsetDate}
             onsetDate={onsetDate}
             symptomError={symptomError}
