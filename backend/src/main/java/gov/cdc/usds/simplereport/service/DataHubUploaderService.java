@@ -285,7 +285,9 @@ public class DataHubUploaderService {
             return;
         }
 
-        if (!_dataHubUploadRepo.tryUploadLock()) {   // take the advisory lock for this process. auto released after transaction
+        if (_dataHubUploadRepo.tryUploadLock()) { // take the advisory lock for this process. auto released after transaction
+            LOG.info("Data hub upload lock obtained: commencing upload processing.");
+        } else {
             LOG.info("Data hub upload locked out by mutex: aborting");
             return;
         }
@@ -324,6 +326,8 @@ public class DataHubUploaderService {
 
             if (_rowCount > 0) {
                 this.uploadCSVDocument(_config.getApiKey());
+            } else {
+                LOG.info("No new tests found since previous successful data hub upload.");
             }
 
             // todo: parse json run sanity checks like total records processed matches what we sent.
