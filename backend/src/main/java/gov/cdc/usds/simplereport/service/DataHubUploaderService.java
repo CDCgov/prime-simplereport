@@ -188,9 +188,9 @@ public class DataHubUploaderService {
             this._warnMessage += "More rows were found than can be uploaded in a single batch.";
         }
 
-        // timestamp of highest matched entry, used for the next query.
-        this._nextTimestamp = events.get(0).getCreatedAt();
         this._rowCount = events.size();
+        // timestamp of last matched entry, used for the next query.
+        this._nextTimestamp = events.get(_rowCount - 1).getCreatedAt();
 
         List<TestEventExport> eventsToExport = new ArrayList<>();
         events.forEach(e -> eventsToExport.add(new TestEventExport(e)));

@@ -26,7 +26,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
 	// Need to control how this query is built. "between" is too vague.
 	// This is across all Orgs/facilities because datahub uploader users
-    @Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt DESC")
+    @Query("FROM #{#entityName} q WHERE q.createdAt > :before AND q.createdAt <= :after ORDER BY q.createdAt")
     public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
 
 	@Query( value = "SELECT DISTINCT ON (test_order_id) * " +
