@@ -91,12 +91,14 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    public Optional<Organization> getOrganizationForUser(ApiUser apiUser) {
-        String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
-        if (orgExternalId == null) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(getOrganization(orgExternalId));
+    @AuthorizationConfiguration.RequirePermissionManageUserList
+    public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
+        Optional<AuthorityBasedOrganizationRoles> authBasedOrgRoles = 
+                _oktaService.getOrganizationRolesForUser(apiUser.getLoginEmail());
+        return authBasedOrgRoles.map(a -> {
+            return new OrganizationRoles(getOrganization(a.getOrganizationExternalId()),
+                                         a.getGrantedRoles());
+        });
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {

@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.when;
@@ -15,17 +16,32 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ApiUserManagementTest extends BaseApiTest {
 
     private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
-                                                          "rjjones@gmail.com");
+                                                          "rjjones@gmail.com",
+                                                          "jaredholler@msn.com",
+                                                          "janicek90@yahoo.com");
+    private final AuthorityBasedOrganizationRoles orgRolesUser =
+            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
+                                                Set.of(OrganizationRole.USER));
+    private final AuthorityBasedOrganizationRoles orgRolesAdmin =
+            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
+                                                Set.of(OrganizationRole.USER,
+                                                       OrganizationRole.ADMIN));
+    private final AuthorityBasedOrganizationRoles orgRolesEntryOnly =
+            new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
+                                                Set.of(OrganizationRole.USER,
+                                                       OrganizationRole.ENTRY_ONLY));
 
     @Override
     protected Set<String> getOktaTestUsernames() {
@@ -79,67 +95,176 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser() {
+    public void createUser_adminUser_success() {
         useSuperUser();
-        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
-            .thenReturn(_initService.getDefaultOrganizationId());
-        ObjectNode variables = JsonNodeFactory.instance.objectNode()
-            .put("firstName", "Rhonda")
-            .put("middleName", "Janet")
-            .put("lastName", "Jones")
-            .put("suffix", "III")
-            .put("email", USERNAMES.get(0))
-            .put("organizationExternalId", _initService.getDefaultOrganizationId());
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(orgRolesUser));
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
         ObjectNode resp = runQuery("add-user", variables);
         ObjectNode user = (ObjectNode) resp.get("addUser");
         assertEquals("Rhonda", user.get("firstName").asText());
         assertEquals(USERNAMES.get(0), user.get("email").asText());
         assertEquals(_initService.getDefaultOrganizationId(), 
-                     user.get("organization").get("externalId").asText());
+                user.get("organization").get("externalId").asText());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
     }
 
     @Test
     public void createUser_orgUser_failure() {
-        ObjectNode variables = JsonNodeFactory.instance.objectNode()
-            .put("firstName", "Rhonda")
-            .put("middleName", "Janet")
-            .put("lastName", "Jones")
-            .put("suffix", "III")
-            .put("email", USERNAMES.get(0))
-            .put("organizationExternalId", _initService.getDefaultOrganizationId());
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", variables, ACCESS_ERROR);
     }
 
     @Test
-    public void updateUser() {
+    public void updateUser_adminUser_success() {
         useSuperUser();
-        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
-            .thenReturn(_initService.getDefaultOrganizationId());
-        when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(1)))
-            .thenReturn(_initService.getDefaultOrganizationId());
 
-        ObjectNode addVariables = JsonNodeFactory.instance.objectNode()
-            .put("firstName", "Rhonda")
-            .put("middleName", "Janet")
-            .put("lastName", "Jones")
-            .put("suffix", "III")
-            .put("email", USERNAMES.get(0))
-            .put("organizationExternalId", _initService.getDefaultOrganizationId());
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(orgRolesUser));
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", addVariables);
 
-        ObjectNode updateVariables = JsonNodeFactory.instance.objectNode()
-            .put("firstName", "Ronda")
-            .put("middleName", "J")
-            .put("lastName", "Jones")
-            .put("suffix", "III")
-            .put("newEmail", USERNAMES.get(1))
-            .put("oldEmail", USERNAMES.get(0));
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
+                .thenReturn(Optional.of(orgRolesUser));
+
+        ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
+                USERNAMES.get(1), USERNAMES.get(0));
         ObjectNode resp = runQuery("update-user", updateVariables);
         ObjectNode user = (ObjectNode) resp.get("updateUser");
         assertEquals("Ronda", user.get("firstName").asText());
         assertEquals(USERNAMES.get(1), user.get("email").asText());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+    }
+
+    @Test
+    public void updateUser_orgUser_failure() {
+        useSuperUser();
+
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(orgRolesUser));
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user", addVariables);
+
+        useOrgUser();
+
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
+                .thenReturn(Optional.of(orgRolesUser));
+
+        ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
+                USERNAMES.get(1), USERNAMES.get(0));
+        runQuery("update-user", updateVariables, ACCESS_ERROR);
+    }
+
+    @Test
+    public void getUsers_adminUser_success() {
+        useSuperUser();
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(orgRolesUser));
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
+                .thenReturn(Optional.of(orgRolesUser));
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
+                .thenReturn(Optional.of(orgRolesUser));
+        
+        List<ObjectNode> usersAdded = List.of(
+                getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                        USERNAMES.get(0), _initService.getDefaultOrganizationId()),
+                getAddUserVariables("Jared", "K", "Holler", null, 
+                        USERNAMES.get(2), _initService.getDefaultOrganizationId()),
+                getAddUserVariables("Janice", null, "Katz", "Jr", 
+                        USERNAMES.get(3), _initService.getDefaultOrganizationId()));
+        for (ObjectNode userVariables : usersAdded) {
+            runQuery("add-user", userVariables);
+        }
+
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+                                                         OrganizationRole.USER))
+                .thenReturn(List.of(USERNAMES.get(0), USERNAMES.get(2), USERNAMES.get(3)));
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+                                                         OrganizationRole.ADMIN))
+                .thenReturn(List.of());
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+                                                         OrganizationRole.ENTRY_ONLY))
+                .thenReturn(List.of());
+        
+        ObjectNode resp = runQuery("users-query");
+        ArrayNode usersRetrieved = (ArrayNode) resp.get("users");
+        assertEquals(usersRetrieved.size(), usersAdded.size());
+        for (int i = 0; i < usersRetrieved.size(); i++) {
+            ObjectNode userRetrieved = (ObjectNode) usersRetrieved.get(i);
+            ObjectNode userAdded = usersAdded.get(i);
+            assertEquals(userRetrieved.get("firstName").asText(),
+                         userAdded.get("firstName").asText());
+            assertEquals(userRetrieved.get("email").asText(),
+                         userAdded.get("email").asText());
+            assertEquals(userRetrieved.get("organization").get("externalId").asText(),
+                         userAdded.get("organizationExternalId").asText());
+            assertEquals(OrganizationRole.USER.getGrantedPermissions(), 
+                         extractPermissionsFromUser(userRetrieved));
+        }
+    }
+
+    @Test
+    public void getUsers_orgUser_failure() {
+        useSuperUser();
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(orgRolesUser));
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
+                .thenReturn(Optional.of(orgRolesUser));
+        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
+                .thenReturn(Optional.of(orgRolesUser));
+        
+        List<ObjectNode> usersAdded = List.of(
+                getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                        USERNAMES.get(0), _initService.getDefaultOrganizationId()),
+                getAddUserVariables("Jared", "K", "Holler", null, 
+                        USERNAMES.get(2), _initService.getDefaultOrganizationId()),
+                getAddUserVariables("Janice", null, "Katz", "Jr", 
+                        USERNAMES.get(3), _initService.getDefaultOrganizationId()));
+        for (ObjectNode userVariables : usersAdded) {
+            runQuery("add-user", userVariables);
+        }
+
+        useOrgUser();
+        
+        runQuery("users-query", ACCESS_ERROR);
+    }
+
+    private ObjectNode getAddUserVariables(String firstName, 
+                                           String middleName, 
+                                           String lastName, 
+                                           String suffix, 
+                                           String email, 
+                                           String orgExternalId) {
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+            .put("firstName", firstName)
+            .put("middleName", middleName)
+            .put("lastName", lastName)
+            .put("suffix", suffix)
+            .put("email", email)
+            .put("organizationExternalId", orgExternalId);
+        return variables;
+    }
+
+    private ObjectNode getUpdateUserVariables(String firstName, 
+                                           String middleName, 
+                                           String lastName, 
+                                           String suffix, 
+                                           String newEmail, 
+                                           String oldEmail) {
+        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+            .put("firstName", firstName)
+            .put("middleName", middleName)
+            .put("lastName", lastName)
+            .put("suffix", suffix)
+            .put("newEmail", newEmail)
+            .put("oldEmail", oldEmail);
+        return variables;
     }
 
     private Set<UserPermission> extractPermissionsFromUser(ObjectNode user) {

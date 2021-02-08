@@ -1,12 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Component;
-import org.springframework.context.annotation.Primary;
-import org.springframework.context.annotation.Profile;
 
-import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -15,28 +17,40 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  * 
  * Handles all user/organization management in Okta
  */
-@Component
-@Primary
-@Profile(BeanProfiles.NO_OKTA_MGMT)
 public class OktaServiceEmptyImpl implements OktaService {
 
-    public OktaServiceEmptyImpl() {}
+    Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap;
+    Map<String,Map<OrganizationRole,List<String>>> orgRoleUsernamesMap;
+
+    public OktaServiceEmptyImpl(Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap) {
+        this.usernameRolesMap = usernameRolesMap;
+        this.orgRoleUsernamesMap = new HashMap<>();
+        for (Map.Entry<String,AuthorityBasedOrganizationRoles> entry : usernameRolesMap.entrySet()) {
+            Map<OrganizationRole,List<String>> roleUsernamesMap = 
+                    orgRoleUsernamesMap.getOrDefault(entry.getValue().getOrganizationExternalId(),
+                                                     new HashMap<>());
+            for (OrganizationRole role : entry.getValue().getGrantedRoles()) {
+                List<String> usernames = roleUsernamesMap.getOrDefault(role, new ArrayList<>());
+                usernames.add(entry.getKey());
+                roleUsernamesMap.put(role, usernames);
+            }
+            orgRoleUsernamesMap.put(entry.getValue().getOrganizationExternalId(), roleUsernamesMap);
+        }
+    }
 
     public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {}
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {}
 
     public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role) {
-        return List.of();
+        return orgRoleUsernamesMap.get(externalId).get(role);
     }
 
-    public void createOrganization(String name, String externalId) {
-    }
+    public void createOrganization(String name, String externalId) {}
 
     public void deleteOrganization(String externalId) {}
 
-    // returns the external ID of the organization the specified user belongs to
-    public String getOrganizationExternalIdForUser(String username) {
-        return null;
+    public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username) {
+        return Optional.ofNullable(usernameRolesMap.get(username));
     }
 }

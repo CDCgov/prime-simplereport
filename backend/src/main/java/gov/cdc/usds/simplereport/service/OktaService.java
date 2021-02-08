@@ -1,11 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -25,7 +28,6 @@ public interface OktaService {
 
     public void deleteOrganization(String externalId);
 
-    // returns the external ID of the organization the specified user belongs to
-    public String getOrganizationExternalIdForUser(String username);
+    public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username);
 
 }

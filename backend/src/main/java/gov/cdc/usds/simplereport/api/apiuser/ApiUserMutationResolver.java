@@ -46,12 +46,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
         Boolean isAdmin = _us.isAdmin(apiUser);
-        // This assumption doesn't hold for admins, but when creating another user, it's not terribly important yet.
-        Optional<OrganizationRoles> orgRoles = org.isPresent() 
-                ? Optional.of(new OrganizationRoles(org.get(), Set.of(OrganizationRole.USER)))
-                : Optional.empty();
         return new User(apiUser, orgRoles, isAdmin);
     }
 
@@ -68,12 +64,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             _us.assertEmailAvailable(newEmail);
         }
         ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
         Boolean isAdmin = _us.isAdmin(apiUser);
-        // This assumption doesn't hold for admins, but when updating another user, it's not terribly important yet.
-        Optional<OrganizationRoles> orgRoles = org.isPresent() 
-                ? Optional.of(new OrganizationRoles(org.get(), Set.of(OrganizationRole.USER)))
-                : Optional.empty();
         return new User(apiUser, orgRoles, isAdmin);
     }
 }

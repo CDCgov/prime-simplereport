@@ -14,7 +14,7 @@ import com.okta.sdk.resource.ResourceException;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-
+import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 public class OktaServiceTest extends BaseServiceTest<OktaService> {
@@ -117,11 +117,13 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     @Disabled
     @Test
-    public void getOrganizationExternalIdForUser() {
+    public void getOrganizationRolesForUser() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
         _service.createUser(CHARLES, GHI.getExternalId());
 
-        assertEquals(_service.getOrganizationExternalIdForUser(CHARLES.getUsername()),GHI.getExternalId());
+        assertEquals(_service.getOrganizationRolesForUser(CHARLES.getUsername()),
+                     new AuthorityBasedOrganizationRoles(GHI.getExternalId(),
+                                                         Set.of(OrganizationRole.USER)));
     }
 
     @Disabled

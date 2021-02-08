@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.config;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -24,6 +26,7 @@ public class InitialSetupProperties {
     private List<String> configuredDeviceTypes;
     private IdentityAttributes defaultUser;
     private ConfigFacility facility;
+    private Map<IdentityAttributes, List<OrganizationRole>> userRolesMap;
 
     public InitialSetupProperties(Organization organization,
             ConfigFacility facility,
@@ -31,13 +34,15 @@ public class InitialSetupProperties {
             List<DeviceType> deviceTypes,
             List<String> configuredDeviceTypes,
             IdentityAttributes defaultUser,
-            IdentityAttributes adminUser) {
+            IdentityAttributes adminUser,
+            Map<IdentityAttributes, List<OrganizationRole>> userRolesMap) {
         this.organization = organization;
         this.provider = provider;
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
         this.defaultUser = defaultUser;
         this.facility = facility;
+        this.userRolesMap = userRolesMap;
     }
 
     public ConfigFacility getFacility() {
@@ -67,6 +72,10 @@ public class InitialSetupProperties {
 
     public IdentityAttributes getDefaultUser() {
         return defaultUser;
+    }
+
+    public Map<IdentityAttributes, List<OrganizationRole>> getUserRolesMap() {
+        return userRolesMap;
     }
 
     public static final class ConfigFacility {
