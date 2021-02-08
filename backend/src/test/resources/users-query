@@ -1,0 +1,14 @@
+query getUsers {
+  users {
+    firstName
+    middleName
+    lastName
+    suffix
+    email
+    permissions
+    organization {
+      name
+      externalId
+    }
+  }
+}
