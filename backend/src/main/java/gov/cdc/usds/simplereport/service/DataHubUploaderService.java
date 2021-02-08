@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -44,25 +45,29 @@ import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class DataHubUploaderService {
     private static final Logger LOG = LoggerFactory.getLogger(DataHubUploaderService.class);
 
     private final DataHubConfig _config;
     private final TestEventRepository _testReportEventsRepo;
     private final DataHubUploadRespository _dataHubUploadRepo;
+    private final UploadTrackingService _trackingService;
 
     private String _fileContents;
-    private String _nextTimestamp;
+    private Date _nextTimestamp;
     private String _warnMessage;
     private String _resultJson;
     private int _rowCount;
 
+
     public DataHubUploaderService(DataHubConfig config,
-                                  TestEventRepository testReportEventsRepo,
-                                  DataHubUploadRespository dataHubUploadRepo) {
+            TestEventRepository testReportEventsRepo,
+            DataHubUploadRespository dataHubUploadRepo,
+            UploadTrackingService trackingService) {
         _config = config;
         _testReportEventsRepo = testReportEventsRepo;
+        _trackingService = trackingService;
         _dataHubUploadRepo = dataHubUploadRepo;
 
         LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
@@ -83,9 +88,9 @@ public class DataHubUploaderService {
     private void init() {
         // because we are a service these need to be reset each time through.
         // this needs a refactor. This is ONLY here until we can get rid of running the schedule via a webaddress
-        _nextTimestamp = "";
+        _nextTimestamp = null;
         _warnMessage = "";
-        _resultJson = "";
+        _resultJson = "{}";
         _rowCount = 0;
     }
 
@@ -144,7 +149,7 @@ public class DataHubUploaderService {
             HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
             restTemplate.put(_config.getSlackNotifyWebhookUrl(), entity);
         } catch (RestClientException | JSONException err) {
-            LOG.error(err.toString());
+            LOG.error("sendSlackChannelMessage failed {}", err.toString());
         }
     }
 
@@ -172,17 +177,20 @@ public class DataHubUploaderService {
     }
 
     private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
-            throws IOException, DateTimeParseException, NoResultException {
-        List<TestEvent> events = _testReportEventsRepo.queryMatchAllBetweenDates(earlistCreatedAt, latestCreateOn);
+            throws IOException, DateTimeParseException {
+        List<TestEvent> events = _testReportEventsRepo.queryMatchAllBetweenDates(earlistCreatedAt, latestCreateOn,
+                PageRequest.of(0, _config.getMaxCsvRows()));
         if (events.size() == 0) {
-            throw new NoResultException();
-        } else if (events.size() >= _config.getMaxCsvRows()) {
-            this._warnMessage += "More rows were found than can be uploaded in a single batch. Needs to be more than once.";
+            // next end timerange stays the same as the last. NOTE: This will not change until there are new events
+            this._nextTimestamp = earlistCreatedAt;
+            return;
+        } else if (events.size() == _config.getMaxCsvRows()) {
+            this._warnMessage += "More rows were found than can be uploaded in a single batch.";
         }
 
-        // timestamp of highest matched entry, used for the next query.
-        this._nextTimestamp = dateToUTCString(events.get(0).getCreatedAt());
         this._rowCount = events.size();
+        // timestamp of last matched entry, used for the next query.
+        this._nextTimestamp = events.get(_rowCount - 1).getCreatedAt();
 
         List<TestEventExport> eventsToExport = new ArrayList<>();
         events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
@@ -226,9 +234,7 @@ public class DataHubUploaderService {
         }
     }
 
-    // There is also the risk of the top action running multiple times concurrently.
     // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
-    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public Map<String, String> uploadTestEventCSVToDataHub(final String apiKey, String lastEndCreateOn) {
         try {
@@ -237,18 +243,21 @@ public class DataHubUploaderService {
             // This is important for first-ever-run and then if the webpage is run again after the db is initialized
             Date lastTimestamp = getLatestRecordedTimestamp();
             if (lastTimestamp == null) {
+                DataHubUpload upload = _trackingService.startUpload(utcStringToDate(lastEndCreateOn));
+                LOG.info("Added {} to data_hub_upload table", upload.getInternalId());
                 // database has no entries. FIRST EVER RUN.
                 this.createTestEventCSV(lastEndCreateOn);
-                this.uploadCSVDocument(apiKey);
-                DataHubUpload newUpload = new DataHubUpload();
-                newUpload.setJobStatus(DataHubUploadStatus.SUCCESS)
-                        .setEarliestRecordedTimestamp(utcStringToDate(lastEndCreateOn))
-                        .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp))
-                        .setRecordsProcessed(_rowCount)
-                        .setResponseData(_resultJson)
-                        .setErrorMessage(_warnMessage);
-                _dataHubUploadRepo.save(newUpload);
-                LOG.info("Added {} to data_hub_upload table", newUpload.getInternalId());
+                if (this._rowCount == 0) {
+                    LOG.warn("No rows were found for uploadTestEventCSVToDataHub.");
+                } else {
+                    _trackingService.markRowCount(upload, _rowCount, _nextTimestamp);
+                    try {
+                        this.uploadCSVDocument(apiKey);
+                        _trackingService.markSucceeded(upload, _resultJson, _warnMessage);
+                    } catch (RestClientException e) {
+                        _trackingService.markFailed(upload, this._resultJson, e);
+                    }
+                }
             } else {
                 // run the new code and ignore the lastEndCreateOn passed in.
                 dataHubUploaderTask();
@@ -256,7 +265,7 @@ public class DataHubUploaderService {
 
             return Map.of(
                     "result", "ok",
-                    "lastTimestamp", this._nextTimestamp,
+                    "lastTimestamp", dateToUTCString(this._nextTimestamp),
                     "rowsSent", String.valueOf(this._rowCount),
                     "uploadResultId", this._resultJson,
                     "message", this._warnMessage);
@@ -266,9 +275,6 @@ public class DataHubUploaderService {
         } catch (IOException err) {
             return Map.of("result", "error",
                     "messsage", err.toString());
-        } catch (NoResultException err) {
-            return Map.of("result", "error",
-                    "message", "No matching results for the given startupdateby param.  " + err.toString());
         }
     }
 
@@ -276,6 +282,13 @@ public class DataHubUploaderService {
         // sanity check everything is configured correctly (dev likely will not be)
         if (!_config.getUploadEnabled()) {
             LOG.warn("DataHubUploaderTask not running because simple-report.data-hub.uploadEnabled is false");
+            return;
+        }
+
+        if (_dataHubUploadRepo.tryUploadLock()) { // take the advisory lock for this process. auto released after transaction
+            LOG.info("Data hub upload lock obtained: commencing upload processing.");
+        } else {
+            LOG.info("Data hub upload locked out by mutex: aborting");
             return;
         }
 
@@ -292,58 +305,50 @@ public class DataHubUploaderService {
             sendSlackChannelMessage("DataHubUploader not run", msgs, true);
             return;
         }
-
-        DataHubUpload newUpload = new DataHubUpload();
-        try {
-            // The start date is the last end date. Can be null for empty database.
-            Date lastTimestamp = getLatestRecordedTimestamp();
-            if (lastTimestamp == null) {
-                // this happens if EVERYTHING in the db would be matched.
-                LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
-                return;
-            }
-            newUpload.setEarliestRecordedTimestamp(lastTimestamp);
-            _dataHubUploadRepo.save(newUpload);
-
-            // end range is back 1 minute, this is to avoid selecting transactions that
-            // may still be rolled back.
-            final Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
-
-            this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
-            _dataHubUploadRepo.save(newUpload
-                    .setRecordsProcessed(_rowCount)
-                    .setLatestRecordedTimestamp(utcStringToDate(_nextTimestamp)));
-
-            this.uploadCSVDocument(_config.getApiKey());
-
-            // todo: parse json run sanity checks like total records processed matches what we sent.
-
-            _dataHubUploadRepo.save(newUpload
-                    .setResponseData(_resultJson)
-                    .setJobStatus(DataHubUploadStatus.SUCCESS));
-
-        } catch (RestClientException | IOException err) {
-            _dataHubUploadRepo.save(newUpload
-                    .setResponseData(_resultJson)
-                    .setJobStatus(DataHubUploadStatus.FAIL)
-                    .setErrorMessage(err.toString()));
-            LOG.error("DataHubUploaderService Error '{}'", err.toString());
-        } catch (NoResultException err) {
-            _dataHubUploadRepo.save(newUpload
-                    .setJobStatus(DataHubUploadStatus.FAIL)
-                    .setErrorMessage("No matching results for the given startupdateby param"));
-            LOG.warn("DataHubUploaderService Warning NoMatchingRows latestRecordedTimestamp() '{}'", newUpload.getLatestRecordedTimestamp());
+        
+        // The start date is the last end date. Can be null for empty database.
+        Date lastTimestamp = getLatestRecordedTimestamp();
+        if (lastTimestamp == null) {
+            // this happens if EVERYTHING in the db would be matched.
+            LOG.error("No earliest_recorded_timestamp found. EVERYTHING would be matched and sent");
+            return;
         }
 
-        // Build and send message to slackChannel
-        ArrayList<String> message = new ArrayList<>();
-        message.add("Result: ```" + newUpload.getJobStatus() + "``` ");
-        message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
-        message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
-        message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
-        message.add("ErrorMessage: " + newUpload.getErrorMessage());
-        message.add("setResponseData: ");
-        message.add("> ``` " + newUpload.getResponseData() + " ```");
-        sendSlackChannelMessage("DataHubUpload result", message, false);
+        DataHubUpload newUpload = _trackingService.startUpload(lastTimestamp);
+        try {
+            // end range is back 1 minute, to avoid complications involving open
+            // transactions
+            Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
+
+            this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
+            _trackingService.markRowCount(newUpload, _rowCount, _nextTimestamp);
+
+            if (_rowCount > 0) {
+                this.uploadCSVDocument(_config.getApiKey());
+            } else {
+                LOG.info("No new tests found since previous successful data hub upload.");
+            }
+
+            // todo: parse json run sanity checks like total records processed matches what we sent.
+            _trackingService.markSucceeded(newUpload, _resultJson, _warnMessage);
+        } catch (RestClientException | IOException err) {
+            _trackingService.markFailed(newUpload, _resultJson, err);
+        }
+
+        if (_rowCount > 0) {
+            // Build and send message to slackChannel
+            ArrayList<String> message = new ArrayList<>();
+            message.add("Result: ```" + newUpload.getJobStatus() + "``` ");
+            message.add("RecordsProcessed: " + newUpload.getRecordsProcessed());
+            message.add("EarlistTimestamp: " + dateToUTCString(newUpload.getEarliestRecordedTimestamp()));
+            message.add("LatestTimestamp: " + dateToUTCString(newUpload.getLatestRecordedTimestamp()));
+            message.add("ErrorMessage: " + newUpload.getErrorMessage());
+            message.add("setResponseData: ");
+            message.add("> ``` " + newUpload.getResponseData() + " ```");
+            sendSlackChannelMessage("DataHubUpload result", message, false);
+        }
+
+        // should this sleep for some period of time? If no rows match it may be really fast
+        // and other server instances not overlap and get blocked by tryUploadLock() otherwise.
     }
 }

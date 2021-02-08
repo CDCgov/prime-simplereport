@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.db.repository;
 
-import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import org.junit.jupiter.api.Test;
@@ -19,8 +18,6 @@ class DataHubUploadEntityRespositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private DataHubUploadRespository _repoDH;
-    @Autowired
-    private DataHubConfig _config;
 
     @Test
     void testBasicSavingQueryDataHubUpload() {
