@@ -13,6 +13,11 @@ import gov.cdc.usds.simplereport.db.model.DataHubUpload;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
 
+/**
+ * Service to create and update {@link DataHubUpload} entities, largely in
+ * free-standing transactions so that updates are written to the database
+ * immediately rather than at the conclusion of the upload task.
+ */
 @Service
 @Transactional
 public class UploadTrackingService {
@@ -36,14 +41,6 @@ public class UploadTrackingService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void markFailed(DataHubUpload dhu, String responseString, String errorMessage) {
-        dhu.setJobStatus(DataHubUploadStatus.FAIL)
-                .setResponseData(responseString)
-                .setErrorMessage(errorMessage);
-        _repo.save(dhu);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markSucceeded(DataHubUpload newUpload, String resultJson, String warnMessage) {
         newUpload.setJobStatus(DataHubUploadStatus.SUCCESS)
                 .setResponseData(resultJson)
@@ -54,8 +51,10 @@ public class UploadTrackingService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markFailed(DataHubUpload newUpload, String resultJson, Exception err) {
         LOG.error("Data hub upload failed", err);
-        markFailed(newUpload, resultJson, err.toString());
-
+        newUpload.setJobStatus(DataHubUploadStatus.FAIL)
+                .setResponseData(resultJson)
+                .setErrorMessage(err.toString());
+        _repo.save(newUpload);
     }
 
 }

@@ -255,7 +255,7 @@ public class DataHubUploaderService {
                         this.uploadCSVDocument(apiKey);
                         _trackingService.markSucceeded(upload, _resultJson, _warnMessage);
                     } catch (RestClientException e) {
-                        _trackingService.markFailed(upload, this._resultJson, e.toString());
+                        _trackingService.markFailed(upload, this._resultJson, e);
                     }
                 }
             } else {
