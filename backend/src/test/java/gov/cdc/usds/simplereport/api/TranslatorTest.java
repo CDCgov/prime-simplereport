@@ -7,6 +7,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
@@ -127,6 +128,28 @@ class TranslatorTest {
     void testInvalidParseRace() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseRace("xyz");
+        });
+    }
+
+    @Test
+    void testEmptyParseRaceDisplayValue() {
+        assertEquals(null, parseRaceDisplayValue(""));
+    }
+
+    @Test
+    void testNullParseRaceDisplayValue() {
+        assertEquals(null, parseRaceDisplayValue(null));
+    }
+
+    @Test
+    void testValidParseRaceDisplayValue() {
+        assertEquals("black", parseRaceDisplayValue("Black or African American"));
+    }
+
+    @Test
+    void testInvalidParseRaceDisplayValue() {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
+            parseRaceDisplayValue("456");
         });
     }
 
