@@ -8,9 +8,9 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
-import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.UUID;
 import javax.servlet.http.Part;
 
@@ -47,7 +47,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         String middleName,
         String lastName,
         String suffix,
-        String birthDate,
+            LocalDate birthDate,
         String street,
         String street2,
         String city,
@@ -70,7 +70,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             parseString(middleName),
             parseString(lastName),
             parseString(suffix),
-            parseUserDate(birthDate),
+              birthDate,
             parseString(street),
             parseString(street2),
             parseString(city),
@@ -96,7 +96,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
       String middleName,
       String lastName,
       String suffix,
-      String birthDate,
+            LocalDate birthDate,
       String street,
       String street2,
       String city,
@@ -120,7 +120,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
           parseString(middleName),
           parseString(lastName),
           parseString(suffix),
-          parseUserDate(birthDate),
+              birthDate,
           parseString(street),
           parseString(street2),
           parseString(city),
