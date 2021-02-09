@@ -26,7 +26,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TestOrderRepositoryTest extends BaseRepositoryTest {
+class TestOrderRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private TestOrderRepository _repo;
@@ -40,7 +40,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     private TestDataFactory _dataFactory;
 
     @Test
-    public void runChanges() {
+    void runChanges() {
         Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
         Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
         Facility site = _dataFactory.createValidFacility(gtown);
@@ -62,7 +62,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void testLifeCycle() {
+    void testLifeCycle() {
         DeviceType device = _dataFactory.getGenericDevice();
         Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
         Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null,
@@ -89,7 +89,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicatesFound_error() {
+    void createOrder_duplicatesFound_error() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -105,7 +105,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicateCanceled_ok() {
+    void createOrder_duplicateCanceled_ok() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -127,7 +127,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicateSubmitted_ok() {
+    void createOrder_duplicateSubmitted_ok() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -152,7 +152,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void fetchQueue_multipleEntries_sortedFifo() {
+    void fetchQueue_multipleEntries_sortedFifo() {
         Organization org = _dataFactory.createValidOrg();
         Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
         Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);

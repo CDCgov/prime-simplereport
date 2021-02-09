@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-public class DeviceManagementTest extends BaseApiTest {
+class DeviceManagementTest extends BaseApiTest {
 
     @Test
     void listDeviceTypes_orgUser_expectedDevices() {

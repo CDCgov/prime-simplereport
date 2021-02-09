@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 
-public class OrganizationFacilityTest extends BaseApiTest {
+class OrganizationFacilityTest extends BaseApiTest {
 
     @Autowired
     private DeviceTypeService _deviceService;
