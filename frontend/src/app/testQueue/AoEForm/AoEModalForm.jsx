@@ -5,14 +5,13 @@ import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
-import { getSymptomList } from "../../../patientApp/timeOfTest/constants";
+import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
   saveButtonText = "Save",
   onClose,
   patient,
-  facilityId,
   loadState = {},
   saveCallback,
   qrCodeValue = `${getUrl()}pxp`,
@@ -26,7 +25,7 @@ const AoEModalForm = ({
   ];
 
   const symptomsResponse = {};
-  getSymptomList().forEach(({ value }) => {
+  globalSymptomDefinitions.forEach(({ value }) => {
     symptomsResponse[value] = false;
   });
 
@@ -140,7 +139,6 @@ const AoEModalForm = ({
               saveButtonText="Continue"
               onClose={onClose}
               patient={patient}
-              facilityId={facilityId}
               loadState={loadState}
               saveCallback={saveCallback}
               isModal={true}
@@ -153,7 +151,6 @@ const AoEModalForm = ({
           saveButtonText="Continue"
           onClose={onClose}
           patient={patient}
-          facilityId={facilityId}
           loadState={loadState}
           saveCallback={saveCallback}
           isModal={true}
