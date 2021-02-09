@@ -2,7 +2,7 @@ import {AzureFunction, Context, HttpRequest} from '@azure/functions';
 const fetch = require('node-fetch');
 const util = require('util')
 
-let APP_INSIGHT_URL = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/overview';
+let app_insight_url = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/overview';
 
 const httpTrigger: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     // context will allow logging statements to appear in Azure
@@ -47,11 +47,18 @@ async function sendToSlack(url: string, alert: any) {
 }
 
 function generateSlackMessage(alert: any): any {
+    let headerText;
+    let alertName;
     // Generate the heading text
     let alert_type;
     if (alert.data.alertContext.conditionType === 'WebtestLocationAvailabilityCriteria'){
+        app_insight_url = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/availability'
         alert_type = "Ping Availability"
-        APP_INSIGHT_URL = 'https://portal.azure.com/#@cdc.onmicrosoft.com/resource/subscriptions/7d1e3999-6577-4cd5-b296-f518e5c8e677/resourcegroups/prime-simple-report-management/providers/microsoft.insights/components/prime-simple-report-global-insights/availability'
+        alertName = alert.data.essentials.alertRule.slice(0, alert.data.essentials.alertRule.indexOf('-prime-simple-report-global-insights'));
+    } else if (alert.data.alertContext.conditionType === 'SingleResourceMultipleMetricCriteria') {
+        alert_type = `${alert.data.essentials.alertRule}`
+        alertName = alert.data.essentials.description;
+        app_insight_url = `https://portal.azure.com/#@cdc.onmicrosoft.com/resource/${alert.data.essentials.alertTargetIDs[0]}`
     }
 
     let alert_type_emoji;
@@ -60,8 +67,8 @@ function generateSlackMessage(alert: any): any {
     } else {
         alert_type_emoji = ':warning:'
     }
-    let alertName= alert.data.essentials.alertRule.slice(0, alert.data.essentials.alertRule.indexOf('-prime-simple-report-global-insights'));
-    const headerText = `${alert_type_emoji} ${alert_type}: ${alertName} ${alert.data.essentials.monitorCondition}`;
+
+    headerText = `${alert_type_emoji} ${alert_type}: ${alertName} ${alert.data.essentials.monitorCondition}`;
 
     return {
         blocks: [
@@ -76,7 +83,7 @@ function generateSlackMessage(alert: any): any {
                 type: 'section',
                 text: {
                     type: 'mrkdwn',
-                    text: `Details here:\n${APP_INSIGHT_URL}.`
+                    text: `Details here:\n${app_insight_url}.`
                 }
             }
         ]

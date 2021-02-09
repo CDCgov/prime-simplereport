@@ -3,6 +3,8 @@ module "simple_report_api" {
   name   = "${local.name}-api"
   env    = local.env
 
+  instance_count = 2
+
   resource_group_location = data.azurerm_resource_group.rg.location
   resource_group_name     = data.azurerm_resource_group.rg.name
 
