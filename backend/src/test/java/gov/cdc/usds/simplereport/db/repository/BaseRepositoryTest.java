@@ -14,6 +14,14 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 @Import(SliceTestConfiguration.class)
 public abstract class BaseRepositoryTest {
 
+    protected static void pause() {
+        try {
+            Thread.sleep(2);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Autowired
     private TestEntityManager _manager;
 
