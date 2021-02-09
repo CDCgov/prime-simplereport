@@ -38,8 +38,9 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
             " ORDER BY test_order_id, te.created_at desc" +
             ") " +
             " SELECT * FROM FILTEREDEVENTS " +
-            " WHERE created_at > :newerThanDate " + // technically this could be in the CTE but then when we make it
-                                                    // more complicated somebody will break it
+            " WHERE created_at > :newerThanDate " + // moving this filter into the CTE makes this query significantly
+                                                    // more efficient (like 75% faster in one case), but then when we
+                                                    // make it more complicated somebody will probably break it
             " ORDER BY created_at DESC ",
             nativeQuery = true)
 	public List<TestEvent> getTestEventResults(UUID facilityId, Date newerThanDate);
