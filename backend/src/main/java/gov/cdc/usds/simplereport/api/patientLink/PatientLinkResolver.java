@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.patientLink;
 
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -25,7 +27,7 @@ public class PatientLinkResolver implements GraphQLQueryResolver {
         return pls.getPatientLinkCurrent(internalId);
     }
 
-    public Person getPatientLinkVerify(String internalId, String birthDate) throws Exception {
+    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws Exception {
         if (!patientLinksEnabled) {
             throw new Exception("Patient links not enabled");
         }

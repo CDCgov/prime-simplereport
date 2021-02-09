@@ -32,10 +32,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
         return pls.refreshPatientLink(internalId);
     }
 
-    public String patientLinkSubmit(String internalId, String birthDate, String pregnancy, String symptoms,
+    public String patientLinkSubmit(String internalId, LocalDate birthDate, String pregnancy, String symptoms,
             boolean firstTest, LocalDate priorTestDate, String priorTestType, String priorTestResult,
-            LocalDate symptomOnset,
-            boolean noSymptoms) throws Exception {
+            LocalDate symptomOnset, boolean noSymptoms) throws Exception {
         if (!patientLinksEnabled) {
             throw new Exception("Patient links not enabled");
         }
