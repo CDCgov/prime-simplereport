@@ -1,6 +1,8 @@
 name: Deploy Demo Backend Azure Resources
 
 on:
+  schedule:
+    - cron: '30 9 * * *' # Daily at 09:30 UTC
   workflow_dispatch:
     env:
       description: 'environment to deploy'
