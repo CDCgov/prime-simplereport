@@ -40,6 +40,10 @@ export const RACE_VALUES = [
     label: "White",
   },
   {
+    value: "unknown",
+    label: "Unknown",
+  },
+  {
     value: "refused",
     label: "Refused to answer",
   },
