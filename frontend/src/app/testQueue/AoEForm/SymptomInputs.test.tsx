@@ -1,10 +1,12 @@
-import renderer, { act } from "react-test-renderer";
+import renderer from "react-test-renderer";
 import SymptomInputs from "./SymptomInputs";
+import MockDate from "mockdate";
 
 describe("SymptomInputs", () => {
   let component: renderer.ReactTestRenderer;
   let setNoSymptoms: jest.Mock;
   beforeEach(() => {
+    MockDate.set("2021-02-08");
     setNoSymptoms = jest.fn();
     component = renderer.create(
       <SymptomInputs
