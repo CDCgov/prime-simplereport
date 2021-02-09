@@ -1,6 +1,8 @@
 name: Deploy Staging Backend Azure Resources
 
 on:
+  schedule:
+    - cron: '0 9 * * *' # Daily at 09:00 UTC
   workflow_dispatch:
     env:
       description: 'environment to deploy'
