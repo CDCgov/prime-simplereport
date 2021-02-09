@@ -20,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
-@SuppressWarnings("checkstyle:MagicNumber")
 class TranslatorTest {
     @Test
     void testEmptyShortDate() {
@@ -53,6 +52,7 @@ class TranslatorTest {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseUserShortDate("fooexample.com");
         });
+        assertEquals("[fooexample.com] is not a valid date.", caught.getMessage());
     }
 
     @Test
@@ -82,6 +82,7 @@ class TranslatorTest {
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vestibulum lacus vitae condimentum ultricies. Phasellus sed velit a urna aliquam tempus. Nulla nunc ex, porta eget tristique vel, cursus eu enim. Sed malesuada turpis at rhoncus aliquam. Nullam blandit turpis ac pharetra lobortis. Ut bibendum ligula ex. Curabitur fermentum condimentum erat, in tristique justo maximus eu. Fusce posuere cursus enim, a ullamcorper augue bibendum eget. In eu nunc vitae est molestie mollis. Sed mollis fermentum ante vel bibendum. Fusce vel elit risus."
             );
         });
+        assertEquals("Value received exceeds field length limit of 500 characters", caught.getMessage());
     }
 
     @Test
@@ -104,7 +105,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidParseUUID() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseUUID("abc 123");
         });
     }
@@ -126,7 +127,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidParseRace() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseRace("xyz");
         });
     }
@@ -170,7 +171,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidParseEthnicity() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseEthnicity("xyz");
         });
     }
@@ -192,7 +193,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidParseGender() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseGender("asd");
         });
     }
@@ -217,7 +218,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidParseYesNo() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseYesNo("positive");
         });
     }
@@ -239,7 +240,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidState() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseState("New York");
         });
     }
@@ -261,7 +262,7 @@ class TranslatorTest {
 
     @Test
     void testInvalidEmail() {
-        IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
+        assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseEmail("fooexample.com");
         });
     }

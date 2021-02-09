@@ -44,7 +44,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void createOrganization_adminUser_success() {
+    void createOrganization_adminUser_success() {
         List<DeviceType> configuredDevices = new ArrayList<>();
         DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         configuredDevices.add(device);
