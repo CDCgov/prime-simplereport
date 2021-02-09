@@ -1,7 +1,8 @@
 import React from "react";
 // import { gql, useQuery } from "@apollo/client";
-import ManagedUsers from "./ManageUsers";
+import ManageUsers from "./ManageUsers";
 import { UserRole } from "../../permissions";
+import { useSelector } from "react-redux";
 
 // TODO this hasn't been implemented yet in the backend
 // const GET_USERS = gql`
@@ -17,6 +18,15 @@ import { UserRole } from "../../permissions";
 //     }
 //   }
 // `;
+
+export interface SettingsUser {
+  id: string;
+  name: string;
+  role: UserRole;
+  email: string;
+  isAdmin: boolean;
+  isEdited?: boolean;
+}
 
 const dummyUsers = [
   {
@@ -43,7 +53,13 @@ const dummyUsers = [
   },
 ];
 
-const ManageUsersContainer: any = () => {
+const updateUser = (user: SettingsUser) => {
+  // TODO: perform graphql query
+};
+
+const ManageUsersContainer: React.FC<any> = () => {
+  const currentUser = useSelector((state) => (state as any).user as User);
+  currentUser.id = "123";
   //   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
   //     fetchPolicy: "no-cache",
   //   });
@@ -60,9 +76,10 @@ const ManageUsersContainer: any = () => {
   //   }
 
   return (
-    <ManagedUsers
+    <ManageUsers
       users={dummyUsers}
-      currentUser={{ id: "123", isAdmin: true }}
+      currentUser={currentUser}
+      onUpdateUser={updateUser}
     />
   );
 };

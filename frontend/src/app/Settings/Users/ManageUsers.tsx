@@ -9,8 +9,9 @@ import "./ManageUsers.scss";
 import { UserRole } from "../../permissions";
 import { showNotification } from "../../utils";
 import { toast } from "react-toastify";
-import InProgressModal from "./InProgerssModal";
+import InProgressModal from "./InProgressModal";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import { SettingsUser } from "./ManageUsersContainer";
 
 interface RoleButton {
   value: UserRole;
@@ -32,23 +33,15 @@ const ROLES: RoleButton[] = [
   },
 ];
 
-interface SettingsUser {
-  id: string;
-  name: string;
-  role: UserRole;
-  email: string;
-  isAdmin: boolean;
-  isEdited?: boolean;
-}
-
 interface Props {
   currentUser: any; // TODO: this is a subset of the whoami user
   users: SettingsUser[];
+  onUpdateUser: (user: SettingsUser) => void;
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
 
-const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
+const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
       acc[user.id] = user;
@@ -93,7 +86,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   };
 
   const onSaveChanges = (userId: string) => {
-    // TODO: make graphql mututation to save query
+    onUpdateUser(usersState[userId]); // TODO this does nothing atm
 
     updateUsersState({
       ...usersState,
@@ -134,6 +127,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
       <li
         className="usa-sidenav__item users-sidenav-item"
         onClick={() => onChangeActiveUser(user.id)}
+        key={user.id}
       >
         <ConditionalWrap
           condition={activeUser === user.id}
@@ -157,14 +151,12 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   };
 
   const userDetail = (user: SettingsUser, currentUser: any) => {
-    // TODO update currentUser type
     return (
       <React.Fragment>
         <div className="user-header">
           <h2 className="display-inline-block margin-top-2 margin-bottom-105">
-            {" "}
-            {user.name}{" "}
-          </h2>{" "}
+            {user.name}
+          </h2>
           {user.id === currentUser.id ? (
             <span className="usa-tag margin-left-1">YOU</span>
           ) : null}
@@ -175,7 +167,6 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           </p>
           <RadioGroup
             legend="Roles"
-            // required
             legendSrOnly
             name="role"
             buttons={ROLES}
@@ -184,23 +175,6 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
               changeRole(e, user.id)
             }
           />
-          {/* <Checkboxes
-            boxes={[
-              {
-                value: "admin",
-                label: "Admin",
-                checked: user.isAdmin,
-              },
-            ]}
-            legend="Set default"
-            legendSrOnly
-            required={false}
-            name="user role"
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              changeIsAdmin(e, user.id)
-            }
-            disabled={!currentUser.isAdmin}
-          /> */}
           <div className="float-right">
             <Button
               type="button"
@@ -220,8 +194,6 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
           <InProgressModal
             onClose={() => updateShowInProgressModal(false)}
             onContinue={() => onContinueChangeActiveUser(user.id)}
-            // overlayClassName="prime-modal-overlay"
-            // contentLabel="Time of Test Questions"
           ></InProgressModal>
         ) : null}
       </React.Fragment>
@@ -269,26 +241,22 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser }) => {
   // });
 
   return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="prime-container usa-card__container">
-          <div className="usa-card__header">
-            <h2>Manage Users</h2>
+    <div className="prime-container usa-card__container">
+      <div className="usa-card__header">
+        <h2>Manage Users</h2>
+      </div>
+      <div className="usa-card__body">
+        <div className="grid-row">
+          <div className="display-block users-sidenav">
+            <h3>Users</h3>
+            <ul className="usa-sidenav">{sideNavItems}</ul>
           </div>
-          <div className="usa-card__body">
-            <div className="grid-row">
-              <div className="display-block users-sidenav">
-                <h3>Users</h3>
-                <ul className="usa-sidenav">{sideNavItems}</ul>
-              </div>
-              <div className="tablet:grid-col">
-                {userDetail(usersState[activeUser], currentUser)}
-              </div>
-            </div>
+          <div className="tablet:grid-col">
+            {userDetail(usersState[activeUser], currentUser)}
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 };
 
