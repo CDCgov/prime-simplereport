@@ -47,53 +47,49 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container usa-card__container">
-            <div className="usa-card__header">
-              <div>
-                <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-                <NavLink to={`/settings/facilities`}> All Facilities</NavLink>
-                <h2>{facility.name}</h2>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  type="button"
-                  onClick={() => props.saveFacility(facility)}
-                  label="Save Changes"
-                  disabled={!formChanged}
-                />
-              </div>
-            </div>
-            <div className="usa-card__body">
-              <RequiredMessage />
-              <FacilityInformation
-                facility={facility}
-                updateFacility={updateFacility}
-              />
-            </div>
+    <div className="grid-row">
+      <div className="prime-container usa-card__container">
+        <div className="usa-card__header">
+          <div>
+            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
+            <NavLink to={`/settings/facilities`}> All Facilities</NavLink>
+            <h2>{facility.name}</h2>
           </div>
-          <OrderingProviderSettings
-            provider={facility.orderingProvider}
-            updateProvider={updateProvider}
-          />
-          <ManageDevices
-            deviceTypes={facility.deviceTypes}
-            defaultDevice={facility.defaultDevice}
-            updateDeviceTypes={updateDeviceTypes}
-            updateDefaultDevice={updateDefaultDevice}
-            deviceOptions={props.deviceOptions}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              type="button"
+              onClick={() => props.saveFacility(facility)}
+              label="Save Changes"
+              disabled={!formChanged}
+            />
+          </div>
+        </div>
+        <div className="usa-card__body">
+          <RequiredMessage />
+          <FacilityInformation
+            facility={facility}
+            updateFacility={updateFacility}
           />
         </div>
       </div>
-    </main>
+      <OrderingProviderSettings
+        provider={facility.orderingProvider}
+        updateProvider={updateProvider}
+      />
+      <ManageDevices
+        deviceTypes={facility.deviceTypes}
+        defaultDevice={facility.defaultDevice}
+        updateDeviceTypes={updateDeviceTypes}
+        updateDefaultDevice={updateDefaultDevice}
+        deviceOptions={props.deviceOptions}
+      />
+    </div>
   );
 };
 

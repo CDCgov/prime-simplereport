@@ -19,13 +19,10 @@ import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
-import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
-import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
-import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
-import ManageUsersContainer from "./Settings/Users/ManageUsersContainer";
+import Settings from "./Settings/Settings";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -49,30 +46,6 @@ const WHOAMI_QUERY = gql`
     }
   }
 `;
-
-const SettingsRoutes = ({ match }: any) => (
-  <>
-    {/* note the addition of the exact property here */}
-    <Route exact path={match.url} component={ManageOrganizationContainer} />
-    <Route
-      path={match.url + "/facilities"}
-      component={ManageFacilitiesContainer}
-    />
-    <Route
-      path={match.url + "/facility/:facilityId"}
-      render={({ match }) => (
-        <FacilityFormContainer facilityId={match.params.facilityId} />
-      )}
-    />
-    <Route
-      path={match.url + "/add-facility/"}
-      render={({ match }) => (
-        <FacilityFormContainer facilityId={match.params.facilityId} />
-      )}
-    />
-    <Route path={match.url + "/users"} component={ManageUsersContainer} />
-  </>
-);
 
 const App = () => {
   const dispatch = useDispatch();
@@ -176,7 +149,7 @@ const App = () => {
                 />
                 <ProtectedRoute
                   path="/settings"
-                  component={SettingsRoutes}
+                  component={Settings}
                   requiredPermissions={appPermissions.settings.canView}
                   userPermissions={data.whoami.permissions}
                 />
