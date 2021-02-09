@@ -44,7 +44,7 @@ const EDIT_QUEUE_ITEM = gql`
     $id: String!
     $deviceId: String
     $result: String
-    $dateTested: String
+    $dateTested: DateTime
   ) {
     editQueueItem(
       id: $id
@@ -81,7 +81,7 @@ const SUBMIT_TEST_RESULT = gql`
     $patientId: String!
     $deviceId: String!
     $result: String!
-    $dateTested: String
+    $dateTested: DateTime
   ) {
     addTestResult(
       patientId: $patientId
@@ -96,10 +96,10 @@ const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean

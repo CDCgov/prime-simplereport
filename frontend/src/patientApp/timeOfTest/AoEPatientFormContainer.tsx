@@ -9,14 +9,14 @@ import { gql, useMutation } from "@apollo/client";
 const PATIENT_LINK_SUBMIT_MUTATION = gql`
   mutation PatientLinkById(
     $plid: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $pregnancy: String
     $symptoms: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $noSymptoms: Boolean
   ) {
     patientLinkSubmit(
