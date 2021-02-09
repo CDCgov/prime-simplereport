@@ -23,7 +23,7 @@ public class DemoUserConfiguration {
     public DemoUserConfiguration(DemoCurrentUser defaultUser, List<DemoAlternateUser> alternateUsers) {
         super();
         this.defaultUser = defaultUser;
-        this.alternateUsers = alternateUsers;
+        this.alternateUsers = alternateUsers == null ? List.of() : alternateUsers;
     }
 
     public DemoCurrentUser getDefaultUser() {
