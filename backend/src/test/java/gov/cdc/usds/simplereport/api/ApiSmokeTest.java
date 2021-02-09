@@ -9,10 +9,10 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ApiSmokeTest extends BaseApiTest {
+class ApiSmokeTest extends BaseApiTest {
 
     @Test
-    public void smoketestPatientList() throws IOException {
+    void smoketestPatientList() throws IOException {
         JsonNode jsonResponse = runQuery("person-query");
         assertTrue(jsonResponse.get("patients").isEmpty());
         executeAddPersonMutation("Baz", "Jesek", "2403-12-03", null, "BAZ");

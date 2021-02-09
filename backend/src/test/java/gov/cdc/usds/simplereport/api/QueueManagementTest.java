@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
-public class QueueManagementTest extends BaseApiTest {
+class QueueManagementTest extends BaseApiTest {
 
     private static final String QUERY = "queue-dates-query";
 
@@ -46,7 +46,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void enqueueOnePatient() throws Exception {
+    void enqueueOnePatient() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "05/15/2020")
@@ -65,7 +65,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateViaPatientLink() throws Exception {
+    void updateViaPatientLink() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId);
@@ -97,7 +97,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateItemInQueue() throws Exception {
+    void updateItemInQueue() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         TestOrder o = _dataFactory.createTestOrder(p, _site);
         String orderId = o.getInternalId().toString();
@@ -122,7 +122,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void enqueueOnePatientIsoDate() throws Exception {
+    void enqueueOnePatientIsoDate() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "2020-05-15")

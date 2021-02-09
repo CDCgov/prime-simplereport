@@ -18,7 +18,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
-public class FacilityRepositoryTest extends BaseRepositoryTest {
+class FacilityRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private DeviceTypeRepository _devices;
@@ -30,7 +30,7 @@ public class FacilityRepositoryTest extends BaseRepositoryTest {
     private FacilityRepository _repo;
 
     @Test
-    public void smokeTestDeviceOperations() {
+    void smokeTestDeviceOperations() {
         List<DeviceType> configuredDevices = new ArrayList<>();
         DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));

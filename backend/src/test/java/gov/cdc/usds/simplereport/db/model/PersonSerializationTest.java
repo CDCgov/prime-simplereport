@@ -20,31 +20,31 @@ import org.springframework.boot.test.json.ObjectContent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 @JsonTest
-public class PersonSerializationTest {
+class PersonSerializationTest {
 
     @Autowired
     private JacksonTester<Person> _tester;
 
     @Test
-    public void deserialize_stringRace_raceFound() throws IOException {
+    void deserialize_stringRace_raceFound() throws IOException {
         ObjectContent<Person> ob = _tester.read("/deserialization/race-scalar.json");
         assertAlexanderHamilton(ob);
     }
 
     @Test
-    public void deserialize_arrayRace_raceFound() throws IOException {
+    void deserialize_arrayRace_raceFound() throws IOException {
         ObjectContent<Person> ob = _tester.read("/deserialization/race-array.json");
         assertAlexanderHamilton(ob);
     }
 
     @Test
-    public void deserialize_withFacility_raceFoundNoFacility() throws IOException {
+    void deserialize_withFacility_raceFoundNoFacility() throws IOException {
         ObjectContent<Person> ob = _tester.read("/deserialization/with-facility.json");
         assertAlexanderHamilton(ob);
     }
 
     @Test
-    public void serialize_withOrgAndFacility_noOrgOrFacility() throws IOException {
+    void serialize_withOrgAndFacility_noOrgOrFacility() throws IOException {
         // consts are to keep style check happy othewise it complains about
         // "magic numbers"
         final int BIRTH_YEAR = 2000;

@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class TestEventRepositoryTest extends BaseRepositoryTest {
+class TestEventRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private TestEventRepository _repo;
@@ -34,7 +34,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
     private TestDataFactory _dataFactory;
 
     @Test
-    public void testFindByPatient() {
+    void testFindByPatient() {
         Organization org = _dataFactory.createValidOrg();
         Facility place = _dataFactory.createValidFacility(org);
         Person patient = _dataFactory.createMinimalPerson(org);
@@ -47,7 +47,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void testLatestTestEventForPerson() {
+    void testLatestTestEventForPerson() {
         Date d1 = Date.from(Instant.parse("2000-01-01T00:00:00Z"));
         final Date DATE_1MIN_FUTURE = new Date(System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(3));
         List<TestEvent> foundTestReports1 = _repo.queryMatchAllBetweenDates(d1, DATE_1MIN_FUTURE,
@@ -70,7 +70,7 @@ public class TestEventRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
+    void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
         Organization org = _dataFactory.createValidOrg();
         Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
         Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);

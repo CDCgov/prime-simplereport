@@ -21,7 +21,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PersonServiceTest extends BaseServiceTest<PersonService> {
+class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // I'll have you know that I didn't actually mean to do this...
     private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);

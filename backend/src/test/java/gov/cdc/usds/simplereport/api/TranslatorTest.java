@@ -20,19 +20,19 @@ import org.junit.jupiter.api.Test;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TranslatorTest {
+class TranslatorTest {
     @Test
-    public void testEmptyShortDate() {
+    void testEmptyShortDate() {
         assertEquals(null, parseUserShortDate(""));
     }
 
     @Test
-    public void testNullShortDate() {
+    void testNullShortDate() {
         assertEquals(null, parseUserShortDate(null));
     }
 
     @Test
-    public void testValidShortDate() {
+    void testValidShortDate() {
         LocalDate result = parseUserShortDate("2/1/2021");
         assertEquals(2, result.getMonthValue());
         assertEquals(1, result.getDayOfMonth());
@@ -40,7 +40,7 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testValidDateWithLeadingZeros() {
+    void testValidDateWithLeadingZeros() {
         LocalDate result = parseUserShortDate("02/01/2021");
         assertEquals(2, result.getMonthValue());
         assertEquals(1, result.getDayOfMonth());
@@ -48,34 +48,34 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testInvalidShortDate() {
+    void testInvalidShortDate() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseUserShortDate("fooexample.com");
         });
     }
 
     @Test
-    public void testEmptyParseString() {
+    void testEmptyParseString() {
         assertEquals(null, parseString(""));
     }
 
     @Test
-    public void testNullParseString() {
+    void testNullParseString() {
         assertEquals(null, parseString(null));
     }
 
     @Test
-    public void testValidParseString() {
+    void testValidParseString() {
         assertEquals("abc 123", parseString("abc 123"));
     }
 
     @Test
-    public void testValidParseStringWithSurroundingSpaces() {
+    void testValidParseStringWithSurroundingSpaces() {
         assertEquals("abc 123", parseString("   abc 123   "));
     }
 
     @Test
-    public void testParseStringWithLongString() {
+    void testParseStringWithLongString() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseString(
                 "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin vestibulum lacus vitae condimentum ultricies. Phasellus sed velit a urna aliquam tempus. Nulla nunc ex, porta eget tristique vel, cursus eu enim. Sed malesuada turpis at rhoncus aliquam. Nullam blandit turpis ac pharetra lobortis. Ut bibendum ligula ex. Curabitur fermentum condimentum erat, in tristique justo maximus eu. Fusce posuere cursus enim, a ullamcorper augue bibendum eget. In eu nunc vitae est molestie mollis. Sed mollis fermentum ante vel bibendum. Fusce vel elit risus."
@@ -84,17 +84,17 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testEmptyUUID() {
+    void testEmptyUUID() {
         assertEquals(null, parseUUID(""));
     }
 
     @Test
-    public void testNullParseUUID() {
+    void testNullParseUUID() {
         assertEquals(null, parseUUID(null));
     }
 
     @Test
-    public void testValidParseUUID() {
+    void testValidParseUUID() {
         assertEquals(
             "8ae1a210-fe20-44ab-80c6-214289acead7",
             parseUUID("8ae1a210-fe20-44ab-80c6-214289acead7").toString()
@@ -102,90 +102,90 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testInvalidParseUUID() {
+    void testInvalidParseUUID() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseUUID("abc 123");
         });
     }
 
     @Test
-    public void testEmptyParseRace() {
+    void testEmptyParseRace() {
         assertEquals(null, parseRace(""));
     }
 
     @Test
-    public void testNullParseRace() {
+    void testNullParseRace() {
         assertEquals(null, parseRace(null));
     }
 
     @Test
-    public void testValidParseRace() {
+    void testValidParseRace() {
         assertEquals("native", parseRace("native"));
     }
 
     @Test
-    public void testInvalidParseRace() {
+    void testInvalidParseRace() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseRace("xyz");
         });
     }
 
     @Test
-    public void testEmptyParseEthnicity() {
+    void testEmptyParseEthnicity() {
         assertEquals(null, parseEthnicity(""));
     }
 
     @Test
-    public void testNullParseEthnicity() {
+    void testNullParseEthnicity() {
         assertEquals(null, parseEthnicity(null));
     }
 
     @Test
-    public void testValidParseEthnicity() {
+    void testValidParseEthnicity() {
         assertEquals("hispanic", parseEthnicity("hispanic"));
     }
 
     @Test
-    public void testInvalidParseEthnicity() {
+    void testInvalidParseEthnicity() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseEthnicity("xyz");
         });
     }
 
     @Test
-    public void testEmptyParseGender() {
+    void testEmptyParseGender() {
         assertEquals(null, parseGender(""));
     }
 
     @Test
-    public void testNullParseGender() {
+    void testNullParseGender() {
         assertEquals(null, parseGender(null));
     }
 
     @Test
-    public void testValidParseGender() {
+    void testValidParseGender() {
         assertEquals("other", parseGender("other"));
     }
 
     @Test
-    public void testInvalidParseGender() {
+    void testInvalidParseGender() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseGender("asd");
         });
     }
 
     @Test
-    public void testEmptyParseYesNo() {
+    void testEmptyParseYesNo() {
         assertEquals(null, parseYesNo(""));
     }
 
     @Test
-    public void testNullParseYesNo() {
+    void testNullParseYesNo() {
         assertEquals(null, parseYesNo(null));
     }
 
     @Test
-    public void testValidParseYesNo() {
+    void testValidParseYesNo() {
         assertEquals(true, parseYesNo("y"));
         assertEquals(true, parseYesNo("yEs"));
         assertEquals(false, parseYesNo("n"));
@@ -193,51 +193,51 @@ public class TranslatorTest {
     }
 
     @Test
-    public void testInvalidParseYesNo() {
+    void testInvalidParseYesNo() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseYesNo("positive");
         });
     }
 
     @Test
-    public void testEmptyState() {
+    void testEmptyState() {
         assertEquals(null, parseState(""));
     }
 
     @Test
-    public void testNullState() {
+    void testNullState() {
         assertEquals(null, parseState(null));
     }
 
     @Test
-    public void testValidState() {
+    void testValidState() {
         assertEquals("NY", parseState("ny"));
     }
 
     @Test
-    public void testInvalidState() {
+    void testInvalidState() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseState("New York");
         });
     }
 
     @Test
-    public void testEmptyEmail() {
+    void testEmptyEmail() {
         assertEquals(null, parseEmail(""));
     }
 
     @Test
-    public void testNullEmail() {
+    void testNullEmail() {
         assertEquals(null, parseEmail(null));
     }
 
     @Test
-    public void testValidEmail() {
+    void testValidEmail() {
         assertEquals("foo@example.com", parseEmail("foo@example.com"));
     }
 
     @Test
-    public void testInvalidEmail() {
+    void testInvalidEmail() {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseEmail("fooexample.com");
         });

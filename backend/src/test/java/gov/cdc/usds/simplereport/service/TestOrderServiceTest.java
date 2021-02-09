@@ -29,7 +29,7 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
+class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
         @Autowired
         private DeviceTypeRepository _deviceTypeRepo;
@@ -48,7 +48,7 @@ public class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         }
 
         @Test
-        public void addPatientToQueue() {
+        void addPatientToQueue() {
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
