@@ -6,10 +6,10 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 
 public class TestDescription {
 
-    private static TestDescription DEFAULT_TEST = new TestDescription("Unknown", "Unknown", "Unknown", "Unknown",
+    private static final TestDescription DEFAULT_TEST = new TestDescription("Unknown", "Unknown", "Unknown", "Unknown",
             "Unknown");
 
-    private static Map<String, TestDescription> KNOWN_TESTS = Map.of(
+    private static final Map<String, TestDescription> KNOWN_TESTS = Map.of(
             "94534-5", new TestDescription(
                     "94534-5",
                     "SARS-CoV-2 (COVID-19) RdRp gene [Presence] in Respiratory specimen by NAA with probe detection",
