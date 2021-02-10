@@ -36,7 +36,7 @@ const SearchResults = ({
             <thead>
               <tr>
                 <th scope="col">Full name</th>
-                <th scope="col">Date of Birth</th>
+                <th scope="col">Date of birth</th>
                 <th scope="col">Unique ID</th>
                 <th scope="col">Actions</th>
               </tr>
@@ -53,7 +53,7 @@ const SearchResults = ({
                     {canAddToTestQueue(p.internalId) ? (
                       <Button
                         variant="unstyled"
-                        label="Begin Test"
+                        label="Begin test"
                         onClick={() => {
                           setDialogPatient(p);
                           setCanAddToQueue(canAddToTestQueue(p.internalId));

@@ -157,7 +157,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
 );
 Modal.setAppElement("#root");
 
-/* 
+/*
   Dates from the backend are coming in as ISO 8601 strings: (eg: "2021-01-11T23:56:53.103Z")
   The datetime-local text input expects values in the following format *IN LOCAL TIME*: (eg: "2014-01-02T11:42:13.510")
 
@@ -368,7 +368,7 @@ const QueueItem: any = ({
 
       /* the custom date input field manages its own state in the DOM, not in the react state
       The reason for this is an invalid custom date would update react. Updating another field in the queue item, like the test result, would attempt to submit the invalid date to the backend
-      Instead, we are only going to update react if there is a *valid* date. 
+      Instead, we are only going to update react if there is a *valid* date.
       this can be mitigated if the backend can reliably handle null/invalid dates (never needs to be the case, just default to current date)
       or if we change our updateQueuItem function to update only a single value at a time, which is a TODO for later
     */
@@ -496,13 +496,13 @@ const QueueItem: any = ({
                   <li className="prime-li">
                     <LabeledText
                       text={patient.telephone}
-                      label="Phone Number"
+                      label="Phone number"
                     />
                   </li>
                   <li className="prime-li">
                     <LabeledText
                       text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                      label="Date of Birth"
+                      label="Date of birth"
                     />
                   </li>
                   <li className="prime-li">
@@ -555,7 +555,7 @@ const QueueItem: any = ({
                           : ""
                       }
                       legend={
-                        useCurrentDateTime === "true" ? "Test Date" : null
+                        useCurrentDateTime === "true" ? "Test date" : null
                       }
                       name="currentDateTime"
                       onChange={onUseCurrentDateChange}
