@@ -26,7 +26,7 @@ const SearchResults = ({
   };
   let results;
   if (patients.length === 0) {
-    results = <h3> No results </h3>;
+    results = <h3>No results</h3>;
     if (canAddToQueue) setCanAddToQueue(false);
   } else {
     results = (

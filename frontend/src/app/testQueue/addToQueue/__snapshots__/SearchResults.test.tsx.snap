@@ -2,7 +2,7 @@
 
 exports[`SearchResults should say 'No Results' for no matches 1`] = `
 <h3>
-   No results
+  No results
 </h3>
 `;
 
