@@ -1,0 +1,86 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AoEPatientFormContainer snapshot 1`] = `
+<main
+  className="patient-app patient-app--form padding-bottom-4"
+>
+  <div
+    className="grid-container maxw-tablet"
+  >
+    <div
+      aria-label="progress"
+      className="usa-step-indicator usa-step-indicator--counters-sm margin-y-205"
+    >
+      <ol
+        className="usa-step-indicator__segments"
+      >
+        <li
+          aria-current={false}
+          className="usa-step-indicator__segment"
+        >
+          <span
+            className="usa-step-indicator__segment-label"
+          >
+            Profile information
+             
+            <span
+              className="usa-sr-only"
+            >
+              completed
+            </span>
+          </span>
+        </li>
+        <li
+          aria-current={false}
+          className="usa-step-indicator__segment"
+        >
+          <span
+            className="usa-step-indicator__segment-label"
+          >
+            Symptoms and history
+             
+            <span
+              className="usa-sr-only"
+            >
+              completed
+            </span>
+          </span>
+        </li>
+      </ol>
+      <div
+        className="usa-step-indicator__header"
+      >
+        <h1
+          className="usa-step-indicator__heading"
+        >
+          <span
+            className="usa-step-indicator__heading-counter"
+          >
+            <span
+              className="usa-sr-only"
+            >
+              Step
+            </span>
+            <span
+              className="usa-step-indicator__current-step margin-right-05"
+            >
+              1
+            </span>
+            <span
+              className="usa-step-indicator__total-steps"
+            >
+              of 
+              2
+            </span>
+          </span>
+          <span
+            className="usa-step-indicator__heading-text"
+          >
+            
+          </span>
+        </h1>
+      </div>
+    </div>
+  </div>
+</main>
+`;

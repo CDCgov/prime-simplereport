@@ -51,7 +51,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void createAndDeleteDeviceTypes_adminUser_success() {
+    void createAndDeleteDeviceTypes_adminUser_success() {
         DeviceType devA = _service.createDeviceType("A", "B", "C", "D", "E");
         DeviceType devB = _service.createDeviceType("F", "G", "H", "I", "J");
         assertNotNull(devA);
@@ -66,7 +66,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void updateDeviceTypeName_adminUser_success() {
+    void updateDeviceTypeName_adminUser_success() {
         DeviceType device = _service.createDeviceType("A", "B", "C", "D", "E");
 
         DeviceType updatedDevice = _service.updateDeviceType(device.getInternalId(), "Tim", null, null, null, null);

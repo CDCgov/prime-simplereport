@@ -518,7 +518,6 @@ const QueueItem: any = ({
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        facilityId={facilityId}
                         canAddToTestQueue={false}
                         qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
                       />

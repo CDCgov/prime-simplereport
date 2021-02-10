@@ -1,5 +1,5 @@
 // BEGIN things that should be service calls
-const globalSymptomDefinitions = [
+export const globalSymptomDefinitions = [
   { value: "426000000", label: "Fever over 100.4F" },
   { value: "103001002", label: "Feeling feverish" },
   { value: "43724002", label: "Chills" },
@@ -19,7 +19,6 @@ const globalSymptomDefinitions = [
   { value: "62315008", label: "Diarrhea" },
 ];
 
-export const getSymptomList = () => globalSymptomDefinitions;
 export const getTestTypes = () => [
   { label: "Molecular", value: "1" },
   { label: "Antigen", value: "2" },

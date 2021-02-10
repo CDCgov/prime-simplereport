@@ -16,6 +16,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Static package for utilities to translate things to or from wireline format
@@ -97,8 +98,18 @@ public class Translators {
         throw new IllegalGraphqlArgumentException("\"" + e + "\" is not a valid email.");
     }
 
-    private static final Set<String> RACES = Set.of("native", "asian", "black", "pacific", "white", "unknown",
-            "refused");
+    private static final Map<String, String> RACES = Map.of(
+        "american indian or alaskan native", "native",
+        "asian", "asian",
+        "black or african american", "black",
+        "native hawaiian or other pacific islander", "pacific",
+        "white", "white",
+        "unknown", "unknown",
+        "refused to answer", "refused"
+    );
+
+    private static final Set<String> RACE_VALUES = RACES.values().stream().collect(Collectors.toSet());
+    private static final Set<String> RACE_KEYS = RACES.keySet();
 
     public static String parseRace(String r) {
         String race = parseString(r);
@@ -106,10 +117,22 @@ public class Translators {
             return null;
         }
         race = race.toLowerCase();
-        if (RACES.contains(race)) {
+        if (RACE_VALUES.contains(race)) {
             return race;
         }
-        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACES) + "].");
+        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_VALUES) + "].");
+    }
+
+    public static String parseRaceDisplayValue(String r) {
+        String race = parseString(r);
+        if (race == null) {
+            return null;
+        }
+        race = RACES.get(race.toLowerCase());
+        if (race == null) {
+            throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_KEYS) + "].");
+        }
+        return race;
     }
 
     private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");

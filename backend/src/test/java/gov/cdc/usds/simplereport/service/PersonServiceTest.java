@@ -45,7 +45,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     @Test
     @WithSimpleReportStandardUser
-    public void roundTrip() {
+    void roundTrip() {
         _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
@@ -58,7 +58,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     @Test
     @WithSimpleReportStandardUser
-    public void deletePatient_standardUser_error() {
+    void deletePatient_standardUser_error() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
@@ -69,7 +69,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void deletePatient_adminUser_success() {
+    void deletePatient_adminUser_success() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
                 "123 Main",
                 "Apartment 3", "Hicksville", "NY",
@@ -83,7 +83,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void getPatients_noFacility_allFetchedAndSorted() {
+    void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(null);
         assertPatientList(patients, CHARLES, FRANK, BRAD, DEXTER, ELIZABETH, AMOS);
@@ -91,7 +91,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
+    void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(_site1.getInternalId());
         assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
