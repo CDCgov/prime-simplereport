@@ -4,10 +4,7 @@ import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
 
-import {
-  PATIENT_TERM,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../config/constants";
+import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PatientUpload from "./PatientUpload";
