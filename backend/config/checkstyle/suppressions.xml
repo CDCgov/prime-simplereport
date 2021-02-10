@@ -20,9 +20,6 @@
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/queue/QueueResolver.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/config/AuditingConfig.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/config/SecurityConfiguration.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/ApiUser.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/AuditedEntity.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/BaseTestInfo.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Facility.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Organization.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScoped.java" />

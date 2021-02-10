@@ -32,12 +32,12 @@ public class OktaServiceConfig {
     @Bean
     @Profile(BeanProfiles.NO_OKTA_MGMT)
     public OktaService getDummyOktaService(InitialSetupProperties setupProps, DemoUserConfiguration demoUsers) {
-        Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap = new HashMap<>();
+        Map<String,OrganizationRoleClaims> usernameRolesMap = new HashMap<>();
         for (DemoAlternateUser altUser : demoUsers.getAlternateUsers()) {
             IdentityAttributes user = altUser.getIdentity();
             String username = user.getUsername();
-            AuthorityBasedOrganizationRoles orgRoles = 
-                    new AuthorityBasedOrganizationRoles(setupProps.getOrganization().getExternalId(),
+            OrganizationRoleClaims orgRoles = 
+                    new OrganizationRoleClaims(setupProps.getOrganization().getExternalId(),
                                                         altUser.getRoles());
             usernameRolesMap.put(username, orgRoles);
         }

@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import java.util.List;
 import java.util.Optional;
 
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -24,6 +24,6 @@ public interface OktaService {
 
     public void deleteOrganization(String externalId);
 
-    public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username);
+    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username);
 
 }

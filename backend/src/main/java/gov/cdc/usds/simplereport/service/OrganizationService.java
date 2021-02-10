@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -58,9 +58,9 @@ public class OrganizationService {
     }
 
     public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-        List<AuthorityBasedOrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
+        List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
-                .map(AuthorityBasedOrganizationRoles::getOrganizationExternalId)
+                .map(OrganizationRoleClaims::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
@@ -70,7 +70,7 @@ public class OrganizationService {
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
-        AuthorityBasedOrganizationRoles foundRoles = orgRoles.stream()
+        OrganizationRoleClaims foundRoles = orgRoles.stream()
                 .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
                 .findFirst().get();
         return Optional.of(new OrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
@@ -93,7 +93,7 @@ public class OrganizationService {
 
     @AuthorizationConfiguration.RequirePermissionManageUserList
     public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
-        Optional<AuthorityBasedOrganizationRoles> authBasedOrgRoles = 
+        Optional<OrganizationRoleClaims> authBasedOrgRoles = 
                 _oktaService.getOrganizationRolesForUser(apiUser.getLoginEmail());
         return authBasedOrgRoles.map(a -> {
             return new OrganizationRoles(getOrganization(a.getOrganizationExternalId()),

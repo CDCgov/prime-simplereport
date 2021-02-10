@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -36,16 +36,16 @@ public class DemoUserConfiguration {
 
     @ConstructorBinding
     public static class DemoCurrentUser {
-        private AuthorityBasedOrganizationRoles authorization;
+        private OrganizationRoleClaims authorization;
         private IdentityAttributes identity;
 
-        public DemoCurrentUser(AuthorityBasedOrganizationRoles authorization, IdentityAttributes identity) {
+        public DemoCurrentUser(OrganizationRoleClaims authorization, IdentityAttributes identity) {
             super();
             this.authorization = authorization;
             this.identity = identity;
         }
 
-        public AuthorityBasedOrganizationRoles getAuthorization() {
+        public OrganizationRoleClaims getAuthorization() {
             return authorization;
         }
 

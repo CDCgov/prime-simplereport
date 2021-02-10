@@ -16,6 +16,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 /**
  * Base class for entities that have no user creating or modifying them, but
  * still have creation and modification times and a UUID primary key.
+ * 
+ * Since we can't use JPA auditing here, we use Hibernate
+ * {@link CreationTimestamp} and {@link UpdateTimestamp}, and feel kind of weird
+ * about it.
  */
 @MappedSuperclass
 public abstract class SystemManagedEntity {

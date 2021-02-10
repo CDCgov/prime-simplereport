@@ -23,7 +23,7 @@ public class AuthorizationServiceConfig {
     @Bean
     @Profile(BeanProfiles.SINGLE_TENANT)
     public AuthorizationService getDemoAuthorizer(DemoUserConfiguration configProps) {
-        final AuthorityBasedOrganizationRoles defaultOrg = configProps.getDefaultUser().getAuthorization();
+        final OrganizationRoleClaims defaultOrg = configProps.getDefaultUser().getAuthorization();
         return () -> Collections.singletonList(defaultOrg);
     }
 }

@@ -27,7 +27,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 /**
@@ -147,7 +147,7 @@ public class OktaServiceImpl implements OktaService {
     }
 
     // returns the external ID of the organization the specified user belongs to
-    public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username) {
+    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username) {
 
         UserList users = _client.listUsers(username, null, null, null, null);
         if (!users.iterator().hasNext()) {
@@ -177,7 +177,7 @@ public class OktaServiceImpl implements OktaService {
         }
 
         String orgExternalId = orgExternalIds.stream().collect(Collectors.toList()).get(0);
-        return Optional.of(new AuthorityBasedOrganizationRoles(orgExternalId, roles));
+        return Optional.of(new OrganizationRoleClaims(orgExternalId, roles));
     }
 
     private String generateGroupName(String externalId, OrganizationRole role) {

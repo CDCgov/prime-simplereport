@@ -26,7 +26,7 @@ import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
@@ -52,13 +52,13 @@ public abstract class BaseApiTest {
     @MockBean
     protected OktaService _oktaService;
 
-    private static final List<AuthorityBasedOrganizationRoles> USER_ORG_ROLES = 
-            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
-    private static final List<AuthorityBasedOrganizationRoles> ADMIN_ORG_ROLES = 
-            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoleClaims> ADMIN_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ADMIN)));
-    private static final List<AuthorityBasedOrganizationRoles> ENTRY_ONLY_ORG_ROLES = 
-            Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<OrganizationRoleClaims> ENTRY_ONLY_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ENTRY_ONLY)));
 
     protected void truncateDb() {
@@ -87,9 +87,9 @@ public abstract class BaseApiTest {
     }
 
     protected void setRoles(Set<OrganizationRole> roles) {
-        List<AuthorityBasedOrganizationRoles> orgRoles;
+        List<OrganizationRoleClaims> orgRoles;
         if (roles != null && !roles.isEmpty()) {
-            orgRoles = Collections.singletonList(new AuthorityBasedOrganizationRoles("DIS_ORG", roles));
+            orgRoles = Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", roles));
         } else {
             orgRoles = Collections.emptyList();
         }

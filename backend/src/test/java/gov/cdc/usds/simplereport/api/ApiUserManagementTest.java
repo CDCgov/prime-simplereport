@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.api;
 
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
@@ -16,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 
@@ -25,7 +28,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ApiUserManagementTest extends BaseApiTest {
+class ApiUserManagementTest extends BaseApiTest {
 
     private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
                                                           "rjjones@gmail.com",
@@ -33,7 +36,7 @@ public class ApiUserManagementTest extends BaseApiTest {
                                                           "janicek90@yahoo.com");
 
     @Test
-    public void whoami_standardUser_okResponses() {
+    void whoami_standardUser_okResponses() {
         ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
@@ -163,7 +166,7 @@ public class ApiUserManagementTest extends BaseApiTest {
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
-        List<ObjectNode> usersAdded = List.of(
+        List<ObjectNode> usersAdded = Arrays.asList(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                         USERNAMES.get(0), _initService.getDefaultOrganizationId()),
                 getAddUserVariables("Jared", "K", "Holler", null, 
@@ -185,8 +188,13 @@ public class ApiUserManagementTest extends BaseApiTest {
                 .thenReturn(List.of());
         
         ObjectNode resp = runQuery("users-query");
-        ArrayNode usersRetrieved = (ArrayNode) resp.get("users");
+        List<ObjectNode> usersRetrieved = toList((ArrayNode) resp.get("users"));
+        
         assertEquals(usersRetrieved.size(), usersAdded.size());
+
+        Collections.sort(usersAdded, new SortByEmail());
+        Collections.sort(usersRetrieved, new SortByEmail());
+
         for (int i = 0; i < usersRetrieved.size(); i++) {
             ObjectNode userRetrieved = (ObjectNode) usersRetrieved.get(i);
             ObjectNode userAdded = usersAdded.get(i);
@@ -229,11 +237,28 @@ public class ApiUserManagementTest extends BaseApiTest {
         runQuery("users-query", ACCESS_ERROR);
     }
 
-    private AuthorityBasedOrganizationRoles getOrgRoles(OrganizationRole role) {
+    private class SortByEmail implements Comparator<ObjectNode> 
+    { 
+        // Used for sorting by email
+        public int compare(ObjectNode userA, ObjectNode userB) 
+        { 
+            return userA.get("email").asText().compareTo(userB.get("email").asText()); 
+        } 
+    } 
+
+    private List<ObjectNode> toList(ArrayNode arr) {
+        List<ObjectNode> list = new ArrayList<>();
+        for (int i = 0; i < arr.size(); i++) {
+            list.add((ObjectNode) arr.get(i));
+        }
+        return list;
+    }
+
+    private OrganizationRoleClaims getOrgRoles(OrganizationRole role) {
         Set<OrganizationRole> roles = new HashSet<>();
         roles.add(OrganizationRole.USER);
         roles.add(role);
-        return new AuthorityBasedOrganizationRoles(_initService.getDefaultOrganizationId(),
+        return new OrganizationRoleClaims(_initService.getDefaultOrganizationId(),
                                                    roles);
     }
 

@@ -22,7 +22,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
     public static final String FACILITY_QUERY = BASE_ORG_QUERY + " and q.facility = :facility ";
     public static final String IS_PENDING = " and q.orderStatus = 'PENDING' ";
     public static final String IS_COMPLETED = " and q.orderStatus = 'COMPLETED' ";
-    public static final String HAS_EVENT = " and q.testEventId IS NOT NULL ";
     public static final String ORDER_CREATION_ORDER = " order by q.updatedAt ";
     public static final String RESULT_RECENT_ORDER = " order by updatedAt desc ";
 
@@ -46,12 +45,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
     @Modifying
     public int cancelAllPendingOrders(Organization org);
 
-    @Query(FACILITY_QUERY + IS_COMPLETED + HAS_EVENT)
-    @EntityGraph(attributePaths = "patient")
-    List<TestOrder> getTestResults(Organization org, Facility facility);
-
-    @Query( "from #{#entityName} q " +
-            " where q.organization = :org " +
-            " and q.testEventId = :testEventId")
+    @Query(BASE_ORG_QUERY + " and q.testEventId = :testEventId")
     TestOrder findByTestEventId(Organization org, UUID testEventId);
 }

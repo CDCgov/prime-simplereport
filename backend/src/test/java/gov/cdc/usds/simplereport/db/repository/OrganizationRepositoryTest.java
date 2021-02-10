@@ -11,13 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 
-public class OrganizationRepositoryTest extends BaseRepositoryTest {
+class OrganizationRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private OrganizationRepository _repo;
 
     @Test
-    public void createAndFindSomething() {
+    void createAndFindSomething() {
         Organization saved = _repo.save(new Organization("My House", "12345"));
         assertNotNull(saved);
         assertNotNull(saved.getInternalId());

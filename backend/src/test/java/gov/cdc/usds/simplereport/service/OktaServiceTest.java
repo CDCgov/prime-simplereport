@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Disabled;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +15,10 @@ import com.okta.sdk.resource.ResourceException;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
-public class OktaServiceTest extends BaseServiceTest<OktaService> {
+class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     private static final IdentityAttributes AMOS = new IdentityAttributes("aquint@gmail.com", "Amos", null, "Quint", null);
     private static final IdentityAttributes BRAD = new IdentityAttributes("bzj@msn.com", "Bradley", "Z.", "Jones", "Jr.");
@@ -50,7 +51,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     @Disabled
     @Test
-    public void createOrganizationAndUser() {
+    void createOrganizationAndUser() {
 
         _service.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
         _service.createUser(AMOS, ABC.getExternalId());
@@ -84,7 +85,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     @Disabled
     @Test
-    public void updateUser() {
+    void updateUser() {
 
         _service.createOrganization(DEF.getOrganizationName(), DEF.getExternalId());
         _service.createUser(AMOS, DEF.getExternalId());
@@ -126,13 +127,13 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
         _service.createUser(CHARLES, GHI.getExternalId());
 
         assertEquals(_service.getOrganizationRolesForUser(CHARLES.getUsername()),
-                     new AuthorityBasedOrganizationRoles(GHI.getExternalId(),
-                                                         Set.of(OrganizationRole.USER)));
+                     Optional.of(new OrganizationRoleClaims(GHI.getExternalId(),
+                                                         Set.of(OrganizationRole.USER))));
     }
 
     @Disabled
     @Test
-    public void createUser_duplicateUsernames() {
+    void createUser_duplicateUsernames() {
         _service.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
         _service.createUser(FRANK, ABC.getExternalId());
 
@@ -155,7 +156,7 @@ public class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     @Disabled
     @Test
-    public void createOrganization_duplicateExternalIds() {
+    void createOrganization_duplicateExternalIds() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
         assertThrows(ResourceException.class, () -> {
             _service.createOrganization(GHI_DUP.getOrganizationName(), GHI_DUP.getExternalId());

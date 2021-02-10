@@ -22,7 +22,7 @@ interface Props {
   className?: string;
   errorMessage?: string;
   validationStatus?: "error" | "success";
-  onChange: React.ChangeEventHandler;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
 }
 

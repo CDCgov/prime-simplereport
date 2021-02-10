@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.HashMap;
 
-import gov.cdc.usds.simplereport.config.authorization.AuthorityBasedOrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -17,13 +17,13 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  */
 public class OktaServiceEmptyImpl implements OktaService {
 
-    Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap;
+    Map<String,OrganizationRoleClaims> usernameRolesMap;
     Map<String,Map<OrganizationRole,List<String>>> orgRoleUsernamesMap;
 
-    public OktaServiceEmptyImpl(Map<String,AuthorityBasedOrganizationRoles> usernameRolesMap) {
+    public OktaServiceEmptyImpl(Map<String,OrganizationRoleClaims> usernameRolesMap) {
         this.usernameRolesMap = usernameRolesMap;
         this.orgRoleUsernamesMap = new HashMap<>();
-        for (Map.Entry<String,AuthorityBasedOrganizationRoles> entry : usernameRolesMap.entrySet()) {
+        for (Map.Entry<String,OrganizationRoleClaims> entry : usernameRolesMap.entrySet()) {
             Map<OrganizationRole,List<String>> roleUsernamesMap = 
                     orgRoleUsernamesMap.getOrDefault(entry.getValue().getOrganizationExternalId(),
                                                      new HashMap<>());
@@ -48,7 +48,7 @@ public class OktaServiceEmptyImpl implements OktaService {
 
     public void deleteOrganization(String externalId) {}
 
-    public Optional<AuthorityBasedOrganizationRoles> getOrganizationRolesForUser(String username) {
+    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username) {
         return Optional.ofNullable(usernameRolesMap.get(username));
     }
 }
