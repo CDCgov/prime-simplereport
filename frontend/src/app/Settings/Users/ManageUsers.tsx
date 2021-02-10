@@ -1,17 +1,14 @@
 import React, { useState } from "react";
-import Button from "../../commonComponents/Button";
-// import Dropdown from "../../commonComponents/Dropdown";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import ConditionalWrap from "../../commonComponents/ConditionalWrap";
-// import Checkboxes from "../../commonComponents/Checkboxes";
-import Alert from "../../commonComponents/Alert";
-import "./ManageUsers.scss";
-import { UserRole } from "../../permissions";
-import { showNotification } from "../../utils";
 import { toast } from "react-toastify";
+import Alert from "../../commonComponents/Alert";
+import Button from "../../commonComponents/Button";
+import ConditionalWrap from "../../commonComponents/ConditionalWrap";
 import InProgressModal from "./InProgressModal";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { SettingsUser } from "./ManageUsersContainer";
+import { showNotification } from "../../utils";
+import { UserRole } from "../../permissions";
+import "./ManageUsers.scss";
 
 interface RoleButton {
   value: UserRole;
@@ -34,7 +31,7 @@ const ROLES: RoleButton[] = [
 ];
 
 interface Props {
-  currentUser: any; // TODO: this is a subset of the whoami user
+  currentUser: User;
   users: SettingsUser[];
   onUpdateUser: (user: SettingsUser) => void;
 }
@@ -56,19 +53,6 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
   ); // pick the first user
   const [nextActiveUser, updateNextActiveUser] = useState<string | null>(null);
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
-
-  // const onDropdownChange = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  //   userId: string
-  // ) => {
-  //   updateUsersState({
-  //     ...usersState,
-  //     [userId]: {
-  //       ...usersState[userId],
-  //       role: e.target.value,
-  //     },
-  //   });
-  // };
 
   const changeRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -133,11 +117,11 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
           condition={activeUser === user.id}
           wrap={(children) => <div className="usa-current">{children}</div>}
         >
-          <a className="padding-left-2 padding-right-2">
+          <div className="padding-105 padding-right-2">
             <span className="sidenav-user-name">{user.name}</span>
             <br />
             <span className="sidenav-user-email">{user.email}</span>
-          </a>
+          </div>
         </ConditionalWrap>
       </li>
     );
@@ -180,14 +164,11 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
               type="button"
               onClick={() => onSaveChanges(user.id)}
               label="Save changes"
-              disabled={!currentUser.isAdmin || !usersState[user.id].isEdited}
+              disabled={
+                currentUser.roleDescription !== "Admin user" ||
+                !usersState[user.id].isEdited
+              }
             />
-            {/* <Button
-              variant="unstyled"
-              className="reset-button"
-              onClick={() => resetUser(user.id)}
-              label="Reset"
-            /> */}
           </div>
         </div>
         {showInProgressModal ? (
@@ -199,46 +180,6 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
       </React.Fragment>
     );
   };
-
-  // const userRows = Object.values(usersState).map((user: any) => {
-  //   let role = isUserEditable[user.id] ? (
-  //     <Dropdown
-  //       selectedValue={user.role}
-  //       onChange={(e) => onDropdownChange(e, user.id)}
-  //       options={[
-  //         { label: "Admin", value: "Admin" },
-  //         { label: "User", value: "User" },
-  //         { label: "Entry Only", value: "Entry Only" },
-  //       ]}
-  //     />
-  //   ) : user.isCurrentUser ? (
-  //     <div>
-  //       <span>{user.role} </span>
-  //       <span className="usa-tag">YOU</span>
-  //     </div>
-  //   ) : (
-  //     <span>{user.role}</span>
-  //   );
-
-  //   return (
-  //     <tr key={user.id}>
-  //       <td>{user.name}</td>
-  //       <td>{user.email}</td>
-  //       <td>{role}</td>
-  //       <td>
-  //         {!user.isCurrentUser ? (
-  //           <div
-  //             onClick={() => {
-  //               updateIsUserEditable({ ...isUserEditable, [user.id]: true });
-  //             }}
-  //           >
-  //             <FontAwesomeIcon icon={"edit"} />
-  //           </div>
-  //         ) : null}
-  //       </td>
-  //     </tr>
-  //   );
-  // });
 
   return (
     <div className="prime-container usa-card__container">

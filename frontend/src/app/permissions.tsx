@@ -11,6 +11,11 @@ export type UserPermission =
 
 export type UserRole = "admin" | "user" | "entry-only";
 
+export type RoleDescription =
+  | "Admin user"
+  | "Standard user"
+  | "Test-entry user";
+
 /* 
     TODO: this is a quick v0
 

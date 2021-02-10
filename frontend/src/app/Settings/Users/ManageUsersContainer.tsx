@@ -49,7 +49,6 @@ const dummyUsers = [
     role: "admin" as UserRole,
     isAdmin: true,
     email: "widow@hero.com",
-    isCurrentUser: true,
   },
 ];
 
@@ -59,7 +58,7 @@ const updateUser = (user: SettingsUser) => {
 
 const ManageUsersContainer: React.FC<any> = () => {
   const currentUser = useSelector((state) => (state as any).user as User);
-  currentUser.id = "123";
+  currentUser.id = "123"; // TODO: delete this
   //   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
   //     fetchPolicy: "no-cache",
   //   });
