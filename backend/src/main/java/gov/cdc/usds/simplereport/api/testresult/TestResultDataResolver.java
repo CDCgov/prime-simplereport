@@ -7,24 +7,16 @@ import java.time.LocalDate;
 
 import graphql.kickstart.tools.GraphQLResolver;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.service.TestOrderService;
-import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 
 @Component
 public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
-
-    @Autowired
-    private TestEventService _testEventService;
-    @Autowired
-    public TestOrderService _svc;
 
     private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
         return testEvent.getSurveyData();
