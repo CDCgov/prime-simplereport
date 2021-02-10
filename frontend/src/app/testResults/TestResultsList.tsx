@@ -17,7 +17,7 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 
-export const testResultQuery = gql`
+const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
     testResults(facilityId: $facilityId, newerThanDate: $newerThanDate) {
       internalId

@@ -25,7 +25,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ApiUserManagementTest extends BaseApiTest {
+class ApiUserManagementTest extends BaseApiTest {
 
     private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
                                                           "rjjones@gmail.com",
@@ -33,7 +33,7 @@ public class ApiUserManagementTest extends BaseApiTest {
                                                           "janicek90@yahoo.com");
 
     @Test
-    public void whoami_standardUser_okResponses() {
+    void whoami_standardUser_okResponses() {
         ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
@@ -82,7 +82,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser_adminUser_success() {
+    void createUser_adminUser_success() {
         useSuperUser();
         useOrgAdmin();
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
@@ -99,14 +99,14 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser_orgUser_failure() {
+    void createUser_orgUser_failure() {
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", variables, ACCESS_ERROR);
     }
 
     @Test
-    public void updateUser_adminUser_success() {
+    void updateUser_adminUser_success() {
         useSuperUser();
         useOrgAdmin();
 

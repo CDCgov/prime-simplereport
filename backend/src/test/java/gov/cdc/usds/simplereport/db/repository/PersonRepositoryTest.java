@@ -13,7 +13,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
-public class PersonRepositoryTest extends BaseRepositoryTest {
+class PersonRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private PersonRepository _repo;
@@ -21,7 +21,7 @@ public class PersonRepositoryTest extends BaseRepositoryTest {
     private OrganizationRepository _orgRepo;
 
     @Test
-    public void doPersonOperations() {
+    void doPersonOperations() {
         Organization org = _orgRepo.save(new Organization("Here", "there"));
         Organization other = _orgRepo.save(new Organization("There", "where?"));
 

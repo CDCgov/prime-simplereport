@@ -56,6 +56,7 @@
     "lint:prettier": "prettier -c ./src",
     "lint:write": "prettier --write ./src",
     "test": "TZ='UTC' react-scripts test",
+    "test:ci": "CI=true yarn test --coverage",
     "db": "docker-compose -f ../backend/docker-compose.yml exec db psql -U postgres simple_report",
     "e2e": "cd e2e; docker-compose build; docker-compose run nightwatch ./nightwatch-entrypoint.bash; docker-compose down -v; cd ..",
     "eject": "react-scripts eject",

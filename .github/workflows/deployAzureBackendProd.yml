@@ -2,10 +2,6 @@ name: Deploy Production Backend Azure Resources
 
 on:
   workflow_dispatch:
-    env:
-      description: 'environment to deploy'
-      default: 'prod'
-      required: true
 
 defaults:
   run:

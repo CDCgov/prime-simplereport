@@ -26,7 +26,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class TestOrderRepositoryTest extends BaseRepositoryTest {
+class TestOrderRepositoryTest extends BaseRepositoryTest {
 
     @Autowired
     private TestOrderRepository _repo;
@@ -40,7 +40,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     private TestDataFactory _dataFactory;
 
     @Test
-    public void runChanges() {
+    void runChanges() {
         Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
         Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
         Facility site = _dataFactory.createValidFacility(gtown);
@@ -52,13 +52,17 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         assertEquals(0, queue.size());
         queue = _repo.fetchQueue(gtown, site);
         assertEquals(1, queue.size());
-        doTest(order, TestResult.NEGATIVE);
+        TestEvent event = _dataFactory.doTest(order, TestResult.NEGATIVE);
+        flush();
+        TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
+        assertNotNull(lookuporder);
+        assertEquals(lookuporder.getInternalId(), order.getInternalId());
         assertEquals(0, _repo.fetchQueue(gtown, site).size());
         assertEquals(1, _repo.fetchPastResults(gtown, site).size());
     }
 
     @Test
-    public void testLifeCycle() {
+    void testLifeCycle() {
         DeviceType device = _dataFactory.getGenericDevice();
         Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
         Person hoya = _personRepo.save(new Person(gtown, "lookupId", "Joe", null, "Schmoe", null, LocalDate.now(), null,
@@ -85,7 +89,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicatesFound_error() {
+    void createOrder_duplicatesFound_error() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -101,7 +105,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicateCanceled_ok() {
+    void createOrder_duplicateCanceled_ok() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -123,7 +127,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void createOrder_duplicateSubmitted_ok() {
+    void createOrder_duplicateSubmitted_ok() {
         Organization org = _dataFactory.createValidOrg();
         Person patient0 = _dataFactory.createMinimalPerson(org);
         Facility site = _dataFactory.createValidFacility(org);
@@ -148,7 +152,7 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
     }
 
     @Test
-    public void fetchQueue_multipleEntries_sortedFifo() {
+    void fetchQueue_multipleEntries_sortedFifo() {
         Organization org = _dataFactory.createValidOrg();
         Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
         Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
@@ -163,55 +167,5 @@ public class TestOrderRepositoryTest extends BaseRepositoryTest {
         assertEquals("Charles", orders.get(0).getPatient().getFirstName());
         assertEquals("Adam", orders.get(1).getPatient().getFirstName());
         assertEquals("Bradley", orders.get(2).getPatient().getFirstName());
-    }
-
-    @Test
-    public void fetchResults_multipleEntries_sortedLifo() throws InterruptedException {
-        Organization org = _dataFactory.createValidOrg();
-        Person adam = _dataFactory.createMinimalPerson(org, null, "Adam", "A.", "Astaire", "Jr.");
-        Person brad = _dataFactory.createMinimalPerson(org, null, "Bradley", "B.", "Bones", null);
-        Person charlie = _dataFactory.createMinimalPerson(org, null, "Charles", "C.", "Crankypants", "3rd");
-        Facility facility = _dataFactory.createValidFacility(org);
-
-        TestOrder charlieOrder = _repo.save(new TestOrder(charlie, facility));
-        pause();
-        TestOrder adamOrder = _repo.save(new TestOrder(adam, facility));
-        pause();
-        TestOrder bradleyOrder = _repo.save(new TestOrder(brad, facility));
-
-        List<TestOrder> results = _repo.fetchPastResults(org, facility);
-        assertEquals(0, results.size());
-
-        doTest(bradleyOrder, TestResult.NEGATIVE);
-        pause();
-        doTest(charlieOrder, TestResult.POSITIVE);
-        pause();
-        doTest(adamOrder, TestResult.UNDETERMINED);
-
-        results = _repo.fetchPastResults(org, facility);
-        assertEquals(3, results.size());
-        assertEquals("Adam", results.get(0).getPatient().getFirstName());
-        assertEquals("Charles", results.get(1).getPatient().getFirstName());
-        assertEquals("Bradley", results.get(2).getPatient().getFirstName());
-    }
-
-    private void doTest(TestOrder order, TestResult result) {
-        order.setResult(result);
-        TestEvent event = _events.save(new TestEvent(order));
-        order.setTestEventRef(event);
-        order.markComplete();
-        _repo.save(order);
-        flush();
-        TestOrder lookuporder = _repo.findByTestEventId(order.getOrganization(), event.getInternalId());
-        assertNotNull(lookuporder);
-        assertEquals(lookuporder.getInternalId(), order.getInternalId());
-    }
-
-    private static void pause() {
-        try {
-            Thread.sleep(2);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

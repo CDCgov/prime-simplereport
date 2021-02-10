@@ -79,7 +79,7 @@ module.exports = {
       selector: '.ReactModal__Content',
       elements: {
         verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
-        noSymptoms: 'input[name="symptom_list"][value="no"]+label',
+        noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         firstTest: 'input[name="prior_test_flag"][value="yes"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',
         continueButton: '#aoe-form-save-button',

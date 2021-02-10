@@ -21,46 +21,46 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * A base entity class for things that have UUID primary key and auto-populated
- * creation/modification timestamps. 
+ * creation/modification timestamps.
  */
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
 public abstract class AuditedEntity {
 
-	@Column(updatable = false, nullable = false)
-	@Id
-	@GeneratedValue(generator = "UUID4")
-	private UUID internalId;
+    @Column(updatable = false, nullable = false)
+    @Id
+    @GeneratedValue(generator = "UUID4")
+    private UUID internalId;
 
-	@Column(updatable = false)
-	@CreatedDate
-	private Date createdAt;
+    @Column(updatable = false)
+    @CreatedDate
+    private Date createdAt;
 
-	@Column
-	@LastModifiedDate
-	private Date updatedAt;
+    @Column
+    @LastModifiedDate
+    private Date updatedAt;
 
-	@CreatedBy
-	@Immutable // not sure this is needed. Not sure it works if it is. :-(
-	@ManyToOne(optional = false)
-	@JoinColumn(name="created_by", updatable = false)
-	private ApiUser createdBy;
+    @CreatedBy
+    @Immutable // not sure this is needed. Not sure it works if it is. :-(
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "created_by", updatable = false)
+    private ApiUser createdBy;
 
-	@LastModifiedBy
-	@ManyToOne(optional = false)
-	@JoinColumn(name="updated_by")
-	private ApiUser updatedBy;
+    @LastModifiedBy
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "updated_by")
+    private ApiUser updatedBy;
 
-	public UUID getInternalId() {
-		return internalId;
-	}
+    public UUID getInternalId() {
+        return internalId;
+    }
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
+    public Date getCreatedAt() {
+        return createdAt;
+    }
 
-	public Date getUpdatedAt() {
-		return updatedAt;
-	}
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
 }

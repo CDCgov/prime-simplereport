@@ -20,7 +20,7 @@ import org.springframework.scheduling.support.CronTrigger;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 
 
-public class ScheduledTasksServiceTest {
+class ScheduledTasksServiceTest {
 
     @Test
     void scheduleUploads_oneSchedule_scheduled() {
