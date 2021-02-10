@@ -7,7 +7,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
   <h4
     className="prime-radio__title"
   >
-     SARS-CoV-2 results
+    SARS-CoV-2 results
   </h4>
   <fieldset
     className="usa-fieldset prime-radios"
@@ -112,7 +112,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
   <h4
     className="prime-radio__title"
   >
-     SARS-CoV-2 results
+    SARS-CoV-2 results
   </h4>
   <fieldset
     className="usa-fieldset prime-radios"
