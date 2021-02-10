@@ -34,7 +34,7 @@ const ADD_PATIENT = gql`
     $firstName: String!
     $middleName: String
     $lastName: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $street: String!
     $streetTwo: String
     $city: String
@@ -83,7 +83,7 @@ const UPDATE_PATIENT = gql`
     $firstName: String!
     $middleName: String
     $lastName: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $street: String!
     $streetTwo: String
     $city: String

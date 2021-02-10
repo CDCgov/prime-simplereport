@@ -10,9 +10,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -26,8 +24,7 @@ import java.util.stream.Collectors;
  */
 public class Translators {
 
-    private static DateTimeFormatter US_SLASHDATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    private static DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
     private static final int MAX_STRING_LENGTH = 500;
 
     public static final LocalDate parseUserShortDate(String d) {
@@ -40,30 +37,6 @@ public class Translators {
         } catch (DateTimeParseException e) {
             throw new IllegalGraphqlArgumentException("[" + d + "] is not a valid date.");
         }
-    }
-
-    public static final LocalDate parseUserDate(String userSuppliedDateString) {
-        if (userSuppliedDateString == null) {
-            return null;
-        }
-        if (userSuppliedDateString.contains("/")) {
-            return LocalDate.parse(userSuppliedDateString, US_SLASHDATE_FORMATTER);
-        } else {
-            return LocalDate.parse(userSuppliedDateString); // ISO_LOCAL_DATE is the default
-        }
-    }
-
-    public static final Date parseUserDateTime(String userSuppliedIsoDateString) {
-        if (userSuppliedIsoDateString == null) {
-            return null;
-        }
-        Instant isoDateInstant;
-        try {
-            isoDateInstant = Instant.parse(userSuppliedIsoDateString);
-        } catch (DateTimeParseException parseException) {
-            throw new IllegalGraphqlArgumentException("[" + userSuppliedIsoDateString + "] is not a valid date.");
-        }
-        return Date.from(isoDateInstant);
     }
 
     public static String parsePhoneNumber(String userSuppliedPhoneNumber) {
