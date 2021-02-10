@@ -123,7 +123,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Test
+                  Conduct Tests
                 </NavLink>
               </li>
             ) : null}
@@ -215,7 +215,7 @@ const Header: React.FC<{}> = () => {
                     color: "white",
                   }}
                 >
-                  Conduct Test
+                  Conduct Tests
                 </NavLink>
               </li>
             ) : null}

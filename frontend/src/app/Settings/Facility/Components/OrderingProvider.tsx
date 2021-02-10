@@ -17,13 +17,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
-        <h2> Ordering Provider </h2>
+        <h2>Ordering provider</h2>
       </div>
       <div className="usa-card__body">
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label="First Name"
+              label="First name"
               name="firstName"
               value={provider.firstName}
               onChange={onChange}
@@ -32,7 +32,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label="Middle Name"
+              label="Middle name"
               name="middleName"
               value={provider.middleName}
               onChange={onChange}
@@ -40,7 +40,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label="Last Name"
+              label="Last name"
               name="lastName"
               value={provider.lastName}
               onChange={onChange}
@@ -68,7 +68,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label="Phone Number"
+              label="Phone number"
               name="phone"
               value={provider.phone}
               onChange={onChange}
@@ -79,7 +79,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label="Street 1"
+              label="Street address 1"
               name="street"
               value={provider.street}
               onChange={onChange}
@@ -89,7 +89,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
             <TextInput
-              label="Street 2"
+              label="Street address 2"
               name="streetTwo"
               value={provider.streetTwo}
               onChange={onChange}
@@ -115,7 +115,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label="Zip Code"
+              label="Zip code"
               name="zipCode"
               value={provider.zipCode}
               onChange={onChange}

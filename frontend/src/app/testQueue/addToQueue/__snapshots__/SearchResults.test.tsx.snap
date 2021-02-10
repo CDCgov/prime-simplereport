@@ -2,7 +2,7 @@
 
 exports[`SearchResults should say 'No Results' for no matches 1`] = `
 <h3>
-   No results 
+  No results
 </h3>
 `;
 
@@ -26,7 +26,7 @@ exports[`SearchResults should show matching results 1`] = `
           <th
             scope="col"
           >
-            Date of Birth
+            Date of birth
           </th>
           <th
             scope="col"
@@ -53,7 +53,7 @@ exports[`SearchResults should show matching results 1`] = `
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>
@@ -69,7 +69,7 @@ exports[`SearchResults should show matching results 1`] = `
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>
@@ -85,7 +85,7 @@ exports[`SearchResults should show matching results 1`] = `
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>

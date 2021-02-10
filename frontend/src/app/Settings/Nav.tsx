@@ -25,7 +25,7 @@ const SettingsNav = () => {
             onClick={() => 4}
             activeClassName="active"
           >
-            Manage facilities
+            Manage Facilities
           </NavLink>
         </li>
       </ul>
