@@ -10,7 +10,7 @@ function conductTest(patientName) {
   this.section.searchResults.expect.element('@beginTest').to.be.visible;
   this.section.searchResults.expect
     .element('@beginTest')
-    .to.contain.text('Begin Test');
+    .to.contain.text('Begin test');
   this.section.searchResults.click('@beginTest');
   this.expect.section('@modal').to.be.visible;
   this.expect
