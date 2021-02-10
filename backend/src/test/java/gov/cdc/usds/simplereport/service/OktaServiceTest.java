@@ -122,7 +122,7 @@ class OktaServiceTest extends BaseServiceTest<OktaService> {
 
     @Disabled
     @Test
-    public void getOrganizationRolesForUser() {
+    void getOrganizationRolesForUser() {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
         _service.createUser(CHARLES, GHI.getExternalId());
 

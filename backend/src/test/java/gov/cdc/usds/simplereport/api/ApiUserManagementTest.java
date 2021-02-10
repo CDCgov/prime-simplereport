@@ -85,7 +85,7 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser_adminUser_success() {
+    void createUser_adminUser_success() {
         useSuperUser();
         useOrgAdmin();
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
@@ -102,14 +102,14 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser_orgUser_failure() {
+    void createUser_orgUser_failure() {
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", variables, ACCESS_ERROR);
     }
 
     @Test
-    public void updateUser_adminUser_success() {
+    void updateUser_adminUser_success() {
         useSuperUser();
         useOrgAdmin();
 
@@ -133,7 +133,7 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateUser_orgUser_failure() {
+    void updateUser_orgUser_failure() {
         useSuperUser();
         useOrgAdmin();
 
@@ -155,7 +155,7 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void getUsers_adminUser_success() {
+    void getUsers_adminUser_success() {
         useSuperUser();
         useOrgAdmin();
 
@@ -210,7 +210,7 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void getUsers_orgUser_failure() {
+    void getUsers_orgUser_failure() {
         useSuperUser();
         useOrgAdmin();
 
