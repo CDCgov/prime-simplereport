@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.api.model.TestDescription;
 
 @Component
 public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
@@ -73,6 +74,10 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
 
     public Date getDateTested(TestEvent testEvent) {
         return testEvent.getDateTested();
+    }
+
+    public TestDescription getTestPerformed(TestEvent event) {
+        return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
     }
 
     public String getCorrectionStatus(TestEvent testEvent) { return testEvent.getCorrectionStatus().toString(); }

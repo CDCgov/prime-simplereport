@@ -29,6 +29,11 @@ enum TestCorrectionStatus {
   REMOVED
 }
 
+type TestDescription {
+  name: String!
+  loincCode: String!
+}
+
 type DeviceType {
   internalId: ID
   name: String
@@ -142,6 +147,7 @@ type TestResult {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
 }

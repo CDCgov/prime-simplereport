@@ -14,5 +14,8 @@ query GetFacilityResults($facilityId: String!) {
       lastName
       lookupId
     }
+    testPerformed {
+      name
+    }
   }
 }
