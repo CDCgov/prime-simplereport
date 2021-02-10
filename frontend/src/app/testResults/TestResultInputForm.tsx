@@ -39,7 +39,7 @@ const TestResultInputForm: React.FC<Props> = ({
 
   return (
     <form className="usa-form">
-      <h4 className="prime-radio__title"> SARS-CoV-2 Results </h4>
+      <h4 className="prime-radio__title"> SARS-CoV-2 results </h4>
       <React.Fragment>
         <RadioGroup
           legend="Test result"

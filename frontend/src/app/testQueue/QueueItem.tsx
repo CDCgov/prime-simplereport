@@ -151,7 +151,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     </p>
     <div className="prime-modal-buttons">
       <Button onClick={cancelHandler} variant="unstyled" label="No, go back" />
-      <Button onClick={continueHandler} label="Submit Anyway" />
+      <Button onClick={continueHandler} label="Submit anyway" />
     </div>
   </Modal>
 );
