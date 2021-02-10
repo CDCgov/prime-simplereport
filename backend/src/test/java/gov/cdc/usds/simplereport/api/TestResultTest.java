@@ -45,10 +45,15 @@ class TestResultTest extends BaseApiTest {
   
         ObjectNode variables = getFacilityScopedArguments();
         ArrayNode testResults = fetchTestResults(variables);
+        assertEquals(3, testResults.size());
+        assertEquals("SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+                testResults.get(0).get("testPerformed").get("name").asText());
 
+        variables.put("nameType", "short");
+        testResults = fetchTestResults(variables);
         assertEquals(3, testResults.size());
         assertEquals("SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
-                testResults.get(0).get("testPerformed").get("name"));
+                testResults.get(0).get("testPerformed").get("name").asText());
     }
 
     private ObjectNode getFacilityScopedArguments() {

@@ -2,6 +2,8 @@ package gov.cdc.usds.simplereport.api.model;
 
 import java.util.Map;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+
 public class TestDescription {
 
     private static TestDescription DEFAULT_TEST = new TestDescription("Unknown", "Unknown", "Unknown", "Unknown",
@@ -47,8 +49,19 @@ public class TestDescription {
         return loincCode;
     }
 
-    public String getName() {
-        return shortName;
+    public String getName(String nameType) {
+        switch(nameType) {
+            case "short":
+                return shortName;
+            case "long":
+                return longName;
+            case "display":
+                return displayName;
+            case "consumer":
+                return consumerName;
+            default:
+                throw new IllegalGraphqlArgumentException("Name type not recognized");
+        }
     }
 
     public String getLongName() {

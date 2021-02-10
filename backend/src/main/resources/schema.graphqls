@@ -30,7 +30,7 @@ enum TestCorrectionStatus {
 }
 
 type TestDescription {
-  name: String!
+  name(nameType: String = "long"): String!
   loincCode: String!
 }
 
