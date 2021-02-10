@@ -24,15 +24,15 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
                 className="usa-button usa-button--inverse"
                 to="/settings/add-facility/"
               >
-                + New Facility
+                + New facility
               </NavLink>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">Facility Name</th>
-                    <th scope="col">CLIA Number</th>
+                    <th scope="col">Facility name</th>
+                    <th scope="col">CLIA number</th>
                   </tr>
                 </thead>
                 <tbody>
