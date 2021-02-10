@@ -140,7 +140,7 @@ export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP} Name</th>
+                    <th scope="col">{PATIENT_TERM_CAP}</th>
                     <th scope="col">Unique ID</th>
                     <th scope="col">Test date</th>
                     <th scope="col">Result</th>

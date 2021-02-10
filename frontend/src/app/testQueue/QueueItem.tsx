@@ -502,7 +502,7 @@ const QueueItem: any = ({
                   <li className="prime-li">
                     <LabeledText
                       text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                      label="Date of Birth"
+                      label="Date of birth"
                     />
                   </li>
                   <li className="prime-li">

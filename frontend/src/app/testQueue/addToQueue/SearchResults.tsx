@@ -36,7 +36,7 @@ const SearchResults = ({
             <thead>
               <tr>
                 <th scope="col">Full name</th>
-                <th scope="col">Date of Birth</th>
+                <th scope="col">Date of birth</th>
                 <th scope="col">Unique ID</th>
                 <th scope="col">Actions</th>
               </tr>

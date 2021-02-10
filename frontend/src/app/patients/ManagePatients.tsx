@@ -5,7 +5,7 @@ import moment from "moment";
 import { displayFullName } from "../utils";
 
 import {
-  PATIENT_TERM_CAP,
+  PATIENT_TERM,
   PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 import { daysSince } from "../utils/date";
@@ -96,7 +96,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
+              <h2>{PATIENT_TERM_PLURAL_CAP}</h2>
               {canEditUser ? (
                 <NavLink
                   className="usa-button usa-button--outline"
@@ -104,7 +104,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   id="add-patient-button"
                 >
                   <FontAwesomeIcon icon="plus" />
-                  {` Add ${PATIENT_TERM_CAP}`}
+                  {` Add ${PATIENT_TERM}`}
                 </NavLink>
               ) : null}
             </div>
@@ -119,7 +119,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                     <tr>
                       <th scope="col">Name</th>
                       <th scope="col">Unique ID</th>
-                      <th scope="col">Date of Birth</th>
+                      <th scope="col">Date of birth</th>
                       <th scope="col">Days since last test</th>
                     </tr>
                   </thead>
