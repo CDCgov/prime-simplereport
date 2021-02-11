@@ -140,7 +140,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     facilityId: string
   ) => {
-    let newFacilityId = e.target.value;
+    // let newFacilityId = e.target.value;
   };
 
   const userFacilitiesSettings = (user: SettingsUser) => {
