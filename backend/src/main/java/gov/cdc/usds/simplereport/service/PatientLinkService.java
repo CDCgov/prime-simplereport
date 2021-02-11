@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.api.exceptions.IncorrectBirthDateException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -45,13 +46,13 @@ public class PatientLinkService {
         }
     }
 
-    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws Exception {
+    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws IncorrectBirthDateException {
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
         if (patient.getBirthDate().equals(birthDate)) {
             return patient;
         } else {
-            throw new Exception("Incorrect birth date");
+            throw new IncorrectBirthDateException("Incorrect birth date provided");
         }
     }
 
