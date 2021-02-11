@@ -39,11 +39,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Unique ID
-                  </th>
-                  <th
-                    scope="col"
-                  >
                     Date of Test
                   </th>
                   <th
@@ -73,7 +68,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Davis Melvin
                   </th>
-                  <td />
                   <td>
                     Jan 12, 2021 5:56 PM
                   </td>
@@ -125,7 +119,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Cheez Whizzz
                   </th>
-                  <td />
                   <td>
                     Jan 4, 2021 12:00 AM
                   </td>

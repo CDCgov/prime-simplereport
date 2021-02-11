@@ -180,7 +180,6 @@ interface QueueItemProps {
     firstName: string;
     middleName: string;
     lastName: string;
-    lookupId: string;
     telephone: string;
     birthDate: string;
   };
@@ -490,9 +489,6 @@ const QueueItem: any = ({
             <div className="usa-card__body">
               <div className="grid-row">
                 <ul className="prime-ul">
-                  <li className="prime-li">
-                    <LabeledText text={patient.lookupId} label="Unique ID" />
-                  </li>
                   <li className="prime-li">
                     <LabeledText
                       text={patient.telephone}
