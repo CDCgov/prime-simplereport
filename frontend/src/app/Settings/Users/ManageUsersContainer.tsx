@@ -26,6 +26,7 @@ export interface SettingsUser {
   email: string;
   isAdmin: boolean;
   isEdited?: boolean;
+  facilities?: any[]; // TODO: update this when the graphql query is defined. Should just be the facility id and name.
 }
 
 const dummyUsers = [

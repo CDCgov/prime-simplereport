@@ -5,6 +5,7 @@ import Button from "../../commonComponents/Button";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
 import InProgressModal from "./InProgressModal";
 import RadioGroup from "../../commonComponents/RadioGroup";
+import Dropdown from "../../commonComponents/Dropdown";
 import { SettingsUser } from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
 import { UserRole } from "../../permissions";
@@ -134,7 +135,44 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
     });
   };
 
-  const userDetail = (user: SettingsUser, currentUser: any) => {
+  // TODO: this operates similarly to adding devices in the facility settings
+  const onFacilityChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    facilityId: string
+  ) => {
+    let newFacilityId = e.target.value;
+  };
+
+  const userFacilitiesSettings = (user: SettingsUser) => {
+    // TODO: get this from usersState
+    const facilities: any[] = [
+      { id: "abc", name: "Mountainside Nursing" },
+      { id: "def", name: "HillsideNursing" },
+      { id: "hij", name: "Lakeside Nursing" },
+    ];
+
+    let facilityOptions = facilities.map((facility: any) => ({
+      label: facility.name,
+      value: facility.id,
+    }));
+
+    let facilityDropdowns = facilities.map((facility) => (
+      <Dropdown
+        selectedValue={facility.id}
+        onChange={(e) => onFacilityChange(e, facility.id)}
+        disabled={user.role === "admin"} // current users have access to all facilities
+        options={facilityOptions}
+      />
+    ));
+    return (
+      <React.Fragment>
+        <h3> Facility Access </h3>
+        {facilityDropdowns}
+      </React.Fragment>
+    );
+  };
+
+  const userRoleSettings = (user: SettingsUser, currentUser: any) => {
     return (
       <React.Fragment>
         <div className="user-header">
@@ -193,7 +231,10 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
             <ul className="usa-sidenav">{sideNavItems}</ul>
           </div>
           <div className="tablet:grid-col">
-            {userDetail(usersState[activeUser], currentUser)}
+            {userRoleSettings(usersState[activeUser], currentUser)}
+            {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED
+              ? userFacilitiesSettings(usersState[activeUser])
+              : null}
           </div>
         </div>
       </div>
