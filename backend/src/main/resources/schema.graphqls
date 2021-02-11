@@ -403,13 +403,13 @@ type Mutation {
   ): String
   patientLinkUpdatePatient(
     internalId: String!
-    oldBirthDate: String!
+    oldBirthDate: LocalDate!
     lookupId: String
     firstName: String!
     middleName: String
     lastName: String!
     suffix: String
-    newBirthDate: String!
+    newBirthDate: LocalDate!
     street: String!
     streetTwo: String
     city: String

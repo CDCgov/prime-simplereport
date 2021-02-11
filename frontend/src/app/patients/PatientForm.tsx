@@ -130,12 +130,12 @@ const UPDATE_PATIENT = gql`
 const PXP_UPDATE_PATIENT = gql`
   mutation PatientLinkUpdatePatient(
     $internalId: String!
-    $oldBirthDate: String!
+    $oldBirthDate: LocalDate!
     $lookupId: String
     $firstName: String!
     $middleName: String
     $lastName: String!
-    $newBirthDate: String!
+    $newBirthDate: LocalDate!
     $street: String!
     $streetTwo: String
     $city: String
