@@ -116,16 +116,15 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     if (data && data.patients) {
       let formattedQueryString = queryString.toLowerCase();
       let searchResults = data.patients.filter((patient) => {
-        let doesMatchPatientName =
+        return (
           displayFullName(
             patient.firstName,
             patient.middleName,
             patient.lastName
           )
             .toLowerCase()
-            .indexOf(formattedQueryString) > -1;
-
-        return doesMatchPatientName;
+            .indexOf(formattedQueryString) > -1
+        );
       });
       return searchResults;
     }
