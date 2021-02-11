@@ -11,10 +11,9 @@ resource "azurerm_app_service" "metabase" {
   }
 
   app_settings = {
-    "MB_DB_CONNECTION_URI"   = var.postgres_url
-    "WEBSITE_VNET_ROUTE_ALL" = 1
-    "WEBSITE_DNS_SERVER"     = "168.63.129.16"
-    //    "WEBSITES_PORT"                  = "3000"
+    "MB_DB_CONNECTION_URI"           = var.postgres_url
+    "WEBSITE_VNET_ROUTE_ALL"         = 1
+    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
     "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
   }
 
