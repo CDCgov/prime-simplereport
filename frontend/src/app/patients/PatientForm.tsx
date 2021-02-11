@@ -1,33 +1,33 @@
-import React, { useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { gql, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from '@microsoft/applicationinsights-react-js';
-import moment from 'moment';
-import { Prompt } from 'react-router-dom';
-import { Redirect } from 'react-router';
+} from "@microsoft/applicationinsights-react-js";
+import moment from "moment";
+import { Prompt } from "react-router-dom";
+import { Redirect } from "react-router";
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
   stateCodes,
-} from '../../config/constants';
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from '../constants';
+} from "../../config/constants";
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
 
-import Breadcrumbs from '../commonComponents/Breadcrumbs';
-import TextInput from '../commonComponents/TextInput';
-import RadioGroup from '../commonComponents/RadioGroup';
-import RequiredMessage from '../commonComponents/RequiredMessage';
-import Dropdown from '../commonComponents/Dropdown';
-import { displayFullName, showError, showNotification } from '../utils';
-import './EditPatient.scss';
-import Alert from '../commonComponents/Alert';
-import FormGroup from '../commonComponents/FormGroup';
-import Button from '../../app/commonComponents/Button';
-import { useDispatch, useSelector } from 'react-redux';
-import classnames from 'classnames';
-import { setPatient as reduxSetPatient } from '../../app/store';
+import Breadcrumbs from "../commonComponents/Breadcrumbs";
+import TextInput from "../commonComponents/TextInput";
+import RadioGroup from "../commonComponents/RadioGroup";
+import RequiredMessage from "../commonComponents/RequiredMessage";
+import Dropdown from "../commonComponents/Dropdown";
+import { displayFullName, showError, showNotification } from "../utils";
+import "./EditPatient.scss";
+import Alert from "../commonComponents/Alert";
+import FormGroup from "../commonComponents/FormGroup";
+import Button from "../../app/commonComponents/Button";
+import { useDispatch, useSelector } from "react-redux";
+import classnames from "classnames";
+import { setPatient as reduxSetPatient } from "../../app/store";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -208,8 +208,8 @@ interface Props {
 
 const PatientForm = (props: Props) => {
   const appInsights = useAppInsightsContext();
-  const trackAddPatient = useTrackEvent(appInsights, 'Add Patient', {});
-  const trackUpdatePatient = useTrackEvent(appInsights, 'Update Patient', {});
+  const trackAddPatient = useTrackEvent(appInsights, "Add Patient", {});
+  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient", {});
 
   const dispatch = useDispatch();
 
@@ -223,7 +223,7 @@ const PatientForm = (props: Props) => {
   const plid = useSelector((state) => (state as any).plid as String);
   const patientInStore = useSelector((state) => (state as any).patient as any);
 
-  const allFacilities = '~~ALL-FACILITIES~~';
+  const allFacilities = "~~ALL-FACILITIES~~";
   const [currentFacilityId, setCurrentFacilityId] = useState(
     patient.facility === null ? allFacilities : patient.facility?.id
   );
@@ -234,14 +234,14 @@ const PatientForm = (props: Props) => {
     label: f.name,
     value: f.id,
   }));
-  facilityList.unshift({ label: 'All facilities', value: allFacilities });
-  facilityList.unshift({ label: '-Select-', value: '' });
+  facilityList.unshift({ label: "All facilities", value: allFacilities });
+  facilityList.unshift({ label: "-Select-", value: "" });
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     let value: string | null = e.target.value;
-    if (e.target.type === 'checkbox') {
+    if (e.target.type === "checkbox") {
       value = {
         ...patient[e.target.name],
         [e.target.value]: (e.target as any).checked,
@@ -280,8 +280,8 @@ const PatientForm = (props: Props) => {
       race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
-      residentCongregateSetting: patient.residentCongregateSetting === 'YES',
-      employedInHealthcare: patient.employedInHealthcare === 'YES',
+      residentCongregateSetting: patient.residentCongregateSetting === "YES",
+      employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.isPxpView) {
       // TODO: not this
@@ -308,11 +308,11 @@ const PatientForm = (props: Props) => {
           );
           const updatedPatientFromApi = res.data.patientLinkUpdatePatient;
           const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-            ? 'YES'
-            : 'NO';
+            ? "YES"
+            : "NO";
           const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-            ? 'YES'
-            : 'NO';
+            ? "YES"
+            : "NO";
 
           dispatch(
             reduxSetPatient({
@@ -328,7 +328,7 @@ const PatientForm = (props: Props) => {
           showError(
             toast,
             `${PATIENT_TERM_CAP} Data Error`,
-            'Please check for missing data or typos.'
+            "Please check for missing data or typos."
           );
         }
       );
@@ -356,7 +356,7 @@ const PatientForm = (props: Props) => {
           showError(
             toast,
             `${PATIENT_TERM_CAP} Data Error`,
-            'Please check for missing data or typos.'
+            "Please check for missing data or typos."
           );
         }
       );
@@ -379,7 +379,7 @@ const PatientForm = (props: Props) => {
           showError(
             toast,
             `${PATIENT_TERM_CAP} Data Error`,
-            'Please check for missing data or typos.'
+            "Please check for missing data or typos."
           );
         }
       );
@@ -395,7 +395,7 @@ const PatientForm = (props: Props) => {
           <Redirect
             push
             to={{
-              pathname: '/patient-info-confirm',
+              pathname: "/patient-info-confirm",
             }}
           />
         );
@@ -407,19 +407,19 @@ const PatientForm = (props: Props) => {
   return (
     <main
       className={classnames(
-        'prime-edit-patient prime-home',
-        props.isPxpView && 'padding-top-0'
+        "prime-edit-patient prime-home",
+        props.isPxpView && "padding-top-0"
       )}
     >
       <div
         className={classnames(
-          !props.isPxpView && 'grid-container margin-bottom-4'
+          !props.isPxpView && "grid-container margin-bottom-4"
         )}
       >
         <Prompt
           when={formChanged}
           message={(location) =>
-            '\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.'
+            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
           }
         />
         {!props.isPxpView && (
@@ -431,7 +431,7 @@ const PatientForm = (props: Props) => {
                   text: PATIENT_TERM_PLURAL_CAP,
                 },
                 {
-                  link: '',
+                  link: "",
                   text: !props.patientId
                     ? `Add New ${PATIENT_TERM_CAP}`
                     : fullName,
@@ -491,11 +491,11 @@ const PatientForm = (props: Props) => {
               selectedValue={patient.role}
               onChange={onChange}
               options={[
-                { label: '-Select-', value: '' },
-                { label: 'Staff', value: 'STAFF' },
-                { label: 'Resident', value: 'RESIDENT' },
-                { label: 'Student', value: 'STUDENT' },
-                { label: 'Visitor', value: 'VISITOR' },
+                { label: "-Select-", value: "" },
+                { label: "Staff", value: "STAFF" },
+                { label: "Resident", value: "RESIDENT" },
+                { label: "Student", value: "STUDENT" },
+                { label: "Visitor", value: "VISITOR" },
               ]}
             />
             {!props.isPxpView && (
@@ -627,8 +627,8 @@ const PatientForm = (props: Props) => {
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
             buttons={[
-              { label: 'Yes', value: 'YES' },
-              { label: 'No', value: 'NO' },
+              { label: "Yes", value: "YES" },
+              { label: "No", value: "NO" },
             ]}
             selectedRadio={patient.residentCongregateSetting}
             onChange={onChange}
@@ -638,8 +638,8 @@ const PatientForm = (props: Props) => {
             legend="Work in Healthcare?"
             name="employedInHealthcare"
             buttons={[
-              { label: 'Yes', value: 'YES' },
-              { label: 'No', value: 'NO' },
+              { label: "Yes", value: "YES" },
+              { label: "No", value: "NO" },
             ]}
             selectedRadio={patient.employedInHealthcare}
             onChange={onChange}
@@ -659,7 +659,7 @@ const PatientForm = (props: Props) => {
                 <tbody>
                   {patient.testResults.map((r: any, i: number) => (
                     <tr key={i}>
-                      <td>{moment(r.dateTested).format('lll')}</td>
+                      <td>{moment(r.dateTested).format("lll")}</td>
                       <td>{r.result}</td>
                     </tr>
                   ))}
@@ -670,16 +670,16 @@ const PatientForm = (props: Props) => {
         )}
         <div className="mobile-lg:display-flex flex-justify-end margin-top-2 prime-edit-patient-heading">
           <Button
-            className={'prime-save-patient-changes'}
+            className={"prime-save-patient-changes"}
             disabled={!formChanged}
             onClick={savePatientData}
-            label={props.isPxpView ? 'Save and continue' : 'Save changes'}
+            label={props.isPxpView ? "Save and continue" : "Save changes"}
           />
           {props.isPxpView && (
             <Button
               className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
               variant="outline"
-              label={'Back'}
+              label={"Back"}
               onClick={props.backCallback}
             />
           )}

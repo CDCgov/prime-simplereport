@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router';
-import { useHistory } from 'react-router-dom';
-import AoEForm from '../../app/testQueue/AoEForm/AoEForm';
-import StepIndicator from '../../app/commonComponents/StepIndicator';
-import PatientProfile from './PatientProfile';
-import { connect, useSelector } from 'react-redux';
-import { gql, useMutation } from '@apollo/client';
+import React, { useState } from "react";
+import { Redirect } from "react-router";
+import { useHistory } from "react-router-dom";
+import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
+import StepIndicator from "../../app/commonComponents/StepIndicator";
+import PatientProfile from "./PatientProfile";
+import { connect, useSelector } from "react-redux";
+import { gql, useMutation } from "@apollo/client";
 
-import { getPatientLinkIdFromUrl } from '../../app/utils/url';
-import PatientTimeOfTestContainer from '../PatientTimeOfTestContainer';
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
+import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
 const PATIENT_LINK_SUBMIT_MUTATION = gql`
   mutation PatientLinkById(
@@ -52,23 +52,23 @@ const AoEPatientFormContainer = ({ page }: Props) => {
   const history = useHistory();
 
   const residentCongregateSetting = patient.residentCongregateSetting
-    ? 'YES'
-    : 'NO';
+    ? "YES"
+    : "NO";
 
-  const employedInHealthcare = patient.employedInHealthcare ? 'YES' : 'NO';
+  const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
   const steps = [
     {
-      label: 'Profile information',
-      value: 'profile',
+      label: "Profile information",
+      value: "profile",
       order: 0,
-      isCurrent: page === 'profile',
+      isCurrent: page === "profile",
     },
     {
-      label: 'Symptoms and history',
-      value: 'symptoms',
+      label: "Symptoms and history",
+      value: "symptoms",
       order: 1,
-      isCurrent: page === 'symptoms',
+      isCurrent: page === "symptoms",
     },
   ];
 
@@ -85,7 +85,7 @@ const AoEPatientFormContainer = ({ page }: Props) => {
   };
 
   history.listen((loc, action) => {
-    if (action === 'POP') {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });
@@ -95,14 +95,14 @@ const AoEPatientFormContainer = ({ page }: Props) => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-confirm',
+          pathname: "/patient-info-confirm",
         }}
       />
     );
   }
 
   return (
-    <PatientTimeOfTestContainer currentPage={'symptoms'}>
+    <PatientTimeOfTestContainer currentPage={"symptoms"}>
       <AoEForm
         patient={patient}
         isModal={false}
