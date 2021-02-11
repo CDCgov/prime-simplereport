@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,26 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
     @BeforeEach
     void setupData() {
         initSampleData();
+    }
+
+    @Test
+    void testRowWithValue() {
+        String value = this._service.getRow(Map.of("key1","value1"), "key1", true);
+        assertEquals("value1", value);
+    }
+
+    @Test
+    void testRowWithEmptyValue() {
+        String value = this._service.getRow(Map.of("key1",""), "key1", false);
+        assertEquals("", value);
+    }
+
+    @Test
+    void testRowWithEmptyValueRequired() {
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () -> this._service.getRow(Map.of("key1",""), "key1", true)
+        );
     }
 
     @Test
