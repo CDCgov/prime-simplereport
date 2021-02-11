@@ -6,6 +6,7 @@ import { displayFullName } from "../../utils";
 interface SearchResultsProps {
   patients: any[]; //TODO TYPE: Patient
   onAddToQueue: (a: any, b: any, c: string) => string; //TODO TYPE: Patient, answers
+  facilityId: string;
   patientsInQueue: string[];
   shouldShowSuggestions: boolean;
 }
@@ -13,6 +14,7 @@ interface SearchResultsProps {
 const SearchResults = ({
   patients,
   onAddToQueue,
+  facilityId,
   patientsInQueue,
   shouldShowSuggestions,
 }: SearchResultsProps) => {
