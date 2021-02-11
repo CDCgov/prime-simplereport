@@ -1,15 +1,15 @@
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect, RouteComponentProps } from "react-router-dom";
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
 import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
 
-interface Props {
-  match: any;
+interface Params {
+  facilityId: string;
 }
 
-const Settings: React.FC<Props> = ({ match }) => {
+const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -21,13 +21,13 @@ const Settings: React.FC<Props> = ({ match }) => {
         />
         <Route
           path={match.url + "/facility/:facilityId"}
-          render={({ match }) => (
+          render={({ match }: RouteComponentProps<Params>) => (
             <FacilityFormContainer facilityId={match.params.facilityId} />
           )}
         />
         <Route
           path={match.url + "/add-facility/"}
-          render={({ match }) => (
+          render={({ match }: RouteComponentProps<Params>) => (
             <FacilityFormContainer facilityId={match.params.facilityId} />
           )}
         />
