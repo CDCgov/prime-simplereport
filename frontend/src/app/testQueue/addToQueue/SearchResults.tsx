@@ -6,7 +6,6 @@ import { displayFullName } from "../../utils";
 interface SearchResultsProps {
   patients: any[]; //TODO TYPE: Patient
   onAddToQueue: (a: any, b: any, c: string) => string; //TODO TYPE: Patient, answers
-  facilityId: string;
   patientsInQueue: string[];
   shouldShowSuggestions: boolean;
 }
@@ -14,7 +13,6 @@ interface SearchResultsProps {
 const SearchResults = ({
   patients,
   onAddToQueue,
-  facilityId,
   patientsInQueue,
   shouldShowSuggestions,
 }: SearchResultsProps) => {
@@ -37,7 +35,6 @@ const SearchResults = ({
               <tr>
                 <th scope="col">Full name</th>
                 <th scope="col">Date of birth</th>
-                <th scope="col">Unique ID</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -48,7 +45,6 @@ const SearchResults = ({
                     {displayFullName(p.firstName, p.middleName, p.lastName)}
                   </td>
                   <td>{p.birthDate}</td>
-                  <td>{p.lookupId}</td>
                   <td>
                     {canAddToTestQueue(p.internalId) ? (
                       <Button

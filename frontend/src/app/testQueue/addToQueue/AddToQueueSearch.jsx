@@ -215,7 +215,6 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       <SearchResults
         patients={suggestions}
         onAddToQueue={onAddToQueue}
-        facilityId={facilityId}
         patientsInQueue={patientsInQueue}
         shouldShowSuggestions={shouldShowSuggestions}
       />

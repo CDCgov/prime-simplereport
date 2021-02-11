@@ -321,12 +321,6 @@ const PatientForm = (props: Props) => {
           />
         </div>
         <div className="prime-form-line">
-          <TextInput
-            label="Lookup ID (optional)"
-            name="lookupId"
-            value={patient.lookupId}
-            onChange={onChange}
-          />
           <Dropdown
             label="Role (optional)"
             name="role"
