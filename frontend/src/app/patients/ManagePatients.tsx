@@ -16,7 +16,6 @@ const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
-      lookupId
       firstName
       lastName
       middleName
@@ -30,7 +29,6 @@ const patientQuery = gql`
 
 interface Patient {
   internalId: string;
-  lookupId: string;
   firstName: string;
   lastName: string;
   middleName: string;

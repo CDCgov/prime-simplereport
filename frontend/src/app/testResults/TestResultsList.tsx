@@ -33,7 +33,6 @@ const testResultQuery = gql`
         firstName
         middleName
         lastName
-        lookupId
       }
     }
   }

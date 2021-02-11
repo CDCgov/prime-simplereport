@@ -19,7 +19,6 @@ const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
-      lookupId
       firstName
       lastName
       middleName
@@ -126,10 +125,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
             .toLowerCase()
             .indexOf(formattedQueryString) > -1;
 
-        let doesMatchLookupId = patient.lookupId
-          ? patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
-          : false;
-        return doesMatchPatientName || doesMatchLookupId;
+        return doesMatchPatientName;
       });
       return searchResults;
     }

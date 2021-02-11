@@ -180,7 +180,6 @@ interface QueueItemProps {
     firstName: string;
     middleName: string;
     lastName: string;
-    lookupId: string;
     telephone: string;
     birthDate: string;
   };

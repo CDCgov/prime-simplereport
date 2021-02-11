@@ -30,7 +30,6 @@ import { useSelector } from "react-redux";
 const ADD_PATIENT = gql`
   mutation AddPatient(
     $facilityId: String
-    $lookupId: String
     $firstName: String!
     $middleName: String
     $lastName: String!
@@ -52,7 +51,6 @@ const ADD_PATIENT = gql`
   ) {
     addPatient(
       facilityId: $facilityId
-      lookupId: $lookupId
       firstName: $firstName
       middleName: $middleName
       lastName: $lastName
@@ -79,7 +77,6 @@ const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: String
     $patientId: String!
-    $lookupId: String
     $firstName: String!
     $middleName: String
     $lastName: String!
@@ -102,7 +99,6 @@ const UPDATE_PATIENT = gql`
     updatePatient(
       facilityId: $facilityId
       patientId: $patientId
-      lookupId: $lookupId
       firstName: $firstName
       middleName: $middleName
       lastName: $lastName
@@ -182,7 +178,6 @@ const PatientForm = (props: Props) => {
     const variables = {
       facilityId:
         currentFacilityId === allFacilities ? null : currentFacilityId,
-      lookupId: patient.lookupId,
       firstName: patient.firstName,
       middleName: patient.middleName,
       lastName: patient.lastName,
