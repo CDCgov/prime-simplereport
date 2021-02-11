@@ -270,6 +270,7 @@ resource "azurerm_application_gateway" "load_balancer" {
       identity,
       rewrite_rule_set,
       url_path_map,
+      ssl_policy,
       # comment if you are creating the gateway for the first time
       request_routing_rule,
     ]
