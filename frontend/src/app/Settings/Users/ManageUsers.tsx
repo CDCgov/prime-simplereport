@@ -162,6 +162,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
         onChange={(e) => onFacilityChange(e, facility.id)}
         disabled={user.role === "admin"} // current users have access to all facilities
         options={facilityOptions}
+        key={facility.id}
       />
     ));
     return (
@@ -232,7 +233,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
           </div>
           <div className="tablet:grid-col">
             {userRoleSettings(usersState[activeUser], currentUser)}
-            {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED
+            {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true"
               ? userFacilitiesSettings(usersState[activeUser])
               : null}
           </div>
