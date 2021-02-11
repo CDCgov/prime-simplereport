@@ -23,7 +23,7 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
         },
       }}
       overlayClassName="prime-modal-overlay"
-      contentLabel="Time of Test Questions"
+      contentLabel="Unsaved changes to current user"
     >
       <div className="display-flex flex-column flex-align-center text-center">
         <h3> You have unsaved changes, are you sure you want to proceed? </h3>
