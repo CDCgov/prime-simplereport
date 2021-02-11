@@ -18,6 +18,7 @@ import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import ErrorPage from "./ErrorPage";
 import PatientHeader from "./PatientHeader";
+import TermsOfService from "./timeOfTest/TermsOfService";
 import DOB from "./timeOfTest/DOB";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
@@ -99,6 +100,7 @@ const PatientApp = () => {
                       />
                     )}
                   />
+                  <Route path="/terms-of-service" component={TermsOfService} />
                   <Route path="/birth-date-confirmation" component={DOB} />
                   <Route
                     path="/patient-info-confirm"
