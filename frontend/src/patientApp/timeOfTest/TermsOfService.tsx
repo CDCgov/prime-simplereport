@@ -1,4 +1,5 @@
 import Button from "../../app/commonComponents/Button";
+// import tos from "./tos.md"
 
 const TermsOfService = () => {
 
@@ -8,17 +9,14 @@ const TermsOfService = () => {
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
           Terms of Service
         </h1>
-        <div className="prime-formgroup usa-prose">
-          <h2 className="font-heading-lg">Sup</h2>
-          <div className="usa-media-block">
-            <p>Some text</p>
-          </div>
-          <Button
-            label="I consent to the Terms of Service"
-            // onClick={savePatientAnswers}
-            className="margin-top-3"
-          />
+        <div className="prime-formgroup usa-prose height-card-lg overflow-x-hidden">
+          <p>Some text</p>
         </div>
+        <Button
+          label="I consent to the Terms of Service"
+          // onClick={savePatientAnswers}
+          className="margin-top-3"
+        />
       </div>
     </main>
   );
