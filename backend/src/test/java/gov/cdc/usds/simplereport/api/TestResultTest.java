@@ -14,15 +14,13 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 
-@SuppressWarnings("checkstyle:MagicNumber")
-public class TestResultTest extends BaseApiTest {
+class TestResultTest extends BaseApiTest {
 
     @Autowired
     private TestDataFactory _dataFactory;
@@ -39,7 +37,7 @@ public class TestResultTest extends BaseApiTest {
     }
 
     @Test
-    public void fetchTestResults() throws Exception {
+    void fetchTestResults() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         _dataFactory.createTestEvent(p, _site);
         _dataFactory.createTestEvent(p, _site);
@@ -47,8 +45,15 @@ public class TestResultTest extends BaseApiTest {
   
         ObjectNode variables = getFacilityScopedArguments();
         ArrayNode testResults = fetchTestResults(variables);
-
         assertEquals(3, testResults.size());
+        assertEquals("SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+                testResults.get(0).get("testPerformed").get("name").asText());
+
+        variables.put("nameType", "short");
+        testResults = fetchTestResults(variables);
+        assertEquals(3, testResults.size());
+        assertEquals("SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
+                testResults.get(0).get("testPerformed").get("name").asText());
     }
 
     private ObjectNode getFacilityScopedArguments() {
@@ -61,10 +66,10 @@ public class TestResultTest extends BaseApiTest {
     }
     
     @Test
-    public void submitTestResult() throws Exception {
+    void submitTestResult() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         DeviceType d = _dataFactory.getGenericDevice();
-        TestOrder to = _dataFactory.createTestOrder(p, _site);
+        _dataFactory.createTestOrder(p, _site);
         String dateTested = "2020-12-31T14:30:30.001Z";
 
         ObjectNode variables = JsonNodeFactory.instance.objectNode()

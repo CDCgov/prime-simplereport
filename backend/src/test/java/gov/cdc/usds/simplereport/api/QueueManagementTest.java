@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
-public class QueueManagementTest extends BaseApiTest {
+class QueueManagementTest extends BaseApiTest {
 
     private static final String QUERY = "queue-dates-query";
 
@@ -46,11 +46,13 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void enqueueOnePatient() throws Exception {
+    void enqueueOnePatient() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "05/15/2020")
-                .put("symptomOnsetDate", "11/30/2020");
+        ObjectNode variables = getFacilityScopedArguments()
+                .put("id", personId)
+                .put("previousTestDate", "2020-05-15")
+                .put("symptomOnsetDate", "2020-11-30");
         performEnqueueMutation(variables);
         ArrayNode queueData = fetchQueue();
         assertEquals(1, queueData.size());
@@ -65,7 +67,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateViaPatientLink() throws Exception {
+    void updateViaPatientLink() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId);
@@ -85,7 +87,7 @@ public class QueueManagementTest extends BaseApiTest {
         String plPatientId = plPatient.get("internalId").asText();
         String patientId = p.getInternalId().toString();
         assertEquals(plPatientId, patientId);
-        plVariables.put("previousTestDate", "05/15/2020").put("symptomOnsetDate", "11/30/2020").put("symptoms", "{}");
+        plVariables.put("previousTestDate", "2020-05-15").put("symptomOnsetDate", "2020-11-30").put("symptoms", "{}");
         performPatientLinkSubmitMutation(plVariables);
         queueData = fetchQueue();
         assertEquals(1, queueData.size());
@@ -97,7 +99,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateItemInQueue() throws Exception {
+    void updateItemInQueue() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         TestOrder o = _dataFactory.createTestOrder(p, _site);
         String orderId = o.getInternalId().toString();
@@ -122,7 +124,7 @@ public class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void enqueueOnePatientIsoDate() throws Exception {
+    void enqueueOnePatientIsoDate() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "2020-05-15")

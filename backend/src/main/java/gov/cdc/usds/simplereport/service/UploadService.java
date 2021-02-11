@@ -5,7 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
-import static gov.cdc.usds.simplereport.api.Translators.parseRace;
+import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
@@ -94,9 +94,9 @@ public class UploadService {
                     parsePersonRole(row.get("Role")),
                     parseEmail(row.get("Email")),
                     parseString(row.get("County")),
-                    parseRace(row.get("Race")),
+                    parseRaceDisplayValue(row.get("Race")),
                     parseEthnicity(row.get("Ethnicity")),
-                    parseGender(row.get("Gender")),
+                    parseGender(row.get("biologicalSex")),
                     parseYesNo(row.get("residentCongregateSetting")),
                     parseYesNo(row.get("employedInHealthcare"))
                 );
@@ -115,7 +115,7 @@ public class UploadService {
                 .addColumn("Suffix", CsvSchema.ColumnType.STRING)
                 .addColumn("Race", CsvSchema.ColumnType.STRING)
                 .addColumn("DOB", CsvSchema.ColumnType.STRING)
-                .addColumn("Gender", CsvSchema.ColumnType.STRING)
+                .addColumn("biologicalSex", CsvSchema.ColumnType.STRING)
                 .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
                 .addColumn("Street", CsvSchema.ColumnType.STRING)
                 .addColumn("Street2", CsvSchema.ColumnType.STRING)

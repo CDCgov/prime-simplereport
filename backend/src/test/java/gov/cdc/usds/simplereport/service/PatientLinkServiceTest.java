@@ -19,7 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
 @SuppressWarnings("checkstyle:MagicNumber")
-public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
+class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
         @Autowired
         private OrganizationService _organizationService;
         @Autowired
@@ -33,7 +33,7 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
         }
 
         @Test
-        public void getPatientLinkCurrent() throws Exception {
+        void getPatientLinkCurrent() throws Exception {
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
@@ -50,7 +50,7 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
         }
 
         @Test
-        public void getPatientLinkVerify() throws Exception {
+        void getPatientLinkVerify() throws Exception {
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
@@ -62,12 +62,12 @@ public class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> 
                                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
 
                 Person patient = _service.getPatientLinkVerify(to.getPatientLink().getInternalId().toString(),
-                                to.getPatient().getBirthDate().toString());
+                                to.getPatient().getBirthDate());
                 assertEquals(patient.getInternalId(), p.getInternalId());
         }
 
         @Test
-        public void refreshPatientLink() throws Exception {
+        void refreshPatientLink() throws Exception {
                 Organization org = _organizationService.getCurrentOrganization();
                 Facility facility = _organizationService.getFacilities(org).get(0);
                 Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),

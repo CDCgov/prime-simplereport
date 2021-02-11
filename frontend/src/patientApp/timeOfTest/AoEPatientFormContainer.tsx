@@ -1,5 +1,4 @@
 import React from "react";
-import { getFacilityIdFromUrl } from "../../app/utils/url";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import StepIndicator from "../../app/commonComponents/StepIndicator";
 import PatientProfile from "./PatientProfile";
@@ -9,14 +8,14 @@ import { gql, useMutation } from "@apollo/client";
 const PATIENT_LINK_SUBMIT_MUTATION = gql`
   mutation PatientLinkById(
     $plid: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $pregnancy: String
     $symptoms: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $noSymptoms: Boolean
   ) {
     patientLinkSubmit(
@@ -35,23 +34,17 @@ const PATIENT_LINK_SUBMIT_MUTATION = gql`
 `;
 
 interface Props {
-  patientId: string;
   page: string;
 }
 
-const AoEPatientFormContainer = ({ patientId, page }: Props) => {
+const AoEPatientFormContainer = ({ page }: Props) => {
   const patient = useSelector((state) => (state as any).patient as any);
-  const facility = useSelector((state) => (state as any).facility as any);
   const plid = useSelector((state) => (state as any).plid as String);
 
   const residentCongregateSetting = patient.residentCongregateSetting
     ? "YES"
     : "NO";
 
-  let facilityId = getFacilityIdFromUrl();
-  if (!facilityId && facility) {
-    facilityId = facility.id;
-  }
   const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
   const steps = [
@@ -91,7 +84,6 @@ const AoEPatientFormContainer = ({ patientId, page }: Props) => {
               residentCongregateSetting,
               employedInHealthcare,
             }}
-            facilityId={facilityId}
             isModal={false}
             saveButtonText="Submit"
             noValidation={false}

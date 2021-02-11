@@ -10,7 +10,7 @@ import { setPatient } from "../../app/store";
 import { Redirect } from "react-router";
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
-  query PatientLinkVerify($plid: String!, $birthDate: String!) {
+  query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
     patientLinkVerify(internalId: $plid, birthDate: $birthDate) {
       internalId
       firstName

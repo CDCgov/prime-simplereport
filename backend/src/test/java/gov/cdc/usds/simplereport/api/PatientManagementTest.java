@@ -22,7 +22,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 /**
  * Tests for adding and fetching patients through the API
  */
-public class PatientManagementTest extends BaseApiTest {
+class PatientManagementTest extends BaseApiTest {
 
     @Autowired
     private TestDataFactory _dataFactory;
@@ -30,7 +30,7 @@ public class PatientManagementTest extends BaseApiTest {
     private OrganizationService _orgService;
 
     @Test
-    public void queryPatientWithFacility() throws Exception {
+    void queryPatientWithFacility() throws Exception {
         Organization org = _orgService.getCurrentOrganization();
         Facility place = _orgService.getFacilities(org).get(0);
         _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
@@ -41,20 +41,9 @@ public class PatientManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createAndFetchOnePatientUsDate() throws Exception {
-        String firstName = "Jon";
-        JsonNode patients = doCreateAndFetch(firstName, "Snow", "05/18/1066", "(202) 867-5309", "youknownothing");
-        assertTrue(patients.has(0), "At least one patient found");
-        JsonNode jon = patients.get(0);
-        assertEquals(firstName, jon.get("firstName").asText());
-        assertEquals("1066-05-18", jon.get("birthDate").asText());
-        assertEquals("(202) 867-5309", jon.get("telephone").asText());
-    }
-
-    @Test
-    public void createAndFetchOnePatientIsoDate() throws Exception {
+    void createAndFetchOnePatientIsoDate() throws Exception {
         String firstName = "Sansa";
-        JsonNode patients = doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+        JsonNode patients = doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
         assertTrue(patients.has(0), "At least one patient found");
         JsonNode sansa = patients.get(0);
         assertEquals(firstName, sansa.get("firstName").asText());
@@ -63,24 +52,24 @@ public class PatientManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createPatient_adminUser_ok() throws Exception {
+    void createPatient_adminUser_ok() throws Exception {
         useOrgAdmin();
         String firstName = "Sansa";
-        doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+        doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
     }
 
     @Test
-    public void createPatient_entryUser_fail() throws Exception {
+    void createPatient_entryUser_fail() throws Exception {
         useOrgEntryOnly();
         String firstName = "Sansa";
-        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME",
+        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME",
                 "notbitter");
         assertGraphQLOutcome(mutandem.readTree(), ACCESS_ERROR);
     }
 
     @Test
-    public void failsOnInvalidPhoneNumber() throws Exception {
-        GraphQLResponse resp = executeAddPersonMutation("a", "b", "12/29/2020", "d", "e");
+    void failsOnInvalidPhoneNumber() throws Exception {
+        GraphQLResponse resp = executeAddPersonMutation("a", "b", "2020-12-29", "d", "e");
         JsonNode errors = resp.readTree().get("errors");
         assertNotNull(errors);
         assertTrue(errors.isArray());

@@ -17,10 +17,10 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
-public class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
+class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     @Test
-    public void findit() {
+    void findit() {
         initSampleData();
         Organization org = _service.getCurrentOrganization();
         assertNotNull(org);
@@ -28,7 +28,7 @@ public class OrganizationServiceTest extends BaseServiceTest<OrganizationService
     }
 
     @Test
-    public void createOrganization_standardUser_error() {
+    void createOrganization_standardUser_error() {
         assertSecurityError(() -> {
             List<DeviceType> configuredDevices = new ArrayList<>();
             DeviceType device = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
@@ -44,7 +44,7 @@ public class OrganizationServiceTest extends BaseServiceTest<OrganizationService
 
     @Test
     @WithSimpleReportSiteAdminUser
-    public void createOrganization_adminUser_success() {
+    void createOrganization_adminUser_success() {
         List<DeviceType> configuredDevices = new ArrayList<>();
         DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         configuredDevices.add(device);

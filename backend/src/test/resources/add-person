@@ -3,7 +3,7 @@ mutation createPersonEntry(
     $lookupId: String,
     $firstName: String!, # this is technically optional on the back end...
     $lastName: String!,
-    $birthDate: String!,
+    $birthDate: LocalDate!,
     $street: String = "Top Floor",
     $streetTwo: String,
     $city: String = "Winterfell",

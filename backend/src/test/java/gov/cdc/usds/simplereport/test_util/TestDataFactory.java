@@ -121,6 +121,15 @@ public class TestDataFactory {
         return e;
     }
 
+    public TestEvent doTest(TestOrder order, TestResult result) {
+        order.setResult(result);
+        TestEvent event = _testEventRepo.save(new TestEvent(order));
+        order.setTestEventRef(event);
+        order.markComplete();
+        _testOrderRepo.save(order);
+        return event;
+    }
+
     public DeviceType createDeviceType(String name, String manufacturer, String model, String loincCode, String swabType) {
         return _deviceRepo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
     }

@@ -29,6 +29,11 @@ enum TestCorrectionStatus {
   REMOVED
 }
 
+type TestDescription {
+  name(nameType: String = "long"): String!
+  loincCode: String!
+}
+
 type DeviceType {
   internalId: ID
   name: String
@@ -46,7 +51,7 @@ type Patient {
   lastName: String
   suffix: String
   race: String
-  birthDate: String
+  birthDate: LocalDate
   gender: String
   ethnicity: String
   street: String
@@ -114,9 +119,9 @@ type TestOrder {
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
-  symptomOnset: String
+  symptomOnset: LocalDate
   firstTest: Boolean
-  priorTestDate: String
+  priorTestDate: LocalDate
   priorTestType: String
   priorTestResult: String
   deviceType: DeviceType
@@ -134,7 +139,7 @@ type TestResult {
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
-  symptomOnset: String
+  symptomOnset: LocalDate
   firstTest: Boolean
   priorTestDate: String
   priorTestType: String
@@ -142,6 +147,7 @@ type TestResult {
   deviceType: DeviceType
   result: String
   dateTested: DateTime
+  testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
 }
@@ -178,7 +184,7 @@ type Query {
   testResult(id: String!): TestResult
   whoami: User!
   patientLinkCurrent(internalId: String!): Organization
-  patientLinkVerify(internalId: String!, birthDate: String!): Patient
+  patientLinkVerify(internalId: String!, birthDate: LocalDate!): Patient
 }
 type Mutation {
   uploadPatients(patientList: Upload!): String
@@ -288,7 +294,7 @@ type Mutation {
     middleName: String
     lastName: String!
     suffix: String
-    birthDate: String!
+    birthDate: LocalDate!
     street: String!
     streetTwo: String
     city: String
@@ -312,7 +318,7 @@ type Mutation {
     middleName: String
     lastName: String!
     suffix: String
-    birthDate: String!
+    birthDate: LocalDate!
     street: String!
     streetTwo: String
     city: String
@@ -333,13 +339,13 @@ type Mutation {
     deviceId: String!
     result: String!
     patientId: String!
-    dateTested: String
+    dateTested: DateTime
   ): String
   editQueueItem(
     id: String!
     deviceId: String
     result: String
-    dateTested: String
+    dateTested: DateTime
   ): TestOrder
   correctTestMarkAsError(id: String!, reason: String): TestResult
   addPatientToQueue(
@@ -348,10 +354,10 @@ type Mutation {
     pregnancy: String
     symptoms: String
     firstTest: Boolean
-    priorTestDate: String
+    priorTestDate: LocalDate
     priorTestType: String
     priorTestResult: String
-    symptomOnset: String
+    symptomOnset: LocalDate
     noSymptoms: Boolean
   ): String
   removePatientFromQueue(patientId: String!): String
@@ -361,10 +367,10 @@ type Mutation {
     pregnancy: String
     symptoms: String
     firstTest: Boolean
-    priorTestDate: String
+    priorTestDate: LocalDate
     priorTestType: String
     priorTestResult: String
-    symptomOnset: String
+    symptomOnset: LocalDate
     noSymptoms: Boolean
   ): String
   createDeviceType(
@@ -385,14 +391,14 @@ type Mutation {
   refreshPatientLink(internalId: String!): PatientLink
   patientLinkSubmit(
     internalId: String!
-    birthDate: String!
+    birthDate: LocalDate!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
-    priorTestDate: String
+    priorTestDate: LocalDate
     priorTestType: String
     priorTestResult: String
-    symptomOnset: String
+    symptomOnset: LocalDate
     noSymptoms: Boolean
   ): String
 }

@@ -46,12 +46,9 @@ const testResults = [
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
-      <DetachedTestResultsList
-        activeFacilityId={"fake-facility-1234"}
-        data={{ testResults }}
-      />
+      <DetachedTestResultsList data={{ testResults }} />
     );
-    expect(getByText("Test Results")).toBeInTheDocument();
+    expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
     expect(getByText("Cheez Whizzz")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });

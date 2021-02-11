@@ -14,7 +14,7 @@ import Header from "./commonComponents/Header";
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
-import TestResultsListContainer from "./testResults/TestResultsListContainer";
+import TestResultsList from "./testResults/TestResultsList";
 import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
@@ -120,7 +120,7 @@ const App = () => {
                 <ProtectedRoute
                   path="/results"
                   render={() => {
-                    return <TestResultsListContainer />;
+                    return <TestResultsList />;
                   }}
                   requiredPermissions={appPermissions.results.canView}
                   userPermissions={data.whoami.permissions}

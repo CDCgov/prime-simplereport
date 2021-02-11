@@ -10,14 +10,13 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Static package for utilities to translate things to or from wireline format
@@ -25,8 +24,7 @@ import java.util.UUID;
  */
 public class Translators {
 
-    private static DateTimeFormatter US_SLASHDATE_FORMATTER = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-    private static DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+    private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
     private static final int MAX_STRING_LENGTH = 500;
 
     public static final LocalDate parseUserShortDate(String d) {
@@ -39,30 +37,6 @@ public class Translators {
         } catch (DateTimeParseException e) {
             throw new IllegalGraphqlArgumentException("[" + d + "] is not a valid date.");
         }
-    }
-
-    public static final LocalDate parseUserDate(String userSuppliedDateString) {
-        if (userSuppliedDateString == null) {
-            return null;
-        }
-        if (userSuppliedDateString.contains("/")) {
-            return LocalDate.parse(userSuppliedDateString, US_SLASHDATE_FORMATTER);
-        } else {
-            return LocalDate.parse(userSuppliedDateString); // ISO_LOCAL_DATE is the default
-        }
-    }
-
-    public static final Date parseUserDateTime(String userSuppliedIsoDateString) {
-        if (userSuppliedIsoDateString == null) {
-            return null;
-        }
-        Instant isoDateInstant;
-        try {
-            isoDateInstant = Instant.parse(userSuppliedIsoDateString);
-        } catch (DateTimeParseException parseException) {
-            throw new IllegalGraphqlArgumentException("[" + userSuppliedIsoDateString + "] is not a valid date.");
-        }
-        return Date.from(isoDateInstant);
     }
 
     public static String parsePhoneNumber(String userSuppliedPhoneNumber) {
@@ -124,8 +98,18 @@ public class Translators {
         throw new IllegalGraphqlArgumentException("\"" + e + "\" is not a valid email.");
     }
 
-    private static final Set<String> RACES = Set.of("native", "asian", "black", "pacific", "white", "unknown",
-            "refused");
+    private static final Map<String, String> RACES = Map.of(
+        "american indian or alaskan native", "native",
+        "asian", "asian",
+        "black or african american", "black",
+        "native hawaiian or other pacific islander", "pacific",
+        "white", "white",
+        "unknown", "unknown",
+        "refused to answer", "refused"
+    );
+
+    private static final Set<String> RACE_VALUES = RACES.values().stream().collect(Collectors.toSet());
+    private static final Set<String> RACE_KEYS = RACES.keySet();
 
     public static String parseRace(String r) {
         String race = parseString(r);
@@ -133,10 +117,22 @@ public class Translators {
             return null;
         }
         race = race.toLowerCase();
-        if (RACES.contains(race)) {
+        if (RACE_VALUES.contains(race)) {
             return race;
         }
-        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACES) + "].");
+        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_VALUES) + "].");
+    }
+
+    public static String parseRaceDisplayValue(String r) {
+        String race = parseString(r);
+        if (race == null) {
+            return null;
+        }
+        race = RACES.get(race.toLowerCase());
+        if (race == null) {
+            throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_KEYS) + "].");
+        }
+        return race;
     }
 
     private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");

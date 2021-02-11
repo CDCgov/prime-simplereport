@@ -26,7 +26,7 @@ const SettingsNav = () => {
             onClick={() => 4}
             activeClassName="active"
           >
-            Manage facilities
+            Manage Facilities
           </NavLink>
         </li>
         {process.env.REACT_APP_V1_ACCESS_CONTROL_ENABLED === "true" ? (

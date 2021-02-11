@@ -24,14 +24,14 @@ const ManageOrganization: React.FC<Props> = (props) => {
           <h2>Manage Organization</h2>
           <Button
             onClick={() => props.onSave(name)}
-            label="Save Settings"
+            label="Save settings"
             disabled={!formChanged}
           />
         </div>
         <div className="usa-card__body">
           <RequiredMessage />
           <TextInput
-            label="Organization Name"
+            label="Organization name"
             name="name"
             value={name}
             onChange={onChange}

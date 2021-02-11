@@ -59,18 +59,10 @@ public class TestOrderService {
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
-  @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionStartTest // Incorrect permission:
-                                                         // https://github.com/CDCgov/prime-simplereport/issues/677
-  public List<TestOrder> getTestResults(UUID facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
-    return _repo.getTestResults(fac.getOrganization(), fac);
-  }
-
     @Transactional(readOnly = true)
     @AuthorizationConfiguration.RequirePermissionReadResultList
     public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
-        Facility fac = _os.getFacilityInCurrentOrg(facilityId);  // security.
+        Facility fac = _os.getFacilityInCurrentOrg(facilityId);  // org access is checked here
         return _terepo.getTestEventResults(fac.getInternalId(), (newerThanDate != null) ? newerThanDate: new Date(0));
     }
 
