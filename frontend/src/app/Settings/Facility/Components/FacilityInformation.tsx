@@ -17,11 +17,11 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
 
   return (
     <div>
-      <h2 style={{ margin: 0 }}>Facility Information</h2>
+      <h2 style={{ margin: 0 }}>Facility information</h2>
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label="Testing Facility Name"
+            label="Testing facility name"
             name="name"
             value={facility.name}
             onChange={onChange}
@@ -30,7 +30,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label="CLIA Number"
+            label="CLIA number"
             name="cliaNumber"
             value={facility.cliaNumber}
             onChange={onChange}
@@ -40,7 +40,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label="Phone Number"
+            label="Phone number"
             name="phone"
             value={facility.phone}
             onChange={onChange}
@@ -59,7 +59,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label="Street 1"
+            label="Street address 1"
             name="street"
             value={facility.street}
             onChange={onChange}
@@ -69,7 +69,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
       <div className="grid-row grid-gap">
         <div className="tablet:grid-col">
           <TextInput
-            label="Street 2"
+            label="Street address 2"
             name="streetTwo"
             value={facility.streetTwo}
             onChange={onChange}
@@ -95,7 +95,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label="Zip Code"
+            label="Zip code"
             name="zipCode"
             value={facility.zipCode}
             onChange={onChange}

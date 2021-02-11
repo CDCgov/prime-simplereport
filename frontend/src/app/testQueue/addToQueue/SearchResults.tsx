@@ -53,7 +53,7 @@ const SearchResults = ({
                     {canAddToTestQueue(p.internalId) ? (
                       <Button
                         variant="unstyled"
-                        label="Begin Test"
+                        label="Begin test"
                         onClick={() => {
                           setDialogPatient(p);
                           setCanAddToQueue(canAddToTestQueue(p.internalId));
@@ -84,7 +84,6 @@ const SearchResults = ({
           saveCallback={(a: any) =>
             onAddToQueue(dialogPatient, a, canAddToQueue ? "create" : "update")
           }
-          facilityId={facilityId}
           canAddToTestQueue={canAddToQueue}
         />
       )}

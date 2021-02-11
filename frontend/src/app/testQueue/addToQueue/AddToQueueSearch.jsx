@@ -34,10 +34,10 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $facilityId: String!
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
@@ -61,10 +61,10 @@ const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean

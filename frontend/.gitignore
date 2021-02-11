@@ -4,3 +4,5 @@
 /.env.local
 /.env.*.local
 .eslintcache
+yarn-error.log
+coverage

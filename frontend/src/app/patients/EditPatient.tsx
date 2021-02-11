@@ -25,11 +25,6 @@ const GET_PATIENT = gql`
       gender
       residentCongregateSetting
       employedInHealthcare
-      testResults {
-        internalId
-        dateTested
-        result
-      }
       facility {
         id
       }

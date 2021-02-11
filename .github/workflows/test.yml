@@ -1,4 +1,4 @@
-name: Smoke Test Back-end API
+name: Test
 
 # Run this on pushes to any branch that change a backend file or the workflow definition
 on:
@@ -72,6 +72,22 @@ jobs:
           name: test-report
           path: backend/build/reports/tests/test
           retention-days: 7
+      - name: Use Node.js ${{env.NODE_VERSION}}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{env.NODE_VERSION}}
+      - name: Cache npm local files
+        uses: actions/cache@v2
+        with:
+          path: |
+            ./frontend/node_modules
+          key: npm-${{env.NODE_VERSION}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
+      - name: Node setup
+        working-directory: ./frontend
+        run: yarn
+      - name: Test
+        working-directory: ./frontend
+        run: yarn test:ci
       - name: Sonar analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
@@ -94,7 +110,7 @@ jobs:
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Java Build
         run: ./gradlew assemble
-  lint:
+  backend-lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -111,7 +127,7 @@ jobs:
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest --continue
-  schema-check:
+  frontend-lint-and-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -128,6 +144,10 @@ jobs:
       - name: Node setup
         working-directory: ./frontend
         run: yarn
-      - name: Lint front-end code with eslint to check graphql queries
+      - name: Lint front-end 
         working-directory: ./frontend
-        run: yarn lint:eslint
+        run: yarn lint
+      - name: Build release
+        working-directory: ./frontend
+        run: yarn build
+

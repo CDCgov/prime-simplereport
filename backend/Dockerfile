@@ -1,18 +1,14 @@
 FROM gradle:6.7.1-jdk11-hotspot
 
 WORKDIR /home/gradle/graphql-api
-COPY --chown=gradle:gradle gradle ./gradle
-COPY --chown=gradle:gradle ./*.gradle ./
+COPY --chown=gradle:gradle ./.git ./.git
 
-# nice optimization opportunity: get the dependencies cached in an intermediate
-# docker layer (have to tickle gradle, may not be worth it)
-
-# This is only useful if we have the git-info actuator, in which case we have 
-# to rearrange some files because we're in a subdirectory
-# COPY --chown=gradle:gradle ./.git ./.git
-COPY --chown=gradle:gradle ./config ./config
-COPY --chown=gradle:gradle ./src ./src
-COPY --chown=gradle:gradle gradle.properties gradle.properties
+WORKDIR /home/gradle/graphql-api/backend
+COPY --chown=gradle:gradle ./backend/gradle ./gradle
+COPY --chown=gradle:gradle ./backend/*.gradle ./
+COPY --chown=gradle:gradle ./backend/config ./config
+COPY --chown=gradle:gradle ./backend/src ./src
+COPY --chown=gradle:gradle ./backend/gradle.properties gradle.properties
 
 RUN gradle --no-daemon classes testClasses assemble
 

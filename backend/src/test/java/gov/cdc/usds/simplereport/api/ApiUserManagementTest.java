@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
-public class ApiUserManagementTest extends BaseApiTest {
+class ApiUserManagementTest extends BaseApiTest {
 
     private static final List<String> USERNAMES = List.of("rjj@gmail.com", 
                                                           "rjjones@gmail.com");
@@ -34,7 +34,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void whoami_standardUser_okResponses() {
+    void whoami_standardUser_okResponses() {
         ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
@@ -83,7 +83,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser() {
+    void createUser() {
         useSuperUser();
         when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
             .thenReturn(_initService.getDefaultOrganizationId());
@@ -104,7 +104,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void createUser_orgUser_failure() {
+    void createUser_orgUser_failure() {
         ObjectNode variables = JsonNodeFactory.instance.objectNode()
             .put("firstName", "Rhonda")
             .put("middleName", "Janet")
@@ -116,7 +116,7 @@ public class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    public void updateUser() {
+    void updateUser() {
         useSuperUser();
         when(_oktaService.getOrganizationExternalIdForUser(USERNAMES.get(0)))
             .thenReturn(_initService.getDefaultOrganizationId());

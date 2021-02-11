@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 public class SimpleReportApplicationTests {
 
     @Test
-    public void contextLoads() {
+    void contextLoads() {
         // no-op
     }
 }

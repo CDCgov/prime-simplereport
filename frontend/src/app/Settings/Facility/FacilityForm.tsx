@@ -54,7 +54,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             <div className="usa-card__header">
               <div>
                 <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-                <NavLink to={`/settings/facilities`}> All Facilities</NavLink>
+                <NavLink to={`/settings/facilities`}> All facilities</NavLink>
                 <h2>{facility.name}</h2>
               </div>
               <div
@@ -67,7 +67,7 @@ const FacilityForm: React.FC<Props> = (props) => {
                 <Button
                   type="button"
                   onClick={() => props.saveFacility(facility)}
-                  label="Save Changes"
+                  label="Save changes"
                   disabled={!formChanged}
                 />
               </div>

@@ -9,7 +9,7 @@ import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient } from "../../app/store";
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
-  query PatientLinkVerify($plid: String!, $birthDate: String!) {
+  query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
     patientLinkVerify(internalId: $plid, birthDate: $birthDate) {
       internalId
       firstName

@@ -44,7 +44,7 @@ const EDIT_QUEUE_ITEM = gql`
     $id: String!
     $deviceId: String
     $result: String
-    $dateTested: String
+    $dateTested: DateTime
   ) {
     editQueueItem(
       id: $id
@@ -81,7 +81,7 @@ const SUBMIT_TEST_RESULT = gql`
     $patientId: String!
     $deviceId: String!
     $result: String!
-    $dateTested: String
+    $dateTested: DateTime
   ) {
     addTestResult(
       patientId: $patientId
@@ -96,10 +96,10 @@ const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
@@ -151,7 +151,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     </p>
     <div className="prime-modal-buttons">
       <Button onClick={cancelHandler} variant="unstyled" label="No, go back" />
-      <Button onClick={continueHandler} label="Submit Anyway" />
+      <Button onClick={continueHandler} label="Submit anyway" />
     </div>
   </Modal>
 );
@@ -496,7 +496,7 @@ const QueueItem: any = ({
                   <li className="prime-li">
                     <LabeledText
                       text={patient.telephone}
-                      label="Phone Number"
+                      label="Phone number"
                     />
                   </li>
                   <li className="prime-li">
@@ -518,7 +518,6 @@ const QueueItem: any = ({
                         patient={patient}
                         loadState={aoeAnswers}
                         saveCallback={saveAoeCallback}
-                        facilityId={facilityId}
                         canAddToTestQueue={false}
                         qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
                       />
@@ -556,7 +555,7 @@ const QueueItem: any = ({
                           : ""
                       }
                       legend={
-                        useCurrentDateTime === "true" ? "Test Date" : null
+                        useCurrentDateTime === "true" ? "Test date" : null
                       }
                       name="currentDateTime"
                       onChange={onUseCurrentDateChange}

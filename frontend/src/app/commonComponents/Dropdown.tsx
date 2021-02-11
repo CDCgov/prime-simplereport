@@ -4,7 +4,7 @@ import classnames from "classnames";
 import Required from "../commonComponents/Required";
 import Optional from "./Optional";
 
-interface Option {
+export interface Option {
   label: string;
   value: string;
   disabled?: boolean;

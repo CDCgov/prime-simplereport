@@ -1,8 +1,8 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { NavLink } from 'react-router-dom';
 
-import Nav from "../Nav";
+import Nav from '../Nav';
 
 interface Props {
   facilities: Facility[];
@@ -24,15 +24,15 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
                 className="usa-button usa-button--inverse"
                 to="/settings/add-facility/"
               >
-                + Add Facility
+                + New facility
               </NavLink>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">Facility Name</th>
-                    <th scope="col">CLIA Number</th>
+                    <th scope="col">Facility name</th>
+                    <th scope="col">CLIA number</th>
                   </tr>
                 </thead>
                 <tbody>

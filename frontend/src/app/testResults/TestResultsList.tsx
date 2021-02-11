@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
 import { PATIENT_TERM_CAP } from "../../config/constants";
@@ -16,9 +17,9 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 
-export const testResultQuery = gql`
-  query GetFacilityResults($facilityId: String!) {
-    testResults(facilityId: $facilityId) {
+const testResultQuery = gql`
+  query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
+    testResults(facilityId: $facilityId, newerThanDate: $newerThanDate) {
       internalId
       dateTested
       result
@@ -39,15 +40,29 @@ export const testResultQuery = gql`
 `;
 
 interface Props {
-  activeFacilityId: string;
+  showAll: boolean;
+  setShowAll: (state: boolean) => void;
   data: any;
   trackAction: () => void;
   refetch: () => void;
 }
 
-export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
+export const DetachedTestResultsList: any = ({
+  data,
+  showAll,
+  setShowAll,
+  refetch,
+}: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
+  const showMoreButton = useRef<HTMLButtonElement>(null);
+
+  const showCompleteResults = () => {
+    if (showMoreButton.current) {
+      showMoreButton.current.disabled = true;
+    }
+    setShowAll(true);
+  };
 
   if (printModalId) {
     return (
@@ -134,7 +149,7 @@ export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>Test Results</h2>
+              <h2>Test Results {showAll ? "(all)" : "(past two days)"}</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -151,6 +166,17 @@ export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
                 <tbody>{testResultRows()}</tbody>
               </table>
             </div>
+            {!showAll && (
+              <div className="sr-more-test-results">
+                <button
+                  className="usa-button"
+                  ref={showMoreButton}
+                  onClick={showCompleteResults}
+                >
+                  See all results
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -158,15 +184,33 @@ export const DetachedTestResultsList: any = ({ data, refetch }: Props) => {
   );
 };
 
-const TestResultsList = (props: Omit<Props, InjectedQueryWrapperProps>) => (
-  <QueryWrapper<Props>
-    query={testResultQuery}
-    queryOptions={{
-      variables: { facilityId: props.activeFacilityId },
-    }}
-    Component={DetachedTestResultsList}
-    componentProps={{ ...props }}
-  />
-);
+const TestResultsList = (
+  props: Omit<Props, InjectedQueryWrapperProps | "showAll" | "setShowAll">
+) => {
+  const [showAll, setShowAll] = useState(false);
+  const activeFacilityId = useSelector(
+    (state) => (state as any).facility.id as string
+  );
+
+  if (activeFacilityId.length < 1) {
+    return <div>"No facility selected"</div>;
+  }
+
+  // This gives us midnight of the previous day
+  const startDate = moment().subtract(1, "day").format("YYYY-MM-DD");
+  return (
+    <QueryWrapper<Props>
+      query={testResultQuery}
+      queryOptions={{
+        variables: {
+          facilityId: activeFacilityId,
+          newerThanDate: showAll ? null : startDate,
+        },
+      }}
+      Component={DetachedTestResultsList}
+      componentProps={{ ...props, showAll, setShowAll }}
+    />
+  );
+};
 
 export default TestResultsList;

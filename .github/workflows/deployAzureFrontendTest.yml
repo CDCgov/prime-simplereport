@@ -2,10 +2,6 @@ name: Deploy Test Frontend Azure Resources
 
 on:
   workflow_dispatch:
-    env:
-      description: 'environment to deploy'
-      default: 'test'
-      required: true
 
 env:
   ACR_ADMIN_USERNAME: ${{ secrets.ACR_ADMIN_USERNAME }}

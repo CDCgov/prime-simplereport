@@ -18,7 +18,8 @@ exports[`TestResultsList should render a list of tests 1`] = `
             class="usa-card__header"
           >
             <h2>
-              Test Results
+              Test Results 
+              (past two days)
             </h2>
           </div>
           <div
@@ -168,6 +169,15 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div
+            class="sr-more-test-results"
+          >
+            <button
+              class="usa-button"
+            >
+              See all results
+            </button>
           </div>
         </div>
       </div>
