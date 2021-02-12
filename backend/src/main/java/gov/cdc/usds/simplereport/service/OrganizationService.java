@@ -112,11 +112,11 @@ public class OrganizationService {
         return _facilityRepo.findByOrganizationOrderByFacilityName(org);
     }
 
+    // Move this to ApiUserService soon
     @AuthorizationConfiguration.RequirePermissionManageUserList
     public List<ApiUser> getUsersInCurrentOrg(OrganizationRole role) {
-        String organizationExternalId = getCurrentOrganization().getExternalId();
-        List<String> usernames = _oktaService.getAllUsernamesForOrganization(organizationExternalId, role);
-        return _userRepo.findAllByUsername(usernames);
+        List<String> usernames = getUsernamesInCurrentOrg(role);
+        return _userRepo.findAllByLoginEmailIn(usernames);
     }
 
     @AuthorizationConfiguration.RequirePermissionManageUserList

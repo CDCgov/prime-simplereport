@@ -86,7 +86,7 @@ public class ApiUserService {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
         if (found.isPresent()) {
-            LOG.info("User has logged in before: retrieving user record.");
+            LOG.debug("User has logged in before: retrieving user record.");
             ApiUser user = found.get();
             user.updateLastSeen();
             return _apiUserRepo.save(user);

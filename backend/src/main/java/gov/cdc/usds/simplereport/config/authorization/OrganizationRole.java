@@ -69,4 +69,8 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
             return Integer.compare(one.precedence, other.precedence);
         }
     }
+
+    public static final OrganizationRole getDefault() {
+        return USER;
+    }
 }

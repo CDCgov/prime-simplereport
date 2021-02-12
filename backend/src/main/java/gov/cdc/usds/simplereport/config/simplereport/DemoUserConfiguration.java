@@ -17,29 +17,29 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 @ConstructorBinding
 public class DemoUserConfiguration {
 
-    private DemoCurrentUser defaultUser;
-    private List<DemoAlternateUser> alternateUsers;
+    private DemoUser defaultUser;
+    private List<DemoUser> alternateUsers;
 
-    public DemoUserConfiguration(DemoCurrentUser defaultUser, List<DemoAlternateUser> alternateUsers) {
+    public DemoUserConfiguration(DemoUser defaultUser, List<DemoUser> alternateUsers) {
         super();
         this.defaultUser = defaultUser;
         this.alternateUsers = alternateUsers == null ? List.of() : alternateUsers;
     }
 
-    public DemoCurrentUser getDefaultUser() {
+    public DemoUser getDefaultUser() {
         return defaultUser;
     }
 
-    public List<DemoAlternateUser> getAlternateUsers() {
+    public List<DemoUser> getAlternateUsers() {
         return alternateUsers;
     }
 
     @ConstructorBinding
-    public static class DemoCurrentUser {
+    public static class DemoUser {
         private OrganizationRoleClaims authorization;
         private IdentityAttributes identity;
 
-        public DemoCurrentUser(OrganizationRoleClaims authorization, IdentityAttributes identity) {
+        public DemoUser(OrganizationRoleClaims authorization, IdentityAttributes identity) {
             super();
             this.authorization = authorization;
             this.identity = identity;
@@ -47,26 +47,6 @@ public class DemoUserConfiguration {
 
         public OrganizationRoleClaims getAuthorization() {
             return authorization;
-        }
-
-        public IdentityAttributes getIdentity() {
-            return identity;
-        }
-    }
-
-    @ConstructorBinding
-    public static class DemoAlternateUser {
-        private List<OrganizationRole> roles;
-        private IdentityAttributes identity;
-
-        public DemoAlternateUser(List<OrganizationRole> roles, IdentityAttributes identity) {
-            super();
-            this.roles = roles;
-            this.identity = identity;
-        }
-
-        public List<OrganizationRole> getRoles() {
-            return roles;
         }
 
         public IdentityAttributes getIdentity() {

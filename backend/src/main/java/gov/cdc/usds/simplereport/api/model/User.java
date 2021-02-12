@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -24,8 +26,8 @@ public class User {
         this.wrapped = user;
         this.org = orgwrapper.map(OrganizationRoles::getOrganization);
         this.permissions = new ArrayList<>();
-        this.roles = new ArrayList<>();
-        orgwrapper.map(OrganizationRoles::getGrantedRoles).map(roles::addAll);
+        this.roles = orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of())
+                .stream().collect(Collectors.toList());
         Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(OrganizationRoles::getEffectiveRole);
         this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
         effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);

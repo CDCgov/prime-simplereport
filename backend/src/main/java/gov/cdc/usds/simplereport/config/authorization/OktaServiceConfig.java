@@ -11,7 +11,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAlternateUser;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.service.OktaService;
 import gov.cdc.usds.simplereport.service.OktaServiceImpl;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -33,12 +33,12 @@ public class OktaServiceConfig {
     @Profile(BeanProfiles.NO_OKTA_MGMT)
     public OktaService getDummyOktaService(InitialSetupProperties setupProps, DemoUserConfiguration demoUsers) {
         Map<String,OrganizationRoleClaims> usernameRolesMap = new HashMap<>();
-        for (DemoAlternateUser altUser : demoUsers.getAlternateUsers()) {
+        for (DemoUser altUser : demoUsers.getAlternateUsers()) {
             IdentityAttributes user = altUser.getIdentity();
             String username = user.getUsername();
             OrganizationRoleClaims orgRoles = 
-                    new OrganizationRoleClaims(setupProps.getOrganization().getExternalId(),
-                                                        altUser.getRoles());
+                    new OrganizationRoleClaims(altUser.getAuthorization().getOrganizationExternalId(),
+                                               altUser.getAuthorization().getGrantedRoles());
             usernameRolesMap.put(username, orgRoles);
         }
         return new OktaServiceEmptyImpl(usernameRolesMap);
