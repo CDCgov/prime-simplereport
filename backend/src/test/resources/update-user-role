@@ -1,0 +1,9 @@
+mutation updateUserRole(
+    $email: String!,
+    $role: OrganizationRole!,
+    ){
+  updateUserRole(
+    email: $email
+    role: $role
+  ) 
+}
