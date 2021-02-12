@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -57,6 +58,7 @@ public class PatientExperienceController {
    * @return the Organization attached to the Patient
    * @throws Exception
    */
+  @CrossOrigin
   @GetMapping("/link/{plid}")
   public Organization getPatientLinkCurrent(@PathVariable("plid") String internalId) throws Exception {
     if (!patientLinksEnabled) {
