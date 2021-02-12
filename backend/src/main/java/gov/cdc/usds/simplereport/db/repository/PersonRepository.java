@@ -19,6 +19,9 @@ public interface PersonRepository extends EternalEntityRepository<Person> {
     @Query(BASE_QUERY + " and organization = :org")
     public List<Person> findAllByOrganization(Organization org, Sort sortBy);
 
+    @Query("from #{#entityName} e where e.organization = :org")
+    public List<Person> findAllByOrganizationIncludeDeleted(Organization org, Sort sortBy);
+
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
     public Optional<Person> findByIDAndOrganization(UUID id, Organization org);
 

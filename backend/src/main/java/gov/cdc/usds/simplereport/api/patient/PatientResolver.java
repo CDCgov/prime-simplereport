@@ -21,7 +21,7 @@ public class PatientResolver implements GraphQLQueryResolver {
     private PersonService ps;
 
     public List<Person> getPatients(UUID facilityId, long pageNumber, long pageSize, boolean showDeleted) {
-        if (pageNumber < 1) {
+        if (pageNumber < 0) {
             pageNumber = PersonService.DEFAULT_PAGINATION_PAGEOFFSET;
         }
         if (pageSize < 1) {

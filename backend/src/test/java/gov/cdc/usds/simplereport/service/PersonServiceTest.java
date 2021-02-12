@@ -66,26 +66,31 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
 
-        // try to read a list with deleted users
-        assertSecurityError(() -> _service.getPatients(null, 1, 100, true));
+        assertSecurityError(() -> _service.getPatients(null, 0, 100, true));
+        assertSecurityError(() -> _service.getPatients(p.getInternalId(), 0, 100, true));
     }
 
     @Test
     @WithSimpleReportOrgAdminUser
     void deletePatient_adminUser_success() {
-        Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
+        Person p = _service.addPatient(null, "FOO", "Fred", null,
+                "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
                 "123 Main",
                 "Apartment 3", "Hicksville", "NY",
-                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau",
+                null, null, null, false, false);
 
+        assertEquals(1, _service.getPatients(null).size());
         Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
 
-        assertEquals(0, _service.getPatients(null).size());
+        List<Person> test = _service.getPatients(null);
+
         assertTrue(deletedPerson.isDeleted());
+        assertEquals(0, _service.getPatients(null).size());
 
         List<Person> result = _service.getPatients(null, 0, 100, true);
         assertEquals(1, result.size());
-        assertTrue(result.get(1).isDeleted());
+        assertTrue(result.get(0).isDeleted());
     }
 
     @Test

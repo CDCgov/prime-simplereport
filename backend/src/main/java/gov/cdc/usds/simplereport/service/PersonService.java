@@ -30,7 +30,7 @@ public class PersonService {
     private OrganizationService _os;
     private PersonRepository _repo;
 
-    public static final long DEFAULT_PAGINATION_PAGEOFFSET = 1;
+    public static final long DEFAULT_PAGINATION_PAGEOFFSET = 0;
     public static final long DEFAULT_PAGINATION_PAGESIZE = 500;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
@@ -51,21 +51,32 @@ public class PersonService {
         person.setFacility(facility);
     }
 
-    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
-    private List<Person> getPatientsWithDeletePermissions(Facility fac, Organization org) {
-        return _repo.findByFacilityAndOrganizationIncludeDeleted(fac, org, NAME_SORT);
-    }
 
     @AuthorizationConfiguration.RequirePermissionReadPatientList
     private List<Person> getPatientsWithListOnlyPermissions(Facility fac, Organization org) {
         return _repo.findByFacilityAndOrganization(fac, org, NAME_SORT);
     }
 
+    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
+    private List<Person> getPatientsWithDeletePermissions(Facility fac, Organization org) {
+        return _repo.findByFacilityAndOrganizationIncludeDeleted(fac, org, NAME_SORT);
+    }
+
+    // Maybe listing all patients across all factilities should be a special permission
+    @AuthorizationConfiguration.RequirePermissionReadPatientList
+    private List<Person> getAllPatientsWithListOnlyPermissions(Organization org) {
+        return _repo.findAllByOrganization(org, NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
+    private List<Person> getAllPatientsWithDeleteyPermissions(Organization org) {
+        return _repo.findAllByOrganizationIncludeDeleted(org, NAME_SORT);
+    }
     /**
      *
      * @param facilityId UUID facility to access or NULL to see facilities across org
-     * @param pageOffset long Positive number (> 0) for the current page
-     * @param pageSize long Positive number (> 0) for the items per page to return
+     * @param pageOffset long zero-based page index, must NOT be negative
+     * @param pageSize number of items in a page to be returned, must be greater than 0
      * @param includeDeleted boolean
      * @return List<Person>
      *
@@ -74,7 +85,11 @@ public class PersonService {
     public List<Person> getPatients(UUID facilityId, long pageOffset, long pageSize, boolean includeDeleted) {
         Organization org = _os.getCurrentOrganization();
         if (facilityId == null) {
-            return _repo.findAllByOrganization(org, NAME_SORT);
+            if (includeDeleted) {
+                return getAllPatientsWithDeleteyPermissions(org);
+            } else {
+                return getAllPatientsWithListOnlyPermissions(org);
+            }
         }
         Facility facility = _os.getFacilityInCurrentOrg(facilityId);
         if (includeDeleted) {
