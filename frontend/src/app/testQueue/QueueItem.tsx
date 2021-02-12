@@ -8,6 +8,7 @@ import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
+import classnames from "classnames";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
@@ -22,7 +23,7 @@ import { patientPropType, devicePropType } from "../propTypes";
 import { QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { removeTimer, TestTimerWidget } from "./TestTimer";
+import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
 import Checkboxes from "../commonComponents/Checkboxes";
 import moment from "moment";
 
@@ -476,15 +477,25 @@ const QueueItem: any = ({
       </li>
     ) : null;
 
+  const timer = useTestTimer(internalId);
+
+  const containerClasses = classnames(
+    "grid-container",
+    "prime-container",
+    "prime-queue-item usa-card__container",
+    timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
+    timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
+  );
+
   return (
     <React.Fragment>
-      <div className="grid-container prime-container prime-queue-item usa-card__container">
+      <div className={containerClasses}>
         {closeButton}
         <div className="grid-row">
           <div className="tablet:grid-col-9">
             <div className="grid-row prime-test-name usa-card__header">
               <h2>{patientFullName}</h2>
-              <TestTimerWidget id={internalId} />
+              <TestTimerWidget timer={timer} />
             </div>
             <div className="usa-card__body">
               <div className="grid-row">
