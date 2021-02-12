@@ -68,9 +68,7 @@ class OktaServiceTest extends BaseServiceTest<OktaService> {
 
         User user = _oktaClient.listUsers(AMOS.getUsername(), null, null, null, null).single();
         assertEquals(user.getProfile().getFirstName(), AMOS.getFirstName());
-        assertEquals(user.getProfile().getMiddleName(), AMOS.getMiddleName());
         assertEquals(user.getProfile().getLastName(), AMOS.getLastName());
-        assertEquals(user.getProfile().getHonorificSuffix(), AMOS.getSuffix());
         assertEquals(user.getProfile().getLogin(), AMOS.getUsername());
         assertEquals(user.getProfile().getEmail(), AMOS.getUsername());
 
@@ -97,9 +95,7 @@ class OktaServiceTest extends BaseServiceTest<OktaService> {
 
         User user = _oktaClient.listUsers(BRAD.getUsername(), null, null, null, null).single();
         assertEquals(user.getProfile().getFirstName(), BRAD.getFirstName());
-        assertEquals(user.getProfile().getMiddleName(), BRAD.getMiddleName());
         assertEquals(user.getProfile().getLastName(), BRAD.getLastName());
-        assertEquals(user.getProfile().getHonorificSuffix(), BRAD.getSuffix());
         assertEquals(user.getProfile().getLogin(), BRAD.getUsername());
         assertEquals(user.getProfile().getEmail(), BRAD.getUsername());
 
@@ -126,7 +122,7 @@ class OktaServiceTest extends BaseServiceTest<OktaService> {
         _service.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
         _service.createUser(CHARLES, GHI.getExternalId());
 
-        assertEquals(_service.getOrganizationRolesForUser(CHARLES.getUsername()),
+        assertEquals(_service.getOrganizationRoleClaimsForUser(CHARLES.getUsername()),
                      Optional.of(new OrganizationRoleClaims(GHI.getExternalId(),
                                                          Set.of(OrganizationRole.USER))));
     }

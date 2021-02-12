@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -25,6 +27,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         _us = us;
     }
 
+    @AuthorizationConfiguration.RequireGlobalAdminUser
     public User addUser(
             String firstName,
             String middleName,
@@ -35,7 +38,21 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
+        Boolean isAdmin = _us.isAdmin(apiUser);
+        return new User(apiUser, orgRoles, isAdmin);
+    }
+    
+    public User addUserToCurrentOrg(
+            String firstName,
+            String middleName,
+            String lastName,
+            String suffix,
+            String email
+                ) {
+        _us.assertEmailAvailable(email);
+        ApiUser apiUser = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
@@ -53,9 +70,17 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             _us.assertEmailAvailable(newEmail);
         }
         ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
-        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
+    }
+
+    public OrganizationRole updateUserRole(
+            String email,
+            OrganizationRole role
+                ) {
+        _us.updateUserRole(email, role);
+        return role;
     }
 }
 

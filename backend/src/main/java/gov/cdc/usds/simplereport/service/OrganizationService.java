@@ -14,16 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
@@ -39,7 +36,6 @@ public class OrganizationService {
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
-    private ApiUserRepository _userRepo;
     private AuthorizationService _authService;
     private OktaService _oktaService;
 
@@ -47,13 +43,11 @@ public class OrganizationService {
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            ApiUserRepository userRepo,
             OktaService oktaService) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
-        _userRepo = userRepo;
         _oktaService = oktaService;
     }
 
@@ -91,38 +85,14 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    @AuthorizationConfiguration.RequirePermissionManageUserList
-    public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
-        Optional<OrganizationRoleClaims> authBasedOrgRoles = 
-                _oktaService.getOrganizationRolesForUser(apiUser.getLoginEmail());
-        return authBasedOrgRoles.map(a -> {
-            return new OrganizationRoles(getOrganization(a.getOrganizationExternalId()),
-                                         a.getGrantedRoles());
-        });
-    }
-
     public void assertFacilityNameAvailable(String testingFacilityName) {
         Organization org = getCurrentOrganization();
         _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
-            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
-        ;
+            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");});
     }
 
     public List<Facility> getFacilities(Organization org) {
         return _facilityRepo.findByOrganizationOrderByFacilityName(org);
-    }
-
-    @AuthorizationConfiguration.RequirePermissionManageUserList
-    public List<ApiUser> getUsersInCurrentOrg(OrganizationRole role) {
-        String organizationExternalId = getCurrentOrganization().getExternalId();
-        List<String> usernames = _oktaService.getAllUsernamesForOrganization(organizationExternalId, role);
-        return _userRepo.findAllByUsername(usernames);
-    }
-
-    @AuthorizationConfiguration.RequirePermissionManageUserList
-    public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
-        String organizationExternalId = getCurrentOrganization().getExternalId();
-        return _oktaService.getAllUsernamesForOrganization(organizationExternalId, role);
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {

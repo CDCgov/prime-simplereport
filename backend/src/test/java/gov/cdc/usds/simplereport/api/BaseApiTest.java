@@ -54,8 +54,13 @@ public abstract class BaseApiTest {
 
     private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoleClaims> OUTSIDE_USER_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER)));
     private static final List<OrganizationRoleClaims> ADMIN_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                                              OrganizationRole.ADMIN)));
+    private static final List<OrganizationRoleClaims> OUTSIDE_ADMIN_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ADMIN)));
     private static final List<OrganizationRoleClaims> ENTRY_ONLY_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
@@ -71,9 +76,19 @@ public abstract class BaseApiTest {
         when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
     }
 
+    protected void useOutsideOrgUser() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org user");
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
+    }
+
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
+    }
+
+    protected void useOutsideOrgAdmin() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
     }
 
     protected void useOrgEntryOnly() {

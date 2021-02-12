@@ -38,4 +38,10 @@ public class UserAuthorizationVerifier {
         Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
         return orgRoles.isPresent() && orgRoles.get().getGrantedPermissions().contains(permission);
     }
+
+    public boolean userIsInOrg(String organizationExternalId) {
+        Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
+        return orgRoles.isPresent() ? orgRoles.get().getOrganization().getExternalId() == organizationExternalId
+                                    : false;
+    }
 }

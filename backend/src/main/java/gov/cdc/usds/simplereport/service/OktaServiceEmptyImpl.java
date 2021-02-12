@@ -40,6 +40,8 @@ public class OktaServiceEmptyImpl implements OktaService {
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {}
 
+    public void updateUserRole(String username, OrganizationRole role) {}
+
     public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role) {
         return orgRoleUsernamesMap.get(externalId).get(role);
     }
@@ -48,7 +50,7 @@ public class OktaServiceEmptyImpl implements OktaService {
 
     public void deleteOrganization(String externalId) {}
 
-    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username) {
+    public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
         return Optional.ofNullable(usernameRolesMap.get(username));
     }
 }

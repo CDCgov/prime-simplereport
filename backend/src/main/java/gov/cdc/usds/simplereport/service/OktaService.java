@@ -18,12 +18,14 @@ public interface OktaService {
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity);
 
+    public void updateUserRole(String username, OrganizationRole role);
+
     public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role);
 
     public void createOrganization(String name, String externalId);
 
     public void deleteOrganization(String externalId);
 
-    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username);
+    public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
 }

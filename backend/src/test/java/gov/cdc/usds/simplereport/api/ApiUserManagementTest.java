@@ -85,10 +85,9 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    void createUser_adminUser_success() {
+    void addUser_superUser_success() {
         useSuperUser();
-        useOrgAdmin();
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
@@ -102,25 +101,86 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    void createUser_orgUser_failure() {
+    void addUser_adminUser_failure() {
+        useOrgAdmin();
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", variables, ACCESS_ERROR);
     }
 
     @Test
-    void updateUser_adminUser_success() {
+    void addUser_orgUser_failure() {
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user", variables, ACCESS_ERROR);
+    }
+
+    @Test
+    void addUserToCurrentOrg_adminUser_success() {
+        useOrgAdmin();
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        ObjectNode resp = runQuery("add-user-to-current-org", variables);
+        ObjectNode user = (ObjectNode) resp.get("addUserToCurrentOrg");
+        assertEquals("Rhonda", user.get("firstName").asText());
+        assertEquals(USERNAMES.get(0), user.get("email").asText());
+        assertEquals(_initService.getDefaultOrganizationId(), 
+                user.get("organization").get("externalId").asText());
+        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+    }
+
+    @Test
+    void addUserToCurrentOrg_superUser_failure() {
         useSuperUser();
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
+    }
+
+    @Test
+    void addUserToCurrentOrg_orgUser_failure() {
+        ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
+    }
+
+    @Test
+    void updateUser_adminUser_success() {
         useOrgAdmin();
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", addVariables);
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+
+        ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
+                USERNAMES.get(1), USERNAMES.get(0));
+        ObjectNode resp = runQuery("update-user", updateVariables);
+        ObjectNode user = (ObjectNode) resp.get("updateUser");
+        assertEquals("Ronda", user.get("firstName").asText());
+        assertEquals(USERNAMES.get(1), user.get("email").asText());
+        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+    }
+
+    @Test
+    void updateUser_superUser_success() {
+        useSuperUser();
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
         runQuery("add-user", addVariables);
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
@@ -134,19 +194,18 @@ class ApiUserManagementTest extends BaseApiTest {
 
     @Test
     void updateUser_orgUser_failure() {
-        useSuperUser();
         useOrgAdmin();
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganizationId());
-        runQuery("add-user", addVariables);
+        runQuery("add-user-to-current-org", addVariables);
 
         useOrgUser();
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables("Ronda", "J", "Jones", "III", 
@@ -155,15 +214,98 @@ class ApiUserManagementTest extends BaseApiTest {
     }
 
     @Test
-    void getUsers_adminUser_success() {
-        useSuperUser();
+    void updateUserRole_adminUser_success() {
         useOrgAdmin();
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", addVariables);
+
+        ObjectNode updateRoleVariables = JsonNodeFactory.instance.objectNode()
+                .put("email", USERNAMES.get(0))
+                .put("role", OrganizationRole.ADMIN.name());
+        
+        ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
+        assertEquals(OrganizationRole.ADMIN.name(), 
+                     resp.get("updateUserRole").asText());
+    }
+
+    @Test
+    void updateUserRole_superUser_success() {
+        useSuperUser();
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user", addVariables);
+
+        ObjectNode updateRoleVariables = JsonNodeFactory.instance.objectNode()
+                .put("email", USERNAMES.get(0))
+                .put("role", OrganizationRole.ADMIN.name());
+        
+        ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
+        assertEquals(OrganizationRole.ADMIN.name(), 
+                     resp.get("updateUserRole").asText());
+    }
+    
+    @Test
+    void updateUserRole_outsideOrgUser_failure() {
+        useOrgAdmin();
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", addVariables);
+
+        useOutsideOrgUser();
+
+        ObjectNode updateRoleVariables = JsonNodeFactory.instance.objectNode()
+                .put("email", USERNAMES.get(0))
+                .put("role", OrganizationRole.ADMIN.name());
+        
+        ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
+        assertEquals(OrganizationRole.ADMIN.name(), 
+                     resp.get("updateUserRole").asText());
+    }
+
+    @Test
+    void updateUserRole_orgUser_failure() {
+        useOrgAdmin();
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+
+        ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
+                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+        runQuery("add-user-to-current-org", addVariables);
+
+        useOrgUser();
+
+        ObjectNode updateRoleVariables = JsonNodeFactory.instance.objectNode()
+                .put("email", USERNAMES.get(0))
+                .put("role", OrganizationRole.ADMIN.name());
+        
+        ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
+        assertEquals(OrganizationRole.ADMIN.name(), 
+                     resp.get("updateUserRole").asText());
+    }
+
+    @Test
+    void getUsers_adminUser_success() {
+        useOrgAdmin();
+
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(2)))
+                .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(3)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
         List<ObjectNode> usersAdded = Arrays.asList(
@@ -174,7 +316,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 getAddUserVariables("Janice", null, "Katz", "Jr", 
                         USERNAMES.get(3), _initService.getDefaultOrganizationId()));
         for (ObjectNode userVariables : usersAdded) {
-            runQuery("add-user", userVariables);
+            runQuery("add-user-to-current-org", userVariables);
         }
 
         when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
@@ -211,14 +353,13 @@ class ApiUserManagementTest extends BaseApiTest {
 
     @Test
     void getUsers_orgUser_failure() {
-        useSuperUser();
         useOrgAdmin();
 
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(2)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(2)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(3)))
+        when(_oktaService.getOrganizationRoleClaimsForUser(USERNAMES.get(3)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
         List<ObjectNode> usersAdded = List.of(
@@ -229,7 +370,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 getAddUserVariables("Janice", null, "Katz", "Jr", 
                         USERNAMES.get(3), _initService.getDefaultOrganizationId()));
         for (ObjectNode userVariables : usersAdded) {
-            runQuery("add-user", userVariables);
+            runQuery("add-user-to-current-org", userVariables);
         }
 
         useOrgUser();

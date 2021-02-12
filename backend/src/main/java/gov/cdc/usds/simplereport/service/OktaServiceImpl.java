@@ -78,9 +78,10 @@ public class OktaServiceImpl implements OktaService {
             throw new IllegalGraphqlArgumentException("Cannot create Okta user without username");
         }
 
-        // Okta SDK's way of getting a group by group name
+        // By default, when creating a user, we give them privileges of a standard user
         String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
 
+        // Okta SDK's way of getting a group by group name
         GroupList groups = _client.listGroups(groupName, null, null);
         if (!groups.iterator().hasNext()) {
             throw new IllegalGraphqlArgumentException("Cannot add Okta user to nonexistent group");
@@ -126,6 +127,45 @@ public class OktaServiceImpl implements OktaService {
         user.update();
     }
 
+    public void updateUserRole(String username, OrganizationRole role) {
+        UserList users = _client.listUsers(username, null, null, null, null);
+        if (!users.iterator().hasNext()) {
+            throw new IllegalGraphqlArgumentException("Cannot update role of Okta user with unrecognized username");
+        }
+        User user = users.single();
+
+        Set<String> orgExternalIds = new HashSet<>();
+
+        // Remove user from old groups
+        for (Group g : user.listGroups()) {
+            String groupName = g.getProfile().getName();
+            for (OrganizationRole r : OrganizationRole.values()) {
+                if (g.getType() == GroupType.OKTA_GROUP &&
+                            groupName.startsWith(_rolePrefix)) {
+                    // Remove user from non-USER groups only
+                    if (!groupName.endsWith(generateRoleSuffix(OrganizationRole.USER))) {
+                        g.removeUser(user.getId());
+                    }
+                    // Keep track of organizations user belongs to
+                    orgExternalIds.add(getOrganizationExternalIdFromGroupName(groupName, r));
+                }
+            }
+        }
+
+        // Add user to new groups
+        for (String orgExternalId : orgExternalIds) {
+            String groupName = generateGroupName(orgExternalId, role);
+
+            // Okta SDK's way of getting a group by group name
+            GroupList groups = _client.listGroups(groupName, null, null);
+            if (!groups.iterator().hasNext()) {
+                throw new IllegalGraphqlArgumentException("Cannot add Okta user to nonexistent group");
+            }
+            Group group = groups.single();
+            user.addToGroup(group.getId());
+        }
+    }
+
     public void createOrganization(String name, String externalId) {
         for (OrganizationRole role : OrganizationRole.values()) {
             GroupBuilder.instance()
@@ -147,7 +187,7 @@ public class OktaServiceImpl implements OktaService {
     }
 
     // returns the external ID of the organization the specified user belongs to
-    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username) {
+    public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
 
         UserList users = _client.listUsers(username, null, null, null, null);
         if (!users.iterator().hasNext()) {
