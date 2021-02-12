@@ -95,7 +95,7 @@ const PatientApp = () => {
                       <Redirect
                         to={{
                           ...location,
-                          pathname: "/birth-date-confirmation",
+                          pathname: "/terms-of-service",
                         }}
                       />
                     )}

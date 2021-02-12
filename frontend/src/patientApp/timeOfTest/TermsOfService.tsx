@@ -1,7 +1,14 @@
+import React, { useState } from "react";
 import Button from "../../app/commonComponents/Button";
-// import tos from "./tos.md"
+import ToS from "./ToS"
+import { Redirect } from "react-router";
 
 const TermsOfService = () => {
+  const [nextPage, setNextPage] = useState(false);
+
+  if (nextPage) {
+    return <Redirect push to={"/birth-date-confirmation"} />;
+  }
 
   return (
     <main className="patient-app padding-bottom-4 bg-base-lightest">
@@ -10,11 +17,11 @@ const TermsOfService = () => {
           Terms of Service
         </h1>
         <div className="prime-formgroup usa-prose height-card-lg overflow-x-hidden">
-          <p>Some text</p>
+          <ToS />
         </div>
         <Button
           label="I consent to the Terms of Service"
-          // onClick={savePatientAnswers}
+          onClick={() => setNextPage(true)}
           className="margin-top-3"
         />
       </div>
