@@ -40,7 +40,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         }
 
         final StreetAddress address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
-        final List<Person> patients = this._ps.getPatients(null);
+        final List<Person> patients = this._ps.getAllPatients();
         assertAll(() -> assertEquals(1, patients.size()),
                 () -> assertEquals("Best", patients.get(0).getFirstName()),
                 () -> assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
@@ -55,7 +55,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
                     final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
             () -> this._service.processPersonCSV(inputStream), "Should fail to parse");
 
-            final List<Person> patients = this._ps.getPatients(null);
+            final List<Person> patients = this._ps.getAllPatients();
             assertEquals(0, patients.size());
         }
 
@@ -69,7 +69,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
             final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
                     () -> this._service.processPersonCSV(bis), "Should fail to parse");
             assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
-            assertEquals(0, this._ps.getPatients(null).size(), "Should not have any patients");
+            assertEquals(0, this._ps.getAllPatients().size(), "Should not have any patients");
         }
     }
 

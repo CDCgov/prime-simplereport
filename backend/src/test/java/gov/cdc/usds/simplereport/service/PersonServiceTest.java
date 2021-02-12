@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,45 +53,51 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main", null,
                 "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
-        List<Person> all = _service.getPatients(null);
+        List<Person> all = _service.getAllPatients();
         assertEquals(2, all.size());
     }
 
     @Test
     @WithSimpleReportStandardUser
     void deletePatient_standardUser_error() {
-        Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
+        Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        UUID facilityId =fac.getInternalId();
+
+        Person p = _service.addPatient(facilityId, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
-        assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
+        assertEquals("Fred", _service.getAllPatients().get(0).getFirstName());
 
-        assertSecurityError(() -> _service.getPatients(null, 0, 100, true));
-        assertSecurityError(() -> _service.getPatients(p.getInternalId(), 0, 100, true));
+        assertSecurityError(() -> _service.getAllPatientsInclDeleted());
+        assertSecurityError(() -> _service.getPatientsInclDeleted(facilityId));
     }
 
     @Test
     @WithSimpleReportOrgAdminUser
     void deletePatient_adminUser_success() {
-        Person p = _service.addPatient(null, "FOO", "Fred", null,
+        Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        UUID facilityId =fac.getInternalId();
+
+        Person p = _service.addPatient(facilityId, "FOO", "Fred", null,
                 "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
                 "123 Main",
                 "Apartment 3", "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau",
                 null, null, null, false, false);
 
-        assertEquals(1, _service.getPatients(null).size());
+        assertEquals(1, _service.getAllPatients().size());
         Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
 
-        List<Person> test = _service.getPatients(null);
-
         assertTrue(deletedPerson.isDeleted());
-        assertEquals(0, _service.getPatients(null).size());
+        assertEquals(0, _service.getAllPatients().size());
+        assertEquals(0, _service.getPatients(facilityId).size());
 
-        List<Person> result = _service.getPatients(null, 0, 100, true);
+        List<Person> result = _service.getAllPatientsInclDeleted();
         assertEquals(1, result.size());
         assertTrue(result.get(0).isDeleted());
+        assertEquals(1, _service.getPatientsInclDeleted(facilityId).size());
     }
 
     @Test
@@ -98,7 +105,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
         // gets all patients across the org
-        List<Person> patients = _service.getPatients(null);
+        List<Person> patients = _service.getAllPatients();
         assertPatientList(patients, CHARLES, FRANK, BRAD, DEXTER, ELIZABETH, AMOS);
     }
 

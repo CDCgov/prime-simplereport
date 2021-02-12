@@ -53,59 +53,25 @@ public class PersonService {
 
 
     @AuthorizationConfiguration.RequirePermissionReadPatientList
-    private List<Person> getPatientsWithListOnlyPermissions(Facility fac, Organization org) {
-        return _repo.findByFacilityAndOrganization(fac, org, NAME_SORT);
-    }
-
-    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
-    private List<Person> getPatientsWithDeletePermissions(Facility fac, Organization org) {
-        return _repo.findByFacilityAndOrganizationIncludeDeleted(fac, org, NAME_SORT);
-    }
-
-    // Maybe listing all patients across all factilities should be a special permission
-    @AuthorizationConfiguration.RequirePermissionReadPatientList
-    private List<Person> getAllPatientsWithListOnlyPermissions(Organization org) {
-        return _repo.findAllByOrganization(org, NAME_SORT);
-    }
-
-    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
-    private List<Person> getAllPatientsWithDeleteyPermissions(Organization org) {
-        return _repo.findAllByOrganizationIncludeDeleted(org, NAME_SORT);
-    }
-    /**
-     *
-     * @param facilityId UUID facility to access or NULL to see facilities across org
-     * @param pageOffset long zero-based page index, must NOT be negative
-     * @param pageSize number of items in a page to be returned, must be greater than 0
-     * @param includeDeleted boolean
-     * @return List<Person>
-     *
-     * -> @AuthorizationConfiguration? Permissions are dynamic based on includeArchived
-     */
-    public List<Person> getPatients(UUID facilityId, long pageOffset, long pageSize, boolean includeDeleted) {
-        Organization org = _os.getCurrentOrganization();
-        if (facilityId == null) {
-            if (includeDeleted) {
-                return getAllPatientsWithDeleteyPermissions(org);
-            } else {
-                return getAllPatientsWithListOnlyPermissions(org);
-            }
-        }
-        Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-        if (includeDeleted) {
-            return getPatientsWithDeletePermissions(facility, org);
-        } else{
-            return getPatientsWithListOnlyPermissions(facility, org);
-        }
-    }
-
-    /**
-     * @param facilityId UUID
-     * @return List<Person>
-     */
-    // AuthorizationConfiguration enforced by RequirePermissionReadPatientDeletedList()
     public List<Person> getPatients(UUID facilityId) {
-        return getPatients(facilityId, DEFAULT_PAGINATION_PAGEOFFSET, DEFAULT_PAGINATION_PAGESIZE, false);
+        return _repo.findByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(), NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientList
+    public List<Person> getAllPatients() {
+        return _repo.findAllByOrganization(_os.getCurrentOrganization(), NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
+    public List<Person> getPatientsInclDeleted(UUID facilityId) {
+        return _repo.findByFacilityAndOrganizationIncludeDeleted(_os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(), NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
+    public List<Person> getAllPatientsInclDeleted() {
+        return _repo.findAllByOrganizationIncludeDeleted(_os.getCurrentOrganization(), NAME_SORT);
     }
 
     // NO PERMISSION CHECK (make sure the caller has one!)
