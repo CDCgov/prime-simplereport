@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
+import { Prompt } from "react-router-dom";
+
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
@@ -197,6 +199,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
               changeRole(e, user.id)
             }
+            disabled={user.id === currentUser.id}
           />
           <div className="float-right">
             <Button
@@ -214,7 +217,14 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
           <InProgressModal
             onClose={() => updateShowInProgressModal(false)}
             onContinue={() => onContinueChangeActiveUser(user.id)}
-          ></InProgressModal>
+          />
+        ) : null}
+
+        {usersState[activeUser].isEdited ? (
+          <Prompt
+            when={usersState[activeUser].isEdited}
+            message="You have unsaved changes. Do you want to continue?"
+          />
         ) : null}
       </React.Fragment>
     );
