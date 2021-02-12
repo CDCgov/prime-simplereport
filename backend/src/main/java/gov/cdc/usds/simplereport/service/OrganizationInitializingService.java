@@ -83,7 +83,7 @@ public class OrganizationInitializingService {
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
 		List<IdentityAttributes> users = _demoUserConfiguration.getAlternateUsers().stream()
-				.map(DemoUserConfiguration.DemoAlternateUser::getIdentity).collect(Collectors.toList());
+				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
 			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
 			initOktaUser(user, emptyOrg.getExternalId());
@@ -108,7 +108,7 @@ public class OrganizationInitializingService {
 		}
 	}
 
-	public String getDefaultOrganizationId() {
-		return _props.getOrganization().getExternalId();
+	public Organization getDefaultOrganization() {
+		return _props.getOrganization();
 	}
 }

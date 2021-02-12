@@ -121,8 +121,7 @@ public class OrganizationService {
 
     @AuthorizationConfiguration.RequirePermissionManageUserList
     public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
-        String organizationExternalId = getCurrentOrganization().getExternalId();
-        return _oktaService.getAllUsernamesForOrganization(organizationExternalId, role);
+        return _oktaService.getAllUsernamesForOrganization(getCurrentOrganization(), role);
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {

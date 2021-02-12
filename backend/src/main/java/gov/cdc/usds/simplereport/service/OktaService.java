@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -18,7 +19,7 @@ public interface OktaService {
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity);
 
-    public List<String> getAllUsernamesForOrganization(String externalId, OrganizationRole role);
+    public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role);
 
     public void createOrganization(String name, String externalId);
 

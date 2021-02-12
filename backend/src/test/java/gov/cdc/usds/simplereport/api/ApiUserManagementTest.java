@@ -91,12 +91,12 @@ class ApiUserManagementTest extends BaseApiTest {
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(0)))
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+                USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode resp = runQuery("add-user", variables);
         ObjectNode user = (ObjectNode) resp.get("addUser");
         assertEquals("Rhonda", user.get("firstName").asText());
         assertEquals(USERNAMES.get(0), user.get("email").asText());
-        assertEquals(_initService.getDefaultOrganizationId(), 
+        assertEquals(_initService.getDefaultOrganization().getExternalId(), 
                 user.get("organization").get("externalId").asText());
         assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
     }
@@ -104,7 +104,7 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void createUser_orgUser_failure() {
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+                USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         runQuery("add-user", variables, ACCESS_ERROR);
     }
 
@@ -117,7 +117,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+                USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         runQuery("add-user", addVariables);
 
         when(_oktaService.getOrganizationRolesForUser(USERNAMES.get(1)))
@@ -141,7 +141,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                USERNAMES.get(0), _initService.getDefaultOrganizationId());
+                USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         runQuery("add-user", addVariables);
 
         useOrgUser();
@@ -168,22 +168,22 @@ class ApiUserManagementTest extends BaseApiTest {
         
         List<ObjectNode> usersAdded = Arrays.asList(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                        USERNAMES.get(0), _initService.getDefaultOrganizationId()),
+                        USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId()),
                 getAddUserVariables("Jared", "K", "Holler", null, 
-                        USERNAMES.get(2), _initService.getDefaultOrganizationId()),
+                        USERNAMES.get(2), _initService.getDefaultOrganization().getExternalId()),
                 getAddUserVariables("Janice", null, "Katz", "Jr", 
-                        USERNAMES.get(3), _initService.getDefaultOrganizationId()));
+                        USERNAMES.get(3), _initService.getDefaultOrganization().getExternalId()));
         for (ObjectNode userVariables : usersAdded) {
             runQuery("add-user", userVariables);
         }
 
-        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganization(),
                                                          OrganizationRole.USER))
                 .thenReturn(List.of(USERNAMES.get(0), USERNAMES.get(2), USERNAMES.get(3)));
-        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganization(),
                                                          OrganizationRole.ADMIN))
                 .thenReturn(List.of());
-        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganizationId(),
+        when(_oktaService.getAllUsernamesForOrganization(_initService.getDefaultOrganization(),
                                                          OrganizationRole.ENTRY_ONLY))
                 .thenReturn(List.of());
         
@@ -223,11 +223,11 @@ class ApiUserManagementTest extends BaseApiTest {
         
         List<ObjectNode> usersAdded = List.of(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
-                        USERNAMES.get(0), _initService.getDefaultOrganizationId()),
+                        USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId()),
                 getAddUserVariables("Jared", "K", "Holler", null, 
-                        USERNAMES.get(2), _initService.getDefaultOrganizationId()),
+                        USERNAMES.get(2), _initService.getDefaultOrganization().getExternalId()),
                 getAddUserVariables("Janice", null, "Katz", "Jr", 
-                        USERNAMES.get(3), _initService.getDefaultOrganizationId()));
+                        USERNAMES.get(3), _initService.getDefaultOrganization().getExternalId()));
         for (ObjectNode userVariables : usersAdded) {
             runQuery("add-user", userVariables);
         }
@@ -258,7 +258,7 @@ class ApiUserManagementTest extends BaseApiTest {
         Set<OrganizationRole> roles = new HashSet<>();
         roles.add(OrganizationRole.USER);
         roles.add(role);
-        return new OrganizationRoleClaims(_initService.getDefaultOrganizationId(),
+        return new OrganizationRoleClaims(_initService.getDefaultOrganization().getExternalId(),
                                                    roles);
     }
 

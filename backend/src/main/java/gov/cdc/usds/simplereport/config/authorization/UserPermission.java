@@ -10,7 +10,7 @@ public enum UserPermission {
     EDIT_PATIENT,
     EDIT_FACILITY,
     EDIT_ORGANIZATION,
-    MANAGE_USER_LIST,
+    MANAGE_USERS,
     START_TEST,
     UPDATE_TEST,
     SUBMIT_TEST,

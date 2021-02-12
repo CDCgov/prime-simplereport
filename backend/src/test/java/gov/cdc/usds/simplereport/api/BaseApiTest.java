@@ -135,15 +135,7 @@ public abstract class BaseApiTest {
      * the {@code data} section of the response if the error was as expected.
      */
     protected ObjectNode runQuery(String queryFileName, String expectedError) {
-        try {
-            GraphQLResponse response = _template.postForResource(queryFileName);
-            assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
-            JsonNode responseBody = response.readTree();
-            assertGraphQLOutcome(responseBody, expectedError);
-            return (ObjectNode) responseBody.get("data");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return runQuery(queryFileName, null, expectedError);
     }
 
     /**
