@@ -16,7 +16,7 @@ const TermsOfService = () => {
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
           Terms of Service
         </h1>
-        <div className="prime-formgroup usa-prose height-card-lg overflow-x-hidden">
+        <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
           <ToS />
         </div>
         <Button
