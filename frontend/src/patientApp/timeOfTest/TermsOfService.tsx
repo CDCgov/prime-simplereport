@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "../../app/commonComponents/Button";
-import ToS from "./ToS"
+import ToS from "./ToS";
 import { Redirect } from "react-router";
 
 const TermsOfService = () => {
@@ -12,7 +12,7 @@ const TermsOfService = () => {
 
   return (
     <main className="patient-app padding-bottom-4 bg-base-lightest">
-      <div className="grid-container maxw-tablet">
+      <form className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
           Terms of Service
         </h1>
@@ -24,7 +24,7 @@ const TermsOfService = () => {
           onClick={() => setNextPage(true)}
           className="margin-top-3"
         />
-      </div>
+      </form>
     </main>
   );
 };
