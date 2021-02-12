@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -29,6 +30,9 @@ public class PersonService {
     private OrganizationService _os;
     private PersonRepository _repo;
 
+    public static final long DEFAULT_PAGINATION_PAGEOFFSET = 1;
+    public static final long DEFAULT_PAGINATION_PAGESIZE = 500;
+
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
 
@@ -47,22 +51,55 @@ public class PersonService {
         person.setFacility(facility);
     }
 
-    @AuthorizationConfiguration.RequirePermissionSearchPatients
-    public List<Person> getPatients(UUID facilityId) {
+    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
+    private List<Person> getPatientsWithDeletePermissions(Facility fac, Organization org) {
+        return _repo.findByFacilityAndOrganizationIncludeDeleted(fac, org, NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientList
+    private List<Person> getPatientsWithListOnlyPermissions(Facility fac, Organization org) {
+        return _repo.findByFacilityAndOrganization(fac, org, NAME_SORT);
+    }
+
+    /**
+     *
+     * @param facilityId UUID facility to access or NULL to see facilities across org
+     * @param pageOffset long Positive number (> 0) for the current page
+     * @param pageSize long Positive number (> 0) for the items per page to return
+     * @param includeDeleted boolean
+     * @return List<Person>
+     *
+     * -> @AuthorizationConfiguration? Permissions are dynamic based on includeArchived
+     */
+    public List<Person> getPatients(UUID facilityId, long pageOffset, long pageSize, boolean includeDeleted) {
         Organization org = _os.getCurrentOrganization();
         if (facilityId == null) {
             return _repo.findAllByOrganization(org, NAME_SORT);
         }
         Facility facility = _os.getFacilityInCurrentOrg(facilityId);
-        return _repo.findByFacilityAndOrganization(facility, _os.getCurrentOrganization(), NAME_SORT);
+        if (includeDeleted) {
+            return getPatientsWithDeletePermissions(facility, org);
+        } else{
+            return getPatientsWithListOnlyPermissions(facility, org);
+        }
+    }
+
+    /**
+     * @param facilityId UUID
+     * @return List<Person>
+     */
+    // AuthorizationConfiguration enforced by RequirePermissionReadPatientDeletedList()
+    public List<Person> getPatients(UUID facilityId) {
+        return getPatients(facilityId, DEFAULT_PAGINATION_PAGEOFFSET, DEFAULT_PAGINATION_PAGESIZE, false);
     }
 
     // NO PERMISSION CHECK (make sure the caller has one!)
-    public Person getPatient(String id) {
-        return getPatient(id, _os.getCurrentOrganization());
+    public Person getPatientNoPermissionsCheck(String id) {
+        return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
     }
 
-    public Person getPatient(String id, Organization org) {
+    // NO PERMISSION CHECK (make sure the caller has one!)
+    public Person getPatientNoPermissionsCheck(String id, Organization org) {
         UUID actualId = UUID.fromString(id);
         return _repo.findByIDAndOrganization(actualId, org)
             .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
@@ -142,7 +179,7 @@ public class PersonService {
         Boolean employedInHealthcare
     ) {
         StreetAddress patientAddress = new StreetAddress(street, streetTwo, city, state, zipCode, county);
-        Person patientToUpdate = this.getPatient(patientId);
+        Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
         patientToUpdate.updatePatient(
             lookupId,
             firstName,
@@ -165,9 +202,9 @@ public class PersonService {
         return _repo.save(patientToUpdate);
     }
 
-    @AuthorizationConfiguration.RequireGlobalAdminUser
+    @AuthorizationConfiguration.RequirePermissionDeletePatient
     public Person setIsDeleted(UUID id, boolean deleted) {
-        Person person = this.getPatient(id.toString());
+        Person person = this.getPatientNoPermissionsCheck(id.toString());
         person.setIsDeleted(deleted);
         return _repo.save(person);
     }

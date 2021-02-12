@@ -51,6 +51,16 @@ public class AuthorizationConfiguration {
     }
 
     /**
+     * Require the current user to have the {@link UserPermission#READ_PATIENT_INCL_DEL_LIST}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "READ_PATIENT_INCL_DEL_LIST" + ")")
+    public @interface RequirePermissionReadPatientDeletedList {
+    }
+
+    /**
      * Require the current user to have the {@link UserPermission#READ_RESULT_LIST}
      * permission.
      */
@@ -68,6 +78,16 @@ public class AuthorizationConfiguration {
     @Target(METHOD)
     @PreAuthorize(SPEL_HAS_PERMISSION + "EDIT_PATIENT" + ")")
     public @interface RequirePermissionEditPatient {
+    }
+
+    /**
+     * Require the current user to have the {@link UserPermission#DELETE_PATIENT}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "DELETE_PATIENT" + ")")
+    public @interface RequirePermissionDeletePatient {
     }
 
     /**

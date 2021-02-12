@@ -33,9 +33,9 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
                     UserPermission.READ_RESULT_LIST, UserPermission.EDIT_PATIENT,
                     UserPermission.START_TEST, UserPermission.UPDATE_TEST, UserPermission.SUBMIT_TEST)),
     /**
-     * This is the organization admin role: if you have this role, then you have the
+     * This is the ORGANIZATION admin role: if you have this role, then you have the
      * ability to change your role, so other roles you may have are moot. This
-     * role's permisisons (which is to say all of them) take precedence over any
+     * role's permission (which is to say all of them) take precedence over any
      * other roles.
      */
     ADMIN("Admin user", Ordered.HIGHEST_PRECEDENCE, EnumSet.allOf(UserPermission.class));

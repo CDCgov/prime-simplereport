@@ -105,7 +105,7 @@ public class TestOrderService {
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
     DeviceType deviceType = _dts.getDeviceType(deviceID);
     Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatient(patientId, org);
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceType(deviceType);
     order.setResult(result);
@@ -176,7 +176,7 @@ public class TestOrderService {
 
   private TestOrder retrieveTestOrder(String patientId) {
     Organization org = _os.getCurrentOrganization();
-    Person patient = _ps.getPatient(patientId, org);
+    Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 

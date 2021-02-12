@@ -14,6 +14,8 @@ enum UserPermission {
   READ_PATIENT_LIST
   READ_RESULT_LIST
   EDIT_PATIENT
+  DELETE_PATIENT
+  READ_PATIENT_INCL_DEL_LIST
   EDIT_FACILITY
   EDIT_ORGANIZATION
   SEARCH_PATIENTS
@@ -63,6 +65,7 @@ type Patient {
   telephone: String
   email: String
   role: String
+  isDeleted: Boolean
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
   lastTest: TestResult
@@ -175,7 +178,7 @@ type PatientLink {
 
 type Query {
   deviceType: [DeviceType]
-  patients(facilityId: String): [Patient]
+  patients(facilityId: String, pageNumber: Int, pageSize: Int, showDeleted: Boolean): [Patient]
   patient(id: String!): Patient
   organization: Organization
   organizations: [Organization]

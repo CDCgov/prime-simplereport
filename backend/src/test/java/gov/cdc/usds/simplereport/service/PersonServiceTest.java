@@ -17,7 +17,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -65,10 +65,13 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getPatients(null).get(0).getFirstName());
+
+        // try to read a list with deleted users
+        assertSecurityError(() -> _service.getPatients(null, 1, 100, true));
     }
 
     @Test
-    @WithSimpleReportSiteAdminUser
+    @WithSimpleReportOrgAdminUser
     void deletePatient_adminUser_success() {
         Person p = _service.addPatient(null, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25),
                 "123 Main",
@@ -79,18 +82,23 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
         assertEquals(0, _service.getPatients(null).size());
         assertTrue(deletedPerson.isDeleted());
+
+        List<Person> result = _service.getPatients(null, 0, 100, true);
+        assertEquals(1, result.size());
+        assertTrue(result.get(1).isDeleted());
     }
 
     @Test
-    @WithSimpleReportSiteAdminUser
+    @WithSimpleReportOrgAdminUser
     void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
+        // gets all patients across the org
         List<Person> patients = _service.getPatients(null);
         assertPatientList(patients, CHARLES, FRANK, BRAD, DEXTER, ELIZABETH, AMOS);
     }
 
     @Test
-    @WithSimpleReportSiteAdminUser
+    @WithSimpleReportOrgAdminUser
     void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata();
         List<Person> patients = _service.getPatients(_site1.getInternalId());

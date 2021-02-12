@@ -24,4 +24,7 @@ public interface PersonRepository extends EternalEntityRepository<Person> {
 
     @Query(BASE_QUERY + " AND e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
     public List<Person> findByFacilityAndOrganization(Facility fac, Organization org, Sort sortBy);
+
+    @Query("from #{#entityName} e where e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
+    public List<Person> findByFacilityAndOrganizationIncludeDeleted(Facility fac, Organization org, Sort sortBy);
 }
