@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Redirect } from 'react-router';
-import { useHistory } from 'react-router-dom';
-import { connect, useSelector } from 'react-redux';
+import React, { useState } from "react";
+import { Redirect } from "react-router";
+import { useHistory } from "react-router-dom";
+import { connect, useSelector } from "react-redux";
 
-import Button from '../../app/commonComponents/Button';
-import PatientTimeOfTestContainer from '../PatientTimeOfTestContainer';
-import PatientProfile from './PatientProfile';
+import Button from "../../app/commonComponents/Button";
+import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
+import PatientProfile from "./PatientProfile";
 
 const PatientProfileContainer = () => {
   const history = useHistory();
@@ -15,7 +15,7 @@ const PatientProfileContainer = () => {
   const patient = useSelector((state) => (state as any).patient as any);
 
   history.listen((loc, action) => {
-    if (action === 'POP') {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });
@@ -25,7 +25,7 @@ const PatientProfileContainer = () => {
       <Redirect
         push
         to={{
-          pathname: '/birth-date-confirmation',
+          pathname: "/birth-date-confirmation",
         }}
       />
     );
@@ -36,7 +36,7 @@ const PatientProfileContainer = () => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-edit',
+          pathname: "/patient-info-edit",
         }}
       />
     );
@@ -47,7 +47,7 @@ const PatientProfileContainer = () => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-symptoms',
+          pathname: "/patient-info-symptoms",
         }}
       />
     );
@@ -58,7 +58,7 @@ const PatientProfileContainer = () => {
       <div className="margin-top-3">
         <Button
           id="patient-confirm-and-continue"
-          label={'Confirm and continue'}
+          label={"Confirm and continue"}
           onClick={() => {
             setNextPage(true);
           }}
@@ -68,7 +68,7 @@ const PatientProfileContainer = () => {
         id="edit-patient-profile-button"
         className="margin-top-1"
         variant="outline"
-        label={'Edit information'}
+        label={"Edit information"}
         onClick={() => {
           setEditPage(true);
         }}
@@ -77,7 +77,7 @@ const PatientProfileContainer = () => {
   );
 
   return (
-    <PatientTimeOfTestContainer currentPage={'profile'}>
+    <PatientTimeOfTestContainer currentPage={"profile"}>
       <PatientProfile patient={patient} />
       {buttonGroup}
     </PatientTimeOfTestContainer>
