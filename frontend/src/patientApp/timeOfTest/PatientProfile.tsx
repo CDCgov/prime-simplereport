@@ -1,13 +1,13 @@
-import moment from "moment";
+import moment from 'moment';
 
-import { formatFullName } from "../../app/utils/user";
-import { formatAddress } from "../../app/utils/address";
-import { capitalizeText } from "../../app/utils/text";
+import { formatFullName } from '../../app/utils/user';
+import { formatAddress } from '../../app/utils/address';
+import { capitalizeText } from '../../app/utils/text';
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
-} from "../../app/constants";
+} from '../../app/constants';
 
 interface Props {
   patient: any;
@@ -22,9 +22,9 @@ const PatientProfile = ({ patient }: Props) => {
   const gender = GENDER_VALUES.find((val) => val.value === patient.gender)
     ?.label;
 
-  const newLineSpan = ({ text = "" }) => {
+  const newLineSpan = ({ text = '' }) => {
     return text
-      .split("\n")
+      .split('\n')
       .map((str) => <span className="display-block">{str}</span>);
   };
 
@@ -36,7 +36,7 @@ const PatientProfile = ({ patient }: Props) => {
     state: patient.state,
     zipCode: patient.zipCode,
   });
-  const notProvided = "Not provided";
+  const notProvided = 'Not provided';
 
   return (
     <div className="prime-formgroup usa-prose">
@@ -48,7 +48,7 @@ const PatientProfile = ({ patient }: Props) => {
       <h3 className="font-heading-sm">Date of birth</h3>
       <p>
         {patient.birthDate
-          ? moment(patient.birthDate).format("MM/DD/yyyy")
+          ? moment(patient.birthDate).format('MM/DD/yyyy')
           : notProvided}
       </p>
       <h3 className="font-heading-sm">Phone number</h3>
@@ -58,7 +58,7 @@ const PatientProfile = ({ patient }: Props) => {
       <h3 className="font-heading-sm">Address</h3>
       <p>{address ? newLineSpan({ text: address }) : notProvided}</p>
       <h3 className="font-heading-sm">Email address</h3>
-      <p>{patient.email || notProvided}</p>
+      <p id="patient-email">{patient.email || notProvided}</p>
       <h2 className="prime-formgroup-heading font-heading-lg">Demographics</h2>
       <h3 className="font-heading-sm">Race</h3>
       <p>{race || notProvided}</p>

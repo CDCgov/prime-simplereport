@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { connect, useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router";
-import { gql, useLazyQuery } from "@apollo/client";
-import moment from "moment";
+import React, { useEffect, useState } from 'react';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import { Redirect } from 'react-router';
+import { gql, useLazyQuery } from '@apollo/client';
+import moment from 'moment';
 
-import Button from "../../app/commonComponents/Button";
-import TextInput from "../../app/commonComponents/TextInput";
-import { setPatient } from "../../app/store";
+import Button from '../../app/commonComponents/Button';
+import TextInput from '../../app/commonComponents/TextInput';
+import { setPatient } from '../../app/store';
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
   query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
@@ -36,9 +36,9 @@ const PATIENT_LINK_VALIDATION_QUERY = gql`
 
 const DOB = () => {
   const dispatch = useDispatch();
-  const [birthDate, setBirthDate] = useState("");
-  const [formattedBirthDate, setFormattedBirthDate] = useState("");
-  const [birthDateError, setBirthDateError] = useState("");
+  const [birthDate, setBirthDate] = useState('');
+  const [formattedBirthDate, setFormattedBirthDate] = useState('');
+  const [birthDateError, setBirthDateError] = useState('');
   const [nextPage, setNextPage] = useState(false);
   const dobRef = React.createRef() as any;
   const plid = useSelector((state) => (state as any).plid as String);
@@ -47,7 +47,7 @@ const DOB = () => {
     PATIENT_LINK_VALIDATION_QUERY,
     {
       variables: { plid, birthDate: formattedBirthDate },
-      fetchPolicy: "no-cache",
+      fetchPolicy: 'no-cache',
     }
   );
 
@@ -55,9 +55,9 @@ const DOB = () => {
     if (!data) return;
     const patient = data.patientLinkVerify;
     const residentCongregateSetting = patient.residentCongregateSetting
-      ? "YES"
-      : "NO";
-    const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
+      ? 'YES'
+      : 'NO';
+    const employedInHealthcare = patient.employedInHealthcare ? 'YES' : 'NO';
 
     dispatch(
       setPatient({
@@ -72,14 +72,14 @@ const DOB = () => {
   }, [data]);
 
   const isValidForm = () => {
-    const validDate = moment(birthDate.replace("/", ""), "MMDDYYYY").isValid();
+    const validDate = moment(birthDate.replace('/', ''), 'MMDDYYYY').isValid();
 
     if (validDate) {
-      setBirthDateError("");
+      setBirthDateError('');
       return true;
     } else {
       dobRef.current.focus();
-      setBirthDateError("Enter your date of birth");
+      setBirthDateError('Enter your date of birth');
       return false;
     }
   };
@@ -87,7 +87,7 @@ const DOB = () => {
   const confirmBirthDate = () => {
     if (isValidForm()) {
       setFormattedBirthDate(
-        moment(birthDate.replace("/", ""), "MMDDYYYY").format("YYYY-MM-DD")
+        moment(birthDate.replace('/', ''), 'MMDDYYYY').format('YYYY-MM-DD')
       );
       validateBirthDate();
     }
@@ -108,7 +108,7 @@ const DOB = () => {
       <Redirect
         push
         to={{
-          pathname: "/patient-info-confirm",
+          pathname: '/patient-info-confirm',
         }}
       />
     );
@@ -123,23 +123,23 @@ const DOB = () => {
           </p>
           <form className="usa-form" onSubmit={confirmBirthDate}>
             <TextInput
-              label={"Date of birth"}
-              name={"birthDate"}
-              type={"bday"}
-              autoComplete={"bday"}
+              label={'Date of birth'}
+              name={'birthDate'}
+              type={'bday'}
+              autoComplete={'bday'}
               value={birthDate}
               size={8}
-              pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
-              inputMode={"numeric"}
-              ariaDescribedBy={"bdayFormat"}
-              hintText={"MM/DD/YYYY or MMDDYYYY"}
+              pattern={'([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})'}
+              inputMode={'numeric'}
+              ariaDescribedBy={'bdayFormat'}
+              hintText={'MM/DD/YYYY or MMDDYYYY'}
               errorMessage={birthDateError}
               hideOptional={true}
-              validationStatus={birthDateError ? "error" : undefined}
+              validationStatus={birthDateError ? 'error' : undefined}
               onChange={(evt) => setBirthDate(evt.currentTarget.value)}
               inputRef={dobRef}
             />
-            <Button label={"Continue"} type={"submit"} />
+            <Button id="dob-submit-button" label={'Continue'} type={'submit'} />
           </form>
         </div>
       </main>

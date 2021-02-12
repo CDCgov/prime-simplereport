@@ -35,7 +35,7 @@ function addPatient() {
   this.expect.section('@patientList').to.be.visible;
   this.expect.section('@patientList').to.contain.text(fullName);
 
-  return fullName;
+  return { patientName: fullName, birthDate: dob };
 }
 
 module.exports = {
