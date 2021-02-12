@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.exceptions.IncorrectBirthDateException;
+import gov.cdc.usds.simplereport.api.exceptions.PatientLinkExpiredException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -42,7 +43,7 @@ public class PatientLinkService {
         if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
             return pl.getTestOrder().getOrganization();
         } else {
-            return null;
+            throw new PatientLinkExpiredException("Patient Link is expired; please contact your provider");
         }
     }
 
