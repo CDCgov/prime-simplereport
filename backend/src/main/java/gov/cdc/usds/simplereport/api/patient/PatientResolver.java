@@ -3,11 +3,11 @@ package gov.cdc.usds.simplereport.api.patient;
 import java.util.List;
 import java.util.UUID;
 
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PersonService;
 

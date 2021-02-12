@@ -51,7 +51,6 @@ public class PersonService {
         person.setFacility(facility);
     }
 
-
     @AuthorizationConfiguration.RequirePermissionReadPatientList
     public List<Person> getPatients(UUID facilityId) {
         return _repo.findByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
