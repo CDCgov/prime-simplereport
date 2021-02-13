@@ -31,11 +31,6 @@ exports[`SearchResults should show matching results 1`] = `
           <th
             scope="col"
           >
-            Unique ID
-          </th>
-          <th
-            scope="col"
-          >
             Actions
           </th>
         </tr>
@@ -45,7 +40,6 @@ exports[`SearchResults should show matching results 1`] = `
           <td>
             George Washington
           </td>
-          <td />
           <td />
           <td>
             <button
@@ -62,7 +56,6 @@ exports[`SearchResults should show matching results 1`] = `
             Martin Luther King
           </td>
           <td />
-          <td />
           <td>
             <button
               className="usa-button usa-button--unstyled"
@@ -77,7 +70,6 @@ exports[`SearchResults should show matching results 1`] = `
           <td>
             Barack Hussein Obama
           </td>
-          <td />
           <td />
           <td>
             <button
