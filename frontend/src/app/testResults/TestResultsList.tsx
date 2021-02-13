@@ -1,21 +1,21 @@
-import { gql } from '@apollo/client';
-import React, { useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
-import moment from 'moment';
-import classnames from 'classnames';
-import { PATIENT_TERM_CAP } from '../../config/constants';
-import { displayFullName } from '../utils';
-import TestResultPrintModal from './TestResultPrintModal';
-import TestResultCorrectionModal from './TestResultCorrectionModal';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
-import { Menu, MenuItem, MenuButton } from '@szhsin/react-menu';
-import '@szhsin/react-menu/dist/index.css';
-import './TestResultsList.scss';
+import { gql } from "@apollo/client";
+import React, { useRef, useState } from "react";
+import { useSelector } from "react-redux";
+import moment from "moment";
+import classnames from "classnames";
+import { PATIENT_TERM_CAP } from "../../config/constants";
+import { displayFullName } from "../utils";
+import TestResultPrintModal from "./TestResultPrintModal";
+import TestResultCorrectionModal from "./TestResultCorrectionModal";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
+import "@szhsin/react-menu/dist/index.css";
+import "./TestResultsList.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from '../commonComponents/QueryWrapper';
+} from "../commonComponents/QueryWrapper";
 
 const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
@@ -105,10 +105,10 @@ export const DetachedTestResultsList: any = ({
     return [...testResults].sort(byDateTested).map((r) => (
       <tr
         key={r.internalId}
-        title={r.correctionStatus === 'REMOVED' ? 'Marked as error' : ''}
+        title={r.correctionStatus === "REMOVED" ? "Marked as error" : ""}
         className={classnames(
-          'sr-test-result-row',
-          r.correctionStatus === 'REMOVED' && 'sr-test-result-row--removed'
+          "sr-test-result-row",
+          r.correctionStatus === "REMOVED" && "sr-test-result-row--removed"
         )}
       >
         <th scope="row">
@@ -118,11 +118,11 @@ export const DetachedTestResultsList: any = ({
             r.patient.lastName
           )}
         </th>
-        <td>{moment(r.dateTested).format('lll')}</td>
+        <td>{moment(r.dateTested).format("lll")}</td>
         <td>{r.result}</td>
         <td>{r.deviceType.name}</td>
         <td>
-          {r.correctionStatus !== 'REMOVED' && (
+          {r.correctionStatus !== "REMOVED" && (
             <Menu
               menuButton={
                 <MenuButton className="sr-modal-menu-button">
@@ -147,7 +147,7 @@ export const DetachedTestResultsList: any = ({
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>Test Results {showAll ? '(all)' : '(past two days)'}</h2>
+              <h2>Test Results {showAll ? "(all)" : "(past two days)"}</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -182,7 +182,7 @@ export const DetachedTestResultsList: any = ({
 };
 
 const TestResultsList = (
-  props: Omit<Props, InjectedQueryWrapperProps | 'showAll' | 'setShowAll'>
+  props: Omit<Props, InjectedQueryWrapperProps | "showAll" | "setShowAll">
 ) => {
   const [showAll, setShowAll] = useState(false);
   const activeFacilityId = useSelector(
@@ -194,7 +194,7 @@ const TestResultsList = (
   }
 
   // This gives us midnight of the previous day
-  const startDate = moment().subtract(1, 'day').format('YYYY-MM-DD');
+  const startDate = moment().subtract(1, "day").format("YYYY-MM-DD");
   return (
     <QueryWrapper<Props>
       query={testResultQuery}
