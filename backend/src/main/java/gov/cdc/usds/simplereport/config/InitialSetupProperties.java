@@ -91,9 +91,7 @@ public class InitialSetupProperties {
 
         public Facility makeRealFacility(Organization org, Provider p, DeviceSpecimen defaultDeviceSpec,
                 List<DeviceSpecimen> configured) {
-            Facility f = new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec,
-                    configured);
-            return f;
+            return new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec, configured);
         }
 
         public String getName() {
