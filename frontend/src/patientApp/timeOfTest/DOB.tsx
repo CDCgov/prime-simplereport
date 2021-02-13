@@ -139,7 +139,7 @@ const DOB = () => {
               onChange={(evt) => setBirthDate(evt.currentTarget.value)}
               inputRef={dobRef}
             />
-            <Button label={"Continue"} type={"submit"} />
+            <Button id="dob-submit-button" label={"Continue"} type={"submit"} />
           </form>
         </div>
       </main>

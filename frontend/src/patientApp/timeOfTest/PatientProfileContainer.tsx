@@ -57,6 +57,7 @@ const PatientProfileContainer = () => {
     <>
       <div className="margin-top-3">
         <Button
+          id="patient-confirm-and-continue"
           label={"Confirm and continue"}
           onClick={() => {
             setNextPage(true);
@@ -64,6 +65,7 @@ const PatientProfileContainer = () => {
         />
       </div>
       <Button
+        id="edit-patient-profile-button"
         className="margin-top-1"
         variant="outline"
         label={"Edit information"}

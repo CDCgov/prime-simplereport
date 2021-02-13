@@ -58,7 +58,7 @@ const PatientProfile = ({ patient }: Props) => {
       <h3 className="font-heading-sm">Address</h3>
       <p>{address ? newLineSpan({ text: address }) : notProvided}</p>
       <h3 className="font-heading-sm">Email address</h3>
-      <p>{patient.email || notProvided}</p>
+      <p id="patient-email">{patient.email || notProvided}</p>
       <h2 className="prime-formgroup-heading font-heading-lg">Demographics</h2>
       <h3 className="font-heading-sm">Race</h3>
       <p>{race || notProvided}</p>

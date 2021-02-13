@@ -115,7 +115,11 @@ const AoEModalForm = ({
                     Point your camera at the QR code <br />
                     to access the questionnaire
                   </p>
-                  <div className="margin-top-205">
+                  <div
+                    className="margin-top-205"
+                    id="patient-link-qr-code"
+                    data-patient-link={patientLink}
+                  >
                     <QRCode value={patientLink} size="190" />
                   </div>
                 </div>
