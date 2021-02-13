@@ -11,8 +11,10 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 /**
@@ -25,10 +27,13 @@ public class DeviceTypeService {
 
     private DeviceTypeRepository _repo;
     private DeviceSpecimenRepository _deviceSpecimenRepo;
+    private SpecimenTypeRepository _specimenTypeRepo;
 
-    public DeviceTypeService(DeviceTypeRepository repo, DeviceSpecimenRepository deviceSpecimenRepo) {
+    public DeviceTypeService(DeviceTypeRepository repo, DeviceSpecimenRepository deviceSpecimenRepo,
+            SpecimenTypeRepository specimenTypeRepo) {
         _repo = repo;
         _deviceSpecimenRepo = deviceSpecimenRepo;
+        _specimenTypeRepo = specimenTypeRepo;
     }
 
     @Transactional(readOnly = false)
@@ -76,7 +81,7 @@ public class DeviceTypeService {
             d.setLoincCode(loincCode);
         }
         if (swabType != null) {
-            d.setSwabType(swabType);
+            throw new IllegalGraphqlArgumentException("swab type editing is temporarily unavailable");
         }
         return _repo.save(d);
     }
@@ -90,7 +95,14 @@ public class DeviceTypeService {
         String loincCode,
         String swabType
     ) {
-        return _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
+        SpecimenType st = _specimenTypeRepo.findByTypeCode(swabType).orElseGet(
+                () -> _specimenTypeRepo.save(new SpecimenType("Auto-generated " + swabType, swabType)));
+        if (st.isDeleted()) {
+            throw new IllegalGraphqlArgumentException("swab type has been deleted and cannot be used");
+        }
+        DeviceType dt = _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
+        _deviceSpecimenRepo.save(new DeviceSpecimen(dt, st));
+        return dt;
     }
 
     public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
