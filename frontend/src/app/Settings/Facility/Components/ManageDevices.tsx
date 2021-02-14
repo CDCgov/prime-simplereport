@@ -72,7 +72,7 @@ const ManageDevices: React.FC<Props> = ({
               boxes={[
                 {
                   value: "1",
-                  label: "Set as Default",
+                  label: "Set as default",
                   checked: deviceId === defaultDevice,
                 },
               ]}
@@ -99,7 +99,7 @@ const ManageDevices: React.FC<Props> = ({
       >
         <thead>
           <tr>
-            <th scope="col">Device Type</th>
+            <th scope="col">Device type</th>
             <th scope="col"></th>
             <th scope="col">Action</th>
           </tr>
@@ -112,14 +112,14 @@ const ManageDevices: React.FC<Props> = ({
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
-        <h3> Manage Devices </h3>
+        <h3>Manage devices</h3>
       </div>
       <div className="usa-card__body">{renderDevicesTable()}</div>
       <div className="usa-card__footer">
         <Button
           onClick={onAddDevice}
           variant="outline"
-          label="Add Device"
+          label="Add device"
           icon="plus"
           disabled={_getRemainingDeviceOptions().length === 0}
         />

@@ -62,7 +62,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
                                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
 
                 Person patient = _service.getPatientLinkVerify(to.getPatientLink().getInternalId().toString(),
-                                to.getPatient().getBirthDate().toString());
+                                to.getPatient().getBirthDate());
                 assertEquals(patient.getInternalId(), p.getInternalId());
         }
 

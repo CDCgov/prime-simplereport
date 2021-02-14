@@ -19,7 +19,6 @@ const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
-      lookupId
       firstName
       lastName
       middleName
@@ -34,10 +33,10 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $facilityId: String!
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
@@ -61,10 +60,10 @@ const UPDATE_AOE = gql`
   mutation UpdateAOE(
     $patientId: String!
     $symptoms: String
-    $symptomOnset: String
+    $symptomOnset: LocalDate
     $pregnancy: String
     $firstTest: Boolean
-    $priorTestDate: String
+    $priorTestDate: LocalDate
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
@@ -117,19 +116,15 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     if (data && data.patients) {
       let formattedQueryString = queryString.toLowerCase();
       let searchResults = data.patients.filter((patient) => {
-        let doesMatchPatientName =
+        return (
           displayFullName(
             patient.firstName,
             patient.middleName,
             patient.lastName
           )
             .toLowerCase()
-            .indexOf(formattedQueryString) > -1;
-
-        let doesMatchLookupId = patient.lookupId
-          ? patient.lookupId.toLowerCase().indexOf(formattedQueryString) > -1
-          : false;
-        return doesMatchPatientName || doesMatchLookupId;
+            .indexOf(formattedQueryString) > -1
+        );
       });
       return searchResults;
     }

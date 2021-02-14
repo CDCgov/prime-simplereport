@@ -16,7 +16,6 @@ const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
-      lookupId
       firstName
       lastName
       middleName
@@ -30,7 +29,6 @@ const patientQuery = gql`
 
 interface Patient {
   internalId: string;
-  lookupId: string;
   firstName: string;
   lastName: string;
   middleName: string;
@@ -78,7 +76,6 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
       return (
         <tr key={patient.internalId}>
           <th scope="row">{editUserLink}</th>
-          <td>{patient.lookupId}</td>
           <td> {patient.birthDate}</td>
           <td>
             {patient.lastTest
@@ -118,7 +115,6 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   <thead>
                     <tr>
                       <th scope="col">Name</th>
-                      <th scope="col">Unique ID</th>
                       <th scope="col">Date of Birth</th>
                       <th scope="col">Days since last test</th>
                     </tr>

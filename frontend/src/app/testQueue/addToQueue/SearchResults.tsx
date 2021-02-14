@@ -26,7 +26,7 @@ const SearchResults = ({
   };
   let results;
   if (patients.length === 0) {
-    results = <h3> No results </h3>;
+    results = <h3>No results</h3>;
     if (canAddToQueue) setCanAddToQueue(false);
   } else {
     results = (
@@ -36,8 +36,7 @@ const SearchResults = ({
             <thead>
               <tr>
                 <th scope="col">Full name</th>
-                <th scope="col">Date of Birth</th>
-                <th scope="col">Unique ID</th>
+                <th scope="col">Date of birth</th>
                 <th scope="col">Actions</th>
               </tr>
             </thead>
@@ -48,12 +47,11 @@ const SearchResults = ({
                     {displayFullName(p.firstName, p.middleName, p.lastName)}
                   </td>
                   <td>{p.birthDate}</td>
-                  <td>{p.lookupId}</td>
                   <td>
                     {canAddToTestQueue(p.internalId) ? (
                       <Button
                         variant="unstyled"
-                        label="Begin Test"
+                        label="Begin test"
                         onClick={() => {
                           setDialogPatient(p);
                           setCanAddToQueue(canAddToTestQueue(p.internalId));

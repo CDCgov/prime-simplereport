@@ -41,7 +41,6 @@ const queueQuery = gql`
         internalId
         telephone
         birthDate
-        lookupId
         firstName
         middleName
         lastName

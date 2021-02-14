@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.service;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
@@ -46,11 +45,10 @@ public class PatientLinkService {
         }
     }
 
-    public Person getPatientLinkVerify(String internalId, String birthDate) throws Exception {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws Exception {
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
-        if (patient.getBirthDate().equals(LocalDate.parse(birthDate, df))) {
+        if (patient.getBirthDate().equals(birthDate)) {
             return patient;
         } else {
             throw new Exception("Incorrect birth date");

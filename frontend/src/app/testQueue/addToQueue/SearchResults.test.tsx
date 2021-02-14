@@ -67,6 +67,6 @@ describe("SearchResults", () => {
     );
 
     expect(screen.getAllByText("Test in progress")).toHaveLength(2);
-    expect(screen.getAllByText("Begin Test")).toHaveLength(1);
+    expect(screen.getAllByText("Begin test")).toHaveLength(1);
   });
 });

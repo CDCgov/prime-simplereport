@@ -41,20 +41,9 @@ class PatientManagementTest extends BaseApiTest {
     }
 
     @Test
-    void createAndFetchOnePatientUsDate() throws Exception {
-        String firstName = "Jon";
-        JsonNode patients = doCreateAndFetch(firstName, "Snow", "05/18/1066", "(202) 867-5309", "youknownothing");
-        assertTrue(patients.has(0), "At least one patient found");
-        JsonNode jon = patients.get(0);
-        assertEquals(firstName, jon.get("firstName").asText());
-        assertEquals("1066-05-18", jon.get("birthDate").asText());
-        assertEquals("(202) 867-5309", jon.get("telephone").asText());
-    }
-
-    @Test
     void createAndFetchOnePatientIsoDate() throws Exception {
         String firstName = "Sansa";
-        JsonNode patients = doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+        JsonNode patients = doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
         assertTrue(patients.has(0), "At least one patient found");
         JsonNode sansa = patients.get(0);
         assertEquals(firstName, sansa.get("firstName").asText());
@@ -66,21 +55,21 @@ class PatientManagementTest extends BaseApiTest {
     void createPatient_adminUser_ok() throws Exception {
         useOrgAdmin();
         String firstName = "Sansa";
-        doCreateAndFetch(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME", "notbitter");
+        doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
     }
 
     @Test
     void createPatient_entryUser_fail() throws Exception {
         useOrgEntryOnly();
         String firstName = "Sansa";
-        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "12/25/1100", "1-800-BIZ-NAME",
+        GraphQLResponse mutandem = executeAddPersonMutation(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME",
                 "notbitter");
         assertGraphQLOutcome(mutandem.readTree(), ACCESS_ERROR);
     }
 
     @Test
     void failsOnInvalidPhoneNumber() throws Exception {
-        GraphQLResponse resp = executeAddPersonMutation("a", "b", "12/29/2020", "d", "e");
+        GraphQLResponse resp = executeAddPersonMutation("a", "b", "2020-12-29", "d", "e");
         JsonNode errors = resp.readTree().get("errors");
         assertNotNull(errors);
         assertTrue(errors.isArray());
