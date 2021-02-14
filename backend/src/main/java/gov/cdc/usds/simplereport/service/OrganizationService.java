@@ -92,7 +92,7 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    @AuthorizationConfiguration.RequirePermissionManageUserList
+    @AuthorizationConfiguration.RequirePermissionManageUsers
     public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
         Optional<OrganizationRoleClaims> authBasedOrgRoles = 
                 _oktaRepo.getOrganizationRolesForUser(apiUser.getLoginEmail());
@@ -114,13 +114,13 @@ public class OrganizationService {
     }
 
     // Move this to ApiUserService soon
-    @AuthorizationConfiguration.RequirePermissionManageUserList
+    @AuthorizationConfiguration.RequirePermissionManageUsers
     public List<ApiUser> getUsersInCurrentOrg(OrganizationRole role) {
         List<String> usernames = getUsernamesInCurrentOrg(role);
         return _userRepo.findAllByLoginEmailIn(usernames);
     }
 
-    @AuthorizationConfiguration.RequirePermissionManageUserList
+    @AuthorizationConfiguration.RequirePermissionManageUsers
     public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
         return _oktaRepo.getAllUsernamesForOrganization(getCurrentOrganization(), role);
     }

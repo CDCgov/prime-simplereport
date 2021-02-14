@@ -97,7 +97,7 @@ public class AuthorizationConfiguration {
     @Retention(RUNTIME)
     @Target(METHOD)
     @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")")
-    public @interface RequirePermissionManageUserList {
+    public @interface RequirePermissionManageUsers {
     }
     
     /**
