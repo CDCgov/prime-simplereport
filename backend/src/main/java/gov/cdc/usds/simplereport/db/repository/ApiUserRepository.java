@@ -5,7 +5,6 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Collection;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;

@@ -2,10 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import java.util.Set;
-import java.util.HashSet;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
 
@@ -18,10 +15,6 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web
