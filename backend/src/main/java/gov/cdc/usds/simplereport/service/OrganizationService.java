@@ -71,10 +71,10 @@ public class OrganizationService {
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
-        OrganizationRoleClaims foundRoles = orgRoles.stream()
+        Optional<OrganizationRoleClaims> foundRoles = orgRoles.stream()
                 .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
-                .findFirst().get();
-        return Optional.of(new OrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+                .findFirst();
+        return foundRoles.map(r -> new OrganizationRoles(foundOrg, r.getGrantedRoles()));
     }
 
     public Organization getCurrentOrganization() {

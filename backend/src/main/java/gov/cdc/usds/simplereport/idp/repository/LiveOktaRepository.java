@@ -109,9 +109,6 @@ public class LiveOktaRepository implements OktaRepository {
             return List.of();
         }
         Group group = groups.single();
-        LOG.warn("OULZAS"+String.join(", ", group.listUsers().stream()
-                .map(u -> u.getProfile().getEmail())
-                .collect(Collectors.toList())));
         return group.listUsers().stream()
                 .map(u -> u.getProfile().getEmail())
                 .collect(Collectors.toList());

@@ -69,8 +69,6 @@ public class DemoOktaRepository implements OktaRepository {
     public void updateUser(String oldUsername, IdentityAttributes userIdentity) {}
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
-        LOG.warn("OUZAS"+String.join(", ", orgRoleUsernamesMap.getOrDefault(org.getExternalId(), new HashMap<>())
-                                                              .getOrDefault(role, List.of())));
         return orgRoleUsernamesMap.getOrDefault(org.getExternalId(), new HashMap<>())
                                   .getOrDefault(role, List.of());
     }
@@ -83,7 +81,7 @@ public class DemoOktaRepository implements OktaRepository {
         orgRoleUsernamesMap.remove(externalId);
         // remove all users from this map whose org roles are in the deleted org
         usernameOrgRolesMap = usernameOrgRolesMap.entrySet().stream()
-                .filter(e -> e.getValue().getOrganizationExternalId() != externalId)
+                .filter(e -> !(e.getValue().getOrganizationExternalId().equals(externalId)))
                 .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
     }
 
