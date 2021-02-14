@@ -23,6 +23,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 import com.okta.sdk.resource.ResourceException;
@@ -46,7 +47,7 @@ public class OrganizationInitializingService {
 	@Autowired
 	private ApiUserRepository _apiUserRepo;
 	@Autowired
-	private OktaService _oktaService;
+	private OktaRepository _oktaRepo;
 	@Autowired
 	private DemoUserConfiguration _demoUserConfiguration;
 
@@ -55,7 +56,6 @@ public class OrganizationInitializingService {
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
 		if (probe.isPresent()) {
-			initOktaOrg(probe.get());
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -93,7 +93,7 @@ public class OrganizationInitializingService {
 	private void initOktaOrg(Organization org) {
 		try {
 			LOG.info("Creating organization {} in Okta", org.getOrganizationName());
-			_oktaService.createOrganization(org.getOrganizationName(), org.getExternalId());
+			_oktaRepo.createOrganization(org.getOrganizationName(), org.getExternalId());
 		} catch (ResourceException e) {
 			LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
 		}
@@ -102,7 +102,7 @@ public class OrganizationInitializingService {
 	private void initOktaUser(IdentityAttributes user, String orgExternalId) {
 		try {
 			LOG.info("Creating user {} in Okta", user.getUsername());
-			_oktaService.createUser(user, orgExternalId);
+			_oktaRepo.createUser(user, orgExternalId);
 		} catch (ResourceException e) {
 			LOG.info("User {} already exists in Okta", user.getUsername());
 		}

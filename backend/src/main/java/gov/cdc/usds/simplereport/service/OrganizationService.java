@@ -25,6 +25,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -41,20 +42,20 @@ public class OrganizationService {
     private ProviderRepository _providerRepo;
     private ApiUserRepository _userRepo;
     private AuthorizationService _authService;
-    private OktaService _oktaService;
+    private OktaRepository _oktaRepo;
 
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
             ApiUserRepository userRepo,
-            OktaService oktaService) {
+            OktaRepository oktaRepo) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
         _userRepo = userRepo;
-        _oktaService = oktaService;
+        _oktaRepo = oktaRepo;
     }
 
     public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
@@ -94,7 +95,7 @@ public class OrganizationService {
     @AuthorizationConfiguration.RequirePermissionManageUserList
     public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
         Optional<OrganizationRoleClaims> authBasedOrgRoles = 
-                _oktaService.getOrganizationRolesForUser(apiUser.getLoginEmail());
+                _oktaRepo.getOrganizationRolesForUser(apiUser.getLoginEmail());
         return authBasedOrgRoles.map(a -> {
             return new OrganizationRoles(getOrganization(a.getOrganizationExternalId()),
                                          a.getGrantedRoles());
@@ -121,7 +122,7 @@ public class OrganizationService {
 
     @AuthorizationConfiguration.RequirePermissionManageUserList
     public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
-        return _oktaService.getAllUsernamesForOrganization(getCurrentOrganization(), role);
+        return _oktaRepo.getAllUsernamesForOrganization(getCurrentOrganization(), role);
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
@@ -227,7 +228,7 @@ public class OrganizationService {
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
                 orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         _facilityRepo.save(facility);
-        _oktaService.createOrganization(name, externalId);
+        _oktaRepo.createOrganization(name, externalId);
         return org;
     }
 

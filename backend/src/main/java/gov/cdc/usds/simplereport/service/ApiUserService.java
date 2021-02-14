@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
@@ -24,7 +25,7 @@ public class ApiUserService {
     private SiteAdminEmailList _siteAdmins;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
-    private OktaService _oktaService;
+    private OktaRepository _oktaRepo;
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
     
@@ -32,12 +33,12 @@ public class ApiUserService {
         ApiUserRepository apiUserRepo,
         IdentitySupplier supplier,
         SiteAdminEmailList admins,
-        OktaService oktaService
+        OktaRepository oktaRepo
     ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
         _siteAdmins = admins;
-        _oktaService = oktaService;
+        _oktaRepo = oktaRepo;
     }
 
     @Transactional
@@ -45,7 +46,7 @@ public class ApiUserService {
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        _oktaService.createUser(userIdentity, organizationExternalId);
+        _oktaRepo.createUser(userIdentity, organizationExternalId);
         return user;
     }
 
@@ -66,7 +67,7 @@ public class ApiUserService {
         user = _apiUserRepo.save(user);
         IdentityAttributes userIdentity = new IdentityAttributes(newUsername, firstName, middleName, lastName, suffix);
         if (!newUsername.equals(oldUsername)) {
-            _oktaService.updateUser(oldUsername, userIdentity);
+            _oktaRepo.updateUser(oldUsername, userIdentity);
         }
         return user;
     }

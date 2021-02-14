@@ -28,7 +28,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.service.OktaService;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -50,7 +50,7 @@ public abstract class BaseApiTest {
     @MockBean
     protected IdentitySupplier _supplier;
     @MockBean
-    protected OktaService _oktaService;
+    protected OktaRepository _oktaRepo;
 
     private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
@@ -82,7 +82,7 @@ public abstract class BaseApiTest {
     }
 
     protected void useSuperUser() {
-        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for super user");
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     }
 
