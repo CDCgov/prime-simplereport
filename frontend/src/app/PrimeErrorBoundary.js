@@ -7,12 +7,14 @@ export default class PrimeErrorBoundary extends React.Component {
 
   componentDidCatch(error, info) {
     this.setState({ hasError: true, error });
-    appInsights.trackException({
-      error: error,
-      //   exception: error,
-      //   severityLevel: SeverityLevel.Error,
-      properties: { ...info },
-    });
+    if (appInsights) {
+      appInsights.trackException({
+        error: error,
+        //   exception: error,
+        //   severityLevel: SeverityLevel.Error,
+        properties: { ...info },
+      });
+    }
   }
 
   render() {
