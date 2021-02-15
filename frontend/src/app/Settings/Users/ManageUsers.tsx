@@ -5,12 +5,11 @@ import { Prompt } from "react-router-dom";
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
-import Dropdown from "../../commonComponents/Dropdown";
 import InProgressModal from "./InProgressModal";
+import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import { SettingsUser } from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
-import { UserRole } from "../../permissions";
 
 import "./ManageUsers.scss";
 
@@ -38,14 +37,13 @@ const ManageUsers: React.FC<Props> = ({
   const [usersState, updateUsersState] = useState<SettingsUsers>(settingsUsers);
   const [activeUserId, updateActiveUserId] = useState<string>(
     Object.keys(settingsUsers)[0]
-  ); // pick the first user
+  ); // TODO: unless there is a desired sort algorithm, pick the first user
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
 
   function updateUser<T>(
-    // e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     userId: string,
     key: string, // the field to update
     value: T // value of the field to update
@@ -125,44 +123,6 @@ const ManageUsers: React.FC<Props> = ({
     });
   };
 
-  // TODO: this operates similarly to adding devices in the facility settings
-  const onFacilityChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    facilityId: string
-  ) => {
-    // let newFacilityId = e.target.value;
-  };
-
-  const userFacilitiesSettings = (user: SettingsUser) => {
-    // TODO: get this from usersState
-    const facilities: any[] = [
-      { id: "abc", name: "Mountainside Nursing" },
-      { id: "def", name: "HillsideNursing" },
-      { id: "hij", name: "Lakeside Nursing" },
-    ];
-
-    let facilityOptions = facilities.map((facility: any) => ({
-      label: facility.name,
-      value: facility.id,
-    }));
-
-    let facilityDropdowns = facilities.map((facility) => (
-      <Dropdown
-        selectedValue={facility.id}
-        onChange={(e) => onFacilityChange(e, facility.id)}
-        disabled={user.role === "admin"} // current users have access to all facilities
-        options={facilityOptions}
-        key={facility.id}
-      />
-    ));
-    return (
-      <React.Fragment>
-        <h3> Facility Access </h3>
-        {facilityDropdowns}
-      </React.Fragment>
-    );
-  };
-
   const activeUser: SettingsUser = usersState[activeUserId];
 
   return (
@@ -181,7 +141,7 @@ const ManageUsers: React.FC<Props> = ({
               <h2 className="display-inline-block margin-top-2 margin-bottom-105">
                 {activeUser.name}
               </h2>
-              {activeUserId === loggedInUser.id ? (
+              {activeUser.id === loggedInUser.id ? (
                 <span className="usa-tag margin-left-1">YOU</span>
               ) : null}
             </div>
@@ -195,10 +155,15 @@ const ManageUsers: React.FC<Props> = ({
                 loggedInUser={loggedInUser}
                 onUpdateUser={updateUser}
               />
+
+              {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true" ? (
+                <UserFacilitiesSettingsForm
+                  activeUser={activeUser}
+                  onUpdateUser={updateUser}
+                />
+              ) : null}
             </div>
-            {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true"
-              ? userFacilitiesSettings(activeUser)
-              : null}
+
             <div className="float-right">
               <Button
                 type="button"
@@ -206,7 +171,7 @@ const ManageUsers: React.FC<Props> = ({
                 label="Save changes"
                 disabled={
                   loggedInUser.roleDescription !== "Admin user" ||
-                  !usersState[activeUserId].isEdited
+                  !activeUser.isEdited
                 }
               />
 
