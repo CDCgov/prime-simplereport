@@ -44,21 +44,6 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
 
-  const changeRole = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    userId: string
-  ) => {
-    let role = e.target.value as UserRole;
-    updateUsersState({
-      ...usersState,
-      [userId]: {
-        ...usersState[userId],
-        role: role,
-        isEdited: true,
-      },
-    });
-  };
-
   function updateUser<T>(
     // e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     userId: string,
