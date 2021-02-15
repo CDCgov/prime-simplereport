@@ -81,7 +81,7 @@ public class PatientExperienceController {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
-    return pls.getPatientLinkVerify(body.getPatientLinkId(), body.getDob());
+    return pls.getPatientLinkVerify(body.getPlid(), body.getDob());
   }
 
   /**
@@ -95,9 +95,9 @@ public class PatientExperienceController {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
 
-    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
+    PatientLink pl = pls.getPatientLink(body.getPlid());
     UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
-    String patientId = pls.getPatientLinkVerify(body.getPatientLinkId(), body.getDob()).getInternalId().toString();
+    String patientId = pls.getPatientLinkVerify(body.getPlid(), body.getDob()).getInternalId().toString();
     Person person = body.getData();
 
     return ps.updatePatient(facilityId, patientId, parseString(person.getLookupId()),
@@ -115,7 +115,7 @@ public class PatientExperienceController {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
-    Person patient = pls.getPatientLinkVerify(body.getPatientLinkId(), body.getDob());
+    Person patient = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
     String patientID = patient.getInternalId().toString();
 
     AoEQuestions data = body.getData();
