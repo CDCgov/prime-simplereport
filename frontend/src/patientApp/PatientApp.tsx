@@ -36,12 +36,8 @@ const PatientApp = () => {
     fetch(`${process.env.REACT_APP_PXP_BACKEND_URL}/link/${plid}`, {
       mode: "cors",
     })
-      .then((res) => {
-        console.log(res);
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data: any) => {
-        console.log("json return", data);
         dispatch(
           setInitialState({
             plid,

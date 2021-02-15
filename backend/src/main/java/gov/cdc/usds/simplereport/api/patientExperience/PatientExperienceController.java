@@ -58,7 +58,6 @@ public class PatientExperienceController {
    * @return the Organization attached to the Patient
    * @throws Exception
    */
-  @CrossOrigin
   @GetMapping("/link/{plid}")
   public Organization getPatientLinkCurrent(@PathVariable("plid") String internalId) throws Exception {
     if (!patientLinksEnabled) {
