@@ -34,6 +34,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="col"
                   >
                     Person
+                     Name
                   </th>
                   <th
                     scope="col"
@@ -68,7 +69,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Davis Melvin
                   </th>
                   <td>
-                    Jan 12, 2021 5:56 PM
+                    Jan 12, 2021 9:56 AM
                   </td>
                   <td>
                     NEGATIVE
@@ -119,7 +120,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Cheez Whizzz
                   </th>
                   <td>
-                    Jan 4, 2021 12:00 AM
+                    Jan 3, 2021 4:00 PM
                   </td>
                   <td>
                     UNDETERMINED
