@@ -58,8 +58,8 @@ const updateUser = (user: SettingsUser) => {
 };
 
 const ManageUsersContainer: React.FC<any> = () => {
-  const currentUser = useSelector((state) => (state as any).user as User);
-  currentUser.id = "123"; // TODO: delete this
+  const loggedInUser = useSelector((state) => (state as any).user as User);
+  loggedInUser.id = "123"; // TODO: delete this
   //   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
   //     fetchPolicy: "no-cache",
   //   });
@@ -78,7 +78,7 @@ const ManageUsersContainer: React.FC<any> = () => {
   return (
     <ManageUsers
       users={dummyUsers}
-      currentUser={currentUser}
+      loggedInUser={loggedInUser}
       onUpdateUser={updateUser}
     />
   );

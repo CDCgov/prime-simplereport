@@ -5,43 +5,28 @@ import { Prompt } from "react-router-dom";
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
 import ConditionalWrap from "../../commonComponents/ConditionalWrap";
-import InProgressModal from "./InProgressModal";
-import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown from "../../commonComponents/Dropdown";
+import InProgressModal from "./InProgressModal";
+import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import { SettingsUser } from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
 import { UserRole } from "../../permissions";
+
 import "./ManageUsers.scss";
 
-interface RoleButton {
-  value: UserRole;
-  label: string;
-}
-
-const ROLES: RoleButton[] = [
-  {
-    value: "admin",
-    label: "Admin",
-  },
-  {
-    value: "user",
-    label: "User",
-  },
-  {
-    value: "entry-only",
-    label: "Entry Only",
-  },
-];
-
 interface Props {
-  currentUser: User;
+  loggedInUser: User;
   users: SettingsUser[];
   onUpdateUser: (user: SettingsUser) => void;
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
 
-const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
+const ManageUsers: React.FC<Props> = ({
+  users,
+  loggedInUser,
+  onUpdateUser,
+}) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
       acc[user.id] = user;
@@ -51,10 +36,12 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
   );
 
   const [usersState, updateUsersState] = useState<SettingsUsers>(settingsUsers);
-  const [activeUser, updateActiveUser] = useState<any>(
+  const [activeUserId, updateActiveUserId] = useState<string>(
     Object.keys(settingsUsers)[0]
   ); // pick the first user
-  const [nextActiveUser, updateNextActiveUser] = useState<string | null>(null);
+  const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
+    null
+  );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
 
   const changeRole = (
@@ -71,6 +58,22 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
       },
     });
   };
+
+  function updateUser<T>(
+    // e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+    userId: string,
+    key: string, // the field to update
+    value: T // value of the field to update
+  ) {
+    updateUsersState({
+      ...usersState,
+      [userId]: {
+        ...usersState[userId],
+        [key]: value,
+        isEdited: true,
+      },
+    });
+  }
 
   const onSaveChanges = (userId: string) => {
     onUpdateUser(usersState[userId]); // TODO this does nothing atm
@@ -95,17 +98,17 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
   };
 
   const onChangeActiveUser = (nextActiveUserId: string) => {
-    if (usersState[activeUser].isEdited) {
-      updateNextActiveUser(nextActiveUserId);
+    if (usersState[activeUserId].isEdited) {
+      updateNextActiveUserId(nextActiveUserId);
       updateShowInProgressModal(true);
     } else {
-      updateActiveUser(nextActiveUserId);
+      updateActiveUserId(nextActiveUserId);
     }
   };
 
   const onContinueChangeActiveUser = (currentActiveUserId: string) => {
     updateShowInProgressModal(false);
-    updateActiveUser(nextActiveUser);
+    updateActiveUserId(nextActiveUserId as string);
     resetUser(currentActiveUserId);
   };
 
@@ -117,7 +120,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
         key={user.id}
       >
         <ConditionalWrap
-          condition={activeUser === user.id}
+          condition={activeUserId === user.id}
           wrap={(children) => <div className="usa-current">{children}</div>}
         >
           <div className="padding-105 padding-right-2">
@@ -175,60 +178,7 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
     );
   };
 
-  const userRoleSettings = (user: SettingsUser, currentUser: any) => {
-    return (
-      <React.Fragment>
-        <div className="user-header">
-          <h2 className="display-inline-block margin-top-2 margin-bottom-105">
-            {user.name}
-          </h2>
-          {user.id === currentUser.id ? (
-            <span className="usa-tag margin-left-1">YOU</span>
-          ) : null}
-        </div>
-        <div className="user-content">
-          <p>
-            Permissions to manage settings and users are limited to admins only
-          </p>
-          <RadioGroup
-            legend="Roles"
-            legendSrOnly
-            name="role"
-            buttons={ROLES}
-            selectedRadio={user.role}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              changeRole(e, user.id)
-            }
-            disabled={user.id === currentUser.id}
-          />
-          <div className="float-right">
-            <Button
-              type="button"
-              onClick={() => onSaveChanges(user.id)}
-              label="Save changes"
-              disabled={
-                currentUser.roleDescription !== "Admin user" ||
-                !usersState[user.id].isEdited
-              }
-            />
-          </div>
-        </div>
-        {showInProgressModal ? (
-          <InProgressModal
-            onClose={() => updateShowInProgressModal(false)}
-            onContinue={() => onContinueChangeActiveUser(user.id)}
-          />
-        ) : null}
-
-        {usersState[activeUser].isEdited ? (
-          <Prompt
-            when={usersState[activeUser].isEdited}
-            message="You have unsaved changes. Do you want to continue?"
-          />
-        ) : null}
-      </React.Fragment>
-    );
-  };
+  const activeUser: SettingsUser = usersState[activeUserId];
 
   return (
     <div className="prime-container usa-card__container">
@@ -242,10 +192,52 @@ const ManageUsers: React.FC<Props> = ({ users, currentUser, onUpdateUser }) => {
             <ul className="usa-sidenav">{sideNavItems}</ul>
           </div>
           <div className="tablet:grid-col">
-            {userRoleSettings(usersState[activeUser], currentUser)}
+            <div className="user-header">
+              <h2 className="display-inline-block margin-top-2 margin-bottom-105">
+                {activeUser.name}
+              </h2>
+              {activeUserId === loggedInUser.id ? (
+                <span className="usa-tag margin-left-1">YOU</span>
+              ) : null}
+            </div>
+            <div className="user-content">
+              <p>
+                Permissions to manage settings and users are limited to admins
+                only
+              </p>
+              <UserRoleSettingsForm
+                activeUser={activeUser}
+                loggedInUser={loggedInUser}
+                onUpdateUser={updateUser}
+              />
+            </div>
             {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true"
-              ? userFacilitiesSettings(usersState[activeUser])
+              ? userFacilitiesSettings(activeUser)
               : null}
+            <div className="float-right">
+              <Button
+                type="button"
+                onClick={() => onSaveChanges(activeUserId)}
+                label="Save changes"
+                disabled={
+                  loggedInUser.roleDescription !== "Admin user" ||
+                  !usersState[activeUserId].isEdited
+                }
+              />
+
+              {showInProgressModal ? (
+                <InProgressModal
+                  onClose={() => updateShowInProgressModal(false)}
+                  onContinue={() => onContinueChangeActiveUser(activeUserId)}
+                />
+              ) : null}
+              {activeUser.isEdited ? (
+                <Prompt
+                  when={activeUser.isEdited}
+                  message="You have unsaved changes. Do you want to continue?"
+                />
+              ) : null}
+            </div>
           </div>
         </div>
       </div>
