@@ -1,30 +1,32 @@
-import renderer from "react-test-renderer";
-import { MockedProvider } from "@apollo/client/testing";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
+import renderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 
-import AoEPatientFormContainer from "./AoEPatientFormContainer";
+import AoEPatientFormContainer from './AoEPatientFormContainer';
 
 const mockStore = configureStore([]);
-jest.mock("react-router-dom", () => ({
+jest.mock('react-router-dom', () => ({
   useHistory: () => ({
     listen: jest.fn(),
+    push: jest.fn(),
   }),
 }));
 
-describe("AoEPatientFormContainer", () => {
-  it("snapshot", () => {
+describe('AoEPatientFormContainer', () => {
+  it('snapshot', () => {
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,
         employedInHealthcare: true,
-        birthDate: "",
+        birthDate: '',
       },
+      plid: 'foo',
     });
     const component = renderer.create(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
-          <AoEPatientFormContainer page={""} />
+          <AoEPatientFormContainer page={''} />
         </MockedProvider>
       </Provider>
     );
