@@ -1,55 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router";
-import { gql, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient } from "../../app/store";
-
-const PATIENT_LINK_VALIDATION_QUERY = gql`
-  query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
-    patientLinkVerify(internalId: $plid, birthDate: $birthDate) {
-      internalId
-      firstName
-      middleName
-      lastName
-      birthDate
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      telephone
-      role
-      email
-      county
-      race
-      ethnicity
-      gender
-      residentCongregateSetting
-      employedInHealthcare
-    }
-  }
-`;
+import { PxpApi } from "../PxpApiService";
 
 const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
-  const [formattedBirthDate, setFormattedBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [nextPage, setNextPage] = useState(false);
   const dobRef = React.createRef() as any;
   const plid = useSelector((state) => (state as any).plid as String);
-
-  const [validateBirthDate, { called, loading, data }] = useLazyQuery(
-    PATIENT_LINK_VALIDATION_QUERY,
-    {
-      variables: { plid, birthDate: formattedBirthDate },
-      fetchPolicy: "no-cache",
-    }
-  );
+  const [called, setCalled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(undefined as any);
 
   useEffect(() => {
     if (!data) return;
@@ -86,10 +54,12 @@ const DOB = () => {
 
   const confirmBirthDate = () => {
     if (isValidForm()) {
-      setFormattedBirthDate(
-        moment(birthDate.replace("/", ""), "MMDDYYYY").format("YYYY-MM-DD")
+      const dob = moment(birthDate.replace("/", ""), "MMDDYYYY").format(
+        "YYYY-MM-DD"
       );
-      validateBirthDate();
+      setLoading(true);
+      setCalled(true);
+      PxpApi.validateDob(plid, dob).then((result) => setData(result));
     }
   };
 

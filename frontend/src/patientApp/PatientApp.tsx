@@ -22,6 +22,7 @@ import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientProfileFormContainer from "./timeOfTest/PatientProfileFormContainer";
 import { showError } from "../app/utils";
+import { PxpApi } from "./PxpApiService";
 
 const PatientApp = () => {
   const dispatch = useDispatch();
@@ -33,10 +34,7 @@ const PatientApp = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_PXP_BACKEND_URL}/link/${plid}`, {
-      mode: "cors",
-    })
-      .then((res) => res.json())
+    PxpApi.getOrgFromPlid(plid)
       .then((data: any) => {
         dispatch(
           setInitialState({
