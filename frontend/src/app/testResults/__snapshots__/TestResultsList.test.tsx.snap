@@ -34,6 +34,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="col"
                   >
                     Person
+                     Name
                   </th>
                   <th
                     scope="col"

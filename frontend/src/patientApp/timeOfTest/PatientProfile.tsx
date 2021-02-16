@@ -23,9 +23,12 @@ const PatientProfile = ({ patient }: Props) => {
     ?.label;
 
   const newLineSpan = ({ text = "" }) => {
-    return text
-      .split("\n")
-      .map((str) => <span className="display-block">{str}</span>);
+    let key = 1;
+    return text.split("\n").map((str) => (
+      <span className="display-block" key={`newLineSpan${++key}`}>
+        {str}
+      </span>
+    ));
   };
 
   const address = formatAddress({

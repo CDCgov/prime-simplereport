@@ -7,4 +7,6 @@ module "metric_alerts" {
   severity            = 1
   rg_name             = data.azurerm_resource_group.rg.name
   tags                = local.management_tags
+
+  mem_threshold = 80
 }

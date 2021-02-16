@@ -40,7 +40,7 @@ interface Props {
   page: string;
 }
 
-const AoEPatientFormContainer = ({ page }: Props) => {
+const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
   const [prevPage, setPrevPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const plid =
