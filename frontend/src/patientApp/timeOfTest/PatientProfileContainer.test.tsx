@@ -3,9 +3,10 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
-import AoEPatientFormContainer from "./AoEPatientFormContainer";
+import PatientProfileContainer from "./PatientProfileContainer";
 
 const mockStore = configureStore([]);
+
 jest.mock("react-router-dom", () => ({
   useHistory: () => ({
     listen: jest.fn(),
@@ -13,20 +14,21 @@ jest.mock("react-router-dom", () => ({
   }),
 }));
 
-describe("AoEPatientFormContainer", () => {
+describe("PatientProfileContainer", () => {
   it("snapshot", () => {
     const store = mockStore({
       patient: {
-        residentCongregateSetting: true,
-        employedInHealthcare: true,
+        residentCongregateSetting: "Yes",
+        employedInHealthcare: "Yes",
         birthDate: "",
+        street: "8 Pine Ct",
       },
-      plid: "foo",
+      plid: "definitely not null I promise",
     });
     const component = renderer.create(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
-          <AoEPatientFormContainer page={""} />
+          <PatientProfileContainer />
         </MockedProvider>
       </Provider>
     );

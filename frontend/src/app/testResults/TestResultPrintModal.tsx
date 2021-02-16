@@ -32,7 +32,6 @@ export const testQuery = gql`
         county
         state
         zipCode
-        lookupId
       }
       facility {
         name
