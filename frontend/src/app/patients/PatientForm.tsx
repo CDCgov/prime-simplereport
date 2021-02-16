@@ -30,11 +30,10 @@ import { useSelector } from "react-redux";
 const ADD_PATIENT = gql`
   mutation AddPatient(
     $facilityId: String
-    $lookupId: String
     $firstName: String!
     $middleName: String
     $lastName: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $street: String!
     $streetTwo: String
     $city: String
@@ -52,7 +51,6 @@ const ADD_PATIENT = gql`
   ) {
     addPatient(
       facilityId: $facilityId
-      lookupId: $lookupId
       firstName: $firstName
       middleName: $middleName
       lastName: $lastName
@@ -79,11 +77,10 @@ const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: String
     $patientId: String!
-    $lookupId: String
     $firstName: String!
     $middleName: String
     $lastName: String!
-    $birthDate: String!
+    $birthDate: LocalDate!
     $street: String!
     $streetTwo: String
     $city: String
@@ -102,7 +99,6 @@ const UPDATE_PATIENT = gql`
     updatePatient(
       facilityId: $facilityId
       patientId: $patientId
-      lookupId: $lookupId
       firstName: $firstName
       middleName: $middleName
       lastName: $lastName
@@ -182,7 +178,6 @@ const PatientForm = (props: Props) => {
     const variables = {
       facilityId:
         currentFacilityId === allFacilities ? null : currentFacilityId,
-      lookupId: patient.lookupId,
       firstName: patient.firstName,
       middleName: patient.middleName,
       lastName: patient.lastName,
@@ -321,12 +316,6 @@ const PatientForm = (props: Props) => {
           />
         </div>
         <div className="prime-form-line">
-          <TextInput
-            label="Lookup ID (optional)"
-            name="lookupId"
-            value={patient.lookupId}
-            onChange={onChange}
-          />
           <Dropdown
             label="Role (optional)"
             name="role"

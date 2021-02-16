@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.apiuser;
 
 import java.util.List;
 import java.util.Set;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -42,12 +43,11 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 
 	public List<User> getUsers() {
 		Organization org = _organizationService.getCurrentOrganization();
-		List<ApiUser> users = _userService.getUsersInCurrentOrg(OrganizationRole.USER);
+		List<ApiUser> users = _userService.getUsersInCurrentOrg(OrganizationRole.getDefault());
 		Set<String> admins = new HashSet<>(_userService.getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
 		Set<String> entryOnly = new HashSet<>(_userService.getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
 		return users.stream().map(u -> {
-			Set<OrganizationRole> roles = new HashSet<>();
-			roles.add(OrganizationRole.USER);
+			Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
 			String email = u.getLoginEmail();
 			if (admins.contains(email)) {
 				roles.add(OrganizationRole.ADMIN);

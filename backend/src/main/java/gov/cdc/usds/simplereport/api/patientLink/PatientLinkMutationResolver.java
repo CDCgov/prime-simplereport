@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.patientLink;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseUserDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import java.time.LocalDate;
@@ -33,21 +32,19 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
         return pls.refreshPatientLink(internalId);
     }
 
-    public String patientLinkSubmit(String internalId, String birthDate, String pregnancy, String symptoms,
-            boolean firstTest, String priorTestDate, String priorTestType, String priorTestResult, String symptomOnset,
-            boolean noSymptoms) throws Exception {
+    public String patientLinkSubmit(String internalId, LocalDate birthDate, String pregnancy, String symptoms,
+            boolean firstTest, LocalDate priorTestDate, String priorTestType, String priorTestResult,
+            LocalDate symptomOnset, boolean noSymptoms) throws Exception {
         if (!patientLinksEnabled) {
             throw new Exception("Patient links not enabled");
         }
         Person patient = pls.getPatientLinkVerify(internalId, birthDate);
         String patientID = patient.getInternalId().toString();
-        LocalDate localPriorTestDate = parseUserDate(priorTestDate);
-        LocalDate localSymptomOnset = parseUserDate(symptomOnset);
 
         Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-        tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, firstTest, localPriorTestDate, priorTestType,
-                priorTestResult == null ? null : TestResult.valueOf(priorTestResult), localSymptomOnset, noSymptoms);
+        tos.updateTimeOfTestQuestions(patientID, pregnancy, symptomsMap, firstTest, priorTestDate, priorTestType,
+                priorTestResult == null ? null : TestResult.valueOf(priorTestResult), symptomOnset, noSymptoms);
         return "success";
     }
 

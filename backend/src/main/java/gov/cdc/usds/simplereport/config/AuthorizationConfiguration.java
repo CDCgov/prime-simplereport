@@ -42,16 +42,16 @@ public class AuthorizationConfiguration {
 
     /**
      * Require the current user to to be one of the administrative 
-     * users ("superusers") or have the {@link UserPermission#MANAGE_USER_LIST}
-     * permission for the specified org with external id {@code organizationExternalId}.
-     * NOTE: any method with this annotation must have a parameter {@code organizationExternalId}.
+     * users ("superusers") or have the {@link UserPermission#MANAGE_USERS}
+     * permission for the organization containing user with UUID {@code userId}.
+     * NOTE: any method with this annotation must have a parameter {@code userId}.
      */
     @Retention(RUNTIME)
     @Target(METHOD)
     @PreAuthorize("( @" + AUTHORIZER_BEAN + ".userHasSiteAdminRole() || " +
-                  "(" + SPEL_HAS_PERMISSION + "MANAGE_USER_LIST" + ")" + " && " + 
-                  "@" + AUTHORIZER_BEAN + ".userIsInOrg(#organizationExternalId)" + ") )")
-    public @interface RequireGlobalAdminUserOrPermissionManageUserListForOrg {
+                  "(" + SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")" + " && " + 
+                  "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)" + ") )")
+    public @interface RequireGlobalAdminUserOrPermissionManageTargetUser {
     }
 
     /**
@@ -105,13 +105,13 @@ public class AuthorizationConfiguration {
     }
 
     /**
-     * Require the current user to have the {@link UserPermission#MANAGE_USER_LIST}
+     * Require the current user to have the {@link UserPermission#MANAGE_USERS}
      * permission.
      */
     @Retention(RUNTIME)
     @Target(METHOD)
-    @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USER_LIST" + ")")
-    public @interface RequirePermissionManageUserList {
+    @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")")
+    public @interface RequirePermissionManageUsers {
     }
     
     /**

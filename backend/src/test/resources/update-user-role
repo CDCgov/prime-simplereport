@@ -1,9 +1,9 @@
 mutation updateUserRole(
-    $email: String!,
+    $id: ID!,
     $role: OrganizationRole!,
     ){
   updateUserRole(
-    email: $email
+    id: $id
     role: $role
   ) 
 }

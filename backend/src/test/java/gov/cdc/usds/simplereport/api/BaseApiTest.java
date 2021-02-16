@@ -28,7 +28,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.service.OktaService;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -50,7 +50,7 @@ public abstract class BaseApiTest {
     @MockBean
     protected IdentitySupplier _supplier;
     @MockBean
-    protected OktaService _oktaService;
+    protected OktaRepository _oktaRepo;
 
     private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
@@ -78,26 +78,30 @@ public abstract class BaseApiTest {
 
     protected void useOutsideOrgUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org user");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
     }
 
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
     }
 
     protected void useOutsideOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
     }
 
     protected void useOrgEntryOnly() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org entry-only");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
     }
 
     protected void useSuperUser() {
-        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for super user");
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     }
 
@@ -150,15 +154,7 @@ public abstract class BaseApiTest {
      * the {@code data} section of the response if the error was as expected.
      */
     protected ObjectNode runQuery(String queryFileName, String expectedError) {
-        try {
-            GraphQLResponse response = _template.postForResource(queryFileName);
-            assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
-            JsonNode responseBody = response.readTree();
-            assertGraphQLOutcome(responseBody, expectedError);
-            return (ObjectNode) responseBody.get("data");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return runQuery(queryFileName, null, expectedError);
     }
 
     /**
@@ -171,6 +167,8 @@ public abstract class BaseApiTest {
             GraphQLResponse response = _template.perform(queryFileName, variables);
             assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
             JsonNode responseBody = response.readTree();
+            //TODO remove
+            System.out.print("PRETTY OUTPUT:"+responseBody.toPrettyString());
             assertGraphQLOutcome(responseBody, expectedError);
             return (ObjectNode) responseBody.get("data");
         } catch (IOException e) {

@@ -1,5 +1,6 @@
 variable "env" {}
 variable "app_service_plan_id" {}
+variable "app_service_id" {}
 variable "action_group_id" {}
 
 variable "severity" {
@@ -15,4 +16,9 @@ variable "rg_name" {
 
 variable "tags" {
   default = {}
+}
+
+# Thresholds
+variable "mem_threshold" {
+  default = 70
 }

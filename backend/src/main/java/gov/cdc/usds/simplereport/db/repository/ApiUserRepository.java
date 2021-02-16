@@ -5,21 +5,24 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Collection;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.data.jpa.repository.Query;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 
-/** Extremely limited repository for finding and saving (only) {@link ApiUser} entities */
-public interface ApiUserRepository extends Repository<ApiUser, UUID> {
+/**
+ * Interface specification for fetching and manipulating {@link ApiUser} entities
+ */
+public interface ApiUserRepository extends EternalEntityRepository<ApiUser> {
 
-	public static final String FIND_BY_USERNAME_QUERY = "from #{#entityName} u "
-			+ "where u.loginEmail in (:usernames)";
+	// Defining this method explicitly means that findById() will not be able to find soft-deleted users,
+	// rendering un-deletion near-impossible
+	@Query(BASE_QUERY + " and internalId = :id")
+	public Optional<ApiUser> findById(UUID id);
 
-	public ApiUser save(ApiUser entity);
-
+	@Query(BASE_QUERY + " and loginEmail = :email")
 	public Optional<ApiUser> findByLoginEmail(String email);
 
-	@Query(FIND_BY_USERNAME_QUERY)
-	public List<ApiUser> findAllByUsername(Collection<String> usernames);
+	@Query(BASE_QUERY + " and loginEmail IN :emails")
+	public List<ApiUser> findAllByLoginEmailIn(Collection<String> emails);
 }

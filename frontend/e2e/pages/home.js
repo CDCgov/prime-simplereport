@@ -10,7 +10,7 @@ function conductTest(patientName) {
   this.section.searchResults.expect.element('@beginTest').to.be.visible;
   this.section.searchResults.expect
     .element('@beginTest')
-    .to.contain.text('Begin Test');
+    .to.contain.text('Begin test');
   this.section.searchResults.click('@beginTest');
   this.expect.section('@modal').to.be.visible;
   this.expect
@@ -31,7 +31,7 @@ function conductTest(patientName) {
   this.section.modal.click('@continueButton');
   this.expect.section('@queueCard').to.be.visible;
   this.expect.section('@queueCard').to.contain.text(patientName);
-  this.expect.section('@queueCard').to.contain.text('SARS-CoV-2 Results');
+  this.expect.section('@queueCard').to.contain.text('SARS-CoV-2 results');
   this.section.queueCard.expect.element('@negativeResult').to.be.visible;
   this.section.queueCard.click('@negativeResult');
   this.section.queueCard.expect.element('@submitResultButton').to.be.visible;

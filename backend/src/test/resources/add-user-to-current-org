@@ -12,6 +12,7 @@ mutation addUserToCurrentOrg(
     suffix: $suffix
     email: $email
   ) {
+      id,
       firstName,
       middleName,
       lastName,

@@ -60,8 +60,7 @@ public class TestOrderService {
   }
 
     @Transactional(readOnly = true)
-    @AuthorizationConfiguration.RequirePermissionStartTest // Intentionally incorrect permission:
-                                                           // https://github.com/CDCgov/prime-simplereport/issues/677
+    @AuthorizationConfiguration.RequirePermissionReadResultList
     public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
         Facility fac = _os.getFacilityInCurrentOrg(facilityId);  // org access is checked here
         return _terepo.getTestEventResults(fac.getInternalId(), (newerThanDate != null) ? newerThanDate: new Date(0));

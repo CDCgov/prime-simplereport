@@ -2,7 +2,7 @@
 
 exports[`SearchResults should say 'No Results' for no matches 1`] = `
 <h3>
-   No results 
+  No results
 </h3>
 `;
 
@@ -26,12 +26,7 @@ exports[`SearchResults should show matching results 1`] = `
           <th
             scope="col"
           >
-            Date of Birth
-          </th>
-          <th
-            scope="col"
-          >
-            Unique ID
+            Date of birth
           </th>
           <th
             scope="col"
@@ -46,14 +41,13 @@ exports[`SearchResults should show matching results 1`] = `
             George Washington
           </td>
           <td />
-          <td />
           <td>
             <button
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>
@@ -62,14 +56,13 @@ exports[`SearchResults should show matching results 1`] = `
             Martin Luther King
           </td>
           <td />
-          <td />
           <td>
             <button
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>
@@ -78,14 +71,13 @@ exports[`SearchResults should show matching results 1`] = `
             Barack Hussein Obama
           </td>
           <td />
-          <td />
           <td>
             <button
               className="usa-button usa-button--unstyled"
               onClick={[Function]}
               type="button"
             >
-              Begin Test
+              Begin test
             </button>
           </td>
         </tr>

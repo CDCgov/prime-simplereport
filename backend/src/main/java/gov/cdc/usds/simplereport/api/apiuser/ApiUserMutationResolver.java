@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -27,7 +28,6 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
         _us = us;
     }
 
-    @AuthorizationConfiguration.RequireGlobalAdminUser
     public User addUser(
             String firstName,
             String middleName,
@@ -36,9 +36,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String email,
             String organizationExternalID
                 ) {
-        _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
@@ -50,37 +49,41 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String suffix,
             String email
                 ) {
-        _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
 
     public User updateUser(
+            UUID id,
             String firstName,
             String middleName,
             String lastName,
             String suffix,
-            String newEmail,
-            String oldEmail
+            String email
                 ) {
-        // if no changes to email are made, email validation will happen inside _us.updateUser()
-        if (!newEmail.equals(oldEmail)) {
-            _us.assertEmailAvailable(newEmail);
-        }
-        ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser);
+        ApiUser apiUser = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
 
     public OrganizationRole updateUserRole(
-            String email,
+            UUID id,
             OrganizationRole role
                 ) {
-        _us.updateUserRole(email, role);
-        return role;
+        return _us.updateUserRole(id, role);
+    }
+
+    public User setUserIsDeleted(
+            UUID id,
+            Boolean deleted
+                ) {
+        ApiUser apiUser = _us.setIsDeleted(id, deleted);
+        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
+        Boolean isAdmin = _us.isAdmin(apiUser);
+        return new User(apiUser, orgRoles, isAdmin);
     }
 }
 

@@ -17,7 +17,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
  */
 @Entity
 @DynamicUpdate
-public class ApiUser extends SystemManagedEntity {
+public class ApiUser extends EternalEntity {
 
     @Column(nullable = false, updatable = true, unique = true)
     @NaturalId(mutable = true)
