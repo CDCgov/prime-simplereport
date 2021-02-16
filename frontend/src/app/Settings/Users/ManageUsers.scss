@@ -33,3 +33,13 @@
   font-weight: normal;
   font-size: 0.8em;
 }
+
+.facility-list {
+  td {
+    border: 1px solid #dfe1e2;
+  }
+}
+
+.remove-tag {
+  cursor: pointer;
+}

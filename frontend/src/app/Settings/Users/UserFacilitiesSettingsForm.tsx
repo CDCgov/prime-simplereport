@@ -1,58 +1,161 @@
-import React from "react";
+import React, { useRef, useState, useEffect } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { SettingsUser } from "./ManageUsersContainer";
-import { UserRole } from "../../permissions";
-import Dropdown from "../../commonComponents/Dropdown";
+import Button from "../../commonComponents/Button";
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+import "./ManageUsers.scss";
 
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
-  onUpdateUser<UserRole>(userId: string, key: string, value: UserRole): void;
+  allFacilities: UserFacilitySetting[];
+  onUpdateUser(userId: string, key: string, value: UserFacilitySetting[]): void;
 }
 
 const UserFacilitiesSettingsForm: React.FC<Props> = ({
   activeUser,
+  allFacilities,
   onUpdateUser,
 }) => {
-  const updateRole = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const role = e.target.value as UserRole;
-    onUpdateUser(activeUser.id, "role", role);
+  const [isComponentVisible, setIsComponentVisible] = useState(true);
+  const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  const handleClickOutside = (event: any) => {
+    if (ref.current && ref.current.contains(event.target)) {
+      // inside click
+      // TODO: this doesn't capture the buttons inside the table
+    } else {
+      // outside click
+      if (isComponentVisible) {
+        setIsComponentVisible(false);
+      }
+    }
   };
 
-  // TODO: this operates similarly to adding devices in the facility settings
-  const onFacilityChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    facilityId: string
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  });
+
+  const onAddFacility = (
+    activeUser: SettingsUser,
+    selectedFacilityId: string
   ) => {
-    // let newFacilityId = e.target.value;
+    const facilityToAdd = allFacilities.filter(
+      (f) => f.id === selectedFacilityId
+    )[0];
+    const updatedFacilityList = activeUser.facilities
+      ? [...activeUser.facilities, facilityToAdd]
+      : [facilityToAdd];
+    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
   };
 
-  const facilities: any[] = [
-    { id: "abc", name: "Mountainside Nursing" },
-    { id: "def", name: "HillsideNursing" },
-    { id: "hij", name: "Lakeside Nursing" },
-  ];
+  const onRemoveFacility = (
+    activeUser: SettingsUser,
+    selectedFacilityId: string
+  ) => {
+    const updatedFacilityList = activeUser.facilities
+      ? activeUser.facilities.filter((f) => f.id !== selectedFacilityId)
+      : [];
+    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
+  };
 
-  let facilityOptions = facilities.map((facility: any) => ({
-    label: facility.name,
-    value: facility.id,
-  }));
+  const onAddAllFacilities = () => {
+    onUpdateUser(activeUser.id, "facilities", allFacilities);
+  };
 
-  let facilityDropdowns = facilities.map((facility) => (
-    <Dropdown
-      selectedValue={facility.id}
-      onChange={(e) => onFacilityChange(e, facility.id)}
-      disabled={activeUser.role === "admin"}
-      options={facilityOptions}
-      key={facility.id}
-    />
-  ));
+  const facilityAccessDescription =
+    !activeUser.facilities || activeUser.facilities.length === 0
+      ? "This user currently does not have access to any facilities"
+      : activeUser.role === "admin"
+      ? "Admins have access to all facilities"
+      : null;
 
+  const userFacilities = activeUser.facilities
+    ? activeUser.facilities.map((facility) => (
+        <tr key={facility.id}>
+          <td>{facility.name}</td>
+          <td>
+            <div
+              className="remove-tag"
+              onClick={() => onRemoveFacility(activeUser, facility.id)}
+            >
+              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+            </div>
+          </td>
+        </tr>
+      ))
+    : null;
+
+  const allFacilityList = (
+    <div
+      ref={ref}
+      className="usa-card__container shadow-2 display-inline-block margin-0"
+    >
+      <div className="usa-card__body">
+        <table className="usa-table usa-table--borderless facility-list">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">
+                <Button
+                  variant="unstyled"
+                  label="Select All"
+                  onClick={onAddAllFacilities}
+                />
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {allFacilities.map((facility) => (
+              <tr key={facility.id}>
+                <td> {facility.name} </td>
+                <td>
+                  {!activeUser.facilities
+                    ?.map((f) => f.id)
+                    .includes(facility.id) ? (
+                    <Button
+                      variant="unstyled"
+                      label="Select"
+                      onClick={() => onAddFacility(activeUser, facility.id)}
+                    />
+                  ) : (
+                    "Already Assigned"
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
   return (
     <React.Fragment>
       <h3> Facility Access </h3>
-      {facilityDropdowns}
+      <p>{facilityAccessDescription}</p>
+      <table
+        className="usa-table usa-table--borderless"
+        style={{ width: "100%" }}
+      >
+        <tbody>{userFacilities}</tbody>
+      </table>
+      <Button
+        variant="outline"
+        type="button"
+        onClick={() => {
+          setIsComponentVisible(!isComponentVisible);
+        }}
+        label="+ Add Facility"
+        disabled={
+          activeUser.facilities &&
+          activeUser.facilities.length === allFacilities.length
+        }
+      />
+      {isComponentVisible ? (
+        <div className="grid-row">{allFacilityList}</div>
+      ) : null}
     </React.Fragment>
   );
 };

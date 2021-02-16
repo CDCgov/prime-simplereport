@@ -8,7 +8,7 @@ import ConditionalWrap from "../../commonComponents/ConditionalWrap";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
-import { SettingsUser } from "./ManageUsersContainer";
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
 
 import "./ManageUsers.scss";
@@ -16,14 +16,16 @@ import "./ManageUsers.scss";
 interface Props {
   loggedInUser: User;
   users: SettingsUser[];
+  allFacilities: UserFacilitySetting[];
   onUpdateUser: (user: SettingsUser) => void;
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
 
 const ManageUsers: React.FC<Props> = ({
-  users,
+  allFacilities,
   loggedInUser,
+  users,
   onUpdateUser,
 }) => {
   let settingsUsers: SettingsUsers = users.reduce(
@@ -159,35 +161,36 @@ const ManageUsers: React.FC<Props> = ({
               {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true" ? (
                 <UserFacilitiesSettingsForm
                   activeUser={activeUser}
+                  allFacilities={allFacilities}
                   onUpdateUser={updateUser}
                 />
               ) : null}
             </div>
-
-            <div className="float-right">
-              <Button
-                type="button"
-                onClick={() => onSaveChanges(activeUserId)}
-                label="Save changes"
-                disabled={
-                  loggedInUser.roleDescription !== "Admin user" ||
-                  !activeUser.isEdited
-                }
-              />
-
-              {showInProgressModal ? (
-                <InProgressModal
-                  onClose={() => updateShowInProgressModal(false)}
-                  onContinue={() => onContinueChangeActiveUser(activeUserId)}
+            <div className="usa-card__footer">
+              <div className="float-right">
+                <Button
+                  type="button"
+                  onClick={() => onSaveChanges(activeUserId)}
+                  label="Save changes"
+                  disabled={
+                    loggedInUser.roleDescription !== "Admin user" ||
+                    !activeUser.isEdited
+                  }
                 />
-              ) : null}
-              {activeUser.isEdited ? (
-                <Prompt
-                  when={activeUser.isEdited}
-                  message="You have unsaved changes. Do you want to continue?"
-                />
-              ) : null}
+              </div>
             </div>
+            {showInProgressModal ? (
+              <InProgressModal
+                onClose={() => updateShowInProgressModal(false)}
+                onContinue={() => onContinueChangeActiveUser(activeUserId)}
+              />
+            ) : null}
+            {activeUser.isEdited ? (
+              <Prompt
+                when={activeUser.isEdited}
+                message="You have unsaved changes. Do you want to continue?"
+              />
+            ) : null}
           </div>
         </div>
       </div>
