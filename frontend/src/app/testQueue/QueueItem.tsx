@@ -156,7 +156,10 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     </div>
   </Modal>
 );
-Modal.setAppElement("#root");
+
+if (process.env.NODE_ENV !== "test") {
+  Modal.setAppElement("#root");
+}
 
 /*
   Dates from the backend are coming in as ISO 8601 strings: (eg: "2021-01-11T23:56:53.103Z")
