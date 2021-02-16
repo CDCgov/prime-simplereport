@@ -8,6 +8,7 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +72,12 @@ public class PersonService {
     @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
     public List<Person> getAllPatientsInclDeleted() {
         return _repo.findAllByOrganizationIncludeDeleted(_os.getCurrentOrganization(), NAME_SORT);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionDeletePatient
+    public Person getPatientCheckInclDelete(String id) {
+        return _repo.findByIDAndOrganizationIncludeDeleted(UUID.fromString(id), _os.getCurrentOrganization())
+                .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
     // NO PERMISSION CHECK (make sure the caller has one!)

@@ -18,6 +18,10 @@ public class ExceptionWrappingManager {
 
     @ExceptionHandler(AccessDeniedException.class)
     public GraphQLError wrapSecurityExceptions(AccessDeniedException e) {
+        // Add This to `application-local.yaml` to debug what's gone wrong.
+        // logging:
+        //  level:
+        //    org.springframework.security: TRACE
         return new ThrowableGraphQLError(e, "Current user does not have permission for this action");
     }
 
