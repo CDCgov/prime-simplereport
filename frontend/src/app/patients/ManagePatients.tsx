@@ -83,15 +83,16 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
         patient.lastName
       );
 
-      let editUserLink = canEditUser ? (
-        <NavLink
-          to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
-        >
-          {fullName}
-        </NavLink>
-      ) : (
-        <span>{fullName}</span>
-      );
+      let editUserLink =
+        canEditUser && !patient.isDeleted ? (
+          <NavLink
+            to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
+          >
+            {fullName}
+          </NavLink>
+        ) : (
+          <span>{fullName}</span>
+        );
 
       return (
         <tr
