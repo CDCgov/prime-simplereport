@@ -1,6 +1,6 @@
 export function formatAddress(address: Address) {
   // format address with correct punctuation and separated by `\n`s
-  const lastAddressLine = `${address.city}${
+  const lastAddressLine = `${address.city ? address.city : ""}${
     address.state && address.city ? ", " : ""
   }${address.city && address.zipCode && !address.state ? " " : ""}${
     address.state

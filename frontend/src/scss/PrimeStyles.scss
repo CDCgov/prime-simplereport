@@ -1,6 +1,6 @@
 .prime-home {
-  background-color: color($theme-color-prime-gray-light);
-  padding-top: 1rem;
+  background-color: color("base-lightest");
+  padding-top: units(2);
 }
 
 .prime-container {
@@ -432,7 +432,7 @@
 .prime-formgroup {
   @include u-padding($theme-card-padding-perimeter);
   background: color("white");
-  border-width: units("1px");
+  border-width: units("2px");
   border-color: color("base-lighter");
   border-style: solid;
   border-radius: units(0.5);
@@ -444,8 +444,7 @@
 
 .prime-formgroup-heading {
   font-size: size("body", "lg");
-  margin-bottom: 0;
-  margin-top: 0;
+  font-weight: font-weight("bold");
 
   + .usa-fieldset {
     margin-top: units(3);

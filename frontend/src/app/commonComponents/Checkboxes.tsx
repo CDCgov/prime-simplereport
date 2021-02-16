@@ -24,6 +24,7 @@ interface Props {
   validationStatus?: "error" | "success";
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const Checkboxes = (props: Props) => {
@@ -37,6 +38,7 @@ const Checkboxes = (props: Props) => {
     validationStatus,
     errorMessage,
     required,
+    inputRef,
   } = props;
   const checkboxIds = useUniqueIds("check", boxes.length);
 
@@ -79,6 +81,7 @@ const Checkboxes = (props: Props) => {
               type="checkbox"
               value={value}
               name={name}
+              ref={inputRef}
               disabled={disabled || props.disabled}
               {...inputProps}
             />

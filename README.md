@@ -67,12 +67,21 @@ Running spring app locally and db in docker on port 5433
 1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
+### Running the app with Make
+
+For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
+
+```bash
+make start
+```
+
 ### Updating user role
 
 By default the local test user is an organization admin role. If you need to change this value to test out other permissions.
 It can be set in `application-local.yaml`. If you have not created one run:
 
 bash
+
 ```
 touch backend/src/main/resources/application-local.yaml
 ```
@@ -80,6 +89,7 @@ touch backend/src/main/resources/application-local.yaml
 #### Organization roles
 
 Organization roles can be set by adding the following to `application-local.yaml`:
+
 ```
 simple-report:
   demo-users:
@@ -87,6 +97,7 @@ simple-report:
       authorization:
         granted-roles: ADMIN
 ```
+
 current role types are `ADMIN`, `USER`, and `ENTRY_ONLY`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
 
 `ADMIN` - an organization admin with full access to their organization
@@ -152,24 +163,34 @@ to edit Spring boot settings for your local set up you must first create a `appl
 (note this file is git ignored):
 
 bash
+
 ```
 touch backend/src/main/resources/application-local.yaml
 ```
 
 Useful local settings
+
 - make the default user an admin
+
 ```
 simple-report:
   admin-emails:
     - bob@example.com
 ```
+
 - make SQL pretty
+
 ```
 spring:
   jpa:
     properties:
       hibernate:
         format_sql: true
+```
+- enable the patient links QR code feature flag
+```
+feature-flags:
+  patient-links: true
 ```
 
 ### SchemaSpy
