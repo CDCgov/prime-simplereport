@@ -466,7 +466,7 @@ const QueueItem: any = ({
       <li className="prime-li">
         <TextInput
           type="datetime-local"
-          label="Test Date"
+          label="Test date"
           name="meeting-time"
           value={isoDateToDatetimeLocal(dateTested)}
           min="2020-01-01T00:00"
