@@ -11,7 +11,6 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 });
 
 describe("TestQueue", () => {
-  beforeEach(() => {});
   it("should render the test queue", async () => {
     const { container, getByText } = render(
       <MockedProvider mocks={mocks}>
@@ -27,6 +26,8 @@ describe("TestQueue", () => {
   });
 });
 
+const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
+
 // Mock data taken from network request tab in Chrome devtools
 const result = {
   data: {
@@ -35,8 +36,25 @@ const result = {
         internalId: "d219f594-0c9f-4269-ab34-f49e1bca49d6",
         pregnancy: null,
         dateAdded: "2021-02-11 20:53:51.337",
-        symptoms:
-          '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+        symptoms: JSON.stringify({
+          "64531003": "false",
+          "103001002": "false",
+          "84229001": "false",
+          "68235000": "false",
+          "426000000": "false",
+          "49727002": "false",
+          "68962001": "false",
+          "422587007": "false",
+          "267036007": "false",
+          "62315008": "false",
+          "43724002": "false",
+          "36955009": "false",
+          "44169009": "false",
+          "422400008": "false",
+          "230145002": "false",
+          "25064002": "false",
+          "162397003": "false",
+        }),
         symptomOnset: null,
         noSymptoms: false,
         firstTest: false,
@@ -44,7 +62,7 @@ const result = {
         priorTestType: null,
         priorTestResult: "",
         deviceType: {
-          internalId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+          internalId,
           name: "LumiraDX",
           __typename: "DeviceType",
         },
@@ -70,8 +88,25 @@ const result = {
         internalId: "def85a2c-2f51-49dd-970b-a22ca0f13f6a",
         pregnancy: null,
         dateAdded: "2021-02-11 22:17:57.26",
-        symptoms:
-          '{"64531003":"false","103001002":"false","84229001":"false","68235000":"false","426000000":"false","49727002":"false","68962001":"false","422587007":"false","267036007":"false","62315008":"false","43724002":"false","36955009":"false","44169009":"false","422400008":"false","230145002":"false","25064002":"false","162397003":"false"}',
+        symptoms: JSON.stringify({
+          "64531003": "false",
+          "103001002": "false",
+          "84229001": "false",
+          "68235000": "false",
+          "426000000": "false",
+          "49727002": "false",
+          "68962001": "false",
+          "422587007": "false",
+          "267036007": "false",
+          "62315008": "false",
+          "43724002": "false",
+          "36955009": "false",
+          "44169009": "false",
+          "422400008": "false",
+          "230145002": "false",
+          "25064002": "false",
+          "162397003": "false",
+        }),
         symptomOnset: null,
         noSymptoms: false,
         firstTest: false,
@@ -79,7 +114,7 @@ const result = {
         priorTestType: null,
         priorTestResult: "",
         deviceType: {
-          internalId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+          internalId,
           name: "LumiraDX",
           __typename: "DeviceType",
         },
@@ -108,7 +143,7 @@ const result = {
           id: "a1",
           deviceTypes: [
             {
-              internalId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+              internalId,
               name: "LumiraDX",
               __typename: "DeviceType",
             },
@@ -119,7 +154,7 @@ const result = {
             },
           ],
           defaultDeviceType: {
-            internalId: "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554",
+            internalId,
             name: "LumiraDX",
             __typename: "DeviceType",
           },
