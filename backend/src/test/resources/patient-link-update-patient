@@ -1,0 +1,66 @@
+mutation patientLinkUpdatePatient($internalId: String!
+    $oldBirthDate: LocalDate!
+    $lookupId: String
+    $firstName: String!
+    $middleName: String
+    $lastName: String!
+    $newBirthDate: LocalDate!
+    $street: String!
+    $streetTwo: String
+    $city: String
+    $state: String!
+    $zipCode: String!
+    $telephone: String!
+    $role: String
+    $email: String
+    $county: String
+    $race: String
+    $ethnicity: String
+    $gender: String
+    $residentCongregateSetting: Boolean!
+    $employedInHealthcare: Boolean!
+  ) {
+    patientLinkUpdatePatient(
+      internalId: $internalId
+      oldBirthDate: $oldBirthDate
+      lookupId: $lookupId
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      newBirthDate: $newBirthDate
+      street: $street
+      streetTwo: $streetTwo
+      city: $city
+      state: $state
+      zipCode: $zipCode
+      telephone: $telephone
+      role: $role
+      email: $email
+      county: $county
+      race: $race
+      ethnicity: $ethnicity
+      gender: $gender
+      residentCongregateSetting: $residentCongregateSetting
+      employedInHealthcare: $employedInHealthcare
+    ) {
+      internalId
+      firstName
+      middleName
+      lastName
+      birthDate
+      street
+      streetTwo
+      city
+      state
+      zipCode
+      telephone
+      role
+      email
+      county
+      race
+      ethnicity
+      gender
+      residentCongregateSetting
+      employedInHealthcare
+    }
+  }

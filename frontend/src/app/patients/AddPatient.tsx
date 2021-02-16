@@ -14,6 +14,7 @@ const AddPatient = () => {
     <PatientForm
       patient={{ patientId: "" }}
       activeFacilityId={activeFacilityId}
+      isPxpView={false}
     />
   );
 };

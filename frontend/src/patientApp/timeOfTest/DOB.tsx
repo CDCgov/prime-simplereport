@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { connect, useDispatch, useSelector } from "react-redux";
+import { Redirect } from "react-router";
+import { gql, useLazyQuery } from "@apollo/client";
 import moment from "moment";
 
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
-import { gql, useLazyQuery } from "@apollo/client";
-import { connect, useDispatch, useSelector } from "react-redux";
 import { setPatient } from "../../app/store";
-import { Redirect } from "react-router";
 
 const PATIENT_LINK_VALIDATION_QUERY = gql`
   query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
@@ -37,12 +36,11 @@ const PATIENT_LINK_VALIDATION_QUERY = gql`
 
 const DOB = () => {
   const dispatch = useDispatch();
-
   const [birthDate, setBirthDate] = useState("");
   const [formattedBirthDate, setFormattedBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
   const [nextPage, setNextPage] = useState(false);
-
+  const dobRef = React.createRef() as any;
   const plid = useSelector((state) => (state as any).plid as String);
 
   const [validateBirthDate, { called, loading, data }] = useLazyQuery(
@@ -55,8 +53,19 @@ const DOB = () => {
 
   useEffect(() => {
     if (!data) return;
+    const patient = data.patientLinkVerify;
+    const residentCongregateSetting = patient.residentCongregateSetting
+      ? "YES"
+      : "NO";
+    const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
 
-    dispatch(setPatient(data.patientLinkVerify));
+    dispatch(
+      setPatient({
+        ...patient,
+        residentCongregateSetting,
+        employedInHealthcare,
+      })
+    );
 
     setNextPage(true);
     // eslint-disable-next-line
@@ -69,6 +78,7 @@ const DOB = () => {
       setBirthDateError("");
       return true;
     } else {
+      dobRef.current.focus();
       setBirthDateError("Enter your date of birth");
       return false;
     }
@@ -84,7 +94,13 @@ const DOB = () => {
   };
 
   if (called && loading) {
-    return <p>Validating birth date...</p>;
+    return (
+      <main>
+        <div className="grid-container maxw-tablet">
+          <p className="margin-top-3">Validating birth date...</p>
+        </div>
+      </main>
+    );
   }
 
   if (nextPage) {
@@ -92,8 +108,7 @@ const DOB = () => {
       <Redirect
         push
         to={{
-          pathname: "/patient-info-confirmation",
-          state: { page: "profile" },
+          pathname: "/patient-info-confirm",
         }}
       />
     );
@@ -106,18 +121,11 @@ const DOB = () => {
           <p className="margin-top-3">
             Enter your date of birth to access your COVID-19 Testing Portal.
           </p>
-          <form
-            className="usa-form"
-            onSubmit={(e) => {
-              e.preventDefault();
-              confirmBirthDate();
-            }}
-          >
+          <form className="usa-form" onSubmit={confirmBirthDate}>
             <TextInput
               label={"Date of birth"}
               name={"birthDate"}
               type={"bday"}
-              required={true}
               autoComplete={"bday"}
               value={birthDate}
               size={8}
@@ -126,10 +134,12 @@ const DOB = () => {
               ariaDescribedBy={"bdayFormat"}
               hintText={"MM/DD/YYYY or MMDDYYYY"}
               errorMessage={birthDateError}
+              hideOptional={true}
               validationStatus={birthDateError ? "error" : undefined}
               onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+              inputRef={dobRef}
             />
-            <Button label={"Continue"} type={"submit"} />
+            <Button id="dob-submit-button" label={"Continue"} type={"submit"} />
           </form>
         </div>
       </main>

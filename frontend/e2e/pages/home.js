@@ -45,6 +45,58 @@ function conductTest(patientName) {
   this.section.app.expect.element('@resultsTable').to.contain.text(patientName);
 }
 
+function getPatientLink(patientName) {
+  this.expect.section('@navbar').to.be.visible;
+  this.section.navbar.expect.element('@conductTestLink').to.be.visible;
+  this.section.navbar.click('@conductTestLink');
+  this.section.app.expect.element('@searchBar').to.be.visible;
+  this.section.app.setValue('@searchBar', patientName);
+  this.expect.section('@searchResults').to.be.visible;
+  this.section.searchResults.expect.element('@beginTest').to.be.visible;
+  this.section.searchResults.expect
+    .element('@beginTest')
+    .to.contain.text('Begin test');
+  this.section.searchResults.click('@beginTest');
+  this.expect.section('@modal').to.be.visible;
+  this.expect.section('@modal').to.contain.text('Complete on smartphone');
+  this.section.modal.expect.element('@smartphoneRadio').to.be.visible;
+  this.section.modal.click('@smartphoneRadio');
+  this.expect
+    .section('@modal')
+    .to.contain.text('Point your camera at the QR code');
+  return new Promise((resolve) => {
+    this.getAttribute(
+      '#patient-link-qr-code',
+      'data-patient-link',
+      ({ value: patientLink }) => {
+        resolve(patientLink);
+      }
+    );
+  });
+}
+
+function verifyQuestionnaireCompleted(patientName) {
+  this.expect.section('@queueCard').to.be.visible;
+  this.expect.section('@queueCard').to.contain.text(patientName);
+  this.expect.section('@queueCard').to.contain.text('SARS-CoV-2 results');
+  this.section.queueCard.expect.element('@questionnaireCompletedTag').to.be
+    .visible;
+  this.section.queueCard.expect
+    .element('@questionnaireCompletedTag')
+    .to.contain.text('COMPLETED');
+  this.section.queueCard.expect.element('@negativeResult').to.be.visible;
+  this.section.queueCard.click('@negativeResult');
+  this.section.queueCard.expect.element('@submitResultButton').to.be.visible;
+  this.section.queueCard.click('@submitResultButton');
+  this.expect
+    .section('@app')
+    .to.contain.text(`Result was saved and reported for ${patientName}`);
+  this.expect.section('@cardContainer').to.not.contain.text(patientName);
+  this.section.navbar.click('@resultsLink');
+  this.section.app.expect.element('@resultsTable').to.be.visible;
+  this.section.app.expect.element('@resultsTable').to.contain.text(patientName);
+}
+
 module.exports = {
   url: function () {
     return this.api.launchUrl + '/';
@@ -52,6 +104,8 @@ module.exports = {
   commands: [
     {
       conductTest,
+      getPatientLink,
+      verifyQuestionnaireCompleted,
     },
   ],
   sections: {
@@ -78,6 +132,7 @@ module.exports = {
     modal: {
       selector: '.ReactModal__Content',
       elements: {
+        smartphoneRadio: 'input[name="qr-code"][value="smartphone"]+label',
         verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         firstTest: 'input[name="prior_test_flag"][value="yes"]+label',
@@ -93,6 +148,7 @@ module.exports = {
       elements: {
         negativeResult: '.prime-radios input[value="NEGATIVE"]+label',
         submitResultButton: '.prime-test-result-submit button',
+        questionnaireCompletedTag: 'span.usa-tag',
       },
     },
   },

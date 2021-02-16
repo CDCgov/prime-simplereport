@@ -11,6 +11,8 @@ env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
+  REACT_APP_PATIENT_EXPERIENCE_ENABLED: true
+  FEATURE_FLAGS_PATIENT_LINKS: true
 
 defaults:
   run:

@@ -509,7 +509,7 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoeModalForm
-                        saveButtonText="Save"
+                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}

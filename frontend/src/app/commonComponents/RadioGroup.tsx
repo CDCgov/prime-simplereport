@@ -20,6 +20,8 @@ interface Props {
   errorMessage?: React.ReactNode;
   validationStatus?: "error" | "success";
   variant?: "default" | "tile" | "horizontal";
+  hintText?: string;
+  hideOptional?: boolean;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
@@ -37,6 +39,8 @@ const RadioGroup = ({
   className,
   required,
   variant,
+  hintText,
+  hideOptional,
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
@@ -64,9 +68,17 @@ const RadioGroup = ({
         <legend
           className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
         >
-          {required ? <Required label={legend} /> : <Optional label={legend} />}
+          {required ? (
+            <Required label={legend} />
+          ) : (
+            <Optional
+              className={hideOptional ? "display-none" : ""}
+              label={legend}
+            />
+          )}
         </legend>
       )}
+      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
       {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
