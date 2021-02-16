@@ -54,7 +54,9 @@ const PatientProfileFormContainer = () => {
   );
 
   useEffect(() => {
-    if (!data) return;
+    if (!data) {
+      return;
+    }
     const updatedPatient = data.patientLinkVerify;
     const residentCongregateSetting = patient.residentCongregateSetting
       ? "YES"
