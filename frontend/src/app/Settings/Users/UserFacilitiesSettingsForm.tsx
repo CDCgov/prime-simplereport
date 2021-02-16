@@ -16,10 +16,11 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   allFacilities,
   onUpdateUser,
 }) => {
-  const [isComponentVisible, setIsComponentVisible] = useState(true);
+  const [isComponentVisible, setIsComponentVisible] = useState(false);
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   const handleClickOutside = (event: any) => {
+    // TODO: figure out this type
     if (ref.current && ref.current.contains(event.target)) {
       // inside click
       // TODO: this doesn't capture the buttons inside the table
@@ -62,6 +63,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   };
 
   const onAddAllFacilities = () => {
+    setIsComponentVisible(false);
     onUpdateUser(activeUser.id, "facilities", allFacilities);
   };
 
@@ -88,6 +90,23 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       ))
     : null;
 
+  const addFacilityRows = allFacilities.map((facility) => (
+    <tr key={facility.id}>
+      <td> {facility.name} </td>
+      <td>
+        {!activeUser.facilities?.map((f) => f.id).includes(facility.id) ? (
+          <Button
+            variant="unstyled"
+            label="Select"
+            onClick={() => onAddFacility(activeUser, facility.id)}
+          />
+        ) : (
+          "Already Assigned"
+        )}
+      </td>
+    </tr>
+  ));
+
   const allFacilityList = (
     <div
       ref={ref}
@@ -107,26 +126,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
               </th>
             </tr>
           </thead>
-          <tbody>
-            {allFacilities.map((facility) => (
-              <tr key={facility.id}>
-                <td> {facility.name} </td>
-                <td>
-                  {!activeUser.facilities
-                    ?.map((f) => f.id)
-                    .includes(facility.id) ? (
-                    <Button
-                      variant="unstyled"
-                      label="Select"
-                      onClick={() => onAddFacility(activeUser, facility.id)}
-                    />
-                  ) : (
-                    "Already Assigned"
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+          <tbody>{addFacilityRows}</tbody>
         </table>
       </div>
     </div>
