@@ -1,5 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
