@@ -13,13 +13,14 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
       isOpen={true}
       style={{
         content: {
+          marginRight: "50%",
           inset: "3em auto auto auto",
-          margin: "auto auto",
-          display: "block",
-          width: "30%",
+          overflow: "auto",
           height: "25%",
-          minHeight: "10em",
-          minWidth: "10em",
+          maxHeight: "100vh",
+          width: "50%",
+          minWidth: "20em",
+          transform: "translate(50%, 125%)",
         },
       }}
       overlayClassName="prime-modal-overlay"
