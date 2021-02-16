@@ -14,6 +14,10 @@ const TestResultsContainer = () => {
     user.permissions,
     appPermissions.people.canEdit
   );
+  const canDeleteUser = hasPermission(
+    user.permissions,
+    appPermissions.people.canDelete
+  );
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
@@ -21,6 +25,7 @@ const TestResultsContainer = () => {
     <ManagePatients
       activeFacilityId={activeFacilityId}
       canEditUser={canEditUser}
+      canDeleteUser={canDeleteUser}
     />
   );
 };

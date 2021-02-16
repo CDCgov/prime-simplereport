@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
-
+import classnames from "classnames";
 import {
   PATIENT_TERM_CAP,
   PATIENT_TERM_PLURAL_CAP,
@@ -24,6 +24,7 @@ const patientQuery = gql`
       lastName
       middleName
       birthDate
+      isDeleted
       lastTest {
         dateAdded
       }
@@ -37,6 +38,7 @@ interface Patient {
   lastName: string;
   middleName: string;
   birthDate: string;
+  isDeleted: string;
   lastTest: {
     dateAdded: string;
   };
@@ -49,6 +51,7 @@ interface Data {
 interface Props {
   activeFacilityId: string;
   canEditUser: boolean;
+  canDeleteUser: boolean;
 }
 
 const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
@@ -91,7 +94,13 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
       );
 
       return (
-        <tr key={patient.internalId} className="sr-patient-row">
+        <tr
+          key={patient.internalId}
+          className={classnames(
+            "sr-patient-row",
+            patient.isDeleted && "sr-patient-row--removed"
+          )}
+        >
           <th scope="row">{editUserLink}</th>
           <td> {patient.birthDate}</td>
           <td>
@@ -100,7 +109,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
               : "N/A"}
           </td>
           <td>
-            {canEditUser && (
+            {canEditUser && !patient.isDeleted && (
               <Menu
                 menuButton={
                   <MenuButton className="sr-modal-menu-button">
