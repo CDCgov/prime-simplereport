@@ -13,7 +13,6 @@ const SettingsNav = () => {
         <li className="usa-nav__secondary-item">
           <NavLink
             to={`/settings/?facility=${getFacilityIdFromUrl()}`}
-            onClick={() => 4} // wut?
             activeClassName="active"
             exact={true}
           >
@@ -23,7 +22,6 @@ const SettingsNav = () => {
         <li className="usa-nav__secondary-item">
           <NavLink
             to={`/settings/facilities/?facility=${getFacilityIdFromUrl()}`}
-            onClick={() => 4}
             activeClassName="active"
           >
             Manage Facilities
@@ -33,7 +31,6 @@ const SettingsNav = () => {
           <li className="usa-nav__secondary-item">
             <NavLink
               to={`/settings/users/?facility=${getFacilityIdFromUrl()}`}
-              onClick={() => 4}
               activeClassName="active"
             >
               Manage users

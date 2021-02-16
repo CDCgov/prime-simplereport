@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { Prompt } from "react-router-dom";
+import classnames from "classnames";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
@@ -104,16 +105,16 @@ const ManageUsers: React.FC<Props> = ({
         onClick={() => onChangeActiveUser(user.id)}
         key={user.id}
       >
-        <ConditionalWrap
-          condition={activeUserId === user.id}
-          wrap={(children) => <div className="usa-current">{children}</div>}
+        <div
+          className={classnames(
+            "padding-105 padding-right-2",
+            activeUserId === user.id && "usa-current"
+          )}
         >
-          <div className="padding-105 padding-right-2">
-            <span className="sidenav-user-name">{user.name}</span>
-            <br />
-            <span className="sidenav-user-email">{user.email}</span>
-          </div>
-        </ConditionalWrap>
+          <span className="sidenav-user-name">{user.name}</span>
+          <br />
+          <span className="sidenav-user-email">{user.email}</span>
+        </div>
       </li>
     );
   });
