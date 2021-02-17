@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
+import { Redirect } from "react-router";
+import { useHistory } from "react-router-dom";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
-import StepIndicator from "../../app/commonComponents/StepIndicator";
-import PatientProfile from "./PatientProfile";
 import { connect, useSelector } from "react-redux";
 import { gql, useMutation } from "@apollo/client";
+
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
+import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
 const PATIENT_LINK_SUBMIT_MUTATION = gql`
   mutation PatientLinkById(
@@ -37,32 +40,16 @@ interface Props {
   page: string;
 }
 
-const AoEPatientFormContainer = ({ page }: Props) => {
+const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
+  const [prevPage, setPrevPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
-  const plid = useSelector((state) => (state as any).plid as String);
-
-  const residentCongregateSetting = patient.residentCongregateSetting
-    ? "YES"
-    : "NO";
-
-  const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
-
-  const steps = [
-    {
-      label: "Profile information",
-      value: "profile",
-      order: 0,
-      isCurrent: page === "profile",
-    },
-    {
-      label: "Symptoms and history",
-      value: "symptoms",
-      order: 1,
-      isCurrent: page === "symptoms",
-    },
-  ];
+  const plid =
+    useSelector((state) => (state as any).plid as String) ||
+    getPatientLinkIdFromUrl();
+  const history = useHistory();
 
   const [submitMutation] = useMutation(PATIENT_LINK_SUBMIT_MUTATION);
+
   const saveCallback = (args: any) => {
     submitMutation({
       variables: {
@@ -73,34 +60,33 @@ const AoEPatientFormContainer = ({ page }: Props) => {
     });
   };
 
+  history.listen((loc, action) => {
+    if (action === "POP") {
+      setPrevPage(true);
+    }
+  });
+
+  if (prevPage) {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/patient-info-confirm",
+        }}
+      />
+    );
+  }
+
   return (
-    <main className="patient-app patient-app--form padding-bottom-4">
-      <div className="grid-container maxw-tablet">
-        <StepIndicator steps={steps} />
-        {page === "symptoms" && (
-          <AoEForm
-            patient={{
-              ...patient,
-              residentCongregateSetting,
-              employedInHealthcare,
-            }}
-            isModal={false}
-            saveButtonText="Submit"
-            noValidation={false}
-            saveCallback={saveCallback}
-          />
-        )}
-        {page === "profile" && (
-          <PatientProfile
-            patient={{
-              ...patient,
-              residentCongregateSetting,
-              employedInHealthcare,
-            }}
-          />
-        )}
-      </div>
-    </main>
+    <PatientTimeOfTestContainer currentPage={"symptoms"}>
+      <AoEForm
+        patient={patient}
+        isModal={false}
+        saveButtonText="Submit"
+        noValidation={false}
+        saveCallback={saveCallback}
+      />
+    </PatientTimeOfTestContainer>
   );
 };
 

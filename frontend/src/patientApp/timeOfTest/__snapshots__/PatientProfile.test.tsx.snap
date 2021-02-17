@@ -1,0 +1,114 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PatientProfile snapshot 1`] = `
+<div
+  className="prime-formgroup usa-prose"
+>
+  <h2
+    className="prime-formgroup-heading font-heading-lg"
+  >
+    General information
+  </h2>
+  <h3
+    className="font-heading-sm"
+  >
+    Name
+  </h3>
+  <p>
+    Jane Doe
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Date of birth
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Phone number
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Address
+  </h3>
+  <p>
+    <span
+      className="display-block"
+    >
+      24 Dreary Lnundefined
+    </span>
+    <span
+      className="display-block"
+    >
+      undefinedundefined
+    </span>
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Email address
+  </h3>
+  <p
+    id="patient-email"
+  >
+    Not provided
+  </p>
+  <h2
+    className="prime-formgroup-heading font-heading-lg"
+  >
+    Demographics
+  </h2>
+  <h3
+    className="font-heading-sm"
+  >
+    Race
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Ethnicity
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Biological sex
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h2
+    className="prime-formgroup-heading font-heading-lg"
+  >
+    Other
+  </h2>
+  <h3
+    className="font-heading-sm"
+  >
+    Resident in congregate care/living setting
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Employed in healthcare
+  </h3>
+  <p>
+    Not provided
+  </p>
+</div>
+`;

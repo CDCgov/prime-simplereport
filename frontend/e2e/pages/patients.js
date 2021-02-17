@@ -20,7 +20,7 @@ function addPatient() {
   this.section.patientList.expect.element('@addPatient').to.be.visible;
   this.section.patientList.click('@addPatient');
   this.expect.section('@editPatient').to.be.visible;
-  this.expect.section('@editPatient').to.contain.text('Create New Person');
+  this.expect.section('@editPatient').to.contain.text('Add New Person');
   this.section.editPatient.setValue('@firstName', firstName);
   this.section.editPatient.setValue('@lastName', lastName);
   this.section.editPatient.setValue('@facility', '~~ALL-FACILITIES~~');
@@ -35,7 +35,7 @@ function addPatient() {
   this.expect.section('@patientList').to.be.visible;
   this.expect.section('@patientList').to.contain.text(fullName);
 
-  return fullName;
+  return { patientName: fullName, birthDate: dob };
 }
 
 module.exports = {

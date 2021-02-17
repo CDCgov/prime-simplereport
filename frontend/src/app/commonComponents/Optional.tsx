@@ -1,9 +1,10 @@
 import React from "react";
+import classnames from "classnames";
 
-const Optional = (props: { label?: React.ReactNode }) => (
+const Optional = (props: { label?: React.ReactNode; className?: string }) => (
   <>
     {props.label}
-    <span className={"usa-hint"}> (optional)</span>
+    <span className={classnames("usa-hint", props.className)}> (optional)</span>
   </>
 );
 

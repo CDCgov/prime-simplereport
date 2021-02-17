@@ -20,15 +20,14 @@ main {
 }
 
 .usa-breadcrumb {
-  background: inherit;
-  margin: 1em;
+  background: transparent;
 }
 
 .prime-edit-patient-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 1em;
+  margin: 1em 0;
 }
 .prime-save-patient-changes {
   padding: 1em;

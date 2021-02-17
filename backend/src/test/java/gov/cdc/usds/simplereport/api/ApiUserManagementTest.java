@@ -4,17 +4,11 @@ import java.util.Set;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Iterator;
 import java.util.HashSet;
 import java.util.Optional;
-
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.argThat;
-import org.mockito.ArgumentMatcher;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -25,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.Organization;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -471,7 +464,7 @@ class ApiUserManagementTest extends BaseApiTest {
         roles.add(OrganizationRole.USER);
         roles.add(role);
         return new OrganizationRoleClaims(_initService.getDefaultOrganization().getExternalId(),
-                                                   roles);
+                                          roles);
     }
 
     private ObjectNode getAddUserVariables(String firstName, 

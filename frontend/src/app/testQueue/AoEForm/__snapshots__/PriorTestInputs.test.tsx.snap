@@ -109,6 +109,11 @@ Array [
       htmlFor="drop-test-1"
     >
       Type of Prior Test
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
     </label>
     <select
       className="usa-select"
@@ -130,6 +135,11 @@ Array [
       htmlFor="drop-test-1"
     >
       Result of Prior Test
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
     </label>
     <select
       className="usa-select"

@@ -109,12 +109,12 @@ public class LiveOktaRepository implements OktaRepository {
 
         GroupList groups = _client.listGroups(groupName, null, null);
         if (!groups.iterator().hasNext()) {
-            LOG.warn("Okta group is nonexistent; returning zero usernames");
+            LOG.warn("Okta group for org={}, role={} is nonexistent; returning zero usernames",
+                     org.getExternalId(), role.name());
             return List.of();
         }
         Group group = groups.single();
         return group.listUsers().stream()
-                .filter(u -> u.getStatus().equals(UserStatus.ACTIVE))
                 .map(u -> u.getProfile().getEmail())
                 .collect(Collectors.toList());
     }

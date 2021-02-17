@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
