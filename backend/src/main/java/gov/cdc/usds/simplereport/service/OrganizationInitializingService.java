@@ -84,7 +84,6 @@ public class OrganizationInitializingService {
                 specimenTypesByName.put(specimenType.getName(), specimenType);
             }
         }
-        SpecimenType defaultSpecimenType = specimenTypesByName.get(_props.getSpecimenTypes().get(0).getName());
 		for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
 			if (null == deviceType) {
@@ -92,10 +91,11 @@ public class OrganizationInitializingService {
 				deviceType = _deviceTypeRepo.save(d);
 				byName.put(deviceType.getName(), deviceType);
 			}
-            Optional<DeviceSpecimen> deviceSpecimens = _deviceSpecimenRepo
-                    .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceType.getInternalId());
+            SpecimenType defaultTypeForDevice = _specimenTypeRepo.findByTypeCode(d.getSwabType())
+                    .orElseThrow(() -> new IllegalArgumentException("No specimen type with code " + d.getSwabType()));
+            Optional<DeviceSpecimen> deviceSpecimens = _deviceSpecimenRepo.find(d, defaultTypeForDevice);
             if (deviceSpecimens.isEmpty()) {
-                _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultSpecimenType));
+                _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultTypeForDevice));
             }
 		}
 

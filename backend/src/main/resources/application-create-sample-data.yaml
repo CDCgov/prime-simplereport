@@ -22,9 +22,12 @@ simple-report-initialization:
     - LumiraDX
     - Quidel Sofia 2
   specimen-types:
-    - name: Swab of the Nose
+    - name: Swab of internal nose
       type-code: "445297001"
-      collection-location-name: "NOSE"
+      collection-location-name: Nasal structure
+    - name: Nasopharyngeal swab
+      type-code: 258500001
+      collection-location-name: Nasopharyngeal structure
       collection-location-code: "71836000"
   device-types:
     - name: Abbott IDNow
