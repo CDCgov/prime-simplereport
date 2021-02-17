@@ -50,7 +50,8 @@ public class TestEventExport {
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
-	private String nasopharyngealStructureCode = "71836000";
+    private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
+                                                                    // "Internal nose structure"
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
 	private Map<String, String> genderMap = Map.of(
 		"male", "M",
@@ -434,7 +435,7 @@ public class TestEventExport {
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
         return Optional.ofNullable(specimenType.getCollectionLocationCode())
-                .orElse(nasopharyngealStructureCode);
+                .orElse(DEFAULT_LOCATION_CODE);
 	}
 
 	@JsonProperty("Specimen_type_code")

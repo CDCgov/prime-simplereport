@@ -24,7 +24,7 @@ simple-report-initialization:
   specimen-types:
     - name: Swab of internal nose
       type-code: "445297001"
-      collection-location-name: Nasal structure
+      collection-location-name: Internal nose structure
     - name: Nasopharyngeal swab
       type-code: 258500001
       collection-location-name: Nasopharyngeal structure
