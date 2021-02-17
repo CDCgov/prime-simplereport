@@ -16,7 +16,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       >
         <li
           aria-current={false}
-          className="usa-step-indicator__segment"
+          className="usa-step-indicator__segment usa-step-indicator__segment--complete"
         >
           <span
             className="usa-step-indicator__segment-label"
@@ -31,8 +31,8 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           </span>
         </li>
         <li
-          aria-current={false}
-          className="usa-step-indicator__segment"
+          aria-current={true}
+          className="usa-step-indicator__segment usa-step-indicator__segment--current"
         >
           <span
             className="usa-step-indicator__segment-label"
@@ -64,7 +64,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             <span
               className="usa-step-indicator__current-step margin-right-05"
             >
-              1
+              2
             </span>
             <span
               className="usa-step-indicator__total-steps"
@@ -76,7 +76,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           <span
             className="usa-step-indicator__heading-text"
           >
-            
+            Symptoms and history
           </span>
         </h1>
       </div>

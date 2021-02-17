@@ -1,16 +1,20 @@
 import React from "react";
 import classnames from "classnames";
+
 interface Props {
   steps: {
     label: string;
     value: string;
     order: number;
-    isCurrent: boolean;
   }[];
+  currentStepValue: string;
 }
 
-const StepIndicator = ({ steps }: Props): React.ReactElement => {
-  const currentStep = steps.find(({ isCurrent }) => isCurrent) || {
+const StepIndicator = ({
+  steps,
+  currentStepValue,
+}: Props): React.ReactElement => {
+  const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
     label: "",
   };
@@ -26,11 +30,12 @@ const StepIndicator = ({ steps }: Props): React.ReactElement => {
             key={step.value}
             className={classnames(
               "usa-step-indicator__segment",
-              step.isCurrent && "usa-step-indicator__segment--current",
+              step.value === currentStepValue &&
+                "usa-step-indicator__segment--current",
               currentStep.order > step.order &&
                 "usa-step-indicator__segment--complete"
             )}
-            aria-current={step.isCurrent}
+            aria-current={step.value === currentStepValue}
           >
             <span className="usa-step-indicator__segment-label">
               {step.label} <span className="usa-sr-only">completed</span>

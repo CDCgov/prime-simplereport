@@ -15,7 +15,7 @@ import { displayFullName } from "../../utils";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
-const QUERY_PATIENT = gql`
+export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId

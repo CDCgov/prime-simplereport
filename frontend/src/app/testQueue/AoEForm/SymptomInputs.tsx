@@ -18,6 +18,8 @@ interface Props {
   setOnsetDate: (onsetDate: string) => void;
   symptomError: string | undefined;
   symptomOnsetError: string | undefined;
+  symptomRef: React.RefObject<HTMLInputElement>;
+  symptomOnsetRef: React.RefObject<HTMLInputElement>;
 }
 
 const SymptomInputs: React.FC<Props> = ({
@@ -29,6 +31,8 @@ const SymptomInputs: React.FC<Props> = ({
   setOnsetDate,
   symptomError,
   symptomOnsetError,
+  symptomRef,
+  symptomOnsetRef,
 }) => {
   return (
     <>
@@ -41,6 +45,7 @@ const SymptomInputs: React.FC<Props> = ({
           required
           errorMessage={symptomError}
           validationStatus={symptomError ? "error" : undefined}
+          inputRef={symptomRef}
         />
         {!noSymptoms && (
           <>
@@ -79,6 +84,7 @@ const SymptomInputs: React.FC<Props> = ({
           )}
           errorMessage={symptomOnsetError}
           validationStatus={symptomOnsetError ? "error" : undefined}
+          inputRef={symptomOnsetRef}
         />
       )}
     </>

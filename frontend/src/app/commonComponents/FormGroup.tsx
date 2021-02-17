@@ -7,8 +7,12 @@ interface Props {
 
 const FormGroup = (props: Props) => (
   <div className="prime-formgroup">
-    <h2 className="prime-formgroup-heading">{props.title}</h2>
-    {props.children}
+    <fieldset className="usa-fieldset">
+      <legend className="prime-formgroup-heading usa-legend">
+        {props.title}
+      </legend>
+      {props.children}
+    </fieldset>
   </div>
 );
 

@@ -9,7 +9,7 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import { getUrl } from "../../utils/url";
 
 const AoEModalForm = ({
-  saveButtonText = "Save",
+  saveButtonText = "Continue",
   onClose,
   patient,
   loadState = {},
@@ -74,16 +74,12 @@ const AoEModalForm = ({
       isOpen={true}
       style={{
         content: {
-          inset: "3em auto auto auto",
-          overflow: "auto",
           maxHeight: "90vh",
-          width: "50%",
-          minWidth: "20em",
-          marginRight: "50%",
-          transform: "translate(50%, 0)",
+          width: "40em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Time of Test Questions"
     >
       <div className="display-flex flex-justify">
@@ -119,7 +115,11 @@ const AoEModalForm = ({
                     Point your camera at the QR code <br />
                     to access the questionnaire
                   </p>
-                  <div className="margin-top-205">
+                  <div
+                    className="margin-top-205"
+                    id="patient-link-qr-code"
+                    data-patient-link={patientLink}
+                  >
                     <QRCode value={patientLink} size="190" />
                   </div>
                 </div>
