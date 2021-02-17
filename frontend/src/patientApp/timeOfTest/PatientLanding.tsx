@@ -19,10 +19,9 @@ const PatientLanding = () => {
               icon={"check-circle"}
               className="usa-media-block__img margin-right-2"
             />
-            <div className="usa-mmedia-block__body usa-prose">
+            <div className="usa-mmedia-block__body usa-prose margin-top-105">
               <h3 className="font-heading-sm">Questionnaire complete</h3>
               <p className="margin-top-05">
-                You will receive a text notification when your result is ready.
               </p>
             </div>
           </div>
