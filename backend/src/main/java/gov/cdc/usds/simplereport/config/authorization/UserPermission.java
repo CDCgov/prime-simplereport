@@ -18,5 +18,5 @@ public enum UserPermission {
     START_TEST,
     UPDATE_TEST,
     SUBMIT_TEST,
-    EXPORT_TEST_EVENT,
+    EXPORT_TEST_EVENT;
 }
