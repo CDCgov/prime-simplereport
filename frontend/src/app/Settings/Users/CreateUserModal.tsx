@@ -2,12 +2,13 @@ import React from "react";
 import Modal from "react-modal";
 
 import CreateUserForm from "./CreateUserForm";
+import { NewUserInvite } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (newUserInvite: NewUserInvite) => void;
 }
 
 const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {

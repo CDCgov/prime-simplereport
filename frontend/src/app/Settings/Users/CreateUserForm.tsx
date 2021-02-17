@@ -4,15 +4,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
+import { NewUserInvite } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onSubmit: () => void;
+  onSubmit: (newUserInvite: NewUserInvite) => void;
 }
 
-const initialFormState = {
+const initialFormState: NewUserInvite = {
   first: "",
   last: "",
   email: "",
@@ -105,7 +106,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           />
           <Button
             className="margin-right-0"
-            onClick={onSubmit}
+            onClick={() => onSubmit(newUser)}
             label="Send Invite"
           />
         </div>

@@ -33,6 +33,13 @@ export interface UserFacilitySetting {
   name: string;
 }
 
+export interface NewUserInvite {
+  first: string;
+  last: string;
+  email: string;
+  role: UserRole | string;
+}
+
 const dummyUsers = [
   {
     id: "111",
@@ -88,6 +95,10 @@ const updateUser = (user: SettingsUser) => {
   // TODO: perform graphql query
 };
 
+const createNewUser = (newUserInvite: NewUserInvite) => {
+  // TODO: perform graphql mutation
+};
+
 const ManageUsersContainer: React.FC<any> = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
   loggedInUser.id = "111"; // TODO: delete this
@@ -112,6 +123,7 @@ const ManageUsersContainer: React.FC<any> = () => {
       loggedInUser={loggedInUser}
       onUpdateUser={updateUser}
       allFacilities={allFacilities}
+      onCreateNewUser={createNewUser}
     />
   );
 };

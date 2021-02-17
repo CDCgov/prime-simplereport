@@ -8,7 +8,11 @@ import Button from "../../commonComponents/Button";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
-import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+import {
+  SettingsUser,
+  UserFacilitySetting,
+  NewUserInvite,
+} from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
 
 import "./ManageUsers.scss";
@@ -19,6 +23,7 @@ interface Props {
   users: SettingsUser[];
   allFacilities: UserFacilitySetting[];
   onUpdateUser: (user: SettingsUser) => void;
+  onCreateNewUser: (newUserInvite: NewUserInvite) => void;
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
@@ -28,6 +33,7 @@ const ManageUsers: React.FC<Props> = ({
   loggedInUser,
   users,
   onUpdateUser,
+  onCreateNewUser,
 }) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
@@ -204,7 +210,7 @@ const ManageUsers: React.FC<Props> = ({
             {showAddUserModal ? (
               <CreateUserModal
                 onClose={() => updateShowAddUserModal(false)}
-                onSubmit={() => {}}
+                onSubmit={onCreateNewUser}
               />
             ) : null}
           </div>
