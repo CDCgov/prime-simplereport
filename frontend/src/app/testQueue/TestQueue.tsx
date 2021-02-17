@@ -20,7 +20,7 @@ const emptyQueueMessage = (
   </div>
 );
 
-const queueQuery = gql`
+export const queueQuery = gql`
   query GetFacilityQueue($facilityId: String!) {
     queue(facilityId: $facilityId) {
       internalId

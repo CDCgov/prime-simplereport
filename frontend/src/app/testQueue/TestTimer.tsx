@@ -129,8 +129,12 @@ export const useTestTimer = (id: string) => {
   };
 };
 
-export const TestTimerWidget = (props: { id: string }) => {
-  const { running, countdown, elapsed, reset, start } = useTestTimer(props.id);
+type Props = {
+  timer: ReturnType<typeof useTestTimer>;
+};
+
+export const TestTimerWidget = ({ timer }: Props) => {
+  const { running, countdown, elapsed, reset, start } = timer;
   const mmss = (t: number) => {
     const mins = Math.floor(Math.abs(t) / 60);
     const secs = Math.abs(t) % 60;
@@ -152,9 +156,10 @@ export const TestTimerWidget = (props: { id: string }) => {
   }
   return (
     <div>
-      <span className="timer-overtime">{mmss(elapsed)} elapsed </span>
       <button className="timer-button timer-ready" onClick={reset}>
-        <span>RESULT READY</span> <FontAwesomeIcon icon={faRedo} />
+        <span className="result-ready">RESULT READY</span>{" "}
+        <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
+        <FontAwesomeIcon icon={faRedo} />
       </button>
     </div>
   );
