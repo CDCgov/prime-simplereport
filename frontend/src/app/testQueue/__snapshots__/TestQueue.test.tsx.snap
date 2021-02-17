@@ -287,7 +287,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_POSITIVE_0"
-                      name="covid-test-result-d219f594-0c9f-4269-ab34-f49e1bca49d6"
+                      name="covid-test-result-abc"
                       type="radio"
                       value="POSITIVE"
                     />
@@ -304,7 +304,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_NEGATIVE_1"
-                      name="covid-test-result-d219f594-0c9f-4269-ab34-f49e1bca49d6"
+                      name="covid-test-result-abc"
                       type="radio"
                       value="NEGATIVE"
                     />
@@ -321,7 +321,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_UNDETERMINED_2"
-                      name="covid-test-result-d219f594-0c9f-4269-ab34-f49e1bca49d6"
+                      name="covid-test-result-abc"
                       type="radio"
                       value="UNDETERMINED"
                     />
@@ -443,7 +443,7 @@ exports[`TestQueue should render the test queue 1`] = `
                       Phone number
                     </strong>
                     <p>
-                      (222) 333-4444
+                      1234567890
                     </p>
                   </li>
                   <li
@@ -593,7 +593,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_POSITIVE_0"
-                      name="covid-test-result-def85a2c-2f51-49dd-970b-a22ca0f13f6a"
+                      name="covid-test-result-def"
                       type="radio"
                       value="POSITIVE"
                     />
@@ -610,7 +610,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_NEGATIVE_1"
-                      name="covid-test-result-def85a2c-2f51-49dd-970b-a22ca0f13f6a"
+                      name="covid-test-result-def"
                       type="radio"
                       value="NEGATIVE"
                     />
@@ -627,7 +627,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     <input
                       class="usa-radio__input"
                       id="radio-test-1_UNDETERMINED_2"
-                      name="covid-test-result-def85a2c-2f51-49dd-970b-a22ca0f13f6a"
+                      name="covid-test-result-def"
                       type="radio"
                       value="UNDETERMINED"
                     />
