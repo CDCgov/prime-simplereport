@@ -175,7 +175,7 @@ Useful local settings
 ```
 simple-report:
   site-admin-emails:
-    - bob@example.com
+    - bob@sample.com
 ```
 
 - make SQL pretty
