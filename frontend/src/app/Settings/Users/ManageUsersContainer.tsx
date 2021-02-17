@@ -25,7 +25,6 @@ export interface SettingsUser {
   role: UserRole;
   email: string;
   isAdmin: boolean;
-  isEdited?: boolean;
   facilities?: UserFacilitySetting[]; // TODO: update this when the graphql query is defined. Should just be the facility id and name.
 }
 

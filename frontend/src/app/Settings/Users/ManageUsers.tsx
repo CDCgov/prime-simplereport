@@ -46,6 +46,7 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
+  const [isUserEdited, updateIsUserEdited] = useState(false);
 
   function updateUser<T>(
     userId: string,
@@ -57,9 +58,9 @@ const ManageUsers: React.FC<Props> = ({
       [userId]: {
         ...usersState[userId],
         [key]: value,
-        isEdited: true,
       },
     });
+    updateIsUserEdited(true);
   }
 
   const onSaveChanges = (userId: string) => {
@@ -69,9 +70,9 @@ const ManageUsers: React.FC<Props> = ({
       ...usersState,
       [userId]: {
         ...usersState[userId],
-        isEdited: false,
       },
     });
+    updateIsUserEdited(false);
 
     let successAlert = (
       <Alert
@@ -85,7 +86,7 @@ const ManageUsers: React.FC<Props> = ({
   };
 
   const onChangeActiveUser = (nextActiveUserId: string) => {
-    if (usersState[activeUserId].isEdited) {
+    if (isUserEdited) {
       updateNextActiveUserId(nextActiveUserId);
       updateShowInProgressModal(true);
     } else {
@@ -95,6 +96,7 @@ const ManageUsers: React.FC<Props> = ({
 
   const onContinueChangeActiveUser = (currentActiveUserId: string) => {
     updateShowInProgressModal(false);
+
     updateActiveUserId(nextActiveUserId as string);
     resetUser(currentActiveUserId);
   };
@@ -125,6 +127,7 @@ const ManageUsers: React.FC<Props> = ({
       ...usersState,
       [userId]: settingsUsers[userId],
     });
+    updateIsUserEdited(false);
   };
 
   const activeUser: SettingsUser = usersState[activeUserId];
@@ -181,7 +184,7 @@ const ManageUsers: React.FC<Props> = ({
                   label="Save changes"
                   disabled={
                     loggedInUser.roleDescription !== "Admin user" ||
-                    !activeUser.isEdited
+                    !isUserEdited
                   }
                 />
               </div>
@@ -192,9 +195,9 @@ const ManageUsers: React.FC<Props> = ({
                 onContinue={() => onContinueChangeActiveUser(activeUserId)}
               />
             ) : null}
-            {activeUser.isEdited ? (
+            {isUserEdited ? (
               <Prompt
-                when={activeUser.isEdited}
+                when={isUserEdited}
                 message="You have unsaved changes. Do you want to continue?"
               />
             ) : null}
