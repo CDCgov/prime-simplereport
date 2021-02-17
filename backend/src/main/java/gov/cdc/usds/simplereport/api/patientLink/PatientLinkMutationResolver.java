@@ -15,8 +15,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.exceptions.FeatureFlagDisabledException;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -37,6 +39,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private PersonService ps;
 
+    @Value("${simple-report.feature-flags.patient-links:false}")
+    private boolean patientLinksEnabled;
+
     public PatientLink refreshPatientLink(String internalId) {
         return pls.refreshPatientLink(internalId);
     }
@@ -44,6 +49,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     public String patientLinkSubmit(String internalId, LocalDate birthDate, String pregnancy, String symptoms,
             boolean firstTest, LocalDate priorTestDate, String priorTestType, String priorTestResult,
             LocalDate symptomOnset, boolean noSymptoms) throws Exception {
+        if (!patientLinksEnabled) {
+            throw new FeatureFlagDisabledException("Patient links not enabled");
+        }
         Person patient = pls.getPatientLinkVerify(internalId, birthDate);
         String patientID = patient.getInternalId().toString();
 
@@ -59,6 +67,9 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
             String city, String state, String zipCode, String telephone, String role, String email, String county,
             String race, String ethnicity, String gender, Boolean residentCongregateSetting,
             Boolean employedInHealthcare) throws Exception {
+        if (!patientLinksEnabled) {
+            throw new FeatureFlagDisabledException("Patient links not enabled");
+        }
         PatientLink pl = pls.getPatientLink(internalId);
         UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
         Person patient = pls.getPatientLinkVerify(internalId, oldBirthDate);
