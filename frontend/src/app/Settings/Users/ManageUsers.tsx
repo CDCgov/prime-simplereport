@@ -13,6 +13,7 @@ import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import { showNotification } from "../../utils";
 
 import "./ManageUsers.scss";
+import CreateUserModal from "./CreateUserModal";
 
 interface Props {
   loggedInUser: User;
@@ -45,6 +46,7 @@ const ManageUsers: React.FC<Props> = ({
     null
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
+  const [showAddUserModal, updateShowAddUserModal] = useState(true);
 
   function updateUser<T>(
     userId: string,
@@ -191,6 +193,9 @@ const ManageUsers: React.FC<Props> = ({
                 when={activeUser.isEdited}
                 message="You have unsaved changes. Do you want to continue?"
               />
+            ) : null}
+            {showAddUserModal ? (
+              <CreateUserModal onClose={() => {}} onContinue={() => {}} />
             ) : null}
           </div>
         </div>
