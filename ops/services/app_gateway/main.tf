@@ -260,7 +260,6 @@ resource "azurerm_application_gateway" "load_balancer" {
       identity,
       rewrite_rule_set,
       url_path_map,
-      ssl_policy,
       request_routing_rule,
     ]
   }
