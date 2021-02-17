@@ -1,3 +1,5 @@
+@import "../../scss/app-settings.scss";
+
 .sr-test-results-list {
   .sr-more-test-results {
     display: flex;
@@ -12,7 +14,7 @@
   }
 
   .sr-test-result-row:hover {
-    background: #f4f4f4;
+    background: $theme-color-base-lightest;
   }
 
   .sr-test-result-row--removed {
