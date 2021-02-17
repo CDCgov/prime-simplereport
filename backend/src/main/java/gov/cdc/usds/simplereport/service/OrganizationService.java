@@ -14,7 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -22,10 +23,12 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
@@ -37,25 +40,28 @@ public class OrganizationService {
     private OrganizationRepository _repo;
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
+    private ApiUserRepository _userRepo;
     private AuthorizationService _authService;
-    private OktaService _oktaService;
+    private OktaRepository _oktaRepo;
 
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            OktaService oktaService) {
+            ApiUserRepository userRepo,
+            OktaRepository oktaRepo) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
-        _oktaService = oktaService;
+        _userRepo = userRepo;
+        _oktaRepo = oktaRepo;
     }
 
-    public Optional<CurrentOrganizationRoles> getCurrentOrganizationRoles() {
-        List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
+    public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
+        List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
-                .map(OrganizationRoles::getOrganizationExternalId)
+                .map(OrganizationRoleClaims::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
@@ -65,14 +71,14 @@ public class OrganizationService {
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
-        OrganizationRoles foundRoles = orgRoles.stream()
+        Optional<OrganizationRoleClaims> foundRoles = orgRoles.stream()
                 .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
-                .findFirst().get();
-        return Optional.of(new CurrentOrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+                .findFirst();
+        return foundRoles.map(r -> new OrganizationRoles(foundOrg, r.getGrantedRoles()));
     }
 
     public Organization getCurrentOrganization() {
-        CurrentOrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+        OrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
         return orgRole.getOrganization();
     }
 
@@ -86,12 +92,14 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    public Optional<Organization> getOrganizationForUser(ApiUser apiUser) {
-        String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
-        if (orgExternalId == null) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(getOrganization(orgExternalId));
+    @AuthorizationConfiguration.RequirePermissionManageUsers
+    public Optional<OrganizationRoles> getOrganizationRolesForUser(ApiUser apiUser) {
+        Optional<OrganizationRoleClaims> authBasedOrgRoles = 
+                _oktaRepo.getOrganizationRolesForUser(apiUser.getLoginEmail());
+        return authBasedOrgRoles.map(a -> {
+            return new OrganizationRoles(getOrganization(a.getOrganizationExternalId()),
+                                         a.getGrantedRoles());
+        });
     }
 
     public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -103,6 +111,18 @@ public class OrganizationService {
 
     public List<Facility> getFacilities(Organization org) {
         return _facilityRepo.findByOrganizationOrderByFacilityName(org);
+    }
+
+    // Move this to ApiUserService soon
+    @AuthorizationConfiguration.RequirePermissionManageUsers
+    public List<ApiUser> getUsersInCurrentOrg(OrganizationRole role) {
+        List<String> usernames = getUsernamesInCurrentOrg(role);
+        return _userRepo.findAllByLoginEmailIn(usernames);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionManageUsers
+    public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
+        return _oktaRepo.getAllUsernamesForOrganization(getCurrentOrganization(), role);
     }
 
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
@@ -208,14 +228,14 @@ public class OrganizationService {
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
                 orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         _facilityRepo.save(facility);
-        _oktaService.createOrganization(name, externalId);
+        _oktaRepo.createOrganization(name, externalId);
         return org;
     }
 
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditOrganization
     public Organization updateOrganization(String name) {
-        Organization org = this.getCurrentOrganization();
+        Organization org = getCurrentOrganization();
         org.setOrganizationName(name);
         return _repo.save(org);
     }

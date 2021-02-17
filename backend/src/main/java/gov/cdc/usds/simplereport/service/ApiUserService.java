@@ -10,10 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
@@ -21,23 +22,23 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-    private AdminEmailList _admins;
+    private SiteAdminEmailList _siteAdmins;
     private ApiUserRepository _apiUserRepo;
     private IdentitySupplier _supplier;
-    private OktaService _oktaService;
+    private OktaRepository _oktaRepo;
 
     private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
     
     public ApiUserService(
         ApiUserRepository apiUserRepo,
         IdentitySupplier supplier,
-        AdminEmailList admins,
-        OktaService oktaService
+        SiteAdminEmailList admins,
+        OktaRepository oktaRepo
     ) {
         _apiUserRepo = apiUserRepo;
         _supplier = supplier;
-        _admins = admins;
-        _oktaService = oktaService;
+        _siteAdmins = admins;
+        _oktaRepo = oktaRepo;
     }
 
     @Transactional
@@ -45,7 +46,7 @@ public class ApiUserService {
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        _oktaService.createUser(userIdentity, organizationExternalId);
+        _oktaRepo.createUser(userIdentity, organizationExternalId);
         return user;
     }
 
@@ -66,13 +67,13 @@ public class ApiUserService {
         user = _apiUserRepo.save(user);
         IdentityAttributes userIdentity = new IdentityAttributes(newUsername, firstName, middleName, lastName, suffix);
         if (!newUsername.equals(oldUsername)) {
-            _oktaService.updateUser(oldUsername, userIdentity);
+            _oktaRepo.updateUser(oldUsername, userIdentity);
         }
         return user;
     }
 
-    public Boolean isAdminUser(ApiUser user) {
-        return _admins.contains(user.getLoginEmail());
+    public Boolean isAdmin(ApiUser user) {
+        return _siteAdmins.contains(user.getLoginEmail());
     }
 
     public void assertEmailAvailable(String email) {
@@ -86,6 +87,7 @@ public class ApiUserService {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
         if (found.isPresent()) {
+            LOG.debug("User has logged in before: retrieving user record.");
             ApiUser user = found.get();
             user.updateLastSeen();
             return _apiUserRepo.save(user);

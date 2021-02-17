@@ -6,6 +6,12 @@ import configureStore from "redux-mock-store";
 import AoEPatientFormContainer from "./AoEPatientFormContainer";
 
 const mockStore = configureStore([]);
+jest.mock("react-router-dom", () => ({
+  useHistory: () => ({
+    listen: jest.fn(),
+    push: jest.fn(),
+  }),
+}));
 
 describe("AoEPatientFormContainer", () => {
   it("snapshot", () => {
@@ -15,6 +21,7 @@ describe("AoEPatientFormContainer", () => {
         employedInHealthcare: true,
         birthDate: "",
       },
+      plid: "foo",
     });
     const component = renderer.create(
       <Provider store={store}>

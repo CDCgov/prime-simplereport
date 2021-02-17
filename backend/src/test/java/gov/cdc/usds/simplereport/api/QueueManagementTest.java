@@ -49,9 +49,7 @@ class QueueManagementTest extends BaseApiTest {
     void enqueueOnePatient() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments()
-                .put("id", personId)
-                .put("previousTestDate", "2020-05-15")
+        ObjectNode variables = getFacilityScopedArguments().put("id", personId).put("previousTestDate", "2020-05-15")
                 .put("symptomOnsetDate", "2020-11-30");
         performEnqueueMutation(variables);
         ArrayNode queueData = fetchQueue();
@@ -67,7 +65,7 @@ class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    void updateViaPatientLink() throws Exception {
+    void submitViaPatientLink() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         String personId = p.getInternalId().toString();
         ObjectNode variables = getFacilityScopedArguments().put("id", personId);
@@ -96,6 +94,32 @@ class QueueManagementTest extends BaseApiTest {
         String priorTest = queueEntry.get("priorTestDate").asText();
         assertEquals("2020-11-30", symptomOnset);
         assertEquals("2020-05-15", priorTest);
+    }
+
+    @Test
+    void updatePatientViaPatientLink() throws Exception {
+        Person p = _dataFactory.createFullPerson(_org);
+        String personId = p.getInternalId().toString();
+        ObjectNode variables = getFacilityScopedArguments().put("id", personId);
+        performEnqueueMutation(variables);
+        ArrayNode queueData = fetchQueue();
+        assertEquals(1, queueData.size());
+        JsonNode queueEntry = queueData.get(0);
+        String patientLinkId = queueEntry.get("patientLink").get("internalId").asText();
+        assertNotNull(patientLinkId);
+        ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
+        ObjectNode plOrg = performPatientLinkCurrent(plVariables);
+        String plOrgId = plOrg.get("internalId").asText();
+        String orgId = _org.getInternalId().toString();
+        assertEquals(plOrgId, orgId);
+        plVariables.put("oldBirthDate", p.getBirthDate().toString()).put("newBirthDate", "1979-06-12")
+                .put("firstName", "Bob").put("lastName", "Barker").put("telephone", "5558675309")
+                .put("street", "123 Main St").put("state", "CA").put("zipCode", "49294")
+                .put("residentCongregateSetting", false).put("employedInHealthcare", false);
+        ObjectNode newPatient = performPatientLinkUpdatePatientMutation(plVariables);
+        assertEquals(newPatient.get("firstName").asText(), "Bob");
+        assertEquals(newPatient.get("lastName").asText(), "Barker");
+        assertEquals(newPatient.get("birthDate").asText(), "1979-06-12");
     }
 
     @Test
@@ -157,6 +181,10 @@ class QueueManagementTest extends BaseApiTest {
 
     private void performPatientLinkSubmitMutation(ObjectNode variables) throws IOException {
         assertGraphQLSuccess(_template.perform("patient-link-submit", variables));
+    }
+
+    private ObjectNode performPatientLinkUpdatePatientMutation(ObjectNode variables) throws IOException {
+        return (ObjectNode) runQuery("patient-link-update-patient", variables).get("patientLinkUpdatePatient");
     }
 
     private void performEnqueueMutation(ObjectNode variables) throws IOException {
