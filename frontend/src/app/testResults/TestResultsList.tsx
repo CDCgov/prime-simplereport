@@ -33,7 +33,6 @@ const testResultQuery = gql`
         firstName
         middleName
         lastName
-        lookupId
       }
     }
   }
@@ -119,7 +118,6 @@ export const DetachedTestResultsList: any = ({
             r.patient.lastName
           )}
         </th>
-        <td>{r.patient.lookupId}</td>
         <td>{moment(r.dateTested).format("lll")}</td>
         <td>{r.result}</td>
         <td>{r.deviceType.name}</td>
@@ -156,7 +154,6 @@ export const DetachedTestResultsList: any = ({
                 <thead>
                   <tr>
                     <th scope="col">{PATIENT_TERM_CAP} Name</th>
-                    <th scope="col">Unique ID</th>
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>

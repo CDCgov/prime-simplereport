@@ -4,10 +4,7 @@ import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
 
-import {
-  PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../config/constants";
+import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PatientUpload from "./PatientUpload";
@@ -16,7 +13,6 @@ const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
-      lookupId
       firstName
       lastName
       middleName
@@ -30,7 +26,6 @@ const patientQuery = gql`
 
 interface Patient {
   internalId: string;
-  lookupId: string;
   firstName: string;
   lastName: string;
   middleName: string;
@@ -78,7 +73,6 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
       return (
         <tr key={patient.internalId}>
           <th scope="row">{editUserLink}</th>
-          <td>{patient.lookupId}</td>
           <td> {patient.birthDate}</td>
           <td>
             {patient.lastTest
@@ -96,7 +90,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2> All {PATIENT_TERM_PLURAL_CAP}</h2>
+              <h2>{PATIENT_TERM_PLURAL_CAP}</h2>
               {canEditUser ? (
                 <NavLink
                   className="usa-button usa-button--outline"
@@ -104,7 +98,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   id="add-patient-button"
                 >
                   <FontAwesomeIcon icon="plus" />
-                  {` New ${PATIENT_TERM_CAP}`}
+                  {` Add ${PATIENT_TERM}`}
                 </NavLink>
               ) : null}
             </div>
@@ -118,7 +112,6 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                   <thead>
                     <tr>
                       <th scope="col">Name</th>
-                      <th scope="col">Unique ID</th>
                       <th scope="col">Date of Birth</th>
                       <th scope="col">Days since last test</th>
                     </tr>

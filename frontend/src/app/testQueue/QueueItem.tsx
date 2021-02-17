@@ -180,7 +180,6 @@ interface QueueItemProps {
     firstName: string;
     middleName: string;
     lastName: string;
-    lookupId: string;
     telephone: string;
     birthDate: string;
   };
@@ -467,7 +466,7 @@ const QueueItem: any = ({
       <li className="prime-li">
         <TextInput
           type="datetime-local"
-          label="Test Date"
+          label="Test date"
           name="meeting-time"
           value={isoDateToDatetimeLocal(dateTested)}
           min="2020-01-01T00:00"
@@ -491,9 +490,6 @@ const QueueItem: any = ({
               <div className="grid-row">
                 <ul className="prime-ul">
                   <li className="prime-li">
-                    <LabeledText text={patient.lookupId} label="Unique ID" />
-                  </li>
-                  <li className="prime-li">
                     <LabeledText
                       text={patient.telephone}
                       label="Phone number"
@@ -513,7 +509,7 @@ const QueueItem: any = ({
                     />
                     {isAoeModalOpen && (
                       <AoeModalForm
-                        saveButtonText="Save"
+                        saveButtonText="Continue"
                         onClose={closeAoeModal}
                         patient={patient}
                         loadState={aoeAnswers}

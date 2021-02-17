@@ -6,7 +6,6 @@ import PatientForm from "./PatientForm";
 const GET_PATIENT = gql`
   query GetPatientDetails($id: String!) {
     patient(id: $id) {
-      lookupId
       firstName
       middleName
       lastName
@@ -55,15 +54,20 @@ const EditPatient = (props: Props) => {
     : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
-    <PatientForm
-      patient={{
-        ...data.patient,
-        residentCongregateSetting,
-        employedInHealthcare,
-      }}
-      patientId={props.patientId}
-      activeFacilityId={props.facilityId}
-    />
+    <div className="bg-base-lightest">
+      <div className="grid-container">
+        <PatientForm
+          patient={{
+            ...data.patient,
+            residentCongregateSetting,
+            employedInHealthcare,
+          }}
+          patientId={props.patientId}
+          activeFacilityId={props.facilityId}
+          isPxpView={false}
+        />
+      </div>
+    </div>
   );
 };
 

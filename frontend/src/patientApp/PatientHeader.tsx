@@ -7,10 +7,10 @@ const PatientHeader = () => {
   );
 
   return (
-    <header className="usa-header usa-header--basic">
-      <div className="usa-nav-container display-flex flex-align-center maxw-tablet">
-        <div className="usa-navbar padding-y-1">
-          <div className="usa-logo margin-bottom-0" id="basic-logo">
+    <header className="border-bottom border-base-lighter">
+      <div className="display-flex flex-align-center maxw-tablet grid-container">
+        <div className="padding-y-1">
+          <div className="margin-bottom-0" id="basic-logo">
             <div
               className="display-flex flex-align-center"
               title="Home"

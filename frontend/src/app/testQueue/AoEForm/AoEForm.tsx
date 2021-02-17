@@ -8,11 +8,13 @@ import {
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button";
 import FormGroup from "../../commonComponents/FormGroup";
+import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { useQuery } from "@apollo/client";
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
 import { Redirect } from "react-router";
+import classnames from "classnames";
 
 interface Data {
   patient: {
@@ -124,6 +126,8 @@ const AoEForm: React.FC<Props> = ({
   const [symptomOnsetError, setSymptomOnsetError] = useState<
     string | undefined
   >();
+  const symptomRef = React.createRef<HTMLInputElement>();
+  const symptomOnsetRef = React.createRef<HTMLInputElement>();
 
   const isValidForm = () => {
     if (noValidation) return true;
@@ -133,6 +137,7 @@ const AoEForm: React.FC<Props> = ({
     if (!noSymptoms && !hasSymptoms) {
       setSymptomError("Select your symptoms");
       setSymptomOnsetError(undefined);
+      symptomRef?.current?.focus();
       return false;
     }
 
@@ -145,6 +150,7 @@ const AoEForm: React.FC<Props> = ({
     if (hasSymptoms && !onsetDate) {
       setSymptomError(undefined);
       setSymptomOnsetError("Enter the date of symptom onset");
+      symptomOnsetRef?.current?.focus();
       return false;
     }
 
@@ -211,9 +217,10 @@ const AoEForm: React.FC<Props> = ({
   };
 
   const buttonGroup = (
-    <div className="sr-time-of-test-buttons">
+    <div className="sr-time-of-test-buttons display-flex flex-justify-end">
       <Button
         id="aoe-form-save-button"
+        className={classnames(isModal ? "margin-right-205" : "margin-right-0")}
         label={saveButtonText}
         type={"submit"}
       />
@@ -227,6 +234,10 @@ const AoEForm: React.FC<Props> = ({
   return (
     <>
       <form onSubmit={saveAnswers}>
+        {isModal && (
+          <div className="margin-top-4 border-top border-base-lighter" />
+        )}
+        <RequiredMessage />
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
@@ -237,6 +248,8 @@ const AoEForm: React.FC<Props> = ({
             onsetDate={onsetDate}
             symptomError={symptomError}
             symptomOnsetError={symptomOnsetError}
+            symptomRef={symptomRef}
+            symptomOnsetRef={symptomOnsetRef}
           />
         </FormGroup>
 
@@ -269,7 +282,13 @@ const AoEForm: React.FC<Props> = ({
             />
           </FormGroup>
         )}
-        <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
+        <div
+          className={classnames(
+            isModal
+              ? "margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205"
+              : "margin-top-3"
+          )}
+        >
           {buttonGroup}
         </div>
       </form>

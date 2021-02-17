@@ -2,6 +2,8 @@ package gov.cdc.usds.simplereport.db.repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
+import java.util.Collection;
 
 import org.springframework.data.repository.Repository;
 
@@ -13,4 +15,6 @@ public interface ApiUserRepository extends Repository<ApiUser, UUID> {
 	public ApiUser save(ApiUser entity);
 
 	public Optional<ApiUser> findByLoginEmail(String email);
+
+	public List<ApiUser> findAllByLoginEmailIn(Collection<String> emails);
 }

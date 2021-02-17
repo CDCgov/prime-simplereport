@@ -5,9 +5,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.AdminEmailList;
+import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
@@ -18,11 +18,11 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
 public class UserAuthorizationVerifier {
 
-    private AdminEmailList _admins;
+    private SiteAdminEmailList _admins;
     private IdentitySupplier _supplier;
     private OrganizationService _orgService;
 
-    public UserAuthorizationVerifier(AdminEmailList admins, IdentitySupplier supplier, OrganizationService orgService) {
+    public UserAuthorizationVerifier(SiteAdminEmailList admins, IdentitySupplier supplier, OrganizationService orgService) {
         super();
         this._admins = admins;
         this._supplier = supplier;
@@ -35,7 +35,7 @@ public class UserAuthorizationVerifier {
     }
 
     public boolean userHasPermission(UserPermission permission) {
-        Optional<CurrentOrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
+        Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
         return orgRoles.isPresent() && orgRoles.get().getGrantedPermissions().contains(permission);
     }
 }
