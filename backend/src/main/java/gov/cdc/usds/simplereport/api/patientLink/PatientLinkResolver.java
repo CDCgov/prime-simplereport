@@ -18,20 +18,11 @@ public class PatientLinkResolver implements GraphQLQueryResolver {
     @Autowired
     private PatientLinkService pls;
 
-    @Value("${feature-flags.patient-links:true}")
-    private boolean patientLinksEnabled;
-
     public Organization getPatientLinkCurrent(String internalId) throws Exception {
-        if (!patientLinksEnabled) {
-            throw new FeatureFlagDisabledException("Patient links not enabled");
-        }
         return pls.getPatientLinkCurrent(internalId);
     }
 
     public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws Exception {
-        if (!patientLinksEnabled) {
-            throw new FeatureFlagDisabledException("Patient links not enabled");
-        }
         return pls.getPatientLinkVerify(internalId, birthDate);
     }
 
