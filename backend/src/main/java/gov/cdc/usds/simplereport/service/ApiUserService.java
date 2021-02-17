@@ -104,9 +104,11 @@ public class ApiUserService {
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+    @Transactional
     public ApiUser setIsDeleted(UUID userId, boolean deleted) {
         ApiUser user = getUser(userId);
         user.setIsDeleted(deleted);
+        _oktaRepo.setUserIsActive(user.getLoginEmail(), !deleted);
         return _apiUserRepo.save(user);
     }
 
@@ -151,21 +153,37 @@ public class ApiUserService {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ApiUser getCurrentUser() {
+    public Optional<ApiUser> getCurrentUserReadOnly() {
+        //TODO: Delete
+        System.out.print("GET_CURRENT_USER_READ_ONLY ");
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
+        System.out.print("GET_CURRENT_USER_READ_ONLY:POSTFINDBYLOGINEMAIL ");
+        return found;
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ApiUser getCurrentUser() {
+        //TODO: Delete
+        System.out.print("GET_CURRENT_USER ");
+        IdentityAttributes userIdentity = _supplier.get();
+        Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
+        System.out.print("GET_CURRENT_USER:POSTFINDBYLOGINEMAIL ");
         if (found.isPresent()) {
             LOG.debug("User has logged in before: retrieving user record.");
             ApiUser user = found.get();
             user.updateLastSeen();
-            return _apiUserRepo.save(user);
+            user = _apiUserRepo.save(user);
+            System.out.print("GET_CURRENT_USER:END_PRESENT ");
+            return user;
         } else {
             // Assumes user already has a corresponding Okta entity; otherwise, they couldn't log in :)
             LOG.info("Initial login for user: creating user record.");
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
-            return _apiUserRepo.save(user);
+            user = _apiUserRepo.save(user);
+            System.out.print("GET_CURRENT_USER:END_NOTPRESENT ");
+            return user;
         }
     }
 }

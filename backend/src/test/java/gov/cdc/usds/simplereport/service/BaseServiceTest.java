@@ -47,6 +47,7 @@ public abstract class BaseServiceTest<T> {
     @BeforeEach
     protected void before() {
         clearDb();
+        _initService.initAuditor();
     }
 
     public void clearDb() {

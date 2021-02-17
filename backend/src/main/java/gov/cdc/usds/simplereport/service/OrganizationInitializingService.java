@@ -49,9 +49,14 @@ public class OrganizationInitializingService {
 	@Autowired
 	private OktaRepository _oktaRepo;
 	@Autowired
+	private ApiUserService _userService;
+	@Autowired
 	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
+		// Creates current user to allow audited creation of other entities below
+		initAuditor();
+
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
@@ -88,6 +93,11 @@ public class OrganizationInitializingService {
 			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
 			initOktaUser(user, emptyOrg.getExternalId());
 		}
+	}
+
+	public void initAuditor() {
+		// Creates current user if it doesn't already exist
+		_userService.getCurrentUser();
 	}
 
 	private void initOktaOrg(Organization org) {

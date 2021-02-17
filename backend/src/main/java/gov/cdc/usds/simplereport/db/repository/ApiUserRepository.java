@@ -5,7 +5,6 @@ import java.util.UUID;
 import java.util.List;
 import java.util.Collection;
 
-import org.springframework.data.repository.Repository;
 import org.springframework.data.jpa.repository.Query;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -13,7 +12,7 @@ import gov.cdc.usds.simplereport.db.model.ApiUser;
 /**
  * Interface specification for fetching and manipulating {@link ApiUser} entities
  */
-public interface ApiUserRepository extends EternalEntityRepository<ApiUser> {
+public interface ApiUserRepository extends EternalSystemManagedEntityRepository<ApiUser> {
 
 	// Defining this method explicitly means that findById() will not be able to find soft-deleted users,
 	// rendering un-deletion near-impossible

@@ -21,6 +21,8 @@ public interface OktaRepository {
 
     public OrganizationRole updateUserRole(String username, OrganizationRole role);
 
+    public void setUserIsActive(String username, Boolean active);
+
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role);
 
     public void createOrganization(String name, String externalId);

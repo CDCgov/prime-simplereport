@@ -83,6 +83,8 @@ public class DemoOktaRepository implements OktaRepository {
         return role;
     }
 
+    public void setUserIsActive(String username, Boolean active) {}
+
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
         return orgRoleUsernamesMap.getOrDefault(org.getExternalId(), new HashMap<>())
                                   .getOrDefault(role, List.of());

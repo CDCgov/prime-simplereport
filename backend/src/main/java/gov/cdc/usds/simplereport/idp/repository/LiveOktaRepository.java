@@ -95,10 +95,11 @@ public class LiveOktaRepository implements OktaRepository {
         }
         Group group = groups.single();
 
-        UserBuilder.instance()
+        User user = UserBuilder.instance()
                 .setProfileProperties(userProfileMap)
                 .setGroups(group.getId())
                 .buildAndCreate(_client);
+        user.activate(true);
     }
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
@@ -173,6 +174,19 @@ public class LiveOktaRepository implements OktaRepository {
         }
 
         return role;
+    }
+
+    public void setUserIsActive(String username, Boolean active) {
+        UserList users = _client.listUsers(username, null, null, null, null);
+        if (!users.iterator().hasNext()) {
+            throw new IllegalGraphqlArgumentException("Cannot update active status of Okta user with unrecognized username");
+        }
+        User user = users.single();
+        if (active) {
+            user.reactivate(true);
+        } else {
+            user.deactivate();
+        }
     }
 
     public void createOrganization(String name, String externalId) {

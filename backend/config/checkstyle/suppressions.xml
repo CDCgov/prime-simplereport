@@ -23,7 +23,7 @@
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Facility.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Organization.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScoped.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScopedEternalEntity.java" />
+	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScopedEternalAuditedEntity.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/PatientAnswers.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Person.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Provider.java" />
@@ -37,7 +37,7 @@
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/auxiliary/TestResult.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/package-info.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/ApiUserRepository.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/EternalEntityRepository.java" />
+	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/EternalAuditedEntityRepository.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/FacilityRepository.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/OrganizationRepository.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/repository/TestEventRepository.java" />

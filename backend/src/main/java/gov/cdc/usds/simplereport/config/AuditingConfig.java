@@ -25,8 +25,12 @@ public class AuditingConfig {
 	@Bean
 	public AuditorAware<ApiUser> getCurrentUserProvider() {
 		return () -> {
+			//TODO: Delete
+			System.out.print("AUDIT:START ");
 			LOG.debug("Fetching current user for audit");
-			return Optional.ofNullable(_userService.getCurrentUser());
+			Optional<ApiUser> user = _userService.getCurrentUserReadOnly();
+			System.out.print("AUDIT:END ");
+			return user;
 		};
 	}
 
