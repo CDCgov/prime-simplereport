@@ -111,11 +111,7 @@ You can make the default user a site admin by adding the following to `applicati
 ```
 simple-report:
   site-admin-emails:
-<<<<<<< HEAD
     - bob@sample.com
-=======
-    - bob@bobby.bob
->>>>>>> main
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
