@@ -8,6 +8,7 @@ import {
 import moment from "moment";
 import { Prompt } from "react-router-dom";
 import { Redirect } from "react-router";
+import Modal from "react-modal";
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
@@ -215,6 +216,7 @@ const PatientForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
+  const [helpModalOpen, setHelpModalOpen] = useState(false);
 
   const plid = useSelector((state) => (state as any).plid as String);
   const patientInStore = useSelector((state) => (state as any).patient as any);
@@ -595,6 +597,9 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
+          <Button onClick={() => setHelpModalOpen(true)}>
+            Why are we asking for this information?
+          </Button>
           <RadioGroup
             legend="Race"
             name="race"
@@ -680,6 +685,20 @@ const PatientForm = (props: Props) => {
           )}
         </div>
       </div>
+      <Modal
+        isOpen={helpModalOpen}
+        onRequestClose={() => setHelpModalOpen(false)}
+        style={{
+          content: {
+            maxHeight: "90vh",
+            width: "40em",
+            position: "initial",
+          },
+        }}
+        overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      >
+        {/* MODAL CONTENT GOES HERE */}
+      </Modal>
     </main>
   );
 };
