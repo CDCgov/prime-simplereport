@@ -93,9 +93,6 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void addUser_superUser_success() {
         useSuperUser();
-        // TODO: DELETE
-        //when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode resp = runQuery("add-user", variables);
@@ -125,9 +122,6 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void addUserToCurrentOrg_adminUser_success() {
         useOrgAdmin();
-        // TODO: DELETE
-        //when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         ObjectNode variables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode resp = runQuery("add-user-to-current-org", variables);
@@ -157,19 +151,12 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void updateUser_adminUser_success() {
         useOrgAdmin();
-        // TODO: DELETE
-        //when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
         ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
         String id = addUser.get("id").asText();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
         ObjectNode updateResp = runQuery("update-user", updateVariables);
@@ -183,19 +170,11 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUser_superUser_success() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user", addVariables);
         ObjectNode addUser = (ObjectNode) addResp.get("addUser");
         String id = addUser.get("id").asText();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
         ObjectNode resp = runQuery("update-user", updateVariables);
@@ -209,10 +188,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUser_orgUser_failure() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user", addVariables);
@@ -220,10 +195,6 @@ class ApiUserManagementTest extends BaseApiTest {
         String id = addUser.get("id").asText();
 
         useOrgUser();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(1)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
         runQuery("update-user", updateVariables, ACCESS_ERROR);
@@ -245,10 +216,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUserRole_adminUser_success() {
         useOrgAdmin();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
@@ -268,10 +235,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUserRole_superUser_success() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user", addVariables);
@@ -290,10 +253,6 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void updateUserRole_outsideOrgAdmin_failure() {
         useSuperUser();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
@@ -315,10 +274,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUserRole_outsideOrgUser_failure() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
@@ -339,10 +294,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void updateUserRole_orgUser_failure() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
@@ -351,10 +302,6 @@ class ApiUserManagementTest extends BaseApiTest {
         String id = addUser.get("id").asText();
 
         useOrgUser();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode updateRoleVariables = JsonNodeFactory.instance.objectNode()
                 .put("id", id)
@@ -366,10 +313,6 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void setUserIsDeleted_adminUser_success() {
         useOrgAdmin();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
@@ -394,10 +337,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void setUserIsDeleted_superUser_success() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
         ObjectNode addResp = runQuery("add-user", addVariables);
@@ -421,10 +360,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void setUserIsDeleted_outsideOrgAdmin_failure() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
@@ -443,10 +378,6 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void setUserIsDeleted_outsideOrgUser_failure() {
         useSuperUser();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
@@ -467,10 +398,6 @@ class ApiUserManagementTest extends BaseApiTest {
     void setUserIsDeleted_orgUser_failure() {
         useSuperUser();
 
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-
         // Adding a user to get a handle on the internal ID
         ObjectNode addVariables = getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                 USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId());
@@ -479,10 +406,6 @@ class ApiUserManagementTest extends BaseApiTest {
         String id = addUser.get("id").asText();
 
         useOrgUser();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
 
         ObjectNode deleteVariables = JsonNodeFactory.instance.objectNode()
                 .put("id", id)
@@ -494,18 +417,7 @@ class ApiUserManagementTest extends BaseApiTest {
     @Test
     void getUsers_adminUser_success() {
         useOrgAdmin();
-
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(0)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(2)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
-        // TODO: DELETE
-        // when(_oktaRepo.getOrganizationRoleClaimsForUser(USERNAMES.get(3)))
-        //        .thenReturn(Optional.of(getOrgRoles(OrganizationRole.USER)));
         
-        // TODO: fix this test, it intermingles default and specific test users
         List<ObjectNode> usersAdded = Arrays.asList(
                 getAddUserVariables("Rhonda", "Janet", "Jones", "III", 
                         USERNAMES.get(0), _initService.getDefaultOrganization().getExternalId()),

@@ -175,8 +175,6 @@ public abstract class BaseApiTest {
             GraphQLResponse response = _template.perform(queryFileName, variables);
             assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
             JsonNode responseBody = response.readTree();
-            //TODO remove
-            System.out.print("PRETTY OUTPUT:"+responseBody.toPrettyString());
             assertGraphQLOutcome(responseBody, expectedError);
             return (ObjectNode) responseBody.get("data");
         } catch (IOException e) {

@@ -47,17 +47,6 @@ public class DemoOktaRepository implements OktaRepository {
 
         reset();
 
-        //TODO: remove
-        System.out.print("DEMO_OKTA_REPO_INIT");
-        for (String user : usernameOrgRolesMap.keySet()) {
-            System.out.print("USER="+user);
-            OrganizationRoleClaims claims = usernameOrgRolesMap.get(user);
-            System.out.print("ORG="+claims.getOrganizationExternalId());
-            for (OrganizationRole role : claims.getGrantedRoles()) {
-                System.out.print("ROLE="+role.name());
-            }
-        }
-
         LOG.info("Done initializing Demo Okta service.");
     }
 
@@ -174,16 +163,6 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
-        //TODO: remove
-        System.out.print("GET_ORG_ROLE_CLAIMS_FOR_USER");
-        for (String user : usernameOrgRolesMap.keySet()) {
-            System.out.print("USER="+user);
-            OrganizationRoleClaims claims = usernameOrgRolesMap.get(user);
-            System.out.print("ORG="+claims.getOrganizationExternalId());
-            for (OrganizationRole role : claims.getGrantedRoles()) {
-                System.out.print("ROLE="+role.name());
-            }
-        }
         if (inactiveUsernames.contains(username)) {
             return Optional.empty();
         } else {

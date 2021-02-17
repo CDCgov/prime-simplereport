@@ -39,10 +39,6 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         assertEquals(userUsernames.get(3), "sarah@sample.com");
 
         List<String> adminUsernames = _service.getUsernamesInCurrentOrg(OrganizationRole.ADMIN);
-        //TODO: delete
-        for (String username : adminUsernames) {
-            System.out.print("GET_USERNAMES_CURRENT_ORG:USERNAME="+username);
-        }
         Collections.sort(adminUsernames);
         assertEquals(adminUsernames.size(), 2);
         assertEquals(adminUsernames.get(0), "bob@sample.com");

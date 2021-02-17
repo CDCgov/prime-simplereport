@@ -71,6 +71,11 @@ public class ApiUserService {
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
         Organization org = _orgService.getOrganization(organizationExternalId);
         _oktaRepo.createUser(userIdentity, org);
+
+        LOG.info("User with id={} created by user with id={}", 
+                user.getInternalId(),
+                getCurrentUserReadOnly().get().getInternalId());
+
         return user;
     }
 
@@ -95,6 +100,11 @@ public class ApiUserService {
 
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         _oktaRepo.updateUser(oldUsername, userIdentity);
+
+        LOG.info("User with id={} updated by user with id={}", 
+                user.getInternalId(),
+                getCurrentUserReadOnly().get().getInternalId());
+
         return user;
     }
 
@@ -140,12 +150,6 @@ public class ApiUserService {
         ApiUser user = getUser(userId);
         Optional<OrganizationRoleClaims> roleClaims = 
                 _oktaRepo.getOrganizationRoleClaimsForUser(user.getLoginEmail());
-        //TODO: delete
-        System.out.print("GET_ORG_ROLES_FOR_USER_APISVC");
-        System.out.print("USER="+user.getLoginEmail());
-        for (OrganizationRole role : roleClaims.get().getGrantedRoles()) {
-            System.out.print("ROLE="+role.name());
-        }
         return roleClaims.map(c ->
                 new OrganizationRoles(_orgService.getOrganization(c.getOrganizationExternalId()),
                                       c.getGrantedRoles()));
@@ -157,27 +161,20 @@ public class ApiUserService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<ApiUser> getCurrentUserReadOnly() {
-        //TODO: Delete
-        System.out.print("GET_CURRENT_USER_READ_ONLY ");
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
-        System.out.print("GET_CURRENT_USER_READ_ONLY:POSTFINDBYLOGINEMAIL ");
         return found;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public ApiUser getCurrentUser() {
-        //TODO: Delete
-        System.out.print("GET_CURRENT_USER ");
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
-        System.out.print("GET_CURRENT_USER:POSTFINDBYLOGINEMAIL ");
         if (found.isPresent()) {
             LOG.debug("User has logged in before: retrieving user record.");
             ApiUser user = found.get();
             user.updateLastSeen();
             user = _apiUserRepo.save(user);
-            System.out.print("GET_CURRENT_USER:END_PRESENT ");
             return user;
         } else {
             // Assumes user already has a corresponding Okta entity; otherwise, they couldn't log in :)
@@ -185,8 +182,10 @@ public class ApiUserService {
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
             user = _apiUserRepo.save(user);
-            
-            System.out.print("GET_CURRENT_USER:END_NOTPRESENT ");
+
+            LOG.info("User with id={} self-created", 
+                    user.getInternalId());
+
             return user;
         }
     }
