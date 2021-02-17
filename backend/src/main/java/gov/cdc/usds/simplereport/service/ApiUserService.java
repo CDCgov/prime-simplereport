@@ -155,6 +155,7 @@ public class ApiUserService {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Optional<ApiUser> getCurrentUserReadOnly() {
         //TODO: Delete
         System.out.print("GET_CURRENT_USER_READ_ONLY ");

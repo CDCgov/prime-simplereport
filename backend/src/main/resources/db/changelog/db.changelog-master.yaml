@@ -1199,10 +1199,9 @@ databaseChangeLog:
       changes:
         - addColumn:
             tableName: api_user
-            # while we would love to use the proper reference columns for the columns below, there are
-            # already records in this table and we cannot add default values to the existing reference columns
-            # without recreating them entirely; for those records already in the table, their creators will have
-            # to remain null
+            # while we would love to use the proper (non-nullable) reference column below, there are 
+            # already records in this table and we cannot add default values to the existing reference 
+            # column without recreating it entirely
             columns:
               - column:
                   name: is_deleted
