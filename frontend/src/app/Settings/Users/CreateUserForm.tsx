@@ -14,8 +14,8 @@ interface Props {
 }
 
 const initialFormState: NewUserInvite = {
-  first: "",
-  last: "",
+  firstName: "",
+  lastName: "",
   email: "",
   role: "",
 };
@@ -57,18 +57,18 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
       <div className="usa-card__body modal-bottom-border">
         <div className="grid-row grid-gap">
           <TextInput
-            name="first"
+            name="firstName"
             className="grid-col"
             label="First Name"
-            value={newUser.first}
+            value={newUser.firstName}
             required
             onChange={onChange}
           />
           <TextInput
-            name="last"
+            name="lastName"
             label="Last Name"
             className="grid-col"
-            value={newUser.last}
+            value={newUser.lastName}
             required
             onChange={onChange}
           />

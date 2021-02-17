@@ -39,7 +39,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const role = e.target.value as UserRole;
-    onUpdateUser(activeUser.id, "role", role);
+    onUpdateUser(activeUser.id, e.target.name, role);
   };
 
   return (

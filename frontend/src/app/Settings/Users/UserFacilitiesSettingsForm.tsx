@@ -147,7 +147,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         onClick={() => {
           setIsComponentVisible(!isComponentVisible);
         }}
-        label="+ Add Facility"
+        label="+ Add Facility Access"
         disabled={
           activeUser.facilities &&
           activeUser.facilities.length === allFacilities.length

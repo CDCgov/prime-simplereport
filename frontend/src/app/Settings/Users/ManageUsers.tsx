@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { Prompt } from "react-router-dom";
 import classnames from "classnames";
+import { Prompt } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
+import CreateUserModal from "./CreateUserModal";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
@@ -16,7 +17,6 @@ import {
 import { showNotification } from "../../utils";
 
 import "./ManageUsers.scss";
-import CreateUserModal from "./CreateUserModal";
 
 interface Props {
   loggedInUser: User;
@@ -24,6 +24,7 @@ interface Props {
   allFacilities: UserFacilitySetting[];
   onUpdateUser: (user: SettingsUser) => void;
   onCreateNewUser: (newUserInvite: NewUserInvite) => void;
+  onDeleteUser: (userId: string) => void;
 }
 
 type SettingsUsers = { [id: string]: SettingsUser };
@@ -34,6 +35,7 @@ const ManageUsers: React.FC<Props> = ({
   users,
   onUpdateUser,
   onCreateNewUser,
+  onDeleteUser,
 }) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
@@ -71,13 +73,6 @@ const ManageUsers: React.FC<Props> = ({
 
   const onSaveChanges = (userId: string) => {
     onUpdateUser(usersState[userId]); // TODO this does nothing atm
-
-    updateUsersState({
-      ...usersState,
-      [userId]: {
-        ...usersState[userId],
-      },
-    });
     updateIsUserEdited(false);
 
     let successAlert = (
@@ -142,11 +137,13 @@ const ManageUsers: React.FC<Props> = ({
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
-        <Button
-          variant="outline"
-          onClick={() => updateShowAddUserModal(true)}
-          label="+ New User"
-        />
+        {process.env.REACT_APP_ADD_NEW_USER_SETTINGS ? (
+          <Button
+            variant="outline"
+            onClick={() => updateShowAddUserModal(true)}
+            label="+ New User"
+          />
+        ) : null}
       </div>
       <div className="usa-card__body">
         <div className="grid-row">
@@ -174,7 +171,7 @@ const ManageUsers: React.FC<Props> = ({
                 onUpdateUser={updateUser}
               />
 
-              {process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true" ? (
+              {process.env.REACT_APP_USER_FACILITIES_SETTINGS === "true" ? (
                 <UserFacilitiesSettingsForm
                   activeUser={activeUser}
                   allFacilities={allFacilities}
@@ -182,19 +179,27 @@ const ManageUsers: React.FC<Props> = ({
                 />
               ) : null}
             </div>
-            <div className="usa-card__footer">
-              <div className="float-right">
+            <div className="usa-card__footer display-flex flex-justify margin-top-5">
+              {process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
                 <Button
-                  type="button"
-                  onClick={() => onSaveChanges(activeUserId)}
-                  label="Save changes"
-                  disabled={
-                    loggedInUser.roleDescription !== "Admin user" ||
-                    !isUserEdited
-                  }
+                  variant="outline"
+                  icon="trash"
+                  className="flex-align-self-start display-inline-block"
+                  onClick={() => onDeleteUser(activeUser.id)}
+                  label="+ Remove User"
+                  disabled={loggedInUser.id === activeUser.id}
                 />
-              </div>
+              ) : null}
+              <Button
+                type="button"
+                onClick={() => onSaveChanges(activeUserId)}
+                label="Save changes"
+                disabled={
+                  loggedInUser.roleDescription !== "Admin user" || !isUserEdited
+                }
+              />
             </div>
+
             {showInProgressModal ? (
               <InProgressModal
                 onClose={() => updateShowInProgressModal(false)}
@@ -207,7 +212,8 @@ const ManageUsers: React.FC<Props> = ({
                 message="You have unsaved changes. Do you want to continue?"
               />
             ) : null}
-            {showAddUserModal ? (
+            {showAddUserModal &&
+            process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true" ? (
               <CreateUserModal
                 onClose={() => updateShowAddUserModal(false)}
                 onSubmit={onCreateNewUser}
