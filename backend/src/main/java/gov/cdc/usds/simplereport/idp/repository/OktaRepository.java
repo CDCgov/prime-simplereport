@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  */
 public interface OktaRepository {
 
-    public void createUser(IdentityAttributes userIdentity, String organizationExternalId);
+    public void createUser(IdentityAttributes userIdentity, Organization org);
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity);
 

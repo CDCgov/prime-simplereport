@@ -28,7 +28,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -44,13 +44,13 @@ public abstract class BaseApiTest {
     @Autowired
     protected OrganizationInitializingService _initService;
     @Autowired
+    protected DemoOktaRepository _oktaRepo;
+    @Autowired
     protected GraphQLTestTemplate _template; // screw delegation
     @MockBean
     protected AuthorizationService _authService;
     @MockBean
     protected IdentitySupplier _supplier;
-    @MockBean
-    protected OktaRepository _oktaRepo;
 
     private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
@@ -124,6 +124,7 @@ public abstract class BaseApiTest {
     @BeforeEach
     public void setup() {
         truncateDb();
+        _oktaRepo.reset();
         useOrgUser();
         _initService.initAll();
     }
@@ -131,6 +132,7 @@ public abstract class BaseApiTest {
     @AfterEach
     public void cleanup() {
         truncateDb();
+        _oktaRepo.reset();
     }
 
     /**

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
@@ -68,7 +69,8 @@ public class ApiUserService {
     private ApiUser createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        _oktaRepo.createUser(userIdentity, organizationExternalId);
+        Organization org = _orgService.getOrganization(organizationExternalId);
+        _oktaRepo.createUser(userIdentity, org);
         return user;
     }
 
@@ -116,7 +118,7 @@ public class ApiUserService {
     private ApiUser getUser(UUID id) {
         Optional<ApiUser> found = _apiUserRepo.findById(id);
         if (!found.isPresent()) {
-            throw new IllegalGraphqlArgumentException("Cannot find user.");
+            throw new NonexistentUserException();
         }
         ApiUser user = found.get();
         return user;
@@ -182,6 +184,7 @@ public class ApiUserService {
             ApiUser user = new ApiUser(userIdentity.getUsername(), userIdentity);
             user.updateLastSeen();
             user = _apiUserRepo.save(user);
+            
             System.out.print("GET_CURRENT_USER:END_NOTPRESENT ");
             return user;
         }

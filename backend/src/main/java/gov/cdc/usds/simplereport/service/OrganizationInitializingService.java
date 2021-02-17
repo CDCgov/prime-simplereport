@@ -91,7 +91,7 @@ public class OrganizationInitializingService {
 				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
 			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
-			initOktaUser(user, emptyOrg.getExternalId());
+			initOktaUser(user, emptyOrg);
 		}
 	}
 
@@ -109,10 +109,10 @@ public class OrganizationInitializingService {
 		}
 	}
 
-	private void initOktaUser(IdentityAttributes user, String orgExternalId) {
+	private void initOktaUser(IdentityAttributes user, Organization org) {
 		try {
 			LOG.info("Creating user {} in Okta", user.getUsername());
-			_oktaRepo.createUser(user, orgExternalId);
+			_oktaRepo.createUser(user, org);
 		} catch (ResourceException e) {
 			LOG.info("User {} already exists in Okta", user.getUsername());
 		}

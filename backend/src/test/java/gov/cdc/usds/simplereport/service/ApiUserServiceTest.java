@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -19,22 +20,33 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
-    // The next several retrieval tests expect the demo users as they are defined in the no-okta-mgmt profile
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
+
+    // The next several retrieval tests expect the demo users as they are defined in the 
+    // no-security and no-okta-mgmt profiles
     @Test
     @WithSimpleReportOrgAdminUser
     void getUsernamesInCurrentOrg_adminUser_success() {
-        initSampleData();
-
         List<String> userUsernames = _service.getUsernamesInCurrentOrg(OrganizationRole.USER);
         Collections.sort(userUsernames);
-        assertEquals(userUsernames.size(), 3);
+        assertEquals(userUsernames.size(), 4);
         assertEquals(userUsernames.get(0), "ben@sample.com");
-        assertEquals(userUsernames.get(1), "jamar@sample.com");
-        assertEquals(userUsernames.get(2), "sarah@sample.com");
+        assertEquals(userUsernames.get(1), "bob@sample.com");
+        assertEquals(userUsernames.get(2), "jamar@sample.com");
+        assertEquals(userUsernames.get(3), "sarah@sample.com");
 
         List<String> adminUsernames = _service.getUsernamesInCurrentOrg(OrganizationRole.ADMIN);
-        assertEquals(adminUsernames.size(), 1);
-        assertEquals(adminUsernames.get(0), "sarah@sample.com");
+        //TODO: delete
+        for (String username : adminUsernames) {
+            System.out.print("GET_USERNAMES_CURRENT_ORG:USERNAME="+username);
+        }
+        Collections.sort(adminUsernames);
+        assertEquals(adminUsernames.size(), 2);
+        assertEquals(adminUsernames.get(0), "bob@sample.com");
+        assertEquals(adminUsernames.get(1), "sarah@sample.com");
 
         List<String> entryUsernames = _service.getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY);
         assertEquals(entryUsernames.size(), 1);
@@ -59,7 +71,6 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     @Test
     @WithSimpleReportOrgAdminUser
     void getUsersInCurrentOrg_adminUser_success() {
-        initSampleData();
         List<String> userUsernames = _service.getUsersInCurrentOrg(OrganizationRole.USER).stream()
                 .map(u->u.getLoginEmail()).collect(Collectors.toList());
         Collections.sort(userUsernames);
@@ -97,7 +108,6 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     @Test
     @WithSimpleReportOrgAdminUser
     void getOrganizationRolesForUser_adminUser_success() {
-        initSampleData();
         // This is the only way we can get a handle on the internal IDs of the users to check their roles
         List<ApiUser> users = _service.getUsersInCurrentOrg(OrganizationRole.USER);
         for (ApiUser user : users) {

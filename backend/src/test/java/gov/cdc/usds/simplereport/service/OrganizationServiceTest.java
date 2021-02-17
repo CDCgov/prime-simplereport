@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -19,9 +20,13 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
+    @BeforeEach
+    void setupData() {
+        initSampleData();
+    }
+
     @Test
     void findit() {
-        initSampleData();
         Organization org = _service.getCurrentOrganization();
         assertNotNull(org);
         assertEquals("DIS_ORG", org.getExternalId());

@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
@@ -38,6 +39,8 @@ public abstract class BaseServiceTest<T> {
     @Autowired
     private OrganizationInitializingService _initService;
     @Autowired
+    private DemoOktaRepository _oktaRepo;
+    @Autowired
     protected TestDataFactory _dataFactory;
     @Autowired
     protected T _service;
@@ -47,15 +50,23 @@ public abstract class BaseServiceTest<T> {
     @BeforeEach
     protected void before() {
         clearDb();
-        _initService.initAuditor();
+        resetOkta();
     }
 
     public void clearDb() {
         _truncator.truncateAll();
     }
 
+    public void resetOkta() {
+        _oktaRepo.reset();
+    }
+
     protected void initSampleData() {
         _initService.initAll();
+    }
+
+    protected void initAuditor() {
+        _initService.initAuditor();
     }
 
     protected void reset() {

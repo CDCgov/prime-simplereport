@@ -16,6 +16,7 @@ import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserList;
+import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupList;
@@ -58,7 +59,7 @@ public class LiveOktaRepository implements OktaRepository {
                 .build();
     }
 
-    public void createUser(IdentityAttributes userIdentity, String organizationExternalId) {
+    public void createUser(IdentityAttributes userIdentity, Organization org) {
         // need to validate fields before adding them because Maps don't like nulls
         Map<String,Object> userProfileMap = new HashMap<String, Object>();
         if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -86,6 +87,7 @@ public class LiveOktaRepository implements OktaRepository {
         }
 
         // By default, when creating a user, we give them privileges of a standard user
+        String organizationExternalId = org.getExternalId();
         String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
 
         // Okta SDK's way of getting a group by group name
@@ -112,6 +114,7 @@ public class LiveOktaRepository implements OktaRepository {
         }
         Group group = groups.single();
         return group.listUsers().stream()
+                .filter(u -> u.getStatus().equals(UserStatus.ACTIVE))
                 .map(u -> u.getProfile().getEmail())
                 .collect(Collectors.toList());
     }
@@ -217,6 +220,9 @@ public class LiveOktaRepository implements OktaRepository {
             throw new IllegalGraphqlArgumentException("Cannot get org external ID for nonexistent user");
         }
         User user = users.single();
+        if (!user.getStatus().equals(UserStatus.ACTIVE)) {
+            throw new IllegalGraphqlArgumentException("Cannot get org external ID for deactivated user");
+        }
 
         Set<String> orgExternalIds = new HashSet<>();
         Set<OrganizationRole> roles = new HashSet<>();

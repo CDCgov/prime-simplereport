@@ -5,7 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -45,10 +45,19 @@ public class UserAuthorizationVerifier {
 
     public boolean userHasSiteAdminRole() {
         IdentityAttributes id = _supplier.get();
-        return id != null && _admins.contains(id.getUsername());
+        if (id == null) {
+            return false;
+        }
+        getUser(id.getUsername());
+        return _admins.contains(id.getUsername());
     }
 
     public boolean userHasPermission(UserPermission permission) {
+        IdentityAttributes id = _supplier.get();
+        if (id == null) {
+            return false;
+        }
+        getUser(id.getUsername());
         Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
         return orgRoles.isPresent() && orgRoles.get().getGrantedPermissions().contains(permission);
     }
@@ -69,7 +78,16 @@ public class UserAuthorizationVerifier {
     private ApiUser getUser(UUID id) {
         Optional<ApiUser> found = _userRepo.findById(id);
         if (!found.isPresent()) {
-            throw new IllegalGraphqlArgumentException("Cannot find user.");
+            throw new NonexistentUserException();
+        }
+        ApiUser user = found.get();
+        return user;
+    }
+
+    private ApiUser getUser(String loginEmail) {
+        Optional<ApiUser> found = _userRepo.findByLoginEmail(loginEmail);
+        if (!found.isPresent()) {
+            throw new NonexistentUserException();
         }
         ApiUser user = found.get();
         return user;

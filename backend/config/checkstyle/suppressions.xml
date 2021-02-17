@@ -13,7 +13,6 @@
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/ApiFacility.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/ApiProvider.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/TestEventExport.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/User.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/model/errors/IllegalGraphqlArgumentException.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/organization/OrganizationDataResolver.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/api/organization/OrganizationResolver.java" />

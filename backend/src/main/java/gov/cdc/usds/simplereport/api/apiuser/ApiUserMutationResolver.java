@@ -81,7 +81,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             Boolean deleted
                 ) {
         ApiUser apiUser = _us.setIsDeleted(id, deleted);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
+        Optional<OrganizationRoles> orgRoles = Optional.empty();
         Boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
