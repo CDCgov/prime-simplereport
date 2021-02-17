@@ -32,13 +32,6 @@ const testResultQuery = gql`
         lastName
         birthDate
         gender
-        telephone
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
         lookupId
       }
     }
@@ -132,7 +125,6 @@ export const DetachedTestResultsList: any = ({
               r.patient.lastName
             )}
           </th>
-          <td>{r.patient.lookupId}</td>
           <td>{moment(r.dateTested).format("lll")}</td>
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
