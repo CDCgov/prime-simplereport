@@ -18,6 +18,22 @@ const initialFormState = {
   email: "",
   role: "",
 };
+
+const ROLE_OPTIONS = [
+  {
+    value: "entry-only",
+    label: "Entry only (conduct tests)",
+  },
+  {
+    value: "user",
+    label: "Basic (manage results and profiles)",
+  },
+  {
+    value: "admin",
+    label: "Admin (full permissions)",
+  },
+];
+
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (
@@ -69,12 +85,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
         </div>
         <div className="grid-row">
           <Dropdown
-            options={[
-              {
-                value: "hi",
-                label: "hi",
-              },
-            ]}
+            options={ROLE_OPTIONS}
             label="Access Level"
             name="role"
             selectedValue={newUser.role}
