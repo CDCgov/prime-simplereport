@@ -297,8 +297,7 @@ const PatientForm = (props: Props) => {
             toast,
             <Alert
               type="success"
-              title={`${PATIENT_TERM_CAP} Record Saved`}
-              body="Information record has been updated."
+              title={`Your profile changes have been saved`}
             />
           );
           const updatedPatientFromApi = res.data.patientLinkUpdatePatient;
