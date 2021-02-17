@@ -98,7 +98,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="grid-row prime-test-name usa-card__header"
               >
                 <h2>
-                  John A Doe
+                  Doe, John A
                 </h2>
                 <button
                   class="timer-button timer-reset"
@@ -408,7 +408,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 class="grid-row prime-test-name usa-card__header"
               >
                 <h2>
-                  Jane Smith
+                  Smith, Jane
                 </h2>
                 <button
                   class="timer-button timer-reset"
