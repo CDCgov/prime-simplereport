@@ -15,6 +15,12 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
+/**
+* These tests test the ability of the available <code>OktaRepository</code>
+* to create, update, and manage Okta entities like users and organizations.
+* These tests are disabled until we can get either a useful mock Okta API client
+* or a useful stub Okta repository class for demo purposes.
+*/
 class OktaRepositoryTest {
 
     private static final IdentityAttributes AMOS = new IdentityAttributes("aquint@gmail.com", "Amos", null, "Quint", null);

@@ -22,8 +22,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 /**
- * Created by jeremyzitomer-usds on 1/7/21
- * 
  * Handles all user/organization management in Okta
  */
 @Profile(BeanProfiles.NO_OKTA_MGMT)

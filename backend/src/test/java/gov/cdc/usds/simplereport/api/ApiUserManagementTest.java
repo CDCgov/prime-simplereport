@@ -239,7 +239,7 @@ class ApiUserManagementTest extends BaseApiTest {
         roles.add(OrganizationRole.USER);
         roles.add(role);
         return new OrganizationRoleClaims(_initService.getDefaultOrganization().getExternalId(),
-                                                   roles);
+                                          roles);
     }
 
     private ObjectNode getAddUserVariables(String firstName, 
