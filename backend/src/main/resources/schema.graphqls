@@ -410,4 +410,28 @@ type Mutation {
     symptomOnset: LocalDate
     noSymptoms: Boolean
   ): String
+  patientLinkUpdatePatient(
+    internalId: String!
+    oldBirthDate: LocalDate!
+    lookupId: String
+    firstName: String!
+    middleName: String
+    lastName: String!
+    suffix: String
+    newBirthDate: LocalDate!
+    street: String!
+    streetTwo: String
+    city: String
+    state: String!
+    zipCode: String!
+    telephone: String!
+    role: String
+    email: String
+    county: String
+    race: String
+    ethnicity: String
+    gender: String
+    residentCongregateSetting: Boolean!
+    employedInHealthcare: Boolean!
+  ): Patient
 }

@@ -51,6 +51,10 @@ data "azurerm_key_vault_secret" "sr_db_jdbc" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "metabase_db_uri" {
+  name         = "simple-report-${local.env}-db-metabase-uri"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-prod"

@@ -16,11 +16,13 @@ import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
-import DOB from "./timeOfTest/DOB";
 import ErrorPage from "./ErrorPage";
 import PatientHeader from "./PatientHeader";
+import DOB from "./timeOfTest/DOB";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
+import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
+import PatientProfileFormContainer from "./timeOfTest/PatientProfileFormContainer";
 
 const PATIENT_LINK_QUERY = gql`
   query PatientLinkById($plid: String!) {
@@ -36,7 +38,6 @@ const PATIENT_LINK_QUERY = gql`
 
 const PatientApp = () => {
   const dispatch = useDispatch();
-
   const plid = getPatientLinkIdFromUrl();
   if (plid == null) {
     throw new Error("Patient Link ID from URL was null");
@@ -100,7 +101,23 @@ const PatientApp = () => {
                   />
                   <Route path="/birth-date-confirmation" component={DOB} />
                   <Route
-                    path="/patient-info-confirmation"
+                    path="/patient-info-confirm"
+                    render={(props) => (
+                      <PatientProfileContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/patient-info-edit"
+                    render={(props) => (
+                      <PatientProfileFormContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/patient-info-symptoms"
                     render={(props) => (
                       <AoEPatientFormContainer
                         {...(props.location.state as any)}
