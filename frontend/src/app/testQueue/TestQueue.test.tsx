@@ -18,7 +18,7 @@ describe("TestQueue", () => {
       </MockedProvider>
     );
 
-    await waitFor(() => new Promise((resolve) => setTimeout(resolve, 0)));
+    await waitFor(() => new Promise((res) => setTimeout(res, 0)));
 
     expect(getByText("John A Doe")).toBeInTheDocument();
     expect(getByText("Jane Smith")).toBeInTheDocument();
