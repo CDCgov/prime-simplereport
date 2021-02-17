@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
-
 import org.springframework.core.Ordered;
 
 /**
@@ -69,5 +68,9 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
             }
             return Integer.compare(one.precedence, other.precedence);
         }
+    }
+
+    public static final OrganizationRole getDefault() {
+        return USER;
     }
 }

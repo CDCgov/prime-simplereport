@@ -19,10 +19,18 @@ enum UserPermission {
   DELETE_PATIENT
   EDIT_FACILITY
   EDIT_ORGANIZATION
+  MANAGE_USERS
+  SEARCH_PATIENTS
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
   EXPORT_TEST_EVENT
+}
+
+enum OrganizationRole {
+  ENTRY_ONLY
+  USER
+  ADMIN
 }
 
 enum TestCorrectionStatus {
@@ -167,6 +175,7 @@ type User {
   roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization
+  roles: [OrganizationRole!]
 }
 
 type PatientLink {
@@ -185,6 +194,7 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!, newerThanDate: DateTime): [TestResult]
   testResult(id: String!): TestResult
+  users: [User]
   whoami: User!
   patientLinkCurrent(internalId: String!): Organization
   patientLinkVerify(internalId: String!, birthDate: LocalDate!): Patient

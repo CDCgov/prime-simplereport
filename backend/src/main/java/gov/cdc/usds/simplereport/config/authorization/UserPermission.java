@@ -14,6 +14,7 @@ public enum UserPermission {
     DELETE_PATIENT,
     EDIT_FACILITY,
     EDIT_ORGANIZATION,
+    MANAGE_USERS,
     START_TEST,
     UPDATE_TEST,
     SUBMIT_TEST,

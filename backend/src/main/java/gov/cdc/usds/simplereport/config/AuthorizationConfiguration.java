@@ -111,6 +111,16 @@ public class AuthorizationConfiguration {
     }
 
     /**
+     * Require the current user to have the {@link UserPermission#MANAGE_USERS}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")")
+    public @interface RequirePermissionManageUsers {
+    }
+    
+    /**
      * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS}
      * permission.
      */
