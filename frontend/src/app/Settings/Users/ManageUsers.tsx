@@ -213,7 +213,7 @@ const ManageUsers: React.FC<Props> = ({
               />
             ) : null}
             {showAddUserModal &&
-            process.env.REACT_APP_V2_ACCESS_CONTROL_ENABLED === "true" ? (
+            process.env.REACT_APP_ADD_NEW_USER_SETTINGS === "true" ? (
               <CreateUserModal
                 onClose={() => updateShowAddUserModal(false)}
                 onSubmit={onCreateNewUser}
