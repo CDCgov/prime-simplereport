@@ -68,6 +68,15 @@
 .prime-queue-item {
   padding: 0;
   position: relative;
+  .prime-card-container {
+    border-left-width: 0.5em;
+    border-left-style: solid;
+    border-color: transparent;
+  }
+  .prime-test-name {
+    padding-left: 2em;
+    margin-left: -0.5em;
+  }
   .result-ready {
     font-weight: bold;
   }
@@ -78,11 +87,13 @@
 }
 
 .prime-queue-item__ready {
-  box-shadow: inset 0.5em 0 0 color($theme-color-warning);
   border-color: color($theme-color-warning);
   .prime-test-name {
-    margin-left: 0.5em;
-    padding-left: 1em;
+    margin-left: 0em;
+    padding-left: 1.5em;
+  }
+  .prime-card-container {
+    border-color: color($theme-color-warning);
   }
   .timer-ready {
     background-color: color($theme-color-warning);

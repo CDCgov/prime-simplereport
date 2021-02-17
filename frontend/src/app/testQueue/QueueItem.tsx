@@ -493,109 +493,111 @@ const QueueItem: any = ({
   return (
     <React.Fragment>
       <div className={containerClasses}>
-        {closeButton}
-        <div className="grid-row">
-          <div className="tablet:grid-col-9">
-            <div className="grid-row prime-test-name usa-card__header">
-              <h2>{patientFullName}</h2>
-              <TestTimerWidget timer={timer} />
-            </div>
-            <div className="usa-card__body">
-              <div className="grid-row">
-                <ul className="prime-ul">
-                  <li className="prime-li">
-                    <LabeledText
-                      text={patient.telephone}
-                      label="Phone number"
-                    />
-                  </li>
-                  <li className="prime-li">
-                    <LabeledText
-                      text={moment(patient.birthDate).format("MM/DD/yyyy")}
-                      label="Date of birth"
-                    />
-                  </li>
-                  <li className="prime-li">
-                    <Button
-                      variant="unstyled"
-                      label="Time of Test Questions"
-                      onClick={openAoeModal}
-                    />
-                    {isAoeModalOpen && (
-                      <AoeModalForm
-                        saveButtonText="Continue"
-                        onClose={closeAoeModal}
-                        patient={patient}
-                        loadState={aoeAnswers}
-                        saveCallback={saveAoeCallback}
-                        canAddToTestQueue={false}
-                        qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
+        <div className="prime-card-container">
+          {closeButton}
+          <div className="grid-row">
+            <div className="tablet:grid-col-9">
+              <div className="grid-row prime-test-name usa-card__header">
+                <h2>{patientFullName}</h2>
+                <TestTimerWidget timer={timer} />
+              </div>
+              <div className="usa-card__body">
+                <div className="grid-row">
+                  <ul className="prime-ul">
+                    <li className="prime-li">
+                      <LabeledText
+                        text={patient.telephone}
+                        label="Phone number"
                       />
-                    )}
-                    <p>
-                      <AskOnEntryTag aoeAnswers={aoeAnswers} />
-                    </p>
-                  </li>
-                </ul>
-              </div>
-              <div className="grid-row">
-                <ul className="prime-ul">
-                  <li className="prime-li">
-                    <Dropdown
-                      options={options}
-                      label="Device"
-                      name="testDevice"
-                      selectedValue={deviceId}
-                      onChange={onDeviceChange}
-                    />
-                  </li>
-                  {testDateFields}
-                  <li className="prime-li">
-                    <Checkboxes
-                      boxes={[
-                        {
-                          value: useCurrentDateTime,
-                          label: "Use current date",
-                          checked: useCurrentDateTime === "true",
-                        },
-                      ]}
-                      className={
-                        useCurrentDateTime === "false"
-                          ? "testdate-checkbox"
-                          : ""
-                      }
-                      legend={
-                        useCurrentDateTime === "true" ? "Test date" : null
-                      }
-                      name="currentDateTime"
-                      onChange={onUseCurrentDateChange}
-                    />
-                  </li>
-                </ul>
+                    </li>
+                    <li className="prime-li">
+                      <LabeledText
+                        text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                        label="Date of birth"
+                      />
+                    </li>
+                    <li className="prime-li">
+                      <Button
+                        variant="unstyled"
+                        label="Time of Test Questions"
+                        onClick={openAoeModal}
+                      />
+                      {isAoeModalOpen && (
+                        <AoeModalForm
+                          saveButtonText="Continue"
+                          onClose={closeAoeModal}
+                          patient={patient}
+                          loadState={aoeAnswers}
+                          saveCallback={saveAoeCallback}
+                          canAddToTestQueue={false}
+                          qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
+                        />
+                      )}
+                      <p>
+                        <AskOnEntryTag aoeAnswers={aoeAnswers} />
+                      </p>
+                    </li>
+                  </ul>
+                </div>
+                <div className="grid-row">
+                  <ul className="prime-ul">
+                    <li className="prime-li">
+                      <Dropdown
+                        options={options}
+                        label="Device"
+                        name="testDevice"
+                        selectedValue={deviceId}
+                        onChange={onDeviceChange}
+                      />
+                    </li>
+                    {testDateFields}
+                    <li className="prime-li">
+                      <Checkboxes
+                        boxes={[
+                          {
+                            value: useCurrentDateTime,
+                            label: "Use current date",
+                            checked: useCurrentDateTime === "true",
+                          },
+                        ]}
+                        className={
+                          useCurrentDateTime === "false"
+                            ? "testdate-checkbox"
+                            : ""
+                        }
+                        legend={
+                          useCurrentDateTime === "true" ? "Test date" : null
+                        }
+                        name="currentDateTime"
+                        onChange={onUseCurrentDateChange}
+                      />
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="tablet:grid-col-3 prime-test-result">
-            {isConfirmationModalOpen && (
-              <AreYouSure
-                patientName={patientFullName}
-                cancelHandler={() => updateIsConfirmationModalOpen(false)}
-                continueHandler={() => {
-                  forceSubmit = true;
-                  onTestResultSubmit();
-                }}
+            <div className="tablet:grid-col-3 prime-test-result">
+              {isConfirmationModalOpen && (
+                <AreYouSure
+                  patientName={patientFullName}
+                  cancelHandler={() => updateIsConfirmationModalOpen(false)}
+                  continueHandler={() => {
+                    forceSubmit = true;
+                    onTestResultSubmit();
+                  }}
+                />
+              )}
+              <TestResultInputForm
+                queueItemId={internalId}
+                testResultValue={testResultValue}
+                isSubmitDisabled={
+                  !shouldUseCurrentDateTime() &&
+                  !isValidCustomDateTested(dateTested)
+                }
+                onSubmit={onTestResultSubmit}
+                onChange={onTestResultChange}
               />
-            )}
-            <TestResultInputForm
-              queueItemId={internalId}
-              testResultValue={testResultValue}
-              isSubmitDisabled={
-                !shouldUseCurrentDateTime() &&
-                !isValidCustomDateTested(dateTested)
-              }
-              onSubmit={onTestResultSubmit}
-              onChange={onTestResultChange}
-            />
+            </div>
           </div>
         </div>
       </div>
