@@ -5,7 +5,6 @@ import classnames from "classnames";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
-import ConditionalWrap from "../../commonComponents/ConditionalWrap";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
@@ -46,7 +45,7 @@ const ManageUsers: React.FC<Props> = ({
     null
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
-  const [showAddUserModal, updateShowAddUserModal] = useState(true);
+  const [showAddUserModal, updateShowAddUserModal] = useState(false);
 
   function updateUser<T>(
     userId: string,
@@ -134,6 +133,11 @@ const ManageUsers: React.FC<Props> = ({
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
+        <Button
+          variant="outline"
+          onClick={() => updateShowAddUserModal(true)}
+          label="+ New User"
+        />
       </div>
       <div className="usa-card__body">
         <div className="grid-row">
@@ -195,7 +199,10 @@ const ManageUsers: React.FC<Props> = ({
               />
             ) : null}
             {showAddUserModal ? (
-              <CreateUserModal onClose={() => {}} onContinue={() => {}} />
+              <CreateUserModal
+                onClose={() => updateShowAddUserModal(false)}
+                onSubmit={() => {}}
+              />
             ) : null}
           </div>
         </div>
