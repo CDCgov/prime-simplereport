@@ -110,7 +110,7 @@ You can make the default user a site admin by adding the following to `applicati
 
 ```
 simple-report:
-  admin-emails:
+  site-admin-emails:
     - bob@bobby.bob
 ```
 
@@ -174,7 +174,7 @@ Useful local settings
 
 ```
 simple-report:
-  admin-emails:
+  site-admin-emails:
     - bob@example.com
 ```
 

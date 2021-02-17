@@ -12,14 +12,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 import com.okta.sdk.resource.ResourceException;
 
@@ -40,14 +45,17 @@ public class OrganizationInitializingService {
 	@Autowired
 	private FacilityRepository _facilityRepo;
 	@Autowired
-	private OktaService _oktaService;
+	private ApiUserRepository _apiUserRepo;
+	@Autowired
+	private OktaRepository _oktaRepo;
+	@Autowired
+	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
 		if (probe.isPresent()) {
-			initOktaOrg(probe.get());
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -72,18 +80,35 @@ public class OrganizationInitializingService {
 		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
 		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
 		_facilityRepo.save(defaultFacility);
+
+		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
+		List<IdentityAttributes> users = _demoUserConfiguration.getAlternateUsers().stream()
+				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
+		for (IdentityAttributes user : users) {
+			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
+			initOktaUser(user, emptyOrg.getExternalId());
+		}
 	}
 
 	private void initOktaOrg(Organization org) {
 		try {
 			LOG.info("Creating organization {} in Okta", org.getOrganizationName());
-			_oktaService.createOrganization(org.getOrganizationName(), org.getExternalId());
+			_oktaRepo.createOrganization(org.getOrganizationName(), org.getExternalId());
 		} catch (ResourceException e) {
 			LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
 		}
 	}
 
-	public String getDefaultOrganizationId() {
-		return _props.getOrganization().getExternalId();
+	private void initOktaUser(IdentityAttributes user, String orgExternalId) {
+		try {
+			LOG.info("Creating user {} in Okta", user.getUsername());
+			_oktaRepo.createUser(user, orgExternalId);
+		} catch (ResourceException e) {
+			LOG.info("User {} already exists in Okta", user.getUsername());
+		}
+	}
+
+	public Organization getDefaultOrganization() {
+		return _props.getOrganization();
 	}
 }

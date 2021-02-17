@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 
 @RestController
 @Profile(BeanProfiles.AUTHORIZATION_DEV)
@@ -51,7 +51,7 @@ public class AuthTestController {
 	}
 
     @GetMapping("/authTest/orgRoles")
-    public List<OrganizationRoles> getRoles(Authentication auth) {
+    public List<OrganizationRoleClaims> getRoles(Authentication auth) {
         return _extractor.convert(auth.getAuthorities());
     }
 
