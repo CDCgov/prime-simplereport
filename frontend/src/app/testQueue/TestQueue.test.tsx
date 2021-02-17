@@ -12,12 +12,13 @@ jest.mock("@microsoft/applicationinsights-react-js", () => {
 
 describe("TestQueue", () => {
   it("should render the test queue", async () => {
-    const { container, getByText } = render(
+    const { container, getByText, getByLabelText } = render(
       <MockedProvider mocks={mocks}>
         <TestQueue activeFacilityId="a1" />
       </MockedProvider>
     );
 
+    await waitFor(() => getByLabelText("Search"));
     await waitFor(() => new Promise((res) => setTimeout(res, 0)));
 
     expect(getByText("John A Doe")).toBeInTheDocument();
