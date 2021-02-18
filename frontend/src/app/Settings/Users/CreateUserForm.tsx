@@ -45,7 +45,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
   };
 
   const setUserRole =
-    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_SETTINGS === "true" ? (
+    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === "true" ? (
       <Dropdown
         options={ROLE_OPTIONS}
         label="Access Level"

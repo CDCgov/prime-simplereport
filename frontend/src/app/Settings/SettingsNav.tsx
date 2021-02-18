@@ -27,7 +27,7 @@ const SettingsNav = () => {
             Manage Facilities
           </NavLink>
         </li>
-        {process.env.REACT_APP_V1_ACCESS_CONTROL_ENABLED === "true" ? (
+        {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
           <li className="usa-nav__secondary-item">
             <NavLink
               to={`/settings/users/?facility=${getFacilityIdFromUrl()}`}

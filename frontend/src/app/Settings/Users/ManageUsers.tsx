@@ -168,7 +168,7 @@ const ManageUsers: React.FC<Props> = ({
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
-        {process.env.REACT_APP_ADD_NEW_USER_SETTINGS ? (
+        {process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
           <Button
             variant="outline"
             onClick={() => updateShowAddUserModal(true)}
@@ -212,7 +212,7 @@ const ManageUsers: React.FC<Props> = ({
                   onUpdateUser={updateUser}
                 />
 
-                {process.env.REACT_APP_USER_FACILITIES_SETTINGS === "true" ? (
+                {process.env.REACT_APP_USER_FACILITIES_ENABLED === "true" ? (
                   <UserFacilitiesSettingsForm
                     activeUser={activeUser}
                     allFacilities={allFacilities}
@@ -221,7 +221,7 @@ const ManageUsers: React.FC<Props> = ({
                 ) : null}
               </div>
               <div className="usa-card__footer display-flex flex-justify margin-top-5">
-                {process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
+                {process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                   <Button
                     variant="outline"
                     icon="trash"
@@ -258,14 +258,14 @@ const ManageUsers: React.FC<Props> = ({
                 />
               ) : null}
               {showAddUserModal &&
-              process.env.REACT_APP_ADD_NEW_USER_SETTINGS === "true" ? (
+              process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
                 <CreateUserModal
                   onClose={() => updateShowAddUserModal(false)}
                   onSubmit={onHandleCreateNewUser}
                 />
               ) : null}
               {showDeleteUserModal &&
-              process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
+              process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                 <DeleteUserModal
                   user={activeUser}
                   onClose={() => updateShowDeleteUserModal(false)}
