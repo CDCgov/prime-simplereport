@@ -54,20 +54,20 @@ public class ApiUserService {
     @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
-        return createUserHelper(username, firstName, middleName, lastName, suffix, organizationExternalId);
+        Organization org = _orgService.getOrganization(organizationExternalId);
+        return createUserHelper(username, firstName, middleName, lastName, suffix, org);
     }
 
     @Transactional
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public ApiUser createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
-        String organizationExternalId = _orgService.getCurrentOrganization().getExternalId();
-        return createUserHelper(username, firstName, middleName, lastName, suffix, organizationExternalId);
+        Organization org = _orgService.getCurrentOrganization();
+        return createUserHelper(username, firstName, middleName, lastName, suffix, org);
     }
 
-    private ApiUser createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
+    private ApiUser createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, Organization org) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        Organization org = _orgService.getOrganization(organizationExternalId);
         _oktaRepo.createUser(userIdentity, org);
 
         LOG.info("User with id={} created by user with id={}", 

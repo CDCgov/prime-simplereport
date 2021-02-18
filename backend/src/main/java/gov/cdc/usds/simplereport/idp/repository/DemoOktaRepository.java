@@ -167,8 +167,7 @@ public class DemoOktaRepository implements OktaRepository {
         orgRoleUsernamesMap.clear();
         inactiveUsernames.clear();
 
-        initDemoUser(demoUsers.getDefaultUser());
-        for (DemoUser altUser : demoUsers.getAlternateUsers()) {
+        for (DemoUser altUser : demoUsers.getAllUsers()) {
             initDemoUser(altUser);
         }
     }

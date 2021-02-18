@@ -77,6 +77,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         
         List<String> adminUsernames = _service.getUsersInCurrentOrg(OrganizationRole.ADMIN).stream()
                 .map(u->u.getLoginEmail()).collect(Collectors.toList());
+        Collections.sort(adminUsernames);
         assertEquals(adminUsernames.size(), 2);
         assertEquals(adminUsernames.get(0), "bob@sample.com");
         assertEquals(adminUsernames.get(1), "sarah@sample.com");

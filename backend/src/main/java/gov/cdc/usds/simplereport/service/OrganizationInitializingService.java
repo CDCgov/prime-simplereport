@@ -87,7 +87,7 @@ public class OrganizationInitializingService {
 		_facilityRepo.save(defaultFacility);
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
-		List<IdentityAttributes> users = _demoUserConfiguration.getAlternateUsers().stream()
+		List<IdentityAttributes> users = _demoUserConfiguration.getAllUsers().stream()
 				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
 			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
