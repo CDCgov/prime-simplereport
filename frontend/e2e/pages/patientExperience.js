@@ -53,11 +53,6 @@ function completeQuestionnaire() {
   this.section.app.click('@pregnant');
   this.section.app.expect.element('@continueButton').to.be.visible;
   this.section.app.click('@continueButton');
-  this.expect
-    .section('@app')
-    .to.contain.text(
-      'You will receive a text notification when your result is ready.'
-    );
 }
 
 module.exports = {
