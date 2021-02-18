@@ -2,7 +2,9 @@ import Alert from "../commonComponents/Alert";
 import React from "react";
 
 export const displayFullName = (first, middle, last) => {
-  return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
+  return `${last || "?"}, ${first || "?"} ${middle || ""}`
+    .replace(/ +/g, " ")
+    .trim();
 };
 
 export const isLocalHost = () =>
