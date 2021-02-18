@@ -10,6 +10,14 @@ export type UserPermission =
   | "SUBMIT_TEST"
   | "SEARCH_PATIENTS";
 
+export type UserRole = "admin" | "user" | "entry-only";
+
+// this is what the server sends back in the user.roleDescription field
+export type RoleDescription =
+  | "Admin user"
+  | "Standard user"
+  | "Test-entry user";
+
 /* 
     TODO: this is a quick v0
 

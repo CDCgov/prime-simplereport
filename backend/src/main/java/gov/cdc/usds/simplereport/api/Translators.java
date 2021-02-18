@@ -128,11 +128,15 @@ public class Translators {
         if (race == null) {
             return null;
         }
-        race = RACES.get(race.toLowerCase());
-        if (race == null) {
-            throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_KEYS) + "].");
+        race = race.toLowerCase();
+        if (RACES.containsKey(race)) {
+            return RACES.get(race);
         }
-        return race;
+        if (RACES.containsValue(race)) {
+            return race; // passed in the correct value
+        }
+        // not found
+        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_KEYS) + "].");
     }
 
     private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");
@@ -164,7 +168,7 @@ public class Translators {
         throw new IllegalGraphqlArgumentException("\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
     }
 
-    private static final Map<String, Boolean> YES_NO = Map.of("y", true, "yes", true, "n", false, "no", false);
+    private static final Map<String, Boolean> YES_NO = Map.of("y", true, "yes", true, "n", false, "no", false, "true", true, "false", false);
 
     public static Boolean parseYesNo(String v) {
         String stringValue = parseString(v);

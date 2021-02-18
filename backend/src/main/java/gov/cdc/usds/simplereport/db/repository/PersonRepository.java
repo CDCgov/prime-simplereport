@@ -14,7 +14,7 @@ import java.util.UUID;
 /**
  * Interface specification for fetching and manipulating {@link Person} entities
  */
-public interface PersonRepository extends EternalEntityRepository<Person> {
+public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
     @Query(BASE_QUERY + " and organization = :org")
     public List<Person> findAllByOrganization(Organization org, Sort sortBy);

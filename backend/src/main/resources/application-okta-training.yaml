@@ -1,0 +1,9 @@
+# Bean profile to be included in deployment-specific profiles
+# for PENTEST deployments.
+okta:
+  oauth2:
+    client-id: 0oa75lmsiCml0JCCQ4h6
+simple-report:
+  authorization:
+    role-claim: training_roles
+    role-prefix: "SR-TRAINING-TENANT:"

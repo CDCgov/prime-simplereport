@@ -111,7 +111,7 @@ You can make the default user a site admin by adding the following to `applicati
 ```
 simple-report:
   site-admin-emails:
-    - bob@bobby.bob
+    - bob@sample.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -175,7 +175,7 @@ Useful local settings
 ```
 simple-report:
   site-admin-emails:
-    - bob@example.com
+    - bob@sample.com
 ```
 
 - make SQL pretty
@@ -189,8 +189,9 @@ spring:
 ```
 - enable the patient links QR code feature flag
 ```
-feature-flags:
-  patient-links: true
+simple-report:
+  feature-flags:
+    patient-links: true
 ```
 
 ### SchemaSpy
