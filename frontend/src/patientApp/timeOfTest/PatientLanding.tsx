@@ -19,9 +19,9 @@ const PatientLanding = () => {
               icon={"check-circle"}
               className="usa-media-block__img margin-right-2"
             />
-            <div className="usa-mmedia-block__body usa-prose margin-top-105">
+            <div className="usa-media-block__body usa-prose margin-top-105">
               <h3 className="font-heading-sm">Questionnaire complete</h3>
-              <p className="margin-top-05"></p>
+              {/* <p className="margin-top-05"></p> */}
             </div>
           </div>
           {/* <Button
