@@ -219,8 +219,8 @@ public class LiveOktaRepository implements OktaRepository {
             throw new IllegalGraphqlArgumentException("Cannot get org external ID for nonexistent user");
         }
         User user = users.single();
-        if (!user.getStatus().equals(UserStatus.ACTIVE)) {
-            throw new IllegalGraphqlArgumentException("Cannot get org external ID for deactivated user");
+        if (user.getStatus().equals(UserStatus.SUSPENDED)) {
+            throw new IllegalGraphqlArgumentException("Cannot get org external ID for suspended user");
         }
 
         Set<String> orgExternalIds = new HashSet<>();
