@@ -45,16 +45,6 @@ function verifyEmail(email) {
 }
 
 function completeQuestionnaire() {
-<<<<<<< HEAD
-  this.section.app.expect.element('@noSymptoms').to.be.visible;
-  this.section.app.click('@noSymptoms');
-  this.section.app.expect.element('@mostRecent').to.be.visible;
-  this.section.app.click('@mostRecent');
-  this.section.app.expect.element('@pregnant').to.be.visible;
-  this.section.app.click('@pregnant');
-  this.section.app.expect.element('@continueButton').to.be.visible;
-  this.section.app.click('@continueButton');
-=======
   this.section.app.expect.element("@noSymptoms").to.be.visible;
   this.section.app.click("@noSymptoms");
   this.section.app.expect.element("@mostRecent").to.be.visible;
@@ -63,12 +53,6 @@ function completeQuestionnaire() {
   this.section.app.click("@pregnant");
   this.section.app.expect.element("@continueButton").to.be.visible;
   this.section.app.click("@continueButton");
-  this.expect
-    .section("@app")
-    .to.contain.text(
-      "You will receive a text notification when your result is ready."
-    );
->>>>>>> cd006a9b618c51726e8f2893089292e786e46fb5
 }
 
 module.exports = {
