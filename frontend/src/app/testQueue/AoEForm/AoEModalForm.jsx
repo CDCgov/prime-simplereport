@@ -23,7 +23,7 @@ const AoEModalForm = ({
     {
       label: "Text message",
       value: "text",
-      labelDescription: "(321) 543-2109",
+      labelDescription: "{patient.telephone}",
     },
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
@@ -116,16 +116,16 @@ const AoEModalForm = ({
             <>
               <div className="usa-alert usa-alert--success">
                 <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading">Email sent</h3>
+                  <h3 className="usa-alert__heading">Text message sent</h3>
                   <p className="usa-alert__text">
-                    The link was sent to [youremail@organization.com]
+                    The link was sent to {patient.telephone}
                   </p>
                 </div>
               </div>
               <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
                 <Button
                   className="margin-right-205"
-                  label="Submit"
+                  label="Text link"
                   type={"button"}
                   onClick={() => continueModal()}
                 />
