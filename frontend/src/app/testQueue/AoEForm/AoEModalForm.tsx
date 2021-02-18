@@ -109,7 +109,7 @@ const AoEModalForm = (props: Props) => {
   });
   if (loading) return null;
   if (error) throw error;
-  const mostRecentTest = data?.patient.lastTest;
+  const lastTest = data?.patient.lastTest;
 
   return (
     <Modal
@@ -181,7 +181,7 @@ const AoEModalForm = (props: Props) => {
               saveButtonText="Continue"
               onClose={onClose}
               patient={patient}
-              mostRecentTest={mostRecentTest}
+              lastTest={lastTest}
               loadState={loadState as any}
               saveCallback={saveCallback}
               isModal={true}
@@ -196,7 +196,7 @@ const AoEModalForm = (props: Props) => {
           patient={patient}
           loadState={loadState as any}
           saveCallback={saveCallback}
-          mostRecentTest={mostRecentTest}
+          lastTest={lastTest}
           isModal={true}
           noValidation={true}
         />

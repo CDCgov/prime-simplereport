@@ -85,7 +85,7 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
         isModal={false}
         saveButtonText="Submit"
         noValidation={false}
-        mostRecentTest={undefined} // TODO: get most recent test result from... somewhere
+        lastTest={undefined} // TODO: get most recent test result from... somewhere
         saveCallback={saveCallback}
       />
     </PatientTimeOfTestContainer>

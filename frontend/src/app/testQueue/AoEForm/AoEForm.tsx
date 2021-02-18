@@ -28,7 +28,7 @@ interface Props {
     internalId: string;
     gender: string;
   };
-  mostRecentTest:
+  lastTest:
     | {
         dateTested: string;
         result: string;
@@ -66,7 +66,7 @@ const AoEForm: React.FC<Props> = ({
   saveCallback,
   isModal,
   noValidation,
-  mostRecentTest,
+  lastTest,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
@@ -241,7 +241,7 @@ const AoEForm: React.FC<Props> = ({
               setPriorTestType={setPriorTestType}
               priorTestResult={priorTestResult}
               setPriorTestResult={setPriorTestResult}
-              mostRecentTest={mostRecentTest}
+              lastTest={lastTest}
             />
           </div>
         </FormGroup>
