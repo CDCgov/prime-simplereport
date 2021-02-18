@@ -44,9 +44,6 @@ exports[`TestResultInputForm should render with a value 1`] = `
           htmlFor="radio-test-1_POSITIVE_0"
         >
           Positive (+)
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
       <div
@@ -68,9 +65,6 @@ exports[`TestResultInputForm should render with a value 1`] = `
           htmlFor="radio-test-1_NEGATIVE_1"
         >
           Negative (-)
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
       <div
@@ -92,9 +86,6 @@ exports[`TestResultInputForm should render with a value 1`] = `
           htmlFor="radio-test-1_UNDETERMINED_2"
         >
           Inconclusive
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
     </div>
@@ -158,9 +149,6 @@ exports[`TestResultInputForm should render without a value 1`] = `
           htmlFor="radio-test-1_POSITIVE_0"
         >
           Positive (+)
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
       <div
@@ -182,9 +170,6 @@ exports[`TestResultInputForm should render without a value 1`] = `
           htmlFor="radio-test-1_NEGATIVE_1"
         >
           Negative (-)
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
       <div
@@ -206,9 +191,6 @@ exports[`TestResultInputForm should render without a value 1`] = `
           htmlFor="radio-test-1_UNDETERMINED_2"
         >
           Inconclusive
-          <span
-            className="usa-checkbox__label-description"
-          />
         </label>
       </div>
     </div>

@@ -299,9 +299,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_POSITIVE_0"
                       >
                         Positive (+)
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                     <div
@@ -319,9 +316,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_NEGATIVE_1"
                       >
                         Negative (-)
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                     <div
@@ -339,9 +333,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_UNDETERMINED_2"
                       >
                         Inconclusive
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                   </div>
@@ -618,9 +609,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_POSITIVE_0"
                       >
                         Positive (+)
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                     <div
@@ -638,9 +626,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_NEGATIVE_1"
                       >
                         Negative (-)
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                     <div
@@ -658,9 +643,6 @@ exports[`TestQueue should render the test queue 1`] = `
                         for="radio-test-1_UNDETERMINED_2"
                       >
                         Inconclusive
-                        <span
-                          class="usa-checkbox__label-description"
-                        />
                       </label>
                     </div>
                   </div>
