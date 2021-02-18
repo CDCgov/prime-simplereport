@@ -3,34 +3,23 @@ import { gql, useQuery } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import ManageUsers from "./ManageUsers";
-import { UserRole } from "../../permissions";
+import { UserRole, UserPermission } from "../../permissions";
 
 const GET_USERS = gql`
   query GetUsers {
     users {
       id
-      roleDescription
-      permissions
       firstName
       middleName
       lastName
+      roleDescription
+      permissions
       email
       organization {
         testingFacility {
           id
           name
         }
-      }
-    }
-  }
-`;
-
-const GET_FACILITIES = gql`
-  query GetFacilities {
-    organization {
-      testingFacility {
-        id
-        name
       }
     }
   }
@@ -43,8 +32,8 @@ export interface SettingsUser {
   middleName: string;
   lastName: string;
   roleDescription: UserRole;
+  permissions: UserPermission[];
   email: string;
-  isAdmin: boolean;
   organization: {
     testingFacility: UserFacilitySetting[];
   };
@@ -54,11 +43,22 @@ interface UserData {
   users: SettingsUser[];
 }
 
-interface FacilityData {
-  organization: {
-    testingFacility: UserFacilitySetting[];
-  };
-}
+// const GET_FACILITIES = gql`
+//   query GetFacilities {
+//     organization {
+//       testingFacility {
+//         id
+//         name
+//       }
+//     }
+//   }
+// `;
+
+// interface FacilityData {
+//   organization: {
+//     testingFacility: UserFacilitySetting[];
+//   };
+// }
 
 export interface UserFacilitySetting {
   id: string;
@@ -77,7 +77,6 @@ export interface NewUserInvite {
 //     id: "111",
 //     name: "Peter Parker",
 //     role: "admin" as UserRole,
-//     isAdmin: true,
 //     email: "spiderman-or-deadpool@hero.com",
 //     organization: {
 //       testingFacility: [
@@ -93,7 +92,6 @@ export interface NewUserInvite {
 //     id: "222",
 //     name: "Carol Danvers",
 //     role: "entry-only" as UserRole,
-//     isAdmin: false,
 //     email: "marvel@hero.com",
 //     organization: {
 //       testingFacility: [
@@ -106,14 +104,12 @@ export interface NewUserInvite {
 //     id: "333",
 //     name: "Natasha Romanoff",
 //     role: "admin" as UserRole,
-//     isAdmin: true,
 //     email: "widow@hero.com",
 //   },
 //   {
 //     id: "444",
 //     name: "T'Challa",
 //     role: "user" as UserRole,
-//     isAdmin: true,
 //     email: "panther@hero.com",
 //     organization: {
 //       testingFacility: [],
@@ -144,7 +140,6 @@ const deleteUser = (userId: string) => {
 // const ManageUsersContainer: React.FC<any> = () => {
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
-  loggedInUser.id = "111"; // TODO: delete this
 
   // const { data, loading, error } = useQuery<SettingsData, {}>(GET_USERS, {
   //   fetchPolicy: "no-cache",
@@ -153,13 +148,13 @@ const ManageUsersContainer: any = () => {
   const { data, loading, error } = useQuery<UserData, {}>(GET_USERS, {
     fetchPolicy: "no-cache",
   });
-  const {
-    data: dataFacilities,
-    loading: loadingFacilities,
-    error: errorFacilities,
-  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-    fetchPolicy: "no-cache",
-  });
+  // const {
+  //   data: dataFacilities,
+  //   loading: loadingFacilities,
+  //   error: errorFacilities,
+  // } = useQuery<FacilityData, {}>(GET_FACILITIES, {
+  //   fetchPolicy: "no-cache",
+  // });
 
   if (loading) {
     return <p> Loading... </p>;
@@ -171,6 +166,8 @@ const ManageUsersContainer: any = () => {
   if (data === undefined) {
     return <p>Error: Users not found</p>;
   }
+
+  loggedInUser.id = data.users[0].id; // TODO: delete me
 
   // let realFacilities = dataFacilities?.organization
   //   .testingFacility as UserFacilitySetting[];
