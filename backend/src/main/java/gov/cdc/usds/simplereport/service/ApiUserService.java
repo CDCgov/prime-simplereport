@@ -51,13 +51,13 @@ public class ApiUserService {
         _oktaRepo = oktaRepo;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         return createUserHelper(username, firstName, middleName, lastName, suffix, organizationExternalId);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public ApiUser createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
         String organizationExternalId = _orgService.getCurrentOrganization().getExternalId();
@@ -78,7 +78,7 @@ public class ApiUserService {
         return user;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     public ApiUser updateUser(UUID userId, 
                               String username, 
@@ -154,7 +154,7 @@ public class ApiUserService {
                                       c.getGrantedRoles()));
     }
 
-    public Boolean isAdmin(ApiUser user) {
+    public boolean isAdmin(ApiUser user) {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 

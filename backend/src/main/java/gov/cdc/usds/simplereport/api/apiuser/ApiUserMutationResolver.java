@@ -37,7 +37,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
         Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
+        boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
     
@@ -50,7 +50,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         ApiUser apiUser = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
         Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
+        boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
 
@@ -64,7 +64,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         ApiUser apiUser = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
         Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
+        boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
 
@@ -77,11 +77,11 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
     public User setUserIsDeleted(
             UUID id,
-            Boolean deleted
+            boolean deleted
                 ) {
         ApiUser apiUser = _us.setIsDeleted(id, deleted);
         Optional<OrganizationRoles> orgRoles = Optional.empty();
-        Boolean isAdmin = _us.isAdmin(apiUser);
+        boolean isAdmin = _us.isAdmin(apiUser);
         return new User(apiUser, orgRoles, isAdmin);
     }
 }

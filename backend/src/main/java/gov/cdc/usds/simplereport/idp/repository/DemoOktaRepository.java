@@ -81,8 +81,6 @@ public class DemoOktaRepository implements OktaRepository {
         List<String> usernames = roleUsernamesMap.get(OrganizationRole.USER);
         if (!usernames.contains(userIdentity.getUsername())) {
             usernames.add(userIdentity.getUsername());
-            roleUsernamesMap.put(OrganizationRole.USER, usernames);
-            orgRoleUsernamesMap.put(organizationExternalId, roleUsernamesMap);
         }
     }
 
@@ -95,10 +93,8 @@ public class DemoOktaRepository implements OktaRepository {
                 List<String> usernames = roleUsernamesMap.get(role);
                 if (usernames.remove(oldUsername)) {
                     usernames.add(userIdentity.getUsername());
-                    roleUsernamesMap.put(role, usernames);
                 }
             }
-            orgRoleUsernamesMap.put(org, roleUsernamesMap);
         }
     }
 
@@ -122,9 +118,7 @@ public class DemoOktaRepository implements OktaRepository {
                 } else if (!r.equals(OrganizationRole.USER)) {
                     usernames.remove(username);
                 }
-                roleUsernamesMap.put(r, usernames);
             }
-            orgRoleUsernamesMap.put(org, roleUsernamesMap);
         }
 
         return role;

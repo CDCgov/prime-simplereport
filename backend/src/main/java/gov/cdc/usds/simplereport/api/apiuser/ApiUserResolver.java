@@ -37,7 +37,7 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 	public User getWhoami() {
 		ApiUser currentUser = _userService.getCurrentUser();
 		Optional<OrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
-		Boolean isAdmin = _userService.isAdmin(currentUser);
+		boolean isAdmin = _userService.isAdmin(currentUser);
         return new User(currentUser, currentOrgRoles, isAdmin);
 	}
 
