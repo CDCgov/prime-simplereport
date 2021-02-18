@@ -15,13 +15,12 @@ const DOB = () => {
   const [nextPage, setNextPage] = useState(false);
   const dobRef = React.createRef() as any;
   const plid = useSelector((state) => (state as any).plid as String);
-  const [called, setCalled] = useState(false);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(undefined as any);
 
   useEffect(() => {
     if (!data) return;
-    const patient = data.patientLinkVerify;
+    const patient = data;
     const residentCongregateSetting = patient.residentCongregateSetting
       ? "YES"
       : "NO";
@@ -58,12 +57,14 @@ const DOB = () => {
         "YYYY-MM-DD"
       );
       setLoading(true);
-      setCalled(true);
-      PxpApi.validateDob(plid, dob).then((result) => setData(result));
+      PxpApi.validateDob(plid, dob).then((result) => {
+        setData(result);
+        setLoading(false);
+      });
     }
   };
 
-  if (called && loading) {
+  if (loading) {
     return (
       <main>
         <div className="grid-container maxw-tablet">

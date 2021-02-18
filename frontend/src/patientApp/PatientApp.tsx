@@ -86,18 +86,7 @@ const PatientApp = () => {
             <PatientHeader />
             <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
               <Switch>
-                <Route
-                  path="/"
-                  exact
-                  render={({ location }) => (
-                    <Redirect
-                      to={{
-                        ...location,
-                        pathname: "/birth-date-confirmation",
-                      }}
-                    />
-                  )}
-                />
+                <Route path="/" exact component={DOB} />
                 <Route path="/birth-date-confirmation" component={DOB} />
                 <Route
                   path="/patient-info-confirm"

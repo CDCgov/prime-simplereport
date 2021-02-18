@@ -18,6 +18,10 @@ public class PxpPersonWrapper {
     this.p = p;
   }
 
+  public String getLookupId() {
+    return p.getLookupId();
+  }
+
   public String getFirstName() {
     return p.getFirstName();
   }

@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -25,7 +24,8 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.exceptions.FeatureFlagDisabledException;
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
-import gov.cdc.usds.simplereport.api.model.PxpApiWrapper;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -77,18 +77,13 @@ public class PatientExperienceController {
    * @throws Exception
    */
   @PutMapping("/link/verify")
-  public Person getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws Exception {
+  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws Exception {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
-    return pls.getPatientLinkVerify(body.getPlid(), body.getDob());
+    return new PxpPersonWrapper(pls.getPatientLinkVerify(body.getPlid(), body.getDob()));
   }
 
-  /**
-   * 
-   * @param body
-   * @return
-   */
   @PutMapping("/patient")
   public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) {
     if (!patientLinksEnabled) {
