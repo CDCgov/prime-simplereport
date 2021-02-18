@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.model;
+package gov.cdc.usds.simplereport.api.model.pxp;
 
 import java.time.LocalDate;
 
