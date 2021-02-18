@@ -189,8 +189,9 @@ spring:
 ```
 - enable the patient links QR code feature flag
 ```
-feature-flags:
-  patient-links: true
+simple-report:
+  feature-flags:
+    patient-links: true
 ```
 
 ### SchemaSpy
