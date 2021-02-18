@@ -5,7 +5,12 @@ import Required from "./Required";
 import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
-type OptionsArray = { label: string; value: string; disabled?: boolean }[];
+type OptionsArray = {
+  label: string;
+  value: string;
+  checkedLabel?: string;
+  disabled?: boolean;
+}[];
 type Options = OptionsKeys | OptionsArray;
 
 interface Props {
@@ -14,7 +19,6 @@ interface Props {
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
   buttons: Options;
-  labelDescription?: string;
   className?: string;
   required?: boolean;
   selectedRadio?: string | null;
@@ -37,7 +41,6 @@ const RadioGroup = ({
   validationStatus,
   errorMessage,
   buttons,
-  labelDescription,
   className,
   required,
   variant,
@@ -94,7 +97,7 @@ const RadioGroup = ({
           validationStatus === "error" && "usa-form-group--error"
         )}
       >
-        {choices.map((c, i) => (
+        {(choices as []).map((c: any, i: any) => (
           <div className={groupClass} key={c.value}>
             <input
               type="radio"
@@ -112,9 +115,11 @@ const RadioGroup = ({
               htmlFor={`${widgetId}_${c.value}_${i}`}
             >
               {c.label}
-              <span className="usa-checkbox__label-description">
-                {labelDescription}
-              </span>
+              {c.checkedLabel && c.value === selectedRadio ? (
+                <span className="usa-checkbox__label-description">
+                  {c.checkedLabel}
+                </span>
+              ) : null}
             </label>
           </div>
         ))}

@@ -23,7 +23,7 @@ const AoEModalForm = ({
     {
       label: "Text message",
       value: "text",
-      labelDescription: "{patient.telephone}",
+      checkedLabel: patient.telephone,
     },
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
