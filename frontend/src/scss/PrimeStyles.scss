@@ -67,12 +67,53 @@
 
 .prime-queue-item {
   padding: 0;
-  // margin-bottom: 1rem;
   position: relative;
+  .prime-card-container {
+    border-left-width: 0.5em;
+    border-left-style: solid;
+    border-color: transparent;
+  }
+  .prime-test-name {
+    padding-left: 2em;
+    margin-left: -0.5em;
+  }
+  .result-ready {
+    font-weight: bold;
+  }
 }
 
 .prime-queue-item .usa-card__footer .usa-form label {
   margin-top: 0.5rem;
+}
+
+.prime-queue-item__ready {
+  border-color: color($theme-color-warning);
+  .prime-test-name {
+    margin-left: 0em;
+    padding-left: 1.5em;
+  }
+  .prime-card-container {
+    border-color: color($theme-color-warning);
+  }
+  .timer-ready {
+    background-color: color($theme-color-warning);
+    color: color($theme-color-prime-gray-darkest);
+    padding: units(1);
+    .timer-overtime {
+      color: color($theme-color-prime-gray-darkest);
+    }
+  }
+}
+
+.prime-queue-item__completed {
+  .timer-ready {
+    background-color: color($theme-color-warning-lighter);
+    color: color($theme-color-prime-gray-darkest);
+    padding: units(1);
+    .timer-overtime {
+      color: color($theme-color-prime-gray-darkest);
+    }
+  }
 }
 
 .prime-container-padding {

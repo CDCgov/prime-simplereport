@@ -1,14 +1,16 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.List;
+import java.util.ArrayList;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 
 public class User {
 
@@ -16,26 +18,20 @@ public class User {
 	private Optional<Organization> org;
 	private Boolean isAdmin;
     private String roleDescription;
-	private List<UserPermission> permissions;
+    private List<UserPermission> permissions;
+    private List<OrganizationRole> roles;
 
-    public User(ApiUser user, Optional<CurrentOrganizationRoles> orgwrapper, boolean isAdmin) {
+
+    public User(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin) {
         this.wrapped = user;
-        this.org = orgwrapper.map(CurrentOrganizationRoles::getOrganization);
+        this.org = orgwrapper.map(OrganizationRoles::getOrganization);
         this.permissions = new ArrayList<>();
-        this.isAdmin = isAdmin;
-        Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(CurrentOrganizationRoles::getEffectiveRole);
+        this.roles = orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of())
+                .stream().collect(Collectors.toList());
+        Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(OrganizationRoles::getEffectiveRole);
         this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
         effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
-    }
-
-    public User(ApiUser user, Optional<Organization> org, boolean isAdmin, Optional<OrganizationRole> role) {
-        this.wrapped = user;
-        this.org = org;
         this.isAdmin = isAdmin;
-        this.permissions = new ArrayList<>();
-        role.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
-        this.roleDescription = buildRoleDescription(role, isAdmin);
-
     }
 
     private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
@@ -86,5 +82,9 @@ public class User {
 
     public String getRoleDescription() {
         return roleDescription;
+    }
+
+    public List<OrganizationRole> getRoles() {
+        return roles;
     }
 }

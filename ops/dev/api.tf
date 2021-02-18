@@ -11,6 +11,7 @@ module "simple_report_api" {
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
   key_vault_id     = data.azurerm_key_vault.sr_global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
+  https_only       = true
 
   app_settings = {
     SPRING_PROFILES_ACTIVE                         = "azure-dev"

@@ -3,9 +3,8 @@ package gov.cdc.usds.simplereport.api.apiuser;
 import java.util.Optional;
 
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -32,14 +31,13 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String lastName,
             String suffix,
             String email,
-            // may want to replace with an Organization object in the future
             String organizationExternalID
                 ) {
         _us.assertEmailAvailable(email);
         ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultRole());
+        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
+        Boolean isAdmin = _us.isAdmin(apiUser);
+        return new User(apiUser, orgRoles, isAdmin);
     }
 
     public User updateUser(
@@ -55,13 +53,9 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             _us.assertEmailAvailable(newEmail);
         }
         ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultRole());
-    }
-
-    private Optional<OrganizationRole> getDefaultRole() {
-        return Optional.of(OrganizationRole.USER);
+        Optional<OrganizationRoles> orgRoles = _os.getOrganizationRolesForUser(apiUser);
+        Boolean isAdmin = _us.isAdmin(apiUser);
+        return new User(apiUser, orgRoles, isAdmin);
     }
 }
 
