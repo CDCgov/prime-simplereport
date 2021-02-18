@@ -663,7 +663,13 @@ const PatientForm = (props: Props) => {
             )}
           </FormGroup>
         )}
-        <div className={props.isPxpView ? "mobile-lg:display-flex flex-justify-end margin-top-2" : "prime-edit-patient-heading"}>
+        <div
+          className={
+            props.isPxpView
+              ? "mobile-lg:display-flex flex-justify-end margin-top-2"
+              : "prime-edit-patient-heading"
+          }
+        >
           <Button
             className={props.isPxpView ? "" : "prime-save-patient-changes"}
             disabled={!formChanged}
