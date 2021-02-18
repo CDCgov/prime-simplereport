@@ -11,7 +11,7 @@ simple-report:
   demo-users:
     default-user:
       identity:
-        username: bob@bobby.bob
+        username: bob@sample.com
         first-name: Bob
         last-name: Bobberoo
       authorization:

@@ -1192,3 +1192,21 @@ databaseChangeLog:
                   name: refreshed_at
                   type: DATETIME
                   remarks: The timestamp for the most recent refresh of this entity.
+  - changeSet:
+      id: add-is-deleted-to-api-user
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Add soft deletion flag and auditing columns to API users table
+      changes:
+        - addColumn:
+            tableName: api_user
+            # while we would love to use the proper (non-nullable) reference column below, there are 
+            # already records in this table and we cannot add default values to the existing reference 
+            # column without recreating it entirely
+            columns:
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  remarks: Flag for soft-deletion of entities (false unless the entity has been deleted).
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

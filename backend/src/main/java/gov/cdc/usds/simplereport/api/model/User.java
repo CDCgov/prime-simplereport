@@ -15,8 +15,8 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 public class User {
 
     private ApiUser wrapped;
-	private Optional<Organization> org;
-	private Boolean isAdmin;
+    private Optional<Organization> org;
+    private Boolean isAdmin;
     private String roleDescription;
     private List<UserPermission> permissions;
     private List<OrganizationRole> roles;
@@ -43,42 +43,42 @@ public class User {
         }
     }
 
-	public String getId() {
+    public String getId() {
         return wrapped.getInternalId().toString();
-	}
+    }
 
-	public Optional<Organization> getOrganization() {
-		return org;
-	}
+    public Optional<Organization> getOrganization() {
+        return org;
+    }
 
-	public String getFirstName() {
+    public String getFirstName() {
         return wrapped.getNameInfo().getFirstName();
-	}
+    }
 
-	public String getMiddleName() {
+    public String getMiddleName() {
         return wrapped.getNameInfo().getMiddleName();
-	}
+    }
 
-	public String getLastName() {
+    public String getLastName() {
         return wrapped.getNameInfo().getLastName();
-	}
+    }
 
-	public String getSuffix() {
+    public String getSuffix() {
         return wrapped.getNameInfo().getSuffix();
-	}
+    }
 
     // Note: we assume a user's email and login username are the same thing.
-	public String getEmail() {
+    public String getEmail() {
         return wrapped.getLoginEmail();
-	}
+    }
 
-	public Boolean getIsAdmin() {
-		return isAdmin;
-	}
+    public Boolean getIsAdmin() {
+        return isAdmin;
+    }
 
-	public List<UserPermission> getPermissions() {
-		return permissions;
-	}
+    public List<UserPermission> getPermissions() {
+        return permissions;
+    }
 
     public String getRoleDescription() {
         return roleDescription;

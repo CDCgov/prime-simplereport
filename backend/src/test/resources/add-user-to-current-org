@@ -1,18 +1,16 @@
-mutation addUser(
+mutation addUserToCurrentOrg(
     $firstName: String,
     $middleName: String,
     $lastName: String!,
     $suffix: String,
     $email: String!,
-    $organizationExternalId: String!,
     ){
-  addUser(
+  addUserToCurrentOrg(
     firstName: $firstName
     middleName: $middleName
     lastName: $lastName
     suffix: $suffix
     email: $email
-    organizationExternalId: $organizationExternalId
   ) {
       id,
       firstName,

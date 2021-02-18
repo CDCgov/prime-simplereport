@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConstructorBinding;
  * The durable (and non-deletable) representation of a POC test device model.
  */
 @Entity
-public class DeviceType extends EternalEntity {
+public class DeviceType extends EternalAuditedEntity {
 
     @Column(nullable = false)
     private String name;
