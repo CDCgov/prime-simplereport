@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Collections;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,22 +25,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.service.OktaService;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.group.Group;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
@@ -52,94 +43,78 @@ public abstract class BaseApiTest {
     private DbTruncator _truncator;
     @Autowired
     protected OrganizationInitializingService _initService;
-
+    @Autowired
+    protected DemoOktaRepository _oktaRepo;
     @Autowired
     protected GraphQLTestTemplate _template; // screw delegation
-
-    @Autowired
-    protected AuthorizationProperties _authorizationProperties;
-    @Autowired
-    private OktaClientProperties _oktaClientProperties;
-
     @MockBean
     protected AuthorizationService _authService;
     @MockBean
     protected IdentitySupplier _supplier;
-    @MockBean
-    protected OktaService _oktaService;
 
-    protected Client _oktaClient;
-
-    private static final List<OrganizationRoles> USER_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER)));
-    private static final List<OrganizationRoles> ADMIN_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoleClaims> OUTSIDE_USER_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoleClaims> ADMIN_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ADMIN)));
-    private static final List<OrganizationRoles> ENTRY_ONLY_ORG_ROLES = 
-            Collections.singletonList(new OrganizationRoles("DIS_ORG", Set.of(OrganizationRole.USER,
+    private static final List<OrganizationRoleClaims> OUTSIDE_ADMIN_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER,
+                                                                              OrganizationRole.ADMIN)));
+    private static final List<OrganizationRoleClaims> ENTRY_ONLY_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ENTRY_ONLY)));
 
     protected void truncateDb() {
         _truncator.truncateAll();
     }
 
-    public void initOkta() {
-        _oktaClient = Clients.builder()
-                .setOrgUrl(_oktaClientProperties.getOrgUrl())
-                .setClientCredentials(new TokenClientCredentials(_oktaClientProperties.getToken()))
-                .build();
-        clearOktaUsers();
-        clearOktaGroups();
-    }
-
-    // Override this in any derived Test class that creates Okta users
-    protected Set<String> getOktaTestUsernames() {
-        return new HashSet<String>();
-    }
-    
-    protected void clearOktaUsers() {
-        for (User u : _oktaClient.listUsers()) {
-            if (getOktaTestUsernames().contains(u.getProfile().getLogin())) {
-                u.deactivate();
-                u.delete();
-            }
-        }
-    }
-
-    protected void clearOktaGroups() {
-        for (Group g : _oktaClient.listGroups()) {
-            String groupName = g.getProfile().getName();
-            if (groupName.startsWith(_authorizationProperties.getRolePrefix())) {
-                g.delete();
-            }
-        }
-    }
-
     protected void useOrgUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
+        _initService.initAuditor();
+    }
+
+    protected void useOutsideOrgUser() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org user");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
+        _initService.initAuditor();
+    }
+
+    protected void useOutsideOrgAdmin() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useOrgEntryOnly() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org entry-only");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useSuperUser() {
-        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for super user");
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+        _initService.initAuditor();
     }
 
     protected void setRoles(Set<OrganizationRole> roles) {
-        List<OrganizationRoles> orgRoles;
+        List<OrganizationRoleClaims> orgRoles;
         if (roles != null && !roles.isEmpty()) {
-            orgRoles = Collections.singletonList(new OrganizationRoles("DIS_ORG", roles));
+            orgRoles = Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", roles));
         } else {
             orgRoles = Collections.emptyList();
         }
@@ -149,16 +124,15 @@ public abstract class BaseApiTest {
     @BeforeEach
     public void setup() {
         truncateDb();
+        _oktaRepo.reset();
         useOrgUser();
-        initOkta();
         _initService.initAll();
     }
 
     @AfterEach
     public void cleanup() {
         truncateDb();
-        clearOktaUsers();
-        clearOktaGroups();
+        _oktaRepo.reset();
     }
 
     /**
@@ -180,6 +154,15 @@ public abstract class BaseApiTest {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Run the query in the given resource file, check if the response has the
+     * expected error (either none or a single specific error message), and return
+     * the {@code data} section of the response if the error was as expected.
+     */
+    protected ObjectNode runQuery(String queryFileName, String expectedError) {
+        return runQuery(queryFileName, null, expectedError);
     }
 
     /**

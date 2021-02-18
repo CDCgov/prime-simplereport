@@ -1214,11 +1214,12 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
       </fieldset>
     </div>
     <div
-      className="mobile-lg:display-flex flex-justify-end margin-top-2 prime-edit-patient-heading"
+      className="mobile-lg:display-flex flex-justify-end margin-top-2"
     >
       <button
-        className="usa-button usa-button-disabled prime-save-patient-changes"
+        className="usa-button usa-button-disabled"
         disabled={true}
+        id="edit-patient-save-lower"
         onClick={[Function]}
         type="button"
       >

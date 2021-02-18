@@ -6,7 +6,7 @@ function addPatient() {
   // Generate a random patient
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
-  const fullName = `${firstName} ${lastName}`;
+  const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.past(100)).format('YYYY-MM-DD');
   const phone = faker.phone.phoneNumber();
   const address = faker.address.streetAddress();

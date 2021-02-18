@@ -1,0 +1,166 @@
+import { render, waitFor } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
+import TestQueue, { queueQuery } from "./TestQueue";
+import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
+
+jest.mock("@microsoft/applicationinsights-react-js", () => {
+  return {
+    useAppInsightsContext: jest.fn(),
+    useTrackEvent: jest.fn(),
+  };
+});
+
+describe("TestQueue", () => {
+  it("should render the test queue", async () => {
+    const { container, getByText, getByLabelText } = render(
+      <MockedProvider mocks={mocks}>
+        <TestQueue activeFacilityId="a1" />
+      </MockedProvider>
+    );
+
+    await waitFor(() => getByLabelText("Search"));
+    await waitFor(() => new Promise((res) => setTimeout(res, 0)));
+
+    expect(getByText("Doe, John A")).toBeInTheDocument();
+    expect(getByText("Smith, Jane")).toBeInTheDocument();
+    expect(container).toMatchSnapshot();
+  });
+});
+
+const internalId = "f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554";
+
+const symptoms = JSON.stringify({
+  "64531003": "false",
+  "103001002": "false",
+  "84229001": "false",
+  "68235000": "false",
+  "426000000": "false",
+  "49727002": "false",
+  "68962001": "false",
+  "422587007": "false",
+  "267036007": "false",
+  "62315008": "false",
+  "43724002": "false",
+  "36955009": "false",
+  "44169009": "false",
+  "422400008": "false",
+  "230145002": "false",
+  "25064002": "false",
+  "162397003": "false",
+});
+
+const createPatient = ({
+  first,
+  middle,
+  last,
+  birthDate,
+  resultId,
+}: {
+  first: string;
+  middle: string | null;
+  last: string;
+  birthDate: string;
+  resultId: string;
+}) => ({
+  internalId: resultId,
+  pregnancy: null,
+  dateAdded: "2021-02-11 20:53:51.337",
+  symptoms,
+  symptomOnset: null,
+  noSymptoms: false,
+  firstTest: false,
+  priorTestDate: null,
+  priorTestType: null,
+  priorTestResult: "",
+  deviceType: {
+    internalId,
+    name: "LumiraDX",
+    __typename: "DeviceType",
+  },
+  patient: {
+    internalId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+    telephone: "1234567890",
+    birthDate,
+    firstName: first,
+    middleName: middle,
+    lastName: last,
+    gender: "female",
+    __typename: "Patient",
+  },
+  result: "",
+  dateTested: null,
+  patientLink: {
+    internalId: "7df95d14-c9ca-406e-bed7-85da05d5eea1",
+    __typename: "PatientLink",
+  },
+  __typename: "TestOrder",
+});
+
+// Mock data taken from network request tab in Chrome devtools
+const result = {
+  data: {
+    queue: [
+      createPatient({
+        first: "John",
+        middle: "A",
+        last: "Doe",
+        birthDate: "1996-06-19",
+        resultId: "abc",
+      }),
+      createPatient({
+        first: "Jane",
+        middle: null,
+        last: "Smith",
+        birthDate: "2021-02-01",
+        resultId: "def",
+      }),
+    ],
+    organization: {
+      testingFacility: [
+        {
+          id: "a1",
+          deviceTypes: [
+            {
+              internalId,
+              name: "LumiraDX",
+              __typename: "DeviceType",
+            },
+            {
+              internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+              name: "Quidel Sofia 2",
+              __typename: "DeviceType",
+            },
+          ],
+          defaultDeviceType: {
+            internalId,
+            name: "LumiraDX",
+            __typename: "DeviceType",
+          },
+          __typename: "Facility",
+        },
+      ],
+      __typename: "Organization",
+    },
+  },
+};
+
+const mocks = [
+  {
+    request: {
+      query: queueQuery,
+      variables: {
+        facilityId: "a1",
+      },
+    },
+    result,
+  },
+  {
+    request: {
+      query: QUERY_PATIENT,
+      variables: {
+        facilityId: "a1",
+      },
+    },
+    result: {},
+  },
+];

@@ -2,10 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import java.util.Set;
-import java.util.HashSet;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
 
@@ -14,22 +11,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
-import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
-import com.okta.sdk.resource.user.User;
-import com.okta.sdk.resource.group.Group;
-import com.okta.sdk.resource.group.GroupType;
-
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
-
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web
@@ -46,7 +32,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 })
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser
-@EnableConfigurationProperties({OktaClientProperties.class, AuthorizationProperties.class})
 public abstract class BaseServiceTest<T> {
 
     @Autowired
@@ -54,69 +39,34 @@ public abstract class BaseServiceTest<T> {
     @Autowired
     private OrganizationInitializingService _initService;
     @Autowired
+    private DemoOktaRepository _oktaRepo;
+    @Autowired
     protected TestDataFactory _dataFactory;
     @Autowired
     protected T _service;
-    @Autowired
-    protected AuthorizationProperties _authorizationProperties;
-    @Autowired
-    private OktaClientProperties _oktaClientProperties;
-
-    protected Client _oktaClient;
 
     private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
     @BeforeEach
     protected void before() {
         clearDb();
-        initOkta();
+        resetOkta();
     }
 
     public void clearDb() {
         _truncator.truncateAll();
     }
 
-    public void initOkta() {
-        _oktaClient = Clients.builder()
-                .setOrgUrl(_oktaClientProperties.getOrgUrl())
-                .setClientCredentials(new TokenClientCredentials(_oktaClientProperties.getToken()))
-                .build();
-        clearOktaUsers();
-        clearOktaGroups();
-    }
-
-    @AfterEach
-    protected void after() {
-        clearOktaUsers();
-        clearOktaGroups();
-    }
-
-    protected void clearOktaUsers() {
-        for (User u : _oktaClient.listUsers()) {
-            if (getOktaTestUsernames().contains(u.getProfile().getLogin())) {
-                u.deactivate();
-                u.delete();
-            }
-        }
-    }
-
-    // Override this in any derived Test class that creates Okta users
-    protected Set<String> getOktaTestUsernames() {
-        return new HashSet<String>();
-    }
-
-    protected void clearOktaGroups() {
-        for (Group g : _oktaClient.listGroups()) {
-            String groupName = g.getProfile().getName();
-            if (g.getType() == GroupType.OKTA_GROUP &&
-                        groupName.startsWith(_authorizationProperties.getRolePrefix())) {
-                g.delete();
-            }
-        }
+    public void resetOkta() {
+        _oktaRepo.reset();
     }
 
     protected void initSampleData() {
         _initService.initAll();
+    }
+
+    protected void initAuditor() {
+        _initService.initAuditor();
     }
 
     protected void reset() {

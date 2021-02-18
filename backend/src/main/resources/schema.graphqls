@@ -16,11 +16,18 @@ enum UserPermission {
   EDIT_PATIENT
   EDIT_FACILITY
   EDIT_ORGANIZATION
+  MANAGE_USERS
   SEARCH_PATIENTS
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
   EXPORT_TEST_EVENT
+}
+
+enum OrganizationRole {
+  ENTRY_ONLY
+  USER
+  ADMIN
 }
 
 enum TestCorrectionStatus {
@@ -164,6 +171,7 @@ type User {
   roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization
+  roles: [OrganizationRole!]
 }
 
 type PatientLink {
@@ -182,6 +190,7 @@ type Query {
   queue(facilityId: String!): [TestOrder]
   testResults(facilityId: String!, newerThanDate: DateTime): [TestResult]
   testResult(id: String!): TestResult
+  users: [User]
   whoami: User!
   patientLinkCurrent(internalId: String!): Organization
   patientLinkVerify(internalId: String!, birthDate: LocalDate!): Patient
@@ -278,14 +287,28 @@ type Mutation {
     email: String!
     organizationExternalId: String!
   ): User
-  updateUser(
+  addUserToCurrentOrg(
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
-    newEmail: String!
-    # oldEmail serves as the unique identifier for the user to be updated
-    oldEmail: String!
+    email: String!
+  ): User
+  updateUser(
+    id: ID!
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+  ): User
+  updateUserRole(
+    id: ID!
+    role: OrganizationRole!
+  ): OrganizationRole
+  setUserIsDeleted(
+    id: ID!, 
+    deleted: Boolean!
   ): User
   addPatient(
     facilityId: String

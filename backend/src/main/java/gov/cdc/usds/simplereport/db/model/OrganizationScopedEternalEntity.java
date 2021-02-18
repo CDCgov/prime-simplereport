@@ -7,25 +7,25 @@ import javax.persistence.MappedSuperclass;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @MappedSuperclass
-public abstract class OrganizationScopedEternalEntity extends EternalEntity
-		implements OrganizationScoped {
+public abstract class OrganizationScopedEternalEntity extends EternalAuditedEntity
+        implements OrganizationScoped {
 
-	@ManyToOne(optional = false)
-	@JoinColumn(name = "organization_id", updatable = false)
-	@JsonIgnore
-	private Organization organization;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "organization_id", updatable = false)
+    @JsonIgnore
+    private Organization organization;
 
     protected OrganizationScopedEternalEntity() {
-		super();
-	}
+        super();
+    }
 
     protected OrganizationScopedEternalEntity(Organization org) {
-		organization = org;
-	}
+        organization = org;
+    }
 
-	@Override
-	public Organization getOrganization() {
-		return organization;
-	}
+    @Override
+    public Organization getOrganization() {
+        return organization;
+    }
 
 }

@@ -297,8 +297,7 @@ const PatientForm = (props: Props) => {
             toast,
             <Alert
               type="success"
-              title={`${PATIENT_TERM_CAP} Record Saved`}
-              body="Information record has been updated."
+              title={`Your profile changes have been saved`}
             />
           );
           const updatedPatientFromApi = res.data.patientLinkUpdatePatient;
@@ -663,9 +662,16 @@ const PatientForm = (props: Props) => {
             )}
           </FormGroup>
         )}
-        <div className="mobile-lg:display-flex flex-justify-end margin-top-2 prime-edit-patient-heading">
+        <div
+          className={
+            props.isPxpView
+              ? "mobile-lg:display-flex flex-justify-end margin-top-2"
+              : "prime-edit-patient-heading"
+          }
+        >
           <Button
-            className={"prime-save-patient-changes"}
+            id="edit-patient-save-lower"
+            className={props.isPxpView ? "" : "prime-save-patient-changes"}
             disabled={!formChanged}
             onClick={savePatientData}
             label={props.isPxpView ? "Save and continue" : "Save changes"}
