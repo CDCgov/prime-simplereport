@@ -35,4 +35,9 @@ public abstract class BaseRepositoryTest {
     protected void flush() {
         _manager.flush();
     }
+
+    @BeforeEach
+    public void setup() {
+        _initService.initAuditor();
+    }
 }

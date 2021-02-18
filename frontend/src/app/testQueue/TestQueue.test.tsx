@@ -21,8 +21,8 @@ describe("TestQueue", () => {
     await waitFor(() => getByLabelText("Search"));
     await waitFor(() => new Promise((res) => setTimeout(res, 0)));
 
-    expect(getByText("John A Doe")).toBeInTheDocument();
-    expect(getByText("Jane Smith")).toBeInTheDocument();
+    expect(getByText("Doe, John A")).toBeInTheDocument();
+    expect(getByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });
 });

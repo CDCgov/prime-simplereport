@@ -47,7 +47,7 @@ describe("TestResultsList", () => {
       <DetachedTestResultsList data={{ testResults }} />
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
-    expect(getByText("Cheez Whizzz")).toBeInTheDocument();
+    expect(getByText("Whizzz, Cheez")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });
 });

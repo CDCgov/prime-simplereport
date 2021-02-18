@@ -92,7 +92,6 @@ public abstract class BaseApiTest {
     }
 
     protected void useOutsideOrgAdmin() {
-        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
         _initService.initCurrentUser();

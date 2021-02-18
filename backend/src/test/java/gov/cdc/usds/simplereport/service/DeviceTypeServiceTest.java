@@ -19,6 +19,11 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     @Autowired
     private DeviceTypeRepository _deviceTypeRepo;
 
+    @BeforeEach
+    void setupData() {
+        initAuditor();
+    }
+
     @Test
     void fetchDeviceTypes() {
         _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
