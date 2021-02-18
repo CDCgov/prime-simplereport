@@ -97,11 +97,10 @@ public class LiveOktaRepository implements OktaRepository {
         }
         Group group = groups.single();
 
-        User user = UserBuilder.instance()
+        UserBuilder.instance()
                 .setProfileProperties(userProfileMap)
                 .setGroups(group.getId())
                 .buildAndCreate(_client);
-        user.activate(true);
     }
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
@@ -186,9 +185,9 @@ public class LiveOktaRepository implements OktaRepository {
         }
         User user = users.single();
         if (active) {
-            user.reactivate(true);
+            user.unsuspend();
         } else {
-            user.deactivate();
+            user.suspend();
         }
     }
 
