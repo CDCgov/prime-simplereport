@@ -44,25 +44,19 @@ public class UserAuthorizationVerifier {
     }
 
     public boolean userHasSiteAdminRole() {
+        isValidUser();
         IdentityAttributes id = _supplier.get();
-        if (id == null) {
-            return false;
-        }
-        getUser(id.getUsername());
-        return _admins.contains(id.getUsername());
+        return id != null && _admins.contains(id.getUsername());
     }
 
     public boolean userHasPermission(UserPermission permission) {
-        IdentityAttributes id = _supplier.get();
-        if (id == null) {
-            return false;
-        }
-        getUser(id.getUsername());
+        isValidUser();
         Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
         return orgRoles.isPresent() && orgRoles.get().getGrantedPermissions().contains(permission);
     }
 
     public boolean userIsInSameOrg(UUID userId) {
+        isValidUser();
         Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
         String otherUserEmail = getUser(userId).getLoginEmail();
         Optional<Organization> otherOrg = _oktaRepo.getOrganizationRoleClaimsForUser(otherUserEmail)
@@ -72,20 +66,22 @@ public class UserAuthorizationVerifier {
                 : false;
     }
 
+    private void isValidUser() {
+        IdentityAttributes id = _supplier.get();
+        if (id == null) {
+            throw new NonexistentUserException();
+        }
+        Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
+        if (!found.isPresent()) {
+            throw new NonexistentUserException();
+        }
+    }
+
     // This replicates getUser() in ApiUserService.java, but we cannot call that logic directly or else that method
     // would have to either a) become public with no method-level security, which is bad; or b) become public with
     // method-level security that invokes an above method which creates a circular loop with this method.
     private ApiUser getUser(UUID id) {
         Optional<ApiUser> found = _userRepo.findById(id);
-        if (!found.isPresent()) {
-            throw new NonexistentUserException();
-        }
-        ApiUser user = found.get();
-        return user;
-    }
-
-    private ApiUser getUser(String loginEmail) {
-        Optional<ApiUser> found = _userRepo.findByLoginEmail(loginEmail);
         if (!found.isPresent()) {
             throw new NonexistentUserException();
         }
