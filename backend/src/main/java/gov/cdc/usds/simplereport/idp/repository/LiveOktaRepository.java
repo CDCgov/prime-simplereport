@@ -151,9 +151,10 @@ public class LiveOktaRepository implements OktaRepository {
             String groupName = g.getProfile().getName();
             for (OrganizationRole r : OrganizationRole.values()) {
                 if (g.getType().equals(GroupType.OKTA_GROUP) &&
-                            groupName.startsWith(_rolePrefix)) {
+                            groupName.startsWith(_rolePrefix) &&
+                            groupName.endsWith(generateRoleSuffix(r))) {
                     // Remove user from non-USER groups only
-                    if (!groupName.endsWith(generateRoleSuffix(OrganizationRole.USER))) {
+                    if (!r.equals(OrganizationRole.USER)) {
                         g.removeUser(user.getId());
                     }
                     // Keep track of organizations user belongs to
@@ -184,9 +185,9 @@ public class LiveOktaRepository implements OktaRepository {
             throw new IllegalGraphqlArgumentException("Cannot update active status of Okta user with unrecognized username");
         }
         User user = users.single();
-        if (active) {
+        if (active && user.getStatus().equals(UserStatus.SUSPENDED)) {
             user.unsuspend();
-        } else {
+        } else if (!active && !user.getStatus().equals(UserStatus.SUSPENDED)) {
             user.suspend();
         }
     }
