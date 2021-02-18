@@ -90,7 +90,7 @@ public class UploadService {
             rowNumber++;
             try {
                 _ps.addPatient(
-                    parseUUID(row.get(FACILITY_ID)),    // todo: verify this is a facility in the current Org.
+                    parseUUID(row.get(FACILITY_ID)),
                     null, // lookupID. this field is deprecated
                     parseString(row.get("FirstName")),
                     parseString(row.get("MiddleName")),
