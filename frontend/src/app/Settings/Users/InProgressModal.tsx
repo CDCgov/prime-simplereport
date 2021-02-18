@@ -18,9 +18,9 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
           overflow: "auto",
           height: "25%",
           maxHeight: "100vh",
-          width: "50%",
+          width: "40%",
           minWidth: "20em",
-          transform: "translate(50%, 125%)",
+          transform: "translate(75%, 125%)",
         },
       }}
       overlayClassName="prime-modal-overlay"

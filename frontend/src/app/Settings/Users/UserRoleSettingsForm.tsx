@@ -2,24 +2,24 @@ import React from "react";
 
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { SettingsUser } from "./ManageUsersContainer";
-import { UserRole } from "../../permissions";
+import { RoleDescription } from "../../permissions";
 
 interface RoleButton {
-  value: UserRole;
+  value: RoleDescription;
   label: string;
 }
 
 const ROLES: RoleButton[] = [
   {
-    value: "admin",
+    value: "Admin user",
     label: "Admin",
   },
   {
-    value: "user",
+    value: "Standard user",
     label: "User",
   },
   {
-    value: "entry-only",
+    value: "Test-entry user",
     label: "Entry Only",
   },
 ];
@@ -27,7 +27,11 @@ const ROLES: RoleButton[] = [
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
   loggedInUser: User; // the user doing the editing
-  onUpdateUser<UserRole>(userId: string, key: string, value: UserRole): void;
+  onUpdateUser<RoleDescription>(
+    userId: string,
+    key: string,
+    value: RoleDescription
+  ): void;
 }
 
 const UserRoleSettingsForm: React.FC<Props> = ({
@@ -38,7 +42,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   const updateRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const role = e.target.value as UserRole;
+    const role = e.target.value as RoleDescription;
     onUpdateUser(activeUser.id, e.target.name, role);
   };
 
@@ -47,9 +51,9 @@ const UserRoleSettingsForm: React.FC<Props> = ({
       <RadioGroup
         legend="Roles"
         legendSrOnly
-        name="role"
+        name="roleDescription"
         buttons={ROLES}
-        selectedRadio={activeUser.role}
+        selectedRadio={activeUser.roleDescription}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRole(e)}
         disabled={activeUser.id === loggedInUser.id}
       />

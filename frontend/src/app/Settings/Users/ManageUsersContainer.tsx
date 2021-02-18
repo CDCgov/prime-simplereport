@@ -21,8 +21,10 @@ const GET_USERS = gql`
 
 export interface SettingsUser {
   id: string;
-  name: string;
-  role: UserRole;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  roleDescription: UserRole;
   email: string;
   isAdmin: boolean;
   facilities?: UserFacilitySetting[]; // TODO: update this when the graphql query is defined. Should just be the facility id and name.
@@ -121,24 +123,19 @@ const ManageUsersContainer: any = () => {
   });
 
   if (loading) {
-    console.log("loading");
     return <p> Loading... </p>;
   }
   if (error) {
-    console.log(error);
     return error;
   }
 
   if (data === undefined) {
-    console.log("users:", data);
     return <p>Error: Users not found</p>;
-  } else {
-    console.log("data", data);
   }
 
   return (
     <ManageUsers
-      users={dummyUsers}
+      users={data.users}
       loggedInUser={loggedInUser}
       onUpdateUser={updateUser}
       allFacilities={allFacilities}

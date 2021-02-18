@@ -70,7 +70,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   const facilityAccessDescription =
     !activeUser.facilities || activeUser.facilities.length === 0
       ? "This user currently does not have access to any facilities"
-      : activeUser.role === "admin"
+      : activeUser.roleDescription === "admin"
       ? "Admins have access to all facilities"
       : null;
 

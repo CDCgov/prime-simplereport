@@ -14,7 +14,7 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import { showNotification } from "../../utils";
+import { showNotification, displayFullName } from "../../utils";
 
 import "./ManageUsers.scss";
 
@@ -75,11 +75,19 @@ const ManageUsers: React.FC<Props> = ({
     onUpdateUser(usersState[userId]); // TODO this does nothing atm
     updateIsUserEdited(false);
 
+    const user = usersState[userId];
+
+    const fullName = displayFullName(
+      user.firstName,
+      user.middleName,
+      user.lastName
+    );
+
     let successAlert = (
       <Alert
         type="success"
         title="Changes Saved"
-        body={`${usersState[userId].name}'s settings have been saved`}
+        body={`${fullName}'s settings have been saved`}
       />
     );
 
@@ -115,7 +123,9 @@ const ManageUsers: React.FC<Props> = ({
             activeUserId === user.id && "usa-current"
           )}
         >
-          <span className="sidenav-user-name">{user.name}</span>
+          <span className="sidenav-user-name">
+            {displayFullName(user.firstName, user.middleName, user.lastName)}
+          </span>
           <br />
           <span className="sidenav-user-email">{user.email}</span>
         </div>
@@ -145,83 +155,98 @@ const ManageUsers: React.FC<Props> = ({
           />
         ) : null}
       </div>
-      <div className="usa-card__body">
-        <div className="grid-row">
-          <div className="display-block users-sidenav">
-            <h3>Users</h3>
-            <ul className="usa-sidenav">{sideNavItems}</ul>
-          </div>
-          <div className="tablet:grid-col">
-            <div className="user-header">
-              <h2 className="display-inline-block margin-top-2 margin-bottom-105">
-                {activeUser.name}
-              </h2>
-              {activeUser.id === loggedInUser.id ? (
-                <span className="usa-tag margin-left-1">YOU</span>
-              ) : null}
+      {!activeUser ? (
+        <div className="usa-card__body">
+          <p> There are no users in this organization </p>
+        </div>
+      ) : (
+        <div className="usa-card__body">
+          <div className="grid-row">
+            <div className="display-block users-sidenav">
+              <h3>Users</h3>
+              <ul className="usa-sidenav">{sideNavItems}</ul>
             </div>
-            <div className="user-content">
-              <p>
-                Permissions to manage settings and users are limited to admins
-                only
-              </p>
-              <UserRoleSettingsForm
-                activeUser={activeUser}
-                loggedInUser={loggedInUser}
-                onUpdateUser={updateUser}
-              />
 
-              {process.env.REACT_APP_USER_FACILITIES_SETTINGS === "true" ? (
-                <UserFacilitiesSettingsForm
+            <div className="tablet:grid-col">
+              <div className="user-header">
+                <h2 className="display-inline-block margin-top-2 margin-bottom-105">
+                  {displayFullName(
+                    activeUser.firstName,
+                    activeUser.middleName,
+                    activeUser.lastName
+                  )}
+                </h2>
+                {activeUser.id === loggedInUser.id ? (
+                  <span className="usa-tag margin-left-1">YOU</span>
+                ) : null}
+              </div>
+              <div className="user-content">
+                <p>
+                  Permissions to manage settings and users are limited to admins
+                  only
+                </p>
+                <UserRoleSettingsForm
                   activeUser={activeUser}
-                  allFacilities={allFacilities}
+                  loggedInUser={loggedInUser}
                   onUpdateUser={updateUser}
                 />
-              ) : null}
-            </div>
-            <div className="usa-card__footer display-flex flex-justify margin-top-5">
-              {process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
+
+                {process.env.REACT_APP_USER_FACILITIES_SETTINGS === "true" ? (
+                  <UserFacilitiesSettingsForm
+                    activeUser={activeUser}
+                    allFacilities={allFacilities}
+                    onUpdateUser={updateUser}
+                  />
+                ) : null}
+              </div>
+              <div className="usa-card__footer display-flex flex-justify margin-top-5">
+                {process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
+                  <Button
+                    variant="outline"
+                    icon="trash"
+                    className="flex-align-self-start display-inline-block"
+                    onClick={() => onDeleteUser(activeUser.id)}
+                    label="+ Remove User"
+                    disabled={loggedInUser.id === activeUser.id}
+                  />
+                ) : null}
                 <Button
-                  variant="outline"
-                  icon="trash"
-                  className="flex-align-self-start display-inline-block"
-                  onClick={() => onDeleteUser(activeUser.id)}
-                  label="+ Remove User"
-                  disabled={loggedInUser.id === activeUser.id}
+                  type="button"
+                  onClick={() => onSaveChanges(activeUserId)}
+                  label="Save changes"
+                  disabled={
+                    // enabled only if the user has been edited AND the loggedInUser is an org admin or super admin
+                    !isUserEdited ||
+                    !["Admin user", "Admin user (SU)"].includes(
+                      loggedInUser.roleDescription
+                    )
+                  }
+                />
+              </div>
+
+              {showInProgressModal ? (
+                <InProgressModal
+                  onClose={() => updateShowInProgressModal(false)}
+                  onContinue={() => onContinueChangeActiveUser(activeUserId)}
                 />
               ) : null}
-              <Button
-                type="button"
-                onClick={() => onSaveChanges(activeUserId)}
-                label="Save changes"
-                disabled={
-                  loggedInUser.roleDescription !== "Admin user" || !isUserEdited
-                }
-              />
+              {isUserEdited ? (
+                <Prompt
+                  when={isUserEdited}
+                  message="You have unsaved changes. Do you want to continue?"
+                />
+              ) : null}
+              {showAddUserModal &&
+              process.env.REACT_APP_ADD_NEW_USER_SETTINGS === "true" ? (
+                <CreateUserModal
+                  onClose={() => updateShowAddUserModal(false)}
+                  onSubmit={onCreateNewUser}
+                />
+              ) : null}
             </div>
-
-            {showInProgressModal ? (
-              <InProgressModal
-                onClose={() => updateShowInProgressModal(false)}
-                onContinue={() => onContinueChangeActiveUser(activeUserId)}
-              />
-            ) : null}
-            {isUserEdited ? (
-              <Prompt
-                when={isUserEdited}
-                message="You have unsaved changes. Do you want to continue?"
-              />
-            ) : null}
-            {showAddUserModal &&
-            process.env.REACT_APP_ADD_NEW_USER_SETTINGS === "true" ? (
-              <CreateUserModal
-                onClose={() => updateShowAddUserModal(false)}
-                onSubmit={onCreateNewUser}
-              />
-            ) : null}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
