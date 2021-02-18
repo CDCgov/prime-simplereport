@@ -51,32 +51,34 @@ public class ApiUserService {
         _oktaRepo = oktaRepo;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         return createUserHelper(username, firstName, middleName, lastName, suffix, organizationExternalId);
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public ApiUser createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
         String organizationExternalId = _orgService.getCurrentOrganization().getExternalId();
         return createUserHelper(username, firstName, middleName, lastName, suffix, organizationExternalId);
     }
 
-    @Transactional
     private ApiUser createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
         Organization org = _orgService.getOrganization(organizationExternalId);
         _oktaRepo.createUser(userIdentity, org);
 
-        LOG.info("User with id={} created by user with id={}", 
-                user.getInternalId(),
-                getCurrentUserReadOnly().get().getInternalId());
+        Optional<ApiUser> currentUser = getCurrentUserReadOnly();
+        String currentUserId = currentUser.isPresent() ? getCurrentUserReadOnly().get().getInternalId().toString()
+                                                       : "NULL";
+        LOG.info("User with id={} created by user with id={}", user.getInternalId(), currentUserId);
 
         return user;
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     public ApiUser updateUser(UUID userId, 
                               String username, 
@@ -97,10 +99,11 @@ public class ApiUserService {
 
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         _oktaRepo.updateUser(oldUsername, userIdentity);
-
-        LOG.info("User with id={} updated by user with id={}", 
-                user.getInternalId(),
-                getCurrentUserReadOnly().get().getInternalId());
+        
+        Optional<ApiUser> currentUser = getCurrentUserReadOnly();
+        String currentUserId = currentUser.isPresent() ? getCurrentUserReadOnly().get().getInternalId().toString()
+                                                       : "NULL";
+        LOG.info("User with id={} updated by user with id={}", user.getInternalId(), currentUserId);
 
         return user;
     }
@@ -121,7 +124,6 @@ public class ApiUserService {
         return _apiUserRepo.save(user);
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     private ApiUser getUser(UUID id) {
         Optional<ApiUser> found = _apiUserRepo.findById(id);
         if (!found.isPresent()) {

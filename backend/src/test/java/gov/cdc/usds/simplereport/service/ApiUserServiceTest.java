@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -70,15 +69,17 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         List<String> userUsernames = _service.getUsersInCurrentOrg(OrganizationRole.USER).stream()
                 .map(u->u.getLoginEmail()).collect(Collectors.toList());
         Collections.sort(userUsernames);
-        assertEquals(userUsernames.size(), 3);
+        assertEquals(userUsernames.size(), 4);
         assertEquals(userUsernames.get(0), "ben@sample.com");
-        assertEquals(userUsernames.get(1), "jamar@sample.com");
-        assertEquals(userUsernames.get(2), "sarah@sample.com");
+        assertEquals(userUsernames.get(1), "bob@sample.com");
+        assertEquals(userUsernames.get(2), "jamar@sample.com");
+        assertEquals(userUsernames.get(3), "sarah@sample.com");
         
         List<String> adminUsernames = _service.getUsersInCurrentOrg(OrganizationRole.ADMIN).stream()
                 .map(u->u.getLoginEmail()).collect(Collectors.toList());
-        assertEquals(adminUsernames.size(), 1);
-        assertEquals(adminUsernames.get(0), "sarah@sample.com");
+        assertEquals(adminUsernames.size(), 2);
+        assertEquals(adminUsernames.get(0), "bob@sample.com");
+        assertEquals(adminUsernames.get(1), "sarah@sample.com");
         
         List<String> entryUsernames = _service.getUsersInCurrentOrg(OrganizationRole.ENTRY_ONLY).stream()
                 .map(u->u.getLoginEmail()).collect(Collectors.toList());

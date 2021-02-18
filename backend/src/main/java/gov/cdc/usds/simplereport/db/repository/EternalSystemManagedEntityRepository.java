@@ -19,15 +19,15 @@ import gov.cdc.usds.simplereport.db.model.EternalSystemManagedEntity;
 @NoRepositoryBean
 public interface EternalSystemManagedEntityRepository<T extends EternalSystemManagedEntity> extends CrudRepository<T, UUID> {
 
-	public static final String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false ";
+    public static final String BASE_QUERY = "from #{#entityName} e where e.isDeleted = false ";
 
-	@Override
-	@Query(BASE_QUERY)
-	public List<T> findAll();
+    @Override
+    @Query(BASE_QUERY)
+    public List<T> findAll();
 
-	@Override
-	@Modifying// (flushAutomatically = true) // probably not? It's not clear when this would arise actually
-	@Query("update #{#entityName} e set e.isDeleted = true where e = :victim")
-	public void delete(T victim);
+    @Override
+    @Modifying// (flushAutomatically = true) // probably not? It's not clear when this would arise actually
+    @Query("update #{#entityName} e set e.isDeleted = true where e = :victim")
+    public void delete(T victim);
 
 }

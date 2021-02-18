@@ -1,28 +1,21 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
-import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
