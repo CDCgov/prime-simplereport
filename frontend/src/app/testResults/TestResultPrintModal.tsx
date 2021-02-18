@@ -26,7 +26,6 @@ export const testQuery = gql`
         middleName
         lastName
         birthDate
-        gender
       }
       facility {
         name
@@ -113,10 +112,6 @@ export const DetachedTestResultPrintModal = ({
                 <b>Date of Birth</b>
                 <div>{formatDate(patient.birthDate)}</div>
               </li>
-              <li>
-                <b>Sex</b>
-                <div>{patient.gender}</div>
-              </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-facility-details">
@@ -179,7 +174,9 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>Test Result</b>
-                <div>{data.testResult.result}</div>
+                <div>
+                  <strong>{data.testResult.result}</strong>
+                </div>
               </li>
             </ul>
           </section>
