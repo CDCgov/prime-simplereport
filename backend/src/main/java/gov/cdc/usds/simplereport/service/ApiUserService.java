@@ -71,7 +71,7 @@ public class ApiUserService {
         _oktaRepo.createUser(userIdentity, org);
 
         Optional<ApiUser> currentUser = getCurrentUserReadOnly();
-        String currentUserId = currentUser.isPresent() ? getCurrentUserReadOnly().get().getInternalId().toString()
+        String currentUserId = currentUser.isPresent() ? currentUser.get().getInternalId().toString()
                                                        : "NULL";
         LOG.info("User with id={} created by user with id={}", user.getInternalId(), currentUserId);
 
@@ -101,7 +101,7 @@ public class ApiUserService {
         _oktaRepo.updateUser(oldUsername, userIdentity);
         
         Optional<ApiUser> currentUser = getCurrentUserReadOnly();
-        String currentUserId = currentUser.isPresent() ? getCurrentUserReadOnly().get().getInternalId().toString()
+        String currentUserId = currentUser.isPresent() ? currentUser.get().getInternalId().toString()
                                                        : "NULL";
         LOG.info("User with id={} updated by user with id={}", user.getInternalId(), currentUserId);
 
@@ -159,6 +159,10 @@ public class ApiUserService {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Optional<ApiUser> getCurrentUserForAudit() {
+        return getCurrentUserReadOnly();
+    }
+
     public Optional<ApiUser> getCurrentUserReadOnly() {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
