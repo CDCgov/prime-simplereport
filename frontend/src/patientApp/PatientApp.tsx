@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Redirect,
-  Route,
-  Switch,
-  BrowserRouter as Router,
-} from "react-router-dom";
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "../app/AppInsights";
 
@@ -42,8 +37,6 @@ const PatientApp = () => {
             organization: {
               name: data.organizationName,
             },
-            // facilities: data.patientLinkCurrent.testingFacility,
-            // facility: data.patientLinkCurrent.testingFacility[0],
           })
         );
       })

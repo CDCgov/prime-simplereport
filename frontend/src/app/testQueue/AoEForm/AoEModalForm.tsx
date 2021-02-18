@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import React, { useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
@@ -7,24 +7,57 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
+import { gql, useQuery } from "@apollo/client";
 
-const AoEModalForm = ({
-  saveButtonText = "Continue",
-  onClose,
-  patient,
-  loadState = {},
-  saveCallback,
-  qrCodeValue = `${getUrl()}pxp`,
-  canAddToTestQueue,
-}) => {
-  const [modalView, setModalView] = useState(null);
+interface LastTestData {
+  patient: {
+    lastTest: {
+      dateTested: string;
+      result: string;
+    };
+  };
+}
+
+export const LAST_TEST_QUERY = gql`
+  query GetPatientsLastResult($patientId: String!) {
+    patient(id: $patientId) {
+      lastTest {
+        dateTested
+        result
+      }
+    }
+  }
+`;
+
+interface Props {
+  saveButtonText?: string;
+  onClose: () => void;
+  patient: any;
+  loadState?: any;
+  saveCallback: (a: any) => string | void;
+  qrCodeValue?: string;
+  canAddToTestQueue: boolean;
+}
+
+const AoEModalForm = (props: Props) => {
+  const {
+    saveButtonText = "Continue",
+    onClose,
+    patient,
+    loadState = {},
+    saveCallback,
+    qrCodeValue = `${getUrl()}pxp`,
+    canAddToTestQueue,
+  } = props;
+
+  const [modalView, setModalView] = useState("");
   const [patientLink, setPatientLink] = useState(qrCodeValue);
   const modalViewValues = [
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
 
-  const symptomsResponse = {};
+  const symptomsResponse: { [key: string]: boolean } = {};
   globalSymptomDefinitions.forEach(({ value }) => {
     symptomsResponse[value] = false;
   });
@@ -49,7 +82,7 @@ const AoEModalForm = ({
     }
   };
 
-  const chooseModalView = async (view) => {
+  const chooseModalView = async (view: string) => {
     if (view === "smartphone") {
       const patientLinkId = await saveCallback(patientResponse);
       setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`);
@@ -68,6 +101,15 @@ const AoEModalForm = ({
       /> */}
     </div>
   );
+
+  // TODO: only get most recent test from the backend (old todo from Tim)
+  const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
+    fetchPolicy: "no-cache",
+    variables: { patientId: patient.internalId },
+  });
+  if (loading) return null;
+  if (error) throw error;
+  const mostRecentTest = data?.patient.lastTest;
 
   return (
     <Modal
@@ -120,7 +162,7 @@ const AoEModalForm = ({
                     id="patient-link-qr-code"
                     data-patient-link={patientLink}
                   >
-                    <QRCode value={patientLink} size="190" />
+                    <QRCode value={patientLink} size={190} />
                   </div>
                 </div>
               </section>
@@ -139,7 +181,8 @@ const AoEModalForm = ({
               saveButtonText="Continue"
               onClose={onClose}
               patient={patient}
-              loadState={loadState}
+              mostRecentTest={mostRecentTest}
+              loadState={loadState as any}
               saveCallback={saveCallback}
               isModal={true}
               noValidation={true}
@@ -151,8 +194,9 @@ const AoEModalForm = ({
           saveButtonText="Continue"
           onClose={onClose}
           patient={patient}
-          loadState={loadState}
+          loadState={loadState as any}
           saveCallback={saveCallback}
+          mostRecentTest={mostRecentTest}
           isModal={true}
           noValidation={true}
         />

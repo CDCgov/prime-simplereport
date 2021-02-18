@@ -2,7 +2,16 @@ import renderer, { act } from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
 import MockDate from "mockdate";
 
-import AoEForm, { LAST_TEST_QUERY } from "./AoEForm";
+import AoEModalForm, { LAST_TEST_QUERY } from "./AoEModalForm";
+import ReactDOM from "react-dom";
+
+jest.mock("./AoEForm", () => () => <></>);
+jest.mock("react-modal", () => (data: any) => (
+  <div>
+    {JSON.stringify(data.patient, null, 2)}
+    dummy modal for state test
+  </div>
+));
 
 const mocks = [
   {
@@ -25,14 +34,20 @@ const mocks = [
   },
 ];
 
-describe("AoEForm", () => {
+describe("AoEModalForm", () => {
   let component: renderer.ReactTestRenderer;
+
+  beforeAll(() => {
+    ReactDOM.createPortal = jest.fn((element, node) => {
+      return element;
+    }) as any;
+  });
 
   beforeEach(() => {
     MockDate.set("2021-02-06");
     component = renderer.create(
       <MockedProvider mocks={mocks} addTypename={false}>
-        <AoEForm
+        <AoEModalForm
           saveButtonText="save"
           onClose={jest.fn()}
           patient={{
@@ -49,9 +64,8 @@ describe("AoEForm", () => {
             firstTest: false,
             pregnancy: "",
           }}
+          canAddToTestQueue={true}
           saveCallback={jest.fn()}
-          isModal={false}
-          noValidation={true}
         />
       </MockedProvider>
     );

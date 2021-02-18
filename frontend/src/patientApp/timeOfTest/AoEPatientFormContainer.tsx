@@ -8,6 +8,7 @@ import { gql, useMutation } from "@apollo/client";
 import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
+// TODO: refactor to use REST endpoint
 const PATIENT_LINK_SUBMIT_MUTATION = gql`
   mutation PatientLinkById(
     $plid: String!
@@ -84,6 +85,7 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
         isModal={false}
         saveButtonText="Submit"
         noValidation={false}
+        mostRecentTest={undefined} // TODO: get most recent test result from... somewhere
         saveCallback={saveCallback}
       />
     </PatientTimeOfTestContainer>
