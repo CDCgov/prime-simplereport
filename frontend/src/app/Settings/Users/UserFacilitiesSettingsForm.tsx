@@ -1,3 +1,7 @@
+/*
+  TODO: This is a WIP
+*/
+
 import React, { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -16,6 +20,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   allFacilities,
   onUpdateUser,
 }) => {
+  const currentFacilities = activeUser.organization.testingFacility;
   const [isComponentVisible, setIsComponentVisible] = useState(false);
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
@@ -46,8 +51,8 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     const facilityToAdd = allFacilities.filter(
       (f) => f.id === selectedFacilityId
     )[0];
-    const updatedFacilityList = activeUser.facilities
-      ? [...activeUser.facilities, facilityToAdd]
+    const updatedFacilityList = currentFacilities
+      ? [...currentFacilities, facilityToAdd]
       : [facilityToAdd];
     onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
   };
@@ -56,8 +61,8 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     activeUser: SettingsUser,
     selectedFacilityId: string
   ) => {
-    const updatedFacilityList = activeUser.facilities
-      ? activeUser.facilities.filter((f) => f.id !== selectedFacilityId)
+    const updatedFacilityList = currentFacilities
+      ? currentFacilities.filter((f) => f.id !== selectedFacilityId)
       : [];
     onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
   };
@@ -68,14 +73,14 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   };
 
   const facilityAccessDescription =
-    !activeUser.facilities || activeUser.facilities.length === 0
+    !currentFacilities || currentFacilities.length === 0
       ? "This user currently does not have access to any facilities"
       : activeUser.roleDescription === "admin"
       ? "Admins have access to all facilities"
       : null;
 
-  const userFacilities = activeUser.facilities
-    ? activeUser.facilities.map((facility) => (
+  const userFacilities = currentFacilities
+    ? currentFacilities.map((facility) => (
         <tr key={facility.id}>
           <td>{facility.name}</td>
           <td>
@@ -94,7 +99,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     <tr key={facility.id}>
       <td> {facility.name} </td>
       <td>
-        {!activeUser.facilities?.map((f) => f.id).includes(facility.id) ? (
+        {!currentFacilities?.map((f) => f.id).includes(facility.id) ? (
           <Button
             variant="unstyled"
             label="Select"
@@ -149,8 +154,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         }}
         label="+ Add Facility Access"
         disabled={
-          activeUser.facilities &&
-          activeUser.facilities.length === allFacilities.length
+          currentFacilities && currentFacilities.length === allFacilities.length
         }
       />
       {isComponentVisible ? (

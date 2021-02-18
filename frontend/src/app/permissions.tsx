@@ -11,6 +11,7 @@ export type UserPermission =
 
 export type UserRole = "admin" | "user" | "entry-only";
 
+// this is what the server sends back in the user.roleDescription field
 export type RoleDescription =
   | "Admin user"
   | "Standard user"

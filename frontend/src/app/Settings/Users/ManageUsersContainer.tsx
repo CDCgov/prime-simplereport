@@ -1,10 +1,10 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import ManageUsers from "./ManageUsers";
-import { UserRole } from "../../permissions";
 import { useSelector } from "react-redux";
 
-// TODO this hasn't been implemented yet in the backend
+import ManageUsers from "./ManageUsers";
+import { UserRole } from "../../permissions";
+
 const GET_USERS = gql`
   query GetUsers {
     users {
@@ -15,10 +15,28 @@ const GET_USERS = gql`
       middleName
       lastName
       email
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
     }
   }
 `;
 
+const GET_FACILITIES = gql`
+  query GetFacilities {
+    organization {
+      testingFacility {
+        id
+        name
+      }
+    }
+  }
+`;
+
+// structure for `getUsers` query
 export interface SettingsUser {
   id: string;
   firstName: string;
@@ -27,11 +45,19 @@ export interface SettingsUser {
   roleDescription: UserRole;
   email: string;
   isAdmin: boolean;
-  facilities?: UserFacilitySetting[]; // TODO: update this when the graphql query is defined. Should just be the facility id and name.
+  organization: {
+    testingFacility: UserFacilitySetting[];
+  };
 }
 
 interface UserData {
   users: SettingsUser[];
+}
+
+interface FacilityData {
+  organization: {
+    testingFacility: UserFacilitySetting[];
+  };
 }
 
 export interface UserFacilitySetting {
@@ -46,48 +72,54 @@ export interface NewUserInvite {
   role: UserRole | string;
 }
 
-const dummyUsers = [
-  {
-    id: "111",
-    name: "Peter Parker",
-    role: "admin" as UserRole,
-    isAdmin: true,
-    email: "spiderman-or-deadpool@hero.com",
-    facilities: [
-      { id: "abc", name: "Mountainside Nursing" },
-      { id: "def", name: "Hillside Nursing" },
-      { id: "hij", name: "Lakeside Nursing" },
-      { id: "klm", name: "Oceanside Nursing" },
-      { id: "nop", name: "Desertside Nursing" },
-    ],
-  },
-  {
-    id: "222",
-    name: "Carol Danvers",
-    role: "entry-only" as UserRole,
-    isAdmin: false,
-    email: "marvel@hero.com",
-    facilities: [
-      { id: "def", name: "Hillside Nursing" },
-      { id: "nop", name: "Desertside Nursing" },
-    ],
-  },
-  {
-    id: "333",
-    name: "Natasha Romanoff",
-    role: "admin" as UserRole,
-    isAdmin: true,
-    email: "widow@hero.com",
-  },
-  {
-    id: "444",
-    name: "T'Challa",
-    role: "user" as UserRole,
-    isAdmin: true,
-    email: "panther@hero.com",
-    facilities: [],
-  },
-];
+// const dummyUsers = [
+//   {
+//     id: "111",
+//     name: "Peter Parker",
+//     role: "admin" as UserRole,
+//     isAdmin: true,
+//     email: "spiderman-or-deadpool@hero.com",
+//     organization: {
+//       testingFacility: [
+//         { id: "abc", name: "Mountainside Nursing" },
+//         { id: "def", name: "Hillside Nursing" },
+//         { id: "hij", name: "Lakeside Nursing" },
+//         { id: "klm", name: "Oceanside Nursing" },
+//         { id: "nop", name: "Desertside Nursing" },
+//       ],
+//     },
+//   },
+//   {
+//     id: "222",
+//     name: "Carol Danvers",
+//     role: "entry-only" as UserRole,
+//     isAdmin: false,
+//     email: "marvel@hero.com",
+//     organization: {
+//       testingFacility: [
+//         { id: "def", name: "Hillside Nursing" },
+//         { id: "nop", name: "Desertside Nursing" },
+//       ],
+//     },
+//   },
+//   {
+//     id: "333",
+//     name: "Natasha Romanoff",
+//     role: "admin" as UserRole,
+//     isAdmin: true,
+//     email: "widow@hero.com",
+//   },
+//   {
+//     id: "444",
+//     name: "T'Challa",
+//     role: "user" as UserRole,
+//     isAdmin: true,
+//     email: "panther@hero.com",
+//     organization: {
+//       testingFacility: [],
+//     },
+//   },
+// ];
 
 const allFacilities: UserFacilitySetting[] = [
   { id: "abc", name: "Mountainside Nursing" },
@@ -121,6 +153,13 @@ const ManageUsersContainer: any = () => {
   const { data, loading, error } = useQuery<UserData, {}>(GET_USERS, {
     fetchPolicy: "no-cache",
   });
+  const {
+    data: dataFacilities,
+    loading: loadingFacilities,
+    error: errorFacilities,
+  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
+    fetchPolicy: "no-cache",
+  });
 
   if (loading) {
     return <p> Loading... </p>;
@@ -132,6 +171,9 @@ const ManageUsersContainer: any = () => {
   if (data === undefined) {
     return <p>Error: Users not found</p>;
   }
+
+  // let realFacilities = dataFacilities?.organization
+  //   .testingFacility as UserFacilitySetting[];
 
   return (
     <ManageUsers
