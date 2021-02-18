@@ -21,8 +21,7 @@ const PatientLanding = () => {
             />
             <div className="usa-mmedia-block__body usa-prose margin-top-105">
               <h3 className="font-heading-sm">Questionnaire complete</h3>
-              <p className="margin-top-05">
-              </p>
+              <p className="margin-top-05"></p>
             </div>
           </div>
           {/* <Button
