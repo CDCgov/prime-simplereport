@@ -14,6 +14,7 @@ interface Props {
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
   buttons: Options;
+  labelDescription?: string;
   className?: string;
   required?: boolean;
   selectedRadio?: string | null;
@@ -36,6 +37,7 @@ const RadioGroup = ({
   validationStatus,
   errorMessage,
   buttons,
+  labelDescription,
   className,
   required,
   variant,
@@ -110,6 +112,9 @@ const RadioGroup = ({
               htmlFor={`${widgetId}_${c.value}_${i}`}
             >
               {c.label}
+              <span className="usa-checkbox__label-description">
+                {labelDescription}
+              </span>
             </label>
           </div>
         ))}

@@ -812,6 +812,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_native_0"
               >
                 American Indian or Alaskan Native
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -832,6 +835,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_asian_1"
               >
                 Asian
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -852,6 +858,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_black_2"
               >
                 Black or African American
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -872,6 +881,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_pacific_3"
               >
                 Native Hawaiian or other Pacific Islander
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -892,6 +904,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_white_4"
               >
                 White
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -912,6 +927,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_unknown_5"
               >
                 Unknown
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -932,6 +950,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_refused_6"
               >
                 Refused to answer
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>
@@ -970,6 +991,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_hispanic_0"
               >
                 Hispanic or Latino
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -990,6 +1014,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_not_hispanic_1"
               >
                 Not Hispanic
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>
@@ -1028,6 +1055,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_male_0"
               >
                 Male
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -1048,6 +1078,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_female_1"
               >
                 Female
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -1068,6 +1101,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_other_2"
               >
                 Other
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>
@@ -1124,6 +1160,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_YES_0"
               >
                 Yes
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -1144,6 +1183,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_NO_1"
               >
                 No
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>
@@ -1187,6 +1229,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_YES_0"
               >
                 Yes
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -1207,6 +1252,9 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 htmlFor="radio-test-1_NO_1"
               >
                 No
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>

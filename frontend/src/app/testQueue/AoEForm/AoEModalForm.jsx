@@ -20,6 +20,11 @@ const AoEModalForm = ({
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState(qrCodeValue);
   const modalViewValues = [
+    {
+      label: "Text message",
+      value: "text",
+      labelDescription: "(321) 543-2109",
+    },
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
@@ -107,6 +112,26 @@ const AoEModalForm = ({
             selectedRadio={modalView}
             className="margin-top-205"
           />
+          {modalView === "text" && (
+            <>
+              <div className="usa-alert usa-alert--success">
+                <div className="usa-alert__body">
+                  <h3 className="usa-alert__heading">Email sent</h3>
+                  <p className="usa-alert__text">
+                    The link was sent to [youremail@organization.com]
+                  </p>
+                </div>
+              </div>
+              <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+                <Button
+                  className="margin-right-205"
+                  label="Submit"
+                  type={"button"}
+                  onClick={() => continueModal()}
+                />
+              </div>
+            </>
+          )}
           {modalView === "smartphone" && (
             <>
               <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">

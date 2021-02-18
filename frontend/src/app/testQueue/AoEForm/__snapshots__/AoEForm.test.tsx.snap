@@ -530,6 +530,9 @@ exports[`AoEForm on data loaded renders 1`] = `
                 htmlFor="radio-test-1_yes_0"
               >
                 Yes
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
             <div
@@ -550,6 +553,9 @@ exports[`AoEForm on data loaded renders 1`] = `
                 htmlFor="radio-test-1_no_1"
               >
                 No
+                <span
+                  className="usa-checkbox__label-description"
+                />
               </label>
             </div>
           </div>

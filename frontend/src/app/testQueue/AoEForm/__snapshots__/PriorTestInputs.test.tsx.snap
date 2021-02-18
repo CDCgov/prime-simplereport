@@ -51,6 +51,9 @@ Array [
           htmlFor="radio-test-1_yes_0"
         >
           Yes
+          <span
+            className="usa-checkbox__label-description"
+          />
         </label>
       </div>
       <div
@@ -71,6 +74,9 @@ Array [
           htmlFor="radio-test-1_no_1"
         >
           No
+          <span
+            className="usa-checkbox__label-description"
+          />
         </label>
       </div>
     </div>
