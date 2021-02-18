@@ -26,7 +26,7 @@ public class AuditingConfig {
 	public AuditorAware<ApiUser> getCurrentUserProvider() {
 		return () -> {
 			LOG.debug("Fetching current user for audit");
-			Optional<ApiUser> user = Optional.ofNullable(_userService.getCurrentUser());
+			Optional<ApiUser> user = Optional.ofNullable(_userService.getCurrentUserForAudit());
 			return user;
 		};
 	}
