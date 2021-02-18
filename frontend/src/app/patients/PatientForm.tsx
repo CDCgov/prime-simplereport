@@ -663,9 +663,9 @@ const PatientForm = (props: Props) => {
             )}
           </FormGroup>
         )}
-        <div className="mobile-lg:display-flex flex-justify-end margin-top-2 prime-edit-patient-heading">
+        <div className={props.isPxpView ? "mobile-lg:display-flex flex-justify-end margin-top-2" : "prime-edit-patient-heading"}>
           <Button
-            className={"prime-save-patient-changes"}
+            className={props.isPxpView ? "" : "prime-save-patient-changes"}
             disabled={!formChanged}
             onClick={savePatientData}
             label={props.isPxpView ? "Save and continue" : "Save changes"}
