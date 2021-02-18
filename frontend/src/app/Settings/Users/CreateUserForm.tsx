@@ -20,6 +20,7 @@ const initialFormState: NewUserInvite = {
   role: "",
 };
 
+// TODO: right now, all newly invited users are of role USER. This is a future feature
 const ROLE_OPTIONS = [
   {
     value: "entry-only",
@@ -42,6 +43,25 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
   ) => {
     updateNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
+
+  const setUserRole =
+    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_SETTINGS === "true" ? (
+      <Dropdown
+        options={ROLE_OPTIONS}
+        label="Access Level"
+        name="role"
+        selectedValue={newUser.role as string}
+        defaultSelect
+        className="grid-col"
+        onChange={onChange}
+      />
+    ) : (
+      <p>
+        New users will be assigned as Standard Users, which allows them to
+        conduct tests and manage results and profiles. You will be able to edit
+        their access levels once they register their accounts.
+      </p>
+    );
 
   return (
     <div className="border-0 usa-card__container">
@@ -84,17 +104,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
             onChange={onChange}
           />
         </div>
-        <div className="grid-row">
-          <Dropdown
-            options={ROLE_OPTIONS}
-            label="Access Level"
-            name="role"
-            selectedValue={newUser.role}
-            defaultSelect
-            className="grid-col"
-            onChange={onChange}
-          />
-        </div>
+        <div className="grid-row">{setUserRole}</div>
       </div>
       <div className="usa-card__footer">
         <div className="display-flex flex-justify-end">
