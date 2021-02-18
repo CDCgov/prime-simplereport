@@ -671,6 +671,7 @@ const PatientForm = (props: Props) => {
           }
         >
           <Button
+            id="edit-patient-save-lower"
             className={props.isPxpView ? "" : "prime-save-patient-changes"}
             disabled={!formChanged}
             onClick={savePatientData}
