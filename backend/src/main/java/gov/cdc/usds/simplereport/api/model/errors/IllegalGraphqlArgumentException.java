@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.errors;
 
+import java.util.Collection;
 import java.util.List;
 
 import graphql.ErrorClassification;
@@ -29,4 +30,12 @@ public class IllegalGraphqlArgumentException extends IllegalArgumentException im
 		return ErrorType.ValidationError;
 	}
 
+    public static IllegalGraphqlArgumentException invalidInput(String input, String inputType) {
+        return new IllegalGraphqlArgumentException(String.format("[%s] is not a valid %s", input, inputType));
+    }
+
+    public static IllegalGraphqlArgumentException mustBeEnumerated(String input, Collection<String> validInputs) {
+        String message = String.format("\"%s\" must be one of [%s]", input, String.join(", ", validInputs));
+        return new IllegalGraphqlArgumentException(message);
+    }
 }
