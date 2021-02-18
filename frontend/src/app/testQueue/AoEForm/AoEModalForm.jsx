@@ -19,6 +19,7 @@ const AoEModalForm = ({
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState(qrCodeValue);
+  const [smsSuccess, setSmsSuccess] = useState(false)
   const modalViewValues = [
     {
       label: "Text message",
@@ -74,6 +75,11 @@ const AoEModalForm = ({
     </div>
   );
 
+  function sendSms() {
+    // TODO: implement SMS sending
+    setSmsSuccess(true);
+  }
+
   return (
     <Modal
       isOpen={true}
@@ -114,21 +120,32 @@ const AoEModalForm = ({
           />
           {modalView === "text" && (
             <>
-              <div className="usa-alert usa-alert--success">
-                <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading">Text message sent</h3>
-                  <p className="usa-alert__text">
-                    The link was sent to {patient.telephone}
-                  </p>
+              {smsSuccess ? (
+                <div className="usa-alert usa-alert--success">
+                  <div className="usa-alert__body">
+                    <h3 className="usa-alert__heading">Text message sent</h3>
+                    <p className="usa-alert__text">
+                      The link was sent to {patient.telephone}
+                    </p>
+                  </div>
                 </div>
-              </div>
+              ) : null}
               <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-                <Button
+                {!smsSuccess ? (
+                  <Button
+                    className="margin-right-205"
+                    label="Text link"
+                    type={"button"}
+                    onClick={() => sendSms()}
+                  />
+                ) : (
+                  <Button
                   className="margin-right-205"
-                  label="Text link"
+                  label="Continue"
                   type={"button"}
                   onClick={() => continueModal()}
                 />
+                )}
               </div>
             </>
           )}
