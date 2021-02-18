@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import classnames from "classnames";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -9,6 +8,7 @@ import CreateUserModal from "./CreateUserModal";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
+import UsersSideNav from "./UsersSideNav";
 import {
   SettingsUser,
   UserFacilitySetting,
@@ -27,7 +27,7 @@ interface Props {
   onDeleteUser: (userId: string) => void;
 }
 
-type SettingsUsers = { [id: string]: SettingsUser };
+export type SettingsUsers = { [id: string]: SettingsUser };
 
 const ManageUsers: React.FC<Props> = ({
   allFacilities,
@@ -110,29 +110,6 @@ const ManageUsers: React.FC<Props> = ({
     resetUser(currentActiveUserId);
   };
 
-  const sideNavItems = Object.values(usersState).map((user: any) => {
-    return (
-      <li
-        className="usa-sidenav__item users-sidenav-item"
-        onClick={() => onChangeActiveUser(user.id)}
-        key={user.id}
-      >
-        <div
-          className={classnames(
-            "padding-105 padding-right-2",
-            activeUserId === user.id && "usa-current"
-          )}
-        >
-          <span className="sidenav-user-name">
-            {displayFullName(user.firstName, user.middleName, user.lastName)}
-          </span>
-          <br />
-          <span className="sidenav-user-email">{user.email}</span>
-        </div>
-      </li>
-    );
-  });
-
   const resetUser = (userId: string) => {
     updateUsersState({
       ...usersState,
@@ -162,11 +139,11 @@ const ManageUsers: React.FC<Props> = ({
       ) : (
         <div className="usa-card__body">
           <div className="grid-row">
-            <div className="display-block users-sidenav">
-              <h3>Users</h3>
-              <ul className="usa-sidenav">{sideNavItems}</ul>
-            </div>
-
+            <UsersSideNav
+              activeUserId={activeUserId}
+              users={usersState}
+              onChangeActiveUser={onChangeActiveUser}
+            />
             <div className="tablet:grid-col">
               <div className="user-header">
                 <h2 className="display-inline-block margin-top-2 margin-bottom-105">
