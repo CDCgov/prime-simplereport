@@ -19,7 +19,7 @@ const AoEModalForm = ({
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState(qrCodeValue);
-  const [smsSuccess, setSmsSuccess] = useState(false)
+  const [smsSuccess, setSmsSuccess] = useState(false);
   const modalViewValues = [
     {
       label: "Text message",
@@ -140,11 +140,11 @@ const AoEModalForm = ({
                   />
                 ) : (
                   <Button
-                  className="margin-right-205"
-                  label="Continue"
-                  type={"button"}
-                  onClick={() => continueModal()}
-                />
+                    className="margin-right-205"
+                    label="Continue"
+                    type={"button"}
+                    onClick={() => continueModal()}
+                  />
                 )}
               </div>
             </>
