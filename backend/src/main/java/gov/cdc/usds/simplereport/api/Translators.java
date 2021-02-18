@@ -35,7 +35,7 @@ public class Translators {
         try {
             return LocalDate.parse(date, US_SLASHDATE_SHORT_FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalGraphqlArgumentException("[" + d + "] is not a valid date.");
+            throw IllegalGraphqlArgumentException.invalidInput(d, "date");
         }
     }
 
@@ -49,7 +49,7 @@ public class Translators {
             return phoneUtil.format(phoneUtil.parse(userSuppliedPhoneNumber, "US"),
                     PhoneNumberUtil.PhoneNumberFormat.NATIONAL);
         } catch (NumberParseException parseException) {
-            throw new IllegalGraphqlArgumentException("[" + userSuppliedPhoneNumber + "] is not a valid phone number.");
+            throw IllegalGraphqlArgumentException.invalidInput(userSuppliedPhoneNumber, "phone number");
         }
     }
 
@@ -71,7 +71,7 @@ public class Translators {
         try {
             return UUID.fromString(uuid);
         } catch (IllegalArgumentException e) {
-            throw new IllegalGraphqlArgumentException("\"" + uuid + "\" is not a valid UUID.");
+            throw IllegalGraphqlArgumentException.invalidInput(uuid, "UUID");
         }
     }
 
@@ -83,7 +83,7 @@ public class Translators {
         try {
             return PersonRole.valueOf(role.toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new IllegalGraphqlArgumentException("\"" + r + "\" is not a valid role.");
+            throw IllegalGraphqlArgumentException.invalidInput(r, "role");
         }
     }
 
@@ -95,7 +95,7 @@ public class Translators {
         if (email.contains("@")) {
             return email;
         }
-        throw new IllegalGraphqlArgumentException("\"" + e + "\" is not a valid email.");
+        throw IllegalGraphqlArgumentException.invalidInput(e, "email");
     }
 
     private static final Map<String, String> RACES = Map.of(
@@ -120,7 +120,7 @@ public class Translators {
         if (RACE_VALUES.contains(race)) {
             return race;
         }
-        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_VALUES) + "].");
+        throw IllegalGraphqlArgumentException.mustBeEnumerated(r, RACE_VALUES);
     }
 
     public static String parseRaceDisplayValue(String r) {
@@ -136,7 +136,7 @@ public class Translators {
             return race; // passed in the correct value
         }
         // not found
-        throw new IllegalGraphqlArgumentException("\"" + r + "\" must be one of [" + String.join(", ", RACE_KEYS) + "].");
+        throw IllegalGraphqlArgumentException.mustBeEnumerated(r, RACE_KEYS);
     }
 
     private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");
@@ -150,8 +150,7 @@ public class Translators {
         if (ETHNICITIES.contains(ethnicity)) {
             return ethnicity;
         }
-        throw new IllegalGraphqlArgumentException(
-                "\"" + e + "\" must be one of [" + String.join(", ", ETHNICITIES) + "].");
+        throw IllegalGraphqlArgumentException.mustBeEnumerated(e, ETHNICITIES);
     }
 
     private static final Set<String> GENDERS = Set.of("male", "female", "other");
@@ -177,7 +176,7 @@ public class Translators {
         }
         Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
         if (boolValue == null) {
-            throw new IllegalGraphqlArgumentException("\"" + v + "\" is not a valid value.");
+            throw IllegalGraphqlArgumentException.invalidInput(v, "value");
         }
         return boolValue;
     }
@@ -196,7 +195,7 @@ public class Translators {
         if (STATE_CODES.contains(state)) {
             return state;
         }
-        throw new IllegalGraphqlArgumentException("\"" + s + "\" is not a valid state.");
+        throw IllegalGraphqlArgumentException.invalidInput(s, "state");
     }
 
     public static Map<String, Boolean> parseSymptoms(String symptoms) {

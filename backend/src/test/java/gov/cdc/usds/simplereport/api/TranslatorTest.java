@@ -52,7 +52,7 @@ class TranslatorTest {
         IllegalGraphqlArgumentException caught = assertThrows(IllegalGraphqlArgumentException.class, () -> {
             parseUserShortDate("fooexample.com");
         });
-        assertEquals("[fooexample.com] is not a valid date.", caught.getMessage());
+        assertEquals("[fooexample.com] is not a valid date", caught.getMessage());
     }
 
     @Test
