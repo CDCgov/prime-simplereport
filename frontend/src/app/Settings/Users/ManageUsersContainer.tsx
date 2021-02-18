@@ -69,54 +69,10 @@ export interface NewUserInvite {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole | string;
+  role: UserRole | string | undefined; // TODO: clean this up
 }
 
-// const dummyUsers = [
-//   {
-//     id: "111",
-//     name: "Peter Parker",
-//     role: "admin" as UserRole,
-//     email: "spiderman-or-deadpool@hero.com",
-//     organization: {
-//       testingFacility: [
-//         { id: "abc", name: "Mountainside Nursing" },
-//         { id: "def", name: "Hillside Nursing" },
-//         { id: "hij", name: "Lakeside Nursing" },
-//         { id: "klm", name: "Oceanside Nursing" },
-//         { id: "nop", name: "Desertside Nursing" },
-//       ],
-//     },
-//   },
-//   {
-//     id: "222",
-//     name: "Carol Danvers",
-//     role: "entry-only" as UserRole,
-//     email: "marvel@hero.com",
-//     organization: {
-//       testingFacility: [
-//         { id: "def", name: "Hillside Nursing" },
-//         { id: "nop", name: "Desertside Nursing" },
-//       ],
-//     },
-//   },
-//   {
-//     id: "333",
-//     name: "Natasha Romanoff",
-//     role: "admin" as UserRole,
-//     email: "widow@hero.com",
-//   },
-//   {
-//     id: "444",
-//     name: "T'Challa",
-//     role: "user" as UserRole,
-//     email: "panther@hero.com",
-//     organization: {
-//       testingFacility: [],
-//     },
-//   },
-// ];
-
+// TODO: delete this
 const allFacilities: UserFacilitySetting[] = [
   { id: "abc", name: "Mountainside Nursing" },
   { id: "def", name: "Hillside Nursing" },
