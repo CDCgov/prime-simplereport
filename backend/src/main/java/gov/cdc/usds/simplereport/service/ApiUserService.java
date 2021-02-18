@@ -70,10 +70,9 @@ public class ApiUserService {
         Organization org = _orgService.getOrganization(organizationExternalId);
         _oktaRepo.createUser(userIdentity, org);
 
-        Optional<ApiUser> currentUser = getCurrentUserReadOnly();
-        String currentUserId = currentUser.isPresent() ? currentUser.get().getInternalId().toString()
-                                                       : "NULL";
-        LOG.info("User with id={} created by user with id={}", user.getInternalId(), currentUserId);
+        LOG.info("User with id={} created by user with id={}", 
+                 user.getInternalId(), 
+                 getCurrentUser().getInternalId().toString());
 
         return user;
     }
@@ -100,10 +99,9 @@ public class ApiUserService {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         _oktaRepo.updateUser(oldUsername, userIdentity);
         
-        Optional<ApiUser> currentUser = getCurrentUserReadOnly();
-        String currentUserId = currentUser.isPresent() ? currentUser.get().getInternalId().toString()
-                                                       : "NULL";
-        LOG.info("User with id={} updated by user with id={}", user.getInternalId(), currentUserId);
+        LOG.info("User with id={} updated by user with id={}", 
+                 user.getInternalId(), 
+                 getCurrentUser().getInternalId().toString());
 
         return user;
     }
@@ -156,17 +154,6 @@ public class ApiUserService {
 
     public boolean isAdmin(ApiUser user) {
         return _siteAdmins.contains(user.getLoginEmail());
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Optional<ApiUser> getCurrentUserForAudit() {
-        return getCurrentUserReadOnly();
-    }
-
-    public Optional<ApiUser> getCurrentUserReadOnly() {
-        IdentityAttributes userIdentity = _supplier.get();
-        Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
-        return found;
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

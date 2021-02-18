@@ -74,41 +74,41 @@ public abstract class BaseApiTest {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void useOutsideOrgUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org user");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void useOutsideOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void useOrgEntryOnly() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org entry-only");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void useSuperUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
-        _initService.initAuditor();
+        _initService.initCurrentUser();
     }
 
     protected void setRoles(Set<OrganizationRole> roles) {

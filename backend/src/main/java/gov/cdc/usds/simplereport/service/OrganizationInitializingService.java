@@ -54,8 +54,8 @@ public class OrganizationInitializingService {
 	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
-		// Creates current user to allow audited creation of other entities below
-		initAuditor();
+
+		initCurrentUser();
 
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
@@ -95,7 +95,7 @@ public class OrganizationInitializingService {
 		}
 	}
 
-	public void initAuditor() {
+	public void initCurrentUser() {
 		// Creates current user if it doesn't already exist
 		_userService.getCurrentUser();
 	}
