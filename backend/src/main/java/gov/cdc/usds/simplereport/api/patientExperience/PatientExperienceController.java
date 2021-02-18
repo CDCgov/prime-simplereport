@@ -29,9 +29,11 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 
 @RestController
@@ -46,6 +48,9 @@ public class PatientExperienceController {
 
   @Autowired
   private TestOrderService tos;
+
+  @Autowired
+  private TestEventService tes;
 
   @Value("${feature-flags.patient-links:false}")
   private boolean patientLinksEnabled;
@@ -81,7 +86,9 @@ public class PatientExperienceController {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
-    return new PxpPersonWrapper(pls.getPatientLinkVerify(body.getPlid(), body.getDob()));
+    Person p = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
+    TestEvent te = tes.getLastTestResultsForPatient(p);
+    return new PxpPersonWrapper(p, te);
   }
 
   @PutMapping("/patient")

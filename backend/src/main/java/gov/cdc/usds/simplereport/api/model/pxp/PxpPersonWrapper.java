@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
 import java.time.LocalDate;
+import java.util.Date;
 
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 
@@ -13,9 +16,11 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
  */
 public class PxpPersonWrapper {
   private Person p;
+  private PxpTestEventWrapper te;
 
-  public PxpPersonWrapper(Person p) {
+  public PxpPersonWrapper(Person p, TestEvent te) {
     this.p = p;
+    this.te = new PxpTestEventWrapper(te);
   }
 
   public String getLookupId() {
@@ -96,5 +101,25 @@ public class PxpPersonWrapper {
 
   public PersonRole getRole() {
     return p.getRole();
+  }
+
+  public PxpTestEventWrapper getLastTest() {
+    return te;
+  }
+}
+
+class PxpTestEventWrapper {
+  TestEvent te;
+
+  public PxpTestEventWrapper(TestEvent te) {
+    this.te = te;
+  }
+
+  public Date getDateTested() {
+    return te.getDateTested();
+  }
+
+  public TestResult getResult() {
+    return te.getResult();
   }
 }
