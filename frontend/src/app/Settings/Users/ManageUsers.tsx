@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
 import CreateUserModal from "./CreateUserModal";
+import DeleteUserModal from "./DeleteUserModal";
 import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
@@ -54,6 +55,7 @@ const ManageUsers: React.FC<Props> = ({
   );
   const [showInProgressModal, updateShowInProgressModal] = useState(false);
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
+  const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
 
   function updateUser<T>(
@@ -116,6 +118,48 @@ const ManageUsers: React.FC<Props> = ({
       [userId]: settingsUsers[userId],
     });
     updateIsUserEdited(false);
+  };
+
+  const onHandleCreateNewUser = (newUserInvite: NewUserInvite) => {
+    // TODO: validate form
+    onCreateNewUser(newUserInvite);
+
+    const fullName = displayFullName(
+      newUserInvite.firstName,
+      null,
+      newUserInvite.lastName
+    );
+
+    let successAlert = (
+      <Alert
+        type="success"
+        title={`Invitation sent to ${fullName}`}
+        body={`They will receive an invitation to create an account at the email address provided`}
+      />
+    );
+
+    showNotification(toast, successAlert);
+    updateShowAddUserModal(false);
+  };
+
+  const onHandleDeleteUser = (userId: string) => {
+    // TODO: show alert only if delete is successful
+    onDeleteUser(userId);
+
+    const user = usersState[userId];
+
+    const fullName = displayFullName(
+      user.firstName,
+      user.middleName,
+      user.lastName
+    );
+
+    let successAlert = (
+      <Alert type="success" title={`User account removed for ${fullName}`} />
+    );
+
+    showNotification(toast, successAlert);
+    updateShowDeleteUserModal(false);
   };
 
   const activeUser: SettingsUser = usersState[activeUserId];
@@ -182,7 +226,7 @@ const ManageUsers: React.FC<Props> = ({
                     variant="outline"
                     icon="trash"
                     className="flex-align-self-start display-inline-block"
-                    onClick={() => onDeleteUser(activeUser.id)}
+                    onClick={() => updateShowDeleteUserModal(true)}
                     label="+ Remove User"
                     disabled={loggedInUser.id === activeUser.id}
                   />
@@ -217,7 +261,15 @@ const ManageUsers: React.FC<Props> = ({
               process.env.REACT_APP_ADD_NEW_USER_SETTINGS === "true" ? (
                 <CreateUserModal
                   onClose={() => updateShowAddUserModal(false)}
-                  onSubmit={onCreateNewUser}
+                  onSubmit={onHandleCreateNewUser}
+                />
+              ) : null}
+              {showDeleteUserModal &&
+              process.env.REACT_APP_DELETE_USER_SETTINGS === "true" ? (
+                <DeleteUserModal
+                  user={activeUser}
+                  onClose={() => updateShowDeleteUserModal(false)}
+                  onDeleteUser={onHandleDeleteUser}
                 />
               ) : null}
             </div>
