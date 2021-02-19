@@ -6,7 +6,7 @@ import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
 type OptionsArray = {
-  label: ReactNode;
+  label: React.ReactNode;
   value: string;
   disabled?: boolean;
 }[];
