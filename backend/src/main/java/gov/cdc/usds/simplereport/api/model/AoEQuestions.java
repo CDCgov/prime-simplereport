@@ -68,11 +68,11 @@ public class AoEQuestions {
     this.symptomOnset = symptomOnset;
   }
 
-  public boolean hasSymptoms() {
+  public boolean getNoSymptoms() {
     return noSymptoms;
   }
 
-  public void setHasSymptoms(boolean noSymptoms) {
+  public void setNoSymptoms(boolean noSymptoms) {
     this.noSymptoms = noSymptoms;
   }
 }

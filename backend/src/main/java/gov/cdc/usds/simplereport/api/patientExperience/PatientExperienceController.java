@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api.patientExperience;
 import java.util.Map;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
@@ -40,6 +42,8 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 @RequestMapping(value = "/pxp")
 @Validated
 public class PatientExperienceController {
+  private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
+
   @Autowired
   private PersonService ps;
 
@@ -104,7 +108,7 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/questions")
-  public String patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws Exception {
+  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws Exception {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
@@ -117,7 +121,6 @@ public class PatientExperienceController {
     tos.updateTimeOfTestQuestions(patientID, data.getPregnancy(), symptomsMap, data.isFirstTest(),
         data.getPriorTestDate(), data.getPriorTestType(),
         data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
-        data.getSymptomOnset(), data.hasSymptoms());
-    return "success";
+        data.getSymptomOnset(), data.getNoSymptoms());
   }
 }

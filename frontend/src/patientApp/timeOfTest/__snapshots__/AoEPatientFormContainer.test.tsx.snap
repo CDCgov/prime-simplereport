@@ -517,7 +517,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               aria-required="false"
               className="usa-input"
               id="text-test-1"
-              max="2021-02-18"
+              max="2021-02-19"
               min="2020-02-01"
               name="symptom_onset"
               onChange={[Function]}
@@ -701,7 +701,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   className="usa-radio__label"
                   htmlFor="radio-test-1_261665006_2"
                 >
-                  Would not state
+                  Prefer not to answer
                 </label>
               </div>
             </div>
