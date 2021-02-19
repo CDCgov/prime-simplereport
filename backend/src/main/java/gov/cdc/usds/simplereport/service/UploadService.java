@@ -23,8 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -33,10 +36,11 @@ import java.util.Map;
 @Service
 @Transactional
 public class UploadService {
-    private static final CsvSchema PERSON_SCHEMA = personSchema();
     private static final String FACILITY_ID = "facilityId";
+    private static final int MAX_LINE_LENGTH = 1024*6;
 
     private final PersonService _ps;
+    private boolean hasHeaderRow = false;
 
     public UploadService(PersonService ps) {
         this._ps = ps;
@@ -44,11 +48,19 @@ public class UploadService {
 
     private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream) throws IllegalGraphqlArgumentException {
         try {
+            BufferedReader csvStreamBuffered = new BufferedReader(
+                    new InputStreamReader(csvStream, StandardCharsets.UTF_8));
+
+            // determine if this csv has a header row in the first line by looking for header string
+            csvStreamBuffered.mark(MAX_LINE_LENGTH);
+            hasHeaderRow = (csvStreamBuffered.readLine().toLowerCase().contains("firstname"));
+            csvStreamBuffered.reset();
+
             return new CsvMapper()
                 .enable(CsvParser.Feature.FAIL_ON_MISSING_COLUMNS)
                 .readerFor(Map.class)
-                .with(PERSON_SCHEMA)
-                .readValues(csvStream);
+                .with(personSchema(hasHeaderRow))
+                .readValues(csvStreamBuffered);
         } catch (IOException e) {
             throw new IllegalGraphqlArgumentException(e.getMessage());
         }
@@ -68,7 +80,7 @@ public class UploadService {
 
         // Since the CSV parser won't fail when give a single string, we simple check to see if it has any parsed values
         // If not, we throw an error assuming the user didn't actually want to submit something empty.
-        if (!valueIterator.hasNext()) {
+        if (hasHeaderRow && !valueIterator.hasNext()) {
             throw new IllegalGraphqlArgumentException("Empty or invalid CSV submitted");
         }
 
@@ -107,30 +119,38 @@ public class UploadService {
         return "Successfully uploaded " + rowNumber + " record(s)";
     }
 
-    private static CsvSchema personSchema() {
-        return CsvSchema.builder()
-                .addColumn("FirstName", CsvSchema.ColumnType.STRING)
-                .addColumn("LastName", CsvSchema.ColumnType.STRING)
-                .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
-                .addColumn("Suffix", CsvSchema.ColumnType.STRING)
-                .addColumn("Race", CsvSchema.ColumnType.STRING)
-                .addColumn("DOB", CsvSchema.ColumnType.STRING)
-                .addColumn("biologicalSex", CsvSchema.ColumnType.STRING)
-                .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
-                .addColumn("Street", CsvSchema.ColumnType.STRING)
-                .addColumn("Street2", CsvSchema.ColumnType.STRING)
-                .addColumn("City", CsvSchema.ColumnType.STRING)
-                .addColumn("County", CsvSchema.ColumnType.STRING)
-                .addColumn("State", CsvSchema.ColumnType.STRING)
-                .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
-                .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
-                .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
-                .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
-                .addColumn("Role", CsvSchema.ColumnType.STRING)
-                .addColumn("Email", CsvSchema.ColumnType.STRING)
-                .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
-                .setUseHeader(true)
-                .build();
+    private static CsvSchema personSchema(boolean hasHeaderRow) {
+        // using both addColumn and setUseHeader() causes offset issues (columns don't align). use one or the other.
+        if (hasHeaderRow) {
+            return CsvSchema.builder()
+                    .setUseHeader(true)
+                    .build();
+        } else {
+            // Sequence order matters
+            return CsvSchema.builder()
+                    .addColumn("FirstName", CsvSchema.ColumnType.STRING)
+                    .addColumn("LastName", CsvSchema.ColumnType.STRING)
+                    .addColumn("MiddleName", CsvSchema.ColumnType.STRING)
+                    .addColumn("Suffix", CsvSchema.ColumnType.STRING)
+                    .addColumn("Race", CsvSchema.ColumnType.STRING)
+                    .addColumn("DOB", CsvSchema.ColumnType.STRING)
+                    .addColumn("biologicalSex", CsvSchema.ColumnType.STRING)
+                    .addColumn("Ethnicity", CsvSchema.ColumnType.STRING)
+                    .addColumn("Street", CsvSchema.ColumnType.STRING)
+                    .addColumn("Street2", CsvSchema.ColumnType.STRING)
+                    .addColumn("City", CsvSchema.ColumnType.STRING)
+                    .addColumn("County", CsvSchema.ColumnType.STRING)
+                    .addColumn("State", CsvSchema.ColumnType.STRING)
+                    .addColumn("ZipCode", CsvSchema.ColumnType.STRING)
+                    .addColumn("PhoneNumber", CsvSchema.ColumnType.STRING)
+                    .addColumn("employedInHealthcare", CsvSchema.ColumnType.STRING)
+                    .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
+                    .addColumn("Role", CsvSchema.ColumnType.STRING)
+                    .addColumn("Email", CsvSchema.ColumnType.STRING)
+                    .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
+                    .setUseHeader(false)    // no valid header row detected
+                    .build();
+        }
     }
 
 }

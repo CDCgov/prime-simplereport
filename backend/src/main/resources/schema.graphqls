@@ -287,14 +287,28 @@ type Mutation {
     email: String!
     organizationExternalId: String!
   ): User
-  updateUser(
+  addUserToCurrentOrg(
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
-    newEmail: String!
-    # oldEmail serves as the unique identifier for the user to be updated
-    oldEmail: String!
+    email: String!
+  ): User
+  updateUser(
+    id: ID!
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+  ): User
+  updateUserRole(
+    id: ID!
+    role: OrganizationRole!
+  ): OrganizationRole
+  setUserIsDeleted(
+    id: ID!, 
+    deleted: Boolean!
   ): User
   addPatient(
     facilityId: String

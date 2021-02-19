@@ -7,7 +7,7 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 
-public interface FacilityRepository extends EternalEntityRepository<Facility> {
+public interface FacilityRepository extends EternalAuditedEntityRepository<Facility> {
 
 	public Optional<Facility> findByOrganizationAndInternalId(Organization org, UUID id);
 	public Optional<Facility> findByOrganizationInternalIdAndInternalId(UUID orgId, UUID id);

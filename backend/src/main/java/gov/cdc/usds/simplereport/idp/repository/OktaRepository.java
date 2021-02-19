@@ -15,9 +15,13 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  */
 public interface OktaRepository {
 
-    public void createUser(IdentityAttributes userIdentity, String organizationExternalId);
+    public void createUser(IdentityAttributes userIdentity, Organization org);
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity);
+
+    public OrganizationRole updateUserRole(String username, OrganizationRole role);
+
+    public void setUserIsActive(String username, Boolean active);
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role);
 
@@ -25,6 +29,6 @@ public interface OktaRepository {
 
     public void deleteOrganization(String externalId);
 
-    public Optional<OrganizationRoleClaims> getOrganizationRolesForUser(String username);
+    public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 
 }

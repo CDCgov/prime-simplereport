@@ -13,7 +13,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
 @Entity
-public class Provider extends EternalEntity {
+public class Provider extends EternalAuditedEntity {
 
 	@Embedded
 	@JsonUnwrapped

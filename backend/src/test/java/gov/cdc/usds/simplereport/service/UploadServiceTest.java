@@ -42,7 +42,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         final StreetAddress address = new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
         final List<Person> patients = this._ps.getPatients(null);
         assertAll(() -> assertEquals(1, patients.size()),
-                () -> assertEquals("Best", patients.get(0).getFirstName()),
+                () -> assertEquals("Best", patients.get(0).getLastName()),
                 () -> assertEquals(address, patients.get(0).getAddress(), "Should have the correct address"));
     }
 
@@ -53,7 +53,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
         try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
                 .getResourceAsStream("test-upload-one-invalid-row.csv")) {
                     final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
-            () -> this._service.processPersonCSV(inputStream), "Should fail to parse");
+            () -> this._service.processPersonCSV(inputStream), "Should fail to parse. Missing facilityId");
 
             final List<Person> patients = this._ps.getPatients(null);
             assertEquals(0, patients.size());
@@ -68,7 +68,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
                 "this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
             final IllegalGraphqlArgumentException e = assertThrows(IllegalGraphqlArgumentException.class,
                     () -> this._service.processPersonCSV(bis), "Should fail to parse");
-            assertTrue(e.getMessage().contains("Empty or invalid CSV submitted"), "Should have correct error message");
+            assertTrue(e.getMessage().contains("Not enough column values:"), "Should have correct error message");
             assertEquals(0, this._ps.getPatients(null).size(), "Should not have any patients");
         }
     }
@@ -92,5 +92,16 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
                 .getResourceAsStream("test-upload-invalid-phone.csv")) {
             assertThrows(IllegalArgumentException.class, () -> this._service.processPersonCSV(inputStream));
         }
+    }
+
+    @Test
+    @WithSimpleReportSiteAdminUser
+    void testNoHeader() throws Exception {
+        try (InputStream inputStream = UploadServiceTest.class.getClassLoader()
+                .getResourceAsStream("test-upload-valid-no-header.csv")) {
+            this._service.processPersonCSV(inputStream);
+        }
+        List<Person> patients = this._ps.getPatients(null);
+        assertEquals(1, patients.size(), "Should have 1 patient");
     }
 }
