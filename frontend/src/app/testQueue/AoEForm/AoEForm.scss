@@ -18,14 +18,15 @@ div.usa-form-group--error {
   }
 }
 
-.usa-checkbox__label:checked {
-  .usa-checkbox__label-description {
-    display: block;
+// Checked label description
+.usa-radio__input + .usa-radio__label {
+  .radio__label-description--checked {
+    display: none;
   }
 }
 
-.usa-checkbox__label {
-  .usa-checkbox__label-description {
-    display: none;
+.usa-radio__input:checked + .usa-radio__label {
+  .radio__label-description--checked {
+    display: block;
   }
 }

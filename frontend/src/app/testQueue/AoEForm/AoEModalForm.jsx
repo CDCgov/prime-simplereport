@@ -24,7 +24,7 @@ const AoEModalForm = ({
     {
       label: <>
         Text message
-        <span className="usa-checkbox__label-description">
+        <span className="radio__label-description--checked usa-radio__label-description text-base">
           {patient.telephone}
         </span>
       </>,
