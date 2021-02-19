@@ -6,7 +6,7 @@ import { useHistory } from "react-router-dom";
 import PatientForm from "../../app/patients/PatientForm";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
-const PatientProfileFormContainer = () => {
+const PatientFormContainer = () => {
   const [prevPage, setPrevPage] = useState(false);
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
@@ -62,4 +62,4 @@ const PatientProfileFormContainer = () => {
   );
 };
 
-export default connect()(PatientProfileFormContainer);
+export default connect()(PatientFormContainer);

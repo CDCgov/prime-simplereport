@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PatientProfileFormContainer snapshot 1`] = `
+exports[`PatientFormContainer snapshot 1`] = `
 <main
   className="patient-app patient-app--form padding-bottom-4"
 >

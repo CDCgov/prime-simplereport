@@ -15,7 +15,7 @@ import DOB from "./timeOfTest/DOB";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
-import PatientProfileFormContainer from "./timeOfTest/PatientProfileFormContainer";
+import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import { showError } from "../app/utils";
 import { PxpApi } from "./PxpApiService";
 
@@ -99,9 +99,7 @@ const PatientApp = () => {
                 <Route
                   path="/patient-info-edit"
                   render={(props) => (
-                    <PatientProfileFormContainer
-                      {...(props.location.state as any)}
-                    />
+                    <PatientFormContainer {...(props.location.state as any)} />
                   )}
                 />
                 <Route
