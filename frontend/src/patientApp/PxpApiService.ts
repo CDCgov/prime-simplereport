@@ -1,4 +1,8 @@
 const API_URL = process.env.REACT_APP_PXP_BACKEND_URL;
+const headers = {
+  "Content-Type": "application/json",
+  Accept: "application/json",
+};
 
 export class PxpApi {
   static getOrgFromPlid(plid: string): Promise<any> {
@@ -11,9 +15,7 @@ export class PxpApi {
     return fetch(`${API_URL}/link/verify`, {
       method: "put",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         plid,
         dob,
@@ -25,14 +27,25 @@ export class PxpApi {
     return fetch(`${API_URL}/questions`, {
       method: "put",
       mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
         plid,
         dob,
         data,
       }),
     });
+  }
+
+  static updatePatient(plid: string, dob: string, data: any) {
+    return fetch(`${API_URL}/patient`, {
+      method: "put",
+      mode: "cors",
+      headers,
+      body: JSON.stringify({
+        plid,
+        dob,
+        data,
+      }),
+    }).then((res) => res.json());
   }
 }

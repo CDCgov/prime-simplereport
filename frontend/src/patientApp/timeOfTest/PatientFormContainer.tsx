@@ -9,8 +9,8 @@ import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 const PatientFormContainer = () => {
   const [prevPage, setPrevPage] = useState(false);
   const [nextPage, setNextPage] = useState(false);
-  const patient = useSelector((state) => (state as any).patient as any);
-  const facility = useSelector((state) => (state as any).facility as any);
+  const patient = useSelector((state: any) => state.patient);
+  const facility = useSelector((state: any) => state.facility);
 
   useEffect(() => {
     window.scrollTo(0, 0);

@@ -27,6 +27,7 @@ import Button from "../../app/commonComponents/Button";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
 import { setPatient as reduxSetPatient } from "../../app/store";
+import { PxpApi } from "../../patientApp/PxpApiService";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -122,76 +123,6 @@ const UPDATE_PATIENT = gql`
   }
 `;
 
-const PXP_UPDATE_PATIENT = gql`
-  mutation PatientLinkUpdatePatient(
-    $internalId: String!
-    $oldBirthDate: LocalDate!
-    $lookupId: String
-    $firstName: String!
-    $middleName: String
-    $lastName: String!
-    $newBirthDate: LocalDate!
-    $street: String!
-    $streetTwo: String
-    $city: String
-    $state: String!
-    $zipCode: String!
-    $telephone: String!
-    $role: String
-    $email: String
-    $county: String
-    $race: String
-    $ethnicity: String
-    $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
-  ) {
-    patientLinkUpdatePatient(
-      internalId: $internalId
-      oldBirthDate: $oldBirthDate
-      lookupId: $lookupId
-      firstName: $firstName
-      middleName: $middleName
-      lastName: $lastName
-      newBirthDate: $newBirthDate
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      telephone: $telephone
-      role: $role
-      email: $email
-      county: $county
-      race: $race
-      ethnicity: $ethnicity
-      gender: $gender
-      residentCongregateSetting: $residentCongregateSetting
-      employedInHealthcare: $employedInHealthcare
-    ) {
-      internalId
-      firstName
-      middleName
-      lastName
-      birthDate
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      telephone
-      role
-      email
-      county
-      race
-      ethnicity
-      gender
-      residentCongregateSetting
-      employedInHealthcare
-    }
-  }
-`;
-
 interface Props {
   activeFacilityId: string;
   patientId?: string;
@@ -210,7 +141,6 @@ const PatientForm = (props: Props) => {
 
   const [addPatient] = useMutation(ADD_PATIENT);
   const [updatePatient] = useMutation(UPDATE_PATIENT);
-  const [pxpUpdatePatient] = useMutation(PXP_UPDATE_PATIENT);
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
@@ -278,20 +208,8 @@ const PatientForm = (props: Props) => {
       employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.isPxpView) {
-      // TODO: not this
-      const pxpVariables = Object.assign({}, variables);
-      delete pxpVariables.facilityId;
-      const newBirthDate = pxpVariables.birthDate;
-      delete pxpVariables.birthDate;
-      pxpUpdatePatient({
-        variables: {
-          internalId: plid,
-          oldBirthDate: patientInStore.birthDate,
-          newBirthDate,
-          ...pxpVariables,
-        },
-      }).then(
-        (res: any) => {
+      PxpApi.updatePatient(plid, patientInStore.birthDate, variables).then(
+        (updatedPatientFromApi: any) => {
           showNotification(
             toast,
             <Alert
@@ -299,7 +217,8 @@ const PatientForm = (props: Props) => {
               title={`Your profile changes have been saved`}
             />
           );
-          const updatedPatientFromApi = res.data.patientLinkUpdatePatient;
+
+          // TODO: DRY this boolean => YES|NO processing (this will go away when we switch to strings)
           const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
             ? "YES"
             : "NO";
@@ -307,6 +226,7 @@ const PatientForm = (props: Props) => {
             ? "YES"
             : "NO";
 
+          // TODO: maybe factor this redux handling into the pxp code
           dispatch(
             reduxSetPatient({
               ...updatedPatientFromApi,
