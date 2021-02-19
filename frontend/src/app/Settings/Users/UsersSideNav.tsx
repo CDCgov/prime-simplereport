@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 
-import { displayFullName } from "../../utils";
+import { displayFullNameInOrder } from "../../utils";
 import { SettingsUsers } from "./ManageUsers";
 import { SettingsUser } from "./ManageUsersContainer";
 
@@ -36,7 +36,7 @@ const UsersSideNav: React.FC<Props> = ({
                 )}
               >
                 <span className="sidenav-user-name">
-                  {displayFullName(
+                  {displayFullNameInOrder(
                     user.firstName,
                     user.middleName,
                     user.lastName
