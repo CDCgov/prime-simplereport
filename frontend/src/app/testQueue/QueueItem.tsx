@@ -405,6 +405,9 @@ const QueueItem: any = ({
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
+      })
+      .finally(() => {
+        setRemovePatientId(undefined);
       });
   };
 
