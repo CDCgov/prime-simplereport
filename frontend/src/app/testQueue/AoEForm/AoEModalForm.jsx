@@ -121,8 +121,10 @@ const AoEModalForm = ({
           {modalView === "text" && (
             <>
               {smsSuccess ? (
-                <div className="usa-alert usa-alert--success outline-0
-                0">
+                <div
+                  className="usa-alert usa-alert--success outline-0
+                0"
+                >
                   <div className="usa-alert__body">
                     <h3 className="usa-alert__heading">Text message sent</h3>
                     <p className="usa-alert__text">
