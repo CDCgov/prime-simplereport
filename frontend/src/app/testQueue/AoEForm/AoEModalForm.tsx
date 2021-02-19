@@ -84,7 +84,7 @@ const AoEModalForm = (props: Props) => {
 
   const chooseModalView = async (view: string) => {
     if (view === "smartphone") {
-      // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
+      // if we have a truthy qrCodeValue, we don't need to save the test order to generate a PLID
       setPatientLink(
         qrCodeValue ||
           `${getUrl()}pxp?plid=${await saveCallback(patientResponse)}`
