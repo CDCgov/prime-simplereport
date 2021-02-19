@@ -17,12 +17,18 @@ const ARCHIVE_PERSON_RECORD = gql`
 `;
 
 interface Props {
-  person: any;
+  person: Patient;
   closeModal: () => void;
 }
-
+interface ArchivePersonResponse {
+  internalId: string;
+}
+interface ArchivePersonParams {
+  id: string,
+  deleted: string
+}
 const ArchivePersonModal = ({ person, closeModal }: Props) => {
-  const [archivePersonRecord] = useMutation(ARCHIVE_PERSON_RECORD);
+  const [archivePersonRecord] = useMutation<ArchivePersonResponse, ArchivePersonParams>(ARCHIVE_PERSON_RECORD);
   const yesArchivePerson = () => {
     archivePersonRecord({
       variables: {
