@@ -12,7 +12,7 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const dobRef = useRef<HTMLFormElement>(null);
+  const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
   const [loading, setLoading] = useState(false);
