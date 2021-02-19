@@ -295,7 +295,7 @@ type Mutation {
     email: String!
   ): User
   updateUser(
-    id: ID!
+    id: String!
     firstName: String
     middleName: String
     lastName: String!
@@ -303,11 +303,11 @@ type Mutation {
     email: String!
   ): User
   updateUserRole(
-    id: ID!
+    id: String!
     role: OrganizationRole!
   ): OrganizationRole
   setUserIsDeleted(
-    id: ID!, 
+    id: String!, 
     deleted: Boolean!
   ): User
   addPatient(

@@ -1,5 +1,5 @@
 mutation updateUserRole(
-    $id: ID!,
+    $id: String!,
     $role: OrganizationRole!,
     ){
   updateUserRole(
