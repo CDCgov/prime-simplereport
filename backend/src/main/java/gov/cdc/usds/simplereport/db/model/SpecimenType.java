@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 
 import org.hibernate.annotations.NaturalId;
+import org.springframework.boot.context.properties.ConstructorBinding;
 
 import gov.cdc.usds.simplereport.validators.NumericCode;
 import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
@@ -11,6 +13,7 @@ import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
  * A SNOMED-registered specimen type that can be used by one or more
  * {@link DeviceType}s.
  */
+@Entity
 public class SpecimenType extends EternalEntity {
 
     @Column(nullable = false)
@@ -30,6 +33,7 @@ public class SpecimenType extends EternalEntity {
 
     protected SpecimenType() {} // for hibernate
 
+    @ConstructorBinding
     public SpecimenType(String name, String typeCode, String collectionLocationName, String collectionLocationCode) {
         this(name, typeCode);
         this.collectionLocationName = collectionLocationName;

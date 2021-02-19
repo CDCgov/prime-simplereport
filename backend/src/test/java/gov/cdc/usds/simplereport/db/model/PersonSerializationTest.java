@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,12 +54,12 @@ class PersonSerializationTest {
                 LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY), null, "1234556", null, "a@b.c", "marathon", "generic",
                 "Male-ish", true, false);
         Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
-        List<DeviceType> configuredDevices = new ArrayList<>();
-        DeviceType bill = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
-        configuredDevices.add(bill);
+        DeviceSpecimen ds = new DeviceSpecimen(
+                new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"),
+                new SpecimenType("Troll Bogies", "000111222"));
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         p.setFacility(new Facility(fakeOrg, "Nice Place", "YOUGOTHERE", addy, "555-867-5309", "facility@test.com",
-                mccoy, bill, configuredDevices));
+                mccoy, ds, List.of(ds)));
         String json = _tester.write(p).getJson();
         assertFalse(json.contains("organization"));
         assertFalse(json.contains("facility"));

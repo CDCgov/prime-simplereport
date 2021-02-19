@@ -3,23 +3,24 @@ package gov.cdc.usds.simplereport.service.model;
 import java.util.Collections;
 import java.util.List;
 
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 
 public class DeviceTypeHolder {
 
-	private DeviceType _defaultDeviceType;
-	private List<DeviceType> _allDeviceTypes;
-	public DeviceTypeHolder(DeviceType defaultType, List<DeviceType> configuredTypes) {
+    private DeviceSpecimen _defaultDeviceType;
+    private List<DeviceSpecimen> _allDeviceTypes;
+
+    public DeviceTypeHolder(DeviceSpecimen defaultType, List<DeviceSpecimen> configuredTypes) {
 		super();
 		this._defaultDeviceType = defaultType;
 		this._allDeviceTypes = Collections.unmodifiableList(configuredTypes);
 	}
 
-	public DeviceType getDefaultDeviceType() {
+    public DeviceSpecimen getDefaultDeviceType() {
 		return _defaultDeviceType;
 	}
 
-	public List<DeviceType> getConfiguredDeviceTypes() {
+    public List<DeviceSpecimen> getConfiguredDeviceTypes() {
 		return _allDeviceTypes;
 	}
 }

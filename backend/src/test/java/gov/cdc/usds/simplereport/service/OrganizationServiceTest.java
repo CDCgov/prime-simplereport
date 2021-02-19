@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -34,11 +35,8 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     @Test
     void createOrganization_standardUser_error() {
+        DeviceTypeHolder holder = getDeviceConfig();
         assertSecurityError(() -> {
-            List<DeviceType> configuredDevices = new ArrayList<>();
-            DeviceType device = new DeviceType("Bill", "Weasleys", "1", "12345-6", "E");
-            configuredDevices.add(device);
-            DeviceTypeHolder holder = new DeviceTypeHolder(device, configuredDevices);
             StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "",
                     "");
             PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
@@ -47,13 +45,18 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         });
     }
 
+    private DeviceTypeHolder getDeviceConfig() {
+        DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
+        SpecimenType specimen = _dataFactory.getGenericSpecimen();
+        DeviceSpecimen dst = _dataFactory.createDeviceSpecimen(device, specimen);
+        DeviceTypeHolder holder = new DeviceTypeHolder(dst, List.of(dst));
+        return holder;
+    }
+
     @Test
     @WithSimpleReportSiteAdminUser
     void createOrganization_adminUser_success() {
-        List<DeviceType> configuredDevices = new ArrayList<>();
-        DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
-        configuredDevices.add(device);
-        DeviceTypeHolder holder = new DeviceTypeHolder(device, configuredDevices);
+        DeviceTypeHolder holder = getDeviceConfig();
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
         Organization org = _service.createOrganization("Tim's org", "d6b3951b-6698-4ee7-9d63-aaadee85bac0",

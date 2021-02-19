@@ -32,6 +32,10 @@ public abstract class BaseTestInfo extends AuditedEntity
     private Facility facility;
 
     @ManyToOne(optional = false)
+    @JoinColumn(name = "device_specimen_id")
+    private DeviceSpecimen deviceSpecimen;
+
+    @ManyToOne(optional = false)
     @JoinColumn(name = "device_type_id")
     private DeviceType deviceType;
 
@@ -55,22 +59,27 @@ public abstract class BaseTestInfo extends AuditedEntity
         super();
     }
 
-    public BaseTestInfo(Person patient, Facility facility, DeviceType deviceType, TestResult result) {
+    protected BaseTestInfo(BaseTestInfo orig) {
+        this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen(), orig.getResult());
+    }
+
+    protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimen deviceSpecimen, TestResult result) {
         super();
         this.patient = patient;
         this.facility = facility;
         this.organization = facility.getOrganization();
-        this.deviceType = deviceType;
+        this.deviceSpecimen = deviceSpecimen;
+        this.deviceType = deviceSpecimen.getDeviceType();
         this.result = result;
         this.correctionStatus = TestCorrectionStatus.ORIGINAL;
     }
 
     protected BaseTestInfo(Person patient, Facility facility) {
-        this(patient, facility, facility.getDefaultDeviceType(), null);
+        this(patient, facility, facility.getDefaultDeviceSpecimen(), null);
     }
 
     protected BaseTestInfo(BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-        this(cloneInfo.patient, cloneInfo.facility, cloneInfo.deviceType, cloneInfo.result);
+        this(cloneInfo);
         this.reasonForCorrection = reasonForCorrection;
         this.correctionStatus = correctionStatus;
     }
@@ -90,6 +99,10 @@ public abstract class BaseTestInfo extends AuditedEntity
 
     public DeviceType getDeviceType() {
         return deviceType;
+    }
+
+    public DeviceSpecimen getDeviceSpecimen() {
+        return deviceSpecimen;
     }
 
     public TestResult getResult() {
@@ -112,8 +125,9 @@ public abstract class BaseTestInfo extends AuditedEntity
         result = newResult;
     }
 
-    protected void setDeviceType(DeviceType deviceType) {
-        this.deviceType = deviceType;
+    protected void setDeviceSpecimen(DeviceSpecimen deviceSpecimen) {
+        this.deviceSpecimen = deviceSpecimen;
+        this.deviceType = deviceSpecimen.getDeviceType();
     }
 
     public TestCorrectionStatus getCorrectionStatus() {

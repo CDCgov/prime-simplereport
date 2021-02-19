@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.persistence.Column;
@@ -35,21 +37,9 @@ public class Facility extends OrganizationScopedEternalEntity {
 	@Column
 	private String cliaNumber;
 
-	@ManyToOne(optional = true)
-	@JoinColumn(name = "default_device_type_id")
-	private DeviceType defaultDeviceType;
-
 	@OneToOne(optional=false)
 	@JoinColumn(name = "ordering_provider_id", nullable = false)
 	private Provider orderingProvider;
-
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(
-		name = "facility_device_type",
-		joinColumns = @JoinColumn(name="facility_id"),
-		inverseJoinColumns = @JoinColumn(name="device_type_id")
-	)
-	private Set<DeviceType> configuredDevices = new HashSet<>();
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "default_device_specimen_id")
@@ -66,8 +56,8 @@ public class Facility extends OrganizationScopedEternalEntity {
     protected Facility() {/* for hibernate */}
 
 	public Facility(Organization org, String facilityName, String cliaNumber, StreetAddress facilityAddress,
-			String phone, String email, Provider orderingProvider, DeviceType defaultDeviceType,
-			List<DeviceType> configuredDeviceTypes) {
+			String phone, String email, Provider orderingProvider, DeviceSpecimen defaultDeviceSpecimen,
+			List<DeviceSpecimen> configuredDeviceSpecimens) {
 		super(org);
 		this.facilityName = facilityName;
 		this.cliaNumber = cliaNumber;
@@ -75,11 +65,11 @@ public class Facility extends OrganizationScopedEternalEntity {
 		this.telephone = phone;
 		this.email = email;
 		this.orderingProvider = orderingProvider;
-		this.defaultDeviceType = defaultDeviceType;
-		if (defaultDeviceType != null) {
-			this.configuredDevices.add(defaultDeviceType);
+        this.defaultDeviceSpecimen = defaultDeviceSpecimen;
+		if (defaultDeviceSpecimen != null) {
+            this.configuredDeviceSpecimens.add(defaultDeviceSpecimen);
 		}
-		this.configuredDevices.addAll(configuredDeviceTypes);
+        this.configuredDeviceSpecimens.addAll(configuredDeviceSpecimens);
 	}
 
 	public void setFacilityName(String facilityName) {
@@ -90,35 +80,60 @@ public class Facility extends OrganizationScopedEternalEntity {
 		return facilityName;
 	}
 
+    public DeviceSpecimen getDefaultDeviceSpecimen() {
+        return defaultDeviceSpecimen;
+    }
+
 	public DeviceType getDefaultDeviceType() {
-		return defaultDeviceType;
+        return defaultDeviceSpecimen == null ? null : defaultDeviceSpecimen.getDeviceType();
 	}
 
 	public void setDefaultDeviceType(DeviceType defaultDeviceType) {
-		this.defaultDeviceType = defaultDeviceType;
+        throw new IllegalArgumentException();
 	}
 
 	public List<DeviceType> getDeviceTypes() {
 		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
-		return configuredDevices.stream()
+        return configuredDeviceSpecimens.stream()
 			.filter(e -> !e.isDeleted())
+                .map(DeviceSpecimen::getDeviceType)
+                .filter(e -> !e.isDeleted())
 			.collect(Collectors.toList());
 	}
 
-	public void addDeviceType(DeviceType newDevice) {
-		configuredDevices.add(newDevice);
-	}
+    public List<DeviceSpecimen> getDeviceSpecimens() {
+        return configuredDeviceSpecimens.stream()
+                .filter(e -> !(e.isDeleted() || e.getSpecimenType().isDeleted() || e.getDeviceType().isDeleted()))
+                .collect(Collectors.toList());
+    }
 
-	public void addDefaultDeviceType(DeviceType newDevice) {
-		this.defaultDeviceType = newDevice;
-		addDeviceType(newDevice);
-	}
+    public void addDeviceSpecimen(DeviceSpecimen ds) {
+        configuredDeviceSpecimens.add(ds);
+    }
 
-	public void removeDeviceType(DeviceType existingDevice) {
-		configuredDevices.remove(existingDevice);
-		if (defaultDeviceType != null && existingDevice.getInternalId().equals(defaultDeviceType.getInternalId())) {
-			defaultDeviceType = null;
-		}
+    public void addDefaultDeviceSpecimen(DeviceSpecimen newDefault) {
+        addDeviceSpecimen(newDefault);
+        defaultDeviceSpecimen = newDefault;
+    }
+
+    public void removeDeviceSpecimen(DeviceSpecimen existing) {
+        configuredDeviceSpecimens.remove(existing); // count on this being in one hibernate session
+    }
+
+    public void removeDeviceType(DeviceType existingDevice) {
+        Iterator<DeviceSpecimen> i = configuredDeviceSpecimens.iterator();
+        UUID removedId = existingDevice.getInternalId();
+        while (i != null && i.hasNext()) {
+            DeviceType d = i.next().getDeviceType();
+            if (d.getInternalId().equals(removedId)) {
+                i.remove();
+                if (defaultDeviceSpecimen != null
+                        && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
+                    defaultDeviceSpecimen = null;
+                }
+                break;
+            }
+        }
 	}
 
 	public String getCliaNumber() {

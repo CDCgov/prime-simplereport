@@ -117,8 +117,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           Translators.parseState(orderingProviderState),
           orderingProviderZipCode,
           Translators.parsePhoneNumber(orderingProviderTelephone),
-          deviceTypes.getConfiguredDeviceTypes(),
-          deviceTypes.getDefaultDeviceType()
+                deviceTypes
         );
         return new ApiFacility(facility);
     }

@@ -14,15 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -43,6 +47,10 @@ public class OrganizationInitializingService {
 	@Autowired
 	private DeviceTypeRepository _deviceTypeRepo;
 	@Autowired
+    private SpecimenTypeRepository _specimenTypeRepo;
+    @Autowired
+    private DeviceSpecimenRepository _deviceSpecimenRepo;
+    @Autowired
 	private FacilityRepository _facilityRepo;
 	@Autowired
 	private ApiUserRepository _apiUserRepo;
@@ -66,6 +74,17 @@ public class OrganizationInitializingService {
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
 		Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
 				Collectors.toMap(d->d.getName(), d->d));
+        Map<String, SpecimenType> specimenTypesByName = _specimenTypeRepo.findAll().stream().collect(
+                Collectors.toMap(d -> d.getName(), d -> d));
+        for (SpecimenType s : _props.getSpecimenTypes()) {
+            SpecimenType specimenType = specimenTypesByName.get(s.getName());
+            if (null == specimenType) {
+                LOG.info("Creating device {}", s.getName());
+                specimenType = _specimenTypeRepo.save(s);
+                specimenTypesByName.put(specimenType.getName(), specimenType);
+            }
+        }
+        SpecimenType defaultSpecimenType = specimenTypesByName.get(_props.getSpecimenTypes().get(0).getName());
 		for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
 			if (null == deviceType) {
@@ -73,17 +92,29 @@ public class OrganizationInitializingService {
 				deviceType = _deviceTypeRepo.save(d);
 				byName.put(deviceType.getName(), deviceType);
 			}
+            Optional<DeviceSpecimen> deviceSpecimens = _deviceSpecimenRepo
+                    .findFirstByDeviceTypeInternalIdOrderByCreatedAt(deviceType.getInternalId());
+            if (deviceSpecimens.isEmpty()) {
+                _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultSpecimenType));
+            }
 		}
-		List<DeviceType> configured= _props.getConfiguredDeviceTypeNames().stream()
-				.map(name->byName.get(name))
+
+        List<DeviceSpecimen> configured = _props.getConfiguredDeviceTypeNames().stream()
+                .map(name -> byName.get(name).getInternalId())
+                .map(_deviceSpecimenRepo::findFirstByDeviceTypeInternalIdOrderByCreatedAt)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
 				.collect(Collectors.toList());
-		DeviceType defaultDeviceType = configured.get(0);
+        DeviceSpecimen defaultDeviceSpecimen = configured.get(0);
+
 		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
 		Organization realOrg = _orgRepo.save(emptyOrg);
 		// in the unlikely event DB and Okta fall out of sync
 		initOktaOrg(realOrg);
-		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
-		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
+        Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider,
+                defaultDeviceSpecimen, configured);
+        LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(),
+                configured.size());
 		_facilityRepo.save(defaultFacility);
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.

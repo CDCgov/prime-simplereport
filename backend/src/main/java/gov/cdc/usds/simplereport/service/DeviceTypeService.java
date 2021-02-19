@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
@@ -22,9 +24,11 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 public class DeviceTypeService {
 
     private DeviceTypeRepository _repo;
+    private DeviceSpecimenRepository _deviceSpecimenRepo;
 
-    public DeviceTypeService(DeviceTypeRepository repo) {
+    public DeviceTypeService(DeviceTypeRepository repo, DeviceSpecimenRepository deviceSpecimenRepo) {
         _repo = repo;
+        _deviceSpecimenRepo = deviceSpecimenRepo;
     }
 
     @Transactional(readOnly = false)
@@ -40,6 +44,12 @@ public class DeviceTypeService {
     public DeviceType getDeviceType(String internalId) {
         UUID actualId = UUID.fromString(internalId);
         return _repo.findById(actualId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid device type ID"));
+    }
+
+    public DeviceSpecimen getDefaultForDeviceId(String deviceId) {
+        UUID actualDeviceId = UUID.fromString(deviceId);
+        return _deviceSpecimenRepo.findFirstByDeviceTypeInternalIdOrderByCreatedAt(actualDeviceId).orElseThrow(
+                () -> new IllegalGraphqlArgumentException("Device is not configured with a specimen type"));
     }
 
     @Transactional(readOnly = false)
@@ -87,12 +97,12 @@ public class DeviceTypeService {
         if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
             throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
         }
-        List<DeviceType> configuredTypes = configuredDeviceTypeIds.stream()
-                .map(this::getDeviceType)
+        List<DeviceSpecimen> configuredTypes = configuredDeviceTypeIds.stream()
+                .map(this::getDefaultForDeviceId)
                 .collect(Collectors.toList());
         UUID defaultId = UUID.fromString(defaultDeviceTypeId);
-        DeviceType defaultType = configuredTypes.stream()
-            .filter(dt->dt.getInternalId().equals(defaultId))
+        DeviceSpecimen defaultType = configuredTypes.stream()
+                .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultId))
             .findFirst()
             .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
             ;

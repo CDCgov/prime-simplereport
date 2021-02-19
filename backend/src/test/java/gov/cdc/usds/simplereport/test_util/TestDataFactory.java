@@ -8,12 +8,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -21,12 +23,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 
@@ -34,6 +38,8 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 public class TestDataFactory {
 
     private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
+    private static final String DEFAULT_SPECIMEN_TYPE = "Nasal swab";
+
     @Autowired
     private OrganizationRepository _orgRepo;
     @Autowired
@@ -50,6 +56,10 @@ public class TestDataFactory {
     private TestEventRepository _testEventRepo;
     @Autowired
     private PatientAnswersRepository _patientAnswerRepo;
+    @Autowired
+    private SpecimenTypeRepository _specimenRepo;
+    @Autowired
+    private DeviceSpecimenRepository _deviceSpecimenRepo;
 
     public Organization createValidOrg() {
         return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
@@ -60,8 +70,8 @@ public class TestDataFactory {
     }
 
     public Facility createValidFacility(Organization org, String facilityName) {
-        DeviceType dev = getGenericDevice();
-        List<DeviceType> configuredDevices = new ArrayList<>();
+        DeviceSpecimen dev = getGenericDeviceSpecimen();
+        List<DeviceSpecimen> configuredDevices = new ArrayList<>();
         configuredDevices.add(dev);
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         Provider doc = _providerRepo.save(new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "800-555-1212"));
@@ -135,7 +145,30 @@ public class TestDataFactory {
     }
 
     public DeviceType getGenericDevice() {
-        return _deviceRepo.findAll().stream().filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
-                .orElseGet(() -> _deviceRepo.save(new DeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E")));
+        return getGenericDeviceSpecimen().getDeviceType();
     }
+
+    public SpecimenType createSpecimenType(String name, String typeCode, String collectionLocationName,
+            String collectionLocationCode) {
+        return _specimenRepo.save(new SpecimenType(name, typeCode, collectionLocationName, collectionLocationCode));
+    }
+
+    public SpecimenType getGenericSpecimen() {
+        return getGenericDeviceSpecimen().getSpecimenType();
+    }
+
+    public DeviceSpecimen getGenericDeviceSpecimen() {
+        DeviceType dev = _deviceRepo.findAll().stream().filter(d -> d.getName().equals(DEFAULT_DEVICE_TYPE)).findFirst()
+                .orElseGet(() -> createDeviceType(DEFAULT_DEVICE_TYPE, "Acme", "SFN", "54321-BOOM", "E"));
+        SpecimenType specType = _specimenRepo.findAll().stream().filter(d -> d.getName().equals(DEFAULT_SPECIMEN_TYPE))
+                .findFirst()
+                .orElseGet(() -> createSpecimenType(DEFAULT_SPECIMEN_TYPE, "000111222", "Da Nose", "986543321"));
+        return _deviceSpecimenRepo.find(dev, specType)
+                .orElseGet(() -> createDeviceSpecimen(dev, specType));
+    }
+
+    public DeviceSpecimen createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
+        return _deviceSpecimenRepo.save(new DeviceSpecimen(device, specimen));
+    }
+
 }

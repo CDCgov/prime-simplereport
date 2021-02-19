@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -90,8 +90,7 @@ public class TestOrderService {
     TestOrder order = this.getTestOrder(id);
 
     if (deviceId != null) {
-      DeviceType deviceType = _dts.getDeviceType(deviceId);
-      order.setDeviceType(deviceType);
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
     }
 
     order.setResult(result == null ? null : TestResult.valueOf(result));
@@ -103,11 +102,11 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTest
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
-    DeviceType deviceType = _dts.getDeviceType(deviceID);
+      DeviceSpecimen deviceType = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceType(deviceType);
+    order.setDeviceSpecimen(deviceType);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
     order.markComplete();
