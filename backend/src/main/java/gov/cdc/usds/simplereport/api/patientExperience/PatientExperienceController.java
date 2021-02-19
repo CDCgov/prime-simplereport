@@ -58,10 +58,6 @@ public class PatientExperienceController {
   /**
    * This endpoint is used to determine whether or not the patient link is still
    * valid and has not yet expired. It does not require birthdate verification
-   * 
-   * @param internalId
-   * @return the Organization attached to the Patient
-   * @throws Exception
    */
   @GetMapping("/link/{plid}")
   public Organization getPatientLinkCurrent(@PathVariable("plid") String internalId) throws Exception {
@@ -75,11 +71,6 @@ public class PatientExperienceController {
    * Verify that the patient-provided DOB matches the patient on file for the
    * patient link id. It returns the full patient object if so, otherwise it
    * throws an exception
-   * 
-   * @param internalId
-   * @param birthDate
-   * @return
-   * @throws Exception
    */
   @PutMapping("/link/verify")
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws Exception {
