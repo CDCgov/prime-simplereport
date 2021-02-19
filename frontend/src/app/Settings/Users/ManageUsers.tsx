@@ -27,8 +27,8 @@ const RoleDescriptionToOrgRole = {
 };
 
 interface Props {
-  loggedInUser: User;
   users: SettingsUser[];
+  loggedInUser: User;
   allFacilities: UserFacilitySetting[];
   updateUserRole: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
@@ -38,9 +38,9 @@ interface Props {
 export type SettingsUsers = { [id: string]: SettingsUser };
 
 const ManageUsers: React.FC<Props> = ({
-  allFacilities,
-  loggedInUser,
   users,
+  loggedInUser,
+  allFacilities,
   updateUserRole,
   addUserToOrg,
   deleteUser,

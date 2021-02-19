@@ -3,7 +3,7 @@ import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import ManageUsers from "./ManageUsers";
-import { UserRole, UserPermission, OrganizationRole } from "../../permissions";
+import { UserRole, UserPermission } from "../../permissions";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -99,10 +99,9 @@ export interface NewUserInvite {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole | string | undefined; // TODO: clean this up
+  role: UserRole | string | undefined; // TODO: clean this up or delete it if we are not supporting this feature
 }
 
-// const ManageUsersContainer: React.FC<any> = () => {
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
   const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
@@ -135,7 +134,7 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Facilities not found</p>;
   }
 
-  let allFacilities = dataFacilities?.organization
+  let allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
 
   return (
