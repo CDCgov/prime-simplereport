@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   globalSymptomDefinitions,
   getTestTypes,
@@ -11,7 +11,6 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
-import { Redirect } from "react-router-dom";
 import classnames from "classnames";
 
 // Get the value associate with a button label
@@ -104,7 +103,13 @@ const AoEForm: React.FC<Props> = ({
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
-  const [nextPage, setNextPage] = useState(false);
+
+  useEffect(() => {
+    // scroll to the top on first-nav for pxp
+    if (!isModal) {
+      window.scrollTo(0, 0);
+    }
+  }, []);
 
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
@@ -185,7 +190,8 @@ const AoEForm: React.FC<Props> = ({
       if (isModal && onClose) {
         onClose();
       } else {
-        setNextPage(true);
+        // pxp must not use dom form's action->post
+        e.preventDefault();
       }
     } else {
       e.preventDefault();
@@ -202,10 +208,6 @@ const AoEForm: React.FC<Props> = ({
       />
     </div>
   );
-
-  if (nextPage) {
-    return <Redirect to={"/success"} />;
-  }
 
   return (
     <>

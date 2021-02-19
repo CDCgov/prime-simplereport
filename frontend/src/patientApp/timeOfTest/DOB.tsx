@@ -14,7 +14,7 @@ const DOB = () => {
   const [birthDateError, setBirthDateError] = useState("");
   const [nextPage, setNextPage] = useState(false);
   const dobRef = React.createRef() as any;
-  const plid = useSelector((state) => (state as any).plid as String);
+  const plid = useSelector((state) => (state as any).plid as string);
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(undefined as any);
 

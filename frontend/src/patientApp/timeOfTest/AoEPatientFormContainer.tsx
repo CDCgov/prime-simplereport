@@ -3,39 +3,11 @@ import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import { connect, useSelector } from "react-redux";
-import { gql, useMutation } from "@apollo/client";
+import { showError } from "../../app/utils";
 
 import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
-
-// TODO: refactor to use REST endpoint
-const PATIENT_LINK_SUBMIT_MUTATION = gql`
-  mutation PatientLinkById(
-    $plid: String!
-    $birthDate: LocalDate!
-    $pregnancy: String
-    $symptoms: String
-    $firstTest: Boolean
-    $priorTestDate: LocalDate
-    $priorTestType: String
-    $priorTestResult: String
-    $symptomOnset: LocalDate
-    $noSymptoms: Boolean
-  ) {
-    patientLinkSubmit(
-      internalId: $plid
-      birthDate: $birthDate
-      pregnancy: $pregnancy
-      symptoms: $symptoms
-      firstTest: $firstTest
-      priorTestDate: $priorTestDate
-      priorTestType: $priorTestType
-      priorTestResult: $priorTestResult
-      symptomOnset: $symptomOnset
-      noSymptoms: $noSymptoms
-    )
-  }
-`;
+import { PxpApi } from "../PxpApiService";
 
 interface Props {
   page: string;
@@ -43,22 +15,25 @@ interface Props {
 
 const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
   const [prevPage, setPrevPage] = useState(false);
+  const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const plid =
-    useSelector((state) => (state as any).plid as String) ||
-    getPatientLinkIdFromUrl();
+    useSelector((state) => (state as any).plid) || getPatientLinkIdFromUrl();
   const history = useHistory();
 
-  const [submitMutation] = useMutation(PATIENT_LINK_SUBMIT_MUTATION);
-
-  const saveCallback = (args: any) => {
-    submitMutation({
-      variables: {
-        ...args,
-        plid,
-        birthDate: patient.birthDate,
-      },
-    });
+  const saveCallback = async (data: any) => {
+    try {
+      const result = await PxpApi.submitQuestions(
+        plid as string,
+        patient.birthDate,
+        data
+      );
+      setNextPage(true);
+    } catch (e) {
+      console.error(e);
+      showError("There was an error submitting your responses");
+      return;
+    }
   };
 
   history.listen((loc, action) => {
@@ -66,6 +41,16 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
       setPrevPage(true);
     }
   });
+
+  if (nextPage) {
+    return (
+      <Redirect
+        to={{
+          pathname: "/success",
+        }}
+      />
+    );
+  }
 
   if (prevPage) {
     return (

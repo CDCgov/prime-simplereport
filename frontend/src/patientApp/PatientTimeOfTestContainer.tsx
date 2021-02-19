@@ -12,7 +12,7 @@ interface Props {
 
 const PatientTimeOfTestContainer = ({ children, currentPage }: Props) => {
   const steps = getTimeOfTestSteps();
-  const plid = useSelector((state) => (state as any).plid as String);
+  const plid = useSelector((state) => (state as any).plid as string);
   const history = useHistory();
 
   const setPatientLinkId = (patientLinkId: String) => {

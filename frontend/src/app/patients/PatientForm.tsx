@@ -215,8 +215,8 @@ const PatientForm = (props: Props) => {
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
 
-  const plid = useSelector((state) => (state as any).plid as String);
-  const patientInStore = useSelector((state) => (state as any).patient as any);
+  const plid = useSelector((state: any) => state.plid);
+  const patientInStore = useSelector((state: any) => state.patient);
 
   const allFacilities = "~~ALL-FACILITIES~~";
   const [currentFacilityId, setCurrentFacilityId] = useState(
