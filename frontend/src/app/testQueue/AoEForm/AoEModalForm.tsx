@@ -46,12 +46,12 @@ const AoEModalForm = (props: Props) => {
     patient,
     loadState = {},
     saveCallback,
-    qrCodeValue = `${getUrl()}pxp`,
+    qrCodeValue,
     canAddToTestQueue,
   } = props;
 
   const [modalView, setModalView] = useState("");
-  const [patientLink, setPatientLink] = useState(qrCodeValue);
+  const [patientLink, setPatientLink] = useState("");
   const modalViewValues = [
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
@@ -84,8 +84,11 @@ const AoEModalForm = (props: Props) => {
 
   const chooseModalView = async (view: string) => {
     if (view === "smartphone") {
-      const patientLinkId = await saveCallback(patientResponse);
-      setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`);
+      // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
+      setPatientLink(
+        qrCodeValue ||
+          `${getUrl()}pxp?plid=${await saveCallback(patientResponse)}`
+      );
     }
     setModalView(view);
   };
