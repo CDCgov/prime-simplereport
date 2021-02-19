@@ -114,11 +114,6 @@ const RadioGroup = ({
               htmlFor={`${widgetId}_${c.value}_${i}`}
             >
               {c.label}
-              {/* {c.checkedLabel && c.value === selectedRadio ? (
-                <span className="usa-checkbox__label-description">
-                  {c.checkedLabel}
-                </span>
-              ) : null} */}
             </label>
           </div>
         ))}
