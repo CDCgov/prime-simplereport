@@ -205,29 +205,29 @@ public class ApiUserService {
     }
 
     public UserInfo getCurrentUserInfo() {
-		ApiUser currentUser = getCurrentApiUser();
-		Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-		boolean isAdmin = isAdmin(currentUser);
+        ApiUser currentUser = getCurrentApiUser();
+        Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+        boolean isAdmin = isAdmin(currentUser);
         return new UserInfo(currentUser, currentOrgRoles, isAdmin);
     }
 
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public List<UserInfo> getUsersInCurrentOrg() {
-		Organization org = _orgService.getCurrentOrganization();
-		List<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
-		Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
-		Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
-		return apiUsers.stream().map(u -> {
-			Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
-			String email = u.getLoginEmail();
-			if (admins.contains(email)) {
-				roles.add(OrganizationRole.ADMIN);
-			}
-			if (entryOnly.contains(email)) {
-				roles.add(OrganizationRole.ENTRY_ONLY);
-			}
-			OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
-			return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
+        Organization org = _orgService.getCurrentOrganization();
+        List<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
+        Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
+        Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
+        return apiUsers.stream().map(u -> {
+            Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
+            String email = u.getLoginEmail();
+            if (admins.contains(email)) {
+                roles.add(OrganizationRole.ADMIN);
+            }
+            if (entryOnly.contains(email)) {
+                roles.add(OrganizationRole.ENTRY_ONLY);
+            }
+            OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
+            return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
         }).collect(Collectors.toList());
     }
 }
