@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -98,26 +99,27 @@ public class DemoOktaRepository implements OktaRepository {
         }
     }
 
-    public OrganizationRole updateUserRole(String username, OrganizationRole role) {
+    public OrganizationRole updateUserRole(String username, Organization org, OrganizationRole role) {
         OrganizationRoleClaims oldRoleClaims = usernameOrgRolesMap.get(username);
+        String orgId = org.getExternalId();
+        if (!oldRoleClaims.getOrganizationExternalId().equals(orgId)) {
+            throw new IllegalGraphqlArgumentException("Cannot update user role for organization they are not in.");
+        }
         Set<OrganizationRole> roles = new HashSet<>();
         roles.add(OrganizationRole.USER);
         roles.add(role);
-        OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(oldRoleClaims.getOrganizationExternalId(),
-                                                                          roles);
+        OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(orgId, roles);
         usernameOrgRolesMap.put(username, newRoleClaims);
         
-        for (String org : orgRoleUsernamesMap.keySet()) {
-            Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(org);
-            for (OrganizationRole r : roleUsernamesMap.keySet()) {
-                List<String> usernames = roleUsernamesMap.get(r);
-                if (r.equals(role)) {
-                    if (!usernames.contains(username)) {
-                        usernames.add(username);
-                    }
-                } else if (!r.equals(OrganizationRole.USER)) {
-                    usernames.remove(username);
+        Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(orgId);
+        for (OrganizationRole r : roleUsernamesMap.keySet()) {
+            List<String> usernames = roleUsernamesMap.get(r);
+            if (r.equals(role)) {
+                if (!usernames.contains(username)) {
+                    usernames.add(username);
                 }
+            } else if (!r.equals(OrganizationRole.USER)) {
+                usernames.remove(username);
             }
         }
 

@@ -19,7 +19,7 @@ public interface OktaRepository {
 
     public void updateUser(String oldUsername, IdentityAttributes userIdentity);
 
-    public OrganizationRole updateUserRole(String username, OrganizationRole role);
+    public OrganizationRole updateUserRole(String username, Organization org, OrganizationRole role);
 
     public void setUserIsActive(String username, Boolean active);
 

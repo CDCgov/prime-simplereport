@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -110,7 +111,10 @@ public class ApiUserService {
     public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
         ApiUser user = getUser(userId);
         String username = user.getLoginEmail();
-        return _oktaRepo.updateUserRole(username, role);
+        OrganizationRoleClaims orgClaims = _oktaRepo.getOrganizationRoleClaimsForUser(username)
+                .orElseThrow(MisconfiguredUserException::new);
+        Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+        return _oktaRepo.updateUserRole(username, org, role);
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser

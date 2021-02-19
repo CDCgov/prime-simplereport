@@ -55,6 +55,8 @@ public class OrganizationInitializingService {
 
 	public void initAll() {
 
+		// Allows any subsequent callers to have a valid user record for purposes of passing
+		// permission-checks
 		initCurrentUser();
 
 		LOG.debug("Organization init called (again?)");
