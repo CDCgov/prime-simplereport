@@ -12,7 +12,6 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const [error, setError] = useState("");
   const dobRef = React.createRef() as any;
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -87,12 +86,6 @@ const DOB = () => {
             Enter your date of birth to access your COVID-19 Testing Portal.
           </p>
           <form className="usa-form" onSubmit={confirmBirthDate}>
-            {error ? (
-              <div className="usa-error-message" role="alert">
-                <span className="usa-sr-only">Error: </span>
-                {error}
-              </div>
-            ) : null}
             <TextInput
               label={"Date of birth"}
               name={"birthDate"}
