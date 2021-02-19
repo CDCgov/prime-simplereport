@@ -278,7 +278,7 @@ const ManageUsers: React.FC<Props> = ({
                   onUpdateUser={updateUser}
                 />
 
-                {process.env.REACT_APP_USER_FACILITIES_ENABLED === "true" ? (
+                {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
                     activeUser={activeUser}
                     allFacilities={allFacilities}

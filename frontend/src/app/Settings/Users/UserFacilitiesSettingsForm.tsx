@@ -11,7 +11,7 @@ import "./ManageUsers.scss";
 
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
-  allFacilities: UserFacilitySetting[];
+  allFacilities: UserFacilitySetting[]; // all facilities for the entire org; the activeUser would have a subset of these
   onUpdateUser(userId: string, key: string, value: UserFacilitySetting[]): void;
 }
 
@@ -84,12 +84,14 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         <tr key={facility.id}>
           <td>{facility.name}</td>
           <td>
-            <div
-              className="remove-tag"
-              onClick={() => onRemoveFacility(activeUser, facility.id)}
-            >
-              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-            </div>
+            {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
+              <div
+                className="remove-tag"
+                onClick={() => onRemoveFacility(activeUser, facility.id)}
+              >
+                <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+              </div>
+            ) : null}
           </td>
         </tr>
       ))
@@ -146,17 +148,20 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       >
         <tbody>{userFacilities}</tbody>
       </table>
-      <Button
-        variant="outline"
-        type="button"
-        onClick={() => {
-          setIsComponentVisible(!isComponentVisible);
-        }}
-        label="+ Add Facility Access"
-        disabled={
-          currentFacilities && currentFacilities.length === allFacilities.length
-        }
-      />
+      {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
+        <Button
+          variant="outline"
+          type="button"
+          onClick={() => {
+            setIsComponentVisible(!isComponentVisible);
+          }}
+          label="+ Add Facility Access"
+          disabled={
+            currentFacilities &&
+            currentFacilities.length === allFacilities.length
+          }
+        />
+      ) : null}
       {isComponentVisible ? (
         <div className="grid-row">{allFacilityList}</div>
       ) : null}
