@@ -139,9 +139,9 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
       content: {
         top: "50%",
         left: "50%",
+        bottom: "auto",
         width: "40%",
         minWidth: "20em",
-        maxHeight: "14em",
         marginRight: "-50%",
         transform: "translate(-50%, -50%)",
       },
