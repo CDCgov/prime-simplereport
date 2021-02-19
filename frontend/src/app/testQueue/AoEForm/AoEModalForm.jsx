@@ -15,6 +15,7 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback,
   qrCodeValue = "",
+  canAddToTestQueue,
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState("");
@@ -40,10 +41,11 @@ const AoEModalForm = ({
     symptoms: JSON.stringify(symptomsResponse),
   };
 
+  // Save default values if in "smartphone mode" or verbal form not displayed
   const continueModal = () => {
-    if (modalView === "smartphone") {
+    if (modalView === "smartphone" || !formRef?.current) {
       saveCallback(patientResponse);
-    } else if (formRef?.current) {
+    } else {
       formRef.current.dispatchEvent(new Event("submit"));
     }
     onClose();
