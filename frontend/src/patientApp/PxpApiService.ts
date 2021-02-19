@@ -20,7 +20,12 @@ export class PxpApi {
         plid,
         dob,
       }),
-    }).then((res) => res.json());
+    }).then((res) => {
+      if (!res.ok) {
+        throw new Error(res.statusText);
+      }
+      return res.json();
+    });
   }
 
   static submitQuestions(plid: string, dob: string, data: any) {

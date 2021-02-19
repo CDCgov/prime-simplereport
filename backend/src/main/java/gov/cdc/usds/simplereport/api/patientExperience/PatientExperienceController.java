@@ -25,6 +25,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.exceptions.FeatureFlagDisabledException;
+import gov.cdc.usds.simplereport.api.exceptions.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
@@ -77,7 +78,8 @@ public class PatientExperienceController {
    * throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws Exception {
+  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
+      throws InvalidPatientLinkException {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
@@ -87,10 +89,11 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/patient")
-  public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) {
+  public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) throws InvalidPatientLinkException {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }
+    pls.getPatientLinkVerify(body.getPlid(), body.getDob()); // gotta verify!
 
     PatientLink pl = pls.getPatientLink(body.getPlid());
     UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
@@ -108,7 +111,7 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/questions")
-  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws Exception {
+  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws InvalidPatientLinkException {
     if (!patientLinksEnabled) {
       throw new FeatureFlagDisabledException("Patient links not enabled");
     }

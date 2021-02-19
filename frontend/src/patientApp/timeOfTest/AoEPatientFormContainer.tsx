@@ -27,11 +27,7 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
 
   const saveCallback = async (data: any) => {
     try {
-      const result = await PxpApi.submitQuestions(
-        plid as string,
-        patient.birthDate,
-        data
-      );
+      await PxpApi.submitQuestions(plid as string, patient.birthDate, data);
       setNextPage(true);
     } catch (e) {
       console.error(e);

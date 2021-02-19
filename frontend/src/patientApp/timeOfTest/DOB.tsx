@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
@@ -12,55 +12,49 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const [nextPage, setNextPage] = useState(false);
+  const [error, setError] = useState("");
   const dobRef = React.createRef() as any;
-  const plid = useSelector((state) => (state as any).plid as string);
+  const plid = useSelector((state: any) => state.plid);
+  const patient = useSelector((state: any) => state.patient);
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState(undefined as any);
 
   useEffect(() => {
-    if (!data) return;
-    const patient = data;
-    const residentCongregateSetting = patient.residentCongregateSetting
-      ? "YES"
-      : "NO";
-    const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
+    dobRef.current.focus();
+  }, []);
 
-    dispatch(
-      setPatient({
-        ...patient,
-        residentCongregateSetting,
-        employedInHealthcare,
-      })
-    );
+  const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    setNextPage(true);
-    // eslint-disable-next-line
-  }, [data]);
-
-  const isValidForm = () => {
-    const validDate = moment(birthDate.replace("/", ""), "MMDDYYYY").isValid();
-
-    if (validDate) {
-      setBirthDateError("");
-      return true;
-    } else {
+    const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
+    if (!date.isValid()) {
       dobRef.current.focus();
       setBirthDateError("Enter your date of birth");
-      return false;
+      return;
     }
-  };
 
-  const confirmBirthDate = () => {
-    if (isValidForm()) {
-      const dob = moment(birthDate.replace("/", ""), "MMDDYYYY").format(
-        "YYYY-MM-DD"
+    setLoading(true);
+    try {
+      const response = await PxpApi.validateDob(
+        plid,
+        date.format("YYYY-MM-DD")
       );
-      setLoading(true);
-      PxpApi.validateDob(plid, dob).then((result) => {
-        setData(result);
-        setLoading(false);
-      });
+      const residentCongregateSetting = response.residentCongregateSetting
+        ? "YES"
+        : "NO";
+      const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
+      dispatch(
+        setPatient({
+          ...response,
+          residentCongregateSetting,
+          employedInHealthcare,
+        })
+      );
+    } catch (e) {
+      setBirthDateError(
+        "No patient link with the supplied ID was found, or the birth date provided was incorrect."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,7 +68,7 @@ const DOB = () => {
     );
   }
 
-  if (nextPage) {
+  if (patient) {
     return (
       <Redirect
         push
@@ -93,6 +87,12 @@ const DOB = () => {
             Enter your date of birth to access your COVID-19 Testing Portal.
           </p>
           <form className="usa-form" onSubmit={confirmBirthDate}>
+            {error ? (
+              <div className="usa-error-message" role="alert">
+                <span className="usa-sr-only">Error: </span>
+                {error}
+              </div>
+            ) : null}
             <TextInput
               label={"Date of birth"}
               name={"birthDate"}

@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.cdc.usds.simplereport.api.exceptions.IncorrectBirthDateException;
-import gov.cdc.usds.simplereport.api.exceptions.PatientLinkExpiredException;
+import gov.cdc.usds.simplereport.api.exceptions.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -43,17 +42,19 @@ public class PatientLinkService {
         if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
             return pl.getTestOrder().getOrganization();
         } else {
-            throw new PatientLinkExpiredException("Patient Link is expired; please contact your provider");
+            // TODO: right now this will throw a 401 with the wrong reason. follow up here:
+            // https://github.com/CDCgov/prime-simplereport/pull/813#discussion_r578893986
+            throw new InvalidPatientLinkException("Patient Link is expired; please contact your provider");
         }
     }
 
-    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws IncorrectBirthDateException {
+    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws InvalidPatientLinkException {
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
         if (patient.getBirthDate().equals(birthDate)) {
             return patient;
         } else {
-            throw new IncorrectBirthDateException("Incorrect birth date provided");
+            throw new InvalidPatientLinkException();
         }
     }
 
