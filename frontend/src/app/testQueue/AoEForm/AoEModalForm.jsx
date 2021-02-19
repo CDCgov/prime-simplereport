@@ -40,9 +40,13 @@ const AoEModalForm = ({
     symptoms: JSON.stringify(symptomsResponse),
   };
 
-  // Save default values if in "smartphone mode" or verbal form not displayed
   const continueModal = () => {
-    if (modalView === "smartphone" || !formRef?.current) {
+    // No need to save form if in "smartphone" mode
+    if (modalView === "smartphone") {
+      return onClose();
+    }
+    // Save default if form doesn't exist, otherwise submit form
+    if (!formRef?.current) {
       saveCallback(patientResponse);
     } else {
       formRef.current.dispatchEvent(new Event("submit"));
