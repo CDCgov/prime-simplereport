@@ -22,12 +22,14 @@ const AoEModalForm = ({
   const formRef = useRef(null);
   const modalViewValues = [
     {
-      label: <>
-        Text message
-        <span className="radio__label-description--checked usa-radio__label-description text-base">
-          {patient.telephone}
-        </span>
-      </>,
+      label: (
+        <>
+          Text message
+          <span className="radio__label-description--checked usa-radio__label-description text-base">
+            {patient.telephone}
+          </span>
+        </>
+      ),
       value: "text",
     },
     { label: "Complete on smartphone", value: "smartphone" },
