@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
@@ -15,10 +15,10 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback,
   qrCodeValue = "",
-  canAddToTestQueue,
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState("");
+  const formRef = useRef(null);
   const modalViewValues = [
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
@@ -41,12 +41,12 @@ const AoEModalForm = ({
   };
 
   const continueModal = () => {
-    if (canAddToTestQueue) {
+    if (modalView === "smartphone") {
       saveCallback(patientResponse);
-      onClose();
-    } else {
-      onClose();
+    } else if (formRef?.current) {
+      formRef.current.dispatchEvent(new Event("submit"));
     }
+    onClose();
   };
 
   const chooseModalView = async (view) => {
@@ -63,12 +63,12 @@ const AoEModalForm = ({
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      {/* <Button
+      <Button
         className="margin-right-0"
         label={saveButtonText}
         type={"button"}
         onClick={() => continueModal()}
-      /> */}
+      />
     </div>
   );
 
@@ -146,6 +146,7 @@ const AoEModalForm = ({
               saveCallback={saveCallback}
               isModal={true}
               noValidation={true}
+              formRef={formRef}
             />
           )}
         </>
@@ -158,6 +159,7 @@ const AoEModalForm = ({
           saveCallback={saveCallback}
           isModal={true}
           noValidation={true}
+          formRef={formRef}
         />
       )}
     </Modal>
