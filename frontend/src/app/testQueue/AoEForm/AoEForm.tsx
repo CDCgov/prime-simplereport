@@ -11,7 +11,7 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
-import { Redirect } from "react-router";
+import { Redirect } from "react-router-dom";
 import classnames from "classnames";
 
 // Get the value associate with a button label

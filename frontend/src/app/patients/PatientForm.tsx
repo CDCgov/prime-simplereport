@@ -6,8 +6,7 @@ import {
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
 import moment from "moment";
-import { Prompt } from "react-router-dom";
-import { Redirect } from "react-router";
+import { Prompt, Redirect } from "react-router-dom";
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,

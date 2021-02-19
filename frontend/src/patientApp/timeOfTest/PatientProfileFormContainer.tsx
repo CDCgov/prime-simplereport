@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Redirect } from "react-router";
+import { Redirect } from "react-router-dom";
 import { useDispatch, connect, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { gql, useLazyQuery } from "@apollo/client";
