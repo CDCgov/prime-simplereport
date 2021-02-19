@@ -80,5 +80,7 @@ jobs:
         run: cd frontend; yarn start &> ../yarn-log.txt &
       - name: Build e2e container images
         run: cd frontend/e2e; docker-compose build
+      - name: Print logs
+        run: sleep 300 && cat gradle-log.txt && cat yarn-log.txt
       - name: Run e2e tests
         run: cd frontend/e2e; docker-compose run nightwatch ./nightwatch-entrypoint.bash;
