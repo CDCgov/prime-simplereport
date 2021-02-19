@@ -5,7 +5,7 @@ import moment from "moment";
 
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
-import { setPatient } from "../../app/store";
+import { setPatient, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
 
 const DOB = () => {
@@ -45,6 +45,11 @@ const DOB = () => {
         ? "YES"
         : "NO";
       const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
+      dispatch(
+        updateOrganization({
+          name: response.organizationName,
+        })
+      );
       dispatch(
         setPatient({
           ...response,

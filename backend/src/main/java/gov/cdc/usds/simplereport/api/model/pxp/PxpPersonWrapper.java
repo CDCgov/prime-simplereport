@@ -106,6 +106,13 @@ public class PxpPersonWrapper {
   public PxpTestEventWrapper getLastTest() {
     return te;
   }
+
+  public String getOrganizationName() {
+    if (p.getOrganization() == null) {
+      return null;
+    }
+    return p.getOrganization().getOrganizationName();
+  }
 }
 
 class PxpTestEventWrapper {

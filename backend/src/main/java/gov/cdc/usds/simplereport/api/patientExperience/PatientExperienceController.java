@@ -61,18 +61,6 @@ public class PatientExperienceController {
   private boolean patientLinksEnabled;
 
   /**
-   * This endpoint is used to determine whether or not the patient link is still
-   * valid and has not yet expired. It does not require birthdate verification
-   */
-  @GetMapping("/link/{plid}")
-  public Organization getPatientLinkCurrent(@PathVariable("plid") String internalId) throws Exception {
-    if (!patientLinksEnabled) {
-      throw new FeatureFlagDisabledException("Patient links not enabled");
-    }
-    return pls.getPatientLinkCurrent(internalId);
-  }
-
-  /**
    * Verify that the patient-provided DOB matches the patient on file for the
    * patient link id. It returns the full patient object if so, otherwise it
    * throws an exception
