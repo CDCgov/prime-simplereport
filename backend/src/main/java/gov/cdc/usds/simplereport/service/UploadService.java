@@ -67,7 +67,7 @@ public class UploadService {
         if (!isRequired) {
             return value;
         }
-        if(value == null || value.trim().isEmpty()) {
+        if (value == null || value.trim().isEmpty()) {
             throw new IllegalGraphqlArgumentException(name + " is required.");
         }
         return value;
