@@ -72,7 +72,7 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     // Does not overwrite demo users who were created on initialization
-    public void createUser(IdentityAttributes userIdentity, Organization org) {
+    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org) {
         String organizationExternalId = org.getExternalId();
         OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, 
                                                                      Set.of(OrganizationRole.USER));
@@ -83,10 +83,16 @@ public class DemoOktaRepository implements OktaRepository {
         if (!usernames.contains(userIdentity.getUsername())) {
             usernames.add(userIdentity.getUsername());
         }
+
+        return Optional.of(orgRoles);
     }
 
-    public void updateUser(String oldUsername, IdentityAttributes userIdentity) {
-        usernameOrgRolesMap.put(userIdentity.getUsername(), usernameOrgRolesMap.get(oldUsername));
+    public Optional<OrganizationRoleClaims> updateUser(String oldUsername, IdentityAttributes userIdentity) {
+        OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(oldUsername);
+        usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
+        if (!oldUsername.equals(userIdentity.getUsername())) {
+            usernameOrgRolesMap.remove(oldUsername);
+        }
 
         for (String org : orgRoleUsernamesMap.keySet()) {
             Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(org);
@@ -97,6 +103,8 @@ public class DemoOktaRepository implements OktaRepository {
                 }
             }
         }
+
+        return Optional.of(orgRoles);
     }
 
     public OrganizationRole updateUserRole(String username, Organization org, OrganizationRole role) {

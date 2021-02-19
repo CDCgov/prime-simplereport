@@ -1,8 +1,12 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +28,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 
 @Service
@@ -54,62 +59,71 @@ public class ApiUserService {
 
     @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
-    public ApiUser createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
+    public UserInfo createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
         Organization org = _orgService.getOrganization(organizationExternalId);
         return createUserHelper(username, firstName, middleName, lastName, suffix, org);
     }
 
     @Transactional
     @AuthorizationConfiguration.RequirePermissionManageUsers
-    public ApiUser createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
+    public UserInfo createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
         Organization org = _orgService.getCurrentOrganization();
         return createUserHelper(username, firstName, middleName, lastName, suffix, org);
     }
 
-    private ApiUser createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, Organization org) {
+    private UserInfo createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, Organization org) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
-        ApiUser user = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        _oktaRepo.createUser(userIdentity, org);
+        ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
+        Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org);
+        Optional<OrganizationRoles> orgRoles = roleClaims.map(c ->
+                new OrganizationRoles(org, c.getGrantedRoles()));
+        boolean isAdmin = isAdmin(apiUser);
+        UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
         LOG.info("User with id={} created by user with id={}", 
-                 user.getInternalId(), 
-                 getCurrentUser().getInternalId().toString());
+                 apiUser.getInternalId(), 
+                 getCurrentApiUser().getInternalId().toString());
 
         return user;
     }
 
     @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-    public ApiUser updateUser(UUID userId, 
+    public UserInfo updateUser(UUID userId, 
                               String username, 
                               String firstName, 
                               String middleName, 
                               String lastName, 
                               String suffix) {
-        ApiUser user = getUser(userId);
-        String oldUsername = user.getLoginEmail();
+        ApiUser apiUser = getApiUser(userId);
+        String oldUsername = apiUser.getLoginEmail();
 
-        user.setLoginEmail(username);
-        PersonName nameInfo = user.getNameInfo();
+        apiUser.setLoginEmail(username);
+        PersonName nameInfo = apiUser.getNameInfo();
         nameInfo.setFirstName(firstName);
         nameInfo.setMiddleName(middleName);
         nameInfo.setLastName(lastName);
         nameInfo.setSuffix(suffix);
-        user = _apiUserRepo.save(user);
+        apiUser = _apiUserRepo.save(apiUser);
 
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
-        _oktaRepo.updateUser(oldUsername, userIdentity);
+        Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
+        Optional<OrganizationRoles> orgRoles = roleClaims.map(c ->
+                new OrganizationRoles(_orgService.getOrganization(c.getOrganizationExternalId()), 
+                                      c.getGrantedRoles()));
+        boolean isAdmin = isAdmin(apiUser);
+        UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
         
         LOG.info("User with id={} updated by user with id={}", 
-                 user.getInternalId(), 
-                 getCurrentUser().getInternalId().toString());
+                 apiUser.getInternalId(), 
+                 getCurrentApiUser().getInternalId().toString());
 
         return user;
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
-        ApiUser user = getUser(userId);
+        ApiUser user = getApiUser(userId);
         String username = user.getLoginEmail();
         OrganizationRoleClaims orgClaims = _oktaRepo.getOrganizationRoleClaimsForUser(username)
                 .orElseThrow(MisconfiguredUserException::new);
@@ -119,14 +133,15 @@ public class ApiUserService {
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     @Transactional
-    public ApiUser setIsDeleted(UUID userId, boolean deleted) {
-        ApiUser user = getUser(userId);
-        user.setIsDeleted(deleted);
-        _oktaRepo.setUserIsActive(user.getLoginEmail(), !deleted);
-        return _apiUserRepo.save(user);
+    public UserInfo setIsDeleted(UUID userId, boolean deleted) {
+        ApiUser apiUser = getApiUser(userId);
+        apiUser.setIsDeleted(deleted);
+        apiUser = _apiUserRepo.save(apiUser);
+        _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
+        return new UserInfo(apiUser, Optional.empty(), isAdmin(apiUser));
     }
 
-    private ApiUser getUser(UUID id) {
+    private ApiUser getApiUser(UUID id) {
         Optional<ApiUser> found = _apiUserRepo.findById(id);
         if (!found.isPresent()) {
             throw new NonexistentUserException();
@@ -135,20 +150,18 @@ public class ApiUserService {
         return user;
     }
 
-    @AuthorizationConfiguration.RequirePermissionManageUsers
-    public List<ApiUser> getUsersInCurrentOrg(OrganizationRole role) {
+    private List<ApiUser> getApiUsersInCurrentOrg(OrganizationRole role) {
         List<String> usernames = _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
         return _apiUserRepo.findAllByLoginEmailIn(usernames);
     }
 
-    @AuthorizationConfiguration.RequirePermissionManageUsers
-    public List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
+    private List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
         return _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     public Optional<OrganizationRoles> getOrganizationRolesForUser(UUID userId) {
-        ApiUser user = getUser(userId);
+        ApiUser user = getApiUser(userId);
         Optional<OrganizationRoleClaims> roleClaims = 
                 _oktaRepo.getOrganizationRoleClaimsForUser(user.getLoginEmail());
         return roleClaims.map(c ->
@@ -160,15 +173,15 @@ public class ApiUserService {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 
-    // Creating separate getCurrentUser() methods because the auditing use case requires
+    // Creating separate getCurrentApiUser() methods because the auditing use case requires
     // a new transaction, while Sonar requires a non-Transactional version to be called
     // from other methods in the same class
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ApiUser getCurrentUserForAudit() {
-        return getCurrentUser();
+    public ApiUser getCurrentApiUserForAudit() {
+        return getCurrentApiUser();
     }
 
-    public ApiUser getCurrentUser() {
+    public ApiUser getCurrentApiUser() {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
         if (found.isPresent()) {
@@ -189,5 +202,32 @@ public class ApiUserService {
 
             return user;
         }
+    }
+
+    public UserInfo getCurrentUserInfo() {
+		ApiUser currentUser = getCurrentApiUser();
+		Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+		boolean isAdmin = isAdmin(currentUser);
+        return new UserInfo(currentUser, currentOrgRoles, isAdmin);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionManageUsers
+    public List<UserInfo> getUsersInCurrentOrg() {
+		Organization org = _orgService.getCurrentOrganization();
+		List<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
+		Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
+		Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
+		return apiUsers.stream().map(u -> {
+			Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
+			String email = u.getLoginEmail();
+			if (admins.contains(email)) {
+				roles.add(OrganizationRole.ADMIN);
+			}
+			if (entryOnly.contains(email)) {
+				roles.add(OrganizationRole.ENTRY_ONLY);
+			}
+			OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
+			return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
+        }).collect(Collectors.toList());
     }
 }

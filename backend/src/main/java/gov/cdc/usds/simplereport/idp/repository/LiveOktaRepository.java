@@ -59,7 +59,7 @@ public class LiveOktaRepository implements OktaRepository {
                 .build();
     }
 
-    public void createUser(IdentityAttributes userIdentity, Organization org) {
+    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org) {
         // need to validate fields before adding them because Maps don't like nulls
         Map<String,Object> userProfileMap = new HashMap<String, Object>();
         if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -101,6 +101,8 @@ public class LiveOktaRepository implements OktaRepository {
                 .setProfileProperties(userProfileMap)
                 .setGroups(group.getId())
                 .buildAndCreate(_client);
+
+        return Optional.of(new OrganizationRoleClaims(organizationExternalId, Set.of(OrganizationRole.USER)));
     }
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
@@ -118,7 +120,7 @@ public class LiveOktaRepository implements OktaRepository {
                 .collect(Collectors.toList());
     }
 
-    public void updateUser(String oldUsername, IdentityAttributes userIdentity) {
+    public Optional<OrganizationRoleClaims> updateUser(String oldUsername, IdentityAttributes userIdentity) {
 
         UserList users = _client.listUsers(oldUsername, null, null, null, null);
         if (!users.iterator().hasNext()) {
@@ -135,6 +137,8 @@ public class LiveOktaRepository implements OktaRepository {
         user.getProfile().setEmail(userIdentity.getUsername());
         user.getProfile().setLogin(userIdentity.getUsername());
         user.update();
+
+        return getOrganizationRoleClaimsForUser(user);
     }
 
     public OrganizationRole updateUserRole(String username, Organization org, OrganizationRole role) {
@@ -222,6 +226,10 @@ public class LiveOktaRepository implements OktaRepository {
             throw new IllegalGraphqlArgumentException("Cannot get org external ID for suspended user");
         }
 
+        return getOrganizationRoleClaimsForUser(user);
+    }
+
+    private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
         Set<String> orgExternalIds = new HashSet<>();
         Set<OrganizationRole> roles = new HashSet<>();
 
