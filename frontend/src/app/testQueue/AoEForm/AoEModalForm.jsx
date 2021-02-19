@@ -22,9 +22,13 @@ const AoEModalForm = ({
   const formRef = useRef(null);
   const modalViewValues = [
     {
-      label: "Text message",
+      label: <>
+        Text message
+        <span className="usa-checkbox__label-description">
+          {patient.telephone}
+        </span>
+      </>,
       value: "text",
-      checkedLabel: patient.telephone,
     },
     { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },

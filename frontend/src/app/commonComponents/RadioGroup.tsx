@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import classnames from "classnames";
 import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
@@ -6,9 +6,8 @@ import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
 type OptionsArray = {
-  label: string;
+  label: ReactNode;
   value: string;
-  checkedLabel?: string;
   disabled?: boolean;
 }[];
 type Options = OptionsKeys | OptionsArray;
@@ -59,7 +58,7 @@ const RadioGroup = ({
     "usa-radio",
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
-  const choices = Array.isArray(buttons)
+  const choices: OptionsArray = Array.isArray(buttons)
     ? buttons
     : Object.keys(buttons).map((k) => ({
         label: k,
@@ -97,7 +96,7 @@ const RadioGroup = ({
           validationStatus === "error" && "usa-form-group--error"
         )}
       >
-        {(choices as []).map((c: any, i: any) => (
+        {choices.map((c, i) => (
           <div className={groupClass} key={c.value}>
             <input
               type="radio"
@@ -115,11 +114,11 @@ const RadioGroup = ({
               htmlFor={`${widgetId}_${c.value}_${i}`}
             >
               {c.label}
-              {c.checkedLabel && c.value === selectedRadio ? (
+              {/* {c.checkedLabel && c.value === selectedRadio ? (
                 <span className="usa-checkbox__label-description">
                   {c.checkedLabel}
                 </span>
-              ) : null}
+              ) : null} */}
             </label>
           </div>
         ))}

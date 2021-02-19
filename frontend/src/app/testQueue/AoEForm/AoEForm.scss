@@ -17,3 +17,15 @@ div.usa-form-group--error {
     }
   }
 }
+
+.usa-checkbox__label:checked {
+  .usa-checkbox__label-description {
+    display: block;
+  }
+}
+
+.usa-checkbox__label {
+  .usa-checkbox__label-description {
+    display: none;
+  }
+}
