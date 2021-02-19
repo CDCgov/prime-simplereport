@@ -18,9 +18,11 @@ const Header: React.FC<{}> = () => {
     (state) => (state as any).organization as Organization
   );
   const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
+    (state) => ((state as any).facilities as Facility[]) || []
   );
-  const facility = useSelector((state) => (state as any).facility as Facility);
+  const facility = useSelector(
+    (state) => ((state as any).facility as Facility) || { id: "", name: "" }
+  );
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
