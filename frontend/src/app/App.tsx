@@ -114,7 +114,12 @@ const App = () => {
                   path="/"
                   exact
                   render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: "/queue" }} />
+                    <Redirect
+                      to={{
+                        ...location,
+                        pathname: data.whoami.isAdmin ? "/admin" : "/queue",
+                      }}
+                    />
                   )}
                 />
                 <ProtectedRoute
