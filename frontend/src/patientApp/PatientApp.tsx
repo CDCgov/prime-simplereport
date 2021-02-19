@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
-import { useDispatch, connect } from "react-redux";
+import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
@@ -16,52 +16,19 @@ import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientFormContainer from "./timeOfTest/PatientFormContainer";
-import { showError } from "../app/utils";
-import { PxpApi } from "./PxpApiService";
+import Patient404 from "./timeOfTest/Patient404";
 
 const PatientApp = () => {
   const dispatch = useDispatch();
-  const plid = getPatientLinkIdFromUrl();
-  if (plid == null) {
-    throw new Error("Patient Link ID from URL was null");
-  }
-
-  const [loading, setLoading] = useState(true);
+  const plid = useSelector((state: any) => state.plid);
 
   useEffect(() => {
-    PxpApi.getOrgFromPlid(plid)
-      .then((data: any) => {
-        dispatch(
-          setInitialState({
-            plid,
-            organization: {
-              name: data.organizationName,
-            },
-          })
-        );
+    dispatch(
+      setInitialState({
+        plid: getPatientLinkIdFromUrl(),
       })
-      .catch((err) => showError(err))
-      .finally(() => {
-        setLoading(false);
-      });
-  }, [dispatch, plid]);
-
-  if (loading) {
-    return (
-      <main>
-        <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">Loading account information...</p>
-        </div>
-        <ToastContainer
-          autoClose={5000}
-          closeButton={false}
-          limit={2}
-          position="bottom-center"
-          hideProgressBar={true}
-        />
-      </main>
     );
-  }
+  }, [dispatch]);
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
@@ -77,49 +44,64 @@ const PatientApp = () => {
           <div id="main-wrapper">
             <USAGovBanner />
             <PatientHeader />
-            <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
-              <Switch>
-                <Route
-                  path="/"
-                  exact
-                  render={(props) => <DOB {...(props.location.state as any)} />}
-                />
-                <Route
-                  path="/birth-date-confirmation"
-                  render={(props) => <DOB {...(props.location.state as any)} />}
-                />
-                <Route
-                  path="/patient-info-confirm"
-                  render={(props) => (
-                    <PatientProfileContainer
-                      {...(props.location.state as any)}
+
+            {plid === undefined ? (
+              "Loading..."
+            ) : plid === null ? (
+              <Patient404 />
+            ) : (
+              <>
+                <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+                  <Switch>
+                    <Route
+                      path="/"
+                      exact
+                      render={(props) => (
+                        <DOB {...(props.location.state as any)} />
+                      )}
                     />
-                  )}
-                />
-                <Route
-                  path="/patient-info-edit"
-                  render={(props) => (
-                    <PatientFormContainer {...(props.location.state as any)} />
-                  )}
-                />
-                <Route
-                  path="/patient-info-symptoms"
-                  render={(props) => (
-                    <AoEPatientFormContainer
-                      {...(props.location.state as any)}
+                    <Route
+                      path="/birth-date-confirmation"
+                      render={(props) => (
+                        <DOB {...(props.location.state as any)} />
+                      )}
                     />
-                  )}
+                    <Route
+                      path="/patient-info-confirm"
+                      render={(props) => (
+                        <PatientProfileContainer
+                          {...(props.location.state as any)}
+                        />
+                      )}
+                    />
+                    <Route
+                      path="/patient-info-edit"
+                      render={(props) => (
+                        <PatientFormContainer
+                          {...(props.location.state as any)}
+                        />
+                      )}
+                    />
+                    <Route
+                      path="/patient-info-symptoms"
+                      render={(props) => (
+                        <AoEPatientFormContainer
+                          {...(props.location.state as any)}
+                        />
+                      )}
+                    />
+                    <Route path="/success" component={PatientLanding} />
+                  </Switch>
+                </Router>
+                <ToastContainer
+                  autoClose={5000}
+                  closeButton={false}
+                  limit={2}
+                  position="bottom-center"
+                  hideProgressBar={true}
                 />
-                <Route path="/success" component={PatientLanding} />
-              </Switch>
-            </Router>
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+              </>
+            )}
           </div>
         </div>
       </PrimeErrorBoundary>
