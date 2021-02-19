@@ -15,17 +15,24 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import { showNotification, displayFullName } from "../../utils";
+import { showNotification, displayFullNameInOrder } from "../../utils";
+import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import "./ManageUsers.scss";
+
+const RoleDescriptionToOrgRole = {
+  "Admin user": "ADMIN",
+  "Standard user": "USER",
+  "Test-entry user": "ENTRY_ONLY",
+};
 
 interface Props {
   loggedInUser: User;
   users: SettingsUser[];
   allFacilities: UserFacilitySetting[];
-  onUpdateUser: (user: SettingsUser) => void;
-  onCreateNewUser: (newUserInvite: NewUserInvite) => void;
-  onDeleteUser: (userId: string) => void;
+  updateUserRole: (variables: any) => Promise<any>;
+  addUserToOrg: (variables: any) => Promise<any>;
+  deleteUser: (variables: any) => Promise<any>;
 }
 
 export type SettingsUsers = { [id: string]: SettingsUser };
@@ -34,9 +41,9 @@ const ManageUsers: React.FC<Props> = ({
   allFacilities,
   loggedInUser,
   users,
-  onUpdateUser,
-  onCreateNewUser,
-  onDeleteUser,
+  updateUserRole,
+  addUserToOrg,
+  deleteUser,
 }) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
@@ -49,7 +56,7 @@ const ManageUsers: React.FC<Props> = ({
   const [usersState, updateUsersState] = useState<SettingsUsers>(settingsUsers);
   const [activeUserId, updateActiveUserId] = useState<string>(
     Object.keys(settingsUsers)[0]
-  ); // TODO: unless there is a desired sort algorithm, pick the first user
+  ); // TODO: unless there is a desired sort algorithm, arbitrarily pick the first user
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -58,6 +65,7 @@ const ManageUsers: React.FC<Props> = ({
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
 
+  // only updates the local state
   function updateUser<T>(
     userId: string,
     key: string, // the field to update
@@ -73,29 +81,7 @@ const ManageUsers: React.FC<Props> = ({
     updateIsUserEdited(true);
   }
 
-  const onSaveChanges = (userId: string) => {
-    onUpdateUser(usersState[userId]); // TODO this does nothing atm
-    updateIsUserEdited(false);
-
-    const user = usersState[userId];
-
-    const fullName = displayFullName(
-      user.firstName,
-      user.middleName,
-      user.lastName
-    );
-
-    let successAlert = (
-      <Alert
-        type="success"
-        title="Changes Saved"
-        body={`${fullName}'s settings have been saved`}
-      />
-    );
-
-    showNotification(toast, successAlert);
-  };
-
+  // confirm with the user if they have unsaved edits and want to change users
   const onChangeActiveUser = (nextActiveUserId: string) => {
     if (isUserEdited) {
       updateNextActiveUserId(nextActiveUserId);
@@ -105,6 +91,7 @@ const ManageUsers: React.FC<Props> = ({
     }
   };
 
+  // proceed with changing the active user
   const onContinueChangeActiveUser = (currentActiveUserId: string) => {
     updateShowInProgressModal(false);
 
@@ -112,6 +99,7 @@ const ManageUsers: React.FC<Props> = ({
     resetUser(currentActiveUserId);
   };
 
+  // throw away unsaved edits
   const resetUser = (userId: string) => {
     updateUsersState({
       ...usersState,
@@ -120,35 +108,113 @@ const ManageUsers: React.FC<Props> = ({
     updateIsUserEdited(false);
   };
 
-  const onHandleCreateNewUser = (newUserInvite: NewUserInvite) => {
-    // TODO: validate form
-    onCreateNewUser(newUserInvite);
+  const handleUpdateUser = (userId: string) => {
+    const selectedRoleDescription = usersState[userId]
+      .roleDescription as RoleDescription;
+    const selectedOrganizationRole = RoleDescriptionToOrgRole[
+      selectedRoleDescription
+    ] as OrganizationRole;
+    updateUserRole({
+      variables: {
+        id: userId,
+        role: selectedOrganizationRole,
+      },
+    })
+      .then(() => {
+        updateIsUserEdited(false);
 
-    const fullName = displayFullName(
-      newUserInvite.firstName,
-      null,
-      newUserInvite.lastName
-    );
+        const user = usersState[userId];
 
-    let successAlert = (
-      <Alert
-        type="success"
-        title={`Invitation sent to ${fullName}`}
-        body={`They will receive an invitation to create an account at the email address provided`}
-      />
-    );
+        const fullName = displayFullNameInOrder(
+          user.firstName,
+          user.middleName,
+          user.lastName
+        );
 
-    showNotification(toast, successAlert);
-    updateShowAddUserModal(false);
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title="Changes Saved"
+            body={`${fullName}'s settings have been saved`}
+          />
+        );
+      })
+      .catch((error: Error) => {
+        console.log(error);
+        // TODO: track error
+      });
   };
 
-  const onHandleDeleteUser = (userId: string) => {
-    // TODO: show alert only if delete is successful
-    onDeleteUser(userId);
+  const handleAddUserToOrg = (newUserInvite: NewUserInvite) => {
+    // TODO: validate form
+    const { firstName, lastName, email } = { ...newUserInvite };
+    addUserToOrg({
+      variables: {
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+      },
+    })
+      .then(() => {
+        const fullName = displayFullNameInOrder(firstName, "", lastName);
+
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title={`Invitation sent to ${fullName}`}
+            body={`They will receive an invitation to create an account at the email address provided`}
+          />
+        );
+        updateShowAddUserModal(false);
+
+        // TODO: immediately show user in list (not sure if this is the desired behavior)
+      })
+      .catch((error) => {
+        console.log(error);
+        // TODO: track error in analytics
+      });
+  };
+
+  const handleDeleteUser = (userId: string) => {
+    deleteUser({
+      variables: {
+        id: userId,
+        deleted: true,
+      },
+    })
+      .then((data) => {
+        const deletedUserId = data.data.setUserIsDeleted.id;
+        const user = usersState[deletedUserId];
+
+        const fullName = displayFullNameInOrder(
+          user.firstName,
+          user.middleName,
+          user.lastName
+        );
+
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title={`User account removed for ${fullName}`}
+          />
+        );
+
+        // remove the deleted user from the UI
+        const { [deletedUserId]: value, ...usersMinusDeleted } = usersState;
+        updateUsersState(usersMinusDeleted);
+        updateActiveUserId(Object.keys(usersMinusDeleted)[0]); // arbitrarily pick the first user as the next active.
+      })
+      .catch((error: Error) => {
+        console.log(error);
+        // TODO: track error in analytics
+      });
 
     const user = usersState[userId];
 
-    const fullName = displayFullName(
+    const fullName = displayFullNameInOrder(
       user.firstName,
       user.middleName,
       user.lastName
@@ -191,7 +257,7 @@ const ManageUsers: React.FC<Props> = ({
             <div className="tablet:grid-col">
               <div className="user-header">
                 <h2 className="display-inline-block margin-top-2 margin-bottom-105">
-                  {displayFullName(
+                  {displayFullNameInOrder(
                     activeUser.firstName,
                     activeUser.middleName,
                     activeUser.lastName
@@ -233,7 +299,7 @@ const ManageUsers: React.FC<Props> = ({
                 ) : null}
                 <Button
                   type="button"
-                  onClick={() => onSaveChanges(activeUserId)}
+                  onClick={() => handleUpdateUser(activeUserId)}
                   label="Save changes"
                   disabled={
                     // enabled only if the user has been edited AND the loggedInUser is an org admin or super admin
@@ -261,7 +327,7 @@ const ManageUsers: React.FC<Props> = ({
               process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
                 <CreateUserModal
                   onClose={() => updateShowAddUserModal(false)}
-                  onSubmit={onHandleCreateNewUser}
+                  onSubmit={handleAddUserToOrg}
                 />
               ) : null}
               {showDeleteUserModal &&
@@ -269,7 +335,7 @@ const ManageUsers: React.FC<Props> = ({
                 <DeleteUserModal
                   user={activeUser}
                   onClose={() => updateShowDeleteUserModal(false)}
-                  onDeleteUser={onHandleDeleteUser}
+                  onDeleteUser={handleDeleteUser}
                 />
               ) : null}
             </div>

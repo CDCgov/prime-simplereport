@@ -1,9 +1,9 @@
 import React from "react";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import ManageUsers from "./ManageUsers";
-import { UserRole, UserPermission } from "../../permissions";
+import { UserRole, UserPermission, OrganizationRole } from "../../permissions";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -43,22 +43,52 @@ interface UserData {
   users: SettingsUser[];
 }
 
-// const GET_FACILITIES = gql`
-//   query GetFacilities {
-//     organization {
-//       testingFacility {
-//         id
-//         name
-//       }
-//     }
-//   }
-// `;
+const UPDATE_USER_ROLE = gql`
+  mutation UpdateUserRole($id: ID!, $role: OrganizationRole!) {
+    updateUserRole(id: $id, role: $role)
+  }
+`;
 
-// interface FacilityData {
-//   organization: {
-//     testingFacility: UserFacilitySetting[];
-//   };
-// }
+const DELETE_USER = gql`
+  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
+    setUserIsDeleted(id: $id, deleted: $deleted) {
+      id
+    }
+  }
+`;
+
+const ADD_USER_TO_ORG = gql`
+  mutation AddUserToCurrentOrg(
+    $firstName: String
+    $lastName: String!
+    $email: String!
+  ) {
+    addUserToCurrentOrg(
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+    ) {
+      id
+    }
+  }
+`;
+
+const GET_FACILITIES = gql`
+  query GetFacilities {
+    organization {
+      testingFacility {
+        id
+        name
+      }
+    }
+  }
+`;
+
+interface FacilityData {
+  organization: {
+    testingFacility: UserFacilitySetting[];
+  };
+}
 
 export interface UserFacilitySetting {
   id: string;
@@ -72,50 +102,28 @@ export interface NewUserInvite {
   role: UserRole | string | undefined; // TODO: clean this up
 }
 
-// TODO: delete this
-const allFacilities: UserFacilitySetting[] = [
-  { id: "abc", name: "Mountainside Nursing" },
-  { id: "def", name: "Hillside Nursing" },
-  { id: "hij", name: "Lakeside Nursing" },
-  { id: "klm", name: "Oceanside Nursing" },
-  { id: "nop", name: "Desertside Nursing" },
-];
-
-const updateUser = (user: SettingsUser) => {
-  // TODO: perform graphql query
-};
-
-const createNewUser = (newUserInvite: NewUserInvite) => {
-  // TODO: perform graphql mutation
-};
-
-const deleteUser = (userId: string) => {
-  // TODO: perform, graphql mutation
-};
-
 // const ManageUsersContainer: React.FC<any> = () => {
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
-
-  // const { data, loading, error } = useQuery<SettingsData, {}>(GET_USERS, {
-  //   fetchPolicy: "no-cache",
-  // });
+  const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
+  const [deleteUser] = useMutation(DELETE_USER);
+  const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
   const { data, loading, error } = useQuery<UserData, {}>(GET_USERS, {
     fetchPolicy: "no-cache",
   });
-  // const {
-  //   data: dataFacilities,
-  //   loading: loadingFacilities,
-  //   error: errorFacilities,
-  // } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-  //   fetchPolicy: "no-cache",
-  // });
+  const {
+    data: dataFacilities,
+    loading: loadingFacilities,
+    error: errorFacilities,
+  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
+    fetchPolicy: "no-cache",
+  });
 
-  if (loading) {
+  if (loading || loadingFacilities) {
     return <p> Loading... </p>;
   }
-  if (error) {
+  if (error || errorFacilities) {
     return error;
   }
 
@@ -123,19 +131,21 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Users not found</p>;
   }
 
-  loggedInUser.id = data.users[0].id; // TODO: delete me
+  if (dataFacilities === undefined) {
+    return <p>Error: Facilities not found</p>;
+  }
 
-  // let realFacilities = dataFacilities?.organization
-  //   .testingFacility as UserFacilitySetting[];
+  let allFacilities = dataFacilities?.organization
+    .testingFacility as UserFacilitySetting[];
 
   return (
     <ManageUsers
       users={data.users}
       loggedInUser={loggedInUser}
-      onUpdateUser={updateUser}
       allFacilities={allFacilities}
-      onCreateNewUser={createNewUser}
-      onDeleteUser={deleteUser}
+      updateUserRole={updateUserRole}
+      addUserToOrg={addUserToOrg}
+      deleteUser={deleteUser}
     />
   );
 };
