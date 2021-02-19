@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { useHistory } from "react-router-dom";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
@@ -20,6 +20,10 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
   const plid =
     useSelector((state) => (state as any).plid) || getPatientLinkIdFromUrl();
   const history = useHistory();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const saveCallback = async (data: any) => {
     try {

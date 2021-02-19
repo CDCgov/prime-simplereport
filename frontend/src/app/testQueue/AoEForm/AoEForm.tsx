@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   globalSymptomDefinitions,
   getTestTypes,
@@ -103,13 +103,6 @@ const AoEForm: React.FC<Props> = ({
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
-
-  useEffect(() => {
-    // scroll to the top on first-nav for pxp
-    if (!isModal) {
-      window.scrollTo(0, 0);
-    }
-  }, []);
 
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();

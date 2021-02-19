@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
@@ -11,6 +11,10 @@ const PatientFormContainer = () => {
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const facility = useSelector((state) => (state as any).facility as any);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const history = useHistory();
   history.listen((loc, action) => {
