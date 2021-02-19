@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import moment from "moment";
@@ -12,13 +12,15 @@ const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const dobRef = React.createRef() as any;
+  const dobRef = useRef<HTMLFormElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    dobRef.current.focus();
+    if (dobRef?.current) {
+      dobRef?.current.focus();
+    }
   }, []);
 
   const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
@@ -26,8 +28,10 @@ const DOB = () => {
 
     const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
     if (!date.isValid()) {
-      dobRef.current.focus();
       setBirthDateError("Enter your date of birth");
+      if (dobRef?.current) {
+        dobRef?.current.focus();
+      }
       return;
     }
 

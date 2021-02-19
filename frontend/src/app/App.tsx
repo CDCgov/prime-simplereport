@@ -59,9 +59,9 @@ const App = () => {
     dispatch(
       setInitialState({
         organization: {
-          name: data.whoami.organization.name,
+          name: data.whoami.organization?.name,
         },
-        facilities: data.whoami.organization.testingFacility,
+        facilities: data.whoami.organization?.testingFacility,
         facility: null,
         user: {
           id: data.whoami.id,
@@ -114,7 +114,12 @@ const App = () => {
                   path="/"
                   exact
                   render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: "/queue" }} />
+                    <Redirect
+                      to={{
+                        ...location,
+                        pathname: data.whoami.isAdmin ? "/admin" : "/queue",
+                      }}
+                    />
                   )}
                 />
                 <ProtectedRoute
