@@ -15,7 +15,6 @@ const AoEModalForm = ({
   loadState = {},
   saveCallback,
   qrCodeValue = "",
-  canAddToTestQueue,
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState("");
