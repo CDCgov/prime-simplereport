@@ -1,5 +1,5 @@
 mutation setUserIsDeleted(
-    $id: ID!,
+    $id: String!,
     $deleted: Boolean!,
     ){
   setUserIsDeleted(

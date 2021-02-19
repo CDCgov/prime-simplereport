@@ -11,9 +11,6 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
 
 
-/**
- * Created by jeremyzitomer-usds on 1/7/21
- */
 @Component
 public class ApiUserMutationResolver implements GraphQLMutationResolver {
 

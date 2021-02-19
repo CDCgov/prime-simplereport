@@ -10,9 +10,6 @@ import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
-/**
- * Created by jeremyzitomer-usds on 1/7/21
- */
 @Component
 public class ApiUserResolver implements GraphQLQueryResolver  {
 
