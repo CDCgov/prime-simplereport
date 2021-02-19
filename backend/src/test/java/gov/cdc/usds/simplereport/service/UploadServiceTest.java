@@ -101,7 +101,7 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
                 .getResourceAsStream("test-upload-valid-no-header.csv")) {
             this._service.processPersonCSV(inputStream);
         }
-        List<Person> patients = this._ps.getPatients(null);
+        List<Person> patients = this._ps.getAllPatients();
         assertEquals(1, patients.size(), "Should have 1 patient");
     }
 }
