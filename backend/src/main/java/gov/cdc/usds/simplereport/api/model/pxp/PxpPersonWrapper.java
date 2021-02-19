@@ -20,7 +20,7 @@ public class PxpPersonWrapper {
 
   public PxpPersonWrapper(Person p, TestEvent te) {
     this.p = p;
-    this.te = new PxpTestEventWrapper(te);
+    this.te = te != null ? new PxpTestEventWrapper(te) : null;
   }
 
   public String getLookupId() {
