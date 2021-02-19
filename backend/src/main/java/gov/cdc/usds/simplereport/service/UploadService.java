@@ -74,6 +74,17 @@ public class UploadService {
         }
     }
 
+    public String getRow(Map<String, String> row, String name, boolean isRequired) {
+        String value = row.get(name);
+        if (!isRequired) {
+            return value;
+        }
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalGraphqlArgumentException(name + " is required.");
+        }
+        return value;
+    }
+
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public String processPersonCSV(InputStream csvStream) throws IllegalGraphqlArgumentException {
         final MappingIterator<Map<String, String>> valueIterator = getIteratorForCsv(csvStream);
@@ -90,27 +101,27 @@ public class UploadService {
             rowNumber++;
             try {
                 _ps.addPatient(
-                    parseUUID(row.get(FACILITY_ID)),
+                    parseUUID(getRow(row, FACILITY_ID, false)),
                     null, // lookupID. this field is deprecated
-                    parseString(row.get("FirstName")),
-                    parseString(row.get("MiddleName")),
-                    parseString(row.get("LastName")),
-                    parseString(row.get("Suffix")),
-                    parseUserShortDate(row.get("DOB")),
-                    parseString(row.get("Street")),
-                    parseString(row.get("Street2")),
-                    parseString(row.get("City")),
-                    parseState(row.get("State")),
-                    parseString(row.get("ZipCode")),
-                    parsePhoneNumber(row.get("PhoneNumber")),
-                    parsePersonRole(row.get("Role")),
-                    parseEmail(row.get("Email")),
-                    parseString(row.get("County")),
-                    parseRaceDisplayValue(row.get("Race")),
-                    parseEthnicity(row.get("Ethnicity")),
-                    parseGender(row.get("biologicalSex")),
-                    parseYesNo(row.get("residentCongregateSetting")),
-                    parseYesNo(row.get("employedInHealthcare"))
+                    parseString(getRow(row, "FirstName", true)),
+                    parseString(getRow(row, "MiddleName", false)),
+                    parseString(getRow(row, "LastName", true)),
+                    parseString(getRow(row, "Suffix", false)),
+                    parseUserShortDate(getRow(row, "DOB", true)),
+                    parseString(getRow(row, "Street", true)),
+                    parseString(getRow(row, "Street2", false)),
+                    parseString(getRow(row, "City", false)),
+                    parseState(getRow(row, "State", true)),
+                    parseString(getRow(row, "ZipCode", true)),
+                    parsePhoneNumber(getRow(row, "PhoneNumber", true)),
+                    parsePersonRole(getRow(row, "Role", false)),
+                    parseEmail(getRow(row, "Email", false)),
+                    parseString(getRow(row, "County", false)),
+                    parseRaceDisplayValue(getRow(row, "Race", false)),
+                    parseEthnicity(getRow(row, "Ethnicity", false)),
+                    parseGender(getRow(row, "biologicalSex", false)),
+                    parseYesNo(getRow(row, "residentCongregateSetting", true)),
+                    parseYesNo(getRow(row, "employedInHealthcare", true))
                 );
             } catch (IllegalGraphqlArgumentException e) {
                 throw new IllegalGraphqlArgumentException("Error on row "+ rowNumber+ "; " + e.getMessage());
