@@ -131,7 +131,6 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String orderingProviderCity, String orderingProviderCounty, String orderingProviderState,
             String orderingProviderZipCode, String orderingProviderTelephone, List<String> deviceIds,
             String defaultDeviceId) {
-        _os.assertFacilityNameAvailable(testingFacilityName);
         DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,

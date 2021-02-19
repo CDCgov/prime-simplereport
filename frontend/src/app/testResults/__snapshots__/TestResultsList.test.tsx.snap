@@ -81,7 +81,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
-                      class="rc-menu-button sr-modal-menu-button"
+                      class="rc-menu-button sr-actions-menu"
                     >
                       <svg
                         aria-hidden="true"
@@ -132,7 +132,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
-                      class="rc-menu-button sr-modal-menu-button"
+                      class="rc-menu-button sr-actions-menu"
                     >
                       <svg
                         aria-hidden="true"

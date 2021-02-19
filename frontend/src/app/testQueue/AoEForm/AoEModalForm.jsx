@@ -1,4 +1,4 @@
-import { React, useState } from "react";
+import { React, useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
@@ -14,12 +14,12 @@ const AoEModalForm = ({
   patient,
   loadState = {},
   saveCallback,
-  qrCodeValue = `${getUrl()}pxp`,
-  canAddToTestQueue,
+  qrCodeValue = "",
 }) => {
   const [modalView, setModalView] = useState(null);
   const [patientLink, setPatientLink] = useState(qrCodeValue);
   const [smsSuccess, setSmsSuccess] = useState(false);
+  const formRef = useRef(null);
   const modalViewValues = [
     {
       label: "Text message",
@@ -47,18 +47,26 @@ const AoEModalForm = ({
   };
 
   const continueModal = () => {
-    if (canAddToTestQueue) {
-      saveCallback(patientResponse);
-      onClose();
-    } else {
-      onClose();
+    // No need to save form if in "smartphone" mode
+    if (modalView === "smartphone") {
+      return onClose();
     }
+    // Save default if form doesn't exist, otherwise submit form
+    if (!formRef?.current) {
+      saveCallback(patientResponse);
+    } else {
+      formRef.current.dispatchEvent(new Event("submit"));
+    }
+    onClose();
   };
 
   const chooseModalView = async (view) => {
     if (view === "smartphone") {
-      const patientLinkId = await saveCallback(patientResponse);
-      setPatientLink(`${getUrl()}pxp?plid=${patientLinkId}`);
+      // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
+      setPatientLink(
+        qrCodeValue ||
+          `${getUrl()}pxp?plid=${await saveCallback(patientResponse)}`
+      );
     }
     setModalView(view);
   };
@@ -66,12 +74,12 @@ const AoEModalForm = ({
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      {/* <Button
+      <Button
         className="margin-right-0"
         label={saveButtonText}
         type={"button"}
         onClick={() => continueModal()}
-      /> */}
+      />
     </div>
   );
 
@@ -188,6 +196,7 @@ const AoEModalForm = ({
               saveCallback={saveCallback}
               isModal={true}
               noValidation={true}
+              formRef={formRef}
             />
           )}
         </>
@@ -200,6 +209,7 @@ const AoEModalForm = ({
           saveCallback={saveCallback}
           isModal={true}
           noValidation={true}
+          formRef={formRef}
         />
       )}
     </Modal>
