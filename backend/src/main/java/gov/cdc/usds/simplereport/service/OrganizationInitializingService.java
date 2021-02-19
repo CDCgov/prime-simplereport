@@ -61,8 +61,8 @@ public class OrganizationInitializingService {
 
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
-		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
-		if (probe.isPresent()) {
+		Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
+		if (orgProbe.isPresent()) {
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -92,7 +92,10 @@ public class OrganizationInitializingService {
 		List<IdentityAttributes> users = _demoUserConfiguration.getAllUsers().stream()
 				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
-			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
+			Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(user.getUsername());
+			if (!userProbe.isPresent()) {
+				_apiUserRepo.save(new ApiUser(user.getUsername(), user));
+			}
 			initOktaUser(user, emptyOrg);
 		}
 	}
