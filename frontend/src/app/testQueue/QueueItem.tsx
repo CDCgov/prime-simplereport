@@ -137,16 +137,12 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     isOpen={true}
     style={{
       content: {
-        top: "50%",
-        left: "50%",
-        bottom: "auto",
-        width: "40%",
-        minWidth: "20em",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
+        maxHeight: "90vh",
+        width: "40em",
+        position: "initial",
       },
     }}
-    overlayClassName={"prime-modal-overlay"}
+    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
   >
     <div className="sr-modal-content">{children}</div>
