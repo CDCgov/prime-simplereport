@@ -28,8 +28,10 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
       contentLabel="Unsaved changes to current user"
     >
       <div className="border-0 usa-card__container">
-        <div className="usa-card__header display-flex flex-justify modal-bottom-border">
-          <h2 className="margin-0"> Delete User </h2>
+        <div className="display-flex flex-justify">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+            Delete User
+          </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
               <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -37,23 +39,18 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
             </span>
           </button>
         </div>
-        <div className="usa-card__body modal-bottom-border">
-          <div className="grid-row grid-gap">
-            <p>
-              Are you sure you want to remove{" "}
-              <strong>
-                {displayFullName(
-                  user.firstName,
-                  user.middleName,
-                  user.lastName
-                )}
-              </strong>
-              ?
-            </p>
-            <p> Doing so will remove this person's access to SimpleReport.</p>
-          </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+        <div className="grid-row grid-gap">
+          <p>
+            Are you sure you want to remove{" "}
+            <strong>
+              {displayFullName(user.firstName, user.middleName, user.lastName)}
+            </strong>
+            ?
+          </p>
+          <p> Doing so will remove this person's access to SimpleReport.</p>
         </div>
-        <div className="usa-card__footer">
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
             <Button
               className="margin-right-2"
@@ -62,7 +59,7 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
               label="No, go back"
             />
             <Button
-              className="margin-right-0"
+              className="margin-right-205"
               onClick={() => onDeleteUser(user.id)}
               label="Yes, I'm sure"
             />
