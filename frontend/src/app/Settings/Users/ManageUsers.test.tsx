@@ -1,4 +1,5 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { displayFullNameInOrder } from "../../utils";
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
@@ -126,6 +127,30 @@ describe("ManageUsers", () => {
     await waitFor(() => expect(deleteUser).toBeCalled());
     expect(deleteUser).toBeCalledWith({
       variables: { deleted: true, id: users[0].id },
+    });
+  });
+  it("updates someone from user to admin", async () => {
+    const { findAllByRole, findByText } = render(
+      <MemoryRouter>
+        <ManageUsers
+          users={users}
+          loggedInUser={loggedInUser}
+          allFacilities={allFacilities}
+          updateUserRole={updateUserRole}
+          addUserToOrg={addUserToOrg}
+          deleteUser={deleteUser}
+          getUsers={getUsers}
+        />
+      </MemoryRouter>
+    );
+    const [adminOption] = await findAllByRole("radio");
+    fireEvent.click(adminOption);
+    const button = await findByText("Save", { exact: false });
+    await waitFor(() => expect(button).not.toHaveAttribute("disabled"));
+    fireEvent.click(button);
+    await waitFor(() => expect(updateUserRole).toBeCalled());
+    expect(updateUserRole).toBeCalledWith({
+      variables: { id: users[0].id, role: "ADMIN" },
     });
   });
 });
