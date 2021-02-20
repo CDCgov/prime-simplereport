@@ -138,7 +138,7 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Facilities not found</p>;
   }
 
-  let allFacilities = dataFacilities.organization
+  const allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
 
   return (
