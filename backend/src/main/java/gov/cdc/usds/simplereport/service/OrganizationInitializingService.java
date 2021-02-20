@@ -49,9 +49,14 @@ public class OrganizationInitializingService {
 	@Autowired
 	private OktaRepository _oktaRepo;
 	@Autowired
+	private ApiUserService _userService;
+	@Autowired
 	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
+		// Creates current user to allow audited creation of other entities below
+		initAuditor();
+
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
 		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
@@ -86,8 +91,13 @@ public class OrganizationInitializingService {
 				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
 			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
-			initOktaUser(user, emptyOrg.getExternalId());
+			initOktaUser(user, emptyOrg);
 		}
+	}
+
+	public void initAuditor() {
+		// Creates current user if it doesn't already exist
+		_userService.getCurrentUser();
 	}
 
 	private void initOktaOrg(Organization org) {
@@ -99,10 +109,10 @@ public class OrganizationInitializingService {
 		}
 	}
 
-	private void initOktaUser(IdentityAttributes user, String orgExternalId) {
+	private void initOktaUser(IdentityAttributes user, Organization org) {
 		try {
 			LOG.info("Creating user {} in Okta", user.getUsername());
-			_oktaRepo.createUser(user, orgExternalId);
+			_oktaRepo.createUser(user, org);
 		} catch (ResourceException e) {
 			LOG.info("User {} already exists in Okta", user.getUsername());
 		}

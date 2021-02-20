@@ -7,6 +7,7 @@ import moment from "moment";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
+import classnames from "classnames";
 
 const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");
@@ -16,6 +17,7 @@ export const testQuery = gql`
     testResult(id: $id) {
       dateTested
       result
+      correctionStatus
       deviceType {
         name
       }
@@ -24,14 +26,6 @@ export const testQuery = gql`
         middleName
         lastName
         birthDate
-        gender
-        telephone
-        street
-        streetTwo
-        city
-        county
-        state
-        zipCode
       }
       facility {
         name
@@ -48,6 +42,10 @@ export const testQuery = gql`
           lastName
           NPI
         }
+      }
+      testPerformed {
+        name
+        loincCode
       }
     }
   }
@@ -70,7 +68,13 @@ export const DetachedTestResultPrintModal = ({
       <Button label="Print" onClick={() => window.print()} />
     </div>
   );
-  const { patient, facility, deviceType } = data.testResult;
+  const {
+    patient,
+    facility,
+    deviceType,
+    testPerformed,
+    correctionStatus,
+  } = data.testResult;
 
   return (
     <Modal
@@ -80,7 +84,12 @@ export const DetachedTestResultPrintModal = ({
       contentLabel="Printable test result"
     >
       {buttonGroup}
-      <div className="sr-test-result-report">
+      <div
+        className={classnames(
+          "sr-test-result-report",
+          correctionStatus === "REMOVED" && "sr-removed-result"
+        )}
+      >
         <header>
           <img alt="SimpleReport logo" src={logo} className="sr-print-logo" />
           <h1>SARS-CoV-2 Result</h1>
@@ -102,24 +111,6 @@ export const DetachedTestResultPrintModal = ({
               <li>
                 <b>Date of Birth</b>
                 <div>{formatDate(patient.birthDate)}</div>
-              </li>
-              <li>
-                <b>Sex</b>
-                <div>{patient.gender}</div>
-              </li>
-              <li>
-                <b>Phone</b>
-                <div>{patient.telephone}</div>
-              </li>
-              <li>
-                <b>Address</b>
-                <div>{patient.street}</div>
-                {patient.streetTwo && (
-                  <div className="hanging">{patient.streetTwo}</div>
-                )}
-                <div className="hanging">
-                  {patient.city}, {patient.state} {patient.zipCode}
-                </div>
               </li>
             </ul>
           </section>
@@ -171,7 +162,7 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>Test Name</b>
-                <div>SARS-CoV-2 Antigen</div>
+                <div>{testPerformed.name}</div>
               </li>
               <li>
                 <b>Test Device</b>
@@ -183,32 +174,97 @@ export const DetachedTestResultPrintModal = ({
               </li>
               <li>
                 <b>Test Result</b>
-                <div>{data.testResult.result}</div>
+                <div>
+                  <strong>{data.testResult.result}</strong>
+                </div>
               </li>
             </ul>
           </section>
           <section className="sr-result-section sr-result-next-steps">
-            <h2>Next Steps</h2>
-            <p>
-              Antigen tests can return inaccurate or false results and follow up
-              testing may be needed. Continue social distancing and wearing a
-              mask. Contact your healthcare provider to determine if additional
-              testing is needed especially if you experience any of these
-              COVID-19 symptoms.
-            </p>
-            <ul className="sr-multi-column">
-              <li>Fever or chills</li>
-              <li>Cough</li>
-              <li>Shortness of breath or difficulty breathing</li>
-              <li>Fatigue</li>
-              <li>Muscle or body aches</li>
-              <li>Headache</li>
-              <li>New loss of taste or smell</li>
-              <li>Sore throat</li>
-              <li>Congestion or runny nose</li>
-              <li>Nausea or vomiting</li>
-              <li>Diarrhea</li>
-            </ul>
+            <h2>Notes</h2>
+            {data.testResult.result !== "POSITIVE" && (
+              <>
+                <p>
+                  Antigen tests can return inaccurate or false results and
+                  follow up testing may be needed. Continue social distancing
+                  and wearing a mask. Contact your healthcare provider to
+                  determine if additional testing is needed especially if you
+                  experience any of these COVID-19 symptoms.
+                </p>
+                <ul className="sr-multi-column">
+                  <li>Fever or chills</li>
+                  <li>Cough</li>
+                  <li>Shortness of breath or difficulty breathing</li>
+                  <li>Fatigue</li>
+                  <li>Muscle or body aches</li>
+                  <li>Headache</li>
+                  <li>New loss of taste or smell</li>
+                  <li>Sore throat</li>
+                  <li>Congestion or runny nose</li>
+                  <li>Nausea or vomiting</li>
+                  <li>Diarrhea</li>
+                </ul>
+              </>
+            )}
+            {data.testResult.result === "POSITIVE" && (
+              <>
+                <p>
+                  Most people who get COVID-19 will be able to recover at home.
+                  CDC has directions for people who are recovering at home and
+                  their caregivers, including:
+                </p>
+                <ul>
+                  <li>
+                    Stay home when you are sick, except to get medical care.
+                  </li>
+                  <li>
+                    Use a separate room and bathroom for sick household members
+                    (if possible). Clean the sick room and bathroom, as needed,
+                    to avoid unnecessary contact with the sick person.
+                  </li>
+                  <li>
+                    Wash your hands often with soap and water for at least 20
+                    seconds, especially after blowing your nose, coughing, or
+                    sneezing; going to the bathroom; and before eating or
+                    preparing food.
+                  </li>
+                  <li>
+                    If soap and water are not available, use an alcohol-based
+                    hand sanitizer with at least 60% alcohol.
+                  </li>
+                  <li>
+                    Provide your sick household member with clean disposable
+                    facemasks to wear at home. Everyone else should wear masks
+                    at home.
+                  </li>
+                </ul>
+                <p>
+                  More information is available at
+                  https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/
+                </p>
+                <p>
+                  Watch for symptoms and learn when to seek emergency medical
+                  attention here:
+                  https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html
+                </p>
+                <p>
+                  If someone is showing any of these signs, seek emergency
+                  medical care immediately:
+                </p>
+                <ul className="sr-multi-column" style={{ height: "5ex" }}>
+                  <li>Trouble breathing</li>
+                  <li>Persistent chest pain/pressure</li>
+                  <li>New confusion</li>
+                  <li>Inability to wake or stay awake</li>
+                  <li>Bluish lips or face</li>
+                </ul>
+                <p>
+                  Call 911 or call ahead to your local emergency facility:
+                  Notify the operator that you are seeking care for someone who
+                  has or may have COVID-19.
+                </p>
+              </>
+            )}
           </section>
         </main>
         <footer>

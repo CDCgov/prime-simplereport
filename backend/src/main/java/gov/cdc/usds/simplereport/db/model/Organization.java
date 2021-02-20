@@ -7,7 +7,7 @@ import org.hibernate.annotations.NaturalId;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
-public class Organization extends EternalEntity {
+public class Organization extends EternalAuditedEntity {
 
 	@Column(nullable = false, unique = true)
 	private String organizationName;

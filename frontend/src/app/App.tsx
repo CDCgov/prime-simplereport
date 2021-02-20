@@ -19,12 +19,10 @@ import TestQueueContainer from "./testQueue/TestQueueContainer";
 import ManagePatientsContainer from "./patients/ManagePatientsContainer";
 import EditPatientContainer from "./patients/EditPatientContainer";
 import AddPatient from "./patients/AddPatient";
-import ManageOrganizationContainer from "./Settings/ManageOrganizationContainer";
-import ManageFacilitiesContainer from "./Settings/Facility/ManageFacilitiesContainer";
-import FacilityFormContainer from "./Settings/Facility/FacilityFormContainer";
 import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
+import Settings from "./Settings/Settings";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -49,29 +47,6 @@ const WHOAMI_QUERY = gql`
   }
 `;
 
-const SettingsRoutes = ({ match }: any) => (
-  <>
-    {/* note the addition of the exact property here */}
-    <Route exact path={match.url} component={ManageOrganizationContainer} />
-    <Route
-      path={match.url + "/facilities"}
-      component={ManageFacilitiesContainer}
-    />
-    <Route
-      path={match.url + "/facility/:facilityId"}
-      render={({ match }) => (
-        <FacilityFormContainer facilityId={match.params.facilityId} />
-      )}
-    />
-    <Route
-      path={match.url + "/add-facility/"}
-      render={({ match }) => (
-        <FacilityFormContainer facilityId={match.params.facilityId} />
-      )}
-    />
-  </>
-);
-
 const App = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
@@ -84,9 +59,9 @@ const App = () => {
     dispatch(
       setInitialState({
         organization: {
-          name: data.whoami.organization.name,
+          name: data.whoami.organization?.name,
         },
-        facilities: data.whoami.organization.testingFacility,
+        facilities: data.whoami.organization?.testingFacility,
         facility: null,
         user: {
           id: data.whoami.id,
@@ -139,7 +114,12 @@ const App = () => {
                   path="/"
                   exact
                   render={({ location }) => (
-                    <Redirect to={{ ...location, pathname: "/queue" }} />
+                    <Redirect
+                      to={{
+                        ...location,
+                        pathname: data.whoami.isAdmin ? "/admin" : "/queue",
+                      }}
+                    />
                   )}
                 />
                 <ProtectedRoute
@@ -174,7 +154,7 @@ const App = () => {
                 />
                 <ProtectedRoute
                   path="/settings"
-                  component={SettingsRoutes}
+                  component={Settings}
                   requiredPermissions={appPermissions.settings.canView}
                   userPermissions={data.whoami.permissions}
                 />

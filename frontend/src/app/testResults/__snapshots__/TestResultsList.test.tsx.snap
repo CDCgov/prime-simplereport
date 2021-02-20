@@ -66,7 +66,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Davis Melvin
+                    Melvin, Davis
                   </th>
                   <td>
                     Jan 12, 2021 5:56 PM
@@ -81,7 +81,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
-                      class="rc-menu-button sr-modal-menu-button"
+                      class="rc-menu-button sr-actions-menu"
                     >
                       <svg
                         aria-hidden="true"
@@ -117,7 +117,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Cheez Whizzz
+                    Whizzz, Cheez
                   </th>
                   <td>
                     Jan 4, 2021 12:00 AM
@@ -132,7 +132,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <button
                       aria-expanded="false"
                       aria-haspopup="true"
-                      class="rc-menu-button sr-modal-menu-button"
+                      class="rc-menu-button sr-actions-menu"
                     >
                       <svg
                         aria-hidden="true"

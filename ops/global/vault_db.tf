@@ -1,5 +1,5 @@
 locals {
-  envs = ["dev", "test", "stg", "prod", "demo", "pentest"]
+  envs = ["dev", "test", "stg", "prod", "demo", "pentest", "training"]
 }
 
 resource "azurerm_key_vault" "db_keys" {

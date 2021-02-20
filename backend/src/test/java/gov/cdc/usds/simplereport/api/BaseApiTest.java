@@ -28,7 +28,7 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
-import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -44,18 +44,23 @@ public abstract class BaseApiTest {
     @Autowired
     protected OrganizationInitializingService _initService;
     @Autowired
+    protected DemoOktaRepository _oktaRepo;
+    @Autowired
     protected GraphQLTestTemplate _template; // screw delegation
     @MockBean
     protected AuthorizationService _authService;
     @MockBean
     protected IdentitySupplier _supplier;
-    @MockBean
-    protected OktaRepository _oktaRepo;
 
     private static final List<OrganizationRoleClaims> USER_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
+    private static final List<OrganizationRoleClaims> OUTSIDE_USER_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER)));
     private static final List<OrganizationRoleClaims> ADMIN_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
+                                                                              OrganizationRole.ADMIN)));
+    private static final List<OrganizationRoleClaims> OUTSIDE_ADMIN_ORG_ROLES = 
+            Collections.singletonList(new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER,
                                                                               OrganizationRole.ADMIN)));
     private static final List<OrganizationRoleClaims> ENTRY_ONLY_ORG_ROLES = 
             Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER,
@@ -69,21 +74,41 @@ public abstract class BaseApiTest {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
         when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
+        _initService.initAuditor();
+    }
+
+    protected void useOutsideOrgUser() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org user");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useOrgAdmin() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
+        _initService.initAuditor();
+    }
+
+    protected void useOutsideOrgAdmin() {
+        LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for outside org admin");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
+        when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useOrgEntryOnly() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org entry-only");
+        when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
         when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
+        _initService.initAuditor();
     }
 
     protected void useSuperUser() {
         LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
         when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
+        _initService.initAuditor();
     }
 
     protected void setRoles(Set<OrganizationRole> roles) {
@@ -99,6 +124,7 @@ public abstract class BaseApiTest {
     @BeforeEach
     public void setup() {
         truncateDb();
+        _oktaRepo.reset();
         useOrgUser();
         _initService.initAll();
     }
@@ -106,6 +132,7 @@ public abstract class BaseApiTest {
     @AfterEach
     public void cleanup() {
         truncateDb();
+        _oktaRepo.reset();
     }
 
     /**
