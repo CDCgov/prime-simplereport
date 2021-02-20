@@ -173,11 +173,11 @@ public class ApiUserService {
         return _siteAdmins.contains(user.getLoginEmail());
     }
 
-    // Creating separate getCurrentApiUser() methods because the auditing use case requires
-    // a new transaction, while Sonar requires a non-Transactional version to be called
-    // from other methods in the same class
+    // Creating separate getCurrentApiUser() methods because the auditing use case and
+    // sample data initialization require contained transactions, while Sonar requires 
+    // a non-Transactional version to be called from other methods in the same class
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public ApiUser getCurrentApiUserForAudit() {
+    public ApiUser getCurrentApiUserInContainedTransaction() {
         return getCurrentApiUser();
     }
 

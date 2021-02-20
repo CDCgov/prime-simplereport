@@ -102,7 +102,7 @@ public class OrganizationInitializingService {
 
 	public void initCurrentUser() {
 		// Creates current user if it doesn't already exist
-		_userService.getCurrentApiUser();
+		_userService.getCurrentApiUserInContainedTransaction();
 	}
 
 	private void initOktaOrg(Organization org) {
