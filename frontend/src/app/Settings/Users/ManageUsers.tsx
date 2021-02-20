@@ -33,6 +33,7 @@ interface Props {
   updateUserRole: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
+  getUsers: () => void;
 }
 
 export type SettingsUsers = { [id: string]: SettingsUser };
@@ -44,6 +45,7 @@ const ManageUsers: React.FC<Props> = ({
   updateUserRole,
   addUserToOrg,
   deleteUser,
+  getUsers,
 }) => {
   let settingsUsers: SettingsUsers = users.reduce(
     (acc: SettingsUsers, user: SettingsUser) => {
@@ -168,8 +170,7 @@ const ManageUsers: React.FC<Props> = ({
           />
         );
         updateShowAddUserModal(false);
-
-        // TODO: immediately show user in list (not sure if this is the desired behavior)
+        getUsers();
       })
       .catch((error) => {
         console.log(error);
