@@ -697,7 +697,7 @@ const PatientForm = (props: Props) => {
         </div>
       </div>
       <Modal
-        portalClassName="modal--simple"
+        portalClassName="modal--basic"
         isOpen={helpModalOpen}
         onRequestClose={() => setHelpModalOpen(false)}
         style={{

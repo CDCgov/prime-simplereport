@@ -239,7 +239,7 @@
 }
 
 // Simple modal
-.modal--simple {
+.modal--basic {
   .ReactModal__Content {
     @include u-margin-x('4');
     max-height: 90vh;
