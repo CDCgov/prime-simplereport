@@ -7,11 +7,11 @@ package gov.cdc.usds.simplereport.config.authorization;
  */
 public enum UserPermission {
     READ_PATIENT_LIST,
-    READ_PATIENT_INCL_DEL_LIST,
+    READ_ARCHIVED_PATIENT_LIST,
     SEARCH_PATIENTS,
     READ_RESULT_LIST,
     EDIT_PATIENT,
-    DELETE_PATIENT,
+    ARCHIVE_PATIENT,
     EDIT_FACILITY,
     EDIT_ORGANIZATION,
     MANAGE_USERS,

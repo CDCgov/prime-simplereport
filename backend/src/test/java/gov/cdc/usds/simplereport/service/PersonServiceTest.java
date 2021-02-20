@@ -70,8 +70,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getAllPatients().get(0).getFirstName());
 
-        assertSecurityError(() -> _service.getAllPatientsInclDeleted());
-        assertSecurityError(() -> _service.getPatientsInclDeleted(facilityId));
+        assertSecurityError(() -> _service.getAllArchivedPatients());
+        assertSecurityError(() -> _service.getArchivedPatients(facilityId));
     }
 
     @Test
@@ -94,10 +94,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertEquals(0, _service.getAllPatients().size());
         assertEquals(0, _service.getPatients(facilityId).size());
 
-        List<Person> result = _service.getAllPatientsInclDeleted();
+        List<Person> result = _service.getAllArchivedPatients();
         assertEquals(1, result.size());
         assertTrue(result.get(0).isDeleted());
-        assertEquals(1, _service.getPatientsInclDeleted(facilityId).size());
+        assertEquals(1, _service.getArchivedPatients(facilityId).size());
     }
 
     @Test

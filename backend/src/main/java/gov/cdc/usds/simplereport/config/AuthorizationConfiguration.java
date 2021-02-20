@@ -65,13 +65,13 @@ public class AuthorizationConfiguration {
     }
 
     /**
-     * Require the current user to have the {@link UserPermission#READ_PATIENT_INCL_DEL_LIST}
+     * Require the current user to have the {@link UserPermission#READ_ARCHIVED_PATIENT_LIST}
      * permission.
      */
     @Retention(RUNTIME)
     @Target(METHOD)
-    @PreAuthorize(SPEL_HAS_PERMISSION + "READ_PATIENT_INCL_DEL_LIST" + ")")
-    public @interface RequirePermissionReadPatientDeletedList {
+    @PreAuthorize(SPEL_HAS_PERMISSION + "READ_ARCHIVED_PATIENT_LIST" + ")")
+    public @interface RequirePermissionReadArchivedPatientList {
     }
 
     /**
@@ -95,13 +95,13 @@ public class AuthorizationConfiguration {
     }
 
     /**
-     * Require the current user to have the {@link UserPermission#DELETE_PATIENT}
+     * Require the current user to have the {@link UserPermission#ARCHIVE_PATIENT}
      * permission.
      */
     @Retention(RUNTIME)
     @Target(METHOD)
-    @PreAuthorize(SPEL_HAS_PERMISSION + "DELETE_PATIENT" + ")")
-    public @interface RequirePermissionDeletePatient {
+    @PreAuthorize(SPEL_HAS_PERMISSION + "ARCHIVE_PATIENT" + ")")
+    public @interface RequirePermissionArchivePatient {
     }
 
     /**

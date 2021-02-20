@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import Button from "../commonComponents/Button";
 import { displayFullName, showNotification } from "../utils";
 import "./ArchivePersonModal.scss";
+import { Patient } from "./ManagePatients";
 
 import Alert from "../commonComponents/Alert";
 import { toast } from "react-toastify";
@@ -24,11 +25,14 @@ interface ArchivePersonResponse {
   internalId: string;
 }
 interface ArchivePersonParams {
-  id: string,
-  deleted: string
+  id: string;
+  deleted: boolean;
 }
 const ArchivePersonModal = ({ person, closeModal }: Props) => {
-  const [archivePersonRecord] = useMutation<ArchivePersonResponse, ArchivePersonParams>(ARCHIVE_PERSON_RECORD);
+  const [archivePersonRecord] = useMutation<
+    ArchivePersonResponse,
+    ArchivePersonParams
+  >(ARCHIVE_PERSON_RECORD);
   const yesArchivePerson = () => {
     archivePersonRecord({
       variables: {

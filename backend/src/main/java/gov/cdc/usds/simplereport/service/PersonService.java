@@ -62,20 +62,20 @@ public class PersonService {
         return _repo.findAllByOrganization(_os.getCurrentOrganization(), NAME_SORT);
     }
 
-    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
-    public List<Person> getPatientsInclDeleted(UUID facilityId) {
-        return _repo.findByFacilityAndOrganizationIncludeDeleted(_os.getFacilityInCurrentOrg(facilityId),
+    @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
+    public List<Person> getArchivedPatients(UUID facilityId) {
+        return _repo.findArchivedByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
                 _os.getCurrentOrganization(), NAME_SORT);
     }
 
-    @AuthorizationConfiguration.RequirePermissionReadPatientDeletedList
-    public List<Person> getAllPatientsInclDeleted() {
-        return _repo.findAllByOrganizationIncludeDeleted(_os.getCurrentOrganization(), NAME_SORT);
+    @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
+    public List<Person> getAllArchivedPatients() {
+        return _repo.findAllArchivedByOrganization(_os.getCurrentOrganization(), NAME_SORT);
     }
 
-    @AuthorizationConfiguration.RequirePermissionDeletePatient
-    public Person getPatientCheckInclDelete(String id) {
-        return _repo.findByIDAndOrganizationIncludeDeleted(UUID.fromString(id), _os.getCurrentOrganization())
+    @AuthorizationConfiguration.RequirePermissionArchivePatient
+    public Person getArchivedPatient(UUID id) {
+        return _repo.findArchivedByIdAndOrganization(id, _os.getCurrentOrganization())
                 .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
@@ -87,7 +87,7 @@ public class PersonService {
     // NO PERMISSION CHECK (make sure the caller has one!)
     public Person getPatientNoPermissionsCheck(String id, Organization org) {
         UUID actualId = UUID.fromString(id);
-        return _repo.findByIDAndOrganization(actualId, org)
+        return _repo.findByIdAndOrganization(actualId, org)
             .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
@@ -188,7 +188,7 @@ public class PersonService {
         return _repo.save(patientToUpdate);
     }
 
-    @AuthorizationConfiguration.RequirePermissionDeletePatient
+    @AuthorizationConfiguration.RequirePermissionArchivePatient
     public Person setIsDeleted(UUID id, boolean deleted) {
         Person person = this.getPatientNoPermissionsCheck(id.toString());
         person.setIsDeleted(deleted);

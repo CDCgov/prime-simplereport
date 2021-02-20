@@ -28,9 +28,9 @@ public class PatientResolver implements GraphQLQueryResolver {
             pageSize = PersonService.DEFAULT_PAGINATION_PAGESIZE;
         }
         if (facilityId == null) {
-            return showDeleted ? ps.getAllPatientsInclDeleted() : ps.getAllPatients();
+            return showDeleted ? ps.getAllArchivedPatients() : ps.getAllPatients();
         }
-        return showDeleted ? ps.getPatients(facilityId) : ps.getPatientsInclDeleted(facilityId);
+        return showDeleted ? ps.getArchivedPatients(facilityId) : ps.getPatients(facilityId);
     }
 
 

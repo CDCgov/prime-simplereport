@@ -19,18 +19,18 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
     @Query(BASE_QUERY + " and organization = :org")
     public List<Person> findAllByOrganization(Organization org, Sort sortBy);
 
-    @Query("from #{#entityName} e where e.organization = :org")
-    public List<Person> findAllByOrganizationIncludeDeleted(Organization org, Sort sortBy);
+    @Query(BASE_ARCHIVED_QUERY + " and e.organization = :org")
+    public List<Person> findAllArchivedByOrganization(Organization org, Sort sortBy);
 
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
-    public Optional<Person> findByIDAndOrganization(UUID id, Organization org);
+    public Optional<Person> findByIdAndOrganization(UUID id, Organization org);
 
-    @Query("from #{#entityName} e where e.internalId = :id and e.organization = :org")
-    public Optional<Person> findByIDAndOrganizationIncludeDeleted(UUID id, Organization org);
+    @Query(BASE_ARCHIVED_QUERY + " and e.internalId = :id and e.organization = :org")
+    public Optional<Person> findArchivedByIdAndOrganization(UUID id, Organization org);
 
     @Query(BASE_QUERY + " AND e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
     public List<Person> findByFacilityAndOrganization(Facility fac, Organization org, Sort sortBy);
 
-    @Query("from #{#entityName} e where e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
-    public List<Person> findByFacilityAndOrganizationIncludeDeleted(Facility fac, Organization org, Sort sortBy);
+    @Query(BASE_ARCHIVED_QUERY + " and  e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
+    public List<Person> findArchivedByFacilityAndOrganization(Facility fac, Organization org, Sort sortBy);
 }

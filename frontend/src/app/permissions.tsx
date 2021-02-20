@@ -2,7 +2,7 @@ export type UserPermission =
   | "READ_PATIENT_LIST"
   | "READ_RESULT_LIST"
   | "EDIT_PATIENT"
-  | "DELETE_PATIENT"
+  | "ARCHIVE_PATIENT"
   | "EDIT_FACILITY"
   | "EDIT_ORGANIZATION"
   | "START_TEST"
@@ -85,7 +85,7 @@ const appPermissions: AppPermissions = {
   people: {
     canView: ["READ_PATIENT_LIST"],
     canEdit: ["EDIT_PATIENT"],
-    canDelete: ["DELETE_PATIENT"],
+    canDelete: ["ARCHIVE_PATIENT"],
   },
   results: {
     canView: ["READ_RESULT_LIST"],

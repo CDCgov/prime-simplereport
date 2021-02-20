@@ -29,13 +29,13 @@ const patientQuery = gql`
   }
 `;
 
-interface Patient {
+export interface Patient {
   internalId: string;
   firstName: string;
   lastName: string;
   middleName: string;
   birthDate: string;
-  isDeleted: string;
+  isDeleted: boolean;
   lastTest: {
     dateAdded: string;
   };
@@ -58,7 +58,7 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
       facilityId: activeFacilityId,
     },
   });
-  const [archivePerson, setArchivePerson] = useState<object | null>(null);
+  const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
 
   if (archivePerson) {
     return (
