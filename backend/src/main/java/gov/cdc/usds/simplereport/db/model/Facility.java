@@ -88,10 +88,6 @@ public class Facility extends OrganizationScopedEternalEntity {
         return defaultDeviceSpecimen == null ? null : defaultDeviceSpecimen.getDeviceType();
 	}
 
-	public void setDefaultDeviceType(DeviceType defaultDeviceType) {
-        throw new IllegalArgumentException();
-	}
-
 	public List<DeviceType> getDeviceTypes() {
 		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
         return configuredDeviceSpecimens.stream()

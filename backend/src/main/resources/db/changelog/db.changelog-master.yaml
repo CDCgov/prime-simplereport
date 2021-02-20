@@ -47,7 +47,7 @@ x-ref-data:
 databaseChangeLog:
   - property:
       name: migrations_user_email
-      value: usds@cdc.gov
+      value: db-migrations@simplereport.gov
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -1231,7 +1231,7 @@ databaseChangeLog:
               - column:
                   name: name
                   type: *string
-                  remarks: The name of the specimen type, as displayed in isolation
+                  remarks: The name of this specimen type.
                   constraints:
                     nullable: false
                     unique: true
@@ -1346,9 +1346,9 @@ databaseChangeLog:
             remarks: Create migrations user to indicate records created by migration rather than by a human.
             sql: |
               INSERT INTO ${database.defaultSchemaName}.api_user
-              (internal_id, created_at, updated_at, last_seen, login_email, last_name)
+              (internal_id, created_at, updated_at, is_deleted, last_seen, login_email, last_name)
               VALUES (
-                gen_random_uuid(), now(), now(), null,
+                gen_random_uuid(), now(), now(), false, null,
                 '${migrations_user_email}', 'Database Migration Process'
               )
   - changeSet:

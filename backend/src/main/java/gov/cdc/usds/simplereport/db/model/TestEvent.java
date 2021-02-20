@@ -52,7 +52,7 @@ public class TestEvent extends BaseTestInfo {
         this.patientData = getPatient();
         this.providerData = getFacility().getOrderingProvider();
         this.order = order;
-        super.setDateTestedBackdate(order.getDateTestedBackdate());
+        setDateTestedBackdate(order.getDateTestedBackdate());
         PatientAnswers answers = order.getAskOnEntrySurvey();
         if (answers != null) {
             this.surveyData = order.getAskOnEntrySurvey().getSurvey();
