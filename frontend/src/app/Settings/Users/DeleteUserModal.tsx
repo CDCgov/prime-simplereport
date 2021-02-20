@@ -19,17 +19,12 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
       isOpen={true}
       style={{
         content: {
-          marginRight: "50%",
-          overflow: "auto",
-          width: "40%",
-          minWidth: "20em",
-          height: "40%",
-          maxHeight: "80vh",
-          padding: "0",
-          transform: "translate(70%, 50%)",
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
     >
       <div className="border-0 usa-card__container">

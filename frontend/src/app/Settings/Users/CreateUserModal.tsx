@@ -17,17 +17,12 @@ const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
       isOpen={true}
       style={{
         content: {
-          marginRight: "50%",
-          overflow: "auto",
-          height: "60%",
-          width: "40%",
-          minWidth: "20em",
-          maxHeight: "100vh",
-          padding: "0",
-          transform: "translate(70%, 25%)",
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
     >
       <CreateUserForm onClose={onClose} onSubmit={onSubmit} />

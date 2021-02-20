@@ -65,8 +65,10 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
 
   return (
     <div className="border-0 usa-card__container">
-      <div className="usa-card__header display-flex flex-justify modal-bottom-border">
-        <h1 className="margin-0"> Invite new user </h1>
+      <div className="display-flex flex-justify">
+        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+          Invite new user
+        </h1>
         <button onClick={onClose} className="close-button" aria-label="Close">
           <span className="fa-layers">
             <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -74,39 +76,38 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           </span>
         </button>
       </div>
-      <div className="usa-card__body modal-bottom-border">
-        <div className="grid-row grid-gap">
-          <TextInput
-            name="firstName"
-            className="grid-col"
-            label="First Name"
-            value={newUser.firstName}
-            required
-            onChange={onChange}
-          />
-          <TextInput
-            name="lastName"
-            label="Last Name"
-            className="grid-col"
-            value={newUser.lastName}
-            required
-            onChange={onChange}
-          />
-        </div>
-        <div className="grid-row">
-          <TextInput
-            type="email"
-            label="Email Address"
-            name="email"
-            className="grid-col"
-            value={newUser.email}
-            required
-            onChange={onChange}
-          />
-        </div>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+      <div className="grid-row grid-gap">
+        <TextInput
+          name="firstName"
+          className="grid-col"
+          label="First Name"
+          value={newUser.firstName}
+          required
+          onChange={onChange}
+        />
+        <TextInput
+          name="lastName"
+          label="Last Name"
+          className="grid-col"
+          value={newUser.lastName}
+          required
+          onChange={onChange}
+        />
+      </div>
+      <div className="grid-row">
+        <TextInput
+          type="email"
+          label="Email Address"
+          name="email"
+          className="grid-col"
+          value={newUser.email}
+          required
+          onChange={onChange}
+        />
         <div className="grid-row">{setUserRole}</div>
       </div>
-      <div className="usa-card__footer">
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
         <div className="display-flex flex-justify-end">
           <Button
             className="margin-right-2"
@@ -115,7 +116,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
             label="Go back"
           />
           <Button
-            className="margin-right-0"
+            className="margin-right-205"
             onClick={() => onSubmit(newUser)}
             label="Send Invite"
           />
