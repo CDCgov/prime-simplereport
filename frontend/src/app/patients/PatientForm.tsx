@@ -597,11 +597,13 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
+        {props.isPxpView && (
           <Button
             className="usa-button--unstyled margin-top-1 margin-bottom-2"
             onClick={() => setHelpModalOpen(true)}
             label="Why are we asking for this information?"
           />
+        )}
           <RadioGroup
             legend="Race"
             name="race"
@@ -695,27 +697,26 @@ const PatientForm = (props: Props) => {
         </div>
       </div>
       <Modal
+        portalClassName="modal--simple"
         isOpen={helpModalOpen}
         onRequestClose={() => setHelpModalOpen(false)}
         style={{
           content: {
-            maxHeight: "90vh",
-            width: "33em",
             position: "initial",
           },
         }}
         overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       >
-        <div className="position-relative">
+        <div className="modal__container">
           <button
-            className="usa-nav__close position-absolute right-0 display-block margin-top-neg-205 margin-right-neg-205 margin-bottom-0"
+            className="modal__close-button"
             style={{ cursor: "pointer" }}
             onClick={() => setHelpModalOpen(false)}
           >
-            <img className="width-4 text-base" src={iconClose} alt="Close" />
+            <img className="modal__close-img" src={iconClose} alt="Close" />
           </button>
-          <div className="usa-prose">
-            <h3 className="margin-right-3">
+          <div className="modal__content">
+            <h3 className="modal__heading">
               Why are we asking for this information?
             </h3>
             <p>

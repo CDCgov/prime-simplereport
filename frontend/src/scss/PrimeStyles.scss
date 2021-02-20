@@ -223,16 +223,56 @@
   bottom: 0;
   z-index: 1000;
 }
+
 .prime-modal-buttons {
   display: flex;
   justify-content: flex-end;
   margin: 0 1em;
 }
+
 .prime-modal-buttons button {
   margin-left: 1em;
 }
+
 .prime-modal-text {
   margin: 1em;
+}
+
+// Simple modal
+.modal--simple {
+  .ReactModal__Content {
+    @include u-margin-x('4');
+    max-height: 90vh;
+    width: units('mobile-lg');
+  }
+}
+
+.modal__container {
+  position: relative;
+}
+
+.modal__close-button {
+  @include button-unstyled;
+  @include u-square($size-touch-target);
+  display: block;
+  margin-bottom: 0;
+  margin-right: units('neg-205');
+  margin-top: units('neg-205');
+  position: absolute;
+  right: 0;
+  text-align: center;
+}
+
+.modal__close-img {
+  width: units(4);
+}
+
+.modal__content {
+  @extend .usa-prose;
+}
+
+.modal__heading {
+  margin-right: units(3);
 }
 
 .usa-alert--success {
