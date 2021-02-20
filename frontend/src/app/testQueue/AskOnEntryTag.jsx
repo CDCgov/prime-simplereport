@@ -26,7 +26,9 @@ export const areAnswersComplete = (answers) => {
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
   const [answers, setAnswers] = useState(aoeAnswers);
-  useEffect(() => { setAnswers(aoeAnswers) }, [aoeAnswers]);
+  useEffect(() => {
+    setAnswers(aoeAnswers);
+  }, [aoeAnswers]);
   if (areAnswersComplete(answers)) {
     return <span className="usa-tag bg-green">COMPLETED</span>;
   } else {
