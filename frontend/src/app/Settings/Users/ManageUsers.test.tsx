@@ -1,4 +1,4 @@
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import { displayFullNameInOrder } from "../../utils";
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
@@ -32,12 +32,20 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
   { ...loggedInUser, permissions: [], organization, roleDescription: "admin" },
 ];
 
-const updateUserRole = jest.fn();
-const addUserToOrg = jest.fn();
-const deleteUser = jest.fn();
-const getUsers = jest.fn();
+let updateUserRole: () => Promise<any>;
+let addUserToOrg: () => Promise<any>;
+let deleteUser: () => Promise<any>;
+let getUsers: () => void;
+
+let inputValue = (value: string) => ({ target: { value } });
 
 describe("ManageUsers", () => {
+  beforeEach(() => {
+    updateUserRole = jest.fn(() => Promise.resolve());
+    addUserToOrg = jest.fn(() => Promise.resolve());
+    deleteUser = jest.fn(() => Promise.resolve());
+    getUsers = jest.fn();
+  });
   it("displays the list of users and defaults to the first user", () => {
     const { container } = render(
       <ManageUsers
@@ -53,7 +61,7 @@ describe("ManageUsers", () => {
     expect(container).toMatchSnapshot();
   });
   it("disables logged-in user's settings", async () => {
-    const { container, getByText } = render(
+    const { container, findByText, getByText } = render(
       <ManageUsers
         users={users}
         loggedInUser={loggedInUser}
@@ -65,10 +73,36 @@ describe("ManageUsers", () => {
       />
     );
 
-    await fireEvent.click(
-      getByText(displayFullNameInOrder("Bob", "", "Bobberoo"))
+    fireEvent.click(getByText(displayFullNameInOrder("Bob", "", "Bobberoo")));
+    await findByText("YOU");
+    expect(container).toMatchSnapshot();
+  });
+  it("passes user details to the addUserToOrg function", async () => {
+    const { getByText, findAllByRole } = render(
+      <ManageUsers
+        users={users}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
     );
 
-    expect(container).toMatchSnapshot();
+    const newUser = {
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane@smith.co",
+    };
+
+    fireEvent.click(getByText("New User", { exact: false }));
+    const [first, last, email] = await findAllByRole("textbox");
+    fireEvent.change(first, inputValue(newUser.firstName));
+    fireEvent.change(last, inputValue(newUser.lastName));
+    fireEvent.change(email, inputValue(newUser.email));
+    fireEvent.click(getByText("Send", { exact: false }));
+    await waitFor(() => expect(addUserToOrg).toBeCalled());
+    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
   });
 });

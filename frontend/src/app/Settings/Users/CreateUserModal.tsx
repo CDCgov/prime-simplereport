@@ -24,6 +24,7 @@ const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
       <CreateUserForm onClose={onClose} onSubmit={onSubmit} />
     </Modal>
