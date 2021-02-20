@@ -208,7 +208,28 @@ const PatientForm = (props: Props) => {
       employedInHealthcare: patient.employedInHealthcare === "YES",
     };
     if (props.isPxpView) {
-      PxpApi.updatePatient(plid, patientInStore.birthDate, variables).then(
+      // due to @JsonIgnores on Person to avoid duplicate recording, we have to
+      // inline the address so that it can be deserialized outside the context
+      // of GraphQL, which understands the flattened shape in its schema
+      const {
+        street,
+        streetTwo,
+        city,
+        state,
+        county,
+        zipCode,
+        ...withoutAddress
+      } = variables;
+      PxpApi.updatePatient(plid, patientInStore.birthDate, {
+        ...withoutAddress,
+        address: {
+          street: [street, streetTwo],
+          city,
+          state,
+          county,
+          zipCode,
+        },
+      }).then(
         (updatedPatientFromApi: any) => {
           showNotification(
             toast,
