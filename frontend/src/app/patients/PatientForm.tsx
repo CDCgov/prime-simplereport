@@ -29,6 +29,7 @@ import Button from "../../app/commonComponents/Button";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
 import { setPatient as reduxSetPatient } from "../../app/store";
+import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -596,9 +597,11 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
-          <Button onClick={() => setHelpModalOpen(true)}>
-            Why are we asking for this information?
-          </Button>
+          <Button
+            className="usa-button--unstyled margin-top-1 margin-bottom-2"
+            onClick={() => setHelpModalOpen(true)}
+            label="Why are we asking for this information?"
+          />
           <RadioGroup
             legend="Race"
             name="race"
@@ -703,7 +706,30 @@ const PatientForm = (props: Props) => {
         }}
         overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       >
-        {/* MODAL CONTENT GOES HERE */}
+        <div className="position-relative">
+          <button
+            className="usa-nav__close position-absolute right-0 display-block margin-top-neg-205 margin-right-neg-205 margin-bottom-0"
+            style={{ cursor: "pointer" }}
+            onClick={() => setHelpModalOpen(false)}
+          >
+            <img className="width-4 text-base" src={iconClose} alt="Close" />
+          </button>
+          <div className="usa-prose">
+            <h2 className="font-heading-lg margin-right-3">
+              Why are we asking for this information?
+            </h2>
+            <p>
+              Collecting data on demographics is important for improving public
+              health.
+            </p>
+            <p>
+              We know that public health problems are disproportionately higher
+              in some populations in the U.S., and this information can assist
+              with public health efforts to recognize and mitigate disparities
+              in health outcomes.
+            </p>
+          </div>
+        </div>
       </Modal>
     </main>
   );
