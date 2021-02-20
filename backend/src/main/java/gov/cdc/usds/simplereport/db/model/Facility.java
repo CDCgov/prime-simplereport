@@ -119,14 +119,14 @@ public class Facility extends OrganizationScopedEternalEntity {
     public void removeDeviceType(DeviceType existingDevice) {
         Iterator<DeviceSpecimen> i = configuredDeviceSpecimens.iterator();
         UUID removedId = existingDevice.getInternalId();
+        if (defaultDeviceSpecimen != null
+                && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
+            defaultDeviceSpecimen = null;
+        }
         while (i != null && i.hasNext()) {
             DeviceType d = i.next().getDeviceType();
             if (d.getInternalId().equals(removedId)) {
                 i.remove();
-                if (defaultDeviceSpecimen != null
-                        && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {
-                    defaultDeviceSpecimen = null;
-                }
                 break;
             }
         }

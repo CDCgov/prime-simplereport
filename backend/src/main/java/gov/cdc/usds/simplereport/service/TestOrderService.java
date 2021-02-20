@@ -86,6 +86,7 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
     TestOrder order = this.getTestOrder(id);
 
@@ -101,12 +102,13 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
-      DeviceSpecimen deviceType = _dts.getDefaultForDeviceId(deviceID);
+      DeviceSpecimen deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceSpecimen(deviceType);
+    order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
     order.markComplete();

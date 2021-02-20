@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -75,35 +76,40 @@ public class OrganizationInitializingService {
 		Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
 				Collectors.toMap(d->d.getName(), d->d));
         Map<String, SpecimenType> specimenTypesByName = _specimenTypeRepo.findAll().stream().collect(
-                Collectors.toMap(d -> d.getName(), d -> d));
+                Collectors.toMap(s -> s.getName(), s -> s));
+        Map<String, SpecimenType> specimenTypesByCode = new HashMap<>();
         for (SpecimenType s : _props.getSpecimenTypes()) {
             SpecimenType specimenType = specimenTypesByName.get(s.getName());
             if (null == specimenType) {
                 LOG.info("Creating device {}", s.getName());
                 specimenType = _specimenTypeRepo.save(s);
-                specimenTypesByName.put(specimenType.getName(), specimenType);
             }
+            specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
         }
-		for (DeviceType d : _props.getDeviceTypes()) {
+
+        Map<String, DeviceSpecimen> dsForDeviceName = new HashMap<>();
+        for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
 			if (null == deviceType) {
 				LOG.info("Creating device {}", d.getName());
 				deviceType = _deviceTypeRepo.save(d);
 				byName.put(deviceType.getName(), deviceType);
 			}
-            SpecimenType defaultTypeForDevice = _specimenTypeRepo.findByTypeCode(d.getSwabType())
-                    .orElseThrow(() -> new IllegalArgumentException("No specimen type with code " + d.getSwabType()));
-            Optional<DeviceSpecimen> deviceSpecimens = _deviceSpecimenRepo.find(d, defaultTypeForDevice);
-            if (deviceSpecimens.isEmpty()) {
-                _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultTypeForDevice));
+            SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
+            if (defaultTypeForDevice == null) {
+                throw new RuntimeException("specimen type " + deviceType.getSwabType() + " was not initialized");
+            }
+            Optional<DeviceSpecimen> deviceSpecimen = _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
+            if (deviceSpecimen.isEmpty()) {
+                dsForDeviceName.put(deviceType.getName(),
+                        _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultTypeForDevice)));
+            } else {
+                dsForDeviceName.put(deviceType.getName(), deviceSpecimen.get());
             }
 		}
 
         List<DeviceSpecimen> configured = _props.getConfiguredDeviceTypeNames().stream()
-                .map(name -> byName.get(name).getInternalId())
-                .map(_deviceSpecimenRepo::findFirstByDeviceTypeInternalIdOrderByCreatedAt)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
+                .map(dsForDeviceName::get)
 				.collect(Collectors.toList());
         DeviceSpecimen defaultDeviceSpecimen = configured.get(0);
 

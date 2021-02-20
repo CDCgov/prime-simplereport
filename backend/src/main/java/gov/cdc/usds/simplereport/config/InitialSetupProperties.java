@@ -60,8 +60,8 @@ public class InitialSetupProperties {
 
     public List<SpecimenType> getSpecimenTypes() {
         return specimenTypes.stream()
-                .map(d -> new SpecimenType(d.getName(), d.getTypeCode(), d.getCollectionLocationName(),
-                        d.getCollectionLocationCode()))
+                .map(s -> new SpecimenType(s.getName(), s.getTypeCode(), s.getCollectionLocationName(),
+                        s.getCollectionLocationCode()))
                 .collect(Collectors.toList());
     }
 

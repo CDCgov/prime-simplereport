@@ -24,6 +24,7 @@ public interface DeviceSpecimenRepository extends EternalEntityRepository<Device
 
     // INSTA-DEPRECATION: this should only be used until we fix the API to not need
     // it
+    @Deprecated
     @EntityGraph(attributePaths = { "deviceType", "specimenType" })
     public Optional<DeviceSpecimen> findFirstByDeviceTypeInternalIdOrderByCreatedAt(UUID deviceTypeId); // IGNORES
                                                                                                         // DELETION

@@ -51,6 +51,12 @@ public class DeviceTypeService {
         return _repo.findById(actualId).orElseThrow(()->new IllegalGraphqlArgumentException("invalid device type ID"));
     }
 
+    /**
+     * Find the original device/specimen type combination created for this
+     * DeviceType, since that will be the one that is assumed by callers who aren't
+     * aware that you can have multiple specimen types for a given device type.
+     */
+    @Deprecated // this is a backward-compatibility shim!
     public DeviceSpecimen getDefaultForDeviceId(String deviceId) {
         UUID actualDeviceId = UUID.fromString(deviceId);
         return _deviceSpecimenRepo.findFirstByDeviceTypeInternalIdOrderByCreatedAt(actualDeviceId).orElseThrow(
@@ -95,6 +101,7 @@ public class DeviceTypeService {
         String loincCode,
         String swabType
     ) {
+        @SuppressWarnings("deprecation") // this is a shim
         SpecimenType st = _specimenTypeRepo.findByTypeCode(swabType).orElseGet(
                 () -> _specimenTypeRepo.save(new SpecimenType("Auto-generated " + swabType, swabType)));
         if (st.isDeleted()) {
