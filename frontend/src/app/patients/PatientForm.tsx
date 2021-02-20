@@ -700,7 +700,7 @@ const PatientForm = (props: Props) => {
         style={{
           content: {
             maxHeight: "90vh",
-            width: "40em",
+            width: "33em",
             position: "initial",
           },
         }}
@@ -715,9 +715,9 @@ const PatientForm = (props: Props) => {
             <img className="width-4 text-base" src={iconClose} alt="Close" />
           </button>
           <div className="usa-prose">
-            <h2 className="font-heading-lg margin-right-3">
+            <h3 className="margin-right-3">
               Why are we asking for this information?
-            </h2>
+            </h3>
             <p>
               Collecting data on demographics is important for improving public
               health.
