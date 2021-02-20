@@ -1,4 +1,5 @@
-import { render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
+import { displayFullNameInOrder } from "../../utils";
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
@@ -10,9 +11,9 @@ const allFacilities = [
 const loggedInUser = {
   firstName: "Bob",
   middleName: "",
-  lastName: "Bobaroo",
-  id: "1",
-  email: "bob@bobaroo.org",
+  lastName: "Bobberoo",
+  id: "b1",
+  email: "bob@bobberoo.org",
   suffix: "",
   roleDescription: "Admin user",
 };
@@ -22,7 +23,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     firstName: "John",
     middleName: "",
     lastName: "Doe",
-    id: "123",
+    id: "a123",
     email: "john@doe.org",
     organization,
     permissions: ["READ_PATIENT_LIST"],
@@ -49,6 +50,25 @@ describe("ManageUsers", () => {
         getUsers={getUsers}
       />
     );
+    expect(container).toMatchSnapshot();
+  });
+  it("disables logged-in user's settings", async () => {
+    const { container, getByText } = render(
+      <ManageUsers
+        users={users}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
+    );
+
+    await fireEvent.click(
+      getByText(displayFullNameInOrder("Bob", "", "Bobberoo"))
+    );
+
     expect(container).toMatchSnapshot();
   });
 });

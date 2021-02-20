@@ -29,8 +29,11 @@ const UsersSideNav: React.FC<Props> = ({
               onClick={() => onChangeActiveUser(user.id)}
               key={user.id}
             >
-              <div
+              <button
                 className={classnames(
+                  "usa-button--unstyled",
+                  "text-ink",
+                  "text-no-underline",
                   "padding-105 padding-right-2",
                   activeUserId === user.id && "usa-current"
                 )}
@@ -44,7 +47,7 @@ const UsersSideNav: React.FC<Props> = ({
                 </span>
                 <br />
                 <span className="sidenav-user-email">{user.email}</span>
-              </div>
+              </button>
             </li>
           );
         })}
