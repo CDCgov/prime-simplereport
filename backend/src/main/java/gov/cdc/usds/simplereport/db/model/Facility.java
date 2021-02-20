@@ -43,7 +43,7 @@ public class Facility extends OrganizationScopedEternalEntity {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "default_device_specimen_id")
-    private DeviceSpecimen defaultDeviceSpecimen;
+    private DeviceSpecimenType defaultDeviceSpecimen;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -51,13 +51,13 @@ public class Facility extends OrganizationScopedEternalEntity {
             joinColumns = @JoinColumn(name = "facility_id"),
             inverseJoinColumns = @JoinColumn(name = "device_specimen_id")
     )
-    private Set<DeviceSpecimen> configuredDeviceSpecimens = new HashSet<>();
+    private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
     protected Facility() {/* for hibernate */}
 
 	public Facility(Organization org, String facilityName, String cliaNumber, StreetAddress facilityAddress,
-			String phone, String email, Provider orderingProvider, DeviceSpecimen defaultDeviceSpecimen,
-			List<DeviceSpecimen> configuredDeviceSpecimens) {
+			String phone, String email, Provider orderingProvider, DeviceSpecimenType defaultDeviceSpecimen,
+			List<DeviceSpecimenType> configuredDeviceSpecimens) {
 		super(org);
 		this.facilityName = facilityName;
 		this.cliaNumber = cliaNumber;
@@ -67,9 +67,9 @@ public class Facility extends OrganizationScopedEternalEntity {
 		this.orderingProvider = orderingProvider;
         this.defaultDeviceSpecimen = defaultDeviceSpecimen;
 		if (defaultDeviceSpecimen != null) {
-            this.configuredDeviceSpecimens.add(defaultDeviceSpecimen);
+            this.configuredDeviceSpecimenTypes.add(defaultDeviceSpecimen);
 		}
-        this.configuredDeviceSpecimens.addAll(configuredDeviceSpecimens);
+        this.configuredDeviceSpecimenTypes.addAll(configuredDeviceSpecimens);
 	}
 
 	public void setFacilityName(String facilityName) {
@@ -80,7 +80,7 @@ public class Facility extends OrganizationScopedEternalEntity {
 		return facilityName;
 	}
 
-    public DeviceSpecimen getDefaultDeviceSpecimen() {
+    public DeviceSpecimenType getDefaultDeviceSpecimen() {
         return defaultDeviceSpecimen;
     }
 
@@ -90,34 +90,34 @@ public class Facility extends OrganizationScopedEternalEntity {
 
 	public List<DeviceType> getDeviceTypes() {
 		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
-        return configuredDeviceSpecimens.stream()
+        return configuredDeviceSpecimenTypes.stream()
 			.filter(e -> !e.isDeleted())
-                .map(DeviceSpecimen::getDeviceType)
+                .map(DeviceSpecimenType::getDeviceType)
                 .filter(e -> !e.isDeleted())
 			.collect(Collectors.toList());
 	}
 
-    public List<DeviceSpecimen> getDeviceSpecimens() {
-        return configuredDeviceSpecimens.stream()
+    public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
+        return configuredDeviceSpecimenTypes.stream()
                 .filter(e -> !(e.isDeleted() || e.getSpecimenType().isDeleted() || e.getDeviceType().isDeleted()))
                 .collect(Collectors.toList());
     }
 
-    public void addDeviceSpecimen(DeviceSpecimen ds) {
-        configuredDeviceSpecimens.add(ds);
+    public void addDeviceSpecimenType(DeviceSpecimenType ds) {
+        configuredDeviceSpecimenTypes.add(ds);
     }
 
-    public void addDefaultDeviceSpecimen(DeviceSpecimen newDefault) {
-        addDeviceSpecimen(newDefault);
+    public void addDefaultDeviceSpecimen(DeviceSpecimenType newDefault) {
+        addDeviceSpecimenType(newDefault);
         defaultDeviceSpecimen = newDefault;
     }
 
-    public void removeDeviceSpecimen(DeviceSpecimen existing) {
-        configuredDeviceSpecimens.remove(existing); // count on this being in one hibernate session
+    public void removeDeviceSpecimenType(DeviceSpecimenType existing) {
+        configuredDeviceSpecimenTypes.remove(existing); // count on this being in one hibernate session
     }
 
     public void removeDeviceType(DeviceType existingDevice) {
-        Iterator<DeviceSpecimen> i = configuredDeviceSpecimens.iterator();
+        Iterator<DeviceSpecimenType> i = configuredDeviceSpecimenTypes.iterator();
         UUID removedId = existingDevice.getInternalId();
         if (defaultDeviceSpecimen != null
                 && defaultDeviceSpecimen.getDeviceType().getInternalId().equals(removedId)) {

@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 
-public interface SpecimenTypeRepository extends EternalEntityRepository<SpecimenType> {
+public interface SpecimenTypeRepository extends EternalAuditedEntityRepository<SpecimenType> {
 
     @Deprecated // this doesn't check for soft-deletion! But we need that behavior for the
                 // backward-compatibility shim code.

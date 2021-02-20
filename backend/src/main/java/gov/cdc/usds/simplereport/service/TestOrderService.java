@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -104,7 +104,7 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionSubmitTest
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
-      DeviceSpecimen deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
+      DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatient(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);

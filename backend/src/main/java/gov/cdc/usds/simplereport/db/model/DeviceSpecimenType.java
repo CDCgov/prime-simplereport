@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.db.model;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.NaturalId;
 
@@ -11,7 +12,8 @@ import org.hibernate.annotations.NaturalId;
  * cannot be otherwise modified.
  */
 @Entity
-public class DeviceSpecimen extends EternalEntity {
+@Table(name = "device_specimen")
+public class DeviceSpecimenType extends EternalAuditedEntity {
 
     @NaturalId
     @ManyToOne(optional = false)
@@ -23,10 +25,10 @@ public class DeviceSpecimen extends EternalEntity {
     @JoinColumn(name = "specimen_type_id", nullable = false, updatable = false)
     private SpecimenType specimenType;
 
-    protected DeviceSpecimen() {
+    protected DeviceSpecimenType() {
     } // for hibernate
 
-    public DeviceSpecimen(DeviceType deviceType, SpecimenType specimenType) {
+    public DeviceSpecimenType(DeviceType deviceType, SpecimenType specimenType) {
         this.deviceType = deviceType;
         this.specimenType = specimenType;
     }

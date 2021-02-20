@@ -15,14 +15,14 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
@@ -50,7 +50,7 @@ public class OrganizationInitializingService {
 	@Autowired
     private SpecimenTypeRepository _specimenTypeRepo;
     @Autowired
-    private DeviceSpecimenRepository _deviceSpecimenRepo;
+    private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
     @Autowired
 	private FacilityRepository _facilityRepo;
 	@Autowired
@@ -87,7 +87,7 @@ public class OrganizationInitializingService {
             specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
         }
 
-        Map<String, DeviceSpecimen> dsForDeviceName = new HashMap<>();
+        Map<String, DeviceSpecimenType> dsForDeviceName = new HashMap<>();
         for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
 			if (null == deviceType) {
@@ -99,19 +99,19 @@ public class OrganizationInitializingService {
             if (defaultTypeForDevice == null) {
                 throw new RuntimeException("specimen type " + deviceType.getSwabType() + " was not initialized");
             }
-            Optional<DeviceSpecimen> deviceSpecimen = _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
+            Optional<DeviceSpecimenType> deviceSpecimen = _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
             if (deviceSpecimen.isEmpty()) {
                 dsForDeviceName.put(deviceType.getName(),
-                        _deviceSpecimenRepo.save(new DeviceSpecimen(deviceType, defaultTypeForDevice)));
+                        _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
             } else {
                 dsForDeviceName.put(deviceType.getName(), deviceSpecimen.get());
             }
 		}
 
-        List<DeviceSpecimen> configured = _props.getConfiguredDeviceTypeNames().stream()
+        List<DeviceSpecimenType> configured = _props.getConfiguredDeviceTypeNames().stream()
                 .map(dsForDeviceName::get)
 				.collect(Collectors.toList());
-        DeviceSpecimen defaultDeviceSpecimen = configured.get(0);
+        DeviceSpecimenType defaultDeviceSpecimen = configured.get(0);
 
 		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
 		Organization realOrg = _orgRepo.save(emptyOrg);

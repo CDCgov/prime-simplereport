@@ -64,7 +64,7 @@ public class TestOrder extends BaseTestInfo {
 	}
 
     @Override
-    public void setDeviceSpecimen(DeviceSpecimen ds) {
+    public void setDeviceSpecimen(DeviceSpecimenType ds) {
         super.setDeviceSpecimen(ds);
     }
 

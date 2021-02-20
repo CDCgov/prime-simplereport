@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -48,7 +48,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     private DeviceTypeHolder getDeviceConfig() {
         DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         SpecimenType specimen = _dataFactory.getGenericSpecimen();
-        DeviceSpecimen dst = _dataFactory.createDeviceSpecimen(device, specimen);
+        DeviceSpecimenType dst = _dataFactory.createDeviceSpecimen(device, specimen);
         DeviceTypeHolder holder = new DeviceTypeHolder(dst, List.of(dst));
         return holder;
     }

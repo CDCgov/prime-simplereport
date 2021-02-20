@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.validators.RequiredNumericCode;
  * {@link DeviceType}s.
  */
 @Entity
-public class SpecimenType extends EternalEntity {
+public class SpecimenType extends EternalAuditedEntity {
 
     @Column(nullable = false)
     private String name;

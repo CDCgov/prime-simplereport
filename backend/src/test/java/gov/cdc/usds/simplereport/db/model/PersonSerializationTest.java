@@ -76,7 +76,7 @@ class PersonSerializationTest {
         Organization fakeOrg = new Organization("ABC", "123");
         Person p = makeSerializablePerson(fakeOrg);
         Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
-        DeviceSpecimen ds = new DeviceSpecimen(
+        DeviceSpecimenType ds = new DeviceSpecimenType(
                 new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"),
                 new SpecimenType("Troll Bogies", "000111222"));
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");

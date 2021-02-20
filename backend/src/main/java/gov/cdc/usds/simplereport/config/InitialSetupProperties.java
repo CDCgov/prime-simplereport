@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -89,8 +89,8 @@ public class InitialSetupProperties {
             this.email = email;
         }
 
-        public Facility makeRealFacility(Organization org, Provider p, DeviceSpecimen defaultDeviceSpec,
-                List<DeviceSpecimen> configured) {
+        public Facility makeRealFacility(Organization org, Provider p, DeviceSpecimenType defaultDeviceSpec,
+                List<DeviceSpecimenType> configured) {
             return new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec, configured);
         }
 

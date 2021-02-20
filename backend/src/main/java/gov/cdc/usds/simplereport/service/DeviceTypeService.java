@@ -9,10 +9,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
-import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
@@ -26,10 +26,10 @@ import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 public class DeviceTypeService {
 
     private DeviceTypeRepository _repo;
-    private DeviceSpecimenRepository _deviceSpecimenRepo;
+    private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
     private SpecimenTypeRepository _specimenTypeRepo;
 
-    public DeviceTypeService(DeviceTypeRepository repo, DeviceSpecimenRepository deviceSpecimenRepo,
+    public DeviceTypeService(DeviceTypeRepository repo, DeviceSpecimenTypeRepository deviceSpecimenRepo,
             SpecimenTypeRepository specimenTypeRepo) {
         _repo = repo;
         _deviceSpecimenRepo = deviceSpecimenRepo;
@@ -57,7 +57,7 @@ public class DeviceTypeService {
      * aware that you can have multiple specimen types for a given device type.
      */
     @Deprecated // this is a backward-compatibility shim!
-    public DeviceSpecimen getDefaultForDeviceId(String deviceId) {
+    public DeviceSpecimenType getDefaultForDeviceId(String deviceId) {
         UUID actualDeviceId = UUID.fromString(deviceId);
         return _deviceSpecimenRepo.findFirstByDeviceTypeInternalIdOrderByCreatedAt(actualDeviceId).orElseThrow(
                 () -> new IllegalGraphqlArgumentException("Device is not configured with a specimen type"));
@@ -108,7 +108,7 @@ public class DeviceTypeService {
             throw new IllegalGraphqlArgumentException("swab type has been deleted and cannot be used");
         }
         DeviceType dt = _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
-        _deviceSpecimenRepo.save(new DeviceSpecimen(dt, st));
+        _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, st));
         return dt;
     }
 
@@ -116,11 +116,11 @@ public class DeviceTypeService {
         if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
             throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
         }
-        List<DeviceSpecimen> configuredTypes = configuredDeviceTypeIds.stream()
+        List<DeviceSpecimenType> configuredTypes = configuredDeviceTypeIds.stream()
                 .map(this::getDefaultForDeviceId)
                 .collect(Collectors.toList());
         UUID defaultId = UUID.fromString(defaultDeviceTypeId);
-        DeviceSpecimen defaultType = configuredTypes.stream()
+        DeviceSpecimenType defaultType = configuredTypes.stream()
                 .filter(dt -> dt.getDeviceType().getInternalId().equals(defaultId))
             .findFirst()
             .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))

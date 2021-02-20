@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -25,7 +25,7 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
     @Autowired
     private DeviceTypeRepository _devices;
     @Autowired
-    private DeviceSpecimenRepository _deviceSpecimens;
+    private DeviceSpecimenTypeRepository _deviceSpecimens;
     @Autowired
     private SpecimenTypeRepository _specimens;
     @Autowired
@@ -37,14 +37,14 @@ class FacilityRepositoryTest extends BaseRepositoryTest {
 
     @Test
     void smokeTestDeviceOperations() {
-        List<DeviceSpecimen> configuredDevices = new ArrayList<>();
+        List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
         DeviceType bill = _devices.save(new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"));
         DeviceType percy = _devices.save(new DeviceType("Percy", "Weasleys", "2", "12345-7", "E"));
         SpecimenType spec = _specimens.save(new SpecimenType("Troll Bogies", "0001111234"));
-        DeviceSpecimen billbogies = _deviceSpecimens.save(new DeviceSpecimen(bill, spec));
+        DeviceSpecimenType billbogies = _deviceSpecimens.save(new DeviceSpecimenType(bill, spec));
         Provider mccoy = _providers.save(new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222"));
         configuredDevices.add(billbogies);
-        configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimen(percy, spec)));
+        configuredDevices.add(_deviceSpecimens.save(new DeviceSpecimenType(percy, spec)));
         Organization org = _orgs.save(new Organization("My Office", "650Mass"));
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         Facility saved = _repo.save(new Facility(org, "Third Floor", "123456", addy, "555-867-5309",

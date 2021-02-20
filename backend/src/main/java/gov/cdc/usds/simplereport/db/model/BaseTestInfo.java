@@ -33,7 +33,7 @@ public abstract class BaseTestInfo extends AuditedEntity
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "device_specimen_id")
-    private DeviceSpecimen deviceSpecimen;
+    private DeviceSpecimenType deviceSpecimen;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "device_type_id")
@@ -63,7 +63,7 @@ public abstract class BaseTestInfo extends AuditedEntity
         this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen(), orig.getResult());
     }
 
-    protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimen deviceSpecimen, TestResult result) {
+    protected BaseTestInfo(Person patient, Facility facility, DeviceSpecimenType deviceSpecimen, TestResult result) {
         super();
         this.patient = patient;
         this.facility = facility;
@@ -101,7 +101,7 @@ public abstract class BaseTestInfo extends AuditedEntity
         return deviceType;
     }
 
-    public DeviceSpecimen getDeviceSpecimen() {
+    public DeviceSpecimenType getDeviceSpecimen() {
         return deviceSpecimen;
     }
 
@@ -125,7 +125,7 @@ public abstract class BaseTestInfo extends AuditedEntity
         result = newResult;
     }
 
-    protected void setDeviceSpecimen(DeviceSpecimen deviceSpecimen) {
+    protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
         this.deviceSpecimen = deviceSpecimen;
         this.deviceType = deviceSpecimen.getDeviceType();
     }

@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimen;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -173,13 +173,13 @@ public class OrganizationService {
         a.setPostalCode(orderingProviderZipCode);
         p.setAddress(a);
 
-        for (DeviceSpecimen ds : deviceHolder.getConfiguredDeviceTypes()) {
-            facility.addDeviceSpecimen(ds);
+        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceTypes()) {
+            facility.addDeviceSpecimenType(ds);
         }
         // remove all existing devices
-        for (DeviceSpecimen ds : facility.getDeviceSpecimens()) {
+        for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
             if (!deviceHolder.getConfiguredDeviceTypes().contains(ds)) {
-                facility.removeDeviceSpecimen(ds);
+                facility.removeDeviceSpecimenType(ds);
             }
         }
         facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceType());
