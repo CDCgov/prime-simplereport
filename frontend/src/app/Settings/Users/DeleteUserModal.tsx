@@ -26,6 +26,7 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
       <div className="border-0 usa-card__container">
         <div className="display-flex flex-justify">

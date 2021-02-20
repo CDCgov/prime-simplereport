@@ -34,7 +34,7 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
 
 let updateUserRole: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
-let deleteUser: () => Promise<any>;
+let deleteUser: (obj: any) => Promise<any>;
 let getUsers: () => void;
 
 let inputValue = (value: string) => ({ target: { value } });
@@ -43,7 +43,9 @@ describe("ManageUsers", () => {
   beforeEach(() => {
     updateUserRole = jest.fn(() => Promise.resolve());
     addUserToOrg = jest.fn(() => Promise.resolve());
-    deleteUser = jest.fn(() => Promise.resolve());
+    deleteUser = jest.fn((obj) =>
+      Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
+    );
     getUsers = jest.fn();
   });
   it("displays the list of users and defaults to the first user", () => {
@@ -104,5 +106,26 @@ describe("ManageUsers", () => {
     fireEvent.click(getByText("Send", { exact: false }));
     await waitFor(() => expect(addUserToOrg).toBeCalled());
     expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+  });
+  it("deletes a user", async () => {
+    const { findByText } = render(
+      <ManageUsers
+        users={users}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
+    );
+    const removeButton = await findByText("Remove", { exact: false });
+    fireEvent.click(removeButton);
+    const sureButton = await findByText("Yes", { exact: false });
+    fireEvent.click(sureButton);
+    await waitFor(() => expect(deleteUser).toBeCalled());
+    expect(deleteUser).toBeCalledWith({
+      variables: { deleted: true, id: users[0].id },
+    });
   });
 });
