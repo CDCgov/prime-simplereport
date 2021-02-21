@@ -126,8 +126,9 @@ const ManageUsersContainer: any = () => {
   if (loading || loadingFacilities) {
     return <p> Loading... </p>;
   }
+
   if (error || errorFacilities) {
-    return error;
+    throw error || errorFacilities;
   }
 
   if (data === undefined) {

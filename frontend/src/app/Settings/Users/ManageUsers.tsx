@@ -66,6 +66,11 @@ const ManageUsers: React.FC<Props> = ({
   const [showAddUserModal, updateShowAddUserModal] = useState(false);
   const [showDeleteUserModal, updateShowDeleteUserModal] = useState(false);
   const [isUserEdited, updateIsUserEdited] = useState(false);
+  const [error, setError] = useState<Error>();
+
+  if (error) {
+    throw error;
+  }
 
   // only updates the local state
   function updateUser<T>(
@@ -142,10 +147,7 @@ const ManageUsers: React.FC<Props> = ({
           />
         );
       })
-      .catch((error: Error) => {
-        console.log(error);
-        // TODO: track error
-      });
+      .catch(setError);
   };
 
   const handleAddUserToOrg = (newUserInvite: NewUserInvite) => {
@@ -172,10 +174,7 @@ const ManageUsers: React.FC<Props> = ({
         updateShowAddUserModal(false);
         getUsers();
       })
-      .catch((error) => {
-        console.log(error);
-        // TODO: track error in analytics
-      });
+      .catch(setError);
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -208,10 +207,7 @@ const ManageUsers: React.FC<Props> = ({
         updateUsersState(usersMinusDeleted);
         updateActiveUserId(Object.keys(usersMinusDeleted)[0]); // arbitrarily pick the first user as the next active.
       })
-      .catch((error: Error) => {
-        console.log(error);
-        // TODO: track error in analytics
-      });
+      .catch(setError);
 
     const user = usersState[userId];
 
