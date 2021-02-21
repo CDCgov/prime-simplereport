@@ -140,7 +140,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   );
   return (
     <React.Fragment>
-      <h3> Facility Access </h3>
+      <h3>Facility access</h3>
       <p>{facilityAccessDescription}</p>
       <table
         className="usa-table usa-table--borderless"

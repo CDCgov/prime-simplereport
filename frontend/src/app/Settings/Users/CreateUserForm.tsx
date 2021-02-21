@@ -118,7 +118,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           <Button
             className="margin-right-205"
             onClick={() => onSubmit(newUser)}
-            label="Send Invite"
+            label="Send invite"
           />
         </div>
       </div>

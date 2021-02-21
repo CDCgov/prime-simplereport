@@ -235,7 +235,7 @@ const ManageUsers: React.FC<Props> = ({
           <Button
             variant="outline"
             onClick={() => updateShowAddUserModal(true)}
-            label="+ New User"
+            label="+ New user"
           />
         ) : null}
       </div>
@@ -251,9 +251,9 @@ const ManageUsers: React.FC<Props> = ({
               users={usersState}
               onChangeActiveUser={onChangeActiveUser}
             />
-            <div className="tablet:grid-col">
-              <div className="user-header">
-                <h2 className="display-inline-block margin-top-2 margin-bottom-105">
+            <div className="tablet:grid-col padding-left-2">
+              <div className="user-header grid-row flex-row flex-align-center">
+                <h2 className="display-inline-block margin-y-1">
                   {displayFullNameInOrder(
                     activeUser.firstName,
                     activeUser.middleName,
@@ -261,13 +261,15 @@ const ManageUsers: React.FC<Props> = ({
                   )}
                 </h2>
                 {activeUser.id === loggedInUser.id ? (
-                  <span className="usa-tag margin-left-1">YOU</span>
+                  <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
+                    YOU
+                  </span>
                 ) : null}
               </div>
               <div className="user-content">
-                <p>
-                  Permissions to manage settings and users are limited to admins
-                  only
+                <p className="text-base">
+                  Admins have full access to conduct tests, manage results and
+                  profiles, and manage settings and users
                 </p>
                 <UserRoleSettingsForm
                   activeUser={activeUser}
@@ -283,14 +285,14 @@ const ManageUsers: React.FC<Props> = ({
                   />
                 ) : null}
               </div>
-              <div className="usa-card__footer display-flex flex-justify margin-top-5">
+              <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
                 {process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                   <Button
                     variant="outline"
                     icon="trash"
                     className="flex-align-self-start display-inline-block"
                     onClick={() => updateShowDeleteUserModal(true)}
-                    label="+ Remove User"
+                    label=" Remove user"
                     disabled={loggedInUser.id === activeUser.id}
                   />
                 ) : null}

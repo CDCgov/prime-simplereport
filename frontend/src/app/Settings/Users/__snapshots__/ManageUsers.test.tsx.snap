@@ -15,7 +15,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
         class="usa-button usa-button--outline"
         type="button"
       >
-        + New User
+        + New user
       </button>
     </div>
     <div
@@ -74,18 +74,18 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
           </ul>
         </div>
         <div
-          class="tablet:grid-col"
+          class="tablet:grid-col padding-left-2"
         >
           <div
-            class="user-header"
+            class="user-header grid-row flex-row flex-align-center"
           >
             <h2
-              class="display-inline-block margin-top-2 margin-bottom-105"
+              class="display-inline-block margin-y-1"
             >
               Bob Bobberoo
             </h2>
             <span
-              class="usa-tag margin-left-1"
+              class="usa-tag margin-left-1 bg-base-lighter text-ink"
             >
               YOU
             </span>
@@ -93,11 +93,13 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
           <div
             class="user-content"
           >
-            <p>
-              Permissions to manage settings and users are limited to admins only
+            <p
+              class="text-base"
+            >
+              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
             </p>
             <fieldset
-              class="usa-fieldset prime-radios"
+              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
             >
               <legend
                 class="usa-legend usa-sr-only"
@@ -127,7 +129,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__label"
                     for="radio-test-1_Admin user_0"
                   >
-                    Admin
+                    Admin (full permissions)
                   </label>
                 </div>
                 <div
@@ -145,7 +147,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__label"
                     for="radio-test-1_Standard user_1"
                   >
-                    User
+                    User (manage results and profiles)
                   </label>
                 </div>
                 <div
@@ -163,13 +165,13 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__label"
                     for="radio-test-1_Test-entry user_2"
                   >
-                    Entry Only
+                    Entry Only (conduct tests)
                   </label>
                 </div>
               </div>
             </fieldset>
             <h3>
-               Facility Access 
+              Facility access
             </h3>
             <p>
               Admins have access to all facilities
@@ -189,7 +191,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
             </table>
           </div>
           <div
-            class="usa-card__footer display-flex flex-justify margin-top-5"
+            class="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0"
           >
             <button
               class="usa-button usa-button--outline usa-button-disabled flex-align-self-start display-inline-block"
@@ -211,7 +213,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                   fill="currentColor"
                 />
               </svg>
-              + Remove User
+               Remove user
             </button>
             <button
               class="usa-button usa-button-disabled"
@@ -243,7 +245,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
         class="usa-button usa-button--outline"
         type="button"
       >
-        + New User
+        + New user
       </button>
     </div>
     <div
@@ -302,13 +304,13 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
           </ul>
         </div>
         <div
-          class="tablet:grid-col"
+          class="tablet:grid-col padding-left-2"
         >
           <div
-            class="user-header"
+            class="user-header grid-row flex-row flex-align-center"
           >
             <h2
-              class="display-inline-block margin-top-2 margin-bottom-105"
+              class="display-inline-block margin-y-1"
             >
               John Doe
             </h2>
@@ -316,11 +318,13 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
           <div
             class="user-content"
           >
-            <p>
-              Permissions to manage settings and users are limited to admins only
+            <p
+              class="text-base"
+            >
+              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
             </p>
             <fieldset
-              class="usa-fieldset prime-radios"
+              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
             >
               <legend
                 class="usa-legend usa-sr-only"
@@ -349,7 +353,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-radio__label"
                     for="radio-test-1_Admin user_0"
                   >
-                    Admin
+                    Admin (full permissions)
                   </label>
                 </div>
                 <div
@@ -366,7 +370,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-radio__label"
                     for="radio-test-1_Standard user_1"
                   >
-                    User
+                    User (manage results and profiles)
                   </label>
                 </div>
                 <div
@@ -383,13 +387,13 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-radio__label"
                     for="radio-test-1_Test-entry user_2"
                   >
-                    Entry Only
+                    Entry Only (conduct tests)
                   </label>
                 </div>
               </div>
             </fieldset>
             <h3>
-               Facility Access 
+              Facility access
             </h3>
             <p />
             <table
@@ -407,7 +411,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             </table>
           </div>
           <div
-            class="usa-card__footer display-flex flex-justify margin-top-5"
+            class="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0"
           >
             <button
               class="usa-button usa-button--outline flex-align-self-start display-inline-block"
@@ -428,7 +432,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   fill="currentColor"
                 />
               </svg>
-              + Remove User
+               Remove user
             </button>
             <button
               class="usa-button usa-button-disabled"
