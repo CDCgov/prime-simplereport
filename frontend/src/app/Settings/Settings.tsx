@@ -1,4 +1,4 @@
-import { Route, Redirect, RouteComponentProps } from "react-router-dom";
+import { Route, RouteComponentProps } from "react-router-dom";
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
@@ -39,11 +39,6 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
         >
           <SettingsNav />
           <Route
-            exact
-            path={match.url}
-            component={ManageOrganizationContainer}
-          />
-          <Route
             path={match.url + "/facilities"}
             component={ManageFacilitiesContainer}
           />
@@ -59,8 +54,15 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
               <FacilityFormContainer facilityId={match.params.facilityId} />
             )}
           />
-          <Route path={match.url + "/users"} component={ManageUsersContainer} />
-          <Redirect exact to={"/settings"} />
+          <Route
+            path={match.url + "/users/:id?"}
+            component={ManageUsersContainer}
+          />
+          <Route
+            exact
+            path={match.url}
+            component={ManageOrganizationContainer}
+          />
         </PrimeErrorBoundary>
       </div>
     </main>
