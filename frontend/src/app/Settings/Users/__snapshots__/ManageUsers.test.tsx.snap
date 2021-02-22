@@ -38,17 +38,18 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
             >
               <button
                 class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2"
+                style="cursor: pointer;"
               >
                 <span
                   class="sidenav-user-name"
                 >
-                  John Doe
+                  Arthur, John
                 </span>
                 <br />
                 <span
                   class="sidenav-user-email"
                 >
-                  john@doe.org
+                  john@arthur.org
                 </span>
               </button>
             </li>
@@ -57,11 +58,12 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
             >
               <button
                 class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 usa-current"
+                style="cursor: pointer;"
               >
                 <span
                   class="sidenav-user-name"
                 >
-                  Bob Bobberoo
+                  Bobberoo, Bob
                 </span>
                 <br />
                 <span
@@ -147,7 +149,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__label"
                     for="radio-test-1_Standard user_1"
                   >
-                    User (manage results and profiles)
+                    Standard user (manage results and profiles)
                   </label>
                 </div>
                 <div
@@ -165,7 +167,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__label"
                     for="radio-test-1_Test-entry user_2"
                   >
-                    Entry Only (conduct tests)
+                    Entry only (conduct tests)
                   </label>
                 </div>
               </div>
@@ -268,17 +270,18 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             >
               <button
                 class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 usa-current"
+                style="cursor: pointer;"
               >
                 <span
                   class="sidenav-user-name"
                 >
-                  John Doe
+                  Arthur, John
                 </span>
                 <br />
                 <span
                   class="sidenav-user-email"
                 >
-                  john@doe.org
+                  john@arthur.org
                 </span>
               </button>
             </li>
@@ -287,11 +290,12 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             >
               <button
                 class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2"
+                style="cursor: pointer;"
               >
                 <span
                   class="sidenav-user-name"
                 >
-                  Bob Bobberoo
+                  Bobberoo, Bob
                 </span>
                 <br />
                 <span
@@ -312,7 +316,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             <h2
               class="display-inline-block margin-y-1"
             >
-              John Doe
+              John Arthur
             </h2>
           </div>
           <div
@@ -370,7 +374,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-radio__label"
                     for="radio-test-1_Standard user_1"
                   >
-                    User (manage results and profiles)
+                    Standard user (manage results and profiles)
                   </label>
                 </div>
                 <div
@@ -387,7 +391,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-radio__label"
                     for="radio-test-1_Test-entry user_2"
                   >
-                    Entry Only (conduct tests)
+                    Entry only (conduct tests)
                   </label>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { displayFullNameInOrder } from "../../utils";
+import { displayFullName } from "../../utils";
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
@@ -23,9 +23,9 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
   {
     firstName: "John",
     middleName: "",
-    lastName: "Doe",
+    lastName: "Arthur",
     id: "a123",
-    email: "john@doe.org",
+    email: "john@arthur.org",
     organization,
     permissions: ["READ_PATIENT_LIST"],
     roleDescription: "user",
@@ -76,7 +76,7 @@ describe("ManageUsers", () => {
       />
     );
 
-    fireEvent.click(getByText(displayFullNameInOrder("Bob", "", "Bobberoo")));
+    fireEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
     await findByText("YOU");
     expect(container).toMatchSnapshot();
   });
