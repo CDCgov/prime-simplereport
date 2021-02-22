@@ -6,10 +6,8 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,12 +22,10 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
-import gov.cdc.usds.simplereport.api.exceptions.FeatureFlagDisabledException;
 import gov.cdc.usds.simplereport.api.exceptions.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -39,8 +35,9 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 
+@ConditionalOnProperty("${feature-flags.patient-links}")
 @RestController
-@RequestMapping(value = "/pxp")
+@RequestMapping("/pxp")
 @Validated
 public class PatientExperienceController {
   private static final Logger LOG = LoggerFactory.getLogger(PatientExperienceController.class);
@@ -57,9 +54,6 @@ public class PatientExperienceController {
   @Autowired
   private TestEventService tes;
 
-  @Value("${feature-flags.patient-links:false}")
-  private boolean patientLinksEnabled;
-
   /**
    * Verify that the patient-provided DOB matches the patient on file for the
    * patient link id. It returns the full patient object if so, otherwise it
@@ -68,9 +62,6 @@ public class PatientExperienceController {
   @PutMapping("/link/verify")
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
       throws InvalidPatientLinkException {
-    if (!patientLinksEnabled) {
-      throw new FeatureFlagDisabledException("Patient links not enabled");
-    }
     Person p = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     return new PxpPersonWrapper(p, te);
@@ -78,9 +69,6 @@ public class PatientExperienceController {
 
   @PutMapping("/patient")
   public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) throws InvalidPatientLinkException {
-    if (!patientLinksEnabled) {
-      throw new FeatureFlagDisabledException("Patient links not enabled");
-    }
     pls.getPatientLinkVerify(body.getPlid(), body.getDob()); // gotta verify!
 
     PatientLink pl = pls.getPatientLink(body.getPlid());
@@ -100,9 +88,6 @@ public class PatientExperienceController {
 
   @PutMapping("/questions")
   public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws InvalidPatientLinkException {
-    if (!patientLinksEnabled) {
-      throw new FeatureFlagDisabledException("Patient links not enabled");
-    }
     Person patient = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
     String patientID = patient.getInternalId().toString();
 

@@ -109,7 +109,6 @@ const AoEModalForm = (props: Props) => {
     </div>
   );
 
-  // TODO: only get most recent test from the backend (old todo from Tim)
   const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
