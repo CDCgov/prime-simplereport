@@ -241,9 +241,9 @@
 // Simple modal
 .modal--basic {
   .ReactModal__Content {
-    @include u-margin-x('4');
+    @include u-margin-x("4");
     max-height: 90vh;
-    width: units('mobile-lg');
+    width: units("mobile-lg");
   }
 
   .modal__container {
@@ -265,8 +265,8 @@
   @include u-square($size-touch-target);
   display: block;
   margin-bottom: 0;
-  margin-right: units('neg-205');
-  margin-top: units('neg-205');
+  margin-right: units("neg-205");
+  margin-top: units("neg-205");
   text-align: center;
 }
 

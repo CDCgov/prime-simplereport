@@ -597,13 +597,13 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
-        {props.isPxpView && (
-          <Button
-            className="usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
-            onClick={() => setHelpModalOpen(true)}
-            label="Why are we asking for this information?"
-          />
-        )}
+          {props.isPxpView && (
+            <Button
+              className="usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
+              onClick={() => setHelpModalOpen(true)}
+              label="Why are we asking for this information?"
+            />
+          )}
           <RadioGroup
             legend="Race"
             name="race"
