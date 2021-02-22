@@ -24,6 +24,9 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
 
+    public static final int PATIENT_PAGEOFFSET = 0;
+    public static final int PATIENT_PAGESIZE = 1000;
+
     // I'll have you know that I didn't actually mean to do this...
     private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
     private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -53,7 +56,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _service.addPatient(null, "BAR", "Basil", null, "Barnacle", "4th", LocalDate.of(1865, 12, 25), "13 Main", null,
                 "Hicksville", "NY",
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
-        List<Person> all = _service.getAllPatients();
+        List<Person> all = _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertEquals(2, all.size());
     }
 
@@ -68,10 +71,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
-        assertEquals("Fred", _service.getAllPatients().get(0).getFirstName());
+        assertEquals("Fred", _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).get(0).getFirstName());
 
-        assertSecurityError(() -> _service.getAllArchivedPatients());
-        assertSecurityError(() -> _service.getArchivedPatients(facilityId));
+        assertSecurityError(() -> _service.getAllArchivedPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE));
+        assertSecurityError(() -> _service.getArchivedPatients(facilityId, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE));
     }
 
     @Test
@@ -87,17 +90,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "11801", "5555555555", PersonRole.STAFF, null, "Nassau",
                 null, null, null, false, false);
 
-        assertEquals(1, _service.getAllPatients().size());
+        assertEquals(1, _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
         Person deletedPerson = _service.setIsDeleted(p.getInternalId(), true);
 
         assertTrue(deletedPerson.isDeleted());
-        assertEquals(0, _service.getAllPatients().size());
-        assertEquals(0, _service.getPatients(facilityId).size());
+        assertEquals(0, _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
+        assertEquals(0, _service.getPatients(facilityId, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
 
-        List<Person> result = _service.getAllArchivedPatients();
+        List<Person> result = _service.getAllArchivedPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertEquals(1, result.size());
         assertTrue(result.get(0).isDeleted());
-        assertEquals(1, _service.getArchivedPatients(facilityId).size());
+        assertEquals(1, _service.getArchivedPatients(facilityId, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
     }
 
     @Test
@@ -105,7 +108,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     void getPatients_noFacility_allFetchedAndSorted() {
         makedata();
         // gets all patients across the org
-        List<Person> patients = _service.getAllPatients();
+        List<Person> patients = _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, CHARLES, FRANK, BRAD, DEXTER, ELIZABETH, AMOS);
     }
 
@@ -113,9 +116,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     @WithSimpleReportOrgAdminUser
     void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata();
-        List<Person> patients = _service.getPatients(_site1.getInternalId());
+        List<Person> patients = _service.getPatients(_site1.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
-        patients = _service.getPatients(_site2.getInternalId());
+        patients = _service.getPatients(_site2.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, FRANK, BRAD, DEXTER, AMOS);
     }
 

@@ -8,6 +8,7 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,8 @@ public class PersonService {
     private OrganizationService _os;
     private PersonRepository _repo;
 
-    public static final long DEFAULT_PAGINATION_PAGEOFFSET = 0;
-    public static final long DEFAULT_PAGINATION_PAGESIZE = 500;
+    public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
+    public static final int DEFAULT_PAGINATION_PAGESIZE = 50;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
@@ -52,25 +53,30 @@ public class PersonService {
     }
 
     @AuthorizationConfiguration.RequirePermissionReadPatientList
-    public List<Person> getPatients(UUID facilityId) {
-        return _repo.findByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
-                _os.getCurrentOrganization(), NAME_SORT);
+    public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
+        return _repo.findByFacilityAndOrganization(
+                _os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(),
+                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionReadPatientList
-    public List<Person> getAllPatients() {
-        return _repo.findAllByOrganization(_os.getCurrentOrganization(), NAME_SORT);
+    public List<Person> getAllPatients(int pageOffset, int pageSize) {
+        return _repo.findAllByOrganization(_os.getCurrentOrganization(),
+                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
-    public List<Person> getArchivedPatients(UUID facilityId) {
+    public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
         return _repo.findArchivedByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
-                _os.getCurrentOrganization(), NAME_SORT);
+                _os.getCurrentOrganization(),
+                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
-    public List<Person> getAllArchivedPatients() {
-        return _repo.findAllArchivedByOrganization(_os.getCurrentOrganization(), NAME_SORT);
+    public List<Person> getAllArchivedPatients(int pageOffset, int pageSize) {
+        return _repo.findAllArchivedByOrganization(_os.getCurrentOrganization(),
+                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionArchivePatient

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.time.LocalDate;
 import java.util.List;
 
+import gov.cdc.usds.simplereport.service.PersonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -12,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import org.springframework.data.domain.PageRequest;
 
 class PersonRepositoryTest extends BaseRepositoryTest {
 
@@ -28,10 +30,12 @@ class PersonRepositoryTest extends BaseRepositoryTest {
         StreetAddress addy = new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
         _repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(), addy, "(123) 456-7890",
                 PersonRole.VISITOR, "", null, "", "", false, false));
-        List<Person> found = _repo.findAllByOrganization(org, null);
+        List<Person> found = _repo.findAllByOrganization(org,
+                PageRequest.of(PersonService.DEFAULT_PAGINATION_PAGEOFFSET, PersonService.DEFAULT_PAGINATION_PAGESIZE)).toList();
         assertEquals(1, found.size());
         assertEquals("Joe", found.get(0).getFirstName());
-        found = _repo.findAllByOrganization(other, null);
+        found = _repo.findAllByOrganization(other,
+                PageRequest.of(PersonService.DEFAULT_PAGINATION_PAGEOFFSET, PersonService.DEFAULT_PAGINATION_PAGESIZE)).toList();
         assertEquals(0, found.size());
     }
 }

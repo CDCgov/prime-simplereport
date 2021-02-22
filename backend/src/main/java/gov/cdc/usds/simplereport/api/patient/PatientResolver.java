@@ -20,7 +20,7 @@ public class PatientResolver implements GraphQLQueryResolver {
     @Autowired
     private PersonService ps;
 
-    public List<Person> getPatients(UUID facilityId, long pageNumber, long pageSize, boolean showDeleted) {
+    public List<Person> getPatients(UUID facilityId, int pageNumber, int pageSize, boolean showDeleted) {
         if (pageNumber < 0) {
             pageNumber = PersonService.DEFAULT_PAGINATION_PAGEOFFSET;
         }
@@ -28,9 +28,9 @@ public class PatientResolver implements GraphQLQueryResolver {
             pageSize = PersonService.DEFAULT_PAGINATION_PAGESIZE;
         }
         if (facilityId == null) {
-            return showDeleted ? ps.getAllArchivedPatients() : ps.getAllPatients();
+            return showDeleted ? ps.getAllArchivedPatients(pageNumber, pageSize) : ps.getAllPatients(pageNumber, pageSize);
         }
-        return showDeleted ? ps.getArchivedPatients(facilityId) : ps.getPatients(facilityId);
+        return showDeleted ? ps.getArchivedPatients(facilityId, pageNumber, pageSize) : ps.getPatients(facilityId, pageNumber, pageSize);
     }
 
 

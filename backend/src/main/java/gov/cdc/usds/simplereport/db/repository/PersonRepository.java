@@ -4,10 +4,10 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,10 +17,10 @@ import java.util.UUID;
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
     @Query(BASE_QUERY + " and organization = :org")
-    public List<Person> findAllByOrganization(Organization org, Sort sortBy);
+    public Page<Person> findAllByOrganization(Organization org, Pageable pageable);
 
     @Query(BASE_ARCHIVED_QUERY + " and e.organization = :org")
-    public List<Person> findAllArchivedByOrganization(Organization org, Sort sortBy);
+    public Page<Person> findAllArchivedByOrganization(Organization org, Pageable pageable);
 
     @Query(BASE_QUERY + " and internalId = :id and organization = :org")
     public Optional<Person> findByIdAndOrganization(UUID id, Organization org);
@@ -29,8 +29,8 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
     public Optional<Person> findArchivedByIdAndOrganization(UUID id, Organization org);
 
     @Query(BASE_QUERY + " AND e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
-    public List<Person> findByFacilityAndOrganization(Facility fac, Organization org, Sort sortBy);
+    public Page<Person> findByFacilityAndOrganization(Facility fac, Organization org, Pageable pageable);
 
     @Query(BASE_ARCHIVED_QUERY + " and  e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
-    public List<Person> findArchivedByFacilityAndOrganization(Facility fac, Organization org, Sort sortBy);
+    public Page<Person> findArchivedByFacilityAndOrganization(Facility fac, Organization org, Pageable pageable);
 }
