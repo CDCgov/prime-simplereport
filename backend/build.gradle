@@ -103,8 +103,6 @@ sonarqube {
 }
 
 spotless {
-    ratchetFrom 'origin/main'
-
     java {
         importOrder()
         removeUnusedImports()
