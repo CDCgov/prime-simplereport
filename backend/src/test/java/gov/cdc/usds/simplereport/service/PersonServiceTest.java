@@ -35,6 +35,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     private static final PersonName ELIZABETH = new PersonName("Elizabeth", null, "Merriwether", null);
     private static final PersonName FRANK = new PersonName("Frank", null, "Bones", "3");
 
+    // used for pagination
+    private static final PersonName GALE = new PersonName("Gale", "S", "Vittorio", "PhD");
+    private static final PersonName HEINRICK = new PersonName("Heinrick", "M", "Silver", "III");
+    private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);
+    private static final PersonName JANNELLE = new PersonName("Jannelle", "T", "Cromack", null);
+    private static final PersonName KACEY = new PersonName("Kacey", "G", "Marthe", null);
+    private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
+
     @Autowired
     private OrganizationService _orgService;
 
@@ -106,7 +114,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     @Test
     @WithSimpleReportOrgAdminUser
     void getPatients_noFacility_allFetchedAndSorted() {
-        makedata();
+        makedata(false);
         // gets all patients across the org
         List<Person> patients = _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, CHARLES, FRANK, BRAD, DEXTER, ELIZABETH, AMOS);
@@ -115,11 +123,32 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     @Test
     @WithSimpleReportOrgAdminUser
     void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
-        makedata();
+        makedata(false);
         List<Person> patients = _service.getPatients(_site1.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
         patients = _service.getPatients(_site2.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
         assertPatientList(patients, FRANK, BRAD, DEXTER, AMOS);
+    }
+
+    @Test
+    @WithSimpleReportOrgAdminUser
+    void getPatients_pagination() {
+        makedata(true);
+        List<Person> patients_org_page0 = _service.getAllPatients(0, 5);
+        List<Person> patients_org_page1 = _service.getAllPatients(1, 5);
+        List<Person> patients_org_page2 = _service.getAllPatients(2, 5);
+
+        assertPatientList(patients_org_page0, CHARLES, FRANK, JANNELLE, BRAD, DEXTER);
+        assertPatientList(patients_org_page1, KACEY, ELIZABETH, LEELOO, AMOS, IAN);
+        assertPatientList(patients_org_page2, HEINRICK, GALE);
+
+        List<Person> patients_site2_page0 = _service.getPatients(_site2.getInternalId(), 0, 3);
+        List<Person> patients_site2_page1 = _service.getPatients(_site2.getInternalId(), 1, 3);
+        List<Person> patients_site2_page2 = _service.getPatients(_site2.getInternalId(), 2, 3);
+
+        assertPatientList(patients_site2_page0, FRANK, JANNELLE, BRAD);
+        assertPatientList(patients_site2_page1, DEXTER, KACEY, LEELOO);
+        assertPatientList(patients_site2_page2, AMOS);
     }
 
     @Test
@@ -130,7 +159,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                         null, "Bedrock", "AZ", "87654", null, PersonRole.RESIDENT, null, null, null, null, null, false, false));
     }
 
-    private void makedata() {
+    private void makedata(boolean extraPatients) {
         _org = _orgService.getCurrentOrganization();
         _site1 = _dataFactory.createValidFacility(_org, "First One");
         _site2 = _dataFactory.createValidFacility(_org, "Second One");
@@ -141,6 +170,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _dataFactory.createMinimalPerson(_org, _site1, CHARLES);
         _dataFactory.createMinimalPerson(_org, _site2, DEXTER);
         _dataFactory.createMinimalPerson(_org, _site2, FRANK);
+        if (extraPatients) {
+            _dataFactory.createMinimalPerson(_org, _site1, GALE);
+            _dataFactory.createMinimalPerson(_org, _site1, HEINRICK);
+            _dataFactory.createMinimalPerson(_org, _site1, IAN);
+            _dataFactory.createMinimalPerson(_org, _site2, JANNELLE);
+            _dataFactory.createMinimalPerson(_org, _site2, KACEY);
+            _dataFactory.createMinimalPerson(_org, _site2, LEELOO);
+        }
     }
 
     private static void assertPatientList(List<Person> found, PersonName... expected) {
