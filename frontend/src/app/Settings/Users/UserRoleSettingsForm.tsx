@@ -16,11 +16,11 @@ const ROLES: RoleButton[] = [
   },
   {
     value: "Standard user",
-    label: "User (manage results and profiles)",
+    label: "Standard user (manage results and profiles)",
   },
   {
     value: "Test-entry user",
-    label: "Entry Only (conduct tests)",
+    label: "Entry only (conduct tests)",
   },
 ];
 

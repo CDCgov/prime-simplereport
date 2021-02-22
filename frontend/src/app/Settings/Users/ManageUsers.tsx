@@ -15,7 +15,11 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import { showNotification, displayFullNameInOrder } from "../../utils";
+import {
+  showNotification,
+  displayFullNameInOrder,
+  displayFullName,
+} from "../../utils";
 import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import "./ManageUsers.scss";
@@ -38,6 +42,14 @@ interface Props {
 
 export type SettingsUsers = { [id: string]: SettingsUser };
 
+const sortUsers = (users: SettingsUsers) =>
+  Object.values(users).sort((a, b) => {
+    const nameA = displayFullName(a.firstName, a.middleName, a.lastName);
+    const nameB = displayFullName(b.firstName, b.middleName, b.lastName);
+    if (nameA === nameB) return 0;
+    return nameA > nameB ? 1 : -1;
+  });
+
 const ManageUsers: React.FC<Props> = ({
   users,
   loggedInUser,
@@ -56,9 +68,12 @@ const ManageUsers: React.FC<Props> = ({
   );
 
   const [usersState, updateUsersState] = useState<SettingsUsers>(settingsUsers);
+
+  const sortedUsers = sortUsers(usersState);
+
   const [activeUserId, updateActiveUserId] = useState<string>(
-    Object.keys(settingsUsers)[0]
-  ); // TODO: unless there is a desired sort algorithm, arbitrarily pick the first user
+    sortedUsers[0].id
+  );
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -162,7 +177,6 @@ const ManageUsers: React.FC<Props> = ({
     })
       .then(() => {
         const fullName = displayFullNameInOrder(firstName, "", lastName);
-
         showNotification(
           toast,
           <Alert
@@ -205,7 +219,11 @@ const ManageUsers: React.FC<Props> = ({
         // remove the deleted user from the UI
         const { [deletedUserId]: value, ...usersMinusDeleted } = usersState;
         updateUsersState(usersMinusDeleted);
-        updateActiveUserId(Object.keys(usersMinusDeleted)[0]); // arbitrarily pick the first user as the next active.
+        const firstUserId =
+          sortedUsers[0].id === deletedUserId
+            ? sortedUsers[1].id
+            : sortedUsers[0].id;
+        updateActiveUserId(firstUserId); // arbitrarily pick the first user as the next active.
       })
       .catch(setError);
 
@@ -248,7 +266,7 @@ const ManageUsers: React.FC<Props> = ({
           <div className="grid-row">
             <UsersSideNav
               activeUserId={activeUserId}
-              users={usersState}
+              users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
             <div className="tablet:grid-col padding-left-2">

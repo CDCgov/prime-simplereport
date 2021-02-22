@@ -81,14 +81,14 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
         <TextInput
           name="firstName"
           className="grid-col"
-          label="First Name"
+          label="First name"
           value={newUser.firstName}
           required
           onChange={onChange}
         />
         <TextInput
           name="lastName"
-          label="Last Name"
+          label="Last name"
           className="grid-col"
           value={newUser.lastName}
           required
@@ -98,7 +98,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
       <div className="grid-row">
         <TextInput
           type="email"
-          label="Email Address"
+          label="Email address"
           name="email"
           className="grid-col"
           value={newUser.email}

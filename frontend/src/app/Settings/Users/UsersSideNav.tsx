@@ -1,15 +1,14 @@
 import React from "react";
 import classnames from "classnames";
 
-import { displayFullNameInOrder } from "../../utils";
-import { SettingsUsers } from "./ManageUsers";
+import { displayFullName } from "../../utils";
 import { SettingsUser } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
   activeUserId: string;
-  users: SettingsUsers;
+  users: SettingsUser[];
   onChangeActiveUser: (userId: string) => void;
 }
 
@@ -22,7 +21,7 @@ const UsersSideNav: React.FC<Props> = ({
     <div className="display-block users-sidenav">
       <h3>Users</h3>
       <ul className="usa-sidenav">
-        {Object.values(users).map((user: SettingsUser) => {
+        {users.map((user: SettingsUser) => {
           return (
             <li
               className="usa-sidenav__item users-sidenav-item"
@@ -30,6 +29,7 @@ const UsersSideNav: React.FC<Props> = ({
               key={user.id}
             >
               <button
+                style={{ cursor: "pointer" }}
                 className={classnames(
                   "usa-button--unstyled",
                   "text-ink",
@@ -39,7 +39,7 @@ const UsersSideNav: React.FC<Props> = ({
                 )}
               >
                 <span className="sidenav-user-name">
-                  {displayFullNameInOrder(
+                  {displayFullName(
                     user.firstName,
                     user.middleName,
                     user.lastName

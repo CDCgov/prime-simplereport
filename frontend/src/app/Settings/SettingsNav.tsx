@@ -33,7 +33,7 @@ const SettingsNav = () => {
               to={`/settings/users/?facility=${getFacilityIdFromUrl()}`}
               activeClassName="active"
             >
-              Manage users
+              Manage Users
             </NavLink>
           </li>
         ) : null}
