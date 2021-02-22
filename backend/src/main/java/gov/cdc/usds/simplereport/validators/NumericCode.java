@@ -17,19 +17,28 @@ import javax.validation.constraints.Size;
 
 /**
  * A constraint to force a value to be a nullable numeric string of length at
- * least 8 (adjust this value up or down if it turns out that is not the minimum
- * length for valid CLIA numbers and SNOMED codes).
+ * between 6 and 32 (adjust these values up or down if it turns out that is not
+ * the minimum length for valid CLIA numbers and SNOMED codes).
  */
 
 @Constraint(validatedBy = {})
 @Pattern(regexp = "\\d+")
-@Size(min = NumericCode.MIN_DIGITS)
+@Size(min = NumericCode.MIN_DIGITS, max = NumericCode.MAX_DIGITS)
 @Documented
 @Retention(RUNTIME)
 @Target({ FIELD, PARAMETER, LOCAL_VARIABLE, ANNOTATION_TYPE })
 public @interface NumericCode {
 
-    public static final int MIN_DIGITS = 8;
+    /**
+     * The minimum length of a numeric code string. Set to what we believe is the
+     * minimum value for a SNOMED code.
+     */
+    public static final int MIN_DIGITS = 6;
+    /**
+     * The maximum length of a numeric code string. We believe this to be wildly
+     * generous, since as far as we know SNOMED codes top out at 18 characters.
+     */
+    public static final int MAX_DIGITS = 32;
 
     Class<?>[] groups() default {};
 
