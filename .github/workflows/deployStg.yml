@@ -3,6 +3,7 @@ name: Deploy Stg
 on:
   schedule:
     - cron: '0 9 * * *' # Daily at 09:00 UTC
+  workflow_dispatch:
 
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}

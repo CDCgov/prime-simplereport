@@ -3,6 +3,7 @@ name: Deploy Demo
 on:
   schedule:
     - cron: '30 9 * * *' # Daily at 09:30 UTC
+  workflow_dispatch:
 
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
