@@ -32,7 +32,6 @@ const AoEModalForm = ({
       ),
       value: "text",
     },
-    { label: "Complete on smartphone", value: "smartphone" },
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
 
