@@ -16,21 +16,18 @@ import java.util.UUID;
  */
 public interface PersonRepository extends EternalAuditedEntityRepository<Person> {
 
-    @Query(BASE_QUERY + " and organization = :org")
-    public Page<Person> findAllByOrganization(Organization org, Pageable pageable);
+    @Query(BASE_ALLOW_DELETED_QUERY + " e.organization = :org AND e.isDeleted = :isDeleted")
+    public Page<Person> findAllByOrganization(Organization org, boolean isDeleted, Pageable pageable);
 
-    @Query(BASE_ARCHIVED_QUERY + " and e.organization = :org")
-    public Page<Person> findAllArchivedByOrganization(Organization org, Pageable pageable);
+    @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE e.organization = :org AND e.isDeleted = :isDeleted")
+    public long countAllByOrganization(Organization org, boolean isDeleted);
 
-    @Query(BASE_QUERY + " and internalId = :id and organization = :org")
-    public Optional<Person> findByIdAndOrganization(UUID id, Organization org);
+    @Query(BASE_ALLOW_DELETED_QUERY + " e.facility = :fac AND e.organization = :org AND e.isDeleted = :isDeleted")
+    public Page<Person> findByFacilityAndOrganization(Facility fac, Organization org, boolean isDeleted, Pageable pageable);
 
-    @Query(BASE_ARCHIVED_QUERY + " and e.internalId = :id and e.organization = :org")
-    public Optional<Person> findArchivedByIdAndOrganization(UUID id, Organization org);
+    @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE e.facility = :fac AND e.organization = :org AND e.isDeleted = :isDeleted")
+    public long countAllByFacilityAndOrganization(Facility fac, Organization org, boolean isDeleted);
 
-    @Query(BASE_QUERY + " AND e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
-    public Page<Person> findByFacilityAndOrganization(Facility fac, Organization org, Pageable pageable);
-
-    @Query(BASE_ARCHIVED_QUERY + " and  e.organization = :org AND (e.facility IS NULL OR e.facility = :fac)")
-    public Page<Person> findArchivedByFacilityAndOrganization(Facility fac, Organization org, Pageable pageable);
+    @Query(BASE_ALLOW_DELETED_QUERY + " e.isDeleted = :isDeleted AND e.internalId = :id and e.organization = :org")
+    public Optional<Person> findByIdAndOrganization(UUID id, Organization org, boolean isDeleted);
 }

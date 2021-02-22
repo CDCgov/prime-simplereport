@@ -20,6 +20,7 @@ public class PatientResolver implements GraphQLQueryResolver {
     @Autowired
     private PersonService ps;
 
+    // authorization happens in calls to PersonService
     public List<Person> getPatients(UUID facilityId, int pageNumber, int pageSize, boolean showDeleted) {
         if (pageNumber < 0) {
             pageNumber = PersonService.DEFAULT_PAGINATION_PAGEOFFSET;
@@ -33,6 +34,13 @@ public class PatientResolver implements GraphQLQueryResolver {
         return showDeleted ? ps.getArchivedPatients(facilityId, pageNumber, pageSize) : ps.getPatients(facilityId, pageNumber, pageSize);
     }
 
+    // authorization happens in calls to PersonService
+    public long patientsCount(UUID facilityId, boolean showDeleted) {
+        if (facilityId == null) {
+            return showDeleted ? ps.getAllArchivedPatientsCount() : ps.getAllPatientsCount();
+        }
+        return showDeleted ? ps.getArchivedPatientsCount(facilityId) : ps.getPatientsCount(facilityId);
+    }
 
     @AuthorizationConfiguration.RequirePermissionEditPatient
     public Person getPatient(String id) {

@@ -31,10 +31,12 @@ class PersonRepositoryTest extends BaseRepositoryTest {
         _repo.save(new Person(org, "lookupid", "Joe", null, "Schmoe", null, LocalDate.now(), addy, "(123) 456-7890",
                 PersonRole.VISITOR, "", null, "", "", false, false));
         List<Person> found = _repo.findAllByOrganization(org,
+                false,
                 PageRequest.of(PersonService.DEFAULT_PAGINATION_PAGEOFFSET, PersonService.DEFAULT_PAGINATION_PAGESIZE)).toList();
         assertEquals(1, found.size());
         assertEquals("Joe", found.get(0).getFirstName());
         found = _repo.findAllByOrganization(other,
+                false,
                 PageRequest.of(PersonService.DEFAULT_PAGINATION_PAGEOFFSET, PersonService.DEFAULT_PAGINATION_PAGESIZE)).toList();
         assertEquals(0, found.size());
     }

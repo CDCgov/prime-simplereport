@@ -32,7 +32,7 @@ public class PersonService {
     private PersonRepository _repo;
 
     public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
-    public static final int DEFAULT_PAGINATION_PAGESIZE = 50;
+    public static final int DEFAULT_PAGINATION_PAGESIZE = 1000;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
@@ -57,35 +57,56 @@ public class PersonService {
         return _repo.findByFacilityAndOrganization(
                 _os.getFacilityInCurrentOrg(facilityId),
                 _os.getCurrentOrganization(),
+                false,
                 PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionReadPatientList
+    public long getPatientsCount(UUID facilityId) {
+        return _repo.countAllByFacilityAndOrganization(
+                _os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(), false);
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientList
     public List<Person> getAllPatients(int pageOffset, int pageSize) {
-        return _repo.findAllByOrganization(_os.getCurrentOrganization(),
+        return _repo.findAllByOrganization(_os.getCurrentOrganization(), false,
+                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
+    }
+
+    @AuthorizationConfiguration.RequirePermissionReadPatientList
+    public long getAllPatientsCount() {
+        return _repo.countAllByOrganization(_os.getCurrentOrganization(), false);
+    }
+
+    // FYI archived is not just a parameter because it requires different permissions.
+    @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
+    public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
+        return _repo.findByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(),
+                true,
                 PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
     @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
-    public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
-        return _repo.findArchivedByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
-                _os.getCurrentOrganization(),
-                PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
+    public long getArchivedPatientsCount(UUID facilityId) {
+        return _repo.countAllByFacilityAndOrganization(_os.getFacilityInCurrentOrg(facilityId),
+                _os.getCurrentOrganization(), true);
     }
 
     @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
     public List<Person> getAllArchivedPatients(int pageOffset, int pageSize) {
-        return _repo.findAllArchivedByOrganization(_os.getCurrentOrganization(),
+        return _repo.findAllByOrganization(_os.getCurrentOrganization(),
+                true,
                 PageRequest.of(pageOffset, pageSize, NAME_SORT)).toList();
     }
 
-    @AuthorizationConfiguration.RequirePermissionArchivePatient
-    public Person getArchivedPatient(UUID id) {
-        return _repo.findArchivedByIdAndOrganization(id, _os.getCurrentOrganization())
-                .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
+    @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
+    public long getAllArchivedPatientsCount() {
+        return _repo.countAllByOrganization(_os.getCurrentOrganization(), true);
     }
 
-    // NO PERMISSION CHECK (make sure the caller has one!)
+    // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
     public Person getPatientNoPermissionsCheck(String id) {
         return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
     }
@@ -93,8 +114,14 @@ public class PersonService {
     // NO PERMISSION CHECK (make sure the caller has one!)
     public Person getPatientNoPermissionsCheck(String id, Organization org) {
         UUID actualId = UUID.fromString(id);
-        return _repo.findByIdAndOrganization(actualId, org)
+        return _repo.findByIdAndOrganization(actualId, org, false)
             .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
+    }
+
+    @AuthorizationConfiguration.RequirePermissionArchivePatient
+    public Person getArchivedPatient(UUID patientId) {
+        return _repo.findByIdAndOrganization(patientId, _os.getCurrentOrganization(), true)
+                .orElseThrow(()->new IllegalGraphqlArgumentException("No patient with that ID was found"));
     }
 
     @AuthorizationConfiguration.RequirePermissionEditPatient
