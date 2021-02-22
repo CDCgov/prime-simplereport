@@ -135,9 +135,7 @@ const AoEModalForm = ({
             <>
               {smsSuccess ? (
                 // TODO: use Alert component once they can support standard alerts
-                <div
-                  className="usa-alert usa-alert--success outline-0"
-                >
+                <div className="usa-alert usa-alert--success outline-0">
                   <div className="usa-alert__body">
                     <h3 className="usa-alert__heading">Text message sent</h3>
                     <p className="usa-alert__text">
