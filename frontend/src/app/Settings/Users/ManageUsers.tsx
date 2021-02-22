@@ -310,7 +310,7 @@ const ManageUsers: React.FC<Props> = ({
                     icon="trash"
                     className="flex-align-self-start display-inline-block"
                     onClick={() => updateShowDeleteUserModal(true)}
-                    label=" Remove user"
+                    label="Remove user"
                     disabled={loggedInUser.id === activeUser.id}
                   />
                 ) : null}

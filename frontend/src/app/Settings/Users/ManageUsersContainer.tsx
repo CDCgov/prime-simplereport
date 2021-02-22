@@ -74,7 +74,7 @@ const ADD_USER_TO_ORG = gql`
 `;
 
 const GET_FACILITIES = gql`
-  query GetFacilities {
+  query GetFacilitiesForManageUsers {
     organization {
       testingFacility {
         id

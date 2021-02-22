@@ -202,7 +202,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-trash fa-w-14 "
+                class="svg-inline--fa fa-trash fa-w-14 margin-right-1"
                 data-icon="trash"
                 data-prefix="fas"
                 focusable="false"
@@ -215,7 +215,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                   fill="currentColor"
                 />
               </svg>
-               Remove user
+              Remove user
             </button>
             <button
               class="usa-button usa-button-disabled"
@@ -423,7 +423,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             >
               <svg
                 aria-hidden="true"
-                class="svg-inline--fa fa-trash fa-w-14 "
+                class="svg-inline--fa fa-trash fa-w-14 margin-right-1"
                 data-icon="trash"
                 data-prefix="fas"
                 focusable="false"
@@ -436,7 +436,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   fill="currentColor"
                 />
               </svg>
-               Remove user
+              Remove user
             </button>
             <button
               class="usa-button usa-button-disabled"
