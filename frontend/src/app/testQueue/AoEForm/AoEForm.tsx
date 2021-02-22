@@ -72,6 +72,7 @@ interface Props {
   }) => void;
   isModal: boolean;
   noValidation: boolean;
+  formRef?: React.Ref<HTMLFormElement>;
 }
 
 const AoEForm: React.FC<Props> = ({
@@ -82,6 +83,7 @@ const AoEForm: React.FC<Props> = ({
   saveCallback,
   isModal,
   noValidation,
+  formRef,
 }) => {
   // this seems like it will do a bunch of wasted work on re-renders and non-renders,
   // but it's all small-ball stuff for now
@@ -233,7 +235,7 @@ const AoEForm: React.FC<Props> = ({
 
   return (
     <>
-      <form onSubmit={saveAnswers}>
+      <form onSubmit={saveAnswers} ref={formRef}>
         {isModal && (
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
