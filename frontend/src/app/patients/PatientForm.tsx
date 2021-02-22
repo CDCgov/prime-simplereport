@@ -256,7 +256,7 @@ const PatientForm = (props: Props) => {
     setPatient({ ...patient, [e.target.name]: value });
   };
 
-  const validateField = (e: { target: any }) => {
+  const validateField = (e: { target: any }, setState = true) => {
     const { target } = e;
     const { name, value } = target;
     const required: boolean =
@@ -264,29 +264,25 @@ const PatientForm = (props: Props) => {
       target.getAttribute("data-required") === "true";
     const format: string | undefined = target.getAttribute("data-format");
     const label = (target.labels as any)[0].firstChild.data;
+    let errorMessage = undefined;
     if ((!value || value === "- Select -") && required) {
-      setErrors({
-        ...errors,
-        [name]: `${label} is required`,
-      });
-      return;
+      errorMessage = `${label} is required`;
     } else if (format) {
       const regex = new RegExp(format);
-      if (!value.match(regex)) {
+      if (value && !value.match(regex)) {
         const formatMessage: string | undefined = target.getAttribute(
           "data-format-message"
         );
-        setErrors({
-          ...errors,
-          [name]: formatMessage || `${label} has an incorrect format`,
-        });
-        return;
+        errorMessage = formatMessage || `${label} has an incorrect format`;
       }
     }
-    setErrors({
-      ...errors,
-      [name]: undefined,
-    });
+    if (setState) {
+      setErrors({
+        ...errors,
+        [name]: errorMessage,
+      });
+    }
+    return errorMessage;
   };
 
   const validationStatus = (name: string) => {
@@ -312,16 +308,21 @@ const PatientForm = (props: Props) => {
   const savePatientData = () => {
     // Validate all fields with validation set up
     const fieldsToValidate = Object.keys(errors).map(
-      (name) => document.getElementsByName(name)[0]
+      (name) => document.getElementsByName(name)[0] as HTMLFormElement
     );
-    fieldsToValidate.forEach((field) => validateField({ target: field }));
-    const remainingErrors = Object.values(errors).filter(
+    const newErrors: { [key: string]: string | undefined } = {};
+    fieldsToValidate.forEach(
+      (field) =>
+        (newErrors[field.name] = validateField({ target: field }, false))
+    );
+    const remainingErrors = Object.values(newErrors).filter(
       (v) => v !== undefined
     );
     if (remainingErrors.length) {
       remainingErrors.forEach((error) =>
         showError(toast, "Please correct before submitting", error)
       );
+      setErrors(newErrors);
       return;
     }
     // If no errors, submit

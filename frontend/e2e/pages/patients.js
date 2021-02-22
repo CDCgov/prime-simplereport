@@ -8,7 +8,7 @@ function addPatient() {
   const lastName = faker.name.lastName();
   const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.past(100)).format('YYYY-MM-DD');
-  const phone = faker.phone.phoneNumber();
+  const phone = faker.phone.phoneNumberFormat(0);
   const address = faker.address.streetAddress();
   const state = faker.address.stateAbbr();
   const zip = faker.address.zipCodeByState(state);
@@ -22,8 +22,11 @@ function addPatient() {
   this.expect.section('@editPatient').to.be.visible;
   this.expect.section('@editPatient').to.contain.text('Add New Person');
   this.section.editPatient.setValue('@firstName', firstName);
+  this.section.editPatient.click('@saveButton');
+  this.expect.section('@editPatient').to.contain.text('Last name is required');
+  this.expect.section('@editPatient').to.contain.text('Facility is required');
   this.section.editPatient.setValue('@lastName', lastName);
-  this.section.editPatient.setValue('@facility', '~~ALL-FACILITIES~~');
+  this.section.editPatient.setValue('@facility', 'All facilities');
   this.section.editPatient.setValue('@dob', dob);
   this.section.editPatient.setValue('@phone', phone);
   this.section.editPatient.setValue('@address', address);
