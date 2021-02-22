@@ -25,7 +25,7 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
  */
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
 public class UserAuthorizationVerifier {
-    private static final Logger LOG = LoggerFactory.getLogger(AuthorizationConfiguration.class);
+    private static final Logger LOG = LoggerFactory.getLogger(UserAuthorizationVerifier.class);
 
     private SiteAdminEmailList _admins;
     private IdentitySupplier _supplier;
