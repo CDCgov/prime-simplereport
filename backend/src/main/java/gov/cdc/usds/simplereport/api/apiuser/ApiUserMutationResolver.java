@@ -5,7 +5,6 @@ import java.util.UUID;
 import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
@@ -17,11 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
-    private final OrganizationService _os;
     private final ApiUserService _us;
 
-    public ApiUserMutationResolver(OrganizationService os, ApiUserService us) {
-        _os = os;
+    public ApiUserMutationResolver(ApiUserService us) {
         _us = us;
     }
 
@@ -31,9 +28,14 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String lastName,
             String suffix,
             String email,
-            String organizationExternalID
+            String organizationExternalID,
+            OrganizationRole role
                 ) {
-        UserInfo user = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
+        // For backward compatibility
+        if (role == null) {
+            role = OrganizationRole.USER;
+        }
+        UserInfo user = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID, role);
         return new User(user);
     }
     
@@ -42,9 +44,13 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String middleName,
             String lastName,
             String suffix,
-            String email
+            String email,
+            OrganizationRole role
                 ) {
-        UserInfo user = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
+        if (role == null) {
+            role = OrganizationRole.USER;
+        }
+        UserInfo user = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix, role);
         return new User(user);
     }
 

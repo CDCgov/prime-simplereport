@@ -59,22 +59,39 @@ public class ApiUserService {
 
     @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
-    public UserInfo createUser(String username, String firstName, String middleName, String lastName, String suffix, String organizationExternalId) {
+    public UserInfo createUser(String username, 
+                               String firstName, 
+                               String middleName, 
+                               String lastName, 
+                               String suffix, 
+                               String organizationExternalId,
+                               OrganizationRole role) {
         Organization org = _orgService.getOrganization(organizationExternalId);
-        return createUserHelper(username, firstName, middleName, lastName, suffix, org);
+        return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
     }
 
     @Transactional
     @AuthorizationConfiguration.RequirePermissionManageUsers
-    public UserInfo createUserInCurrentOrg(String username, String firstName, String middleName, String lastName, String suffix) {
+    public UserInfo createUserInCurrentOrg(String username, 
+                                           String firstName, 
+                                           String middleName, 
+                                           String lastName, 
+                                           String suffix,
+                                           OrganizationRole role) {
         Organization org = _orgService.getCurrentOrganization();
-        return createUserHelper(username, firstName, middleName, lastName, suffix, org);
+        return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
     }
 
-    private UserInfo createUserHelper(String username, String firstName, String middleName, String lastName, String suffix, Organization org) {
+    private UserInfo createUserHelper(String username, 
+                                      String firstName, 
+                                      String middleName, 
+                                      String lastName, 
+                                      String suffix, 
+                                      Organization org, 
+                                      OrganizationRole role) {
         IdentityAttributes userIdentity = new IdentityAttributes(username, firstName, middleName, lastName, suffix);
         ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
-        Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org);
+        Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, role);
         Optional<OrganizationRoles> orgRoles = roleClaims.map(c ->
                 new OrganizationRoles(org, c.getGrantedRoles()));
         boolean isAdmin = isAdmin(apiUser);

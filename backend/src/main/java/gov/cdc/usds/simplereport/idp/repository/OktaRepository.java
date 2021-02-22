@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  */
 public interface OktaRepository {
 
-    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org);
+    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org, OrganizationRole role);
 
     public Optional<OrganizationRoleClaims> updateUser(String oldUsername, IdentityAttributes userIdentity);
 

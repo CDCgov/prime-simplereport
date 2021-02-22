@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,8 +54,7 @@ public class DemoOktaRepository implements OktaRepository {
         IdentityAttributes user = demoUser.getIdentity();
         String username = user.getUsername();
         String orgExternalId = demoUser.getAuthorization().getOrganizationExternalId();
-        Set<OrganizationRole> roles = new HashSet<>();
-        roles.add(OrganizationRole.USER);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
         roles.addAll(demoUser.getAuthorization().getGrantedRoles());
         OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(orgExternalId, roles);
 
@@ -72,16 +72,19 @@ public class DemoOktaRepository implements OktaRepository {
     }
 
     // Does not overwrite demo users who were created on initialization
-    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org) {
+    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
         String organizationExternalId = org.getExternalId();
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
         OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, 
-                                                                     Set.of(OrganizationRole.USER));
+                                                                     roles);
         usernameOrgRolesMap.putIfAbsent(userIdentity.getUsername(), orgRoles);
 
         Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(organizationExternalId);
-        List<String> usernames = roleUsernamesMap.get(OrganizationRole.USER);
-        if (!usernames.contains(userIdentity.getUsername())) {
-            usernames.add(userIdentity.getUsername());
+        for (OrganizationRole r : roles) {
+            List<String> usernames = roleUsernamesMap.get(r);
+            if (!usernames.contains(userIdentity.getUsername())) {
+                usernames.add(userIdentity.getUsername());
+            }
         }
 
         return Optional.of(orgRoles);
@@ -113,9 +116,7 @@ public class DemoOktaRepository implements OktaRepository {
         if (!oldRoleClaims.getOrganizationExternalId().equals(orgId)) {
             throw new IllegalGraphqlArgumentException("Cannot update user role for organization they are not in.");
         }
-        Set<OrganizationRole> roles = new HashSet<>();
-        roles.add(OrganizationRole.USER);
-        roles.add(role);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
         OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(orgId, roles);
         usernameOrgRolesMap.put(username, newRoleClaims);
         

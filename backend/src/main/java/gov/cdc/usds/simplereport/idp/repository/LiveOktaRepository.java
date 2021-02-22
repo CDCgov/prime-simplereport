@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,7 +60,7 @@ public class LiveOktaRepository implements OktaRepository {
                 .build();
     }
 
-    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org) {
+    public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
         // need to validate fields before adding them because Maps don't like nulls
         Map<String,Object> userProfileMap = new HashMap<String, Object>();
         if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -88,21 +89,28 @@ public class LiveOktaRepository implements OktaRepository {
 
         // By default, when creating a user, we give them privileges of a standard user
         String organizationExternalId = org.getExternalId();
-        String groupName = generateGroupName(organizationExternalId, OrganizationRole.USER);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
+        Set<String> groupIds = new HashSet<>();
+        
+        for (OrganizationRole r : roles) {
+            String groupName = generateGroupName(organizationExternalId, r);
 
-        // Okta SDK's way of getting a group by group name
-        GroupList groups = _client.listGroups(groupName, null, null);
-        if (!groups.iterator().hasNext()) {
-            throw new IllegalGraphqlArgumentException("Cannot add Okta user to nonexistent group");
+            // Okta SDK's way of getting a group by group name
+            GroupList groups = _client.listGroups(groupName, null, null);
+            if (!groups.iterator().hasNext()) {
+                throw new IllegalGraphqlArgumentException(
+                        String.format("Cannot add Okta user to nonexistent group=%s", groupName));
+            }
+            Group group = groups.single();
+            groupIds.add(group.getId());
         }
-        Group group = groups.single();
 
         UserBuilder.instance()
                 .setProfileProperties(userProfileMap)
-                .setGroups(group.getId())
+                .setGroups(groupIds)
                 .buildAndCreate(_client);
 
-        return Optional.of(new OrganizationRoleClaims(organizationExternalId, Set.of(OrganizationRole.USER)));
+        return Optional.of(new OrganizationRoleClaims(organizationExternalId, roles));
     }
 
     public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
