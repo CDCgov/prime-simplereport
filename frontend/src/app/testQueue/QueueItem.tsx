@@ -120,39 +120,37 @@ const UPDATE_AOE = gql`
 `;
 
 interface AreYouSureProps {
-  patientName: string;
+  cancelText: string;
+  continueText: string;
   cancelHandler: () => void;
   continueHandler: () => void;
 }
 
 const AreYouSure: React.FC<AreYouSureProps> = ({
-  patientName,
   cancelHandler,
+  cancelText,
   continueHandler,
+  continueText,
+  children,
 }) => (
   <Modal
     isOpen={true}
     style={{
       content: {
-        top: "50%",
-        left: "50%",
-        width: "40%",
-        minWidth: "20em",
-        maxHeight: "14em",
-        marginRight: "-50%",
-        transform: "translate(-50%, -50%)",
+        maxHeight: "90vh",
+        width: "40em",
+        position: "initial",
       },
     }}
-    overlayClassName={"prime-modal-overlay"}
+    overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
   >
-    <p className="usa-prose prime-modal-text">
-      Time of test questions for <b> {` ${patientName} `} </b> have not been
-      completed. Do you want to submit results anyway?
-    </p>
-    <div className="prime-modal-buttons">
-      <Button onClick={cancelHandler} variant="unstyled" label="No, go back" />
-      <Button onClick={continueHandler} label="Submit anyway" />
+    <div className="sr-modal-content">{children}</div>
+    <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
+      <div className="text-right prime-modal-buttons">
+        <Button onClick={cancelHandler} variant="unstyled" label={cancelText} />
+        <Button onClick={continueHandler} label={continueText} />
+      </div>
     </div>
   </Modal>
 );
@@ -294,9 +292,12 @@ const QueueItem: any = ({
     TestResult | undefined
   >(selectedTestResult || undefined);
 
-  const [isConfirmationModalOpen, updateIsConfirmationModalOpen] = useState(
-    false
-  );
+  const [confirmationType, setConfirmationType] = useState<
+    "submitResult" | "removeFromQueue" | "none"
+  >("none");
+
+  const [removePatientId, setRemovePatientId] = useState<string>();
+
   let forceSubmit = false;
 
   if (mutationError) {
@@ -335,7 +336,7 @@ const QueueItem: any = ({
           if (e) e.currentTarget.disabled = false;
         });
     } else {
-      updateIsConfirmationModalOpen(true);
+      setConfirmationType("submitResult");
     }
   };
 
@@ -391,23 +392,21 @@ const QueueItem: any = ({
     updateQueueItem({ deviceId, result, dateTested });
   };
 
-  const removeFromQueue = (
-    e: React.MouseEvent<HTMLButtonElement>,
-    patientId: string
-  ) => {
+  const removeFromQueue = () => {
+    setConfirmationType("none");
     trackRemovePatientFromQueue({});
-    if (e) e.currentTarget.disabled = true;
     removePatientFromQueue({
       variables: {
-        patientId,
+        patientId: removePatientId,
       },
     })
       .then(refetchQueue)
       .then(() => removeTimer(internalId))
       .catch((error) => {
         updateMutationError(error);
-        // Re-enable Submit in the hopes it will work
-        if (e) e.currentTarget.disabled = false;
+      })
+      .finally(() => {
+        setRemovePatientId(undefined);
       });
   };
 
@@ -449,15 +448,25 @@ const QueueItem: any = ({
     value: device.internalId,
   }));
 
-  const patientFullName = displayFullName(
+  const patientFullNameLastFirst = displayFullName(
     patient.firstName,
     patient.middleName,
     patient.lastName
   );
 
+  const patientFullName = displayFullName(
+    patient.firstName,
+    patient.middleName,
+    patient.lastName,
+    false
+  );
+
   const closeButton = (
     <button
-      onClick={(e) => removeFromQueue(e, patient.internalId)}
+      onClick={() => {
+        setRemovePatientId(patient.internalId);
+        setConfirmationType("removeFromQueue");
+      }}
       className="prime-close-button"
       aria-label="Close"
     >
@@ -501,7 +510,7 @@ const QueueItem: any = ({
           <div className="grid-row">
             <div className="tablet:grid-col-9">
               <div className="grid-row prime-test-name usa-card__header">
-                <h2>{patientFullName}</h2>
+                <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
               <div className="usa-card__body">
@@ -579,15 +588,43 @@ const QueueItem: any = ({
               </div>
             </div>
             <div className="tablet:grid-col-3 prime-test-result">
-              {isConfirmationModalOpen && (
+              {confirmationType !== "none" && (
                 <AreYouSure
-                  patientName={patientFullName}
-                  cancelHandler={() => updateIsConfirmationModalOpen(false)}
-                  continueHandler={() => {
-                    forceSubmit = true;
-                    onTestResultSubmit();
-                  }}
-                />
+                  cancelText="No, go back"
+                  continueText={
+                    confirmationType === "submitResult"
+                      ? "Submit anyway"
+                      : "Yes, I'm sure"
+                  }
+                  cancelHandler={() => setConfirmationType("none")}
+                  continueHandler={
+                    confirmationType === "submitResult"
+                      ? () => {
+                          forceSubmit = true;
+                          onTestResultSubmit();
+                        }
+                      : removeFromQueue
+                  }
+                >
+                  {confirmationType === "submitResult" ? (
+                    <p className="usa-prose">
+                      Time of test questions for{" "}
+                      <b> {` ${patientFullName} `} </b> have not been completed.
+                      Do you want to submit results anyway?
+                    </p>
+                  ) : (
+                    <>
+                      <p className="usa-prose">
+                        Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
+                        test?
+                      </p>
+                      <p className="usa-prose">
+                        Doing so will remove this person from the list. You can
+                        use the search bar to start their test again later.
+                      </p>
+                    </>
+                  )}
+                </AreYouSure>
               )}
               <TestResultInputForm
                 queueItemId={internalId}
