@@ -459,12 +459,6 @@ class ApiUserManagementTest extends BaseApiTest {
         return list;
     }
 
-    private OrganizationRoleClaims getOrgRoles(OrganizationRole role) {
-        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
-        return new OrganizationRoleClaims(_initService.getDefaultOrganization().getExternalId(),
-                                          roles);
-    }
-
     private ObjectNode getAddUserVariables(String firstName, 
                                            String middleName, 
                                            String lastName, 
