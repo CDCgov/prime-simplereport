@@ -20,6 +20,7 @@ const AoEModalForm = ({
   const [patientLink, setPatientLink] = useState(qrCodeValue);
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef(null);
+  const qrCodeOption = process.env.QR_CODE_ENABLED ? [{ label: "Complete on smartphone", value: "smartphone" }] : [];
   const modalViewValues = [
     {
       label: (
@@ -30,6 +31,7 @@ const AoEModalForm = ({
           </span>
         </>
       ),
+      ...qrCodeOption,
       value: "text",
     },
     { label: "Complete questionnaire verbally", value: "verbal" },
