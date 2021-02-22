@@ -28,7 +28,7 @@ you can run `db-setup/nuke-db.sh` and it will do that. This deletes the schema
 that we use for our data, and is not reversible other than by restoring from a
 backup.
 
-To do this on your test database, just run './gradlew testDbReset` and gradle
+To do this on your test database, just run `./gradlew testDbReset` and gradle
 will run this command using what it thinks your test DB port is (gradle is
 likely to be right, since it controls what your test DB port is).
 
@@ -47,4 +47,3 @@ restores from the last-modified SQL file in that directory. If that is not the
 desired behavior, you can explicitly tell it which snapshot file to use:
 
    SNAPSHOT=db-setup/snapshots/custom-snapshot.sql db-setup/restore-db.sh
-
