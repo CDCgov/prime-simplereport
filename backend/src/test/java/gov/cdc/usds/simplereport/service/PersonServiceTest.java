@@ -149,7 +149,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         List<Person> patients_site2_page2 = _service.getPatients(_site2.getInternalId(), 2, 4);
 
         assertPatientList(patients_site2_page0, FRANK, JANNELLE, BRAD, DEXTER);
-        assertPatientList(patients_site2_page1, LEELOO, AMOS);
+        assertPatientList(patients_site2_page1, KACEY, LEELOO, AMOS);
         assertEquals(0, patients_site2_page2.size());
     }
 
