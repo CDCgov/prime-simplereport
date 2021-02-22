@@ -245,10 +245,19 @@
     max-height: 90vh;
     width: units('mobile-lg');
   }
-}
 
-.modal__container {
-  position: relative;
+  .modal__container {
+    position: relative;
+  }
+
+  .modal__close-button {
+    position: absolute;
+    right: 0;
+  }
+
+  .modal__heading {
+    margin-right: units(3);
+  }
 }
 
 .modal__close-button {
@@ -258,8 +267,6 @@
   margin-bottom: 0;
   margin-right: units('neg-205');
   margin-top: units('neg-205');
-  position: absolute;
-  right: 0;
   text-align: center;
 }
 
@@ -269,10 +276,6 @@
 
 .modal__content {
   @extend .usa-prose;
-}
-
-.modal__heading {
-  margin-right: units(3);
 }
 
 .usa-alert--success {
