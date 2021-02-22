@@ -22,10 +22,12 @@ public interface PersonRepository extends EternalAuditedEntityRepository<Person>
     @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE e.organization = :org AND e.isDeleted = :isDeleted")
     public long countAllByOrganization(Organization org, boolean isDeleted);
 
-    @Query(BASE_ALLOW_DELETED_QUERY + " e.facility = :fac AND e.organization = :org AND e.isDeleted = :isDeleted")
+    // NOTE: e.facility = NULL allows some patients to be in all facilities (e.g. staff)
+    @Query(BASE_ALLOW_DELETED_QUERY + " (e.facility = :fac OR e.facility IS NULL) AND e.organization = :org AND e.isDeleted = :isDeleted")
     public Page<Person> findByFacilityAndOrganization(Facility fac, Organization org, boolean isDeleted, Pageable pageable);
 
-    @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE e.facility = :fac AND e.organization = :org AND e.isDeleted = :isDeleted")
+    // NOTE: e.facility = NULL allows some patients to be in all facilities  (e.g. staff)
+    @Query("SELECT COUNT(e) FROM #{#entityName} e WHERE (e.facility = :fac OR e.facility IS NULL) AND e.organization = :org AND e.isDeleted = :isDeleted")
     public long countAllByFacilityAndOrganization(Facility fac, Organization org, boolean isDeleted);
 
     @Query(BASE_ALLOW_DELETED_QUERY + " e.isDeleted = :isDeleted AND e.internalId = :id and e.organization = :org")

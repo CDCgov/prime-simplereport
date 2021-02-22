@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -126,13 +125,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     void getPatients_facilitySpecific_nullsAndSpecifiedFetchedAndSorted() {
         makedata(false);
         List<Person> patients = _service.getPatients(_site1.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
-        assertPatientList(patients, CHARLES, ELIZABETH);
+        assertPatientList(patients, CHARLES, BRAD, ELIZABETH, AMOS);
         patients = _service.getPatients(_site2.getInternalId(), PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
-        assertPatientList(patients, FRANK, DEXTER);
-
-        // we now require you call getAllPatients to get across org *or* specify a facility id.
-        assertThrows(IllegalArgumentException.class,  () -> {
-                _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE); });
+        assertPatientList(patients, FRANK, BRAD, DEXTER, AMOS);
     }
 
     @Test
@@ -149,14 +144,12 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertPatientList(patients_org_page2, HEINRICK, GALE);
         assertEquals(0, patients_org_page3.size());
 
-        List<Person> patients_site2_page0 = _service.getPatients(_site2.getInternalId(), 0, 3);
-        List<Person> patients_site2_page1 = _service.getPatients(_site2.getInternalId(), 1, 3);
+        List<Person> patients_site2_page0 = _service.getPatients(_site2.getInternalId(), 0, 4);
+        List<Person> patients_site2_page1 = _service.getPatients(_site2.getInternalId(), 1, 4);
+        List<Person> patients_site2_page2 = _service.getPatients(_site2.getInternalId(), 2, 4);
 
-        assertPatientList(patients_site2_page0, FRANK, JANNELLE, DEXTER);
-        assertPatientList(patients_site2_page1, KACEY, LEELOO);
-
-        // beyond the end, should not throw exception
-        List<Person> patients_site2_page2 = _service.getPatients(_site2.getInternalId(), 2, 3);
+        assertPatientList(patients_site2_page0, FRANK, JANNELLE, BRAD, DEXTER);
+        assertPatientList(patients_site2_page1, LEELOO, AMOS);
         assertEquals(0, patients_site2_page2.size());
     }
 
@@ -168,22 +161,21 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         List<Person> patients_org_page0 = _service.getAllPatients(0, 100);
         assertEquals(patients_org_page0.size(), _service.getAllPatientsCount());
         assertEquals(12, _service.getAllPatientsCount());
-        assertEquals(5, _service.getPatientsCount(_site2.getInternalId()));
+        // count includes patients for site2 AND facilityId=null
+        assertEquals(7, _service.getPatientsCount(_site2.getInternalId()));
 
         // delete a couple, verify counts
         List<Person> patients_site2 = _service.getPatients(_site2.getInternalId(), 0, 100);
 
+        // delete Charles (_site1)
         _service.setIsDeleted(patients_org_page0.get(0).getInternalId(), true);
+        // Delete Frank (_site2)
         _service.setIsDeleted(patients_site2.get(0).getInternalId(), true);
 
         assertEquals(10, _service.getAllPatientsCount());
-        assertEquals(4, _service.getPatientsCount(_site2.getInternalId()));
+        assertEquals(6, _service.getPatientsCount(_site2.getInternalId()));
         assertEquals(2, _service.getAllArchivedPatientsCount());
         assertEquals(1, _service.getArchivedPatientsCount(_site2.getInternalId()));
-
-        // we now require you call getAllPatientsCount to get across org *or* specify a facility id.
-        assertThrows(IllegalArgumentException.class,  () -> {
-            _service.getPatientsCount(null); });
     }
 
         @Test
@@ -199,8 +191,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _site1 = _dataFactory.createValidFacility(_org, "First One");
         _site2 = _dataFactory.createValidFacility(_org, "Second One");
 
+        // patients without a facility appear in ALL of the Org's facilities
         _dataFactory.createMinimalPerson(_org, null, AMOS);
         _dataFactory.createMinimalPerson(_org, null, BRAD);
+
         _dataFactory.createMinimalPerson(_org, _site1, ELIZABETH);
         _dataFactory.createMinimalPerson(_org, _site1, CHARLES);
         _dataFactory.createMinimalPerson(_org, _site2, DEXTER);
