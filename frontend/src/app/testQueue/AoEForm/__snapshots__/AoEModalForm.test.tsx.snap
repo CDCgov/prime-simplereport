@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AoEModalForm on data loaded renders 1`] = `
+<div
+  id="test-modal-container"
+>
+  <div
+    className="display-flex flex-justify"
+  >
+    <h1
+      className="font-heading-lg margin-top-05 margin-bottom-0"
+    >
+      ?, ?
+    </h1>
+    <div
+      className="sr-time-of-test-buttons"
+    >
+      <button
+        className="usa-button usa-button--unstyled"
+        onClick={[MockFunction]}
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        className="usa-button margin-right-0"
+        onClick={[Function]}
+        type="button"
+      >
+        save
+      </button>
+    </div>
+  </div>
+  <div
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+  />
+</div>
+`;
