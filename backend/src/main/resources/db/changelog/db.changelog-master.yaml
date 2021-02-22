@@ -1253,7 +1253,7 @@ databaseChangeLog:
                   remarks: The SNOMED code for the collection location of this specimen type.
                   type: *string
         - createTable:
-            tableName: device_specimen
+            tableName: device_specimen_type
             remarks: A usable combination of device type and specimen type.
             columns:
               - column: *pk_column
@@ -1268,7 +1268,7 @@ databaseChangeLog:
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__device_specimen__device_type
+                    foreignKeyName: fk__device_specimen_type__device_type
                     references: device_type
               - column:
                   name: specimen_type_id
@@ -1276,14 +1276,14 @@ databaseChangeLog:
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__device_specimen__specimen_type
+                    foreignKeyName: fk__device_specimen_type__specimen_type
                     references: specimen_type
         - addUniqueConstraint:
-            tableName: device_specimen
-            constraintName: uk__device_specimen
+            tableName: device_specimen_type
+            constraintName: uk__device_specimen_type
             columnNames: device_type_id, specimen_type_id
         - createTable:
-            tableName: facility_device_specimen
+            tableName: facility_device_specimen_type
             remarks: Many-to-many table for device/specimen configuration at a facility.
             columns:
               - column:
@@ -1292,50 +1292,50 @@ databaseChangeLog:
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__facility_device_specimen__facility
+                    foreignKeyName: fk__facility_device_specimen_type__facility
                     references: facility
               - column:
-                  name: device_specimen_id
+                  name: device_specimen_type_id
                   remarks: A device/specimen combination that is allowed to be used at the facility.
                   type: *idtype
                   constraints:
                     nullable: false
-                    foreignKeyName: fk__facility_device_specimen__device_specimen
-                    references: device_specimen
+                    foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
+                    references: device_specimen_type
         - addUniqueConstraint:
-            tableName: facility_device_specimen
-            constraintName: uk__facility_device_specimen
-            columnNames: facility_id, device_specimen_id
+            tableName: facility_device_specimen_type
+            constraintName: uk__facility_device_specimen_type
+            columnNames: facility_id, device_specimen_type_id
         - addColumn:
             tableName: facility
             columns:
               - column:
-                  name: default_device_specimen_id
+                  name: default_device_specimen_type_id
                   type: *idtype
                   constraints:
-                    foreignKeyName: fk__facility__default_device_specimen
-                    referencedTableName: device_specimen
+                    foreignKeyName: fk__facility__default_device_specimen_type
+                    referencedTableName: device_specimen_type
         - addColumn:
             tableName: test_order
             columns:
               - column:
-                  name: device_specimen_id
+                  name: device_specimen_type_id
                   remarks: The device/specimen combination used to record the test result.
                   type: *idtype
                   constraints:
-                    foreignKeyName: fk__test_order__device_specimen
-                    referencedTableName: device_specimen
+                    foreignKeyName: fk__test_order__device_specimen_type
+                    referencedTableName: device_specimen_type
                     # will be made non-null in a subsequent migration
         - addColumn:
             tableName: test_event
             columns:
               - column:
-                  name: device_specimen_id
+                  name: device_specimen_type_id
                   remarks: The device/specimen combination used to record the test result.
                   type: *idtype
                   constraints:
-                    foreignKeyName: fk__test_event__device_specimen
-                    referencedTableName: device_specimen
+                    foreignKeyName: fk__test_event__device_specimen_type
+                    referencedTableName: device_specimen_type
                     # will be made non-null in a subsequent migration
   - changeSet:
       id: create-migrations-user
@@ -1386,7 +1386,7 @@ databaseChangeLog:
                 false
               FROM swab_types_historical cross join migration_user
         - sql:
-            remarks: Add device_specimen entries based on current device-type data.
+            remarks: Add device_specimen_type entries based on current device-type data.
             sql: |
               WITH device_swab_historical as (
                 SELECT dt.internal_id device_type_id, swt.internal_id specimen_type_id
@@ -1398,7 +1398,7 @@ databaseChangeLog:
                 FROM ${database.defaultSchemaName}.api_user
                 WHERE login_email = '${migrations_user_email}'
               )
-              INSERT INTO ${database.defaultSchemaName}.device_specimen
+              INSERT INTO ${database.defaultSchemaName}.device_specimen_type
               ( internal_id,
                 created_at, created_by, updated_at, updated_by, is_deleted,
                 device_type_id, specimen_type_id
@@ -1409,36 +1409,36 @@ databaseChangeLog:
                 device_type_id, specimen_type_id
               FROM device_swab_historical cross join migration_user;
         - sql:
-            remarks: Populate facility_device_specimen table and (default) device_specimen_id columns in facility, test_type and test_order.
+            remarks: Populate facility_device_specimen_type table and (default) device_specimen_type_id columns in facility, test_type and test_order.
             sql: |
-              INSERT INTO ${database.defaultSchemaName}.facility_device_specimen
-              (facility_id, device_specimen_id)
+              INSERT INTO ${database.defaultSchemaName}.facility_device_specimen_type
+              (facility_id, device_specimen_type_id)
               SELECT facility_id, ds.internal_id
               FROM ${database.defaultSchemaName}.facility_device_type
-                JOIN ${database.defaultSchemaName}.device_specimen ds using(device_type_id);
+                JOIN ${database.defaultSchemaName}.device_specimen_type ds using(device_type_id);
 
               UPDATE ${database.defaultSchemaName}.facility f
-              SET default_device_specimen_id = ds.internal_id
-              FROM ${database.defaultSchemaName}.device_specimen ds
+              SET default_device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = f.default_device_type_id;
 
               UPDATE ${database.defaultSchemaName}.test_order t
-              SET device_specimen_id = ds.internal_id
-              FROM ${database.defaultSchemaName}.device_specimen ds
+              SET device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = t.device_type_id;
 
               UPDATE ${database.defaultSchemaName}.test_event t
-              SET device_specimen_id = ds.internal_id
-              FROM ${database.defaultSchemaName}.device_specimen ds
+              SET device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = t.device_type_id;
   - changeSet:
       id: complete-specimen-column-additions
       author: bwarfield@cdc.gov
-      comment: Update constraints for newly-added columns referencing device_specimen.
+      comment: Update constraints for newly-added columns referencing device_specimen_type.
       changes:
         - addNotNullConstraint:
             tableName: test_event
-            columnName: device_specimen_id
+            columnName: device_specimen_type_id
         - addNotNullConstraint:
             tableName: test_order
-            columnName: device_specimen_id
+            columnName: device_specimen_type_id

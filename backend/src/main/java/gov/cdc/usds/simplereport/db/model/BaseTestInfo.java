@@ -32,7 +32,7 @@ public abstract class BaseTestInfo extends AuditedEntity
     private Facility facility;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "device_specimen_id")
+    @JoinColumn(name = "device_specimen_type_id")
     private DeviceSpecimenType deviceSpecimen;
 
     @ManyToOne(optional = false)

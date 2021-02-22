@@ -42,14 +42,14 @@ public class Facility extends OrganizationScopedEternalEntity {
 	private Provider orderingProvider;
 
     @ManyToOne(optional = true)
-    @JoinColumn(name = "default_device_specimen_id")
+    @JoinColumn(name = "default_device_specimen_type_id")
     private DeviceSpecimenType defaultDeviceSpecimen;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
-            name = "facility_device_specimen",
+            name = "facility_device_specimen_type",
             joinColumns = @JoinColumn(name = "facility_id"),
-            inverseJoinColumns = @JoinColumn(name = "device_specimen_id")
+            inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id")
     )
     private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
