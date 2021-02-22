@@ -26,7 +26,7 @@ simple-report-initialization:
       type-code: "445297001"
       collection-location-name: Internal nose structure
     - name: Nasopharyngeal swab
-      type-code: 258500001
+      type-code: "258500001"
       collection-location-name: Nasopharyngeal structure
       collection-location-code: "71836000"
   device-types:
