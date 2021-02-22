@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
@@ -86,12 +86,12 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @Deprecated // switch to specifying device-specimen combo
   public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
     TestOrder order = this.getTestOrder(id);
 
     if (deviceId != null) {
-      DeviceType deviceType = _dts.getDeviceType(deviceId);
-      order.setDeviceType(deviceType);
+        order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
     }
 
     order.setResult(result == null ? null : TestResult.valueOf(result));
@@ -102,12 +102,13 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
-    DeviceType deviceType = _dts.getDeviceType(deviceID);
+      DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
-    order.setDeviceType(deviceType);
+    order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
     order.markComplete();
