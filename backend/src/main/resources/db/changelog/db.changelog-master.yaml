@@ -1356,6 +1356,7 @@ databaseChangeLog:
       author: bwarfield@cdc.gov
       comment: Populate specimen tables and relations based on existing data.
       preConditions:
+        # run this migration only if there is at least one row in device_type. If there is not, mark it as already run.
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
