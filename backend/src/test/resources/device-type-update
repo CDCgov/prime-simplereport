@@ -4,7 +4,7 @@ mutation updateDevice(
     $manufacturer: String!
     $model: String!
     $loincCode: String!
-    $swabType: String!
+    $swabType: String
 ) {
     updateDeviceType(
       id: $id

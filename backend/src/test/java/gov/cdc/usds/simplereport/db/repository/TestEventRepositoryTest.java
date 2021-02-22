@@ -39,8 +39,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         Facility place = _dataFactory.createValidFacility(org);
         Person patient = _dataFactory.createMinimalPerson(org);
         TestOrder order = _dataFactory.createTestOrder(patient, place);
-        _repo.save(new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place, order));
-        _repo.save(new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place, order));
+        _repo.save(new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order));
+        _repo.save(new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order));
         flush();
         List<TestEvent> found = _repo.findAllByPatient(patient);
         assertEquals(2, found.size());
@@ -56,8 +56,9 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         Facility place = _dataFactory.createValidFacility(org);
         Person patient = _dataFactory.createMinimalPerson(org);
         TestOrder order = _dataFactory.createTestOrder(patient, place);
-        TestEvent first = new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceType(), patient, place, order);
-        TestEvent second = new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceType(), patient, place, order);
+        TestEvent first = new TestEvent(TestResult.POSITIVE, place.getDefaultDeviceSpecimen(), patient, place, order);
+        TestEvent second = new TestEvent(TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place,
+                order);
         _repo.save(first);
         _repo.save(second);
         flush();
