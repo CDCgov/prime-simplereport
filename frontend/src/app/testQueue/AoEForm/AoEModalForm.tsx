@@ -9,10 +9,10 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import { getUrl } from "../../utils/url";
 import { gql, useQuery } from "@apollo/client";
 
-  // the QR code is separately feature flagged – we need it for the e2e tests currently
-  const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
-    ? [{ label: "Complete on smartphone", value: "smartphone" }]
-    : [];
+// the QR code is separately feature flagged – we need it for the e2e tests currently
+const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
+  ? [{ label: "Complete on smartphone", value: "smartphone" }]
+  : [];
 
 interface LastTestData {
   patient: {
@@ -72,16 +72,17 @@ const SmsModalContents = (props: SmsModalProps) => {
             onClick={() => props.sendSms()}
           />
         ) : (
-            <Button
-              className="margin-right-205"
-              label="Continue"
-              type={"button"}
-              onClick={() => props.continueModal()}
-            />
-          )}
+          <Button
+            className="margin-right-205"
+            label="Continue"
+            type={"button"}
+            onClick={() => props.continueModal()}
+          />
+        )}
       </div>
-    </>);
-}
+    </>
+  );
+};
 
 const AoEModalForm = (props: AoEModalProps) => {
   const {
@@ -210,7 +211,12 @@ const AoEModalForm = (props: AoEModalProps) => {
         break;
       case "text":
         innerContents = (
-          <SmsModalContents smsSuccess={smsSuccess} telephone={patient.telephone} sendSms={sendSms} continueModal={continueModal}/>
+          <SmsModalContents
+            smsSuccess={smsSuccess}
+            telephone={patient.telephone}
+            sendSms={sendSms}
+            continueModal={continueModal}
+          />
         );
         break;
       case "smartphone":

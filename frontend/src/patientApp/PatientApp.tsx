@@ -31,7 +31,7 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   if (plid === null) {
     return <Patient404 />;
   }
-  return <>{children}</>
+  return <>{children}</>;
 };
 
 const PatientApp = () => {
