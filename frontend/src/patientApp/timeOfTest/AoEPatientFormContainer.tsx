@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
 import { connect, useSelector } from "react-redux";
 import { showError } from "../../app/utils";

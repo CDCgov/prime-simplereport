@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,6 +17,22 @@ import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import Patient404 from "./timeOfTest/Patient404";
+
+interface WrapperProps {
+  plid: string;
+}
+const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
+  plid,
+  children,
+}) => {
+  if (plid === undefined) {
+    return <>Loading...</>;
+  }
+  if (plid === null) {
+    return <Patient404 />;
+  }
+  return <>{children}</>
+};
 
 const PatientApp = () => {
   const dispatch = useDispatch();
@@ -44,64 +60,57 @@ const PatientApp = () => {
           <div id="main-wrapper">
             <USAGovBanner />
             <PatientHeader />
-
-            {plid === undefined ? (
-              "Loading..."
-            ) : plid === null ? (
-              <Patient404 />
-            ) : (
-              <>
-                <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
-                  <Switch>
-                    <Route
-                      path="/"
-                      exact
-                      render={(props) => (
-                        <DOB {...(props.location.state as any)} />
-                      )}
-                    />
-                    <Route
-                      path="/birth-date-confirmation"
-                      render={(props) => (
-                        <DOB {...(props.location.state as any)} />
-                      )}
-                    />
-                    <Route
-                      path="/patient-info-confirm"
-                      render={(props) => (
-                        <PatientProfileContainer
-                          {...(props.location.state as any)}
-                        />
-                      )}
-                    />
-                    <Route
-                      path="/patient-info-edit"
-                      render={(props) => (
-                        <PatientFormContainer
-                          {...(props.location.state as any)}
-                        />
-                      )}
-                    />
-                    <Route
-                      path="/patient-info-symptoms"
-                      render={(props) => (
-                        <AoEPatientFormContainer
-                          {...(props.location.state as any)}
-                        />
-                      )}
-                    />
-                    <Route path="/success" component={PatientLanding} />
-                  </Switch>
-                </Router>
-                <ToastContainer
-                  autoClose={5000}
-                  closeButton={false}
-                  limit={2}
-                  position="bottom-center"
-                  hideProgressBar={true}
-                />
-              </>
-            )}
+            <PatientLinkURL404Wrapper plid={plid}>
+              <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
+                <Switch>
+                  <Route
+                    path="/"
+                    exact
+                    render={(props) => (
+                      <DOB {...(props.location.state as any)} />
+                    )}
+                  />
+                  <Route
+                    path="/birth-date-confirmation"
+                    render={(props) => (
+                      <DOB {...(props.location.state as any)} />
+                    )}
+                  />
+                  <Route
+                    path="/patient-info-confirm"
+                    render={(props) => (
+                      <PatientProfileContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/patient-info-edit"
+                    render={(props) => (
+                      <PatientFormContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
+                  />
+                  <Route
+                    path="/patient-info-symptoms"
+                    render={(props) => (
+                      <AoEPatientFormContainer
+                        {...(props.location.state as any)}
+                      />
+                    )}
+                  />
+                  <Route path="/success" component={PatientLanding} />
+                </Switch>
+              </Router>
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
+              />
+            </PatientLinkURL404Wrapper>
           </div>
         </div>
       </PrimeErrorBoundary>

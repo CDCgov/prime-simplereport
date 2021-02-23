@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
-import { useHistory } from "react-router-dom";
+import { useHistory, Redirect } from "react-router-dom";
 
 import PatientForm from "../../app/patients/PatientForm";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";

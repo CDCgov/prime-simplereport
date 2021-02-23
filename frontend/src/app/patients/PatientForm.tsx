@@ -242,7 +242,6 @@ const PatientForm = (props: Props) => {
             />
           );
 
-          // TODO: DRY this boolean => YES|NO processing (this will go away when we switch to strings)
           const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
             ? "YES"
             : "NO";
@@ -250,7 +249,6 @@ const PatientForm = (props: Props) => {
             ? "YES"
             : "NO";
 
-          // TODO: maybe factor this redux handling into the pxp code
           dispatch(
             reduxSetPatient({
               ...updatedPatientFromApi,
@@ -260,7 +258,7 @@ const PatientForm = (props: Props) => {
           );
           setSubmitted(true);
         },
-        (error) => {
+        (error: any) => {
           appInsights.trackException(error);
           showError(
             toast,

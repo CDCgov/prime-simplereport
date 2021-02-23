@@ -18,9 +18,7 @@ const DOB = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (dobRef?.current) {
-      dobRef?.current.focus();
-    }
+    dobRef?.current?.focus();
   }, []);
 
   const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
@@ -29,9 +27,7 @@ const DOB = () => {
     const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
     if (!date.isValid()) {
       setBirthDateError("Enter your date of birth");
-      if (dobRef?.current) {
-        dobRef?.current.focus();
-      }
+      dobRef?.current?.focus();
       return;
     }
 
@@ -57,7 +53,7 @@ const DOB = () => {
           employedInHealthcare,
         })
       );
-    } catch (e) {
+    } catch (error) {
       setBirthDateError(
         "No patient link with the supplied ID was found, or the birth date provided was incorrect."
       );

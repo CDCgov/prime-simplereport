@@ -9,6 +9,11 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import { getUrl } from "../../utils/url";
 import { gql, useQuery } from "@apollo/client";
 
+  // the QR code is separately feature flagged – we need it for the e2e tests currently
+  const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
+    ? [{ label: "Complete on smartphone", value: "smartphone" }]
+    : [];
+
 interface LastTestData {
   patient: {
     lastTest: {
@@ -29,7 +34,7 @@ export const LAST_TEST_QUERY = gql`
   }
 `;
 
-interface Props {
+interface AoEModalProps {
   saveButtonText?: string;
   onClose: () => void;
   patient: any;
@@ -38,7 +43,47 @@ interface Props {
   qrCodeValue?: string;
 }
 
-const AoEModalForm = (props: Props) => {
+interface SmsModalProps {
+  smsSuccess: boolean;
+  telephone: string;
+  sendSms: () => void;
+  continueModal: () => void;
+}
+
+const SmsModalContents = (props: SmsModalProps) => {
+  return (
+    <>
+      {props.smsSuccess && (
+        <div className="usa-alert usa-alert--success outline-0">
+          <div className="usa-alert__body">
+            <h3 className="usa-alert__heading">Text message sent</h3>
+            <p className="usa-alert__text">
+              The link was sent to {props.telephone}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+        {!props.smsSuccess ? (
+          <Button
+            className="margin-right-205"
+            label="Text link to complete on smartphone"
+            type={"button"}
+            onClick={() => props.sendSms()}
+          />
+        ) : (
+            <Button
+              className="margin-right-205"
+              label="Continue"
+              type={"button"}
+              onClick={() => props.continueModal()}
+            />
+          )}
+      </div>
+    </>);
+}
+
+const AoEModalForm = (props: AoEModalProps) => {
   const {
     saveButtonText = "Continue",
     onClose,
@@ -52,11 +97,6 @@ const AoEModalForm = (props: Props) => {
   const [patientLink, setPatientLink] = useState("");
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
-
-  // the QR code is separately feature flagged – we need it for the e2e tests currently
-  const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
-    ? [{ label: "Complete on smartphone", value: "smartphone" }]
-    : [];
 
   const modalViewValues = [
     {
@@ -94,8 +134,12 @@ const AoEModalForm = (props: Props) => {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
   });
-  if (loading) return null;
-  if (error) throw error;
+  if (loading) {
+    return null;
+  }
+  if (error) {
+    throw error;
+  }
   const lastTest = data?.patient.lastTest;
 
   const continueModal = () => {
@@ -166,35 +210,7 @@ const AoEModalForm = (props: Props) => {
         break;
       case "text":
         innerContents = (
-          <>
-            {smsSuccess && (
-              <div className="usa-alert usa-alert--success outline-0">
-                <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading">Text message sent</h3>
-                  <p className="usa-alert__text">
-                    The link was sent to {patient.telephone}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-              {!smsSuccess ? (
-                <Button
-                  className="margin-right-205"
-                  label="Text link to complete on smartphone"
-                  type={"button"}
-                  onClick={() => sendSms()}
-                />
-              ) : (
-                <Button
-                  className="margin-right-205"
-                  label="Continue"
-                  type={"button"}
-                  onClick={() => continueModal()}
-                />
-              )}
-            </div>
-          </>
+          <SmsModalContents smsSuccess={smsSuccess} telephone={patient.telephone} sendSms={sendSms} continueModal={continueModal}/>
         );
         break;
       case "smartphone":
@@ -227,7 +243,6 @@ const AoEModalForm = (props: Props) => {
         );
         break;
       default:
-        innerContents = null;
         break;
     }
 

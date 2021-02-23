@@ -1,4 +1,4 @@
-const PatientLanding = () => {
+const Patient404 = () => {
   return (
     <main>
       <div className="grid-container maxw-tablet">
@@ -13,4 +13,4 @@ const PatientLanding = () => {
   );
 };
 
-export default PatientLanding;
+export default Patient404;

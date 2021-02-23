@@ -49,10 +49,7 @@ public class PatientLinkService {
     public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
-        if (patient.getBirthDate().equals(birthDate)) {
-            return true;
-        } 
-        return false;
+        return patient.getBirthDate().equals(birthDate);
     }
 
     public Person getPatientFromLink(String internalId) {
