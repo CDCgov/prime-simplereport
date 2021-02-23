@@ -31,7 +31,10 @@ public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter imple
     @Override
     public void configure(HttpSecurity http) throws Exception {
         LOG.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
-        http.cors().and().authorizeRequests().antMatchers("/**").permitAll().and().csrf().disable();
+        http.cors()
+                .and().authorizeRequests().antMatchers("/**").permitAll()
+                .and().csrf().disable()
+                ;
     }
 
     @Override
