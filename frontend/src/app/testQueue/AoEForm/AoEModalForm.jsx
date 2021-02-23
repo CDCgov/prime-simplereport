@@ -94,25 +94,27 @@ const AoEModalForm = ({
 
   const sendSms = () => {
     setSmsSuccess(true);
-  }
+  };
 
-  const verbalForm = (<AoEForm
-    saveButtonText="Continue"
-    onClose={onClose}
-    patient={patient}
-    loadState={loadState}
-    saveCallback={saveCallback}
-    isModal={true}
-    noValidation={true}
-    formRef={formRef}
-  />);
+  const verbalForm = (
+    <AoEForm
+      saveButtonText="Continue"
+      onClose={onClose}
+      patient={patient}
+      loadState={loadState}
+      saveCallback={saveCallback}
+      isModal={true}
+      noValidation={true}
+      formRef={formRef}
+    />
+  );
 
   const modalContents = () => {
     // the pre-patient-experience situation is way simpler!
     if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== "true") {
       return verbalForm;
-    } 
-    
+    }
+
     let innerContents = null;
     switch (modalView) {
       case "verbal":
@@ -140,13 +142,13 @@ const AoEModalForm = ({
                   onClick={() => sendSms()}
                 />
               ) : (
-                  <Button
-                    className="margin-right-205"
-                    label="Continue"
-                    type={"button"}
-                    onClick={() => continueModal()}
-                  />
-                )}
+                <Button
+                  className="margin-right-205"
+                  label="Continue"
+                  type={"button"}
+                  onClick={() => continueModal()}
+                />
+              )}
             </div>
           </>
         );
@@ -158,8 +160,8 @@ const AoEModalForm = ({
               <div className="text-center">
                 <p className="font-body-lg margin-y-0">
                   Point your camera at the QR code <br />
-                to access the questionnaire
-              </p>
+                  to access the questionnaire
+                </p>
                 <div
                   className="margin-top-205"
                   id="patient-link-qr-code"
@@ -186,7 +188,7 @@ const AoEModalForm = ({
       <>
         <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
           Test questionnaire
-      </h2>
+        </h2>
         <RadioGroup
           legend="How would you like to complete the questionnaire?"
           name="qr-code"
@@ -196,8 +198,9 @@ const AoEModalForm = ({
           selectedRadio={modalView}
           className="margin-top-205"
         />
-        { innerContents}
-      </>);
+        {innerContents}
+      </>
+    );
   };
 
   return (
@@ -224,7 +227,7 @@ const AoEModalForm = ({
         {buttonGroup}
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-      { modalContents() }
+      {modalContents()}
     </Modal>
   );
 };
