@@ -149,7 +149,7 @@ public class TestOrderService {
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTest
-  public void updateTimeOfTestQuestions(UUID patientId, String pregnancy, Map<String, Boolean> symptoms,
+  public void updateTimeOfTestQuestions(String patientId, String pregnancy, Map<String, Boolean> symptoms,
       Boolean firstTest, LocalDate priorTestDate, String priorTestType, TestResult priorTestResult,
       LocalDate symptomOnsetDate, Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
