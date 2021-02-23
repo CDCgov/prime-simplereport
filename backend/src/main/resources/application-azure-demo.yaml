@@ -5,3 +5,6 @@ graphql.servlet.cors:
     - https://simple-report-api-demo.azurewebsites.net
     - https://simple-report-demo.azureedge.net
     - https://demo.simplereport.gov
+simple-report:
+  feature-flags:
+    patient-experience: true
