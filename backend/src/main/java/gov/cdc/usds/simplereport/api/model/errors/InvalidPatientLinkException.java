@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.exceptions;
+package gov.cdc.usds.simplereport.api.model.errors;
 
 import java.util.List;
 

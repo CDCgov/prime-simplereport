@@ -22,8 +22,8 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
-import gov.cdc.usds.simplereport.api.exceptions.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
