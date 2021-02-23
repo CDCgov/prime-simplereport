@@ -1434,6 +1434,27 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = t.device_type_id;
   - changeSet:
+      id: test-order-fixup
+      author: bwarfield@cdc.gov
+      comment: Populate test_order.device_type_id and device_specimen_type_id with a default when it was previously left empty.
+      preConditions:
+        # run this migration only if there is at least one row in test_order with no device_type_id.
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
+            expectedResult: 1
+      changes:
+        - sql:
+            remarks: Populate the device_type_id and device_specimen_type_id for test orders with the default_device_type_id from their facility.
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order t
+              SET device_type_id = f.default_device_type_id,
+                device_specimen_type_id = f.default_device_specimen_type_id
+              FROM ${database.defaultSchemaName}.facility f
+              WHERE f.internal_id = t.facility_id
+              AND t.device_type_id is null
+  - changeSet:
       id: complete-specimen-column-additions
       author: bwarfield@cdc.gov
       comment: Update constraints for newly-added columns referencing device_specimen_type.
