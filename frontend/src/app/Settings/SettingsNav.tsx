@@ -1,11 +1,5 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-
-const getFacilityIdFromUrl = () => {
-  const queryParams = new URLSearchParams(window.location.search);
-  return queryParams.has("facility") ? queryParams.get("facility") : null;
-};
 
 const SettingsNav = () => {
   return (
