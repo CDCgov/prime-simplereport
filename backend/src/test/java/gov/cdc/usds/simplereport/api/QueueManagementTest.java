@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.io.IOException;
@@ -65,64 +64,6 @@ class QueueManagementTest extends BaseApiTest {
     }
 
     @Test
-    void submitViaPatientLink() throws Exception {
-        Person p = _dataFactory.createFullPerson(_org);
-        String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments().put("id", personId);
-        performEnqueueMutation(variables);
-        ArrayNode queueData = fetchQueue();
-        assertEquals(1, queueData.size());
-        JsonNode queueEntry = queueData.get(0);
-        String patientLinkId = queueEntry.get("patientLink").get("internalId").asText();
-        assertNotNull(patientLinkId);
-        ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
-        ObjectNode plOrg = performPatientLinkCurrent(plVariables);
-        String plOrgId = plOrg.get("internalId").asText();
-        String orgId = _org.getInternalId().toString();
-        assertEquals(plOrgId, orgId);
-        plVariables.put("birthDate", p.getBirthDate().toString());
-        ObjectNode plPatient = performPatientLinkVerify(plVariables);
-        String plPatientId = plPatient.get("internalId").asText();
-        String patientId = p.getInternalId().toString();
-        assertEquals(plPatientId, patientId);
-        plVariables.put("previousTestDate", "2020-05-15").put("symptomOnsetDate", "2020-11-30").put("symptoms", "{}");
-        performPatientLinkSubmitMutation(plVariables);
-        queueData = fetchQueue();
-        assertEquals(1, queueData.size());
-        queueEntry = queueData.get(0);
-        String symptomOnset = queueEntry.get("symptomOnset").asText();
-        String priorTest = queueEntry.get("priorTestDate").asText();
-        assertEquals("2020-11-30", symptomOnset);
-        assertEquals("2020-05-15", priorTest);
-    }
-
-    @Test
-    void updatePatientViaPatientLink() throws Exception {
-        Person p = _dataFactory.createFullPerson(_org);
-        String personId = p.getInternalId().toString();
-        ObjectNode variables = getFacilityScopedArguments().put("id", personId);
-        performEnqueueMutation(variables);
-        ArrayNode queueData = fetchQueue();
-        assertEquals(1, queueData.size());
-        JsonNode queueEntry = queueData.get(0);
-        String patientLinkId = queueEntry.get("patientLink").get("internalId").asText();
-        assertNotNull(patientLinkId);
-        ObjectNode plVariables = JsonNodeFactory.instance.objectNode().put("internalId", patientLinkId);
-        ObjectNode plOrg = performPatientLinkCurrent(plVariables);
-        String plOrgId = plOrg.get("internalId").asText();
-        String orgId = _org.getInternalId().toString();
-        assertEquals(plOrgId, orgId);
-        plVariables.put("oldBirthDate", p.getBirthDate().toString()).put("newBirthDate", "1979-06-12")
-                .put("firstName", "Bob").put("lastName", "Barker").put("telephone", "5558675309")
-                .put("street", "123 Main St").put("state", "CA").put("zipCode", "49294")
-                .put("residentCongregateSetting", false).put("employedInHealthcare", false);
-        ObjectNode newPatient = performPatientLinkUpdatePatientMutation(plVariables);
-        assertEquals(newPatient.get("firstName").asText(), "Bob");
-        assertEquals(newPatient.get("lastName").asText(), "Barker");
-        assertEquals(newPatient.get("birthDate").asText(), "1979-06-12");
-    }
-
-    @Test
     void updateItemInQueue() throws Exception {
         Person p = _dataFactory.createFullPerson(_org);
         TestOrder o = _dataFactory.createTestOrder(p, _site);
@@ -169,22 +110,6 @@ class QueueManagementTest extends BaseApiTest {
 
     private ArrayNode fetchQueue() {
         return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
-    }
-
-    private ObjectNode performPatientLinkCurrent(ObjectNode variables) {
-        return (ObjectNode) runQuery("patient-link-current-query", variables).get("patientLinkCurrent");
-    }
-
-    private ObjectNode performPatientLinkVerify(ObjectNode variables) {
-        return (ObjectNode) runQuery("patient-link-verify-query", variables).get("patientLinkVerify");
-    }
-
-    private void performPatientLinkSubmitMutation(ObjectNode variables) throws IOException {
-        assertGraphQLSuccess(_template.perform("patient-link-submit", variables));
-    }
-
-    private ObjectNode performPatientLinkUpdatePatientMutation(ObjectNode variables) throws IOException {
-        return (ObjectNode) runQuery("patient-link-update-patient", variables).get("patientLinkUpdatePatient");
     }
 
     private void performEnqueueMutation(ObjectNode variables) throws IOException {
