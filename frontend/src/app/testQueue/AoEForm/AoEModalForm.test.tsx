@@ -26,6 +26,8 @@ describe("AoEModalForm", () => {
           patient={{
             internalId: "123",
             gender: "male",
+            firstName: "Steve",
+            lastName: "Jobs",
           }}
           loadState={{
             noSymptoms: false,
@@ -50,7 +52,26 @@ describe("AoEModalForm", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
     });
+
     it("renders", async () => {
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+
+    it("has a distinct view for 'text'", async () => {
+      act(() => {
+        component.root
+          .findByProps({ name: "qr-code" })
+          .props.onChange({ currentTarget: { value: "text" } });
+      });
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+
+    it("has a distinct view for 'verbal'", async () => {
+      act(() => {
+        component.root
+          .findByProps({ name: "qr-code" })
+          .props.onChange({ currentTarget: { value: "verbal" } });
+      });
       expect(component.toJSON()).toMatchSnapshot();
     });
   });
