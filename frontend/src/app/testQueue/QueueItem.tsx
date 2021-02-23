@@ -531,7 +531,7 @@ const QueueItem: any = ({
                     <li className="prime-li">
                       <Button
                         variant="unstyled"
-                        label="Time of Test Questions"
+                        label="Test questionnaire"
                         onClick={openAoeModal}
                       />
                       {isAoeModalOpen && (
@@ -608,8 +608,8 @@ const QueueItem: any = ({
                 >
                   {confirmationType === "submitResult" ? (
                     <p className="usa-prose">
-                      Time of test questions for{" "}
-                      <b> {` ${patientFullName} `} </b> have not been completed.
+                      The test questionnaire for{" "}
+                      <b> {` ${patientFullName} `} </b> has not been completed.
                       Do you want to submit results anyway?
                     </p>
                   ) : (
