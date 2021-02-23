@@ -608,9 +608,9 @@ const QueueItem: any = ({
                 >
                   {confirmationType === "submitResult" ? (
                     <p className="usa-prose">
-                      Test questionnaire for <b> {` ${patientFullName} `} </b>{" "}
-                      have not been completed. Do you want to submit results
-                      anyway?
+                      The test questionnaire for{" "}
+                      <b> {` ${patientFullName} `} </b> has not been completed.
+                      Do you want to submit results anyway?
                     </p>
                   ) : (
                     <>
