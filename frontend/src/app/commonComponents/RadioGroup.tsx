@@ -5,7 +5,11 @@ import Required from "./Required";
 import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
-type OptionsArray = { label: string; value: string; disabled?: boolean }[];
+type OptionsArray = {
+  label: React.ReactNode;
+  value: string;
+  disabled?: boolean;
+}[];
 type Options = OptionsKeys | OptionsArray;
 
 interface Props {
@@ -54,7 +58,7 @@ const RadioGroup = ({
     "usa-radio",
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
-  const choices = Array.isArray(buttons)
+  const choices: OptionsArray = Array.isArray(buttons)
     ? buttons
     : Object.keys(buttons).map((k) => ({
         label: k,

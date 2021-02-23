@@ -1,10 +1,13 @@
 import Alert from "../commonComponents/Alert";
 import React from "react";
 
-export const displayFullName = (first, middle, last) => {
-  return `${last || "?"}, ${first || "?"} ${middle || ""}`
-    .replace(/ +/g, " ")
-    .trim();
+export const displayFullName = (first, middle, last, lastFirst = true) => {
+  if (lastFirst) {
+    return `${last || "?"}, ${first || "?"} ${middle || ""}`
+      .replace(/ +/g, " ")
+      .trim();
+  }
+  return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
 };
 
 export const displayFullNameInOrder = (first, middle, last) => {

@@ -82,7 +82,6 @@ const SearchResults = ({
           saveCallback={(a: any) =>
             onAddToQueue(dialogPatient, a, canAddToQueue ? "create" : "update")
           }
-          canAddToTestQueue={canAddToQueue}
         />
       )}
       {shouldShowSuggestions && results}

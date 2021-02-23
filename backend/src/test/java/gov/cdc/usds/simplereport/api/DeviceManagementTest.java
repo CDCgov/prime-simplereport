@@ -48,8 +48,18 @@ class DeviceManagementTest extends BaseApiTest {
         useSuperUser();
         ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
         ObjectNode variables = sillyDeviceArgs()
-                .put("id", someDeviceType.get("internalId").asText());
+                .put("id", someDeviceType.get("internalId").asText())
+                .set("swabType", null);
         runQuery("device-type-update", variables);
+    }
+
+    @Test
+    void updateDeviceType_adminUserUpdatingSwabType_failure() {
+        useSuperUser();
+        ObjectNode someDeviceType = (ObjectNode) fetchSorted().get(0);
+        ObjectNode variables = sillyDeviceArgs()
+                .put("id", someDeviceType.get("internalId").asText());
+        runQuery("device-type-update", variables, "swab type");
     }
 
     private List<JsonNode> fetchSorted() {
@@ -66,7 +76,7 @@ class DeviceManagementTest extends BaseApiTest {
                 .put("manufacturer", "Acme")
                 .put("model", "Test-A-Lot")
                 .put("loincCode", "123456")
-                .put("swabType", "abcdef");
+                .put("swabType", "0987654321");
         return variables;
     }
 
