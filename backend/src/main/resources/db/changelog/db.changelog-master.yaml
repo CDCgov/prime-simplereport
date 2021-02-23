@@ -1355,6 +1355,7 @@ databaseChangeLog:
       id: populate-specimen-tables
       author: bwarfield@cdc.gov
       comment: Populate specimen tables and relations based on existing data.
+      validCheckSum: "8:ab7979e21fd696979931d82120bcbfab"
       preConditions:
         # run this migration only if there is at least one row in device_type. If there is not, mark it as already run.
         - onSqlOutput: FAIL
@@ -1414,7 +1415,7 @@ databaseChangeLog:
             sql: |
               INSERT INTO ${database.defaultSchemaName}.facility_device_specimen_type
               (facility_id, device_specimen_type_id)
-              SELECT facility_id, ds.internal_id
+              SELECT DISTINCT facility_id, ds.internal_id
               FROM ${database.defaultSchemaName}.facility_device_type
                 JOIN ${database.defaultSchemaName}.device_specimen_type ds using(device_type_id);
 
