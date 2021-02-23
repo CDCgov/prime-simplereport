@@ -39,7 +39,7 @@ import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 
 @ConditionalOnProperty(name="simple-report.feature-flags.patient-links", havingValue="true")
-@PreAuthorize("@patientLinkService.verifyPatientLink(#body.getPlid(), #body.getDob())")
+@PreAuthorize("@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @RestController
 @RequestMapping("/pxp")
 @Validated
@@ -70,16 +70,16 @@ public class PatientExperienceController {
    */
   @PutMapping("/link/verify")
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws InvalidPatientLinkException {
-    Person p = pls.getPatientFromLink(body.getPlid());
+    Person p = pls.getPatientFromLink(body.getPatientLinkId());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     return new PxpPersonWrapper(p, te);
   }
 
   @PutMapping("/patient")
   public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) throws InvalidPatientLinkException {
-    PatientLink pl = pls.getPatientLink(body.getPlid());
+    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
     UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
-    String patientId = pls.getPatientFromLink(body.getPlid()).getInternalId().toString();
+    String patientId = pls.getPatientFromLink(body.getPatientLinkId()).getInternalId().toString();
     Person person = body.getData();
 
     return ps.updatePatient(facilityId, patientId, parseString(person.getLookupId()),
@@ -94,7 +94,7 @@ public class PatientExperienceController {
 
   @PutMapping("/questions")
   public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws InvalidPatientLinkException {
-    Person patient = pls.getPatientFromLink(body.getPlid());
+    Person patient = pls.getPatientFromLink(body.getPatientLinkId());
     String patientID = patient.getInternalId().toString();
 
     AoEQuestions data = body.getData();
