@@ -290,6 +290,7 @@ const PatientForm = (props: Props) => {
     let errorMessage = undefined;
     if ((!value || value === "- Select -") && required) {
       errorMessage = `${label} is required`;
+      target.focus();
     } else if (format) {
       const regex = new RegExp(format);
       if (value && !value.match(regex)) {
@@ -297,6 +298,7 @@ const PatientForm = (props: Props) => {
           "data-format-message"
         );
         errorMessage = formatMessage || `${label} has an incorrect format`;
+        target.focus();
       }
     }
     if (setState) {
