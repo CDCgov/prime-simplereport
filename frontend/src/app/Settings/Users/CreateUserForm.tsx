@@ -59,7 +59,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
       <p>
         New users will be assigned as Standard Users, which allows them to
         conduct tests and manage results and profiles. You will be able to edit
-        their access levels once they register their accounts.
+        their access levels after you send them an invite.
       </p>
     );
 

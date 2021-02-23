@@ -104,7 +104,7 @@ describe("ManageUsers", () => {
     fireEvent.change(first, inputValue(newUser.firstName));
     fireEvent.change(last, inputValue(newUser.lastName));
     fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.click(getByText("Send", { exact: false }));
+    fireEvent.click(getByText("Send invite", { exact: false }));
     await waitFor(() => expect(addUserToOrg).toBeCalled());
     expect(addUserToOrg).toBeCalledWith({ variables: newUser });
   });

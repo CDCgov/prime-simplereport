@@ -128,7 +128,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     value="Admin user"
                   />
                   <label
-                    class="usa-radio__label"
+                    class="usa-radio__label text-base"
                     for="radio-test-1_Admin user_0"
                   >
                     Admin (full permissions)
@@ -146,7 +146,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     value="Standard user"
                   />
                   <label
-                    class="usa-radio__label"
+                    class="usa-radio__label text-base"
                     for="radio-test-1_Standard user_1"
                   >
                     Standard user (manage results and profiles)
@@ -164,7 +164,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     value="Test-entry user"
                   />
                   <label
-                    class="usa-radio__label"
+                    class="usa-radio__label text-base"
                     for="radio-test-1_Test-entry user_2"
                   >
                     Entry only (conduct tests)
