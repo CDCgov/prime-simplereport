@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
@@ -7,6 +6,7 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 interface Props {
   facility: Facility;
@@ -52,7 +52,10 @@ const FacilityForm: React.FC<Props> = (props) => {
         <div className="usa-card__header">
           <div>
             <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-            <NavLink to={`/settings/facilities`}> All facilities</NavLink>
+            <LinkWithQuery to={`/settings/facilities`}>
+              {" "}
+              All facilities
+            </LinkWithQuery>
             <h2>{facility.name}</h2>
           </div>
           <div
