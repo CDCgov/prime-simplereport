@@ -8,7 +8,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
     className=""
   >
     <p>
-      All fields marked with
+      All fields marked with 
       <span
         className="usa-sr-only"
       >
