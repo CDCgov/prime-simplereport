@@ -480,7 +480,7 @@ const PatientForm = (props: Props) => {
               onChange={onChange}
             />
             <Dropdown
-              label="Role (optional)"
+              label="Role"
               name="role"
               selectedValue={patient.role}
               onChange={onChange}
