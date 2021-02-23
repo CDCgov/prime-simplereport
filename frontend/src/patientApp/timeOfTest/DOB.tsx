@@ -37,7 +37,7 @@ const DOB = () => {
 
     setLoading(true);
     try {
-      const response = await PxpApi.validateDob(
+      const response = await PxpApi.validateDateOfBirth(
         plid,
         date.format("YYYY-MM-DD")
       );
