@@ -106,7 +106,7 @@ Array [
       onClick={[Function]}
       type="button"
     >
-      Text link
+      Text link to complete on smartphone
     </button>
   </div>,
 ]
