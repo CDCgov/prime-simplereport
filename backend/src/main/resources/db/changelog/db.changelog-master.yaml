@@ -1355,7 +1355,9 @@ databaseChangeLog:
       id: populate-specimen-tables
       author: bwarfield@cdc.gov
       comment: Populate specimen tables and relations based on existing data.
-      validCheckSum: "8:ab7979e21fd696979931d82120bcbfab"
+      validCheckSum: # yes there are two of them because liquibase checksums are not platform-independent LOLsob.
+        - "8:824e942da27e8b5c9d965bf00d067d91" # Linux
+        - "8:ab7979e21fd696979931d82120bcbfab" # MacOS
       preConditions:
         # run this migration only if there is at least one row in device_type. If there is not, mark it as already run.
         - onSqlOutput: FAIL
