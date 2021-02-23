@@ -42,8 +42,6 @@ public class PatientLinkService {
         if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
             return pl.getTestOrder().getOrganization();
         } else {
-            // TODO: right now this will throw a 401 with the wrong reason. follow up here:
-            // https://github.com/CDCgov/prime-simplereport/pull/813#discussion_r578893986
             throw new InvalidPatientLinkException("Patient Link is expired; please contact your provider");
         }
     }

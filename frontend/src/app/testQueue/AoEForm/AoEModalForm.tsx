@@ -45,7 +45,7 @@ const AoEModalForm = (props: Props) => {
     patient,
     loadState = {},
     saveCallback,
-    qrCodeValue = "", 
+    qrCodeValue = "",
   } = props;
 
   const [modalView, setModalView] = useState("");
@@ -53,8 +53,8 @@ const AoEModalForm = (props: Props) => {
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
-    // the QR code is separately feature flagged – we need it for the e2e tests currently
-    const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
+  // the QR code is separately feature flagged – we need it for the e2e tests currently
+  const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
     ? [{ label: "Complete on smartphone", value: "smartphone" }]
     : [];
 
@@ -89,7 +89,7 @@ const AoEModalForm = (props: Props) => {
     symptomOnset: undefined,
     symptoms: JSON.stringify(symptomsResponse),
   };
-  
+
   const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
