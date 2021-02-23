@@ -19,7 +19,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
-@Service
+@Service("patientLinkService")
 @Transactional(readOnly = false)
 public class PatientLinkService {
     @Autowired
@@ -46,14 +46,18 @@ public class PatientLinkService {
         }
     }
 
-    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws InvalidPatientLinkException {
+    public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
         PatientLink pl = getPatientLink(internalId);
         Person patient = pl.getTestOrder().getPatient();
         if (patient.getBirthDate().equals(birthDate)) {
-            return patient;
-        } else {
-            throw new InvalidPatientLinkException();
-        }
+            return true;
+        } 
+        return false;
+    }
+
+    public Person getPatientFromLink(String internalId) {
+        PatientLink pl = getPatientLink(internalId);
+        return pl.getTestOrder().getPatient();
     }
 
     public PatientLink createPatientLink(UUID testOrderUuid) {

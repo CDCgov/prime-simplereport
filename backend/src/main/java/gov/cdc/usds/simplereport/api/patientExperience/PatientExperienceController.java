@@ -3,10 +3,13 @@ package gov.cdc.usds.simplereport.api.patientExperience;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,7 +38,8 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 
-@ConditionalOnProperty("${feature-flags.patient-links}")
+@ConditionalOnProperty(name="simple-report.feature-flags.patient-links", havingValue="true")
+@PreAuthorize("@patientLinkService.verifyPatientLink(#body.getPlid(), #body.getDob())")
 @RestController
 @RequestMapping("/pxp")
 @Validated
@@ -54,26 +58,28 @@ public class PatientExperienceController {
   @Autowired
   private TestEventService tes;
 
+  @PostConstruct
+  private void init() {
+    LOG.info("Patient Experience REST endpoints enabled");
+  }
+
   /**
    * Verify that the patient-provided DOB matches the patient on file for the
    * patient link id. It returns the full patient object if so, otherwise it
    * throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
-      throws InvalidPatientLinkException {
-    Person p = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
+  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws InvalidPatientLinkException {
+    Person p = pls.getPatientFromLink(body.getPlid());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     return new PxpPersonWrapper(p, te);
   }
 
   @PutMapping("/patient")
   public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) throws InvalidPatientLinkException {
-    pls.getPatientLinkVerify(body.getPlid(), body.getDob()); // gotta verify!
-
     PatientLink pl = pls.getPatientLink(body.getPlid());
     UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
-    String patientId = pls.getPatientLinkVerify(body.getPlid(), body.getDob()).getInternalId().toString();
+    String patientId = pls.getPatientFromLink(body.getPlid()).getInternalId().toString();
     Person person = body.getData();
 
     return ps.updatePatient(facilityId, patientId, parseString(person.getLookupId()),
@@ -88,7 +94,7 @@ public class PatientExperienceController {
 
   @PutMapping("/questions")
   public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws InvalidPatientLinkException {
-    Person patient = pls.getPatientLinkVerify(body.getPlid(), body.getDob());
+    Person patient = pls.getPatientFromLink(body.getPlid());
     String patientID = patient.getInternalId().toString();
 
     AoEQuestions data = body.getData();
