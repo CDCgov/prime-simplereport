@@ -140,7 +140,7 @@ const AoEModalForm = ({
               {!smsSuccess ? (
                 <Button
                   className="margin-right-205"
-                  label="Text link"
+                  label="Text link to complete on smartphone"
                   type={"button"}
                   onClick={() => sendSms()}
                 />
