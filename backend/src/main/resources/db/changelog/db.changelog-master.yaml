@@ -1355,6 +1355,9 @@ databaseChangeLog:
       id: populate-specimen-tables
       author: bwarfield@cdc.gov
       comment: Populate specimen tables and relations based on existing data.
+      validCheckSum: # yes there are two of them because liquibase checksums are not platform-independent LOLsob.
+        - "8:824e942da27e8b5c9d965bf00d067d91" # Linux
+        - "8:ab7979e21fd696979931d82120bcbfab" # MacOS
       preConditions:
         # run this migration only if there is at least one row in device_type. If there is not, mark it as already run.
         - onSqlOutput: FAIL
@@ -1414,7 +1417,7 @@ databaseChangeLog:
             sql: |
               INSERT INTO ${database.defaultSchemaName}.facility_device_specimen_type
               (facility_id, device_specimen_type_id)
-              SELECT facility_id, ds.internal_id
+              SELECT DISTINCT facility_id, ds.internal_id
               FROM ${database.defaultSchemaName}.facility_device_type
                 JOIN ${database.defaultSchemaName}.device_specimen_type ds using(device_type_id);
 
@@ -1432,6 +1435,27 @@ databaseChangeLog:
               SET device_specimen_type_id = ds.internal_id
               FROM ${database.defaultSchemaName}.device_specimen_type ds
               WHERE ds.device_type_id = t.device_type_id;
+  - changeSet:
+      id: test-order-fixup
+      author: bwarfield@cdc.gov
+      comment: Populate test_order.device_type_id and device_specimen_type_id with a default when it was previously left empty.
+      preConditions:
+        # run this migration only if there is at least one row in test_order with no device_type_id.
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
+            expectedResult: 1
+      changes:
+        - sql:
+            remarks: Populate the device_type_id and device_specimen_type_id for test orders with the default_device_type_id from their facility.
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order t
+              SET device_type_id = f.default_device_type_id,
+                device_specimen_type_id = f.default_device_specimen_type_id
+              FROM ${database.defaultSchemaName}.facility f
+              WHERE f.internal_id = t.facility_id
+              AND t.device_type_id is null
   - changeSet:
       id: complete-specimen-column-additions
       author: bwarfield@cdc.gov
