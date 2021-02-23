@@ -185,9 +185,6 @@ const AoEModalForm = ({
           </>
         );
         break;
-      case "verbal":
-        innerContents = verbalForm;
-        break;
       default:
         innerContents = null;
         break;
