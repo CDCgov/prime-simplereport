@@ -121,7 +121,6 @@ const AoEModalForm = ({
     let innerContents = null;
     switch (modalView) {
       case "verbal":
-      default:
         innerContents = verbalForm;
         break;
       case "text":
