@@ -45,6 +45,9 @@ x-ref-data:
         constraints:
           nullable: false
 databaseChangeLog:
+  - property:
+      name: migrations_user_email
+      value: db-migrations@simplereport.gov
   - changeSet:
       id: define-enum-types
       author: bwarfield@cdc.gov
@@ -1210,3 +1213,257 @@ databaseChangeLog:
                   defaultValueBoolean: false
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-specimen-tables
+      author: bwarfield@cdc.gov
+      description: Introduce the tables necessary for tracking specimen types.
+      changes:
+        - createTable:
+            tableName: specimen_type
+            remarks: A type of specimen collection from a patient.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: name
+                  type: *string
+                  remarks: The name of this specimen type.
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__specimen_type__name
+              - column:
+                  name: type_code
+                  remarks: The SNOMED type code for this specimen type.
+                  type: *string
+                  constraints:
+                    nullable: false
+                    unique: true
+                    uniqueConstraintName: uk__specimen_type__type_code
+              - column:
+                  name: collection_location_name
+                  remarks: The collection location of this specimen type.
+                  type: *string
+              - column:
+                  name: collection_location_code
+                  remarks: The SNOMED code for the collection location of this specimen type.
+                  type: *string
+        - createTable:
+            tableName: device_specimen_type
+            remarks: A usable combination of device type and specimen type.
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+              - column: *soft_delete_column
+              - column:
+                  name: device_type_id
+                  remarks: The device type for this combination.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_specimen_type__device_type
+                    references: device_type
+              - column:
+                  name: specimen_type_id
+                  remarks: The specimen type for this combination.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__device_specimen_type__specimen_type
+                    references: specimen_type
+        - addUniqueConstraint:
+            tableName: device_specimen_type
+            constraintName: uk__device_specimen_type
+            columnNames: device_type_id, specimen_type_id
+        - createTable:
+            tableName: facility_device_specimen_type
+            remarks: Many-to-many table for device/specimen configuration at a facility.
+            columns:
+              - column:
+                  name: facility_id
+                  remarks: A facility at which this device/specimen combination is used.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__facility
+                    references: facility
+              - column:
+                  name: device_specimen_type_id
+                  remarks: A device/specimen combination that is allowed to be used at the facility.
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__facility_device_specimen_type__device_specimen_type
+                    references: device_specimen_type
+        - addUniqueConstraint:
+            tableName: facility_device_specimen_type
+            constraintName: uk__facility_device_specimen_type
+            columnNames: facility_id, device_specimen_type_id
+        - addColumn:
+            tableName: facility
+            columns:
+              - column:
+                  name: default_device_specimen_type_id
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__facility__default_device_specimen_type
+                    referencedTableName: device_specimen_type
+        - addColumn:
+            tableName: test_order
+            columns:
+              - column:
+                  name: device_specimen_type_id
+                  remarks: The device/specimen combination used to record the test result.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__test_order__device_specimen_type
+                    referencedTableName: device_specimen_type
+                    # will be made non-null in a subsequent migration
+        - addColumn:
+            tableName: test_event
+            columns:
+              - column:
+                  name: device_specimen_type_id
+                  remarks: The device/specimen combination used to record the test result.
+                  type: *idtype
+                  constraints:
+                    foreignKeyName: fk__test_event__device_specimen_type
+                    referencedTableName: device_specimen_type
+                    # will be made non-null in a subsequent migration
+  - changeSet:
+      id: create-migrations-user
+      author: bwarfield@cdc.gov
+      comment: Create a system-level user to attribute migration insert/updates to.
+      changes:
+        - sql:
+            remarks: Create migrations user to indicate records created by migration rather than by a human.
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.api_user
+              (internal_id, created_at, updated_at, is_deleted, last_seen, login_email, last_name)
+              VALUES (
+                gen_random_uuid(), now(), now(), false, null,
+                '${migrations_user_email}', 'Database Migration Process'
+              )
+  - changeSet:
+      id: populate-specimen-tables
+      author: bwarfield@cdc.gov
+      comment: Populate specimen tables and relations based on existing data.
+      validCheckSum: # yes there are two of them because liquibase checksums are not platform-independent LOLsob.
+        - "8:824e942da27e8b5c9d965bf00d067d91" # Linux
+        - "8:ab7979e21fd696979931d82120bcbfab" # MacOS
+      preConditions:
+        # run this migration only if there is at least one row in device_type. If there is not, mark it as already run.
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
+            expectedResult: 1
+      changes:
+        - sql:
+            remarks: Create in-use specimen types based on current device-type data.
+            sql: |
+              WITH swab_types_historical as (
+                select distinct swab_type as type_code from ${database.defaultSchemaName}.device_type
+              ),
+              migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}'
+              )
+              INSERT INTO ${database.defaultSchemaName}.specimen_type (name, type_code,
+                internal_id, created_by, created_at, updated_by, updated_at, is_deleted)
+              SELECT
+                'Auto-generated specimen type ' || type_code,
+                type_code,
+                gen_random_uuid(),
+                migrations_user_id,
+                now(),
+                migrations_user_id,
+                now(),
+                false
+              FROM swab_types_historical cross join migration_user
+        - sql:
+            remarks: Add device_specimen_type entries based on current device-type data.
+            sql: |
+              WITH device_swab_historical as (
+                SELECT dt.internal_id device_type_id, swt.internal_id specimen_type_id
+                FROM ${database.defaultSchemaName}.device_type dt
+                 JOIN ${database.defaultSchemaName}.specimen_type swt ON dt.swab_type = swt.type_code
+              ),
+              migration_user as (
+                SELECT internal_id as migrations_user_id
+                FROM ${database.defaultSchemaName}.api_user
+                WHERE login_email = '${migrations_user_email}'
+              )
+              INSERT INTO ${database.defaultSchemaName}.device_specimen_type
+              ( internal_id,
+                created_at, created_by, updated_at, updated_by, is_deleted,
+                device_type_id, specimen_type_id
+              )
+              SELECT
+                gen_random_uuid(),
+                now(), migrations_user_id, now(), migrations_user_id, false,
+                device_type_id, specimen_type_id
+              FROM device_swab_historical cross join migration_user;
+        - sql:
+            remarks: Populate facility_device_specimen_type table and (default) device_specimen_type_id columns in facility, test_type and test_order.
+            sql: |
+              INSERT INTO ${database.defaultSchemaName}.facility_device_specimen_type
+              (facility_id, device_specimen_type_id)
+              SELECT DISTINCT facility_id, ds.internal_id
+              FROM ${database.defaultSchemaName}.facility_device_type
+                JOIN ${database.defaultSchemaName}.device_specimen_type ds using(device_type_id);
+
+              UPDATE ${database.defaultSchemaName}.facility f
+              SET default_device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
+              WHERE ds.device_type_id = f.default_device_type_id;
+
+              UPDATE ${database.defaultSchemaName}.test_order t
+              SET device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
+              WHERE ds.device_type_id = t.device_type_id;
+
+              UPDATE ${database.defaultSchemaName}.test_event t
+              SET device_specimen_type_id = ds.internal_id
+              FROM ${database.defaultSchemaName}.device_specimen_type ds
+              WHERE ds.device_type_id = t.device_type_id;
+  - changeSet:
+      id: test-order-fixup
+      author: bwarfield@cdc.gov
+      comment: Populate test_order.device_type_id and device_specimen_type_id with a default when it was previously left empty.
+      preConditions:
+        # run this migration only if there is at least one row in test_order with no device_type_id.
+        - onSqlOutput: FAIL
+        - onFail: MARK_RAN
+        - sqlCheck:
+            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
+            expectedResult: 1
+      changes:
+        - sql:
+            remarks: Populate the device_type_id and device_specimen_type_id for test orders with the default_device_type_id from their facility.
+            sql: |
+              UPDATE ${database.defaultSchemaName}.test_order t
+              SET device_type_id = f.default_device_type_id,
+                device_specimen_type_id = f.default_device_specimen_type_id
+              FROM ${database.defaultSchemaName}.facility f
+              WHERE f.internal_id = t.facility_id
+              AND t.device_type_id is null
+  - changeSet:
+      id: complete-specimen-column-additions
+      author: bwarfield@cdc.gov
+      comment: Update constraints for newly-added columns referencing device_specimen_type.
+      changes:
+        - addNotNullConstraint:
+            tableName: test_event
+            columnName: device_specimen_type_id
+        - addNotNullConstraint:
+            tableName: test_order
+            columnName: device_specimen_type_id

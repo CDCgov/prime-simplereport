@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export const areAnswersComplete = (answers) => {
   if (!answers.noSymptoms) {
@@ -25,7 +25,11 @@ export const areAnswersComplete = (answers) => {
 };
 
 const AskOnEntryTag = ({ aoeAnswers }) => {
-  if (areAnswersComplete(aoeAnswers)) {
+  const [answers, setAnswers] = useState(aoeAnswers);
+  useEffect(() => {
+    setAnswers(aoeAnswers);
+  }, [aoeAnswers]);
+  if (areAnswersComplete(answers)) {
     return <span className="usa-tag bg-green">COMPLETED</span>;
   } else {
     return <span className="usa-tag">PENDING</span>;

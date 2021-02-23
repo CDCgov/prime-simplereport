@@ -1,4 +1,4 @@
-import { Route, Redirect, RouteComponentProps } from "react-router-dom";
+import { Route, RouteComponentProps } from "react-router-dom";
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
@@ -14,7 +14,6 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
     <main className="prime-home">
       <div className="grid-container">
         <SettingsNav />
-        <Route exact path={match.url} component={ManageOrganizationContainer} />
         <Route
           path={match.url + "/facilities"}
           component={ManageFacilitiesContainer}
@@ -32,7 +31,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
           )}
         />
         <Route path={match.url + "/users"} component={ManageUsersContainer} />
-        <Redirect exact to={"/settings"} />
+        <Route component={ManageOrganizationContainer} />
       </div>
     </main>
   );

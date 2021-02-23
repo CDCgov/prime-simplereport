@@ -6,10 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 
@@ -19,6 +21,7 @@ public class InitialSetupProperties {
 
     private Organization organization;
     private Provider provider;
+    private List<SpecimenType> specimenTypes;
     private List<? extends DeviceType> deviceTypes;
     private List<String> configuredDeviceTypes;
     private ConfigFacility facility;
@@ -26,10 +29,12 @@ public class InitialSetupProperties {
     public InitialSetupProperties(Organization organization,
             ConfigFacility facility,
             Provider provider,
+            List<SpecimenType> specimenTypes,
             List<DeviceType> deviceTypes,
             List<String> configuredDeviceTypes) {
         this.organization = organization;
         this.provider = provider;
+        this.specimenTypes = specimenTypes;
         this.deviceTypes = deviceTypes;
         this.configuredDeviceTypes = configuredDeviceTypes;
         this.facility = facility;
@@ -53,7 +58,14 @@ public class InitialSetupProperties {
                 provider.getProviderId(), provider.getAddress(), provider.getTelephone());
     }
 
-    public List<? extends DeviceType> getDeviceTypes() {
+    public List<SpecimenType> getSpecimenTypes() {
+        return specimenTypes.stream()
+                .map(s -> new SpecimenType(s.getName(), s.getTypeCode(), s.getCollectionLocationName(),
+                        s.getCollectionLocationCode()))
+                .collect(Collectors.toList());
+    }
+
+    public List<DeviceType> getDeviceTypes() {
         return deviceTypes.stream()
             .map(d->new DeviceType(d.getName(), d.getManufacturer(), d.getModel(), d.getLoincCode(), d.getSwabType()))
             .collect(Collectors.toList())
@@ -77,11 +89,9 @@ public class InitialSetupProperties {
             this.email = email;
         }
 
-        public Facility makeRealFacility(Organization org, Provider p, DeviceType defaultDeviceType,
-                List<DeviceType> configured) {
-            Facility f = new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceType,
-                    configured);
-            return f;
+        public Facility makeRealFacility(Organization org, Provider p, DeviceSpecimenType defaultDeviceSpec,
+                List<DeviceSpecimenType> configured) {
+            return new Facility(org, name, cliaNumber, address, telephone, email, p, defaultDeviceSpec, configured);
         }
 
         public String getName() {

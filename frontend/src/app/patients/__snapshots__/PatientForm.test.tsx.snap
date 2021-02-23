@@ -154,7 +154,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-label"
               htmlFor="drop-test-1"
             >
-              Role (optional)
+              Role
               <span
                 className="usa-hint"
               >
@@ -793,6 +793,13 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
         >
           Demographics
         </legend>
+        <button
+          className="usa-button usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
+          onClick={[Function]}
+          type="button"
+        >
+          Why are we asking for this information?
+        </button>
         <fieldset
           className="usa-fieldset prime-radios"
         >

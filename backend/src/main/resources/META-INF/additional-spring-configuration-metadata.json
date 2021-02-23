@@ -1,43 +1,8 @@
 {"properties": [
   {
-    "name": "simple-report-initialization.organization.org-name",
-    "type": "java.lang.String",
-    "description": "The human-readable name for the organization"
-  },
-  {
-    "name": "simple-report-initialization.organization.external-id",
-    "type": "java.lang.String",
-    "description": "Durable external ID (for authorization management) of the organization"
-  },
-  {
-    "name": "simple-report-initialization.configured-device-types",
-    "type": "java.util.List<java.lang.String>",
-    "description": "The devices to be configured at the default facility"
-  },
-  {
-    "name": "simple-report-initialization.provider",
-    "type": "gov.cdc.usds.simplereport.db.model.Provider",
-    "description": "The ordering provider'"
-  },
-  {
-    "name": "simple-report-initialization.facility.address",
-    "type": "gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress",
-    "description": "facility address'"
-  },
-  {
-    "name": "simple-report-initialization.provider.address",
-    "type": "gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress",
-    "description": "The street address of the ordering provider"
-  },
-  {
-    "name": "simple-report-initialization.device-types",
-    "type": "java.util.List<gov.cdc.usds.simplereport.db.model.DeviceType>",
-    "description": "A description for 'simple-report-initialization.device-types'"
-  },
-  {
-    "name": "simple-report.authorization.role-claim",
-    "type": "java.lang.String",
-    "description": "A description for 'simple-report.authorization.role-claim'"
+    "name": "simple-report-initialization",
+    "type": "gov.cdc.usds.simplereport.config.InitialSetupProperties",
+    "description": "The full configuration for initial setup on a blank database."
   },
   {
     "name": "simple-report.data-hub",
@@ -46,8 +11,8 @@
   },
   {
     "name": "simple-report.authorization",
-    "type": "gov.cdc.usds.simplereport.config.AuthorizationConfiguration",
-    "description": "A description for 'simple-report.authorization.superuser-claim'"
+    "type": "gov.cdc.usds.simplereport.config.AuthorizationProperties",
+    "description": "Properties for configuring authorization claims mapping from the IDP"
   },
   {
     "name": "graphql.datetime.scalars",
