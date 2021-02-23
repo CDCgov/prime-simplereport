@@ -140,7 +140,7 @@ const AoEModalForm = ({
               {!smsSuccess ? (
                 <Button
                   className="margin-right-205"
-                  label="Text link"
+                  label="Text link to complete on smartphone"
                   type={"button"}
                   onClick={() => sendSms()}
                 />
@@ -220,7 +220,7 @@ const AoEModalForm = ({
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      contentLabel="Time of Test Questions"
+      contentLabel="Test questionnaire"
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
