@@ -258,12 +258,32 @@ const PatientForm = (props: Props) => {
 
   const validateField = (e: { target: any }, setState = true) => {
     const { target } = e;
-    const { name, value } = target;
+    const { name } = target;
+    let value = target.value;
+    let label = (target.labels as any)[0].firstChild.data;
+
+    // For radio groups, value should indicate whether one radio is checked or not
+    if (
+      name === "residentCongregateSetting" ||
+      name === "employedInHealthcare"
+    ) {
+      const radioInputs = target.parentElement.parentElement.getElementsByTagName(
+        "input"
+      );
+      value = [0, 1].map((i) => radioInputs.item(i).checked).filter((v) => v)
+        .length
+        ? true
+        : null;
+      // I'm sorry 😭
+      label =
+        target.parentElement.parentElement.parentElement.firstChild.firstChild
+          .textContent;
+    }
+
     const required: boolean =
       target.getAttribute("aria-required") === "true" ||
       target.getAttribute("data-required") === "true";
     const format: string | undefined = target.getAttribute("data-format");
-    const label = (target.labels as any)[0].firstChild.data;
     let errorMessage = undefined;
     if ((!value || value === "- Select -") && required) {
       errorMessage = `${label} is required`;
