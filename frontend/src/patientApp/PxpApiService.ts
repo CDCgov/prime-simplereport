@@ -5,7 +5,10 @@ const headers = {
 };
 
 export class PxpApi {
-  static validateDateOfBirth(patientLinkId: string, dateOfBirth: string): Promise<any> {
+  static validateDateOfBirth(
+    patientLinkId: string,
+    dateOfBirth: string
+  ): Promise<any> {
     return fetch(`${API_URL}/link/verify`, {
       method: "put",
       mode: "cors",
@@ -22,7 +25,11 @@ export class PxpApi {
     });
   }
 
-  static submitQuestions(patientLinkId: string, dateOfBirth: string, data: any) {
+  static submitQuestions(
+    patientLinkId: string,
+    dateOfBirth: string,
+    data: any
+  ) {
     return fetch(`${API_URL}/questions`, {
       method: "put",
       mode: "cors",
