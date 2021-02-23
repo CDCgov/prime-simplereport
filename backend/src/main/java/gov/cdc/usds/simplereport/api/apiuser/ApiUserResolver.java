@@ -28,6 +28,6 @@ public class ApiUserResolver implements GraphQLQueryResolver  {
 
 	public List<User> getUsers() {
 		return _userService.getUsersInCurrentOrg().stream()
-				.map(u -> new User(u)).collect(Collectors.toList());
+				.map(User::new).collect(Collectors.toList());
 	}
 }
