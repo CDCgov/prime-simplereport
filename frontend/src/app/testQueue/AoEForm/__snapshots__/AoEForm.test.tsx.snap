@@ -518,6 +518,7 @@ exports[`AoEForm on data loaded renders 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_yes_0"
                 name="most_recent_flag"
@@ -538,6 +539,7 @@ exports[`AoEForm on data loaded renders 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_no_1"
                 name="most_recent_flag"

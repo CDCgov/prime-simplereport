@@ -196,6 +196,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           </span>
                         </label>
                         <select
+                          aria-required="false"
                           class="usa-select"
                           id="drop-test-1"
                           name="testDevice"
@@ -289,6 +290,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_POSITIVE_0"
                         name="covid-test-result-abc"
                         type="radio"
@@ -306,6 +308,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_NEGATIVE_1"
                         name="covid-test-result-abc"
                         type="radio"
@@ -323,6 +326,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_UNDETERMINED_2"
                         name="covid-test-result-abc"
                         type="radio"
@@ -506,6 +510,7 @@ exports[`TestQueue should render the test queue 1`] = `
                           </span>
                         </label>
                         <select
+                          aria-required="false"
                           class="usa-select"
                           id="drop-test-1"
                           name="testDevice"
@@ -599,6 +604,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_POSITIVE_0"
                         name="covid-test-result-def"
                         type="radio"
@@ -616,6 +622,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_NEGATIVE_1"
                         name="covid-test-result-def"
                         type="radio"
@@ -633,6 +640,7 @@ exports[`TestQueue should render the test queue 1`] = `
                     >
                       <input
                         class="usa-radio__input"
+                        data-required="false"
                         id="radio-test-1_UNDETERMINED_2"
                         name="covid-test-result-def"
                         type="radio"
