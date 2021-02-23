@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
@@ -74,17 +73,13 @@ const Header: React.FC<{}> = () => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <Link
-              to={`/queue/?facility=${facility.id}`}
-              title="Home"
-              aria-label="Home"
-            >
+            <LinkWithQuery to={`/queue`} title="Home" aria-label="Home">
               <img
                 className="width-card desktop:width-full"
                 src={siteLogo}
                 alt="{process.env.REACT_APP_TITLE}"
               />
-            </Link>
+            </LinkWithQuery>
             <div className="prime-organization-name">{organization.name}</div>
           </div>
           <button
