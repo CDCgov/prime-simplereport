@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
@@ -128,15 +128,13 @@ public class OrganizationService {
         String orderingProviderState,
         String orderingProviderZipCode,
         String orderingProviderTelephone,
-        List<DeviceType> devices,
-        DeviceType defaultDeviceType
+            DeviceTypeHolder deviceHolder
     ) {
         Facility facility = this.getFacilityInCurrentOrg(facilityId);
         facility.setFacilityName(testingFacilityName);
         facility.setCliaNumber(cliaNumber);
         facility.setTelephone(phone);
         facility.setEmail(email);
-        facility.addDefaultDeviceType(defaultDeviceType);
         StreetAddress af = facility.getAddress() == null ? new StreetAddress(
             street,
             streetTwo,
@@ -175,16 +173,16 @@ public class OrganizationService {
         a.setPostalCode(orderingProviderZipCode);
         p.setAddress(a);
 
+        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceTypes()) {
+            facility.addDeviceSpecimenType(ds);
+        }
         // remove all existing devices
-        for(DeviceType d : facility.getDeviceTypes()) {
-            facility.removeDeviceType(d);
+        for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
+            if (!deviceHolder.getConfiguredDeviceTypes().contains(ds)) {
+                facility.removeDeviceSpecimenType(ds);
+            }
         }
-
-        // add new devices
-        for(DeviceType d : devices) {
-            facility.addDeviceType(d);
-        }
-        facility.setDefaultDeviceType(defaultDeviceType);
+        facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceType());
         return _facilityRepo.save(facility);
     }
 

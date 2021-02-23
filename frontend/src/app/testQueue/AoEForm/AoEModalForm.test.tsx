@@ -6,12 +6,7 @@ import AoEModalForm, { LAST_TEST_QUERY } from "./AoEModalForm";
 import ReactDOM from "react-dom";
 
 jest.mock("./AoEForm", () => () => <></>);
-jest.mock("react-modal", () => (data: any) => (
-  <div>
-    {JSON.stringify(data.patient, null, 2)}
-    dummy modal for state test
-  </div>
-));
+jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
 
 const mocks = [
   {
@@ -53,6 +48,8 @@ describe("AoEModalForm", () => {
           patient={{
             internalId: "123",
             gender: "male",
+            firstName: "Steve",
+            lastName: "Jobs",
           }}
           loadState={{
             noSymptoms: false,
@@ -64,7 +61,6 @@ describe("AoEModalForm", () => {
             firstTest: false,
             pregnancy: "",
           }}
-          canAddToTestQueue={true}
           saveCallback={jest.fn()}
         />
       </MockedProvider>
@@ -78,14 +74,27 @@ describe("AoEModalForm", () => {
         await new Promise((resolve) => setTimeout(resolve, 0));
       });
     });
+
     it("renders", async () => {
       expect(component.toJSON()).toMatchSnapshot();
     });
-  });
 
-  describe("on loading", () => {
-    it("is null", async () => {
-      expect(component.toJSON()).toBeNull();
+    it("has a distinct view for 'text'", async () => {
+      act(() => {
+        component.root
+          .findByProps({ name: "qr-code" })
+          .props.onChange({ currentTarget: { value: "text" } });
+      });
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+
+    it("has a distinct view for 'verbal'", async () => {
+      act(() => {
+        component.root
+          .findByProps({ name: "qr-code" })
+          .props.onChange({ currentTarget: { value: "verbal" } });
+      });
+      expect(component.toJSON()).toMatchSnapshot();
     });
   });
 });

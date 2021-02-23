@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -12,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
@@ -31,6 +33,7 @@ public class TestEventExport {
 	private AskOnEntrySurvey survey;
 	private Provider provider;
 	private Facility facility;
+    private SpecimenType specimenType;
 	private DeviceType device;
 
 	public TestEventExport(TestEvent testEvent) {
@@ -40,13 +43,15 @@ public class TestEventExport {
 		this.survey = testEvent.getSurveyData();
 		this.provider = testEvent.getProviderData();
 		this.facility = testEvent.getFacility();
-		this.device = testEvent.getDeviceType();
+        this.specimenType = testEvent.getDeviceSpecimen().getSpecimenType();
+		this.device = testEvent.getDeviceSpecimen().getDeviceType();
 	}
 
 	private String genderUnknown = "U";
 	private String ethnicityUnknown = "U";
 	private String raceUnknown = "UNK";
-	private String nasopharyngealStructureCode = "71836000";
+    private static final String DEFAULT_LOCATION_CODE = "53342003"; // http://snomed.info/id/53342003
+                                                                    // "Internal nose structure"
 	// values pulled from https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/common.valuesets
 	private Map<String, String> genderMap = Map.of(
 		"male", "M",
@@ -429,12 +434,13 @@ public class TestEventExport {
 
 	@JsonProperty("Specimen_source_site_code")
 	public String getSpecimenSourceSiteCode() {
-		return nasopharyngealStructureCode;
+        return Optional.ofNullable(specimenType.getCollectionLocationCode())
+                .orElse(DEFAULT_LOCATION_CODE);
 	}
 
 	@JsonProperty("Specimen_type_code")
 	public String getSpecimenTypeCode() {
-		return device.getSwabType();
+        return specimenType.getTypeCode();
 	}
 
 	@JsonProperty("Instrument_ID")
