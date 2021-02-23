@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String defaultDeviceId
                 ) {
         _os.assertFacilityNameAvailable(testingFacilityName);
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
@@ -92,7 +92,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderTelephone,
                                    List<String> deviceIds,
                                    String defaultDeviceId) throws Exception {
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         Facility facility = _os.updateFacility(
           facilityId,
           testingFacilityName,
@@ -130,7 +130,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String orderingProviderCity, String orderingProviderCounty, String orderingProviderState,
             String orderingProviderZipCode, String orderingProviderTelephone, List<String> deviceIds,
             String defaultDeviceId) {
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, Translators.parseState(orderingProviderState), orderingProviderZipCode, orderingProviderCounty);

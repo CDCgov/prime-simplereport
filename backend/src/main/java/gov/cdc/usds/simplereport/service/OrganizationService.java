@@ -26,7 +26,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 
 @Service
 @Transactional(readOnly = true)
@@ -128,7 +128,7 @@ public class OrganizationService {
         String orderingProviderState,
         String orderingProviderZipCode,
         String orderingProviderTelephone,
-            DeviceTypeHolder deviceHolder
+            DeviceSpecimenTypeHolder deviceHolder
     ) {
         Facility facility = this.getFacilityInCurrentOrg(facilityId);
         facility.setFacilityName(testingFacilityName);
@@ -173,29 +173,29 @@ public class OrganizationService {
         a.setPostalCode(orderingProviderZipCode);
         p.setAddress(a);
 
-        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceTypes()) {
+        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceSpecimenTypes()) {
             facility.addDeviceSpecimenType(ds);
         }
         // remove all existing devices
         for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
-            if (!deviceHolder.getConfiguredDeviceTypes().contains(ds)) {
+            if (!deviceHolder.getConfiguredDeviceSpecimenTypes().contains(ds)) {
                 facility.removeDeviceSpecimenType(ds);
             }
         }
-        facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceType());
+        facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceSpecimenType());
         return _facilityRepo.save(facility);
     }
 
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
-            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceTypeHolder deviceTypes,
+            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceSpecimenTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
-                orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
+                orderingProvider, deviceTypes.getDefaultDeviceSpecimenType(), deviceTypes.getConfiguredDeviceSpecimenTypes());
         _facilityRepo.save(facility);
         _oktaRepo.createOrganization(name, externalId);
         return org;
@@ -212,7 +212,7 @@ public class OrganizationService {
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditFacility
     public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
-            DeviceTypeHolder deviceTypes,
+            DeviceSpecimenTypeHolder deviceTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
@@ -221,7 +221,7 @@ public class OrganizationService {
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,
             orderingProvider,
-            deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
+            deviceTypes.getDefaultDeviceSpecimenType(), deviceTypes.getConfiguredDeviceSpecimenTypes());
         return _facilityRepo.save(facility);
     }
 }

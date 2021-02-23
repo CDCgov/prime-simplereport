@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
@@ -112,7 +112,7 @@ public class DeviceTypeService {
         return dt;
     }
 
-    public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
+    public DeviceSpecimenTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
         if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
             throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
         }
@@ -125,6 +125,6 @@ public class DeviceTypeService {
             .findFirst()
             .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
             ;
-        return new DeviceTypeHolder(defaultType, configuredTypes);
+        return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
     }
 }

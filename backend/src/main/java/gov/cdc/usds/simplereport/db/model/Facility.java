@@ -22,80 +22,78 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 @Entity
 public class Facility extends OrganizationScopedEternalEntity {
 
-	@Column(nullable = false, unique = false) // unique within an organization only
-	private String facilityName;
+    @Column(nullable = false, unique = false) // unique within an organization only
+    private String facilityName;
 
-	// these are common to all the children of the immediate base class, but ...
-	@Embedded
-	private StreetAddress address;
-	@Column
-	private String telephone;
+    // these are common to all the children of the immediate base class, but ...
+    @Embedded
+    private StreetAddress address;
+    @Column
+    private String telephone;
 
-	@Column
-	private String email;
+    @Column
+    private String email;
 
-	@Column
-	private String cliaNumber;
+    @Column
+    private String cliaNumber;
 
-	@OneToOne(optional=false)
-	@JoinColumn(name = "ordering_provider_id", nullable = false)
-	private Provider orderingProvider;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "ordering_provider_id", nullable = false)
+    private Provider orderingProvider;
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "default_device_specimen_type_id")
     private DeviceSpecimenType defaultDeviceSpecimen;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "facility_device_specimen_type",
-            joinColumns = @JoinColumn(name = "facility_id"),
-            inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id")
-    )
+    @JoinTable(name = "facility_device_specimen_type", joinColumns = @JoinColumn(name = "facility_id"), inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
     private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
-    protected Facility() {/* for hibernate */}
+    protected Facility() {
+        /* for hibernate */}
 
-	public Facility(Organization org, String facilityName, String cliaNumber, StreetAddress facilityAddress,
-			String phone, String email, Provider orderingProvider, DeviceSpecimenType defaultDeviceSpecimen,
-			List<DeviceSpecimenType> configuredDeviceSpecimens) {
-		super(org);
-		this.facilityName = facilityName;
-		this.cliaNumber = cliaNumber;
-		this.address = facilityAddress;
-		this.telephone = phone;
-		this.email = email;
-		this.orderingProvider = orderingProvider;
+    public Facility(Organization org, String facilityName, String cliaNumber, StreetAddress facilityAddress,
+            String phone, String email, Provider orderingProvider, DeviceSpecimenType defaultDeviceSpecimen,
+            List<DeviceSpecimenType> configuredDeviceSpecimens) {
+        super(org);
+        this.facilityName = facilityName;
+        this.cliaNumber = cliaNumber;
+        this.address = facilityAddress;
+        this.telephone = phone;
+        this.email = email;
+        this.orderingProvider = orderingProvider;
         this.defaultDeviceSpecimen = defaultDeviceSpecimen;
-		if (defaultDeviceSpecimen != null) {
+        if (defaultDeviceSpecimen != null) {
             this.configuredDeviceSpecimenTypes.add(defaultDeviceSpecimen);
-		}
+        }
         this.configuredDeviceSpecimenTypes.addAll(configuredDeviceSpecimens);
-	}
+    }
 
-	public void setFacilityName(String facilityName) {
-		this.facilityName = facilityName;
-	}
+    public void setFacilityName(String facilityName) {
+        this.facilityName = facilityName;
+    }
 
-	public String getFacilityName() {
-		return facilityName;
-	}
+    public String getFacilityName() {
+        return facilityName;
+    }
 
     public DeviceSpecimenType getDefaultDeviceSpecimen() {
         return defaultDeviceSpecimen;
     }
 
-	public DeviceType getDefaultDeviceType() {
+    public DeviceType getDefaultDeviceType() {
         return defaultDeviceSpecimen == null ? null : defaultDeviceSpecimen.getDeviceType();
-	}
+    }
 
-	public List<DeviceType> getDeviceTypes() {
-		// this might be better done on the DB side, but that seems like a recipe for weird behaviors
+    public List<DeviceType> getDeviceTypes() {
+        // this might be better done on the DB side, but that seems like a recipe for
+        // weird behaviors
         return configuredDeviceSpecimenTypes.stream()
-			.filter(e -> !e.isDeleted())
+                .filter(e -> !e.isDeleted())
                 .map(DeviceSpecimenType::getDeviceType)
                 .filter(e -> !e.isDeleted())
-			.collect(Collectors.toList());
-	}
+                .collect(Collectors.toList());
+    }
 
     public List<DeviceSpecimenType> getDeviceSpecimenTypes() {
         return configuredDeviceSpecimenTypes.stream()
@@ -130,45 +128,45 @@ public class Facility extends OrganizationScopedEternalEntity {
                 break;
             }
         }
-	}
+    }
 
-	public String getCliaNumber() {
-		return this.cliaNumber;
-	}
+    public String getCliaNumber() {
+        return this.cliaNumber;
+    }
 
-	public void setCliaNumber(String cliaNumber) {
-		this.cliaNumber = cliaNumber;
-	}
+    public void setCliaNumber(String cliaNumber) {
+        this.cliaNumber = cliaNumber;
+    }
 
-	public Provider getOrderingProvider() {
-		return orderingProvider;
-	}
+    public Provider getOrderingProvider() {
+        return orderingProvider;
+    }
 
-	public void setOrderingProvider(Provider orderingProvider) {
-		this.orderingProvider = orderingProvider;
-	}
+    public void setOrderingProvider(Provider orderingProvider) {
+        this.orderingProvider = orderingProvider;
+    }
 
-	public StreetAddress getAddress() {
-		return address;
-	}
+    public StreetAddress getAddress() {
+        return address;
+    }
 
-	public void setAddress(StreetAddress address) {
-		this.address = address;
-	}
+    public void setAddress(StreetAddress address) {
+        this.address = address;
+    }
 
-	public String getTelephone() {
-		return telephone;
-	}
+    public String getTelephone() {
+        return telephone;
+    }
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }
