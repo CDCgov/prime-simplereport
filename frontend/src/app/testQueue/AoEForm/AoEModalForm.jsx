@@ -92,10 +92,113 @@ const AoEModalForm = ({
     </div>
   );
 
-  function sendSms() {
-    // TODO: implement SMS sending
+  const sendSms = () => {
     setSmsSuccess(true);
   }
+
+  const verbalForm = (<AoEForm
+    saveButtonText="Continue"
+    onClose={onClose}
+    patient={patient}
+    loadState={loadState}
+    saveCallback={saveCallback}
+    isModal={true}
+    noValidation={true}
+    formRef={formRef}
+  />);
+
+  const modalContents = () => {
+    // the pre-patient-experience situation is way simpler!
+    if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== "true") {
+      return verbalForm;
+    } 
+    
+    let innerContents = null;
+    switch (modalView) {
+      case "verbal":
+        innerContents = verbalForm;
+        break;
+      case "text":
+        innerContents = (
+          <>
+            {smsSuccess && (
+              <div className="usa-alert usa-alert--success outline-0">
+                <div className="usa-alert__body">
+                  <h3 className="usa-alert__heading">Text message sent</h3>
+                  <p className="usa-alert__text">
+                    The link was sent to {patient.telephone}
+                  </p>
+                </div>
+              </div>
+            )}
+            <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+              {!smsSuccess ? (
+                <Button
+                  className="margin-right-205"
+                  label="Text link"
+                  type={"button"}
+                  onClick={() => sendSms()}
+                />
+              ) : (
+                  <Button
+                    className="margin-right-205"
+                    label="Continue"
+                    type={"button"}
+                    onClick={() => continueModal()}
+                  />
+                )}
+            </div>
+          </>
+        );
+        break;
+      case "smartphone":
+        innerContents = (
+          <>
+            <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
+              <div className="text-center">
+                <p className="font-body-lg margin-y-0">
+                  Point your camera at the QR code <br />
+                to access the questionnaire
+              </p>
+                <div
+                  className="margin-top-205"
+                  id="patient-link-qr-code"
+                  data-patient-link={patientLink}
+                >
+                  <QRCode value={patientLink} size="190" />
+                </div>
+              </div>
+            </section>
+            <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+              <Button
+                className="margin-right-205"
+                label={saveButtonText}
+                type={"button"}
+                onClick={() => continueModal()}
+              />
+            </div>
+          </>
+        );
+        break;
+    }
+
+    return (
+      <>
+        <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
+          Test questionnaire
+      </h2>
+        <RadioGroup
+          legend="How would you like to complete the questionnaire?"
+          name="qr-code"
+          type="radio"
+          onChange={(evt) => chooseModalView(evt.currentTarget.value)}
+          buttons={modalViewValues}
+          selectedRadio={modalView}
+          className="margin-top-205"
+        />
+        { innerContents}
+      </>);
+  };
 
   return (
     <Modal
@@ -121,104 +224,7 @@ const AoEModalForm = ({
         {buttonGroup}
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
-      {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
-        <>
-          <h2 className="font-heading-lg margin-top-205 margin-bottom-0">
-            Test questionnaire
-          </h2>
-          <RadioGroup
-            legend="How would you like to complete the questionnaire?"
-            name="qr-code"
-            type="radio"
-            onChange={(evt) => chooseModalView(evt.currentTarget.value)}
-            buttons={modalViewValues}
-            selectedRadio={modalView}
-            className="margin-top-205"
-          />
-          {modalView === "text" && (
-            <>
-              {smsSuccess ? (
-                // TODO: use Alert component once they can support standard alerts
-                <div className="usa-alert usa-alert--success outline-0">
-                  <div className="usa-alert__body">
-                    <h3 className="usa-alert__heading">Text message sent</h3>
-                    <p className="usa-alert__text">
-                      The link was sent to {patient.telephone}
-                    </p>
-                  </div>
-                </div>
-              ) : null}
-              <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-                {!smsSuccess ? (
-                  <Button
-                    className="margin-right-205"
-                    label="Text link"
-                    type={"button"}
-                    onClick={() => sendSms()}
-                  />
-                ) : (
-                  <Button
-                    className="margin-right-205"
-                    label="Continue"
-                    type={"button"}
-                    onClick={() => continueModal()}
-                  />
-                )}
-              </div>
-            </>
-          )}
-          {modalView === "smartphone" && (
-            <>
-              <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
-                <div className="text-center">
-                  <p className="font-body-lg margin-y-0">
-                    Point your camera at the QR code <br />
-                    to access the questionnaire
-                  </p>
-                  <div
-                    className="margin-top-205"
-                    id="patient-link-qr-code"
-                    data-patient-link={patientLink}
-                  >
-                    <QRCode value={patientLink} size="190" />
-                  </div>
-                </div>
-              </section>
-              <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-                <Button
-                  className="margin-right-205"
-                  label={saveButtonText}
-                  type={"button"}
-                  onClick={() => continueModal()}
-                />
-              </div>
-            </>
-          )}
-          {modalView === "verbal" && (
-            <AoEForm
-              saveButtonText="Continue"
-              onClose={onClose}
-              patient={patient}
-              loadState={loadState}
-              saveCallback={saveCallback}
-              isModal={true}
-              noValidation={true}
-              formRef={formRef}
-            />
-          )}
-        </>
-      ) : (
-        <AoEForm
-          saveButtonText="Continue"
-          onClose={onClose}
-          patient={patient}
-          loadState={loadState}
-          saveCallback={saveCallback}
-          isModal={true}
-          noValidation={true}
-          formRef={formRef}
-        />
-      )}
+      { modalContents() }
     </Modal>
   );
 };
