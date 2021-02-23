@@ -57,7 +57,6 @@ public class ApiUserService {
         _oktaRepo = oktaRepo;
     }
 
-    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public UserInfo createUser(String username, 
                                String firstName, 
@@ -70,7 +69,6 @@ public class ApiUserService {
         return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
     }
 
-    @Transactional
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public UserInfo createUserInCurrentOrg(String username, 
                                            String firstName, 
@@ -104,7 +102,6 @@ public class ApiUserService {
         return user;
     }
 
-    @Transactional
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
     public UserInfo updateUser(UUID userId, 
                               String username, 
@@ -149,7 +146,6 @@ public class ApiUserService {
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-    @Transactional
     public UserInfo setIsDeleted(UUID userId, boolean deleted) {
         ApiUser apiUser = getApiUser(userId);
         apiUser.setIsDeleted(deleted);
@@ -198,7 +194,7 @@ public class ApiUserService {
         return getCurrentApiUser();
     }
 
-    public ApiUser getCurrentApiUser() {
+    private ApiUser getCurrentApiUser() {
         IdentityAttributes userIdentity = _supplier.get();
         Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
         if (found.isPresent()) {
