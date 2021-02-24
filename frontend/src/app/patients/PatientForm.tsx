@@ -259,10 +259,20 @@ const PatientForm = (props: Props) => {
     setPatient({ ...patient, [e.target.name]: value });
   };
 
-  const validateField = (e: { target: any }, setState = true) => {
-    const { target } = e;
+  /**
+   * This function runs validation checks on form inputs.
+   * It can be attached to the onBlur prop of a TextInput, Dropdown, or RadioGroup
+   * @param {(HTMLInputElement|HTMLSelectElement)} target - The input to validate.
+   * @param {boolean} [setState=true] - Whether or not to update the state of the errors variable immediately. Defaults to true.
+   * @returns {(string|undefined)} The resulting error message for the input after validation
+   */
+  const validateField = (
+    { target }: { target: HTMLInputElement | HTMLSelectElement },
+    setState = true
+  ) => {
+    // Get input name, value, and label
     const { name } = target;
-    let value = target.value;
+    let value: string | null = target.value;
     let label = (target.labels as any)[0].firstChild.data;
 
     // For radio groups, value should indicate whether one radio is checked or not
@@ -270,47 +280,66 @@ const PatientForm = (props: Props) => {
       name === "residentCongregateSetting" ||
       name === "employedInHealthcare"
     ) {
-      const radioInputs = target.parentElement.parentElement.getElementsByTagName(
+      // Two parents above the input is div.usa-form-group, which contains both radio buttons
+      const radioInputs = target?.parentElement?.parentElement?.getElementsByTagName(
         "input"
       );
-      value = [0, 1].map((i) => radioInputs.item(i).checked).filter((v) => v)
+      // If either is checked, return a value, if neither is checked, value is null
+      value = [0, 1].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
         .length
-        ? true
+        ? "true"
         : null;
-      // I'm sorry 😭
+      // The label for a RadioGroup comes from the text in fieldset.prime-radios legend
       label =
-        target.parentElement.parentElement.parentElement.firstChild.firstChild
-          .textContent;
+        target?.parentElement?.parentElement?.parentElement?.firstChild
+          ?.firstChild?.textContent;
     }
 
+    // Get validation relevant properties of the input, required and format
     const required: boolean =
       target.getAttribute("aria-required") === "true" ||
       target.getAttribute("data-required") === "true";
-    const format: string | undefined = target.getAttribute("data-format");
+    const format: string | null = target.getAttribute("data-format");
+
+    // Initialize error message
     let errorMessage = undefined;
+
+    // Required validation check
     if ((!value || value === "- Select -") && required) {
       errorMessage = `${label} is required`;
       target.focus();
+      // Format validation check
     } else if (format) {
       const regex = new RegExp(format);
       if (value && !value.match(regex)) {
-        const formatMessage: string | undefined = target.getAttribute(
+        const formatMessage: string | null = target.getAttribute(
           "data-format-message"
         );
         errorMessage = formatMessage || `${label} has an incorrect format`;
         target.focus();
       }
     }
+
+    // Only set errors state variable if setState is true
+    // It should be false on form submit, since we are validating many fields at once
     if (setState) {
       setErrors({
         ...errors,
         [name]: errorMessage,
       });
     }
+
     return errorMessage;
   };
 
+  /**
+   * This function checks the current validation status of an input
+   * It should be attached to a TextInput, Dropdown, or RadioInput via the validationStatus prop
+   * @param {string} name - The name of the input to check.
+   * @returns {string} "success" if valid, "error" if invalid
+   */
   const validationStatus = (name: string) => {
+    // If the input has never been validated before, initialize a key into the errors state variable
     if (!(name in errors)) {
       setErrors({
         ...errors,
@@ -333,7 +362,10 @@ const PatientForm = (props: Props) => {
   const savePatientData = () => {
     // Validate all fields with validation set up
     const fieldsToValidate = Object.keys(errors).map(
-      (name) => document.getElementsByName(name)[0] as HTMLFormElement
+      (name) =>
+        document.getElementsByName(name)[0] as
+          | HTMLInputElement
+          | HTMLSelectElement
     );
     const newErrors: { [key: string]: string | undefined } = {};
     fieldsToValidate.forEach(
