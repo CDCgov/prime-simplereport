@@ -51,6 +51,7 @@ public abstract class BaseServiceTest<T> {
     protected void before() {
         clearDb();
         resetOkta();
+        initCurrentUser();
     }
 
     public void clearDb() {
@@ -65,8 +66,8 @@ public abstract class BaseServiceTest<T> {
         _initService.initAll();
     }
 
-    protected void initAuditor() {
-        _initService.initAuditor();
+    protected void initCurrentUser() {
+        _initService.initCurrentUser();
     }
 
     protected void reset() {

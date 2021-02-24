@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -35,10 +33,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String email,
             String organizationExternalID
                 ) {
-        ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
-        return new User(apiUser, orgRoles, isAdmin);
+        UserInfo user = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
+        return new User(user);
     }
     
     public User addUserToCurrentOrg(
@@ -48,10 +44,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String suffix,
             String email
                 ) {
-        ApiUser apiUser = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
-        return new User(apiUser, orgRoles, isAdmin);
+        UserInfo user = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix);
+        return new User(user);
     }
 
     public User updateUser(
@@ -62,10 +56,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String suffix,
             String email
                 ) {
-        ApiUser apiUser = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
-        Optional<OrganizationRoles> orgRoles = _us.getOrganizationRolesForUser(apiUser.getInternalId());
-        Boolean isAdmin = _us.isAdmin(apiUser);
-        return new User(apiUser, orgRoles, isAdmin);
+        UserInfo user = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
+        return new User(user);
     }
 
     public OrganizationRole updateUserRole(
@@ -77,12 +69,10 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
     public User setUserIsDeleted(
             UUID id,
-            Boolean deleted
+            boolean deleted
                 ) {
-        ApiUser apiUser = _us.setIsDeleted(id, deleted);
-        Optional<OrganizationRoles> orgRoles = Optional.empty();
-        Boolean isAdmin = _us.isAdmin(apiUser);
-        return new User(apiUser, orgRoles, isAdmin);
+        UserInfo user = _us.setIsDeleted(id, deleted);
+        return new User(user);
     }
 }
 
