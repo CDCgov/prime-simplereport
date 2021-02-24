@@ -7,7 +7,7 @@ import TermsOfService from "./TermsOfService";
 
 const mockStore = configureStore([]);
 
-describe("DOB", () => {
+describe("TermsOfService", () => {
   it("snapshot", () => {
     const store = mockStore({
       plid: "foo",
