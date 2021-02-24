@@ -231,7 +231,7 @@ See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-d
 ### Cloud Environments
 
 **Type**|**Frontend**|**API**|**Deployment**|**How to trigger**
-:-----:|:-----:|:-----:|:-----:
+:-----:|:-----:|:-----:|:-----:|:-----:
 Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
 Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
 Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
@@ -243,9 +243,10 @@ Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/
 
 ### Manually-trigger-deploy
 
-1. Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
-2. Select the environment you want to deploy to from the workflows list. In this case we are selecting the `dev` environment
-![Select-dev](https://user-images.githubusercontent.com/53869143/108391209-78026280-71df-11eb-8cab-2d124f71627e.png)
-1. Click the "Run workflow" button, select the branch you want to deploy and click the green "Run workflow" button. In this case we are deploying the latest commit on `main` to `dev`
-2. ![select branch](https://user-images.githubusercontent.com/53869143/108391056-4c7f7800-71df-11eb-9d41-4c20fa5828e9.png)
-3. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit` and `/api/actuator/info`
+Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
+![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
+1. Select the environment you want to deploy to from the workflows list on the left. In this case we are selecting the `test` environment
+2. Click the "Run workflow" button
+3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
+4. Click the green "Run workflow" button.
+5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`

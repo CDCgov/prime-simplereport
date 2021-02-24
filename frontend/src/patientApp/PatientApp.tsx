@@ -11,6 +11,7 @@ import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
 import PatientHeader from "./PatientHeader";
+import TermsOfService from "./timeOfTest/TermsOfService";
 import DOB from "./timeOfTest/DOB";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
@@ -67,9 +68,10 @@ const PatientApp = () => {
                     path="/"
                     exact
                     render={(props) => (
-                      <DOB {...(props.location.state as any)} />
+                      <TermsOfService {...(props.location.state as any)} />
                     )}
                   />
+                  <Route path="/terms-of-service" component={TermsOfService} />
                   <Route
                     path="/birth-date-confirmation"
                     render={(props) => (
