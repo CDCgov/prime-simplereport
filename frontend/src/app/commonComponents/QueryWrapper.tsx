@@ -20,11 +20,13 @@ const defaultQueryOptions: QueryHookOptions = {
 export function QueryWrapper<ComponentProps>({
   query,
   queryOptions,
+  children,
   Component,
   componentProps,
 }: {
   query: ReturnType<typeof gql>;
   queryOptions?: QueryHookOptions;
+  children?: React.ReactNode;
   Component: React.ComponentType<ComponentProps>;
   componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
 }): React.ReactElement {
@@ -52,5 +54,10 @@ export function QueryWrapper<ComponentProps>({
     startPolling,
     stopPolling,
   } as unknown) as ComponentProps;
-  return <Component {...props} />;
+  return (
+    <>
+      <Component {...props} />
+      {children}
+    </>
+  );
 }
