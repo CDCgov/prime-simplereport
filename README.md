@@ -232,14 +232,14 @@ See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-d
 
 **Type**|**Frontend**|**API**|**Deployment**|**How to trigger**
 :-----:|:-----:|:-----:|:-----:
-Prod|[/app/static/commit](https://simplereport.gov/app/static/commit)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Demo|[/app/static/commit](https://demo.simplereport.gov/app/static/commit)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
-Training|[/app/static/commit](https://training.simplereport.gov/app/static/commit)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
-Staging|[/app/static/commit](https://stg.simplereport.gov/app/static/commit)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Manual & Daily cron|[Github Actions](#manually-trigger-deploy)
-Dev|[/app/static/commit](https://dev.simplereport.gov/app/static/commit)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Automed on merge to `main`|[Github Actions](#manually-trigger-deploy)
-Test|[/app/static/commit](https://test.simplereport.gov/app/static/commit)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Pentest|[/app/static/commit](https://pentest.simplereport.gov/app/static/commit)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Prod|[/app/static/commit](https://simplereport.gov/app/static/commit)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Manual & Daily cron|[Github Actions](#manually-trigger-deploy)
+Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Automed on merge to `main`|[Github Actions](#manually-trigger-deploy)
+Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
 
 ### Manually-trigger-deploy
 
