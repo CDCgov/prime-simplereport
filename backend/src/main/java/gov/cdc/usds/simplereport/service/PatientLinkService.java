@@ -47,9 +47,13 @@ public class PatientLinkService {
     }
 
     public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
-        PatientLink pl = getPatientLink(internalId);
-        Person patient = pl.getTestOrder().getPatient();
-        return patient.getBirthDate().equals(birthDate);
+        try {
+            PatientLink pl = getPatientLink(internalId);
+            Person patient = pl.getTestOrder().getPatient();
+            return patient.getBirthDate().equals(birthDate);
+        } catch (IllegalGraphqlArgumentException e) {
+            return false;
+        }
     }
 
     public Person getPatientFromLink(String internalId) {
