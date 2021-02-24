@@ -1,8 +1,8 @@
-import React from 'react';
-import classnames from 'classnames';
-import useUniqueId from './useUniqueIds';
-import Required from './Required';
-import Optional from './Optional';
+import React from "react";
+import classnames from "classnames";
+import useUniqueId from "./useUniqueIds";
+import Required from "./Required";
+import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
 type OptionsArray = {
@@ -22,14 +22,14 @@ interface Props {
   required?: boolean;
   selectedRadio?: string | null;
   errorMessage?: React.ReactNode;
-  validationStatus?: 'error' | 'success';
-  variant?: 'default' | 'tile' | 'horizontal';
+  validationStatus?: "error" | "success";
+  variant?: "default" | "tile" | "horizontal";
   hintText?: string;
   hideOptional?: boolean;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
 }
 
-type InputProps = JSX.IntrinsicElements['input'];
+type InputProps = JSX.IntrinsicElements["input"];
 
 const RadioGroup = ({
   id,
@@ -48,15 +48,15 @@ const RadioGroup = ({
   onChange,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
-  const [autoId] = useUniqueId('radio', 1);
+  const [autoId] = useUniqueId("radio", 1);
   const widgetId = id || autoId;
   const inputClass = classnames(
-    'usa-radio__input',
-    variant === 'tile' && 'usa-radio__input--tile'
+    "usa-radio__input",
+    variant === "tile" && "usa-radio__input--tile"
   );
   const groupClass = classnames(
-    'usa-radio',
-    variant === 'horizontal' && 'prime-radio--horizontal__container'
+    "usa-radio",
+    variant === "horizontal" && "prime-radio--horizontal__container"
   );
   const choices: OptionsArray = Array.isArray(buttons)
     ? buttons
@@ -67,23 +67,23 @@ const RadioGroup = ({
       }));
 
   return (
-    <fieldset className={classnames('usa-fieldset prime-radios', className)}>
+    <fieldset className={classnames("usa-fieldset prime-radios", className)}>
       {legend && (
         <legend
-          className={classnames('usa-legend', legendSrOnly && 'usa-sr-only')}
+          className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
         >
           {required ? (
             <Required label={legend} />
           ) : (
             <Optional
-              className={hideOptional ? 'display-none' : ''}
+              className={hideOptional ? "display-none" : ""}
               label={legend}
             />
           )}
         </legend>
       )}
       {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
-      {validationStatus === 'error' && (
+      {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
           {errorMessage}
@@ -91,15 +91,15 @@ const RadioGroup = ({
       )}
       <div
         className={classnames(
-          'usa-form-group',
-          variant === 'horizontal' && 'prime-radio--horizontal',
-          validationStatus === 'error' && 'usa-form-group--error'
+          "usa-form-group",
+          variant === "horizontal" && "prime-radio--horizontal",
+          validationStatus === "error" && "usa-form-group--error"
         )}
       >
         {choices.map((c, i) => {
           const labelClasses = classnames(
-            'usa-radio__label',
-            (c.disabled || inputProps.disabled) && 'text-base'
+            "usa-radio__label",
+            (c.disabled || inputProps.disabled) && "text-base"
           );
           return (
             <div className={groupClass} key={c.value}>
@@ -108,7 +108,7 @@ const RadioGroup = ({
                 id={`${widgetId}_${c.value}_${i}`}
                 name={name}
                 value={c.value}
-                data-required={required || 'false'}
+                data-required={required || "false"}
                 disabled={c.disabled || false}
                 className={inputClass}
                 checked={c.value === selectedRadio}

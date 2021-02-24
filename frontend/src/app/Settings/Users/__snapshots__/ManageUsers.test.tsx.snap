@@ -121,6 +121,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     disabled=""
                     id="radio-test-1_Admin user_0"
                     name="roleDescription"
@@ -139,6 +140,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     disabled=""
                     id="radio-test-1_Standard user_1"
                     name="roleDescription"
@@ -157,6 +159,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     disabled=""
                     id="radio-test-1_Test-entry user_2"
                     name="roleDescription"
@@ -348,6 +351,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     id="radio-test-1_Admin user_0"
                     name="roleDescription"
                     type="radio"
@@ -365,6 +369,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     id="radio-test-1_Standard user_1"
                     name="roleDescription"
                     type="radio"
@@ -382,6 +387,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 >
                   <input
                     class="usa-radio__input"
+                    data-required="false"
                     id="radio-test-1_Test-entry user_2"
                     name="roleDescription"
                     type="radio"
