@@ -58,6 +58,12 @@ public class SlackMessageService {
         header, plain_text, section, divider, mrkdwn;
     }
 
+    /**
+     * A slack message body for the webhook.
+     *
+     * @see https://api.slack.com/messaging/webhooks
+     * @see https://app.slack.com/block-kit-builder/
+     */
     public static class SlackMessage {
         List<SlackBlock> blocks;
 
