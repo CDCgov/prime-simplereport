@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,11 +18,6 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     private static final String FAKE_SWAB_TYPE = "012345678";
     @Autowired
     private DeviceTypeRepository _deviceTypeRepo;
-
-    @BeforeEach
-    void setupData() {
-        initAuditor();
-    }
 
     @Test
     void fetchDeviceTypes() {

@@ -61,6 +61,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -84,6 +85,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"
@@ -108,7 +110,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
       onClick={[Function]}
       type="button"
     >
-      Text link
+      Text link to complete on smartphone
     </button>
   </div>
 </div>
@@ -175,6 +177,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -198,6 +201,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"
@@ -278,6 +282,7 @@ exports[`AoEModalForm on data loaded renders 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -301,6 +306,7 @@ exports[`AoEModalForm on data loaded renders 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"

@@ -26,7 +26,7 @@ public abstract class EternalSystemManagedEntity extends SystemManagedEntity
     }
 
     @Override
-    public void setIsDeleted(Boolean deleted) {
+    public void setIsDeleted(boolean deleted) {
         this.isDeleted = deleted;
     }
 }

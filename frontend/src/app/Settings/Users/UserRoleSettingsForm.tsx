@@ -12,15 +12,15 @@ interface RoleButton {
 const ROLES: RoleButton[] = [
   {
     value: "Admin user",
-    label: "Admin",
+    label: "Admin (full permissions)",
   },
   {
     value: "Standard user",
-    label: "User",
+    label: "Standard user (manage results and profiles)",
   },
   {
     value: "Test-entry user",
-    label: "Entry Only",
+    label: "Entry only (conduct tests)",
   },
 ];
 
@@ -49,6 +49,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   return (
     <React.Fragment>
       <RadioGroup
+        className="margin-top-neg-1 margin-bottom-4"
         legend="Roles"
         legendSrOnly
         name="roleDescription"

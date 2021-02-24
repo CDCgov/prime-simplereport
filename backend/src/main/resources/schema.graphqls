@@ -290,6 +290,7 @@ type Mutation {
     suffix: String
     email: String!
     organizationExternalId: String!
+    role: OrganizationRole
   ): User
   addUserToCurrentOrg(
     firstName: String
@@ -297,6 +298,7 @@ type Mutation {
     lastName: String!
     suffix: String
     email: String!
+    role: OrganizationRole
   ): User
   updateUser(
     id: ID!

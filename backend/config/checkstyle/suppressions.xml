@@ -22,7 +22,6 @@
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Facility.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Organization.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScoped.java" />
-	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/OrganizationScopedEternalAuditedEntity.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/PatientAnswers.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Person.java" />
 	<suppress checks="FileTabCharacter" files="src/main/java/gov/cdc/usds/simplereport/db/model/Provider.java" />

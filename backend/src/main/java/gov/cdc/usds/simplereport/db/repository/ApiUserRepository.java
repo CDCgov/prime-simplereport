@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-import java.util.List;
 import java.util.Collection;
 
 import org.springframework.data.jpa.repository.Query;
@@ -23,5 +23,5 @@ public interface ApiUserRepository extends EternalSystemManagedEntityRepository<
 	public Optional<ApiUser> findByLoginEmail(String email);
 
 	@Query(BASE_QUERY + " and loginEmail IN :emails")
-	public List<ApiUser> findAllByLoginEmailIn(Collection<String> emails);
+	public Set<ApiUser> findAllByLoginEmailIn(Collection<String> emails);
 }

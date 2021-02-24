@@ -9,6 +9,7 @@ https://simplereport.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
+    - [Running the app with Make](#running-the-app-with-make)
     - [Updating user role](#updating-user-role)
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
@@ -20,7 +21,9 @@ https://simplereport.gov/
     - [SchemaSpy](#schemaspy)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
-    - [Deploy](#deploy)
+  - [Deploy](#deploy)
+    - [Cloud Environments](#cloud-environments)
+    - [Manually-trigger-deploy](#manually-trigger-deploy)
 
 ## Setup
 
@@ -222,6 +225,28 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
-### Deploy
-
+## Deploy
 See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md
+
+### Cloud Environments
+
+**Type**|**Frontend**|**API**|**Deployment**|**How to trigger**
+:-----:|:-----:|:-----:|:-----:|:-----:
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Manual & Daily cron|[Github Actions](#manually-trigger-deploy)
+Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Automed on merge to `main`|[Github Actions](#manually-trigger-deploy)
+Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+
+### Manually-trigger-deploy
+
+Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
+![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
+1. Select the environment you want to deploy to from the workflows list on the left. In this case we are selecting the `test` environment
+2. Click the "Run workflow" button
+3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
+4. Click the green "Run workflow" button.
+5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`

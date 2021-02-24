@@ -25,7 +25,9 @@ interface Props {
   validationStatus?: "error" | "success";
 }
 
-const Dropdown: React.FC<Props> = ({
+type SelectProps = JSX.IntrinsicElements["select"];
+
+const Dropdown: React.FC<Props & SelectProps> = ({
   options,
   label,
   name,
@@ -38,6 +40,7 @@ const Dropdown: React.FC<Props> = ({
   required,
   validationStatus,
   errorMessage,
+  ...inputProps
 }) => {
   const [selectId] = useUniqueIds("drop", 1);
 
@@ -64,9 +67,11 @@ const Dropdown: React.FC<Props> = ({
         className="usa-select"
         name={name}
         id={selectId}
+        aria-required={required || "false"}
         onChange={onChange}
         value={selectedValue || defaultOption || ""}
         disabled={disabled}
+        {...inputProps}
       >
         {defaultSelect && <option value={undefined}>- Select -</option>}
         {options.map(({ value, label, disabled }, i) => (

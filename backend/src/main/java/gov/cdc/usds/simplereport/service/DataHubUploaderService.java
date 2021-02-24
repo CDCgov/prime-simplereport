@@ -11,15 +11,11 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -53,6 +49,7 @@ public class DataHubUploaderService {
     private final TestEventRepository _testReportEventsRepo;
     private final DataHubUploadRespository _dataHubUploadRepo;
     private final UploadTrackingService _trackingService;
+    private final SlackMessageService _slack;
 
     private String _fileContents;
     private Date _nextTimestamp;
@@ -64,11 +61,13 @@ public class DataHubUploaderService {
     public DataHubUploaderService(DataHubConfig config,
             TestEventRepository testReportEventsRepo,
             DataHubUploadRespository dataHubUploadRepo,
-            UploadTrackingService trackingService) {
+            UploadTrackingService trackingService,
+            SlackMessageService slack) {
         _config = config;
         _testReportEventsRepo = testReportEventsRepo;
         _trackingService = trackingService;
         _dataHubUploadRepo = dataHubUploadRepo;
+        _slack = slack;
 
         LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
 
@@ -106,51 +105,6 @@ public class DataHubUploaderService {
 
     private static Date utcStringToDate(String s) {
         return Date.from(Instant.parse(s));
-    }
-
-    private void sendSlackChannelMessage(String titleMsg, List<String> markupMsgs, Boolean separateMsgs) {
-        // NOTE: logging this is overkill. Putting it hear until we fully trust Slack messaging is working.
-        String markupMsgsForLog = String.join(" ", markupMsgs);
-        if (!_config.getSlackNotifyWebhookUrl().startsWith("https://hooks.slack.com/")) {
-            LOG.error("SlackChannelNotConfigured. Message not sent Title: '{}' Body: {}", titleMsg, markupMsgsForLog);
-            return;
-        } else {
-            // log the result since slack may be down.
-            LOG.info("slackMessage Title: '{}'  Body: '{}'", titleMsg, markupMsgsForLog);
-        }
-
-        try {
-            RestTemplate restTemplate = new RestTemplate();
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // json (escaping)
-            // see https://api.slack.com/messaging/webhooks
-            // see https://app.slack.com/block-kit-builder/
-            JSONArray blocks = new JSONArray();
-            blocks.put(Map.of(
-                    "type", "header",
-                    "text", Map.of(
-                            "type", "plain_text",
-                            "text", titleMsg)
-            ));
-            markupMsgs.forEach(msg -> {
-                blocks.put(Map.of(
-                        "type", "section",
-                        "text", Map.of(
-                                "type", "mrkdwn",
-                                "text", msg)));
-                if (Boolean.TRUE.equals(separateMsgs)) {
-                    blocks.put(Map.of("type", "divider"));
-                }
-            });
-            String requestJson = new JSONObject(Map.of("blocks", blocks)).toString();
-
-            HttpEntity<String> entity = new HttpEntity<>(requestJson, headers);
-            restTemplate.put(_config.getSlackNotifyWebhookUrl(), entity);
-        } catch (RestClientException | JSONException err) {
-            LOG.error("sendSlackChannelMessage failed {}", err.toString());
-        }
     }
 
     // we put this in a function because the query can return null and it abstracts it out
@@ -302,7 +256,7 @@ public class DataHubUploaderService {
             msgs.add("> DataHub upload URL is not configured.");
         }
         if (!msgs.isEmpty()) {
-            sendSlackChannelMessage("DataHubUploader not run", msgs, true);
+            _slack.sendSlackChannelMessage("DataHubUploader not run", msgs, true);
             return;
         }
         
@@ -345,7 +299,7 @@ public class DataHubUploaderService {
             message.add("ErrorMessage: " + newUpload.getErrorMessage());
             message.add("setResponseData: ");
             message.add("> ``` " + newUpload.getResponseData() + " ```");
-            sendSlackChannelMessage("DataHubUpload result", message, false);
+            _slack.sendSlackChannelMessage("DataHubUpload result", message, false);
         }
 
         // should this sleep for some period of time? If no rows match it may be really fast

@@ -7,6 +7,6 @@ public interface Eternal {
 
     public boolean isDeleted();
 
-    public void setIsDeleted(Boolean deleted);
+    public void setIsDeleted(boolean deleted);
 
 }

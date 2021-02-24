@@ -5,7 +5,25 @@ function trapint {
     exit 0
 }
 
-echo 'Waiting for app to boot...'
+echo 'Waiting for backend to boot...'
+curl -k http://localhost:8080/health > /dev/null 2>&1
+result=$?
+
+polls=0
+while [[ $result -ne 0 && $polls -lt 120 ]]; do
+  ((polls++))
+  echo 'Waiting...'
+  sleep 5
+  curl -k http://localhost:8080/health > /dev/null 2>&1
+  result=$?
+done
+
+if [[ $result -ne 0 ]]; then
+  echo 'Backend never started. Exiting...'
+  exit 1
+fi
+
+echo 'Waiting for frontend to boot...'
 curl -k http://localhost:3000 > /dev/null 2>&1
 result=$?
 
@@ -19,7 +37,7 @@ while [[ $result -ne 0 && $polls -lt 120 ]]; do
 done
 
 if [[ $result -ne 0 ]]; then
-  echo 'App never started. Exiting...'
+  echo 'Frontend never started. Exiting...'
   exit 1
 fi
 

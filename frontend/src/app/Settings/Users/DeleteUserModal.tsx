@@ -19,22 +19,20 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
       isOpen={true}
       style={{
         content: {
-          marginRight: "50%",
-          overflow: "auto",
-          width: "40%",
-          minWidth: "20em",
-          height: "40%",
-          maxHeight: "80vh",
-          padding: "0",
-          transform: "translate(70%, 50%)",
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
       <div className="border-0 usa-card__container">
-        <div className="usa-card__header display-flex flex-justify modal-bottom-border">
-          <h2 className="margin-0"> Delete User </h2>
+        <div className="display-flex flex-justify">
+          <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+            Remove user
+          </h1>
           <button onClick={onClose} className="close-button" aria-label="Close">
             <span className="fa-layers">
               <FontAwesomeIcon icon={"circle"} size="2x" inverse />
@@ -42,23 +40,18 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
             </span>
           </button>
         </div>
-        <div className="usa-card__body modal-bottom-border">
-          <div className="grid-row grid-gap">
-            <p>
-              Are you sure you want to remove{" "}
-              <strong>
-                {displayFullName(
-                  user.firstName,
-                  user.middleName,
-                  user.lastName
-                )}
-              </strong>
-              ?
-            </p>
-            <p> Doing so will remove this person's access to SimpleReport.</p>
-          </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+        <div className="grid-row grid-gap">
+          <p>
+            Are you sure you want to remove{" "}
+            <strong>
+              {displayFullName(user.firstName, user.middleName, user.lastName)}
+            </strong>
+            ?
+          </p>
+          <p> Doing so will remove this person's access to SimpleReport.</p>
         </div>
-        <div className="usa-card__footer">
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
           <div className="display-flex flex-justify-end">
             <Button
               className="margin-right-2"
@@ -67,7 +60,7 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
               label="No, go back"
             />
             <Button
-              className="margin-right-0"
+              className="margin-right-205"
               onClick={() => onDeleteUser(user.id)}
               label="Yes, I'm sure"
             />
