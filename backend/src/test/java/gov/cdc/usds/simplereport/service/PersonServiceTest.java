@@ -178,7 +178,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         assertEquals(1, _service.getArchivedPatientsCount(_site2.getInternalId()));
     }
 
-        @Test
+    @Test
     @WithSimpleReportEntryOnlyUser
     void addPatient_entryOnlyUser_error() {
         assertSecurityError(
