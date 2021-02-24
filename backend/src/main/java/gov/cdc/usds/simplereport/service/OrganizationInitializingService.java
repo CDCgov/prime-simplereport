@@ -12,8 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -63,13 +66,15 @@ public class OrganizationInitializingService {
 	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
-		// Creates current user to allow audited creation of other entities below
-		initAuditor();
+
+		// Allows any subsequent callers to have a valid user record for purposes of passing
+		// permission-checks
+		initCurrentUser();
 
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
-		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
-		if (probe.isPresent()) {
+		Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
+		if (orgProbe.isPresent()) {
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -124,17 +129,23 @@ public class OrganizationInitializingService {
 		_facilityRepo.save(defaultFacility);
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
-		List<IdentityAttributes> users = _demoUserConfiguration.getAlternateUsers().stream()
-				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
-		for (IdentityAttributes user : users) {
-			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
-			initOktaUser(user, emptyOrg);
+		List<DemoUser> users = _demoUserConfiguration.getAllUsers();
+		for (DemoUser user : users) {
+			OrganizationRole role = user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
+			Organization org = _orgRepo.findByExternalId(user.getAuthorization().getOrganizationExternalId())
+					.orElseThrow(MisconfiguredUserException::new);
+			IdentityAttributes identity = user.getIdentity();
+			Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
+			if (!userProbe.isPresent()) {
+				_apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
+			}
+			initOktaUser(identity, org, role);
 		}
 	}
 
-	public void initAuditor() {
+	public void initCurrentUser() {
 		// Creates current user if it doesn't already exist
-		_userService.getCurrentUser();
+		_userService.getCurrentApiUserInContainedTransaction();
 	}
 
 	private void initOktaOrg(Organization org) {
@@ -146,10 +157,10 @@ public class OrganizationInitializingService {
 		}
 	}
 
-	private void initOktaUser(IdentityAttributes user, Organization org) {
+	private void initOktaUser(IdentityAttributes user, Organization org, OrganizationRole role) {
 		try {
 			LOG.info("Creating user {} in Okta", user.getUsername());
-			_oktaRepo.createUser(user, org);
+			_oktaRepo.createUser(user, org, role);
 		} catch (ResourceException e) {
 			LOG.info("User {} already exists in Okta", user.getUsername());
 		}

@@ -578,6 +578,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   <input
                     checked={false}
                     className="usa-radio__input"
+                    data-required="false"
                     disabled={false}
                     id="radio-test-1_yes_0"
                     name="prior_test_flag"
@@ -598,6 +599,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   <input
                     checked={false}
                     className="usa-radio__input"
+                    data-required="false"
                     disabled={false}
                     id="radio-test-1_no_1"
                     name="prior_test_flag"
@@ -650,6 +652,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 <input
                   checked={false}
                   className="usa-radio__input"
+                  data-required="false"
                   disabled={false}
                   id="radio-test-1_77386006_0"
                   name="pregnancy"
@@ -670,6 +673,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 <input
                   checked={false}
                   className="usa-radio__input"
+                  data-required="false"
                   disabled={false}
                   id="radio-test-1_60001007_1"
                   name="pregnancy"
@@ -690,6 +694,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 <input
                   checked={false}
                   className="usa-radio__input"
+                  data-required="false"
                   disabled={false}
                   id="radio-test-1_261665006_2"
                   name="pregnancy"

@@ -59,6 +59,7 @@ Array [
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -82,6 +83,7 @@ Array [
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"
@@ -171,6 +173,7 @@ Array [
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -194,6 +197,7 @@ Array [
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"
@@ -272,6 +276,7 @@ Array [
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_text_0"
           name="qr-code"
@@ -295,6 +300,7 @@ Array [
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_verbal_1"
           name="qr-code"

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.config.simplereport;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
@@ -31,6 +32,12 @@ public class DemoUserConfiguration {
 
     public List<DemoUser> getAlternateUsers() {
         return alternateUsers;
+    }
+
+    public List<DemoUser> getAllUsers() {
+        List<DemoUser> allUsers = new ArrayList<>(getAlternateUsers());
+        allUsers.add(getDefaultUser());
+        return allUsers;
     }
 
     @ConstructorBinding

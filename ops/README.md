@@ -110,3 +110,4 @@ cd {environment}
 terraform init
 terraform apply
 ```
+ 

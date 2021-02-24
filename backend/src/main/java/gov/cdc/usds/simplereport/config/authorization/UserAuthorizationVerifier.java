@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
@@ -61,15 +62,15 @@ public class UserAuthorizationVerifier {
         String otherUserEmail = getUser(userId).getLoginEmail();
         Optional<Organization> otherOrg = _oktaRepo.getOrganizationRoleClaimsForUser(otherUserEmail)
                 .map(r -> _orgService.getOrganization(r.getOrganizationExternalId()));
-        return currentOrgRoles.isPresent() && otherOrg.isPresent() 
-                ? currentOrgRoles.get().getOrganization().getExternalId().equals(otherOrg.get().getExternalId())
-                : false;
+        return currentOrgRoles.isPresent() && otherOrg.isPresent() &&
+                currentOrgRoles.get().getOrganization().getExternalId().equals(otherOrg.get().getExternalId());
+
     }
 
     private void isValidUser() {
         IdentityAttributes id = _supplier.get();
         if (id == null) {
-            throw new NonexistentUserException();
+            throw new UnidentifiedUserException();
         }
         Optional<ApiUser> found = _userRepo.findByLoginEmail(id.getUsername());
         if (!found.isPresent()) {
@@ -82,10 +83,6 @@ public class UserAuthorizationVerifier {
     // method-level security that invokes an above method which creates a circular loop with this method.
     private ApiUser getUser(UUID id) {
         Optional<ApiUser> found = _userRepo.findById(id);
-        if (!found.isPresent()) {
-            throw new NonexistentUserException();
-        }
-        ApiUser user = found.get();
-        return user;
+        return found.orElseThrow(NonexistentUserException::new);
     }
 }

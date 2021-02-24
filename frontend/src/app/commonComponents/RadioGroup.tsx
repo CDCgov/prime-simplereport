@@ -96,27 +96,34 @@ const RadioGroup = ({
           validationStatus === "error" && "usa-form-group--error"
         )}
       >
-        {choices.map((c, i) => (
-          <div className={groupClass} key={c.value}>
-            <input
-              type="radio"
-              id={`${widgetId}_${c.value}_${i}`}
-              name={name}
-              value={c.value}
-              disabled={c.disabled || false}
-              className={inputClass}
-              checked={c.value === selectedRadio}
-              onChange={onChange}
-              {...inputProps}
-            />
-            <label
-              className="usa-radio__label"
-              htmlFor={`${widgetId}_${c.value}_${i}`}
-            >
-              {c.label}
-            </label>
-          </div>
-        ))}
+        {choices.map((c, i) => {
+          const labelClasses = classnames(
+            "usa-radio__label",
+            (c.disabled || inputProps.disabled) && "text-base"
+          );
+          return (
+            <div className={groupClass} key={c.value}>
+              <input
+                type="radio"
+                id={`${widgetId}_${c.value}_${i}`}
+                name={name}
+                value={c.value}
+                data-required={required || "false"}
+                disabled={c.disabled || false}
+                className={inputClass}
+                checked={c.value === selectedRadio}
+                onChange={onChange}
+                {...inputProps}
+              />
+              <label
+                className={labelClasses}
+                htmlFor={`${widgetId}_${c.value}_${i}`}
+              >
+                {c.label}
+              </label>
+            </div>
+          );
+        })}
       </div>
     </fieldset>
   );
