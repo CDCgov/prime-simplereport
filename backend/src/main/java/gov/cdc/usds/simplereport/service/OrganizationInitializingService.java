@@ -63,13 +63,15 @@ public class OrganizationInitializingService {
 	private DemoUserConfiguration _demoUserConfiguration;
 
 	public void initAll() {
-		// Creates current user to allow audited creation of other entities below
-		initAuditor();
+
+		// Allows any subsequent callers to have a valid user record for purposes of passing
+		// permission-checks
+		initCurrentUser();
 
 		LOG.debug("Organization init called (again?)");
 		Organization emptyOrg = _props.getOrganization();
-		Optional<Organization> probe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
-		if (probe.isPresent()) {
+		Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
+		if (orgProbe.isPresent()) {
 			return; // one and done
 		}
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
@@ -124,17 +126,20 @@ public class OrganizationInitializingService {
 		_facilityRepo.save(defaultFacility);
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
-		List<IdentityAttributes> users = _demoUserConfiguration.getAlternateUsers().stream()
+		List<IdentityAttributes> users = _demoUserConfiguration.getAllUsers().stream()
 				.map(DemoUserConfiguration.DemoUser::getIdentity).collect(Collectors.toList());
 		for (IdentityAttributes user : users) {
-			_apiUserRepo.save(new ApiUser(user.getUsername(), user));
+			Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(user.getUsername());
+			if (!userProbe.isPresent()) {
+				_apiUserRepo.save(new ApiUser(user.getUsername(), user));
+			}
 			initOktaUser(user, emptyOrg);
 		}
 	}
 
-	public void initAuditor() {
+	public void initCurrentUser() {
 		// Creates current user if it doesn't already exist
-		_userService.getCurrentUser();
+		_userService.getCurrentApiUserInContainedTransaction();
 	}
 
 	private void initOktaOrg(Organization org) {

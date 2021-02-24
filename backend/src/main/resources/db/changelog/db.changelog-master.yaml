@@ -1198,7 +1198,7 @@ databaseChangeLog:
   - changeSet:
       id: add-is-deleted-to-api-user
       author: jeremy.a.zitomer@omb.eop.gov
-      comment: Add soft deletion flag and auditing columns to API users table
+      comment: Add soft deletion flag to API users table
       changes:
         - addColumn:
             tableName: api_user

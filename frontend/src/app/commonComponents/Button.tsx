@@ -47,7 +47,7 @@ const Button = ({
     id={id}
     onClick={onClick}
   >
-    {icon && <FontAwesomeIcon icon={icon} />}
+    {icon && <FontAwesomeIcon icon={icon} className="margin-right-1" />}
     {label || children}
   </button>
 );

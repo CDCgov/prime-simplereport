@@ -8,17 +8,14 @@ import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 
 /**
- * Exception to throw when a user can log in but cannot actually use the
- * application, for some reason (like having their organization deleted);
- * or when a user cannot be retrieved/edited because their organization
- * relationships are misconfigured.
+ * Exception to throw when a user does not exist.
  */
-public class MisconfiguredUserException extends RuntimeException implements GraphQLError {
+public class UnidentifiedUserException extends RuntimeException implements GraphQLError {
 
     private static final long serialVersionUID = 1L;
 
-    public MisconfiguredUserException() {
-        super("User is not configured correctly: user should be a member of exactly one organization.");
+    public UnidentifiedUserException() {
+        super("Cannot determine user's identity.");
     }
 
     @Override // should-be-defaulted unused interface method

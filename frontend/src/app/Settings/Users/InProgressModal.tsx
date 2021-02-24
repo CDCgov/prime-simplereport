@@ -13,25 +13,33 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
       isOpen={true}
       style={{
         content: {
-          marginRight: "50%",
-          inset: "3em auto auto auto",
-          overflow: "auto",
-          height: "25%",
-          maxHeight: "100vh",
-          width: "40%",
-          minWidth: "20em",
-          transform: "translate(75%, 125%)",
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
         },
       }}
-      overlayClassName="prime-modal-overlay"
+      overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
       contentLabel="Unsaved changes to current user"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <div className="display-flex flex-column flex-align-center text-center">
-        <h3> You have unsaved changes, are you sure you want to proceed? </h3>
-
-        <div className="margin-top-3">
-          <Button onClick={onClose} label="Go back" />
-          <Button onClick={onContinue} label="Continue anyway" />
+      <div className="border-0 usa-card__container">
+        <div className="grid-row grid-gap">
+          <p>You have unsaved changes, are you sure you want to proceed?</p>
+        </div>
+        <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+          <div className="display-flex flex-justify-end">
+            <Button
+              className="margin-right-2"
+              onClick={onClose}
+              variant="unstyled"
+              label="No, go back"
+            />
+            <Button
+              className="margin-right-205"
+              onClick={onContinue}
+              label="Yes, I'm sure"
+            />
+          </div>
         </div>
       </div>
     </Modal>
