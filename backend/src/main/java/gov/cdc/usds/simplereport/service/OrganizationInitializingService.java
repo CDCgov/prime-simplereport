@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,15 +18,19 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
+import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
+import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
@@ -46,6 +51,10 @@ public class OrganizationInitializingService {
 	@Autowired
 	private DeviceTypeRepository _deviceTypeRepo;
 	@Autowired
+    private SpecimenTypeRepository _specimenTypeRepo;
+    @Autowired
+    private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
+    @Autowired
 	private FacilityRepository _facilityRepo;
 	@Autowired
 	private ApiUserRepository _apiUserRepo;
@@ -71,30 +80,58 @@ public class OrganizationInitializingService {
 		Provider savedProvider = _providerRepo.save(_props.getProvider());
 		Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
 				Collectors.toMap(d->d.getName(), d->d));
-		for (DeviceType d : _props.getDeviceTypes()) {
+        Map<String, SpecimenType> specimenTypesByName = _specimenTypeRepo.findAll().stream().collect(
+                Collectors.toMap(s -> s.getName(), s -> s));
+        Map<String, SpecimenType> specimenTypesByCode = new HashMap<>();
+        for (SpecimenType s : _props.getSpecimenTypes()) {
+            SpecimenType specimenType = specimenTypesByName.get(s.getName());
+            if (null == specimenType) {
+                LOG.info("Creating device {}", s.getName());
+                specimenType = _specimenTypeRepo.save(s);
+            }
+            specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
+        }
+
+        Map<String, DeviceSpecimenType> dsForDeviceName = new HashMap<>();
+        for (DeviceType d : _props.getDeviceTypes()) {
 			DeviceType deviceType = byName.get(d.getName());
 			if (null == deviceType) {
 				LOG.info("Creating device {}", d.getName());
 				deviceType = _deviceTypeRepo.save(d);
 				byName.put(deviceType.getName(), deviceType);
 			}
+            SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
+            if (defaultTypeForDevice == null) {
+                throw new RuntimeException("specimen type " + deviceType.getSwabType() + " was not initialized");
+            }
+            Optional<DeviceSpecimenType> deviceSpecimen = _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
+            if (deviceSpecimen.isEmpty()) {
+                dsForDeviceName.put(deviceType.getName(),
+                        _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
+            } else {
+                dsForDeviceName.put(deviceType.getName(), deviceSpecimen.get());
+            }
 		}
-		List<DeviceType> configured= _props.getConfiguredDeviceTypeNames().stream()
-				.map(name->byName.get(name))
+
+        List<DeviceSpecimenType> configured = _props.getConfiguredDeviceTypeNames().stream()
+                .map(dsForDeviceName::get)
 				.collect(Collectors.toList());
-		DeviceType defaultDeviceType = configured.get(0);
+        DeviceSpecimenType defaultDeviceSpecimen = configured.get(0);
+
 		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
 		Organization realOrg = _orgRepo.save(emptyOrg);
 		// in the unlikely event DB and Okta fall out of sync
 		initOktaOrg(realOrg);
-		Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider, defaultDeviceType, configured);
-		LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(), configured.size());
+        Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider,
+                defaultDeviceSpecimen, configured);
+        LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(),
+                configured.size());
 		_facilityRepo.save(defaultFacility);
 
 		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
 		List<DemoUser> users = _demoUserConfiguration.getAllUsers();
 		for (DemoUser user : users) {
-			OrganizationRole role = user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.USER);
+			OrganizationRole role = user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
 			Organization org = _orgRepo.findByExternalId(user.getAuthorization().getOrganizationExternalId())
 					.orElseThrow(MisconfiguredUserException::new);
 			IdentityAttributes identity = user.getIdentity();

@@ -58,7 +58,6 @@ function getPatientLink(patientName) {
     .to.contain.text('Begin test');
   this.section.searchResults.click('@beginTest');
   this.expect.section('@modal').to.be.visible;
-  this.expect.section('@modal').to.contain.text('Complete on smartphone');
   this.section.modal.expect.element('@smartphoneRadio').to.be.visible;
   this.section.modal.click('@smartphoneRadio');
   this.expect

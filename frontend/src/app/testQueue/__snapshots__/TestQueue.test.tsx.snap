@@ -160,7 +160,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-button usa-button--unstyled"
                         type="button"
                       >
-                        Time of Test Questions
+                        Test questionnaire
                       </button>
                       <p>
                         <span
@@ -470,7 +470,7 @@ exports[`TestQueue should render the test queue 1`] = `
                         class="usa-button usa-button--unstyled"
                         type="button"
                       >
-                        Time of Test Questions
+                        Test questionnaire
                       </button>
                       <p>
                         <span

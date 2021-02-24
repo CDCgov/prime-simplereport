@@ -54,7 +54,7 @@ public class DemoOktaRepository implements OktaRepository {
         IdentityAttributes user = demoUser.getIdentity();
         String username = user.getUsername();
         String orgExternalId = demoUser.getAuthorization().getOrganizationExternalId();
-        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
         roles.addAll(demoUser.getAuthorization().getGrantedRoles());
         OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(orgExternalId, roles);
 
@@ -74,11 +74,10 @@ public class DemoOktaRepository implements OktaRepository {
     // Does not overwrite demo users who were created on initialization
     public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
         String organizationExternalId = org.getExternalId();
-        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
         OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, 
                                                                      roles);
         usernameOrgRolesMap.putIfAbsent(userIdentity.getUsername(), orgRoles);
-
         Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(organizationExternalId);
         for (OrganizationRole r : roles) {
             List<String> usernames = roleUsernamesMap.get(r);
@@ -110,29 +109,29 @@ public class DemoOktaRepository implements OktaRepository {
         return Optional.of(orgRoles);
     }
 
-    public OrganizationRole updateUserRole(String username, Organization org, OrganizationRole role) {
+    public Optional<OrganizationRoleClaims> updateUserRole(String username, Organization org, OrganizationRole role) {
         OrganizationRoleClaims oldRoleClaims = usernameOrgRolesMap.get(username);
         String orgId = org.getExternalId();
         if (!oldRoleClaims.getOrganizationExternalId().equals(orgId)) {
             throw new IllegalGraphqlArgumentException("Cannot update user role for organization they are not in.");
         }
-        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER, role);
+        Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
         OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(orgId, roles);
         usernameOrgRolesMap.put(username, newRoleClaims);
         
         Map<OrganizationRole,List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(orgId);
         for (OrganizationRole r : roleUsernamesMap.keySet()) {
             List<String> usernames = roleUsernamesMap.get(r);
-            if (r.equals(role)) {
+            if (r == role) {
                 if (!usernames.contains(username)) {
                     usernames.add(username);
                 }
-            } else if (!r.equals(OrganizationRole.USER)) {
+            } else if (r != OrganizationRole.getDefault()) {
                 usernames.remove(username);
             }
         }
 
-        return role;
+        return Optional.of(newRoleClaims);
     }
 
     public void setUserIsActive(String username, Boolean active) {
@@ -143,11 +142,11 @@ public class DemoOktaRepository implements OktaRepository {
         }
     }
 
-    public List<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
+    public Set<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
         return orgRoleUsernamesMap.getOrDefault(org.getExternalId(), new HashMap<>())
                                   .getOrDefault(role, List.of()).stream()
                 .filter(u -> !inactiveUsernames.contains(u))
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     public void createOrganization(String name, String externalId) {

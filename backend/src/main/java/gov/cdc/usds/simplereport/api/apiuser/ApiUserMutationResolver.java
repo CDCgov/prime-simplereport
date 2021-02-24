@@ -33,7 +33,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
                 ) {
         // For backward compatibility
         if (role == null) {
-            role = OrganizationRole.USER;
+            role = OrganizationRole.getDefault();
         }
         UserInfo user = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID, role);
         return new User(user);
@@ -48,7 +48,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             OrganizationRole role
                 ) {
         if (role == null) {
-            role = OrganizationRole.USER;
+            role = OrganizationRole.getDefault();
         }
         UserInfo user = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix, role);
         return new User(user);

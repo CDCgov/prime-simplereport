@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import React from "react";
-import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
 
@@ -8,6 +7,7 @@ import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PatientUpload from "./PatientUpload";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const patientQuery = gql`
   query GetPatientsByFacility($facilityId: String!) {
@@ -61,11 +61,9 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
       );
 
       let editUserLink = canEditUser ? (
-        <NavLink
-          to={`/patient/${patient.internalId}?facility=${activeFacilityId}`}
-        >
+        <LinkWithQuery to={`/patient/${patient.internalId}`}>
           {fullName}
-        </NavLink>
+        </LinkWithQuery>
       ) : (
         <span>{fullName}</span>
       );
@@ -92,14 +90,14 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
             <div className="usa-card__header">
               <h2>{PATIENT_TERM_PLURAL_CAP}</h2>
               {canEditUser ? (
-                <NavLink
+                <LinkWithQuery
                   className="usa-button usa-button--outline"
-                  to={`/add-patient/?facility=${activeFacilityId}`}
+                  to={`/add-patient`}
                   id="add-patient-button"
                 >
                   <FontAwesomeIcon icon="plus" />
                   {` Add ${PATIENT_TERM}`}
-                </NavLink>
+                </LinkWithQuery>
               ) : null}
             </div>
             <div className="usa-card__body">

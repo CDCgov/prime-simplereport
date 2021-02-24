@@ -1,26 +1,22 @@
 import React from "react";
-import { useSelector } from "react-redux";
-import { NavLink } from "react-router-dom";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 interface Props {
   facilities: Facility[];
 }
 
 const ManageFacilities: React.FC<Props> = ({ facilities }) => {
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
   return (
     <div className="grid-row">
       <div className="prime-container usa-card__container">
         <div className="usa-card__header">
           <h2>Manage Facilities</h2>
-          <NavLink
+          <LinkWithQuery
             className="usa-button usa-button--inverse"
             to="/settings/add-facility/"
           >
             + New facility
-          </NavLink>
+          </LinkWithQuery>
         </div>
         <div className="usa-card__body">
           <table className="usa-table usa-table--borderless width-full">
@@ -34,11 +30,9 @@ const ManageFacilities: React.FC<Props> = ({ facilities }) => {
               {facilities.map((facility) => (
                 <tr key={facility.id}>
                   <td>
-                    <NavLink
-                      to={`/settings/facility/${facility.id}?facility=${activeFacilityId}`}
-                    >
+                    <LinkWithQuery to={`/settings/facility/${facility.id}`}>
                       {facility.name}
-                    </NavLink>
+                    </LinkWithQuery>
                   </td>
                   <td>{facility.cliaNumber}</td>
                 </tr>
