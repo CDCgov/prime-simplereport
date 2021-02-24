@@ -1,5 +1,5 @@
-import React from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { useEffect } from "react";
+import { gql, useQuery, useMutation, useLazyQuery } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import ManageUsers from "./ManageUsers";
@@ -43,22 +43,52 @@ interface UserData {
   users: SettingsUser[];
 }
 
-// const GET_FACILITIES = gql`
-//   query GetFacilities {
-//     organization {
-//       testingFacility {
-//         id
-//         name
-//       }
-//     }
-//   }
-// `;
+const UPDATE_USER_ROLE = gql`
+  mutation UpdateUserRole($id: ID!, $role: OrganizationRole!) {
+    updateUserRole(id: $id, role: $role)
+  }
+`;
 
-// interface FacilityData {
-//   organization: {
-//     testingFacility: UserFacilitySetting[];
-//   };
-// }
+const DELETE_USER = gql`
+  mutation SetUserIsDeleted($id: ID!, $deleted: Boolean!) {
+    setUserIsDeleted(id: $id, deleted: $deleted) {
+      id
+    }
+  }
+`;
+
+const ADD_USER_TO_ORG = gql`
+  mutation AddUserToCurrentOrg(
+    $firstName: String
+    $lastName: String!
+    $email: String!
+  ) {
+    addUserToCurrentOrg(
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+    ) {
+      id
+    }
+  }
+`;
+
+const GET_FACILITIES = gql`
+  query GetFacilitiesForManageUsers {
+    organization {
+      testingFacility {
+        id
+        name
+      }
+    }
+  }
+`;
+
+interface FacilityData {
+  organization: {
+    testingFacility: UserFacilitySetting[];
+  };
+}
 
 export interface UserFacilitySetting {
   id: string;
@@ -69,73 +99,58 @@ export interface NewUserInvite {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole | string | undefined; // TODO: clean this up
+  role: UserRole | string | undefined; // TODO: clean this up or delete it if we are not supporting this feature
 }
 
-// TODO: delete this
-const allFacilities: UserFacilitySetting[] = [
-  { id: "abc", name: "Mountainside Nursing" },
-  { id: "def", name: "Hillside Nursing" },
-  { id: "hij", name: "Lakeside Nursing" },
-  { id: "klm", name: "Oceanside Nursing" },
-  { id: "nop", name: "Desertside Nursing" },
-];
-
-const updateUser = (user: SettingsUser) => {
-  // TODO: perform graphql query
-};
-
-const createNewUser = (newUserInvite: NewUserInvite) => {
-  // TODO: perform graphql mutation
-};
-
-const deleteUser = (userId: string) => {
-  // TODO: perform, graphql mutation
-};
-
-// const ManageUsersContainer: React.FC<any> = () => {
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
+  const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
+  const [deleteUser] = useMutation(DELETE_USER);
+  const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
-  // const { data, loading, error } = useQuery<SettingsData, {}>(GET_USERS, {
-  //   fetchPolicy: "no-cache",
-  // });
+  const [getUsers, { data, loading, error }] = useLazyQuery<UserData, {}>(
+    GET_USERS,
+    { fetchPolicy: "no-cache" }
+  );
 
-  const { data, loading, error } = useQuery<UserData, {}>(GET_USERS, {
+  const {
+    data: dataFacilities,
+    loading: loadingFacilities,
+    error: errorFacilities,
+  } = useQuery<FacilityData, {}>(GET_FACILITIES, {
     fetchPolicy: "no-cache",
   });
-  // const {
-  //   data: dataFacilities,
-  //   loading: loadingFacilities,
-  //   error: errorFacilities,
-  // } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-  //   fetchPolicy: "no-cache",
-  // });
 
-  if (loading) {
+  useEffect(getUsers, [getUsers]);
+
+  if (loading || loadingFacilities) {
     return <p> Loading... </p>;
   }
-  if (error) {
-    return error;
+
+  if (error || errorFacilities) {
+    throw error || errorFacilities;
   }
 
   if (data === undefined) {
     return <p>Error: Users not found</p>;
   }
 
-  loggedInUser.id = data.users[0].id; // TODO: delete me
+  if (dataFacilities === undefined) {
+    return <p>Error: Facilities not found</p>;
+  }
 
-  // let realFacilities = dataFacilities?.organization
-  //   .testingFacility as UserFacilitySetting[];
+  const allFacilities = dataFacilities.organization
+    .testingFacility as UserFacilitySetting[];
 
   return (
     <ManageUsers
       users={data.users}
       loggedInUser={loggedInUser}
-      onUpdateUser={updateUser}
       allFacilities={allFacilities}
-      onCreateNewUser={createNewUser}
-      onDeleteUser={deleteUser}
+      updateUserRole={updateUserRole}
+      addUserToOrg={addUserToOrg}
+      deleteUser={deleteUser}
+      getUsers={getUsers}
     />
   );
 };

@@ -10,6 +10,12 @@ export const displayFullName = (first, middle, last, lastFirst = true) => {
   return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
 };
 
+export const displayFullNameInOrder = (first, middle, last) => {
+  return `${first || "?"} ${middle || ""} ${last || ""}`
+    .replace(/ +/g, " ")
+    .trim();
+};
+
 export const isLocalHost = () =>
   Boolean(window.location.hostname === "localhost");
 
