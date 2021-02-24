@@ -5,7 +5,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 public class TestUserIdentities {
 
     public static final String SITE_ADMIN_USER = "ruby@example.com";
-    public static final String STANDARD_USER = "bob@example.com";
+    public static final String STANDARD_USER = "bobbity@example.com";
 
     public static final IdentityAttributes STANDARD_USER_ATTRIBUTES = new IdentityAttributes(STANDARD_USER, "Bobbity",
             "Bob", "Bobberoo", null);

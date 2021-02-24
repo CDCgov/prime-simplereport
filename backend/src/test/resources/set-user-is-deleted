@@ -1,0 +1,21 @@
+mutation setUserIsDeleted(
+    $id: ID!,
+    $deleted: Boolean!,
+    ){
+  setUserIsDeleted(
+    id: $id
+    deleted: $deleted
+  ) {
+      id
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      organization {
+        name
+        externalId
+      }
+    }
+}

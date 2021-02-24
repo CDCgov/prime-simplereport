@@ -21,7 +21,6 @@ services:
       - START_XFVB=FALSE
 
   nightwatch:
-    image: gitlab-dev.bespinmobile.cloud:4567/gearfit/gearfit/nightwatch:latest
     build: .
     network_mode: "host"
     depends_on:

@@ -9,6 +9,17 @@ export type UserPermission =
   | "SUBMIT_TEST"
   | "SEARCH_PATIENTS";
 
+export type UserRole = "admin" | "user" | "entry-only";
+
+// this is what the server sends back in the user.roleDescription field. It is used as the display value (most of the time)
+export type RoleDescription =
+  | "Admin user"
+  | "Standard user"
+  | "Test-entry user";
+
+// when changing a user's role, the server expects one of these values as the roleDescription. It's annoying how its not consistent with RoleDescription
+export type OrganizationRole = "ADMIN" | "USER" | "ENTRY_ONLY";
+
 /* 
     TODO: this is a quick v0
 

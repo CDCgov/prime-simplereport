@@ -23,10 +23,11 @@ public class AuditingConfig {
 	private ApiUserService _userService;
 
 	@Bean
-	public AuditorAware<ApiUser> getCurrentUserProvider() {
+	public AuditorAware<ApiUser> getCurrentApiUserProvider() {
 		return () -> {
 			LOG.debug("Fetching current user for audit");
-			return Optional.ofNullable(_userService.getCurrentUser());
+			Optional<ApiUser> user = Optional.of(_userService.getCurrentApiUserInContainedTransaction());
+			return user;
 		};
 	}
 

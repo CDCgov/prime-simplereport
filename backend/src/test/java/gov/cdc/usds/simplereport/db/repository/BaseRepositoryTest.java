@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
+
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 
 @DataJpaTest
@@ -24,6 +26,9 @@ public abstract class BaseRepositoryTest {
 
     @Autowired
     private TestEntityManager _manager;
+
+    @Autowired
+    protected OrganizationInitializingService _initService;
 
     protected void flush() {
         _manager.flush();

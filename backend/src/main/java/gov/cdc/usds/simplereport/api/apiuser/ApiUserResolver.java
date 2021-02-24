@@ -1,16 +1,13 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 
 import gov.cdc.usds.simplereport.service.ApiUserService;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
-import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
 /**
@@ -20,17 +17,17 @@ import graphql.kickstart.tools.GraphQLQueryResolver;
 public class ApiUserResolver implements GraphQLQueryResolver  {
 
 	private ApiUserService _userService;
-	private OrganizationService _organizationService;
 
-	public ApiUserResolver(OrganizationService os, ApiUserService users, OrganizationInitializingService initer) {
-		_organizationService = os;
-		_userService = users;
+	public ApiUserResolver(ApiUserService userService) {
+		_userService = userService;
 	}
 
 	public User getWhoami() {
-		ApiUser currentUser = _userService.getCurrentUser();
-		Optional<CurrentOrganizationRoles> currentOrgRoles = _organizationService.getCurrentOrganizationRoles();
-		Boolean isAdmin = _userService.isAdminUser(currentUser);
-        return new User(currentUser, currentOrgRoles, isAdmin);
+		return new User(_userService.getCurrentUserInfo());
+	}
+
+	public List<User> getUsers() {
+		return _userService.getUsersInCurrentOrg().stream()
+				.map(User::new).collect(Collectors.toList());
 	}
 }

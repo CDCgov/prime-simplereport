@@ -1,90 +1,64 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.List;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 
 public class User {
 
-    private ApiUser wrapped;
-	private Optional<Organization> org;
-	private Boolean isAdmin;
-    private String roleDescription;
-	private List<UserPermission> permissions;
+    private UserInfo wrapped;
 
-    public User(ApiUser user, Optional<CurrentOrganizationRoles> orgwrapper, boolean isAdmin) {
+    public User(UserInfo user) {
         this.wrapped = user;
-        this.org = orgwrapper.map(CurrentOrganizationRoles::getOrganization);
-        this.permissions = new ArrayList<>();
-        this.isAdmin = isAdmin;
-        Optional<OrganizationRole> effectiveRole = orgwrapper.flatMap(CurrentOrganizationRoles::getEffectiveRole);
-        this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
-        effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
     }
 
-    public User(ApiUser user, Optional<Organization> org, boolean isAdmin, Optional<OrganizationRole> role) {
-        this.wrapped = user;
-        this.org = org;
-        this.isAdmin = isAdmin;
-        this.permissions = new ArrayList<>();
-        role.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
-        this.roleDescription = buildRoleDescription(role, isAdmin);
-
+    public UUID getId() {
+        return wrapped.getId();
     }
 
-    private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
-        if (role.isPresent()) {
-            String desc = role.get().getDescription();
-            return isAdmin ? desc + " (SU)" : desc;
-        } else {
-            return isAdmin ? "Super Admin" : "Misconfigured user";
-        }
+    public Optional<Organization> getOrganization() {
+        return wrapped.getOrganization();
     }
 
-	public String getId() {
-        return wrapped.getInternalId().toString();
-	}
+    public String getFirstName() {
+        return wrapped.getFirstName();
+    }
 
-	public Optional<Organization> getOrganization() {
-		return org;
-	}
+    public String getMiddleName() {
+        return wrapped.getMiddleName();
+    }
 
-	public String getFirstName() {
-        return wrapped.getNameInfo().getFirstName();
-	}
+    public String getLastName() {
+        return wrapped.getLastName();
+    }
 
-	public String getMiddleName() {
-        return wrapped.getNameInfo().getMiddleName();
-	}
-
-	public String getLastName() {
-        return wrapped.getNameInfo().getLastName();
-	}
-
-	public String getSuffix() {
-        return wrapped.getNameInfo().getSuffix();
-	}
+    public String getSuffix() {
+        return wrapped.getSuffix();
+    }
 
     // Note: we assume a user's email and login username are the same thing.
-	public String getEmail() {
-        return wrapped.getLoginEmail();
-	}
+    public String getEmail() {
+        return wrapped.getEmail();
+    }
 
-	public Boolean getIsAdmin() {
-		return isAdmin;
-	}
+    public boolean getIsAdmin() {
+        return wrapped.getIsAdmin();
+    }
 
-	public List<UserPermission> getPermissions() {
-		return permissions;
-	}
+    public List<UserPermission> getPermissions() {
+        return wrapped.getPermissions();
+    }
 
     public String getRoleDescription() {
-        return roleDescription;
+        return wrapped.getRoleDescription();
+    }
+
+    public List<OrganizationRole> getRoles() {
+        return wrapped.getRoles();
     }
 }

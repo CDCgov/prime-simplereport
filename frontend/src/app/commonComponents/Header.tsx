@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
@@ -12,15 +11,18 @@ import Button from "./Button";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
+import { LinkWithQuery } from "./LinkWithQuery";
 
 const Header: React.FC<{}> = () => {
   const organization = useSelector(
     (state) => (state as any).organization as Organization
   );
   const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
+    (state) => ((state as any).facilities as Facility[]) || []
   );
-  const facility = useSelector((state) => (state as any).facility as Facility);
+  const facility = useSelector(
+    (state) => ((state as any).facility as Facility) || { id: "", name: "" }
+  );
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
   const {
@@ -71,17 +73,13 @@ const Header: React.FC<{}> = () => {
       <div className="usa-nav-container">
         <div className="usa-navbar">
           <div className="usa-logo" id="basic-logo">
-            <Link
-              to={`/queue/?facility=${facility.id}`}
-              title="Home"
-              aria-label="Home"
-            >
+            <LinkWithQuery to={`/queue`} title="Home" aria-label="Home">
               <img
                 className="width-card desktop:width-full"
                 src={siteLogo}
                 alt="{process.env.REACT_APP_TITLE}"
               />
-            </Link>
+            </LinkWithQuery>
             <div className="prime-organization-name">{organization.name}</div>
           </div>
           <button
@@ -114,8 +112,8 @@ const Header: React.FC<{}> = () => {
           <ul className="usa-nav__primary usa-accordion">
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <NavLink
-                  to={`/queue/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/queue`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -124,13 +122,13 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   Conduct Tests
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
             {canViewResults ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <NavLink
-                  to={`/results/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/results`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -139,13 +137,13 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   Results
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
             {canViewPeople ? (
               <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
-                <NavLink
-                  to={`/patients/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/patients`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -154,7 +152,7 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
@@ -186,8 +184,8 @@ const Header: React.FC<{}> = () => {
 
             {canViewSettings ? (
               <li className="usa-nav__primary-item prime-settings-hidden">
-                <NavLink
-                  to={`/settings/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/settings`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   activeStyle={{
@@ -195,7 +193,7 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   <FontAwesomeIcon icon={"cog"} /> Settings
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
           </ul>
@@ -205,8 +203,8 @@ const Header: React.FC<{}> = () => {
           <ul className="usa-nav__primary usa-accordion">
             {canViewTestQueue ? (
               <li className="usa-nav__primary-item">
-                <NavLink
-                  to={`/queue/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/queue`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -216,13 +214,13 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   Conduct Tests
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
             {canViewResults ? (
               <li className="usa-nav__primary-item">
-                <NavLink
-                  to={`/results/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/results`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -232,13 +230,13 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   Results
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
             {canViewPeople ? (
               <li className="usa-nav__primary-item">
-                <NavLink
-                  to={`/patients/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/patients`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
@@ -248,7 +246,7 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
           </ul>
@@ -264,7 +262,7 @@ const Header: React.FC<{}> = () => {
           </div>
           <ul className="usa-nav__primary usa-accordion">
             <li className="usa-nav__primary-item nav__primary-item-icon">
-              <NavLink
+              <LinkWithQuery
                 to={`#`}
                 isActive={() => staffDetailsVisible}
                 onClick={(e) => {
@@ -279,7 +277,7 @@ const Header: React.FC<{}> = () => {
                     color: staffDetailsVisible ? "white" : "",
                   }}
                 />
-              </NavLink>
+              </LinkWithQuery>
               <div
                 ref={staffDefailsRef}
                 aria-label="Primary navigation"
@@ -310,8 +308,8 @@ const Header: React.FC<{}> = () => {
             </li>
             {canViewSettings ? (
               <li className="usa-nav__primary-item nav__primary-item-icon">
-                <NavLink
-                  to={`/settings/?facility=${facility.id}`}
+                <LinkWithQuery
+                  to={`/settings`}
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   activeStyle={{
@@ -319,7 +317,7 @@ const Header: React.FC<{}> = () => {
                   }}
                 >
                   <FontAwesomeIcon icon={"cog"} />
-                </NavLink>
+                </LinkWithQuery>
               </li>
             ) : null}
           </ul>

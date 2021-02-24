@@ -5,7 +5,11 @@ import Required from "./Required";
 import Optional from "./Optional";
 
 type OptionsKeys = { [label: string]: string };
-type OptionsArray = { label: string; value: string; disabled?: boolean }[];
+type OptionsArray = {
+  label: React.ReactNode;
+  value: string;
+  disabled?: boolean;
+}[];
 type Options = OptionsKeys | OptionsArray;
 
 interface Props {
@@ -54,7 +58,7 @@ const RadioGroup = ({
     "usa-radio",
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
-  const choices = Array.isArray(buttons)
+  const choices: OptionsArray = Array.isArray(buttons)
     ? buttons
     : Object.keys(buttons).map((k) => ({
         label: k,
@@ -92,27 +96,34 @@ const RadioGroup = ({
           validationStatus === "error" && "usa-form-group--error"
         )}
       >
-        {choices.map((c, i) => (
-          <div className={groupClass} key={c.value}>
-            <input
-              type="radio"
-              id={`${widgetId}_${c.value}_${i}`}
-              name={name}
-              value={c.value}
-              disabled={c.disabled || false}
-              className={inputClass}
-              checked={c.value === selectedRadio}
-              onChange={onChange}
-              {...inputProps}
-            />
-            <label
-              className="usa-radio__label"
-              htmlFor={`${widgetId}_${c.value}_${i}`}
-            >
-              {c.label}
-            </label>
-          </div>
-        ))}
+        {choices.map((c, i) => {
+          const labelClasses = classnames(
+            "usa-radio__label",
+            (c.disabled || inputProps.disabled) && "text-base"
+          );
+          return (
+            <div className={groupClass} key={c.value}>
+              <input
+                type="radio"
+                id={`${widgetId}_${c.value}_${i}`}
+                name={name}
+                value={c.value}
+                data-required={required || "false"}
+                disabled={c.disabled || false}
+                className={inputClass}
+                checked={c.value === selectedRadio}
+                onChange={onChange}
+                {...inputProps}
+              />
+              <label
+                className={labelClasses}
+                htmlFor={`${widgetId}_${c.value}_${i}`}
+              >
+                {c.label}
+              </label>
+            </div>
+          );
+        })}
       </div>
     </fieldset>
   );

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 
@@ -23,8 +23,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 	}
 
 	public Optional<Organization> getOrganization() {
-		Optional<CurrentOrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
-		return roles.map(CurrentOrganizationRoles::getOrganization);
+		Optional<OrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
+		return roles.map(OrganizationRoles::getOrganization);
 	}
 
     public List<Organization> getOrganizations() {

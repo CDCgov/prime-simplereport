@@ -31,6 +31,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_POSITIVE_0"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
@@ -52,6 +53,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_NEGATIVE_1"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
@@ -73,6 +75,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_UNDETERMINED_2"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
@@ -136,6 +139,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_POSITIVE_0"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
@@ -157,6 +161,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_NEGATIVE_1"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
@@ -178,6 +183,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_UNDETERMINED_2"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"

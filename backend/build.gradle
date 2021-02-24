@@ -25,6 +25,7 @@ dependencies {
 
 	// data layer dependencies
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
 	implementation 'org.liquibase:liquibase-core'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -91,6 +92,7 @@ sonarqube {
 		property "sonar.host.url", "https://sonarcloud.io"
 		// In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
 		property "sonar.sources", "backend/src/main/java,frontend/src"
+		property "sonar.exclusions", "frontend/src/**/*.test.*"
 		property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
 	}
 }
@@ -102,6 +104,11 @@ task testDbStart(type: Exec) {
 
 task testDbStop(type: Exec) {
     commandLine "docker-compose", "-p", "simple-report-tests", "down"
+}
+
+task testDbReset(type: Exec) {
+    environment "SR_DB_PORT", testDbPort
+    commandLine "db-setup/nuke-db.sh"
 }
 
 test {

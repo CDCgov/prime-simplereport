@@ -41,6 +41,20 @@ public class AuthorizationConfiguration {
     }
 
     /**
+     * Require the current user to to be one of the administrative 
+     * users ("superusers") or have the {@link UserPermission#MANAGE_USERS}
+     * permission for the organization containing user with UUID {@code userId}.
+     * NOTE: any method with this annotation must have a parameter {@code userId}.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize("( @" + AUTHORIZER_BEAN + ".userHasSiteAdminRole() || " +
+                  "(" + SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")" + " && " + 
+                  "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)" + ") )")
+    public @interface RequireGlobalAdminUserOrPermissionManageTargetUser {
+    }
+
+    /**
      * Require the current user to have the {@link UserPermission#READ_PATIENT_LIST}
      * permission.
      */
@@ -90,6 +104,16 @@ public class AuthorizationConfiguration {
     public @interface RequirePermissionEditOrganization {
     }
 
+    /**
+     * Require the current user to have the {@link UserPermission#MANAGE_USERS}
+     * permission.
+     */
+    @Retention(RUNTIME)
+    @Target(METHOD)
+    @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")")
+    public @interface RequirePermissionManageUsers {
+    }
+    
     /**
      * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS}
      * permission.

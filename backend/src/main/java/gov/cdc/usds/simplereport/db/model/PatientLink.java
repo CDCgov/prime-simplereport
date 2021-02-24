@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
-public class PatientLink extends EternalEntity {
+public class PatientLink extends EternalAuditedEntity {
 
     @OneToOne(optional = false)
     @JoinColumn(name = "test_order_id", nullable = false)

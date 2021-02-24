@@ -63,6 +63,11 @@ public class TestOrder extends BaseTestInfo {
 		return askOnEntrySurvey;
 	}
 
+    @Override
+    public void setDeviceSpecimen(DeviceSpecimenType ds) {
+        super.setDeviceSpecimen(ds);
+    }
+
 	@Override
 	public void setDateTestedBackdate(Date date) {
 		super.setDateTestedBackdate(date);
@@ -128,11 +133,6 @@ public class TestOrder extends BaseTestInfo {
 
 	public Boolean getNoSymptoms() {
 		return askOnEntrySurvey.getSurvey().getNoSymptoms();
-	}
-
-	@Override
-	public void setDeviceType(DeviceType deviceType) {
-		super.setDeviceType(deviceType);
 	}
 
 	// this will eventually be used when corrections are put back into the queue to

@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
@@ -23,8 +24,6 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 
@@ -32,15 +31,11 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
         @Autowired
-        private DeviceTypeRepository _deviceTypeRepo;
-        @Autowired
         private OrganizationService _organizationService;
         @Autowired
         private PersonService _personService;
         @Autowired
         private HibernateQueryInterceptor hibernateQueryInterceptor;
-        @Autowired
-        private TestDataFactory _dataFactory;
 
         @BeforeEach
         void setupData() {
@@ -74,7 +69,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 _service.addPatientToQueue(facility.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(),
                                 false, LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25),
                                 false);
-                DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
+                DeviceType devA = _dataFactory.getGenericDevice();
 
                 _service.addTestResult(devA.getInternalId().toString(), TestResult.POSITIVE,
                                 p.getInternalId().toString(), null);
@@ -94,7 +89,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "",
                                 Collections.<String, Boolean>emptyMap(), false, LocalDate.of(1865, 12, 25), "",
                                 TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-                DeviceType devA = _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", "E"));
+                DeviceType devA = _dataFactory.getGenericDevice();
+                assertNotEquals(o.getDeviceType().getName(), devA.getName());
 
                 _service.editQueueItem(o.getInternalId().toString(), devA.getInternalId().toString(),
                                 TestResult.POSITIVE.toString(), null);

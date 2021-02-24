@@ -67,12 +67,53 @@
 
 .prime-queue-item {
   padding: 0;
-  // margin-bottom: 1rem;
   position: relative;
+  .prime-card-container {
+    border-left-width: 0.5em;
+    border-left-style: solid;
+    border-color: transparent;
+  }
+  .prime-test-name {
+    padding-left: 2em;
+    margin-left: -0.5em;
+  }
+  .result-ready {
+    font-weight: bold;
+  }
 }
 
 .prime-queue-item .usa-card__footer .usa-form label {
   margin-top: 0.5rem;
+}
+
+.prime-queue-item__ready {
+  border-color: color($theme-color-warning);
+  .prime-test-name {
+    margin-left: 0em;
+    padding-left: 1.5em;
+  }
+  .prime-card-container {
+    border-color: color($theme-color-warning);
+  }
+  .timer-ready {
+    background-color: color($theme-color-warning);
+    color: color($theme-color-prime-gray-darkest);
+    padding: units(1);
+    .timer-overtime {
+      color: color($theme-color-prime-gray-darkest);
+    }
+  }
+}
+
+.prime-queue-item__completed {
+  .timer-ready {
+    background-color: color($theme-color-warning-lighter);
+    color: color($theme-color-prime-gray-darkest);
+    padding: units(1);
+    .timer-overtime {
+      color: color($theme-color-prime-gray-darkest);
+    }
+  }
 }
 
 .prime-container-padding {
@@ -182,16 +223,59 @@
   bottom: 0;
   z-index: 1000;
 }
+
 .prime-modal-buttons {
   display: flex;
   justify-content: flex-end;
   margin: 0 1em;
 }
+
 .prime-modal-buttons button {
   margin-left: 1em;
 }
-.prime-modal-text {
+
+.sr-modal-content p {
   margin: 1em;
+}
+
+// Simple modal
+.modal--basic {
+  .ReactModal__Content {
+    @include u-margin-x("4");
+    max-height: 90vh;
+    width: units("mobile-lg");
+  }
+
+  .modal__container {
+    position: relative;
+  }
+
+  .modal__close-button {
+    position: absolute;
+    right: 0;
+  }
+
+  .modal__heading {
+    margin-right: units(3);
+  }
+}
+
+.modal__close-button {
+  @include button-unstyled;
+  @include u-square($size-touch-target);
+  display: block;
+  margin-bottom: 0;
+  margin-right: units("neg-205");
+  margin-top: units("neg-205");
+  text-align: center;
+}
+
+.modal__close-img {
+  width: units(4);
+}
+
+.modal__content {
+  @extend .usa-prose;
 }
 
 .usa-alert--success {

@@ -39,7 +39,7 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private PersonService ps;
 
-    @Value("${feature-flags.patient-links:false}")
+    @Value("${simple-report.feature-flags.patient-links:false}")
     private boolean patientLinksEnabled;
 
     public PatientLink refreshPatientLink(String internalId) {

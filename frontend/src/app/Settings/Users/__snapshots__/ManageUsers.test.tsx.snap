@@ -1,0 +1,460 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ManageUsers disables logged-in user's settings 1`] = `
+<div>
+  <div
+    class="prime-container usa-card__container"
+  >
+    <div
+      class="usa-card__header"
+    >
+      <h2>
+        Manage Users
+      </h2>
+      <button
+        class="usa-button usa-button--outline"
+        type="button"
+      >
+        + New user
+      </button>
+    </div>
+    <div
+      class="usa-card__body"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="display-block users-sidenav"
+        >
+          <h3>
+            Users
+          </h3>
+          <ul
+            class="usa-sidenav"
+          >
+            <li
+              class="usa-sidenav__item users-sidenav-item"
+            >
+              <button
+                class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2"
+                style="cursor: pointer;"
+              >
+                <span
+                  class="sidenav-user-name"
+                >
+                  Arthur, John
+                </span>
+                <br />
+                <span
+                  class="sidenav-user-email"
+                >
+                  john@arthur.org
+                </span>
+              </button>
+            </li>
+            <li
+              class="usa-sidenav__item users-sidenav-item"
+            >
+              <button
+                class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 usa-current"
+                style="cursor: pointer;"
+              >
+                <span
+                  class="sidenav-user-name"
+                >
+                  Bobberoo, Bob
+                </span>
+                <br />
+                <span
+                  class="sidenav-user-email"
+                >
+                  bob@bobberoo.org
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div
+          class="tablet:grid-col padding-left-2"
+        >
+          <div
+            class="user-header grid-row flex-row flex-align-center"
+          >
+            <h2
+              class="display-inline-block margin-y-1"
+            >
+              Bob Bobberoo
+            </h2>
+            <span
+              class="usa-tag margin-left-1 bg-base-lighter text-ink"
+            >
+              YOU
+            </span>
+          </div>
+          <div
+            class="user-content"
+          >
+            <p
+              class="text-base"
+            >
+              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+            </p>
+            <fieldset
+              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
+            >
+              <legend
+                class="usa-legend usa-sr-only"
+              >
+                Roles
+                <span
+                  class="usa-hint"
+                >
+                   (optional)
+                </span>
+              </legend>
+              <div
+                class="usa-form-group"
+              >
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    disabled=""
+                    id="radio-test-1_Admin user_0"
+                    name="roleDescription"
+                    type="radio"
+                    value="Admin user"
+                  />
+                  <label
+                    class="usa-radio__label text-base"
+                    for="radio-test-1_Admin user_0"
+                  >
+                    Admin (full permissions)
+                  </label>
+                </div>
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    disabled=""
+                    id="radio-test-1_Standard user_1"
+                    name="roleDescription"
+                    type="radio"
+                    value="Standard user"
+                  />
+                  <label
+                    class="usa-radio__label text-base"
+                    for="radio-test-1_Standard user_1"
+                  >
+                    Standard user (manage results and profiles)
+                  </label>
+                </div>
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    disabled=""
+                    id="radio-test-1_Test-entry user_2"
+                    name="roleDescription"
+                    type="radio"
+                    value="Test-entry user"
+                  />
+                  <label
+                    class="usa-radio__label text-base"
+                    for="radio-test-1_Test-entry user_2"
+                  >
+                    Entry only (conduct tests)
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+            <h3>
+              Facility access
+            </h3>
+            <p>
+              Admins have access to all facilities
+            </p>
+            <table
+              class="usa-table usa-table--borderless"
+              style="width: 100%;"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    Foo Org
+                  </td>
+                  <td />
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0"
+          >
+            <button
+              class="usa-button usa-button--outline usa-button-disabled flex-align-self-start display-inline-block"
+              disabled=""
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-trash fa-w-14 margin-right-1"
+                data-icon="trash"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+                  fill="currentColor"
+                />
+              </svg>
+              Remove user
+            </button>
+            <button
+              class="usa-button usa-button-disabled"
+              disabled=""
+              type="button"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ManageUsers displays the list of users and defaults to the first user 1`] = `
+<div>
+  <div
+    class="prime-container usa-card__container"
+  >
+    <div
+      class="usa-card__header"
+    >
+      <h2>
+        Manage Users
+      </h2>
+      <button
+        class="usa-button usa-button--outline"
+        type="button"
+      >
+        + New user
+      </button>
+    </div>
+    <div
+      class="usa-card__body"
+    >
+      <div
+        class="grid-row"
+      >
+        <div
+          class="display-block users-sidenav"
+        >
+          <h3>
+            Users
+          </h3>
+          <ul
+            class="usa-sidenav"
+          >
+            <li
+              class="usa-sidenav__item users-sidenav-item"
+            >
+              <button
+                class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2 usa-current"
+                style="cursor: pointer;"
+              >
+                <span
+                  class="sidenav-user-name"
+                >
+                  Arthur, John
+                </span>
+                <br />
+                <span
+                  class="sidenav-user-email"
+                >
+                  john@arthur.org
+                </span>
+              </button>
+            </li>
+            <li
+              class="usa-sidenav__item users-sidenav-item"
+            >
+              <button
+                class="usa-button--unstyled text-ink text-no-underline padding-105 padding-right-2"
+                style="cursor: pointer;"
+              >
+                <span
+                  class="sidenav-user-name"
+                >
+                  Bobberoo, Bob
+                </span>
+                <br />
+                <span
+                  class="sidenav-user-email"
+                >
+                  bob@bobberoo.org
+                </span>
+              </button>
+            </li>
+          </ul>
+        </div>
+        <div
+          class="tablet:grid-col padding-left-2"
+        >
+          <div
+            class="user-header grid-row flex-row flex-align-center"
+          >
+            <h2
+              class="display-inline-block margin-y-1"
+            >
+              John Arthur
+            </h2>
+          </div>
+          <div
+            class="user-content"
+          >
+            <p
+              class="text-base"
+            >
+              Admins have full access to conduct tests, manage results and profiles, and manage settings and users
+            </p>
+            <fieldset
+              class="usa-fieldset prime-radios margin-top-neg-1 margin-bottom-4"
+            >
+              <legend
+                class="usa-legend usa-sr-only"
+              >
+                Roles
+                <span
+                  class="usa-hint"
+                >
+                   (optional)
+                </span>
+              </legend>
+              <div
+                class="usa-form-group"
+              >
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    id="radio-test-1_Admin user_0"
+                    name="roleDescription"
+                    type="radio"
+                    value="Admin user"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="radio-test-1_Admin user_0"
+                  >
+                    Admin (full permissions)
+                  </label>
+                </div>
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    id="radio-test-1_Standard user_1"
+                    name="roleDescription"
+                    type="radio"
+                    value="Standard user"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="radio-test-1_Standard user_1"
+                  >
+                    Standard user (manage results and profiles)
+                  </label>
+                </div>
+                <div
+                  class="usa-radio"
+                >
+                  <input
+                    class="usa-radio__input"
+                    data-required="false"
+                    id="radio-test-1_Test-entry user_2"
+                    name="roleDescription"
+                    type="radio"
+                    value="Test-entry user"
+                  />
+                  <label
+                    class="usa-radio__label"
+                    for="radio-test-1_Test-entry user_2"
+                  >
+                    Entry only (conduct tests)
+                  </label>
+                </div>
+              </div>
+            </fieldset>
+            <h3>
+              Facility access
+            </h3>
+            <p />
+            <table
+              class="usa-table usa-table--borderless"
+              style="width: 100%;"
+            >
+              <tbody>
+                <tr>
+                  <td>
+                    Foo Org
+                  </td>
+                  <td />
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            class="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0"
+          >
+            <button
+              class="usa-button usa-button--outline flex-align-self-start display-inline-block"
+              type="button"
+            >
+              <svg
+                aria-hidden="true"
+                class="svg-inline--fa fa-trash fa-w-14 margin-right-1"
+                data-icon="trash"
+                data-prefix="fas"
+                focusable="false"
+                role="img"
+                viewBox="0 0 448 512"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M432 32H312l-9.4-18.7A24 24 0 0 0 281.1 0H166.8a23.72 23.72 0 0 0-21.4 13.3L136 32H16A16 16 0 0 0 0 48v32a16 16 0 0 0 16 16h416a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16zM53.2 467a48 48 0 0 0 47.9 45h245.8a48 48 0 0 0 47.9-45L416 128H32z"
+                  fill="currentColor"
+                />
+              </svg>
+              Remove user
+            </button>
+            <button
+              class="usa-button usa-button-disabled"
+              disabled=""
+              type="button"
+            >
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;

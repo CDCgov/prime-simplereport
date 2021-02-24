@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
-import java.util.Optional;
+import java.util.UUID;
 
 import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
@@ -18,11 +16,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
-    private final OrganizationService _os;
     private final ApiUserService _us;
 
-    public ApiUserMutationResolver(OrganizationService os, ApiUserService us) {
-        _os = os;
+    public ApiUserMutationResolver(ApiUserService us) {
         _us = us;
     }
 
@@ -32,36 +28,57 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
             String lastName,
             String suffix,
             String email,
-            // may want to replace with an Organization object in the future
-            String organizationExternalID
+            String organizationExternalID,
+            OrganizationRole role
                 ) {
-        _us.assertEmailAvailable(email);
-        ApiUser apiUser = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultRole());
+        // For backward compatibility
+        if (role == null) {
+            role = OrganizationRole.getDefault();
+        }
+        UserInfo user = _us.createUser(email, firstName, middleName, lastName, suffix, organizationExternalID, role);
+        return new User(user);
     }
-
-    public User updateUser(
+    
+    public User addUserToCurrentOrg(
             String firstName,
             String middleName,
             String lastName,
             String suffix,
-            String newEmail,
-            String oldEmail
+            String email,
+            OrganizationRole role
                 ) {
-        // if no changes to email are made, email validation will happen inside _us.updateUser()
-        if (!newEmail.equals(oldEmail)) {
-            _us.assertEmailAvailable(newEmail);
+        if (role == null) {
+            role = OrganizationRole.getDefault();
         }
-        ApiUser apiUser = _us.updateUser(newEmail, oldEmail, firstName, middleName, lastName, suffix);
-        Optional<Organization> org = _os.getOrganizationForUser(apiUser);
-        Boolean isAdmin = _us.isAdminUser(apiUser);
-        return new User(apiUser, org, isAdmin, getDefaultRole());
+        UserInfo user = _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix, role);
+        return new User(user);
     }
 
-    private Optional<OrganizationRole> getDefaultRole() {
-        return Optional.of(OrganizationRole.USER);
+    public User updateUser(
+            UUID id,
+            String firstName,
+            String middleName,
+            String lastName,
+            String suffix,
+            String email
+                ) {
+        UserInfo user = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
+        return new User(user);
+    }
+
+    public OrganizationRole updateUserRole(
+            UUID id,
+            OrganizationRole role
+                ) {
+        return _us.updateUserRole(id, role);
+    }
+
+    public User setUserIsDeleted(
+            UUID id,
+            boolean deleted
+                ) {
+        UserInfo user = _us.setIsDeleted(id, deleted);
+        return new User(user);
     }
 }
 

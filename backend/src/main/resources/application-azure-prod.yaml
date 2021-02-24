@@ -10,8 +10,8 @@ simple-report:
   data-hub:
     upload-enabled: true
     upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
-    upload-schedule: "0 0 5-17/2 * * *"
-  admin-emails:
+    upload-schedule: "0 0 5-21/2 * * *"
+  site-admin-emails:
     - bwarfield@cdc.gov
     - tim.best@usds.dhs.gov
     - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
@@ -19,7 +19,7 @@ simple-report:
     - neil.s.sharma@omb.eop.gov
     - wsullivan@cdc.gov
     - jeremy.a.zitomer@omb.eop.gov
-    - eapau@cdc.gov
+    - nicholas.scialli@usds.dhs.gov
     - qrk8@cdc.gov # Sparkle
     - David.w.methvin@omb.eop.gov
     - thomas.a.nielsen@omb.eop.gov

@@ -1,0 +1,327 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
+<div
+  id="test-modal-container"
+>
+  <div
+    className="display-flex flex-justify"
+  >
+    <h1
+      className="font-heading-lg margin-top-05 margin-bottom-0"
+    >
+      Jobs, Steve
+    </h1>
+    <div
+      className="sr-time-of-test-buttons"
+    >
+      <button
+        className="usa-button usa-button--unstyled"
+        onClick={[MockFunction]}
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        className="usa-button margin-right-0"
+        onClick={[Function]}
+        type="button"
+      >
+        save
+      </button>
+    </div>
+  </div>
+  <div
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+  />
+  <h2
+    className="font-heading-lg margin-top-205 margin-bottom-0"
+  >
+    Test questionnaire
+  </h2>
+  <fieldset
+    className="usa-fieldset prime-radios margin-top-205"
+  >
+    <legend
+      className="usa-legend"
+    >
+      How would you like to complete the questionnaire?
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </legend>
+    <div
+      className="usa-form-group"
+    >
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={true}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_text_0"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="text"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_text_0"
+        >
+          Text message
+          <span
+            className="radio__label-description--checked usa-radio__label-description text-base"
+          />
+        </label>
+      </div>
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_verbal_1"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="verbal"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_verbal_1"
+        >
+          Complete questionnaire verbally
+        </label>
+      </div>
+    </div>
+  </fieldset>
+  <div
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right"
+  >
+    <button
+      className="usa-button margin-right-205"
+      onClick={[Function]}
+      type="button"
+    >
+      Text link to complete on smartphone
+    </button>
+  </div>
+</div>
+`;
+
+exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
+<div
+  id="test-modal-container"
+>
+  <div
+    className="display-flex flex-justify"
+  >
+    <h1
+      className="font-heading-lg margin-top-05 margin-bottom-0"
+    >
+      Jobs, Steve
+    </h1>
+    <div
+      className="sr-time-of-test-buttons"
+    >
+      <button
+        className="usa-button usa-button--unstyled"
+        onClick={[MockFunction]}
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        className="usa-button margin-right-0"
+        onClick={[Function]}
+        type="button"
+      >
+        save
+      </button>
+    </div>
+  </div>
+  <div
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+  />
+  <h2
+    className="font-heading-lg margin-top-205 margin-bottom-0"
+  >
+    Test questionnaire
+  </h2>
+  <fieldset
+    className="usa-fieldset prime-radios margin-top-205"
+  >
+    <legend
+      className="usa-legend"
+    >
+      How would you like to complete the questionnaire?
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </legend>
+    <div
+      className="usa-form-group"
+    >
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_text_0"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="text"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_text_0"
+        >
+          Text message
+          <span
+            className="radio__label-description--checked usa-radio__label-description text-base"
+          />
+        </label>
+      </div>
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={true}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_verbal_1"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="verbal"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_verbal_1"
+        >
+          Complete questionnaire verbally
+        </label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+`;
+
+exports[`AoEModalForm on data loaded renders 1`] = `
+<div
+  id="test-modal-container"
+>
+  <div
+    className="display-flex flex-justify"
+  >
+    <h1
+      className="font-heading-lg margin-top-05 margin-bottom-0"
+    >
+      Jobs, Steve
+    </h1>
+    <div
+      className="sr-time-of-test-buttons"
+    >
+      <button
+        className="usa-button usa-button--unstyled"
+        onClick={[MockFunction]}
+        type="button"
+      >
+        Cancel
+      </button>
+      <button
+        className="usa-button margin-right-0"
+        onClick={[Function]}
+        type="button"
+      >
+        save
+      </button>
+    </div>
+  </div>
+  <div
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+  />
+  <h2
+    className="font-heading-lg margin-top-205 margin-bottom-0"
+  >
+    Test questionnaire
+  </h2>
+  <fieldset
+    className="usa-fieldset prime-radios margin-top-205"
+  >
+    <legend
+      className="usa-legend"
+    >
+      How would you like to complete the questionnaire?
+      <span
+        className="usa-hint"
+      >
+         (optional)
+      </span>
+    </legend>
+    <div
+      className="usa-form-group"
+    >
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_text_0"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="text"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_text_0"
+        >
+          Text message
+          <span
+            className="radio__label-description--checked usa-radio__label-description text-base"
+          />
+        </label>
+      </div>
+      <div
+        className="usa-radio"
+      >
+        <input
+          checked={false}
+          className="usa-radio__input"
+          data-required="false"
+          disabled={false}
+          id="radio-test-1_verbal_1"
+          name="qr-code"
+          onChange={[Function]}
+          type="radio"
+          value="verbal"
+        />
+        <label
+          className="usa-radio__label"
+          htmlFor="radio-test-1_verbal_1"
+        >
+          Complete questionnaire verbally
+        </label>
+      </div>
+    </div>
+  </fieldset>
+</div>
+`;

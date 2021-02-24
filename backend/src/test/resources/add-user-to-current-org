@@ -1,0 +1,30 @@
+mutation addUserToCurrentOrg(
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    $email: String!,
+    $role: OrganizationRole,
+    ){
+  addUserToCurrentOrg(
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+    email: $email
+    role: $role
+  ) {
+      id,
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      roles,
+      organization {
+        name
+        externalId
+      }
+    }
+}

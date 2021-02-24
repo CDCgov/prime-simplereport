@@ -14,18 +14,18 @@ import org.springframework.transaction.annotation.Transactional;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoles;
-import gov.cdc.usds.simplereport.db.model.ApiUser;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
-import gov.cdc.usds.simplereport.service.model.CurrentOrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
 
 @Service
@@ -38,24 +38,24 @@ public class OrganizationService {
     private FacilityRepository _facilityRepo;
     private ProviderRepository _providerRepo;
     private AuthorizationService _authService;
-    private OktaService _oktaService;
+    private OktaRepository _oktaRepo;
 
     public OrganizationService(OrganizationRepository repo,
             FacilityRepository facilityRepo,
             AuthorizationService authService,
             ProviderRepository providerRepo,
-            OktaService oktaService) {
+            OktaRepository oktaRepo) {
         _repo = repo;
         _facilityRepo = facilityRepo;
         _authService = authService;
         _providerRepo = providerRepo;
-        _oktaService = oktaService;
+        _oktaRepo = oktaRepo;
     }
 
-    public Optional<CurrentOrganizationRoles> getCurrentOrganizationRoles() {
-        List<OrganizationRoles> orgRoles = _authService.findAllOrganizationRoles();
+    public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
+        List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
         List<String> candidateExternalIds = orgRoles.stream()
-                .map(OrganizationRoles::getOrganizationExternalId)
+                .map(OrganizationRoleClaims::getOrganizationExternalId)
                 .collect(Collectors.toList());
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
@@ -65,14 +65,14 @@ public class OrganizationService {
             return Optional.empty();
         }
         Organization foundOrg = validOrgs.get(0);
-        OrganizationRoles foundRoles = orgRoles.stream()
+        Optional<OrganizationRoleClaims> foundRoles = orgRoles.stream()
                 .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
-                .findFirst().get();
-        return Optional.of(new CurrentOrganizationRoles(foundOrg, foundRoles.getGrantedRoles()));
+                .findFirst();
+        return foundRoles.map(r -> new OrganizationRoles(foundOrg, r.getGrantedRoles()));
     }
 
     public Organization getCurrentOrganization() {
-        CurrentOrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
+        OrganizationRoles orgRole = getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
         return orgRole.getOrganization();
     }
 
@@ -86,19 +86,10 @@ public class OrganizationService {
         return _repo.findAll();
     }
 
-    public Optional<Organization> getOrganizationForUser(ApiUser apiUser) {
-        String orgExternalId = _oktaService.getOrganizationExternalIdForUser(apiUser.getLoginEmail());
-        if (orgExternalId == null) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(getOrganization(orgExternalId));
-    }
-
     public void assertFacilityNameAvailable(String testingFacilityName) {
         Organization org = getCurrentOrganization();
         _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
-            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");})
-        ;
+            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");});
     }
 
     public List<Facility> getFacilities(Organization org) {
@@ -137,15 +128,13 @@ public class OrganizationService {
         String orderingProviderState,
         String orderingProviderZipCode,
         String orderingProviderTelephone,
-        List<DeviceType> devices,
-        DeviceType defaultDeviceType
+            DeviceTypeHolder deviceHolder
     ) {
         Facility facility = this.getFacilityInCurrentOrg(facilityId);
         facility.setFacilityName(testingFacilityName);
         facility.setCliaNumber(cliaNumber);
         facility.setTelephone(phone);
         facility.setEmail(email);
-        facility.addDefaultDeviceType(defaultDeviceType);
         StreetAddress af = facility.getAddress() == null ? new StreetAddress(
             street,
             streetTwo,
@@ -184,16 +173,16 @@ public class OrganizationService {
         a.setPostalCode(orderingProviderZipCode);
         p.setAddress(a);
 
+        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceTypes()) {
+            facility.addDeviceSpecimenType(ds);
+        }
         // remove all existing devices
-        for(DeviceType d : facility.getDeviceTypes()) {
-            facility.removeDeviceType(d);
+        for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
+            if (!deviceHolder.getConfiguredDeviceTypes().contains(ds)) {
+                facility.removeDeviceSpecimenType(ds);
+            }
         }
-
-        // add new devices
-        for(DeviceType d : devices) {
-            facility.addDeviceType(d);
-        }
-        facility.setDefaultDeviceType(defaultDeviceType);
+        facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceType());
         return _facilityRepo.save(facility);
     }
 
@@ -208,14 +197,14 @@ public class OrganizationService {
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
                 orderingProvider, deviceTypes.getDefaultDeviceType(), deviceTypes.getConfiguredDeviceTypes());
         _facilityRepo.save(facility);
-        _oktaService.createOrganization(name, externalId);
+        _oktaRepo.createOrganization(name, externalId);
         return org;
     }
 
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditOrganization
     public Organization updateOrganization(String name) {
-        Organization org = this.getCurrentOrganization();
+        Organization org = getCurrentOrganization();
         org.setOrganizationName(name);
         return _repo.save(org);
     }
