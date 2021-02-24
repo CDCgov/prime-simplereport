@@ -35,10 +35,10 @@ jobs:
           ./build_and_push.sh
       - uses: hashicorp/setup-terraform@v1
       - name: Terraform Init
-        working-directory: ${{ github.workspace }}/ops/${{ DEPLOY_ENV }}
+        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
         run: terraform init
       - name: Azure deploy Api
-        working-directory: ${{ github.workspace }}/ops/${{ DEPLOY_ENV }}
+        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
         run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api.azurerm_app_service.service"
   deploy-frontend:
     runs-on: ubuntu-latest
@@ -58,4 +58,4 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: yarn run deploy-azure-${{ DEPLOY_ENV }}
+        run: yarn run deploy-azure-${{ env.DEPLOY_ENV }}
