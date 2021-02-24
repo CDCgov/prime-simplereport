@@ -189,13 +189,13 @@ public class OrganizationService {
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
-            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceSpecimenTypeHolder deviceTypes,
+            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceSpecimenTypeHolder deviceSpecimenTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
-                orderingProvider, deviceTypes.getDefaultDeviceSpecimenType(), deviceTypes.getConfiguredDeviceSpecimenTypes());
+                orderingProvider, deviceSpecimenTypes.getDefaultDeviceSpecimenType(), deviceSpecimenTypes.getConfiguredDeviceSpecimenTypes());
         _facilityRepo.save(facility);
         _oktaRepo.createOrganization(name, externalId);
         return org;
@@ -212,7 +212,7 @@ public class OrganizationService {
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditFacility
     public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
-            DeviceSpecimenTypeHolder deviceTypes,
+            DeviceSpecimenTypeHolder deviceSpecimenTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
@@ -221,7 +221,7 @@ public class OrganizationService {
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,
             orderingProvider,
-            deviceTypes.getDefaultDeviceSpecimenType(), deviceTypes.getConfiguredDeviceSpecimenTypes());
+            deviceSpecimenTypes.getDefaultDeviceSpecimenType(), deviceSpecimenTypes.getConfiguredDeviceSpecimenTypes());
         return _facilityRepo.save(facility);
     }
 }

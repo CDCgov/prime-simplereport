@@ -46,7 +46,9 @@ public class Facility extends OrganizationScopedEternalEntity {
     private DeviceSpecimenType defaultDeviceSpecimen;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "facility_device_specimen_type", joinColumns = @JoinColumn(name = "facility_id"), inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
+    @JoinTable(name = "facility_device_specimen_type",
+            joinColumns = @JoinColumn(name = "facility_id"),
+            inverseJoinColumns = @JoinColumn(name = "device_specimen_type_id"))
     private Set<DeviceSpecimenType> configuredDeviceSpecimenTypes = new HashSet<>();
 
     protected Facility() {
