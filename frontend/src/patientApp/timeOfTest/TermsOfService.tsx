@@ -20,6 +20,7 @@ const TermsOfService = () => {
           <ToS />
         </div>
         <Button
+          id="tos-consent-button"
           label="I consent to the Terms of Service"
           onClick={() => setNextPage(true)}
           className="margin-top-3"
