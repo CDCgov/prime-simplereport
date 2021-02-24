@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import ManagePatients from "./ManagePatients";
 import { hasPermission, appPermissions } from "../permissions";
 
-const TestResultsContainer = () => {
+const ManagePatientsContainer = (props: { page?: number }) => {
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
@@ -26,8 +26,9 @@ const TestResultsContainer = () => {
       activeFacilityId={activeFacilityId}
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
+      currentPage={props.page}
     />
   );
 };
 
-export default TestResultsContainer;
+export default ManagePatientsContainer;
