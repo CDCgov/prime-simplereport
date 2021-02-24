@@ -1,6 +1,5 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import moment from "moment";
 import { displayFullName } from "../utils";
 import classnames from "classnames";
@@ -73,15 +72,18 @@ interface Props {
   canDeleteUser: boolean;
   currentPage?: number;
   pageCount: number;
+  entriesPerPage?: number;
   showDeleted?: boolean;
   data: { patients: Patient[] };
   refetch: () => null;
 }
 
-const DetachedManagePatients = ({
+export const DetachedManagePatients = ({
   activeFacilityId,
   canEditUser,
   data,
+  currentPage,
+  pageCount,
   refetch,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
@@ -157,7 +159,9 @@ const DetachedManagePatients = ({
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2>{PATIENT_TERM_PLURAL_CAP}</h2>
+              <h2>
+                {PATIENT_TERM_PLURAL_CAP} (Page {currentPage} of {pageCount})
+              </h2>
               {canEditUser ? (
                 <LinkWithQuery
                   className="usa-button usa-button--outline"
@@ -190,9 +194,6 @@ const DetachedManagePatients = ({
   );
 };
 
-// TODO: Figure out where to put this constant
-const pageSize = 10;
-
 const ManagePatients = (
   props: Omit<Props, InjectedQueryWrapperProps | "pageCount">
 ) => {
@@ -220,7 +221,8 @@ const ManagePatients = (
     throw error;
   }
 
-  const pageCount = Math.ceil(totalPatients.patientsCount / pageSize);
+  const entriesPerPage = props.entriesPerPage || 20;
+  const pageCount = Math.ceil(totalPatients.patientsCount / entriesPerPage);
   const pageNumber = props.currentPage || 1;
   return (
     <QueryWrapper<Props>
@@ -229,7 +231,7 @@ const ManagePatients = (
         variables: {
           facilityId: activeFacilityId,
           pageNumber: pageNumber - 1,
-          pageSize,
+          pageSize: entriesPerPage,
           showDeleted: props.showDeleted || false,
         },
       }}
@@ -242,7 +244,7 @@ const ManagePatients = (
       <Pagination
         baseRoute="/patients"
         currentPage={pageNumber}
-        entriesPerPage={pageSize}
+        entriesPerPage={entriesPerPage}
         totalEntries={totalPatients.patientsCount}
         className="prime-home padding-bottom-5"
       />

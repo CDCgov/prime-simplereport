@@ -131,7 +131,7 @@ const App = () => {
                   userPermissions={data.whoami.permissions}
                 />
                 <ProtectedRoute
-                  path={`/patients/:page`}
+                  path={`/patients/:page?`}
                   render={({ match }: any) => {
                     return <ManagePatientsContainer page={match.params.page} />;
                   }}

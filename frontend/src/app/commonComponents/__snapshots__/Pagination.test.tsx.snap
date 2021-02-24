@@ -1,0 +1,402 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Pagination should render Pagination cases: Pagination '2 pages' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Previous Page"
+          class=""
+          to="/1"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-angle-left fa-w-8 "
+            data-icon="angle-left"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 256 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
+              fill="currentColor"
+            />
+          </svg>
+           Prev
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 1"
+          class=""
+          to="/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 2"
+          class="is-active"
+          to="/2"
+        >
+          <span>
+            2
+          </span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Previous Page"
+          class=""
+          to="/3"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-angle-left fa-w-8 "
+            data-icon="angle-left"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 256 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
+              fill="currentColor"
+            />
+          </svg>
+           Prev
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 1"
+          class=""
+          to="/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 2"
+          class=""
+          to="/2"
+        >
+          <span>
+            2
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 3"
+          class=""
+          to="/3"
+        >
+          <span>
+            3
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 4"
+          class="is-active"
+          to="/4"
+        >
+          <span>
+            4
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 5"
+          class=""
+          to="/5"
+        >
+          <span>
+            5
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 6"
+          class=""
+          to="/6"
+        >
+          <span>
+            6
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 7"
+          class=""
+          to="/7"
+        >
+          <span>
+            7
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Next Page"
+          class=""
+          to="/5"
+        >
+          Next 
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-angle-right fa-w-8 "
+            data-icon="angle-right"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 256 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Previous Page"
+          class=""
+          to="/7"
+        >
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-angle-left fa-w-8 "
+            data-icon="angle-left"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 256 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
+              fill="currentColor"
+            />
+          </svg>
+           Prev
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 1"
+          class=""
+          to="/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+      <li
+        aria-hidden="true"
+      >
+        …
+      </li>
+      <li>
+        <div
+          aria-label="Page 6"
+          class=""
+          to="/6"
+        >
+          <span>
+            6
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 7"
+          class=""
+          to="/7"
+        >
+          <span>
+            7
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 8"
+          class="is-active"
+          to="/8"
+        >
+          <span>
+            8
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 9"
+          class=""
+          to="/9"
+        >
+          <span>
+            9
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Page 10"
+          class=""
+          to="/10"
+        >
+          <span>
+            10
+          </span>
+        </div>
+      </li>
+      <li>
+        <div
+          aria-label="Next Page"
+          class=""
+          to="/9"
+        >
+          Next 
+          <svg
+            aria-hidden="true"
+            class="svg-inline--fa fa-angle-right fa-w-8 "
+            data-icon="angle-right"
+            data-prefix="fas"
+            focusable="false"
+            role="img"
+            viewBox="0 0 256 512"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Pagination should render Pagination cases: Pagination 'undefined currentPage' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Page 1"
+          class="is-active"
+          to="/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Pagination should render Pagination cases: Pagination 'with baseRoute' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Page 1"
+          class="is-active"
+          to="/patients/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;
+
+exports[`Pagination should render Pagination cases: Pagination 'with className' 1`] = `
+<div>
+  <nav
+    aria-label="Pagination"
+    class="usa-pagination unique-class-name"
+    role="navigation"
+  >
+    <ol>
+      <li>
+        <div
+          aria-label="Page 1"
+          class="is-active"
+          to="/1"
+        >
+          <span>
+            1
+          </span>
+        </div>
+      </li>
+    </ol>
+  </nav>
+</div>
+`;

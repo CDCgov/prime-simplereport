@@ -3,6 +3,7 @@ import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import "./Pagination.scss";
+import { NavLink } from "react-router-dom";
 
 interface Props {
   baseRoute: string;
@@ -29,7 +30,7 @@ interface Props {
 //  << 1 2 3 _4_ 5 6 ... 71 >>
 
 // Always make this odd, current page is in the middle
-const defaultGroupSize = 5;
+const defaultGroupSize = 7;
 
 const Pagination = ({
   baseRoute,
@@ -39,12 +40,27 @@ const Pagination = ({
   pageGroupSize = defaultGroupSize,
   className,
 }: Props) => {
-  const groupGutter = Math.floor((pageGroupSize || defaultGroupSize) / 2);
+  const groupGutter = Math.floor(pageGroupSize / 2);
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const currentPage = Math.min(Math.max(+rawCurrentPage || 0, 1), totalPages);
   const minGroupPage = Math.max(1, currentPage - groupGutter);
   const maxGroupPage = Math.min(currentPage + groupGutter, totalPages);
   const pageList = [];
+
+  const Link = (props: {
+    to: string | number;
+    active?: boolean;
+    label?: string;
+    children: React.ReactNode;
+  }) => (
+    <NavLink
+      to={`${baseRoute}/${props.to}`}
+      className={classnames(props.active && "is-active")}
+      aria-label={props.label}
+    >
+      {props.children}
+    </NavLink>
+  );
 
   // Build list of pages, with 0 representing the ellipsis
   if (minGroupPage !== 1) {
@@ -71,35 +87,30 @@ const Pagination = ({
     >
       <ol>
         {currentPage > 1 && (
-          <li>
-            <a
-              href={`${baseRoute}/${currentPage - 1}`}
-              aria-label="Previous Page"
-            >
+          <li key="prevpage">
+            <Link to={`${currentPage - 1}`} label="Previous Page">
               <FontAwesomeIcon icon={faAngleLeft} /> Prev
-            </a>
+            </Link>
           </li>
         )}
         {pageList.map((pn) =>
           pn ? (
-            <li>
-              <a
-                href={`${baseRoute}/${pn}`}
-                aria-label={`Page ${pn}`}
-                className={pn === currentPage ? "is-active" : ""}
-              >
+            <li key={pn}>
+              <Link to={pn} label={`Page ${pn}`} active={pn === currentPage}>
                 <span>{pn}</span>
-              </a>
+              </Link>
             </li>
           ) : (
-            <li aria-hidden="true">…</li>
+            <li key={pn} aria-hidden="true">
+              …
+            </li>
           )
         )}
         {currentPage < totalPages && (
-          <li>
-            <a href={`${baseRoute}/${currentPage + 1}`} aria-label="Next Page">
+          <li key="nextpage">
+            <Link to={`${currentPage + 1}`} label="Next Page">
               Next <FontAwesomeIcon icon={faAngleRight} />
-            </a>
+            </Link>
           </li>
         )}
       </ol>
