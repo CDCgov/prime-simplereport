@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.errors;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -23,7 +24,7 @@ public class InvalidPatientLinkException extends RuntimeException implements Gra
 
     @Override
     public List<SourceLocation> getLocations() {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override

@@ -154,7 +154,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     } else {
       formRef.current.dispatchEvent(new Event("submit"));
     }
-    onClose();
+    return onClose();
   };
 
   const chooseModalView = async (view: string) => {

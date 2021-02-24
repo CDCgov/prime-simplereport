@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.patientLink;
+package gov.cdc.usds.simplereport.api.pxp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

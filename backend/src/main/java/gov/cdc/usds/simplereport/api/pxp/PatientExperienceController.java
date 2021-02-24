@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api.patientExperience;
+package gov.cdc.usds.simplereport.api.pxp;
 
 import java.util.Map;
 import java.util.UUID;
