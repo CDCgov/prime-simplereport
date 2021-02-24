@@ -62,7 +62,9 @@ springBoot {
 }
 
 test {
-	useJUnitPlatform()
+    // people sometimes export this to run local dev more easily: don't let it break the tests
+    environment "SPRING_PROFILES_ACTIVE", ""
+    useJUnitPlatform()
 }
 
 configurations {
