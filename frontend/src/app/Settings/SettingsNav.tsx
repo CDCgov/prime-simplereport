@@ -18,7 +18,7 @@ const SettingsNav = () => {
         {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
           <li className="usa-nav__secondary-item">
             <LinkWithQuery to={`/settings/users`} activeClassName="active">
-              Manage users
+              Manage Users
             </LinkWithQuery>
           </li>
         ) : null}
