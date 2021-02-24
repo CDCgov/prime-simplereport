@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DOB snapshot 1`] = `
+exports[`TermsOfService snapshot 1`] = `
 <main
   className="patient-app padding-bottom-4 bg-base-lightest"
 >
