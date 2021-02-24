@@ -23,9 +23,11 @@ module.exports = {
       browser.page
         .patientExperience()
         .navigate(patientLink)
+        .acceptTos()
         .verifyBirthDate(birthDate)
         .updateEmail('foo@bar.com')
         .navigate(patientLink)
+        .acceptTos()
         .verifyBirthDate(birthDate)
         .verifyEmail('foo@bar.com')
         .completeQuestionnaire();
