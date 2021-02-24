@@ -40,7 +40,7 @@ class ApiUserManagementTest extends BaseApiTest {
         assertEquals("Bobbity", who.get("firstName").asText());
         assertEquals("Standard user", who.get("roleDescription").asText());
         assertFalse(who.get("isAdmin").asBoolean());
-        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(who));
+        assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(who));
     }
 
     @Test
@@ -94,7 +94,7 @@ class ApiUserManagementTest extends BaseApiTest {
         assertEquals(USERNAMES.get(0), user.get("email").asText());
         assertEquals(_initService.getDefaultOrganization().getExternalId(), 
                 user.get("organization").get("externalId").asText());
-        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+        assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(user));
     }
 
     @Test
@@ -123,7 +123,7 @@ class ApiUserManagementTest extends BaseApiTest {
         assertEquals(USERNAMES.get(0), user.get("email").asText());
         assertEquals(_initService.getDefaultOrganization().getExternalId(), 
                 user.get("organization").get("externalId").asText());
-        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+        assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(user));
     }
 
     @Test
@@ -156,7 +156,7 @@ class ApiUserManagementTest extends BaseApiTest {
         ObjectNode updateUser = (ObjectNode) updateResp.get("updateUser");
         assertEquals("Ronda", updateUser.get("firstName").asText());
         assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
-        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(updateUser));
+        assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(updateUser));
     }
 
     @Test
@@ -174,7 +174,7 @@ class ApiUserManagementTest extends BaseApiTest {
         ObjectNode user = (ObjectNode) resp.get("updateUser");
         assertEquals("Ronda", user.get("firstName").asText());
         assertEquals(USERNAMES.get(1), user.get("email").asText());
-        assertEquals(OrganizationRole.USER.getGrantedPermissions(), extractPermissionsFromUser(user));
+        assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(user));
     }
 
     @Test
@@ -441,7 +441,7 @@ class ApiUserManagementTest extends BaseApiTest {
                          userAdded.get("email").asText());
             assertEquals(userRetrieved.get("organization").get("externalId").asText(),
                          userAdded.get("organizationExternalId").asText());
-            assertEquals(OrganizationRole.USER.getGrantedPermissions(), 
+            assertEquals(OrganizationRole.getDefault().getGrantedPermissions(), 
                          extractPermissionsFromUser(userRetrieved));
         }
     }
@@ -461,7 +461,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
     private OrganizationRoleClaims getOrgRoles(OrganizationRole role) {
         Set<OrganizationRole> roles = new HashSet<>();
-        roles.add(OrganizationRole.USER);
+        roles.add(OrganizationRole.getDefault());
         roles.add(role);
         return new OrganizationRoleClaims(_initService.getDefaultOrganization().getExternalId(),
                                           roles);

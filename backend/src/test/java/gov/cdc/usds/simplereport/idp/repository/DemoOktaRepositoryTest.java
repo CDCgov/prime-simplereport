@@ -6,7 +6,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -55,7 +54,7 @@ class DemoOktaRepositoryTest {
 
         _repo.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
         _repo.createUser(AMOS, ABC);
-        assertTrue(_repo.getAllUsernamesForOrganization(ABC, OrganizationRole.USER).contains(AMOS.getUsername()));
+        assertTrue(_repo.getAllUsernamesForOrganization(ABC, OrganizationRole.getDefault()).contains(AMOS.getUsername()));
     }
 
     @Test
@@ -64,8 +63,8 @@ class DemoOktaRepositoryTest {
         _repo.createOrganization(DEF.getOrganizationName(), DEF.getExternalId());
         _repo.createUser(AMOS, DEF);
         _repo.updateUser(AMOS.getUsername(), BRAD);
-        assertFalse(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.USER).contains(AMOS.getUsername()));
-        assertTrue(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.USER).contains(BRAD.getUsername()));
+        assertFalse(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault()).contains(AMOS.getUsername()));
+        assertTrue(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault()).contains(BRAD.getUsername()));
     }
 
     @Test
@@ -73,8 +72,9 @@ class DemoOktaRepositoryTest {
 
         _repo.createOrganization(DEF.getOrganizationName(), DEF.getExternalId());
         _repo.createUser(AMOS, DEF);
-        _repo.updateUserRole(AMOS.getUsername(), DEF, OrganizationRole.ENTRY_ONLY);
-        assertTrue(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.USER).contains(AMOS.getUsername()));
+        assertEquals(_repo.updateUserRole(AMOS.getUsername(), DEF, OrganizationRole.ENTRY_ONLY).get().getGrantedRoles(), 
+                     Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+        assertTrue(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault()).contains(AMOS.getUsername()));
         assertTrue(_repo.getAllUsernamesForOrganization(DEF, OrganizationRole.ENTRY_ONLY).contains(AMOS.getUsername()));
         assertEquals(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get().getGrantedRoles(),
                      Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
@@ -87,7 +87,7 @@ class DemoOktaRepositoryTest {
 
         Optional<OrganizationRoleClaims> actual = _repo.getOrganizationRoleClaimsForUser(CHARLES.getUsername());
         Optional<OrganizationRoleClaims> expected = Optional.of(new OrganizationRoleClaims(GHI.getExternalId(),
-                                                                Set.of(OrganizationRole.USER)));
+                                                                Set.of(OrganizationRole.getDefault())));
         assertTrue(actual.isPresent());
         assertEquals(actual.get().getOrganizationExternalId(), expected.get().getOrganizationExternalId());
         assertEquals(actual.get().getGrantedRoles(), expected.get().getGrantedRoles());
@@ -98,15 +98,16 @@ class DemoOktaRepositoryTest {
         _repo.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
         _repo.createUser(BRAD, GHI);
         _repo.createUser(CHARLES, GHI);
-        _repo.updateUserRole(CHARLES.getUsername(), GHI, OrganizationRole.ENTRY_ONLY);
+        assertEquals(_repo.updateUserRole(CHARLES.getUsername(), GHI, OrganizationRole.ENTRY_ONLY).get().getGrantedRoles(),
+                     Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
 
-        List<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
+        Set<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
         assertTrue(userUsernames.contains(BRAD.getUsername()));
         assertTrue(userUsernames.contains(CHARLES.getUsername()));
-        List<String> entryUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ENTRY_ONLY);
+        Set<String> entryUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ENTRY_ONLY);
         assertFalse(entryUsernames.contains(BRAD.getUsername()));
         assertTrue(entryUsernames.contains(CHARLES.getUsername()));
-        List<String> adminUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ADMIN);
+        Set<String> adminUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ADMIN);
         assertFalse(adminUsernames.contains(BRAD.getUsername()));
         assertFalse(adminUsernames.contains(CHARLES.getUsername()));
     }
@@ -120,7 +121,7 @@ class DemoOktaRepositoryTest {
 
         assertEquals(_repo.getOrganizationRoleClaimsForUser(CHARLES.getUsername()),
                      Optional.empty());
-        List<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
+        Set<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
         assertTrue(userUsernames.contains(BRAD.getUsername()));
         assertFalse(userUsernames.contains(CHARLES.getUsername()));
     }

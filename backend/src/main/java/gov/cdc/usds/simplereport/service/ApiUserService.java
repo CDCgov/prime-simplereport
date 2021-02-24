@@ -125,7 +125,10 @@ public class ApiUserService {
         OrganizationRoleClaims orgClaims = _oktaRepo.getOrganizationRoleClaimsForUser(username)
                 .orElseThrow(MisconfiguredUserException::new);
         Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-        return _oktaRepo.updateUserRole(username, org, role);
+        Optional<OrganizationRoleClaims> newOrgClaims = _oktaRepo.updateUserRole(username, org, role);
+        Optional<OrganizationRole> newRole = newOrgClaims.map(
+            c -> c.getEffectiveRole().orElseThrow(MisconfiguredUserException::new));
+        return newRole.orElseThrow(MisconfiguredUserException::new);
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
@@ -146,23 +149,13 @@ public class ApiUserService {
         return user;
     }
 
-    private List<ApiUser> getApiUsersInCurrentOrg(OrganizationRole role) {
-        List<String> usernames = _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
+    private Set<ApiUser> getApiUsersInCurrentOrg(OrganizationRole role) {
+        Set<String> usernames = _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
         return _apiUserRepo.findAllByLoginEmailIn(usernames);
     }
 
-    private List<String> getUsernamesInCurrentOrg(OrganizationRole role) {
+    private Set<String> getUsernamesInCurrentOrg(OrganizationRole role) {
         return _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
-    }
-
-    @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-    public Optional<OrganizationRoles> getOrganizationRolesForUser(UUID userId) {
-        ApiUser user = getApiUser(userId);
-        Optional<OrganizationRoleClaims> roleClaims = 
-                _oktaRepo.getOrganizationRoleClaimsForUser(user.getLoginEmail());
-        return roleClaims.map(c ->
-                new OrganizationRoles(_orgService.getOrganization(c.getOrganizationExternalId()),
-                                      c.getGrantedRoles()));
     }
 
     public boolean isAdmin(ApiUser user) {
@@ -210,11 +203,11 @@ public class ApiUserService {
     @AuthorizationConfiguration.RequirePermissionManageUsers
     public List<UserInfo> getUsersInCurrentOrg() {
         Organization org = _orgService.getCurrentOrganization();
-        List<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
+        Set<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
         Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
         Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
         return apiUsers.stream().map(u -> {
-            Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.USER);
+            Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
             String email = u.getLoginEmail();
             if (admins.contains(email)) {
                 roles.add(OrganizationRole.ADMIN);
