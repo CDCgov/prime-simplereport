@@ -124,9 +124,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   );
 
   useEffect(() => {
+    // Start polling on creation, stop on componenent teardown
     startPolling(pollInterval);
     return stopPolling;
-  });
+  }, [startPolling, stopPolling]);
 
   if (error) {
     throw error;
