@@ -37,6 +37,8 @@ interface Props {
   hideOptional?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
+  format?: string;
+  formatMessage?: string;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
@@ -61,6 +63,8 @@ export const TextInput = ({
   hideOptional,
   inputRef,
   onChange,
+  format,
+  formatMessage,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
   const [autoId] = useUniqueId("text", 1);
@@ -116,6 +120,8 @@ export const TextInput = ({
         pattern={pattern}
         inputMode={inputMode}
         ref={inputRef}
+        data-format={format}
+        data-format-message={formatMessage}
         {...inputProps}
         {...(validationStatus === "error"
           ? { "aria-describedby": errorId }

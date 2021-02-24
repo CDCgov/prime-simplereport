@@ -108,6 +108,7 @@ const RadioGroup = ({
                 id={`${widgetId}_${c.value}_${i}`}
                 name={name}
                 value={c.value}
+                data-required={required || "false"}
                 disabled={c.disabled || false}
                 className={inputClass}
                 checked={c.value === selectedRadio}

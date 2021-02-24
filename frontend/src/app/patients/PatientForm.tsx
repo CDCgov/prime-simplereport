@@ -217,6 +217,9 @@ const PatientForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState(
+    {} as { [key: string]: string | undefined }
+  );
   const [helpModalOpen, setHelpModalOpen] = useState(false);
 
   const plid = useSelector((state) => (state as any).plid as String);
@@ -239,6 +242,7 @@ const PatientForm = (props: Props) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
+    let name: string | null = e.target.name;
     let value: string | null = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
@@ -248,9 +252,107 @@ const PatientForm = (props: Props) => {
     } else if (value === allFacilities) {
       value = null;
     }
+    if (errors[name]) {
+      validateField(e);
+    }
     setFormChanged(true);
     setPatient({ ...patient, [e.target.name]: value });
   };
+
+  /**
+   * This function runs validation checks on form inputs.
+   * It can be attached to the onBlur prop of a TextInput, Dropdown, or RadioGroup
+   * @param {(HTMLInputElement|HTMLSelectElement)} target - The input to validate.
+   * @param {boolean} [setState=true] - Whether or not to update the state of the errors variable immediately. Defaults to true.
+   * @returns {(string|undefined)} The resulting error message for the input after validation
+   */
+  const validateField = (
+    { target }: { target: HTMLInputElement | HTMLSelectElement },
+    setState = true
+  ) => {
+    // Get input name, value, and label
+    const { name } = target;
+    let value: string | null = target.value;
+    let label = (target.labels as any)[0].firstChild.data;
+
+    // For radio groups, value should indicate whether one radio is checked or not
+    if (
+      name === "residentCongregateSetting" ||
+      name === "employedInHealthcare"
+    ) {
+      // Two parents above the input is div.usa-form-group, which contains both radio buttons
+      const radioInputs = target?.parentElement?.parentElement?.getElementsByTagName(
+        "input"
+      );
+      // If either is checked, return a value, if neither is checked, value is null
+      value = [0, 1].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
+        .length
+        ? "true"
+        : null;
+      // The label for a RadioGroup comes from the text in fieldset.prime-radios legend
+      label =
+        target?.parentElement?.parentElement?.parentElement?.firstChild
+          ?.firstChild?.textContent;
+    }
+
+    // Get validation relevant properties of the input, required and format
+    const required: boolean =
+      target.getAttribute("aria-required") === "true" ||
+      target.getAttribute("data-required") === "true";
+    const format: string | null = target.getAttribute("data-format");
+
+    // Initialize error message
+    let errorMessage = undefined;
+
+    // Required validation check
+    if ((!value || value === "- Select -") && required) {
+      errorMessage = `${label} is required`;
+      target.focus();
+      // Format validation check
+    } else if (format) {
+      const regex = new RegExp(format);
+      if (value && !value.match(regex)) {
+        const formatMessage: string | null = target.getAttribute(
+          "data-format-message"
+        );
+        errorMessage = formatMessage || `${label} has an incorrect format`;
+        target.focus();
+      }
+    }
+
+    // Only set errors state variable if setState is true
+    // It should be false on form submit, since we are validating many fields at once
+    if (setState) {
+      setErrors({
+        ...errors,
+        [name]: errorMessage,
+      });
+    }
+
+    return errorMessage;
+  };
+
+  /**
+   * This function checks the current validation status of an input
+   * It should be attached to a TextInput, Dropdown, or RadioInput via the validationStatus prop
+   * @param {string} name - The name of the input to check.
+   * @returns {string} "success" if valid, "error" if invalid
+   */
+  const validationStatus = (name: string) => {
+    // If the input has never been validated before, initialize a key into the errors state variable
+    if (!(name in errors)) {
+      setErrors({
+        ...errors,
+        [name]: undefined,
+      });
+      return "success";
+    } else if (errors[name] === undefined) {
+      return "success";
+    } else {
+      return "error";
+    }
+  };
+
   const fullName = displayFullName(
     patient.firstName,
     patient.middleName,
@@ -258,6 +360,29 @@ const PatientForm = (props: Props) => {
   );
 
   const savePatientData = () => {
+    // Validate all fields with validation set up
+    const fieldsToValidate = Object.keys(errors).map(
+      (name) =>
+        document.getElementsByName(name)[0] as
+          | HTMLInputElement
+          | HTMLSelectElement
+    );
+    const newErrors: { [key: string]: string | undefined } = {};
+    fieldsToValidate.forEach(
+      (field) =>
+        (newErrors[field.name] = validateField({ target: field }, false))
+    );
+    const remainingErrors = Object.values(newErrors).filter(
+      (v) => v !== undefined
+    );
+    if (remainingErrors.length) {
+      remainingErrors.forEach((error) =>
+        showError(toast, "Please correct before submitting", error)
+      );
+      setErrors(newErrors);
+      return;
+    }
+    // If no errors, submit
     setFormChanged(false);
     const variables = {
       facilityId:
@@ -459,6 +584,9 @@ const PatientForm = (props: Props) => {
               name="firstName"
               value={patient.firstName}
               onChange={onChange}
+              onBlur={validateField}
+              validationStatus={validationStatus("firstName")}
+              errorMessage={errors.firstName}
               required
             />
             <TextInput
@@ -472,6 +600,9 @@ const PatientForm = (props: Props) => {
               name="lastName"
               value={patient.lastName}
               onChange={onChange}
+              onBlur={validateField}
+              validationStatus={validationStatus("lastName")}
+              errorMessage={errors.lastName}
               required
             />
           </div>
@@ -504,6 +635,9 @@ const PatientForm = (props: Props) => {
                   setCurrentFacilityId(e.target.value);
                   setFormChanged(true);
                 }}
+                onBlur={validateField}
+                validationStatus={validationStatus("currentFacilityId")}
+                errorMessage={errors.currentFacilityId}
                 options={facilityList}
                 required
               />
@@ -516,6 +650,9 @@ const PatientForm = (props: Props) => {
               name="birthDate"
               value={patient.birthDate}
               onChange={onChange}
+              onBlur={validateField}
+              validationStatus={validationStatus("birthDate")}
+              errorMessage={errors.birthDate}
               required
             />
           </div>
@@ -530,6 +667,13 @@ const PatientForm = (props: Props) => {
                   name="telephone"
                   value={patient.telephone}
                   onChange={onChange}
+                  onBlur={validateField}
+                  validationStatus={validationStatus("telephone")}
+                  errorMessage={errors.telephone}
+                  format={
+                    "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
+                  }
+                  formatMessage={"Phone number should have 10 digits"}
                   required
                 />
               </div>
@@ -540,6 +684,12 @@ const PatientForm = (props: Props) => {
               name="email"
               value={patient.email}
               onChange={onChange}
+              onBlur={validateField}
+              validationStatus={validationStatus("email")}
+              errorMessage={errors.email}
+              format={
+                '^(([^<>()[\\]\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\.,;:\\s@\\"]+)*)|(\\".+\\"))@(([^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\"]{2,})$'
+              }
             />
           </div>
           <div className="usa-form">
@@ -548,6 +698,9 @@ const PatientForm = (props: Props) => {
               name="street"
               value={patient.street}
               onChange={onChange}
+              onBlur={validateField}
+              validationStatus={validationStatus("street")}
+              errorMessage={errors.street}
               required
             />
           </div>
@@ -581,6 +734,9 @@ const PatientForm = (props: Props) => {
                   options={stateCodes.map((c) => ({ label: c, value: c }))}
                   defaultSelect
                   onChange={onChange}
+                  onBlur={validateField}
+                  validationStatus={validationStatus("state")}
+                  errorMessage={errors.state}
                   required
                 />
               </div>
@@ -590,6 +746,11 @@ const PatientForm = (props: Props) => {
                   name="zipCode"
                   value={patient.zipCode}
                   onChange={onChange}
+                  onBlur={validateField}
+                  validationStatus={validationStatus("zipCode")}
+                  errorMessage={errors.zipCode}
+                  format={"^\\d{5}(-\\d{4})?$"}
+                  formatMessage={"Zip code should have 5 digits"}
                   required
                 />
               </div>
@@ -636,6 +797,9 @@ const PatientForm = (props: Props) => {
             ]}
             selectedRadio={patient.residentCongregateSetting}
             onChange={onChange}
+            onBlur={validateField}
+            validationStatus={validationStatus("residentCongregateSetting")}
+            errorMessage={errors.residentCongregateSetting}
             required
           />
           <RadioGroup
@@ -647,6 +811,9 @@ const PatientForm = (props: Props) => {
             ]}
             selectedRadio={patient.employedInHealthcare}
             onChange={onChange}
+            onBlur={validateField}
+            validationStatus={validationStatus("employedInHealthcare")}
+            errorMessage={errors.employedInHealthcare}
             required
           />
         </FormGroup>
