@@ -37,7 +37,6 @@ public class SlackMessageServiceTest {
         when(builder.build()).thenReturn(template);
         when(template.exchange(captor.capture(), eq(String.class)))
                 .thenReturn(new ResponseEntity<String>("Yo", HttpStatus.OK));
-        ;
         DataHubConfig config = new DataHubConfig(false, null, 0, null, "https://hooks.slack.com/fake", null, null);
         SlackMessageService service = new SlackMessageService(config, builder);
         service.sendSlackChannelMessage("Hello, test harness", List.of("Humpty", "Dumpty"), false);
