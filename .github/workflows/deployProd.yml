@@ -46,7 +46,7 @@ jobs:
         working-directory: ./frontend
     strategy:
       matrix:
-        node: [prod, training, demo]
+        deploy_env: [prod, training, demo]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
