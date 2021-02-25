@@ -47,7 +47,7 @@ interface AoEModalProps {
   patient: any;
   loadState?: any;
   saveCallback: (a: any) => string | void;
-  qrCodeValue?: string;
+  patientLinkId?: string;
 }
 
 interface SmsModalProps {
@@ -98,7 +98,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     patient,
     loadState = {},
     saveCallback,
-    qrCodeValue = "",
+    patientLinkId = "",
   } = props;
 
   const [modalView, setModalView] = useState("");
@@ -169,8 +169,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     if (view === "smartphone") {
       // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
       setPatientLink(
-        qrCodeValue ||
-          `${getUrl()}pxp?plid=${await saveCallback(patientResponse)}`
+        `${getUrl()}pxp?plid=${patientLinkId || await saveCallback(patientResponse)}`
       );
     }
     setModalView(view);
@@ -189,7 +188,7 @@ const AoEModalForm = (props: AoEModalProps) => {
   );
 
   const sendSms = async () => {
-    const internalId = await saveCallback(patientResponse);
+    const internalId = patientLinkId || await saveCallback(patientResponse);
     try {
       await sendSmsMutation({ variables: { internalId } });
       setSmsSuccess(true);
