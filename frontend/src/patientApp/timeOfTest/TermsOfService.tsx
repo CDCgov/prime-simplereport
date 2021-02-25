@@ -3,12 +3,16 @@ import Button from "../../app/commonComponents/Button";
 import ToS from "./ToS";
 import { Redirect, RouteComponentProps, withRouter } from "react-router";
 
-const TermsOfService: React.FunctionComponent<RouteComponentProps> = (props) => {
+const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
+  props
+) => {
   const [nextPage, setNextPage] = useState(false);
 
   if (nextPage) {
     console.info(props.location);
-    return <Redirect push to={`/birth-date-confirmation${props.location.search}`}/>
+    return (
+      <Redirect push to={`/birth-date-confirmation${props.location.search}`} />
+    );
   }
 
   return (
