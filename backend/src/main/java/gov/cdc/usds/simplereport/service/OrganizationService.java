@@ -60,7 +60,7 @@ public class OrganizationService {
         List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
         if (validOrgs == null || validOrgs.size() != 1) {
             int numOrgs = (validOrgs == null) ? 0
-                                              : validOrgs.size();
+                    : validOrgs.size();
             LOG.warn("Found {} organizations for user", numOrgs);
             return Optional.empty();
         }
@@ -78,7 +78,8 @@ public class OrganizationService {
 
     public Organization getOrganization(String externalId) {
         Optional<Organization> found = _repo.findByExternalId(externalId);
-        return found.orElseThrow(()->new IllegalGraphqlArgumentException("An organization with that external ID does not exist"));
+        return found.orElseThrow(
+                () -> new IllegalGraphqlArgumentException("An organization with that external ID does not exist"));
     }
 
     @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -89,7 +90,9 @@ public class OrganizationService {
     public void assertFacilityNameAvailable(String testingFacilityName) {
         Organization org = getCurrentOrganization();
         _facilityRepo.findByOrganizationAndFacilityName(org, testingFacilityName)
-            .ifPresent(f->{throw new IllegalGraphqlArgumentException("A facility with that name already exists");});
+                .ifPresent(f -> {
+                    throw new IllegalGraphqlArgumentException("A facility with that name already exists");
+                });
     }
 
     public List<Facility> getFacilities(Organization org) {
@@ -99,50 +102,48 @@ public class OrganizationService {
     public Facility getFacilityInCurrentOrg(UUID facilityId) {
         Organization org = getCurrentOrganization();
         return _facilityRepo.findByOrganizationAndInternalId(org, facilityId)
-                .orElseThrow(()->new IllegalGraphqlArgumentException("facility could not be found"));
+                .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
     }
 
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditFacility
     public Facility updateFacility(
-        UUID facilityId,
-        String testingFacilityName,
-        String cliaNumber,
-        String street,
-        String streetTwo,
-        String city,
-        String county,
-        String state,
-        String zipCode,
-        String phone,
-        String email,
-        String orderingProviderFirstName,
-        String orderingProviderMiddleName,
-        String orderingProviderLastName,
-        String orderingProviderSuffix,
-        String orderingProviderNPI,
-        String orderingProviderStreet,
-        String orderingProviderStreetTwo,
-        String orderingProviderCity,
-        String orderingProviderCounty,
-        String orderingProviderState,
-        String orderingProviderZipCode,
-        String orderingProviderTelephone,
-            DeviceSpecimenTypeHolder deviceSpecimenTypes
-    ) {
+            UUID facilityId,
+            String testingFacilityName,
+            String cliaNumber,
+            String street,
+            String streetTwo,
+            String city,
+            String county,
+            String state,
+            String zipCode,
+            String phone,
+            String email,
+            String orderingProviderFirstName,
+            String orderingProviderMiddleName,
+            String orderingProviderLastName,
+            String orderingProviderSuffix,
+            String orderingProviderNPI,
+            String orderingProviderStreet,
+            String orderingProviderStreetTwo,
+            String orderingProviderCity,
+            String orderingProviderCounty,
+            String orderingProviderState,
+            String orderingProviderZipCode,
+            String orderingProviderTelephone,
+            DeviceSpecimenTypeHolder deviceSpecimenTypes) {
         Facility facility = this.getFacilityInCurrentOrg(facilityId);
         facility.setFacilityName(testingFacilityName);
         facility.setCliaNumber(cliaNumber);
         facility.setTelephone(phone);
         facility.setEmail(email);
         StreetAddress af = facility.getAddress() == null ? new StreetAddress(
-            street,
-            streetTwo,
-            city,
-            county,
-            state,
-            zipCode
-         ) : facility.getAddress();
+                street,
+                streetTwo,
+                city,
+                county,
+                state,
+                zipCode) : facility.getAddress();
         af.setStreet(street, streetTwo);
         af.setCity(city);
         af.setCounty(county);
@@ -159,13 +160,12 @@ public class OrganizationService {
         p.setTelephone(orderingProviderTelephone);
 
         StreetAddress a = p.getAddress() == null ? new StreetAddress(
-            orderingProviderStreet,
-            orderingProviderStreetTwo,
-            orderingProviderCity,
-            orderingProviderState,
-            orderingProviderZipCode,
-            orderingProviderCounty
-         ) : p.getAddress();
+                orderingProviderStreet,
+                orderingProviderStreetTwo,
+                orderingProviderCity,
+                orderingProviderState,
+                orderingProviderZipCode,
+                orderingProviderCounty) : p.getAddress();
         a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
         a.setCity(orderingProviderCity);
         a.setCounty(orderingProviderCounty);
@@ -189,7 +189,8 @@ public class OrganizationService {
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequireGlobalAdminUser
     public Organization createOrganization(String name, String externalId, String testingFacilityName,
-            String cliaNumber, StreetAddress facilityAddress, String phone, String email, DeviceSpecimenTypeHolder deviceSpecimenTypes,
+            String cliaNumber, StreetAddress facilityAddress, String phone, String email,
+            DeviceSpecimenTypeHolder deviceSpecimenTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Organization org = _repo.save(new Organization(name, externalId));
         Provider orderingProvider = _providerRepo
@@ -211,17 +212,18 @@ public class OrganizationService {
 
     @Transactional(readOnly = false)
     @AuthorizationConfiguration.RequirePermissionEditFacility
-    public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress, String phone, String email,
+    public Facility createFacility(String testingFacilityName, String cliaNumber, StreetAddress facilityAddress,
+            String phone, String email,
             DeviceSpecimenTypeHolder deviceSpecimenTypes,
             PersonName providerName, StreetAddress providerAddress, String providerTelephone, String providerNPI) {
         Provider orderingProvider = _providerRepo.save(
                 new Provider(providerName, providerNPI, providerAddress, providerTelephone));
         Organization org = getCurrentOrganization();
         Facility facility = new Facility(org,
-            testingFacilityName, cliaNumber,
-            facilityAddress, phone, email,
-            orderingProvider,
-            deviceSpecimenTypes.getDefault(), deviceSpecimenTypes.getFullList());
+                testingFacilityName, cliaNumber,
+                facilityAddress, phone, email,
+                orderingProvider,
+                deviceSpecimenTypes.getDefault(), deviceSpecimenTypes.getFullList());
         return _facilityRepo.save(facility);
     }
 }
