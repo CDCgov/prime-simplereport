@@ -15,7 +15,7 @@ import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 
 /**
  * Service for fetching the device-type reference list (<i>not</i> the device types available for a
@@ -112,7 +112,22 @@ public class DeviceTypeService {
         return dt;
     }
 
-    public DeviceTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
+    /**
+     * Retrieve the {@link DeviceSpecimenTypeHolder} that this operation needs based
+     * on the <b>DEVICE TYPE</b> IDs supplied to a mutation.
+     *
+     * @deprecated in favor of (eventually) using device-specimen-type IDs instead
+     *             of device-type IDs.
+     * @param defaultDeviceTypeId     the default DEVICE TYPE id to configure for
+     *                                this operation.
+     * @param configuredDeviceTypeIds the list of device type IDS to configure.
+     *                                <b>Must contain the default value.</b>
+     * @return a {@link DeviceSpecimenTypeHolder} that holds the default
+     *         {@link DeviceSpecimenType} for each of the device types that was
+     *         supplied either in the configured list or as the default.
+     */
+    @Deprecated
+    public DeviceSpecimenTypeHolder getTypesForFacility(String defaultDeviceTypeId, List<String> configuredDeviceTypeIds) {
         if (!configuredDeviceTypeIds.contains(defaultDeviceTypeId)) {
             throw new IllegalGraphqlArgumentException("default device type must be included in device type list");
         }
@@ -125,6 +140,6 @@ public class DeviceTypeService {
             .findFirst()
             .orElseThrow(()->new RuntimeException("Inexplicable inability to find device for ID " + defaultId.toString()))
             ;
-        return new DeviceTypeHolder(defaultType, configuredTypes);
+        return new DeviceSpecimenTypeHolder(defaultType, configuredTypes);
     }
 }

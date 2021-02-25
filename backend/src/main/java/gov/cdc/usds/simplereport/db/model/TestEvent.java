@@ -23,30 +23,32 @@ import java.util.UUID;
 @Immutable
 @AttributeOverride(name = "result", column = @Column(nullable = false))
 public class TestEvent extends BaseTestInfo {
-	private static final Logger LOG = LoggerFactory.getLogger(TestEvent.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestEvent.class);
 
-	@Column
-	@Type(type = "jsonb")
-	private Person patientData;
+    @Column
+    @Type(type = "jsonb")
+    private Person patientData;
 
-	@Column
-	@Type(type = "jsonb")
-	private Provider providerData;
+    @Column
+    @Type(type = "jsonb")
+    private Provider providerData;
 
-	@Column
-	@Type(type = "jsonb")
-	private AskOnEntrySurvey surveyData;
+    @Column
+    @Type(type = "jsonb")
+    private AskOnEntrySurvey surveyData;
 
-	@ManyToOne(optional = false, fetch = FetchType.LAZY)
-	@JoinColumn(name="test_order_id")
-	private TestOrder order;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "test_order_id")
+    private TestOrder order;
 
-	@Column(columnDefinition = "uuid")
-	private UUID priorCorrectedTestEventId;	// used to chain events
+    @Column(columnDefinition = "uuid")
+    private UUID priorCorrectedTestEventId; // used to chain events
 
-	public TestEvent() {}
+    public TestEvent() {
+    }
 
-    public TestEvent(TestResult result, DeviceSpecimenType deviceType, Person patient, Facility facility, TestOrder order) {
+    public TestEvent(TestResult result, DeviceSpecimenType deviceType, Person patient, Facility facility,
+            TestOrder order) {
         super(patient, facility, deviceType, result);
         // store a link, and *also* store the object as JSON
         this.patientData = getPatient();
@@ -64,48 +66,50 @@ public class TestEvent extends BaseTestInfo {
 
     public TestEvent(TestOrder order) {
         this(order.getResult(), order.getDeviceSpecimen(), order.getPatient(), order.getFacility(), order);
-	}
+    }
 
-	// Constructor for creating corrections. Copy the original event
-	public TestEvent(TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-		super(event, correctionStatus, reasonForCorrection);
+    // Constructor for creating corrections. Copy the original event
+    public TestEvent(TestEvent event, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+        super(event, correctionStatus, reasonForCorrection);
 
-		this.patientData = event.getPatientData();
-		this.providerData = event.getProviderData();
-		this.order = event.getTestOrder();
-		this.surveyData = event.getSurveyData();
+        this.patientData = event.getPatientData();
+        this.providerData = event.getProviderData();
+        this.order = event.getTestOrder();
+        this.surveyData = event.getSurveyData();
         setDateTestedBackdate(order.getDateTestedBackdate());
-		this.priorCorrectedTestEventId = event.getInternalId();
-	}
+        this.priorCorrectedTestEventId = event.getInternalId();
+    }
 
-	public Person getPatientData() {
-		return patientData;
-	}
+    public Person getPatientData() {
+        return patientData;
+    }
 
-	public AskOnEntrySurvey getSurveyData() {
-		return surveyData;
-	}
+    public AskOnEntrySurvey getSurveyData() {
+        return surveyData;
+    }
 
-	public Date getDateTested() {
-		if ( getDateTestedBackdate() != null) {
-			return getDateTestedBackdate();
-		} else {
-			return getCreatedAt();
-		}
-	}
+    public Date getDateTested() {
+        if (getDateTestedBackdate() != null) {
+            return getDateTestedBackdate();
+        } else {
+            return getCreatedAt();
+        }
+    }
 
-	public Provider getProviderData() {
-		return providerData;
-	}
+    public Provider getProviderData() {
+        return providerData;
+    }
 
-	public TestOrder getTestOrder() {
-		return order;
-	}
+    public TestOrder getTestOrder() {
+        return order;
+    }
 
-	public UUID getTestOrderId() { return order.getInternalId(); }
+    public UUID getTestOrderId() {
+        return order.getInternalId();
+    }
 
-	public UUID getPriorCorrectedTestEventId() {
-		return priorCorrectedTestEventId;
-	}
+    public UUID getPriorCorrectedTestEventId() {
+        return priorCorrectedTestEventId;
+    }
 
 }
