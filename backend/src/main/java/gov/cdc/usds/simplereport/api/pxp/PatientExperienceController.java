@@ -29,6 +29,7 @@ import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
@@ -78,7 +79,7 @@ public class PatientExperienceController {
     return ps.updateMe(
         parseString(person.getFirstName()), parseString(person.getMiddleName()), parseString(person.getLastName()),
             parseString(person.getSuffix()), person.getBirthDate(),
-            person.getAddress(), // TODO: No longer trimmed! Need to fix that
+            StreetAddress.deAndReSerializeForSafety(person.getAddress()), 
             parsePhoneNumber(person.getTelephone()), person.getRole(),
         parseEmail(person.getEmail()), parseString(person.getCounty()), parseRace(person.getRace()),
         parseEthnicity(person.getEthnicity()), parseGender(person.getGender()), person.getResidentCongregateSetting(),
