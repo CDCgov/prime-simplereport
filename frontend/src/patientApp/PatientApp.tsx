@@ -1,14 +1,8 @@
-import React, { useEffect } from "react";
-import { gql, useQuery } from "@apollo/client";
+import React, { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
-import { useDispatch, connect } from "react-redux";
+import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import {
-  Redirect,
-  Route,
-  Switch,
-  BrowserRouter as Router,
-} from "react-router-dom";
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 import { reactPlugin } from "../app/AppInsights";
 
@@ -16,58 +10,42 @@ import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
-import ErrorPage from "./ErrorPage";
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
 import DOB from "./timeOfTest/DOB";
 import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
-import PatientProfileFormContainer from "./timeOfTest/PatientProfileFormContainer";
+import PatientFormContainer from "./timeOfTest/PatientFormContainer";
+import Patient404 from "./timeOfTest/Patient404";
 
-const PATIENT_LINK_QUERY = gql`
-  query PatientLinkById($plid: String!) {
-    patientLinkCurrent(internalId: $plid) {
-      name
-      testingFacility {
-        id
-        name
-      }
-    }
+interface WrapperProps {
+  plid: string;
+}
+const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
+  plid,
+  children,
+}) => {
+  if (plid === undefined) {
+    return <>Loading...</>;
   }
-`;
+  if (plid === null) {
+    return <Patient404 />;
+  }
+  return <>{children}</>;
+};
 
 const PatientApp = () => {
   const dispatch = useDispatch();
-  const plid = getPatientLinkIdFromUrl();
-  if (plid == null) {
-    throw new Error("Patient Link ID from URL was null");
-  }
-
-  const { data, loading, error } = useQuery(PATIENT_LINK_QUERY, {
-    variables: { plid },
-    fetchPolicy: "no-cache",
-  });
+  const plid = useSelector((state: any) => state.plid);
 
   useEffect(() => {
-    if (!data) return;
-
     dispatch(
       setInitialState({
-        plid,
-        organization: {
-          name: data.patientLinkCurrent.name,
-        },
-        facilities: data.patientLinkCurrent.testingFacility,
-        facility: data.patientLinkCurrent.testingFacility[0],
+        plid: getPatientLinkIdFromUrl(),
       })
     );
-    // eslint-disable-next-line
-  }, [data]);
-
-  if (loading) {
-    return <p>Loading account information...</p>;
-  }
+  }, [dispatch]);
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
@@ -83,25 +61,23 @@ const PatientApp = () => {
           <div id="main-wrapper">
             <USAGovBanner />
             <PatientHeader />
-            {error ? (
-              <ErrorPage error={error} />
-            ) : (
+            <PatientLinkURL404Wrapper plid={plid}>
               <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
                 <Switch>
                   <Route
                     path="/"
                     exact
-                    render={({ location }) => (
-                      <Redirect
-                        to={{
-                          ...location,
-                          pathname: "/terms-of-service",
-                        }}
-                      />
+                    render={(props) => (
+                      <TermsOfService {...(props.location.state as any)} />
                     )}
                   />
                   <Route path="/terms-of-service" component={TermsOfService} />
-                  <Route path="/birth-date-confirmation" component={DOB} />
+                  <Route
+                    path="/birth-date-confirmation"
+                    render={(props) => (
+                      <DOB {...(props.location.state as any)} />
+                    )}
+                  />
                   <Route
                     path="/patient-info-confirm"
                     render={(props) => (
@@ -113,7 +89,7 @@ const PatientApp = () => {
                   <Route
                     path="/patient-info-edit"
                     render={(props) => (
-                      <PatientProfileFormContainer
+                      <PatientFormContainer
                         {...(props.location.state as any)}
                       />
                     )}
@@ -129,14 +105,14 @@ const PatientApp = () => {
                   <Route path="/success" component={PatientLanding} />
                 </Switch>
               </Router>
-            )}
-            <ToastContainer
-              autoClose={5000}
-              closeButton={false}
-              limit={2}
-              position="bottom-center"
-              hideProgressBar={true}
-            />
+              <ToastContainer
+                autoClose={5000}
+                closeButton={false}
+                limit={2}
+                position="bottom-center"
+                hideProgressBar={true}
+              />
+            </PatientLinkURL404Wrapper>
           </div>
         </div>
       </PrimeErrorBoundary>

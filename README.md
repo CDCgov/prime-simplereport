@@ -141,7 +141,7 @@ Go to `localhost:8080` to see interact with the graphql api. You would need to p
 
 ### Tests
 
-All the test can be run with `gradle test`
+All the tests can be run with `gradle test`. Make sure that you do not have `SPRING_PROFILES_ACTIVE` set in your shell environment.
 
 Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
 

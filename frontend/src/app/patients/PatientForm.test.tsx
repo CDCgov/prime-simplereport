@@ -20,7 +20,7 @@ jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useTrackEvent: jest.fn(),
 }));
 
-describe("PatientProfileFormContainer", () => {
+describe("PatientForm", () => {
   it("snapshot", () => {
     const store = mockStore({
       patient: {

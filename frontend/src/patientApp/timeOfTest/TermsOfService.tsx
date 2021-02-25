@@ -1,13 +1,18 @@
 import React, { useState } from "react";
 import Button from "../../app/commonComponents/Button";
 import ToS from "./ToS";
-import { Redirect } from "react-router";
+import { Redirect, RouteComponentProps, withRouter } from "react-router";
 
-const TermsOfService = () => {
+const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
+  props
+) => {
   const [nextPage, setNextPage] = useState(false);
 
   if (nextPage) {
-    return <Redirect push to={"/birth-date-confirmation"} />;
+    console.info(props.location);
+    return (
+      <Redirect push to={`/birth-date-confirmation${props.location.search}`} />
+    );
   }
 
   return (
@@ -30,4 +35,4 @@ const TermsOfService = () => {
   );
 };
 
-export default TermsOfService;
+export default withRouter(TermsOfService);

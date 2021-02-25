@@ -1,4 +1,4 @@
-import { React, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
 import AoEForm from "./AoEForm";
@@ -7,24 +7,97 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
+import { gql, useQuery } from "@apollo/client";
 
-const AoEModalForm = ({
-  saveButtonText = "Continue",
-  onClose,
-  patient,
-  loadState = {},
-  saveCallback,
-  qrCodeValue = "",
-}) => {
-  const [modalView, setModalView] = useState(null);
-  const [patientLink, setPatientLink] = useState(qrCodeValue);
+// the QR code is separately feature flagged – we need it for the e2e tests currently
+const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
+  ? [{ label: "Complete on smartphone", value: "smartphone" }]
+  : [];
+
+interface LastTestData {
+  patient: {
+    lastTest: {
+      dateTested: string;
+      result: string;
+    };
+  };
+}
+
+export const LAST_TEST_QUERY = gql`
+  query GetPatientsLastResult($patientId: String!) {
+    patient(id: $patientId) {
+      lastTest {
+        dateTested
+        result
+      }
+    }
+  }
+`;
+
+interface AoEModalProps {
+  saveButtonText?: string;
+  onClose: () => void;
+  patient: any;
+  loadState?: any;
+  saveCallback: (a: any) => string | void;
+  qrCodeValue?: string;
+}
+
+interface SmsModalProps {
+  smsSuccess: boolean;
+  telephone: string;
+  sendSms: () => void;
+  continueModal: () => void;
+}
+
+const SmsModalContents = (props: SmsModalProps) => {
+  return (
+    <>
+      {props.smsSuccess && (
+        <div className="usa-alert usa-alert--success outline-0">
+          <div className="usa-alert__body">
+            <h3 className="usa-alert__heading">Text message sent</h3>
+            <p className="usa-alert__text">
+              The link was sent to {props.telephone}
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
+        {!props.smsSuccess ? (
+          <Button
+            className="margin-right-205"
+            label="Text link to complete on smartphone"
+            type={"button"}
+            onClick={() => props.sendSms()}
+          />
+        ) : (
+          <Button
+            className="margin-right-205"
+            label="Continue"
+            type={"button"}
+            onClick={() => props.continueModal()}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+
+const AoEModalForm = (props: AoEModalProps) => {
+  const {
+    saveButtonText = "Continue",
+    onClose,
+    patient,
+    loadState = {},
+    saveCallback,
+    qrCodeValue = "",
+  } = props;
+
+  const [modalView, setModalView] = useState("");
+  const [patientLink, setPatientLink] = useState("");
   const [smsSuccess, setSmsSuccess] = useState(false);
-  const formRef = useRef(null);
-
-  // the QR code is separately feature flagged – we need it for the e2e tests currently
-  const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
-    ? [{ label: "Complete on smartphone", value: "smartphone" }]
-    : [];
+  const formRef = useRef<HTMLFormElement>(null);
 
   const modalViewValues = [
     {
@@ -42,7 +115,7 @@ const AoEModalForm = ({
     { label: "Complete questionnaire verbally", value: "verbal" },
   ];
 
-  const symptomsResponse = {};
+  const symptomsResponse: { [key: string]: boolean } = {};
   globalSymptomDefinitions.forEach(({ value }) => {
     symptomsResponse[value] = false;
   });
@@ -58,6 +131,18 @@ const AoEModalForm = ({
     symptoms: JSON.stringify(symptomsResponse),
   };
 
+  const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
+    fetchPolicy: "no-cache",
+    variables: { patientId: patient.internalId },
+  });
+  if (loading) {
+    return null;
+  }
+  if (error) {
+    throw error;
+  }
+  const lastTest = data?.patient.lastTest;
+
   const continueModal = () => {
     // No need to save form if in "smartphone" mode
     if (modalView === "smartphone") {
@@ -69,10 +154,10 @@ const AoEModalForm = ({
     } else {
       formRef.current.dispatchEvent(new Event("submit"));
     }
-    onClose();
+    return onClose();
   };
 
-  const chooseModalView = async (view) => {
+  const chooseModalView = async (view: string) => {
     if (view === "smartphone") {
       // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
       setPatientLink(
@@ -109,6 +194,7 @@ const AoEModalForm = ({
       isModal={true}
       noValidation={true}
       formRef={formRef}
+      lastTest={lastTest}
     />
   );
 
@@ -125,35 +211,12 @@ const AoEModalForm = ({
         break;
       case "text":
         innerContents = (
-          <>
-            {smsSuccess && (
-              <div className="usa-alert usa-alert--success outline-0">
-                <div className="usa-alert__body">
-                  <h3 className="usa-alert__heading">Text message sent</h3>
-                  <p className="usa-alert__text">
-                    The link was sent to {patient.telephone}
-                  </p>
-                </div>
-              </div>
-            )}
-            <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-              {!smsSuccess ? (
-                <Button
-                  className="margin-right-205"
-                  label="Text link to complete on smartphone"
-                  type={"button"}
-                  onClick={() => sendSms()}
-                />
-              ) : (
-                <Button
-                  className="margin-right-205"
-                  label="Continue"
-                  type={"button"}
-                  onClick={() => continueModal()}
-                />
-              )}
-            </div>
-          </>
+          <SmsModalContents
+            smsSuccess={smsSuccess}
+            telephone={patient.telephone}
+            sendSms={sendSms}
+            continueModal={continueModal}
+          />
         );
         break;
       case "smartphone":
@@ -170,7 +233,7 @@ const AoEModalForm = ({
                   id="patient-link-qr-code"
                   data-patient-link={patientLink}
                 >
-                  <QRCode value={patientLink} size="190" />
+                  <QRCode value={patientLink} size={190} />
                 </div>
               </div>
             </section>
@@ -186,7 +249,6 @@ const AoEModalForm = ({
         );
         break;
       default:
-        innerContents = null;
         break;
     }
 

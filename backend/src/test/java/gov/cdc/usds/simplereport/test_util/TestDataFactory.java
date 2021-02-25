@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -138,6 +140,11 @@ public class TestDataFactory {
         order.markComplete();
         _testOrderRepo.save(order);
         return event;
+    }
+
+    @Transactional
+    public AskOnEntrySurvey getAoESurveyForTestOrder(UUID id) {
+        return _testOrderRepo.findById(id).orElseThrow().getAskOnEntrySurvey().getSurvey();
     }
 
     public DeviceType createDeviceType(String name, String manufacturer, String model, String loincCode, String swabType) {

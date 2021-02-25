@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DOB snapshot 1`] = `
+exports[`DOB snapshot matches 1`] = `
 <main>
   <div
     className="grid-container maxw-tablet"

@@ -37,41 +37,50 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 @ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
-    private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
+	public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
+	private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-    public interface OktaAttributes {
-        public static String EMAIL = "email";
+	public interface OktaAttributes {
+		public static String EMAIL = "email";
 		public static String FIRST_NAME = "given_name";
 		public static String LAST_NAME = "family_name";
-    }
+	}
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http
-                .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK).permitAll()
-                .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-                .requestMatchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()
-                .anyRequest()
-                .authenticated();
-        Okta.configureResourceServer401ResponseBody(http);
-    }
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+			.antMatchers("/").permitAll()
+			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+			.antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK).permitAll()
+			.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
+			.requestMatchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()
 
-    @Bean
-    public RequestCache refererRequestCache() {
-        return new HttpSessionRequestCache() {
-            @Override
-            public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-                final String referrer = request.getHeader("referer");
-                if (referrer != null) {
-                    request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
-                }
-            }
-        };
-    }
+			// Patient experience authorization is handled in PatientExperienceController
+			// If this configuration changes, please update the documentation on both sides
+			.antMatchers(HttpMethod.PUT, WebConfiguration.PATIENT_EXPERIENCE).permitAll()
+
+			// Anything else goes through Okta
+			.anyRequest().authenticated()
+
+			// We don't have sessions, so can't have CSRF. Spring's automatic CSRF support
+			// breaks the REST controller, so, disable it:
+			.and().csrf().disable();
+
+		Okta.configureResourceServer401ResponseBody(http);
+	}
+
+	@Bean
+	public RequestCache refererRequestCache() {
+		return new HttpSessionRequestCache() {
+			@Override
+			public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
+				final String referrer = request.getHeader("referer");
+				if (referrer != null) {
+					request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
+				}
+			}
+		};
+	}
 
 	@Bean
 	public IdentitySupplier getRealIdentity() {

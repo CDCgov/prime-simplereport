@@ -1,11 +1,33 @@
 import renderer, { act } from "react-test-renderer";
+import { MockedProvider } from "@apollo/client/testing";
 import MockDate from "mockdate";
 
-import AoEModalForm from "./AoEModalForm";
+import AoEModalForm, { LAST_TEST_QUERY } from "./AoEModalForm";
 import ReactDOM from "react-dom";
 
 jest.mock("./AoEForm", () => () => <></>);
 jest.mock("react-modal", () => (props: any) => <>{props.children}</>);
+
+const mocks = [
+  {
+    request: {
+      query: LAST_TEST_QUERY,
+      variables: {
+        patientId: "123",
+      },
+    },
+    result: {
+      data: {
+        patient: {
+          lastTest: {
+            dateTested: "2021-02-05T22:01:55.386Z",
+            result: "NEGATIVE",
+          },
+        },
+      },
+    },
+  },
+];
 
 describe("AoEModalForm", () => {
   let component: renderer.ReactTestRenderer;
@@ -19,7 +41,7 @@ describe("AoEModalForm", () => {
   beforeEach(() => {
     MockDate.set("2021-02-06");
     component = renderer.create(
-      <div id="test-modal-container">
+      <MockedProvider mocks={mocks} addTypename={false}>
         <AoEModalForm
           saveButtonText="save"
           onClose={jest.fn()}
@@ -41,7 +63,7 @@ describe("AoEModalForm", () => {
           }}
           saveCallback={jest.fn()}
         />
-      </div>
+      </MockedProvider>
     );
   });
 
