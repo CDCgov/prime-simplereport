@@ -13,7 +13,7 @@ const mockContainer = (store: any) => (
 );
 
 jest.mock("../PxpApiService", () => {
-  validateDateOfBirth: jest.fn;
+  validateDateOfBirth: jest.fn();
 });
 
 describe("DOB", () => {
