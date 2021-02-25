@@ -149,6 +149,7 @@ const ManageUsers: React.FC<Props> = ({
           user.lastName
         );
 
+        setIsUpdating(false);
         showNotification(
           toast,
           <Alert
@@ -158,10 +159,7 @@ const ManageUsers: React.FC<Props> = ({
           />
         );
       })
-      .catch(setError)
-      .finally(() => {
-        setIsUpdating(false);
-      });
+      .catch(setError);
   };
 
   const handleAddUserToOrg = async (newUserInvite: NewUserInvite) => {
@@ -188,10 +186,9 @@ const ManageUsers: React.FC<Props> = ({
       );
       updateShowAddUserModal(false);
       setAddedUserId(data?.addUserToCurrentOrg?.id);
+      setIsUpdating(false);
     } catch (e) {
       setError(e);
-    } finally {
-      setIsUpdating(false);
     }
   };
 

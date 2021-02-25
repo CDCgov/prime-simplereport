@@ -36,18 +36,22 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
 let updateUserRole: () => Promise<any>;
 let addUserToOrg: () => Promise<any>;
 let deleteUser: (obj: any) => Promise<any>;
-let getUsers: () => void;
+let getUsers: () => Promise<any>;
 
 let inputValue = (value: string) => ({ target: { value } });
 
 describe("ManageUsers", () => {
   beforeEach(() => {
     updateUserRole = jest.fn(() => Promise.resolve());
-    addUserToOrg = jest.fn(() => Promise.resolve());
+    addUserToOrg = jest.fn(() =>
+      Promise.resolve({
+        data: { data: { addUserToCurrentOrg: { id: "added-user-id" } } },
+      })
+    );
     deleteUser = jest.fn((obj) =>
       Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
     );
-    getUsers = jest.fn();
+    getUsers = jest.fn(() => Promise.resolve());
   });
   it("displays the list of users and defaults to the first user", () => {
     const { container } = render(
