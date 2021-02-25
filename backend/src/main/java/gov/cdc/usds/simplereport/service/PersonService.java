@@ -32,7 +32,8 @@ public class PersonService {
     private PersonRepository _repo;
 
     public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
-    public static final int DEFAULT_PAGINATION_PAGESIZE = 1000;
+    public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
+                                                                // currently loads ALL patients and filters locally.
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
