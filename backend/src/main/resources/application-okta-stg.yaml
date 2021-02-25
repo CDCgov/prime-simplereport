@@ -7,5 +7,3 @@ simple-report:
   authorization:
     role-claim: stg_roles
     role-prefix: "SR-STG-TENANT:"
-  okta-application:
-    name: "Simple Report (stg)"

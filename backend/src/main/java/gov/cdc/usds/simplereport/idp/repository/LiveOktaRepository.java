@@ -27,6 +27,7 @@ import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +35,6 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
-import gov.cdc.usds.simplereport.config.OktaApplicationProperties;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -52,14 +52,14 @@ public class LiveOktaRepository implements OktaRepository {
     private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
 
     private String _rolePrefix;
-    private String _appName;
     private Client _client;
 
+    @Value("${okta.oauth2.client-id}")
+    private String _clientId;
+
     public LiveOktaRepository(AuthorizationProperties authorizationProperties,
-                       OktaClientProperties oktaClientProperties,
-                       OktaApplicationProperties oktaApplicationProperties) {
+                       OktaClientProperties oktaClientProperties) {
         _rolePrefix = authorizationProperties.getRolePrefix();
-        _appName = oktaApplicationProperties.getName();
         _client = Clients.builder()
                 .setOrgUrl(oktaClientProperties.getOrgUrl())
                 .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
@@ -203,10 +203,10 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     public void createOrganization(String name, String externalId) {
-        ApplicationList apps = _client.listApplications(_appName, null, null, false);
-        Optional<Application> appMatch = apps.stream().filter(a->a.getLabel().equals(_appName)).findFirst();
+        ApplicationList apps = _client.listApplications();
+        Optional<Application> appMatch = apps.stream().filter(a->a.getId().equals(_clientId)).findFirst();
         if (appMatch.isEmpty()) {
-            throw new IllegalGraphqlArgumentException("Cannot add organization to Okta application with unrecognized name="+_appName);
+            throw new IllegalGraphqlArgumentException("Cannot add organization to Okta application with unrecognized id="+_clientId);
         }
         Application app = appMatch.get();
 

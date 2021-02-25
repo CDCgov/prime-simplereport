@@ -7,5 +7,3 @@ simple-report:
   authorization:
     role-claim: dev_roles
     role-prefix: "SR-DEV-TENANT:"
-  okta-application:
-    name: "Simple Report (dev)"

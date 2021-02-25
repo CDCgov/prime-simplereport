@@ -7,5 +7,3 @@ simple-report:
   authorization:
     role-claim: prod_roles
     role-prefix: "SR-PROD-TENANT:"
-  okta-application:
-    name: "Simple Report"
