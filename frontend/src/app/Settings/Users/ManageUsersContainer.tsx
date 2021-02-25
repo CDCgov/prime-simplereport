@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { gql, useQuery, useMutation, useLazyQuery } from "@apollo/client";
+import React from "react";
+import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
 import ManageUsers from "./ManageUsers";
@@ -108,7 +108,7 @@ const ManageUsersContainer: any = () => {
   const [deleteUser] = useMutation(DELETE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
-  const [getUsers, { data, loading, error }] = useLazyQuery<UserData, {}>(
+  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
     GET_USERS,
     { fetchPolicy: "no-cache" }
   );
@@ -120,8 +120,6 @@ const ManageUsersContainer: any = () => {
   } = useQuery<FacilityData, {}>(GET_FACILITIES, {
     fetchPolicy: "no-cache",
   });
-
-  useEffect(getUsers, [getUsers]);
 
   if (loading || loadingFacilities) {
     return <p> Loading... </p>;
