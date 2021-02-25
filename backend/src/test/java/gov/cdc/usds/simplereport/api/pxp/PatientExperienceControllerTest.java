@@ -1,16 +1,13 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.hamcrest.Matchers.is;
 
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
-import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,8 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.result.ContentResultMatchers;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
 import gov.cdc.usds.simplereport.api.BaseApiTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -28,8 +23,9 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
@@ -45,7 +41,7 @@ public class PatientExperienceControllerTest extends BaseApiTest {
   private TestDataFactory _dataFactory;
 
   @Autowired
-  private TestOrderService _testOrderService;
+  private PatientLinkService _patientLinkService;
 
   @Autowired
   private PatientExperienceController controller;
@@ -57,6 +53,15 @@ public class PatientExperienceControllerTest extends BaseApiTest {
   public void init() {
     _org = _orgService.getCurrentOrganization();
     _site = _orgService.getFacilities(_org).get(0);
+  }
+
+  private Person _person;
+  private PatientLink _patientLink;
+
+  private void initPatientAndGetLink() {
+    _person = _dataFactory.createFullPerson(_org);
+    TestOrder to = _dataFactory.createTestOrder(_person, _site);
+    _patientLink = _patientLinkService.createPatientLink(to.getInternalId());
   }
 
   @Test
@@ -78,15 +83,12 @@ public class PatientExperienceControllerTest extends BaseApiTest {
   @Test
   public void preAuthorizerSucceeds() throws Exception {
     // GIVEN
-    Person p = _dataFactory.createFullPerson(_org);
-    TestOrder to = _testOrderService.addPatientToQueue(_site.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(), false,
-        LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
-    PatientLink pl = to.getPatientLink();
+    initPatientAndGetLink();
+
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     // WHEN
-    String dob = p.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String requestBody = "{\"patientLinkId\":\"" + pl.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
-
     MockHttpServletRequestBuilder builder = put("/pxp/link/verify").contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8").content(requestBody);
 
@@ -94,18 +96,67 @@ public class PatientExperienceControllerTest extends BaseApiTest {
     this.mockMvc.perform(builder).andExpect(status().isOk());
   }
 
-  // @Test
-  // public void verifyLinkReturnsPerson() throws Exception {
-  //   assertTrue(false);
-  // }
+  @Test
+  public void verifyLinkReturnsPerson() throws Exception {
+    // GIVEN
+    initPatientAndGetLink();
 
-  // @Test
-  // public void updatePatientReturnsPerson() throws Exception {
-  //   assertTrue(false);
-  // }
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
-  // @Test
-  // public void aoeSubmitCallsUpdate() throws Exception {
-  //   assertTrue(false);
-  // }
+    // WHEN
+    MockHttpServletRequestBuilder builder = put("/pxp/link/verify").contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8").content(requestBody);
+
+    // THEN
+    mockMvc.perform(builder).andExpect(status().isOk()).andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
+        .andExpect(jsonPath("$.lastName", is(_person.getLastName())));
+  }
+
+  @Test
+  public void updatePatientReturnsUpdatedPerson() throws Exception {
+    // GIVEN
+    initPatientAndGetLink();
+
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String newFirstName = "Blob";
+    String newLastName = "McBlobster";
+
+    String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob
+        + "\",\"data\":{\"firstName\":\"" + newFirstName + "\",\"middleName\":null,\"lastName\":\"" + newLastName
+        + "\",\"birthDate\":\"0101-01-01\",\"telephone\":\"123-123-1234\",\"role\":\"UNKNOWN\",\"email\":null,\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder = put("/pxp/patient").contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8").content(requestBody);
+
+    // THEN
+    mockMvc.perform(builder).andExpect(status().isOk()).andExpect(jsonPath("$.firstName", is(newFirstName)))
+        .andExpect(jsonPath("$.lastName", is(newLastName)));
+  }
+
+//   @Test
+//   public void aoeSubmitCallsUpdate() throws Exception {
+//     // GIVEN
+//     initPatientAndGetLink();
+
+//     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+//     String symptomOnsetDate = "2021-02-01";
+//     String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob
+//         + "\",\"data\":{\"noSymptoms\":false,\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\"" + symptomOnsetDate+"\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
+
+//     // WHEN
+//     MockHttpServletRequestBuilder builder = put("/pxp/questions").contentType(MediaType.APPLICATION_JSON_VALUE)
+//         .accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8").content(requestBody);
+
+//     // THEN
+//     mockMvc.perform(builder).andExpect(status().isOk());
+
+//     TestOrder order = _testOrderService.getTestOrder(_patientLink.getTestOrder().getInternalId().toString());
+//     PatientAnswers answers = order.getAskOnEntrySurvey();
+
+//     AskOnEntrySurvey survey = answers.getSurvey();
+//     assertEquals(survey.getNoSymptoms(), false);
+//     assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse("2021-02-01"));
+//   }
 }
