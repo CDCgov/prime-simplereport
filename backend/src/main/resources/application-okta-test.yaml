@@ -7,3 +7,5 @@ simple-report:
   authorization:
     role-claim: test_roles
     role-prefix: "SR-TEST-TENANT:"
+  okta-application:
+    name: "Simple Report (test)"

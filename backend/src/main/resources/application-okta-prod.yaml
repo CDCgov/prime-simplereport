@@ -3,6 +3,9 @@
 okta:
   oauth2:
     client-id: 0oa5ahrdfSpxmNZO74h6
-simple-report.authorization:
+simple-report:
+  authorization:
     role-claim: prod_roles
     role-prefix: "SR-PROD-TENANT:"
+  okta-application:
+    name: "Simple Report"

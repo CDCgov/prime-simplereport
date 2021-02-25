@@ -7,3 +7,5 @@ simple-report:
   authorization:
     role-claim: training_roles
     role-prefix: "SR-TRAINING-TENANT:"
+  okta-application:
+    name: "Simple Report (training)"

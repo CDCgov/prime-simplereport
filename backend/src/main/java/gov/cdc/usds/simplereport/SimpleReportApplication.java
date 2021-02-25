@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
+import gov.cdc.usds.simplereport.config.OktaApplicationProperties;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -24,6 +25,7 @@ import gov.cdc.usds.simplereport.service.ScheduledTasksService;
         InitialSetupProperties.class,
         SiteAdminEmailList.class,
         AuthorizationProperties.class,
+        OktaApplicationProperties.class,
         DataHubConfig.class,
         DemoUserConfiguration.class,
 })

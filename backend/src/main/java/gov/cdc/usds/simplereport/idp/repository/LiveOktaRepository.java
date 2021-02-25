@@ -19,6 +19,8 @@ import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
+import com.okta.sdk.resource.application.Application;
+import com.okta.sdk.resource.application.ApplicationList;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupType;
@@ -32,6 +34,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.config.OktaApplicationProperties;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -49,11 +52,14 @@ public class LiveOktaRepository implements OktaRepository {
     private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
 
     private String _rolePrefix;
+    private String _appName;
     private Client _client;
 
     public LiveOktaRepository(AuthorizationProperties authorizationProperties,
-                       OktaClientProperties oktaClientProperties) {
+                       OktaClientProperties oktaClientProperties,
+                       OktaApplicationProperties oktaApplicationProperties) {
         _rolePrefix = authorizationProperties.getRolePrefix();
+        _appName = oktaApplicationProperties.getName();
         _client = Clients.builder()
                 .setOrgUrl(oktaClientProperties.getOrgUrl())
                 .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
@@ -97,7 +103,7 @@ public class LiveOktaRepository implements OktaRepository {
 
             // Okta SDK's way of getting a group by group name
             GroupList groups = _client.listGroups(groupName, null, null);
-            if (!groups.iterator().hasNext()) {
+            if (groups.stream().count() == 0) {
                 throw new IllegalGraphqlArgumentException(
                         String.format("Cannot add Okta user to nonexistent group=%s", groupName));
             }
@@ -117,7 +123,7 @@ public class LiveOktaRepository implements OktaRepository {
         String groupName = generateGroupName(org.getExternalId(), role);
 
         GroupList groups = _client.listGroups(groupName, null, null);
-        if (!groups.iterator().hasNext()) {
+        if (groups.stream().count() == 0) {
             LOG.warn("Okta group for org={}, role={} is nonexistent; returning zero usernames",
                      org.getExternalId(), role.name());
             return Set.of();
@@ -131,7 +137,7 @@ public class LiveOktaRepository implements OktaRepository {
     public Optional<OrganizationRoleClaims> updateUser(String oldUsername, IdentityAttributes userIdentity) {
 
         UserList users = _client.listUsers(oldUsername, null, null, null, null);
-        if (!users.iterator().hasNext()) {
+        if (users.stream().count() == 0) {
             throw new IllegalGraphqlArgumentException("Cannot update Okta user with unrecognized username");
         }
         User user = users.single();
@@ -151,7 +157,7 @@ public class LiveOktaRepository implements OktaRepository {
 
     public Optional<OrganizationRoleClaims> updateUserRole(String username, Organization org, OrganizationRole role) {
         UserList users = _client.listUsers(username, null, null, null, null);
-        if (!users.iterator().hasNext()) {
+        if (users.stream().count() == 0) {
             throw new IllegalGraphqlArgumentException("Cannot update role of Okta user with unrecognized username");
         }
         User user = users.single();
@@ -173,7 +179,7 @@ public class LiveOktaRepository implements OktaRepository {
 
         // Okta SDK's way of getting a group by group name
         GroupList groups = _client.listGroups(groupName, null, null);
-        if (!groups.iterator().hasNext()) {
+        if (groups.stream().count() == 0) {
             throw new IllegalGraphqlArgumentException("Cannot add Okta user to nonexistent group");
         }
         Group group = groups.single();
@@ -184,10 +190,11 @@ public class LiveOktaRepository implements OktaRepository {
 
     public void setUserIsActive(String username, Boolean active) {
         UserList users = _client.listUsers(username, null, null, null, null);
-        if (!users.iterator().hasNext()) {
+        if (users.stream().count() == 0) {
             throw new IllegalGraphqlArgumentException("Cannot update active status of Okta user with unrecognized username");
         }
         User user = users.single();
+
         if (active && user.getStatus() == UserStatus.SUSPENDED) {
             user.unsuspend();
         } else if (!active && user.getStatus() != UserStatus.SUSPENDED) {
@@ -196,19 +203,29 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     public void createOrganization(String name, String externalId) {
-        for (OrganizationRole role : OrganizationRole.values()) {
-            GroupBuilder.instance()
-            .setName(generateGroupName(externalId, role))
-            .setDescription(generateGroupDescription(name, role))
-            .buildAndCreate(_client);
+        ApplicationList apps = _client.listApplications(_appName, null, null, false);
+        Optional<Application> appMatch = apps.stream().filter(a->a.getLabel().equals(_appName)).findFirst();
+        if (appMatch.isEmpty()) {
+            throw new IllegalGraphqlArgumentException("Cannot add organization to Okta application with unrecognized name="+_appName);
         }
+        Application app = appMatch.get();
+
+        for (OrganizationRole role : OrganizationRole.values()) {
+            Group g = GroupBuilder.instance()
+                    .setName(generateGroupName(externalId, role))
+                    .setDescription(generateGroupDescription(name, role))
+                    .buildAndCreate(_client);
+            app.createApplicationGroupAssignment(g.getId());
+        }
+
+        app.update();
     }
 
     public void deleteOrganization(String externalId) {
         for (OrganizationRole role : OrganizationRole.values()) {
             String groupName = generateGroupName(externalId, role);
             GroupList groups = _client.listGroups(groupName, null, null);
-            if (groups.iterator().hasNext()) {
+            if (groups.stream().count() == 0) {
                 Group group = groups.single();
                 group.delete();
             }
@@ -219,7 +236,7 @@ public class LiveOktaRepository implements OktaRepository {
     public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
 
         UserList users = _client.listUsers(username, null, null, null, null);
-        if (!users.iterator().hasNext()) {
+        if (users.stream().count() == 0) {
             throw new IllegalGraphqlArgumentException("Cannot get org external ID for nonexistent user");
         }
         User user = users.single();
