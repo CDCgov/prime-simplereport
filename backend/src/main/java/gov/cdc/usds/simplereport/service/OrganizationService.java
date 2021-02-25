@@ -128,7 +128,7 @@ public class OrganizationService {
         String orderingProviderState,
         String orderingProviderZipCode,
         String orderingProviderTelephone,
-            DeviceSpecimenTypeHolder deviceHolder
+            DeviceSpecimenTypeHolder deviceSpecimenTypes
     ) {
         Facility facility = this.getFacilityInCurrentOrg(facilityId);
         facility.setFacilityName(testingFacilityName);
@@ -173,16 +173,16 @@ public class OrganizationService {
         a.setPostalCode(orderingProviderZipCode);
         p.setAddress(a);
 
-        for (DeviceSpecimenType ds : deviceHolder.getConfiguredDeviceSpecimenTypes()) {
+        for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
             facility.addDeviceSpecimenType(ds);
         }
         // remove all existing devices
         for (DeviceSpecimenType ds : facility.getDeviceSpecimenTypes()) {
-            if (!deviceHolder.getConfiguredDeviceSpecimenTypes().contains(ds)) {
+            if (!deviceSpecimenTypes.getFullList().contains(ds)) {
                 facility.removeDeviceSpecimenType(ds);
             }
         }
-        facility.addDefaultDeviceSpecimen(deviceHolder.getDefaultDeviceSpecimenType());
+        facility.addDefaultDeviceSpecimen(deviceSpecimenTypes.getDefault());
         return _facilityRepo.save(facility);
     }
 
@@ -195,7 +195,7 @@ public class OrganizationService {
         Provider orderingProvider = _providerRepo
                 .save(new Provider(providerName, providerNPI, providerAddress, providerTelephone));
         Facility facility = new Facility(org, testingFacilityName, cliaNumber, facilityAddress, phone, email,
-                orderingProvider, deviceSpecimenTypes.getDefaultDeviceSpecimenType(), deviceSpecimenTypes.getConfiguredDeviceSpecimenTypes());
+                orderingProvider, deviceSpecimenTypes.getDefault(), deviceSpecimenTypes.getFullList());
         _facilityRepo.save(facility);
         _oktaRepo.createOrganization(name, externalId);
         return org;
@@ -221,7 +221,7 @@ public class OrganizationService {
             testingFacilityName, cliaNumber,
             facilityAddress, phone, email,
             orderingProvider,
-            deviceSpecimenTypes.getDefaultDeviceSpecimenType(), deviceSpecimenTypes.getConfiguredDeviceSpecimenTypes());
+            deviceSpecimenTypes.getDefault(), deviceSpecimenTypes.getFullList());
         return _facilityRepo.save(facility);
     }
 }

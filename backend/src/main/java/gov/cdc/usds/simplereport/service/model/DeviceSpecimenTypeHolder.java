@@ -7,20 +7,20 @@ import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 
 public class DeviceSpecimenTypeHolder {
 
-    private DeviceSpecimenType _defaultDeviceType;
-    private List<DeviceSpecimenType> _allDeviceTypes;
+    private DeviceSpecimenType _default;
+    private List<DeviceSpecimenType> _all;
 
     public DeviceSpecimenTypeHolder(DeviceSpecimenType defaultType, List<DeviceSpecimenType> configuredTypes) {
         super();
-        this._defaultDeviceType = defaultType;
-        this._allDeviceTypes = Collections.unmodifiableList(configuredTypes);
+        this._default = defaultType;
+        this._all = Collections.unmodifiableList(configuredTypes);
     }
 
-    public DeviceSpecimenType getDefaultDeviceSpecimenType() {
-        return _defaultDeviceType;
+    public DeviceSpecimenType getDefault() {
+        return _default;
     }
 
-    public List<DeviceSpecimenType> getConfiguredDeviceSpecimenTypes() {
-        return _allDeviceTypes;
+    public List<DeviceSpecimenType> getFullList() {
+        return _all;
     }
 }
