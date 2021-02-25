@@ -92,12 +92,12 @@ data "azurerm_key_vault_secret" "org_clia_number" {
 
 data "azurerm_key_vault_secret" "twilio_account_sid" {
   name         = "twilio-account-sid"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "twilio_auth_token" {
   name         = "twilio-auth-token"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
 # logs
