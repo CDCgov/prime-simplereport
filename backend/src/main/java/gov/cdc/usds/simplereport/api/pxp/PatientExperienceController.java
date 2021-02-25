@@ -81,7 +81,7 @@ public class PatientExperienceController {
             parseString(person.getSuffix()), person.getBirthDate(),
             StreetAddress.deAndReSerializeForSafety(person.getAddress()), 
             parsePhoneNumber(person.getTelephone()), person.getRole(),
-        parseEmail(person.getEmail()), parseString(person.getCounty()), parseRace(person.getRace()),
+        parseEmail(person.getEmail()), parseRace(person.getRace()),
         parseEthnicity(person.getEthnicity()), parseGender(person.getGender()), person.getResidentCongregateSetting(),
         person.getEmployedInHealthcare());
   }

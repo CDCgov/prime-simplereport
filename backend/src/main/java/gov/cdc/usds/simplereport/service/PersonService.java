@@ -29,7 +29,7 @@ public class PersonService {
 
     private OrganizationService _os;
     private PersonRepository _repo;
-    final private CurrentPatientContextHolder _patientContext;
+    private final CurrentPatientContextHolder _patientContext;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
@@ -131,7 +131,6 @@ public class PersonService {
             String telephone,
             PersonRole role, //
             String email,
-            String county,
             String race,
             String ethnicity,
             String gender,

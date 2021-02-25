@@ -33,7 +33,7 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class PatientExperienceControllerTest  {
+class PatientExperienceControllerTest  {
   @Autowired
   private MockMvc _mockMvc;
 
@@ -53,7 +53,7 @@ public class PatientExperienceControllerTest  {
   private Facility _site;
 
   @BeforeEach
-  public void init() {
+  void init() {
     _truncator.truncateAll();
     _org = _dataFactory.createValidOrg();
     _site = _dataFactory.createValidFacility(_org);
@@ -67,12 +67,12 @@ public class PatientExperienceControllerTest  {
   private TestOrder _testOrder;
 
   @Test
-  public void contextLoads() throws Exception {
+  void contextLoads() throws Exception {
     assertThat(_controller).isNotNull();
   }
 
   @Test
-  public void preAuthorizerThrows403() throws Exception {
+  void preAuthorizerThrows403() throws Exception {
     String dob = "1900-01-01";
     String requestBody = "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
@@ -83,7 +83,7 @@ public class PatientExperienceControllerTest  {
   }
 
   @Test
-  public void preAuthorizerSucceeds() throws Exception {
+  void preAuthorizerSucceeds() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
@@ -97,7 +97,7 @@ public class PatientExperienceControllerTest  {
   }
 
   @Test
-  public void verifyLinkReturnsPerson() throws Exception {
+  void verifyLinkReturnsPerson() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
@@ -112,7 +112,7 @@ public class PatientExperienceControllerTest  {
   }
 
   @Test
-  public void updatePatientReturnsUpdatedPerson() throws Exception {
+  void updatePatientReturnsUpdatedPerson() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     String newFirstName = "Blob";
@@ -132,7 +132,7 @@ public class PatientExperienceControllerTest  {
   }
 
   @Test
-  public void aoeSubmitCallsUpdate() throws Exception {
+  void aoeSubmitCallsUpdate() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     boolean noSymptoms = false;
