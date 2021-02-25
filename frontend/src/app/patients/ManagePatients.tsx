@@ -82,7 +82,7 @@ export const DetachedManagePatients = ({
   activeFacilityId,
   canEditUser,
   data,
-  currentPage,
+  currentPage = 1,
   pageCount,
   refetch,
 }: Props) => {
