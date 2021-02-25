@@ -9,10 +9,10 @@ exports[`Pagination should render Pagination cases: Pagination '2 pages' 1`] = `
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Previous Page"
           class=""
-          to="/1"
+          href="/1"
         >
           <svg
             aria-hidden="true"
@@ -30,29 +30,29 @@ exports[`Pagination should render Pagination cases: Pagination '2 pages' 1`] = `
             />
           </svg>
            Prev
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class=""
-          to="/1"
+          href="/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 2"
           class="is-active"
-          to="/2"
+          href="/2"
         >
           <span>
             2
           </span>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>
@@ -68,10 +68,10 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Previous Page"
           class=""
-          to="/3"
+          href="/3"
         >
           <svg
             aria-hidden="true"
@@ -89,90 +89,100 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
             />
           </svg>
            Prev
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class=""
-          to="/1"
+          href="/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
+      </li>
+      <li
+        aria-hidden="true"
+      >
+        …
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 2"
           class=""
-          to="/2"
+          href="/2"
         >
           <span>
             2
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 3"
           class=""
-          to="/3"
+          href="/3"
         >
           <span>
             3
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 4"
           class="is-active"
-          to="/4"
+          href="/4"
         >
           <span>
             4
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 5"
           class=""
-          to="/5"
+          href="/5"
         >
           <span>
             5
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 6"
           class=""
-          to="/6"
+          href="/6"
         >
           <span>
             6
           </span>
-        </div>
+        </a>
+      </li>
+      <li
+        aria-hidden="true"
+      >
+        …
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 7"
           class=""
-          to="/7"
+          href="/7"
         >
           <span>
             7
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Next Page"
           class=""
-          to="/5"
+          href="/5"
         >
           Next 
           <svg
@@ -190,7 +200,7 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
               fill="currentColor"
             />
           </svg>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>
@@ -206,10 +216,10 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Previous Page"
           class=""
-          to="/7"
+          href="/7"
         >
           <svg
             aria-hidden="true"
@@ -227,18 +237,18 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
             />
           </svg>
            Prev
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class=""
-          to="/1"
+          href="/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
       </li>
       <li
         aria-hidden="true"
@@ -246,65 +256,65 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
         …
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 6"
           class=""
-          to="/6"
+          href="/6"
         >
           <span>
             6
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 7"
           class=""
-          to="/7"
+          href="/7"
         >
           <span>
             7
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 8"
           class="is-active"
-          to="/8"
+          href="/8"
         >
           <span>
             8
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 9"
           class=""
-          to="/9"
+          href="/9"
         >
           <span>
             9
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Page 10"
           class=""
-          to="/10"
+          href="/10"
         >
           <span>
             10
           </span>
-        </div>
+        </a>
       </li>
       <li>
-        <div
+        <a
           aria-label="Next Page"
           class=""
-          to="/9"
+          href="/9"
         >
           Next 
           <svg
@@ -322,7 +332,7 @@ exports[`Pagination should render Pagination cases: Pagination '10 pages' 1`] = 
               fill="currentColor"
             />
           </svg>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>
@@ -338,15 +348,15 @@ exports[`Pagination should render Pagination cases: Pagination 'undefined curren
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class="is-active"
-          to="/1"
+          href="/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>
@@ -362,15 +372,15 @@ exports[`Pagination should render Pagination cases: Pagination 'with baseRoute' 
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class="is-active"
-          to="/patients/1"
+          href="/patients/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>
@@ -386,15 +396,15 @@ exports[`Pagination should render Pagination cases: Pagination 'with className' 
   >
     <ol>
       <li>
-        <div
+        <a
           aria-label="Page 1"
           class="is-active"
-          to="/1"
+          href="/1"
         >
           <span>
             1
           </span>
-        </div>
+        </a>
       </li>
     </ol>
   </nav>

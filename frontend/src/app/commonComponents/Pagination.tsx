@@ -3,7 +3,7 @@ import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 import "./Pagination.scss";
-import { NavLink } from "react-router-dom";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 interface Props {
   baseRoute: string;
@@ -19,15 +19,6 @@ interface Props {
 // * Show current page and N pages on either side
 // * Use elipsis if gaps between group and first/last
 //
-// Cases (_n_ represents currentPage):
-//  << _1_ >>
-//  << 1 _2_ 3 >>
-//  << _1_ 2 3 4 5 ... 71  >>
-//  << 1 2 _3_ 4 5 ... 71  >>
-//  << 1 ... 14 15 _16_ 17 18 ... 71 >>
-//  << 1 ... 67 68 _69_ 70 71 >>
-//  << 1 ... 67 68 69 70 _71_ >>
-//  << 1 2 3 _4_ 5 6 ... 71 >>
 
 // Always make this odd, current page is in the middle
 const defaultGroupSize = 7;
@@ -53,26 +44,26 @@ const Pagination = ({
     label?: string;
     children: React.ReactNode;
   }) => (
-    <NavLink
+    <LinkWithQuery
       to={`${baseRoute}/${props.to}`}
       className={classnames(props.active && "is-active")}
       aria-label={props.label}
     >
       {props.children}
-    </NavLink>
+    </LinkWithQuery>
   );
 
   // Build list of pages, with 0 representing the ellipsis
   if (minGroupPage !== 1) {
     pageList.push(1);
   }
-  if (minGroupPage > groupGutter) {
+  if (minGroupPage >= groupGutter) {
     pageList.push(0);
   }
   for (let pn = minGroupPage; pn <= maxGroupPage; pn++) {
     pageList.push(pn);
   }
-  if (maxGroupPage < totalPages - groupGutter) {
+  if (maxGroupPage <= totalPages - groupGutter + 1) {
     pageList.push(0);
   }
   if (maxGroupPage !== totalPages) {
@@ -93,7 +84,7 @@ const Pagination = ({
             </Link>
           </li>
         )}
-        {pageList.map((pn) =>
+        {pageList.map((pn, index) =>
           pn ? (
             <li key={pn}>
               <Link to={pn} label={`Page ${pn}`} active={pn === currentPage}>
@@ -101,7 +92,7 @@ const Pagination = ({
               </Link>
             </li>
           ) : (
-            <li key={pn} aria-hidden="true">
+            <li key={`elp${index}`} aria-hidden="true">
               …
             </li>
           )

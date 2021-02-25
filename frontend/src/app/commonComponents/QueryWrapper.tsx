@@ -20,12 +20,14 @@ const defaultQueryOptions: QueryHookOptions = {
 export function QueryWrapper<ComponentProps>({
   query,
   queryOptions,
+  onRefetch,
   children,
   Component,
   componentProps,
 }: {
   query: ReturnType<typeof gql>;
   queryOptions?: QueryHookOptions;
+  onRefetch?: () => void;
   children?: React.ReactNode;
   Component: React.ComponentType<ComponentProps>;
   componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
@@ -39,18 +41,21 @@ export function QueryWrapper<ComponentProps>({
       ...queryOptions,
     }
   );
-
   if (loading) {
     return <p>Loading</p>;
   }
   if (error) {
     throw error;
   }
+  const passOnRefetch = () => {
+    refetch();
+    onRefetch && onRefetch();
+  };
   const props = ({
     ...componentProps,
     trackAction,
     data,
-    refetch,
+    refetch: passOnRefetch,
     startPolling,
     stopPolling,
   } as unknown) as ComponentProps;

@@ -1,5 +1,6 @@
 import { render } from "@testing-library/react";
 import Pagination from "./Pagination";
+import { MemoryRouter } from "react-router-dom";
 
 /*
 // Cases (_n_ represents currentPage):
@@ -31,16 +32,15 @@ const testCases = {
   "10 pages": { entriesPerPage: 5, totalEntries: 48, currentPage: 8 },
 };
 
-// Avoid the need to wrap in a router
-jest.mock("react-router-dom", () => ({
-  NavLink: (props: any) => <div {...props} />,
-}));
-
 describe("Pagination", () => {
   it("should render Pagination cases", () => {
     Object.entries(testCases).forEach(([name, tc], index) => {
       const props = { ...defaults, ...tc } as any;
-      const { container } = render(<Pagination {...props} />);
+      const { container } = render(
+        <MemoryRouter>
+          <Pagination {...props} />
+        </MemoryRouter>
+      );
       expect(container).toMatchSnapshot(`Pagination '${name}'`);
     });
   });

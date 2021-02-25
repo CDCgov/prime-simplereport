@@ -205,7 +205,7 @@ const ManagePatients = (
     data: totalPatients,
     loading,
     error,
-    //refetch: refetchCount,
+    refetch: refetchCount,
   } = useQuery(patientsCountQuery, {
     variables: { facilityId: activeFacilityId, showDeleted: false },
   });
@@ -235,6 +235,7 @@ const ManagePatients = (
           showDeleted: props.showDeleted || false,
         },
       }}
+      onRefetch={refetchCount}
       Component={DetachedManagePatients}
       componentProps={{
         ...props,
