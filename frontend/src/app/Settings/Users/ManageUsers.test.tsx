@@ -157,4 +157,19 @@ describe("ManageUsers", () => {
       variables: { id: users[0].id, role: "ADMIN" },
     });
   });
+  it("fails gracefully when there are no users", async () => {
+    const { findByText } = render(
+      <ManageUsers
+        users={[]}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
+    );
+    const noUsers = await findByText("no users", { exact: false });
+    expect(noUsers).toBeInTheDocument();
+  });
 });
