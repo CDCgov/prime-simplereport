@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -28,11 +29,13 @@ public class PersonService {
 
     private OrganizationService _os;
     private PersonRepository _repo;
+    final private CurrentPatientContextHolder _patientContext;
 
     private static final Sort NAME_SORT = Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName",
             "nameInfo.suffix");
 
-    public PersonService(OrganizationService os, PersonRepository repo) {
+    public PersonService(OrganizationService os, PersonRepository repo, CurrentPatientContextHolder patientContext) {
+        _patientContext = patientContext;
         _os = os;
         _repo = repo;
     }
@@ -114,6 +117,31 @@ public class PersonService {
 
         updatePersonFacility(newPatient, facilityId);
         return _repo.save(newPatient);
+    }
+
+    // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
+    // is verified, so there is no authorization check
+    public Person updateMe(
+            String firstName,
+            String middleName,
+            String lastName,
+            String suffix,
+            LocalDate birthDate,
+            StreetAddress address,
+            String telephone,
+            PersonRole role, //
+            String email,
+            String county,
+            String race,
+            String ethnicity,
+            String gender,
+            Boolean residentCongregateSetting,
+            Boolean employedInHealthcare) {
+        Person toUpdate = _patientContext.getLinkedOrder().getPatient();
+        toUpdate.updatePatient(toUpdate.getLookupId(),
+                firstName, middleName, lastName, suffix, birthDate, address, telephone, role, email, race, ethnicity,
+                gender, residentCongregateSetting, employedInHealthcare);
+        return _repo.save(toUpdate);
     }
 
     @AuthorizationConfiguration.RequirePermissionEditPatient

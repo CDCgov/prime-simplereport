@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -27,6 +28,9 @@ public class PatientLinkService {
 
     @Autowired
     private TestOrderRepository torepo;
+
+    @Autowired
+    private CurrentPatientContextHolder contextHolder;
 
     public static final long oneDay = 24L;
 
@@ -49,8 +53,10 @@ public class PatientLinkService {
     public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
         try {
             PatientLink pl = getPatientLink(internalId);
-            Person patient = pl.getTestOrder().getPatient();
-            return patient.getBirthDate().equals(birthDate);
+            TestOrder testOrder = pl.getTestOrder();
+            // TODO reverse the order of these operations
+            contextHolder.setLinkedOrder(testOrder);
+            return testOrder.getPatient().getBirthDate().equals(birthDate);
         } catch (IllegalGraphqlArgumentException e) {
             return false;
         }

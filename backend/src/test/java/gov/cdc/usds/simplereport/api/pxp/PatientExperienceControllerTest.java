@@ -28,7 +28,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
@@ -39,9 +38,6 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 public class PatientExperienceControllerTest  {
   @Autowired
   private MockMvc _mockMvc;
-
-  @Autowired
-  private OrganizationService _orgService;
 
   @Autowired
   private TestDataFactory _dataFactory;

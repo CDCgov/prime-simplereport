@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import java.util.Map;
-import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -22,14 +21,12 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
-import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -77,16 +74,12 @@ public class PatientExperienceController {
 
   @PutMapping("/patient")
   public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) throws InvalidPatientLinkException {
-    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
-    UUID facilityId = pl.getTestOrder().getFacility().getInternalId();
-    String patientId = pls.getPatientFromLink(body.getPatientLinkId()).getInternalId().toString();
     Person person = body.getData();
-
-    return ps.updatePatient(facilityId, patientId, parseString(person.getLookupId()),
+    return ps.updateMe(
         parseString(person.getFirstName()), parseString(person.getMiddleName()), parseString(person.getLastName()),
-        parseString(person.getSuffix()), person.getBirthDate(), parseString(person.getStreet()),
-        parseString(person.getStreetTwo()), parseString(person.getCity()), parseState(person.getState()),
-        parseString(person.getZipCode()), parsePhoneNumber(person.getTelephone()), person.getRole(),
+            parseString(person.getSuffix()), person.getBirthDate(),
+            person.getAddress(), // TODO: No longer trimmed! Need to fix that
+            parsePhoneNumber(person.getTelephone()), person.getRole(),
         parseEmail(person.getEmail()), parseString(person.getCounty()), parseRace(person.getRace()),
         parseEthnicity(person.getEthnicity()), parseGender(person.getGender()), person.getResidentCongregateSetting(),
         person.getEmployedInHealthcare());
@@ -94,13 +87,10 @@ public class PatientExperienceController {
 
   @PutMapping("/questions")
   public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) throws InvalidPatientLinkException {
-    Person patient = pls.getPatientFromLink(body.getPatientLinkId());
-    String patientID = patient.getInternalId().toString();
-
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
-    tos.updateTimeOfTestQuestions(patientID, data.getPregnancy(), symptomsMap, data.isFirstTest(),
+    tos.updateMyTimeOfTestQuestions(data.getPregnancy(), symptomsMap, data.isFirstTest(),
         data.getPriorTestDate(), data.getPriorTestType(),
         data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
         data.getSymptomOnset(), data.getNoSymptoms());
