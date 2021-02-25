@@ -4,10 +4,11 @@ import Modal from "react-modal";
 import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { displayFullName } from "../../utils";
+import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -31,6 +32,12 @@ export const LAST_TEST_QUERY = gql`
         result
       }
     }
+  }
+`;
+
+export const SEND_SMS_MUTATION = gql`
+  mutation sendPatientLinkSms($internalId: String!) {
+    sendPatientLinkSms(internalId: $internalId)
   }
 `;
 
@@ -131,6 +138,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     symptoms: JSON.stringify(symptomsResponse),
   };
 
+  const [sendSmsMutation] = useMutation(SEND_SMS_MUTATION);
   const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
@@ -180,8 +188,14 @@ const AoEModalForm = (props: AoEModalProps) => {
     </div>
   );
 
-  const sendSms = () => {
-    setSmsSuccess(true);
+  const sendSms = async () => {
+    const internalId = await saveCallback(patientResponse);
+    try {
+      await sendSmsMutation({ variables: { internalId } });
+      setSmsSuccess(true);
+    } catch (error) {
+      showError(toast, "SMS error", error);
+    }
   };
 
   const verbalForm = (

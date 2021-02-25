@@ -44,9 +44,11 @@ dependencies {
 	runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
 	runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
-// App insights instrumentation
+	// App insights instrumentation
 	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
 
+	// Twilio for SMS
+	implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
 
 	// test/check dependencies
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {

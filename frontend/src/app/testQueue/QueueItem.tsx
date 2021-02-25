@@ -12,7 +12,7 @@ import classnames from "classnames";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
-import AoeModalForm from "./AoEForm/AoEModalForm";
+import AoEModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
@@ -535,7 +535,7 @@ const QueueItem: any = ({
                         onClick={openAoeModal}
                       />
                       {isAoeModalOpen && (
-                        <AoeModalForm
+                        <AoEModalForm
                           saveButtonText="Continue"
                           onClose={closeAoeModal}
                           patient={patient}
