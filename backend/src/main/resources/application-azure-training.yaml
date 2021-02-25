@@ -5,3 +5,9 @@ graphql.servlet.cors:
     - https://simple-report-api-training.azurewebsites.net
     - https://simple-report-training.azureedge.net
     - https://training.simplereport.gov
+  patient-link-url: https://training.simplereport.gov/app/pxp?plid=
+  feature-flags:
+    patient-links: true
+twilio:
+  enabled: true
+  from-number: "+14045312484"
