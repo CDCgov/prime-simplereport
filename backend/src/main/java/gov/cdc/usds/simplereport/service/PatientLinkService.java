@@ -54,9 +54,11 @@ public class PatientLinkService {
         try {
             PatientLink pl = getPatientLink(internalId);
             TestOrder testOrder = pl.getTestOrder();
-            // TODO reverse the order of these operations
-            contextHolder.setLinkedOrder(testOrder);
-            return testOrder.getPatient().getBirthDate().equals(birthDate);
+            if(testOrder.getPatient().getBirthDate().equals(birthDate)) {
+                contextHolder.setLinkedOrder(testOrder);
+                return true;
+            }
+            return false;
         } catch (IllegalGraphqlArgumentException e) {
             return false;
         }
