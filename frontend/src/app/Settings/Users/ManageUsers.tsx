@@ -168,7 +168,7 @@ const ManageUsers: React.FC<Props> = ({
       setIsUpdating(true);
       const { firstName, lastName, email, role } = { ...newUserInvite };
       const { data } = await addUserToOrg({
-        variables: { firstName, lastName, email, role },
+        variables: { firstName, lastName, email, role: role || undefined },
       });
       await getUsers();
       const fullName = displayFullNameInOrder(firstName, "", lastName);
