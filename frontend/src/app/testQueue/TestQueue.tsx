@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
+import "./TestQueue.scss";
 
 const pollInterval = 10_000;
 
@@ -105,10 +106,48 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     pollInterval,
   });
 
+  const [localQueue, setLocalQueue] = useState<QueueItemData[]>();
+  const [toRemove, setToRemove] = useState<Set<string>>(new Set());
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+    if (!data?.queue) {
+      return;
+    }
+    // Immediately set local queue if nonexistent
+    if (localQueue === undefined) {
+      setLocalQueue(data.queue);
+      return;
+    }
+    // Get discrepancies
+    const newIds = new Set(
+      data.queue.map(({ internalId }: QueueItemData) => internalId)
+    );
+    const toRemove = localQueue
+      .filter(({ internalId }) => !newIds.has(internalId))
+      .map(({ internalId }) => internalId);
+    setToRemove(new Set(toRemove));
+
+    // Only requires animation on remove
+    if (toRemove.length === 0) {
+      setLocalQueue(data.queue);
+      return;
+    }
+    // Catch local queue up after small delay
+    timeout = setTimeout(() => {
+      setToRemove(new Set());
+      setLocalQueue(data.queue);
+    }, 1300);
+    // cleanup the timeout on unmount
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [data, localQueue]);
+
   if (error) {
     throw error;
   }
-  if (loading) {
+  if (loading || !localQueue) {
     return <p>Loading patients...</p>;
   }
 
@@ -125,7 +164,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     );
   }
   let shouldRenderQueue =
-    data.queue.length > 0 && facility.deviceTypes.length > 0;
+    localQueue.length > 0 && facility.deviceTypes.length > 0;
+
   const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
@@ -138,25 +178,33 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientLink,
             ...questions
           }) => (
-            <QueueItem
+            <div
               key={internalId}
-              internalId={internalId}
-              patient={patient}
-              askOnEntry={questions}
-              selectedDeviceId={deviceType?.internalId || null}
-              selectedTestResult={result}
-              devices={facility.deviceTypes}
-              defaultDevice={facility.defaultDeviceType}
-              refetchQueue={refetchQueue}
-              facilityId={activeFacilityId}
-              dateTestedProp={dateTested}
-              patientLinkId={patientLink?.internalId || null}
-            />
+              className={
+                toRemove.has(internalId)
+                  ? "sr-queue-item-remove"
+                  : "sr-queue-item"
+              }
+            >
+              <QueueItem
+                internalId={internalId}
+                patient={patient}
+                askOnEntry={questions}
+                selectedDeviceId={deviceType?.internalId || null}
+                selectedTestResult={result}
+                devices={facility.deviceTypes}
+                defaultDevice={facility.defaultDeviceType}
+                refetchQueue={refetchQueue}
+                facilityId={activeFacilityId}
+                dateTestedProp={dateTested}
+                patientLinkId={patientLink?.internalId || null}
+              />
+            </div>
           )
         )
       : emptyQueueMessage;
 
-  const patientsInQueue = data.queue.map(
+  const patientsInQueue = localQueue.map(
     (q: QueueItemData) => q.patient.internalId
   );
 
@@ -170,7 +218,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
           />
         </div>
-        {createQueueItems(data.queue)}
+        {createQueueItems(localQueue)}
       </div>
     </main>
   );
