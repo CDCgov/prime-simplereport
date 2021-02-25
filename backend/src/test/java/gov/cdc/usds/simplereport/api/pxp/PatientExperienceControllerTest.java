@@ -23,13 +23,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
@@ -46,9 +44,6 @@ public class PatientExperienceControllerTest  {
   private PatientLinkService _patientLinkService;
 
   @Autowired
-  private TestOrderService _testOrderService;
-
-  @Autowired
   private PatientExperienceController _controller;
 
   @Autowired
@@ -63,12 +58,13 @@ public class PatientExperienceControllerTest  {
     _org = _dataFactory.createValidOrg();
     _site = _dataFactory.createValidFacility(_org);
     _person = _dataFactory.createFullPerson(_org);
-    TestOrder to = _dataFactory.createTestOrder(_person, _site);
-    _patientLink = _patientLinkService.createPatientLink(to.getInternalId());
+    _testOrder = _dataFactory.createTestOrder(_person, _site);
+    _patientLink = _patientLinkService.createPatientLink(_testOrder.getInternalId());
   }
 
   private Person _person;
   private PatientLink _patientLink;
+  private TestOrder _testOrder;
 
   @Test
   public void contextLoads() throws Exception {
@@ -139,9 +135,10 @@ public class PatientExperienceControllerTest  {
   public void aoeSubmitCallsUpdate() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    boolean noSymptoms = false;
     String symptomOnsetDate = "2021-02-01";
     String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob
-        + "\",\"data\":{\"noSymptoms\":false,\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\"" + symptomOnsetDate+"\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
+        + "\",\"data\":{\"noSymptoms\":"+noSymptoms+",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\"" + symptomOnsetDate+"\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
 
     // WHEN
     MockHttpServletRequestBuilder builder = put("/pxp/questions").contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -150,11 +147,8 @@ public class PatientExperienceControllerTest  {
     // THEN
     _mockMvc.perform(builder).andExpect(status().isOk());
 
-    TestOrder order = _testOrderService.getTestOrder(_patientLink.getTestOrder().getInternalId().toString());
-    PatientAnswers answers = order.getAskOnEntrySurvey();
-
-    AskOnEntrySurvey survey = answers.getSurvey();
-    assertEquals(survey.getNoSymptoms(), false);
-    assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse("2021-02-01"));
+    AskOnEntrySurvey survey = _dataFactory.getAoESurveyForTestOrder(_testOrder.getInternalId());
+    assertEquals(survey.getNoSymptoms(), noSymptoms);
+    assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse(symptomOnsetDate));
   }
 }
