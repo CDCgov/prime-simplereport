@@ -254,7 +254,7 @@ const ManageUsers: React.FC<Props> = ({
           {!localUsers.length ? (
             <p>There are no users in this organization</p>
           ) : (
-            <p>Loading data</p>
+            <p>Loading user data</p>
           )}
         </div>
       ) : (
@@ -268,13 +268,11 @@ const ManageUsers: React.FC<Props> = ({
             <div className="tablet:grid-col padding-left-2">
               <div className="user-header grid-row flex-row flex-align-center">
                 <h2 className="display-inline-block margin-y-1">
-                  {activeUser
-                    ? displayFullNameInOrder(
-                        activeUser.firstName,
-                        activeUser.middleName,
-                        activeUser.lastName
-                      )
-                    : "Loading..."}
+                  {displayFullNameInOrder(
+                    activeUser.firstName,
+                    activeUser.middleName,
+                    activeUser.lastName
+                  )}
                 </h2>
                 {activeUser?.id === loggedInUser.id ? (
                   <span className="usa-tag margin-left-1 bg-base-lighter text-ink">
@@ -287,16 +285,15 @@ const ManageUsers: React.FC<Props> = ({
                   Admins have full access to conduct tests, manage results and
                   profiles, and manage settings and users
                 </p>
-                {activeUser && (
+                {
                   <UserRoleSettingsForm
                     activeUser={activeUser}
                     loggedInUser={loggedInUser}
                     onUpdateUser={updateUser}
                   />
-                )}
+                }
 
-                {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" &&
-                activeUser ? (
+                {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
                     activeUser={activeUser}
                     allFacilities={allFacilities}
@@ -330,12 +327,12 @@ const ManageUsers: React.FC<Props> = ({
                 />
               </div>
 
-              {showInProgressModal && activeUser ? (
+              {showInProgressModal && (
                 <InProgressModal
                   onClose={() => updateShowInProgressModal(false)}
                   onContinue={() => onContinueChangeActiveUser()}
                 />
-              ) : null}
+              )}
               {isUserEdited ? (
                 <Prompt
                   when={isUserEdited}
