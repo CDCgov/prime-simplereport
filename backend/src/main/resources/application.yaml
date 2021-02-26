@@ -37,11 +37,13 @@ graphql:
 okta:
   oauth2:
     issuer: https://hhs-prime.okta.com/oauth2/default
-    client-id: ${OKTA_OAUTH2_CLIENT_ID}
+    # this is overriden by okta-dev, -prod, -test, etc
+    client-id: ${OKTA_OAUTH2_CLIENT_ID:MISSING}
     client-secret: ${OKTA_OAUTH2_CLIENT_SECRET:MISSING}
     groups-claim: ${simple-report.authorization.role-claim}
   client:
     org-url: https://hhs-prime.okta.com
+    # this is set in various Azure environments, and must be defined in -local
     token: ${OKTA_API_KEY:MISSING}
 simple-report:
   data-hub:
