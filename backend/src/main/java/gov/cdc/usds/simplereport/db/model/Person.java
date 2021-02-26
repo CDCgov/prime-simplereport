@@ -32,7 +32,7 @@ import java.time.LocalDate;
 public class Person extends OrganizationScopedEternalEntity {
 
 	// NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
-	// this is common for
+	// this is common for imported patients.
 	@ManyToOne(optional = true)
 	@JoinColumn(name = "facility_id")
 	@JsonIgnore // do not serialize to TestEvents
