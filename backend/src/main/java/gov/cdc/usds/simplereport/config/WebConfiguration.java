@@ -14,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfiguration implements WebMvcConfigurer {
 
     public static final String HEALTH_CHECK = "/health";
+    public static final String PATIENT_EXPERIENCE = "/pxp";
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

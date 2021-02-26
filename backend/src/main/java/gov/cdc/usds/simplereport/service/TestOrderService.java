@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -41,9 +42,12 @@ public class TestOrderService {
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
   private PatientLinkService _pls;
+  private final CurrentPatientContextHolder _patientContext;
 
   public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo,
-      PatientAnswersRepository parepo, TestEventRepository terepo, PersonService ps, PatientLinkService pls) {
+          PatientAnswersRepository parepo, TestEventRepository terepo, PersonService ps, PatientLinkService pls,
+          CurrentPatientContextHolder patientContext) {
+      _patientContext = patientContext;
     _os = os;
     _ps = ps;
     _dts = dts;
@@ -154,6 +158,13 @@ public class TestOrderService {
       LocalDate symptomOnsetDate, Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
 
+    updateTimeOfTest(order, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult,
+            symptomOnsetDate, noSymptoms);
+}
+
+private void updateTimeOfTest(TestOrder order, String pregnancy, Map<String, Boolean> symptoms, Boolean firstTest,
+        LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnsetDate,
+        Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
     survey.setPregnancy(pregnancy);
@@ -166,7 +177,7 @@ public class TestOrderService {
     survey.setPriorTestResult(priorTestResult);
     answers.setSurvey(survey);
     _parepo.save(answers);
-  }
+}
 
   @AuthorizationConfiguration.RequirePermissionUpdateTest
   public void removePatientFromQueue(String patientId) {
@@ -234,7 +245,16 @@ public class TestOrderService {
         return newRemoveEvent;
     }
 
+    // IMPLICITLY AUTHORIZED
+    public void updateMyTimeOfTestQuestions(String pregnancy, Map<String, Boolean> symptoms, boolean firstTest,
+            LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnset,
+            boolean noSymptoms) {
+        updateTimeOfTest(_patientContext.getLinkedOrder(), pregnancy, symptoms, firstTest, priorTestDate, priorTestType,
+                priorTestResult, symptomOnset, noSymptoms);
+    }
+
   private static IllegalGraphqlArgumentException noSuchOrderFound() {
     return new IllegalGraphqlArgumentException("No active test order was found for that patient");
   }
+
 }

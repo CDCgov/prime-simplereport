@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Redirect } from "react-router";
-import { useHistory } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import Button from "../../app/commonComponents/Button";

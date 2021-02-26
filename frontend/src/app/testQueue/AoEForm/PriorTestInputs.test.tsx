@@ -18,7 +18,7 @@ describe("PriorTestInputs", () => {
         setPriorTestResult={jest.fn()}
         priorTestType={""}
         setPriorTestType={jest.fn()}
-        mostRecentTest={undefined}
+        lastTest={undefined}
       />
     );
 

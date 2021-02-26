@@ -10,8 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import gov.cdc.usds.simplereport.api.exceptions.IncorrectBirthDateException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -19,7 +20,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 
-@Service
+@Service("patientLinkService")
 @Transactional(readOnly = false)
 public class PatientLinkService {
     @Autowired
@@ -27,6 +28,9 @@ public class PatientLinkService {
 
     @Autowired
     private TestOrderRepository torepo;
+
+    @Autowired
+    private CurrentPatientContextHolder contextHolder;
 
     public static final long oneDay = 24L;
 
@@ -42,18 +46,27 @@ public class PatientLinkService {
         if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
             return pl.getTestOrder().getOrganization();
         } else {
-            return null;
+            throw new InvalidPatientLinkException("Patient Link is expired; please contact your provider");
         }
     }
 
-    public Person getPatientLinkVerify(String internalId, LocalDate birthDate) throws IncorrectBirthDateException {
-        PatientLink pl = getPatientLink(internalId);
-        Person patient = pl.getTestOrder().getPatient();
-        if (patient.getBirthDate().equals(birthDate)) {
-            return patient;
-        } else {
-            throw new IncorrectBirthDateException("Incorrect birth date provided");
+    public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
+        try {
+            PatientLink pl = getPatientLink(internalId);
+            TestOrder testOrder = pl.getTestOrder();
+            if(testOrder.getPatient().getBirthDate().equals(birthDate)) {
+                contextHolder.setLinkedOrder(testOrder);
+                return true;
+            }
+            return false;
+        } catch (IllegalGraphqlArgumentException e) {
+            return false;
         }
+    }
+
+    public Person getPatientFromLink(String internalId) {
+        PatientLink pl = getPatientLink(internalId);
+        return pl.getTestOrder().getPatient();
     }
 
     public PatientLink createPatientLink(UUID testOrderUuid) {

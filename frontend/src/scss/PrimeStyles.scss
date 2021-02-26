@@ -659,3 +659,13 @@
 .usa-form-group--error {
   margin-top: units(3);
 }
+
+.tos-content {
+  h2 {
+    font-size: size("body", "md");
+  }
+
+  h3 {
+    font-size: size("body", "sm");
+  }
+}

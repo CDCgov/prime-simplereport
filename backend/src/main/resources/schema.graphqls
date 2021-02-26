@@ -192,8 +192,6 @@ type Query {
   testResult(id: String!): TestResult
   users: [User]
   whoami: User!
-  patientLinkCurrent(internalId: String!): Organization
-  patientLinkVerify(internalId: String!, birthDate: LocalDate!): Patient
 }
 type Mutation {
   uploadPatients(patientList: Upload!): String
@@ -304,14 +302,8 @@ type Mutation {
     suffix: String
     email: String!
   ): User
-  updateUserRole(
-    id: ID!
-    role: OrganizationRole!
-  ): OrganizationRole
-  setUserIsDeleted(
-    id: ID!, 
-    deleted: Boolean!
-  ): User
+  updateUserRole(id: ID!, role: OrganizationRole!): OrganizationRole
+  setUserIsDeleted(id: ID!, deleted: Boolean!): User
   addPatient(
     facilityId: String
     lookupId: String
@@ -414,40 +406,4 @@ type Mutation {
     swabType: String
   ): DeviceType
   refreshPatientLink(internalId: String!): PatientLink
-  patientLinkSubmit(
-    internalId: String!
-    birthDate: LocalDate!
-    pregnancy: String
-    symptoms: String
-    firstTest: Boolean
-    priorTestDate: LocalDate
-    priorTestType: String
-    priorTestResult: String
-    symptomOnset: LocalDate
-    noSymptoms: Boolean
-  ): String
-  patientLinkUpdatePatient(
-    internalId: String!
-    oldBirthDate: LocalDate!
-    lookupId: String
-    firstName: String!
-    middleName: String
-    lastName: String!
-    suffix: String
-    newBirthDate: LocalDate!
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    telephone: String!
-    role: String
-    email: String
-    county: String
-    race: String
-    ethnicity: String
-    gender: String
-    residentCongregateSetting: Boolean!
-    employedInHealthcare: Boolean!
-  ): Patient
 }
