@@ -22,7 +22,7 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
     public static final String FACILITY_QUERY = BASE_ORG_QUERY + " and q.facility = :facility ";
     public static final String IS_PENDING = " and q.orderStatus = 'PENDING' ";
     public static final String IS_COMPLETED = " and q.orderStatus = 'COMPLETED' ";
-    public static final String ORDER_CREATION_ORDER = " order by q.updatedAt ";
+    public static final String ORDER_CREATION_ORDER = " order by q.createdAt ";
     public static final String RESULT_RECENT_ORDER = " order by updatedAt desc ";
 
     @Query(FACILITY_QUERY + IS_PENDING + ORDER_CREATION_ORDER)

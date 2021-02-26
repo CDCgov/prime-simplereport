@@ -1,9 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
-<div
-  id="test-modal-container"
->
+Array [
   <div
     className="display-flex flex-justify"
   >
@@ -30,15 +28,15 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
         save
       </button>
     </div>
-  </div>
+  </div>,
   <div
     className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
-  />
+  />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
   >
     Test questionnaire
-  </h2>
+  </h2>,
   <fieldset
     className="usa-fieldset prime-radios margin-top-205"
   >
@@ -101,7 +99,7 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
         </label>
       </div>
     </div>
-  </fieldset>
+  </fieldset>,
   <div
     className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right"
   >
@@ -112,14 +110,12 @@ exports[`AoEModalForm on data loaded has a distinct view for 'text' 1`] = `
     >
       Text link to complete on smartphone
     </button>
-  </div>
-</div>
+  </div>,
+]
 `;
 
 exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
-<div
-  id="test-modal-container"
->
+Array [
   <div
     className="display-flex flex-justify"
   >
@@ -146,15 +142,15 @@ exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
         save
       </button>
     </div>
-  </div>
+  </div>,
   <div
     className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
-  />
+  />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
   >
     Test questionnaire
-  </h2>
+  </h2>,
   <fieldset
     className="usa-fieldset prime-radios margin-top-205"
   >
@@ -217,14 +213,12 @@ exports[`AoEModalForm on data loaded has a distinct view for 'verbal' 1`] = `
         </label>
       </div>
     </div>
-  </fieldset>
-</div>
+  </fieldset>,
+]
 `;
 
 exports[`AoEModalForm on data loaded renders 1`] = `
-<div
-  id="test-modal-container"
->
+Array [
   <div
     className="display-flex flex-justify"
   >
@@ -251,15 +245,15 @@ exports[`AoEModalForm on data loaded renders 1`] = `
         save
       </button>
     </div>
-  </div>
+  </div>,
   <div
     className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
-  />
+  />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
   >
     Test questionnaire
-  </h2>
+  </h2>,
   <fieldset
     className="usa-fieldset prime-radios margin-top-205"
   >
@@ -322,6 +316,6 @@ exports[`AoEModalForm on data loaded renders 1`] = `
         </label>
       </div>
     </div>
-  </fieldset>
-</div>
+  </fieldset>,
+]
 `;

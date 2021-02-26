@@ -10,7 +10,7 @@ const PatientLanding = () => {
     <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
-          Hello, {fullName}
+          {fullName}
         </h1>
         <div className="prime-formgroup usa-prose">
           <h2 className="font-heading-lg">Test questionnaire</h2>

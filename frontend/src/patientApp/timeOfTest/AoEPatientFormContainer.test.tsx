@@ -5,7 +5,6 @@ import configureStore from "redux-mock-store";
 
 import AoEPatientFormContainer from "./AoEPatientFormContainer";
 
-const mockStore = configureStore([]);
 jest.mock("react-router-dom", () => ({
   useHistory: () => ({
     listen: jest.fn(),
@@ -14,7 +13,13 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("AoEPatientFormContainer", () => {
+  beforeAll(() => {
+    jest
+      .useFakeTimers("modern")
+      .setSystemTime(new Date("2399-01-01").getTime());
+  });
   it("snapshot", () => {
+    const mockStore = configureStore([]);
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,

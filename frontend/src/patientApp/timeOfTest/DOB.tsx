@@ -1,99 +1,68 @@
-import React, { useEffect, useState } from "react";
+import React, { FormEvent, useEffect, useState, useRef } from "react";
 import { connect, useDispatch, useSelector } from "react-redux";
-import { Redirect } from "react-router";
-import { gql, useLazyQuery } from "@apollo/client";
+import { Redirect } from "react-router-dom";
 import moment from "moment";
 
 import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
-import { setPatient } from "../../app/store";
-
-const PATIENT_LINK_VALIDATION_QUERY = gql`
-  query PatientLinkVerify($plid: String!, $birthDate: LocalDate!) {
-    patientLinkVerify(internalId: $plid, birthDate: $birthDate) {
-      internalId
-      firstName
-      middleName
-      lastName
-      birthDate
-      street
-      streetTwo
-      city
-      state
-      zipCode
-      telephone
-      role
-      email
-      county
-      race
-      ethnicity
-      gender
-      residentCongregateSetting
-      employedInHealthcare
-    }
-  }
-`;
+import { setPatient, updateOrganization } from "../../app/store";
+import { PxpApi } from "../PxpApiService";
 
 const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
-  const [formattedBirthDate, setFormattedBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
-  const [nextPage, setNextPage] = useState(false);
-  const dobRef = React.createRef() as any;
-  const plid = useSelector((state) => (state as any).plid as String);
-
-  const [validateBirthDate, { called, loading, data }] = useLazyQuery(
-    PATIENT_LINK_VALIDATION_QUERY,
-    {
-      variables: { plid, birthDate: formattedBirthDate },
-      fetchPolicy: "no-cache",
-    }
-  );
+  const dobRef = useRef<HTMLInputElement>(null);
+  const plid = useSelector((state: any) => state.plid);
+  const patient = useSelector((state: any) => state.patient);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!data) return;
-    const patient = data.patientLinkVerify;
-    const residentCongregateSetting = patient.residentCongregateSetting
-      ? "YES"
-      : "NO";
-    const employedInHealthcare = patient.employedInHealthcare ? "YES" : "NO";
+    dobRef?.current?.focus();
+  }, []);
 
-    dispatch(
-      setPatient({
-        ...patient,
-        residentCongregateSetting,
-        employedInHealthcare,
-      })
-    );
+  const confirmBirthDate = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
 
-    setNextPage(true);
-    // eslint-disable-next-line
-  }, [data]);
-
-  const isValidForm = () => {
-    const validDate = moment(birthDate.replace("/", ""), "MMDDYYYY").isValid();
-
-    if (validDate) {
-      setBirthDateError("");
-      return true;
-    } else {
-      dobRef.current.focus();
+    const date = moment(birthDate.replace("/", ""), "MMDDYYYY");
+    if (!date.isValid()) {
       setBirthDateError("Enter your date of birth");
-      return false;
+      dobRef?.current?.focus();
+      return;
     }
-  };
 
-  const confirmBirthDate = () => {
-    if (isValidForm()) {
-      setFormattedBirthDate(
-        moment(birthDate.replace("/", ""), "MMDDYYYY").format("YYYY-MM-DD")
+    setLoading(true);
+    try {
+      const response = await PxpApi.validateDateOfBirth(
+        plid,
+        date.format("YYYY-MM-DD")
       );
-      validateBirthDate();
+      const residentCongregateSetting = response.residentCongregateSetting
+        ? "YES"
+        : "NO";
+      const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
+      dispatch(
+        updateOrganization({
+          name: response.organizationName,
+        })
+      );
+      dispatch(
+        setPatient({
+          ...response,
+          residentCongregateSetting,
+          employedInHealthcare,
+        })
+      );
+    } catch (error) {
+      setBirthDateError(
+        "No patient link with the supplied ID was found, or the birth date provided was incorrect."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (called && loading) {
+  if (loading) {
     return (
       <main>
         <div className="grid-container maxw-tablet">
@@ -103,7 +72,7 @@ const DOB = () => {
     );
   }
 
-  if (nextPage) {
+  if (patient) {
     return (
       <Redirect
         push

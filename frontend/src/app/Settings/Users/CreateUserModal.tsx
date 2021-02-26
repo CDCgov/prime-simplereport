@@ -9,9 +9,14 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onSubmit: (newUserInvite: NewUserInvite) => void;
+  isUpdating: boolean;
 }
 
-const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
+const CreateUserModal: React.FC<Props> = ({
+  onClose,
+  onSubmit,
+  isUpdating,
+}) => {
   return (
     <Modal
       isOpen={true}
@@ -26,7 +31,11 @@ const CreateUserModal: React.FC<Props> = ({ onClose, onSubmit }) => {
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <CreateUserForm onClose={onClose} onSubmit={onSubmit} />
+      <CreateUserForm
+        onClose={onClose}
+        onSubmit={onSubmit}
+        isUpdating={isUpdating}
+      />
     </Modal>
   );
 };

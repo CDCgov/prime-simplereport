@@ -3,7 +3,7 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
-import PatientProfileFormContainer from "./PatientProfileFormContainer";
+import PatientFormContainer from "./PatientFormContainer";
 
 const mockStore = configureStore([]);
 
@@ -25,7 +25,7 @@ jest.mock("../../app/patients/PatientForm", () => () => (
 //   useTrackEvent: jest.fn(),
 // }));
 
-describe("PatientProfileFormContainer", () => {
+describe("PatientFormContainer", () => {
   it("snapshot", () => {
     const store = mockStore({
       patient: {
@@ -42,7 +42,7 @@ describe("PatientProfileFormContainer", () => {
     const component = renderer.create(
       <Provider store={store}>
         <MockedProvider mocks={[]} addTypename={false}>
-          <PatientProfileFormContainer />
+          <PatientFormContainer />
         </MockedProvider>
       </Provider>
     );

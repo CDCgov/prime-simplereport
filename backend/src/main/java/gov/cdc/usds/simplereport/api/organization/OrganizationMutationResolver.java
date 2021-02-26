@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import org.springframework.stereotype.Component;
@@ -57,12 +57,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String defaultDeviceId
                 ) {
         _os.assertFacilityNameAvailable(testingFacilityName);
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceSpecimenTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, orderingProviderState, orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName, orderingProviderLastName, orderingProviderSuffix);
-        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes,
+        Facility created = _os.createFacility(testingFacilityName, cliaNumber, facilityAddress, Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceSpecimenTypes,
             providerName, providerAddress, orderingProviderTelephone, orderingProviderNPI);
         return new ApiFacility(created);
     }
@@ -92,7 +92,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderTelephone,
                                    List<String> deviceIds,
                                    String defaultDeviceId) throws Exception {
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceSpecimenTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         Facility facility = _os.updateFacility(
           facilityId,
           testingFacilityName,
@@ -117,7 +117,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
           Translators.parseState(orderingProviderState),
           orderingProviderZipCode,
           Translators.parsePhoneNumber(orderingProviderTelephone),
-                deviceTypes
+          deviceSpecimenTypes
         );
         return new ApiFacility(facility);
     }
@@ -130,14 +130,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             String orderingProviderCity, String orderingProviderCounty, String orderingProviderState,
             String orderingProviderZipCode, String orderingProviderTelephone, List<String> deviceIds,
             String defaultDeviceId) {
-        DeviceTypeHolder deviceTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+        DeviceSpecimenTypeHolder deviceSpecimenTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         StreetAddress facilityAddress = new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
         StreetAddress providerAddress = new StreetAddress(orderingProviderStreet, orderingProviderStreetTwo,
                 orderingProviderCity, Translators.parseState(orderingProviderState), orderingProviderZipCode, orderingProviderCounty);
         PersonName providerName = new PersonName(orderingProviderFirstName, orderingProviderMiddleName,
                 orderingProviderLastName, orderingProviderSuffix);
         return _os.createOrganization(name, externalId, testingFacilityName, cliaNumber, facilityAddress,
-                Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceTypes, providerName, providerAddress,
+                Translators.parsePhoneNumber(phone), Translators.parseEmail(email), deviceSpecimenTypes, providerName, providerAddress,
                 Translators.parsePhoneNumber(orderingProviderTelephone), orderingProviderNPI);
     }
 

@@ -3,6 +3,9 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 import org.hibernate.annotations.Type;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseState;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Column;
@@ -127,5 +130,15 @@ public class StreetAddress {
     @Override
     public int hashCode() {
         return Objects.hash(street, city, state, postalCode, county);
+    }
+
+    public static StreetAddress deAndReSerializeForSafety(StreetAddress address) {
+        String streetOne = parseString(address.getStreetOne());
+        String streetTwo = parseString(address.getStreetTwo());
+        String city = parseString(address.getCity());
+        String state = parseState(address.getState());
+        String postal = parseString(address.getPostalCode());
+        String county = parseString(address.getCounty());
+        return new StreetAddress(streetOne, streetTwo, city, state, postal, county);
     }
 }

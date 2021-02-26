@@ -11,6 +11,7 @@ import "./ManageUsers.scss";
 interface Props {
   onClose: () => void;
   onSubmit: (newUserInvite: NewUserInvite) => void;
+  isUpdating: boolean;
 }
 
 const initialFormState: NewUserInvite = {
@@ -36,7 +37,7 @@ const ROLE_OPTIONS = [
   },
 ];
 
-const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
+const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -85,6 +86,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           value={newUser.firstName}
           required
           onChange={onChange}
+          disabled={isUpdating}
         />
         <TextInput
           name="lastName"
@@ -93,6 +95,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           value={newUser.lastName}
           required
           onChange={onChange}
+          disabled={isUpdating}
         />
       </div>
       <div className="grid-row">
@@ -104,6 +107,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           value={newUser.email}
           required
           onChange={onChange}
+          disabled={isUpdating}
         />
         <div className="grid-row">{setUserRole}</div>
       </div>
@@ -118,7 +122,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit }) => {
           <Button
             className="margin-right-205"
             onClick={() => onSubmit(newUser)}
-            label="Send invite"
+            label={isUpdating ? "Sending" : "Send invite"}
+            disabled={isUpdating}
           />
         </div>
       </div>

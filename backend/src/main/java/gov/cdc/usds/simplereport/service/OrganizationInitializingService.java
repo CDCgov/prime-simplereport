@@ -40,46 +40,46 @@ import com.okta.sdk.resource.ResourceException;
 @Transactional
 public class OrganizationInitializingService {
 
-	private static final Logger LOG = LoggerFactory.getLogger(OrganizationInitializingService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(OrganizationInitializingService.class);
 
-	@Autowired
-	private InitialSetupProperties _props;
-	@Autowired
-	private OrganizationRepository _orgRepo;
-	@Autowired
-	private ProviderRepository _providerRepo;
-	@Autowired
-	private DeviceTypeRepository _deviceTypeRepo;
-	@Autowired
+    @Autowired
+    private InitialSetupProperties _props;
+    @Autowired
+    private OrganizationRepository _orgRepo;
+    @Autowired
+    private ProviderRepository _providerRepo;
+    @Autowired
+    private DeviceTypeRepository _deviceTypeRepo;
+    @Autowired
     private SpecimenTypeRepository _specimenTypeRepo;
     @Autowired
     private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
     @Autowired
-	private FacilityRepository _facilityRepo;
-	@Autowired
-	private ApiUserRepository _apiUserRepo;
-	@Autowired
-	private OktaRepository _oktaRepo;
-	@Autowired
-	private ApiUserService _userService;
-	@Autowired
-	private DemoUserConfiguration _demoUserConfiguration;
+    private FacilityRepository _facilityRepo;
+    @Autowired
+    private ApiUserRepository _apiUserRepo;
+    @Autowired
+    private OktaRepository _oktaRepo;
+    @Autowired
+    private ApiUserService _userService;
+    @Autowired
+    private DemoUserConfiguration _demoUserConfiguration;
 
-	public void initAll() {
+    public void initAll() {
 
-		// Allows any subsequent callers to have a valid user record for purposes of passing
-		// permission-checks
-		initCurrentUser();
+        // Allows any subsequent callers to have a valid user record for purposes of
+        // passing permission-checks
+        initCurrentUser();
 
-		LOG.debug("Organization init called (again?)");
-		Organization emptyOrg = _props.getOrganization();
-		Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
-		if (orgProbe.isPresent()) {
-			return; // one and done
-		}
-		Provider savedProvider = _providerRepo.save(_props.getProvider());
-		Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
-				Collectors.toMap(d->d.getName(), d->d));
+        LOG.debug("Organization init called (again?)");
+        Organization emptyOrg = _props.getOrganization();
+        Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
+        if (orgProbe.isPresent()) {
+            return; // one and done
+        }
+        Provider savedProvider = _providerRepo.save(_props.getProvider());
+        Map<String, DeviceType> byName = _deviceTypeRepo.findAll().stream().collect(
+                Collectors.toMap(d -> d.getName(), d -> d));
         Map<String, SpecimenType> specimenTypesByName = _specimenTypeRepo.findAll().stream().collect(
                 Collectors.toMap(s -> s.getName(), s -> s));
         Map<String, SpecimenType> specimenTypesByCode = new HashMap<>();
@@ -94,12 +94,12 @@ public class OrganizationInitializingService {
 
         Map<String, DeviceSpecimenType> dsForDeviceName = new HashMap<>();
         for (DeviceType d : _props.getDeviceTypes()) {
-			DeviceType deviceType = byName.get(d.getName());
-			if (null == deviceType) {
-				LOG.info("Creating device {}", d.getName());
-				deviceType = _deviceTypeRepo.save(d);
-				byName.put(deviceType.getName(), deviceType);
-			}
+            DeviceType deviceType = byName.get(d.getName());
+            if (null == deviceType) {
+                LOG.info("Creating device {}", d.getName());
+                deviceType = _deviceTypeRepo.save(d);
+                byName.put(deviceType.getName(), deviceType);
+            }
             SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
             if (defaultTypeForDevice == null) {
                 throw new RuntimeException("specimen type " + deviceType.getSwabType() + " was not initialized");
@@ -111,62 +111,63 @@ public class OrganizationInitializingService {
             } else {
                 dsForDeviceName.put(deviceType.getName(), deviceSpecimen.get());
             }
-		}
+        }
 
         List<DeviceSpecimenType> configured = _props.getConfiguredDeviceTypeNames().stream()
                 .map(dsForDeviceName::get)
-				.collect(Collectors.toList());
+                .collect(Collectors.toList());
         DeviceSpecimenType defaultDeviceSpecimen = configured.get(0);
 
-		LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
-		Organization realOrg = _orgRepo.save(emptyOrg);
-		// in the unlikely event DB and Okta fall out of sync
-		initOktaOrg(realOrg);
+        LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
+        Organization realOrg = _orgRepo.save(emptyOrg);
+        // in the unlikely event DB and Okta fall out of sync
+        initOktaOrg(realOrg);
         Facility defaultFacility = _props.getFacility().makeRealFacility(realOrg, savedProvider,
                 defaultDeviceSpecimen, configured);
         LOG.info("Creating facility {} with {} devices configured", defaultFacility.getFacilityName(),
                 configured.size());
-		_facilityRepo.save(defaultFacility);
+        _facilityRepo.save(defaultFacility);
 
-		// Abusing the class name "OrganizationInitializingService" a little, but the users are in the org.
-		List<DemoUser> users = _demoUserConfiguration.getAllUsers();
-		for (DemoUser user : users) {
-			OrganizationRole role = user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
-			Organization org = _orgRepo.findByExternalId(user.getAuthorization().getOrganizationExternalId())
-					.orElseThrow(MisconfiguredUserException::new);
-			IdentityAttributes identity = user.getIdentity();
-			Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
-			if (!userProbe.isPresent()) {
-				_apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
-			}
-			initOktaUser(identity, org, role);
-		}
-	}
+        // Abusing the class name "OrganizationInitializingService" a little, but the
+        // users are in the org.
+        List<DemoUser> users = _demoUserConfiguration.getAllUsers();
+        for (DemoUser user : users) {
+            OrganizationRole role = user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
+            Organization org = _orgRepo.findByExternalId(user.getAuthorization().getOrganizationExternalId())
+                    .orElseThrow(MisconfiguredUserException::new);
+            IdentityAttributes identity = user.getIdentity();
+            Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
+            if (!userProbe.isPresent()) {
+                _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
+            }
+            initOktaUser(identity, org, role);
+        }
+    }
 
-	public void initCurrentUser() {
-		// Creates current user if it doesn't already exist
-		_userService.getCurrentApiUserInContainedTransaction();
-	}
+    public void initCurrentUser() {
+        // Creates current user if it doesn't already exist
+        _userService.getCurrentApiUserInContainedTransaction();
+    }
 
-	private void initOktaOrg(Organization org) {
-		try {
-			LOG.info("Creating organization {} in Okta", org.getOrganizationName());
-			_oktaRepo.createOrganization(org.getOrganizationName(), org.getExternalId());
-		} catch (ResourceException e) {
-			LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
-		}
-	}
+    private void initOktaOrg(Organization org) {
+        try {
+            LOG.info("Creating organization {} in Okta", org.getOrganizationName());
+            _oktaRepo.createOrganization(org.getOrganizationName(), org.getExternalId());
+        } catch (ResourceException e) {
+            LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
+        }
+    }
 
-	private void initOktaUser(IdentityAttributes user, Organization org, OrganizationRole role) {
-		try {
-			LOG.info("Creating user {} in Okta", user.getUsername());
-			_oktaRepo.createUser(user, org, role);
-		} catch (ResourceException e) {
-			LOG.info("User {} already exists in Okta", user.getUsername());
-		}
-	}
+    private void initOktaUser(IdentityAttributes user, Organization org, OrganizationRole role) {
+        try {
+            LOG.info("Creating user {} in Okta", user.getUsername());
+            _oktaRepo.createUser(user, org, role);
+        } catch (ResourceException e) {
+            LOG.info("User {} already exists in Okta", user.getUsername());
+        }
+    }
 
-	public Organization getDefaultOrganization() {
-		return _props.getOrganization();
-	}
+    public Organization getDefaultOrganization() {
+        return _props.getOrganization();
+    }
 }
