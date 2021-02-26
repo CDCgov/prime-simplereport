@@ -29,7 +29,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
-import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -50,7 +49,6 @@ import org.springframework.security.test.context.support.WithMockUser;
         OrganizationInitializingService.class })
 @EnableConfigurationProperties({
         InitialSetupProperties.class,
-        OktaClientProperties.class,
         AuthorizationProperties.class,
         SiteAdminEmailList.class,
         DataHubConfig.class,

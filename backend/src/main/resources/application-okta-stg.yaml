@@ -3,6 +3,7 @@
 okta:
   oauth2:
     client-id: 0oa62qncijWSeQMuc4h6
-simple-report.authorization:
+simple-report:
+  authorization:
     role-claim: stg_roles
     role-prefix: "SR-STG-TENANT:"
