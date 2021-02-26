@@ -156,7 +156,7 @@ const PriorTestInputs: React.FC<Props> = ({
         <Optional />
       </div>
       <div className="prime-previous-test-display margin-top-2">
-        SimpleReport did not find any previous test data
+        No previous test data found
       </div>
 
       <RadioGroup
