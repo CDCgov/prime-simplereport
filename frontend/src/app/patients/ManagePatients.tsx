@@ -160,7 +160,7 @@ export const DetachedManagePatients = ({
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <h2>
-                {PATIENT_TERM_PLURAL_CAP} (Page {currentPage} of {pageCount})
+                {PATIENT_TERM_PLURAL_CAP}{pageCount > 0 ? ` (Page {currentPage} of {pageCount})` : ""}
               </h2>
               {canEditUser ? (
                 <LinkWithQuery
