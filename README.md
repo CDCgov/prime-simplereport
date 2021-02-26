@@ -19,6 +19,7 @@ https://simplereport.gov/
     - [E2E Tests](#e2e-tests)
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
+    - [Twilio](#twilio)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
   - [Deploy](#deploy)
@@ -210,6 +211,18 @@ SR_SCHEMASPY_PORT=8082 docker-compose up --build schemaspy
 ```
 
 visit http://localhost:8081
+
+### Twilio
+
+Twilio's Java SDK auto-configures based on two environment variables: `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`. SMS is also disabled by default, and can be enabled in application.yml:
+
+```
+twilio:
+  enabled: true
+  from-number: +13214560987
+```
+
+These can also be set by environment variable if desired.
 
 ## Frontend
 

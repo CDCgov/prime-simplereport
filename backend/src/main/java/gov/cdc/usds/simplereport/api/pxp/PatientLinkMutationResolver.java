@@ -16,13 +16,13 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     private PatientLinkService pls;
 
     @Autowired
-    private SmsService svc;
+    private SmsService smsService;
   
     @Value("${simple-report.patient-link-url}")
     private String patientLinkUrl;
   
     public String sendPatientLinkSms(String internalId) {
-      return svc.sendToPatientLink(internalId,
+      return smsService.sendToPatientLink(internalId,
           "Please fill out your Covid-19 pre-test questionnaire: " + patientLinkUrl + internalId);
     }
 
