@@ -71,7 +71,7 @@ Array [
           className="usa-radio__label"
           htmlFor="radio-test-1_text_0"
         >
-          Text message
+          Text link to complete on smartphone
           <span
             className="radio__label-description--checked usa-radio__label-description text-base"
           />
@@ -108,7 +108,7 @@ Array [
       onClick={[Function]}
       type="button"
     >
-      Text link to complete on smartphone
+      Text link
     </button>
   </div>,
 ]
@@ -185,7 +185,7 @@ Array [
           className="usa-radio__label"
           htmlFor="radio-test-1_text_0"
         >
-          Text message
+          Text link to complete on smartphone
           <span
             className="radio__label-description--checked usa-radio__label-description text-base"
           />
@@ -288,7 +288,7 @@ Array [
           className="usa-radio__label"
           htmlFor="radio-test-1_text_0"
         >
-          Text message
+          Text link to complete on smartphone
           <span
             className="radio__label-description--checked usa-radio__label-description text-base"
           />
