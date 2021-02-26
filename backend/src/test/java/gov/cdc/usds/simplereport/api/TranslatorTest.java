@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
@@ -23,12 +24,12 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 class TranslatorTest {
     @Test
     void testEmptyShortDate() {
-        assertEquals(null, parseUserShortDate(""));
+        assertNull(parseUserShortDate(""));
     }
 
     @Test
     void testNullShortDate() {
-        assertEquals(null, parseUserShortDate(null));
+        assertNull(parseUserShortDate(null));
     }
 
     @Test
@@ -57,12 +58,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseString() {
-        assertEquals(null, parseString(""));
+        assertNull(parseString(""));
     }
 
     @Test
     void testNullParseString() {
-        assertEquals(null, parseString(null));
+        assertNull(parseString(null));
     }
 
     @Test
@@ -87,12 +88,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyUUID() {
-        assertEquals(null, parseUUID(""));
+        assertNull(parseUUID(""));
     }
 
     @Test
     void testNullParseUUID() {
-        assertEquals(null, parseUUID(null));
+        assertNull(parseUUID(null));
     }
 
     @Test
@@ -112,12 +113,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseRace() {
-        assertEquals(null, parseRace(""));
+        assertNull(parseRace(""));
     }
 
     @Test
     void testNullParseRace() {
-        assertEquals(null, parseRace(null));
+        assertNull(parseRace(null));
     }
 
     @Test
@@ -134,12 +135,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseRaceDisplayValue() {
-        assertEquals(null, parseRaceDisplayValue(""));
+        assertNull(parseRaceDisplayValue(""));
     }
 
     @Test
     void testNullParseRaceDisplayValue() {
-        assertEquals(null, parseRaceDisplayValue(null));
+        assertNull(parseRaceDisplayValue(null));
     }
 
     @Test
@@ -156,12 +157,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseEthnicity() {
-        assertEquals(null, parseEthnicity(""));
+        assertNull(parseEthnicity(""));
     }
 
     @Test
     void testNullParseEthnicity() {
-        assertEquals(null, parseEthnicity(null));
+        assertNull(parseEthnicity(null));
     }
 
     @Test
@@ -178,12 +179,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseGender() {
-        assertEquals(null, parseGender(""));
+        assertNull(parseGender(""));
     }
 
     @Test
     void testNullParseGender() {
-        assertEquals(null, parseGender(null));
+        assertNull(parseGender(null));
     }
 
     @Test
@@ -200,12 +201,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyParseYesNo() {
-        assertEquals(null, parseYesNo(""));
+        assertNull(parseYesNo(""));
     }
 
     @Test
     void testNullParseYesNo() {
-        assertEquals(null, parseYesNo(null));
+        assertNull(parseYesNo(null));
     }
 
     @Test
@@ -225,12 +226,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyState() {
-        assertEquals(null, parseState(""));
+        assertNull(parseState(""));
     }
 
     @Test
     void testNullState() {
-        assertEquals(null, parseState(null));
+        assertNull(parseState(null));
     }
 
     @Test
@@ -247,12 +248,12 @@ class TranslatorTest {
 
     @Test
     void testEmptyEmail() {
-        assertEquals(null, parseEmail(""));
+        assertNull(parseEmail(""));
     }
 
     @Test
     void testNullEmail() {
-        assertEquals(null, parseEmail(null));
+        assertNull(parseEmail(null));
     }
 
     @Test
