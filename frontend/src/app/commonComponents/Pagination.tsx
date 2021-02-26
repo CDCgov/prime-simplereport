@@ -34,9 +34,19 @@ const Pagination = ({
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const currentPage = Math.min(Math.max(+rawCurrentPage || 0, 1), totalPages);
   const groupGutter = Math.floor(pageGroupSize / 2);
-  const minGroupPage = Math.max(1, currentPage - groupGutter);
-  const maxGroupPage = Math.min(currentPage + groupGutter, totalPages);
   const pageList = [];
+
+  // Ensure that the first, last, and at least groupGutter pages show
+  let minGroupPage = currentPage - groupGutter;
+  let maxGroupPage = currentPage + groupGutter;
+  if (minGroupPage < 1) {
+    maxGroupPage = maxGroupPage - minGroupPage + 1;
+    minGroupPage = 1;
+  }
+  if (maxGroupPage > totalPages) {
+    minGroupPage = Math.max(1, minGroupPage - (maxGroupPage - totalPages));
+    maxGroupPage = totalPages;
+  }
 
   const Link = (props: {
     to: string | number;
@@ -57,13 +67,13 @@ const Pagination = ({
   if (minGroupPage !== 1) {
     pageList.push(1);
   }
-  if (minGroupPage >= groupGutter) {
+  if (minGroupPage > 2) {
     pageList.push(0);
   }
   for (let pn = minGroupPage; pn <= maxGroupPage; pn++) {
     pageList.push(pn);
   }
-  if (maxGroupPage <= totalPages - groupGutter + 1) {
+  if (maxGroupPage < totalPages - 1) {
     pageList.push(0);
   }
   if (maxGroupPage !== totalPages) {

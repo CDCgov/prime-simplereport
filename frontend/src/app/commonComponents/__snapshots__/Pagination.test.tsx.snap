@@ -102,11 +102,6 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
           </span>
         </a>
       </li>
-      <li
-        aria-hidden="true"
-      >
-        …
-      </li>
       <li>
         <a
           aria-label="Page 2"
@@ -161,11 +156,6 @@ exports[`Pagination should render Pagination cases: Pagination '7 pages' 1`] = `
             6
           </span>
         </a>
-      </li>
-      <li
-        aria-hidden="true"
-      >
-        …
       </li>
       <li>
         <a
