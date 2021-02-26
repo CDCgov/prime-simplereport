@@ -70,19 +70,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 	}
 
 	@Bean
-	public RequestCache refererRequestCache() {
-		return new HttpSessionRequestCache() {
-			@Override
-			public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-				final String referrer = request.getHeader("referer");
-				if (referrer != null) {
-					request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
-				}
-			}
-		};
-	}
-
-	@Bean
 	public IdentitySupplier getRealIdentity() {
 		return () -> {
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
