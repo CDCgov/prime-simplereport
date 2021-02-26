@@ -236,7 +236,6 @@ const PatientForm = (props: Props) => {
     // Required validation check
     if ((!value || value === "- Select -") && required) {
       errorMessage = `${label} is required`;
-      target.focus();
       // Format validation check
     } else if (format) {
       const regex = new RegExp(format);
@@ -245,7 +244,6 @@ const PatientForm = (props: Props) => {
           "data-format-message"
         );
         errorMessage = formatMessage || `${label} has an incorrect format`;
-        target.focus();
       }
     }
 
@@ -301,11 +299,17 @@ const PatientForm = (props: Props) => {
       (field) =>
         (newErrors[field.name] = validateField({ target: field }, false))
     );
-    const remainingErrors = Object.values(newErrors).filter(
-      (v) => v !== undefined
+    const remainingErrors = Object.entries(newErrors).filter(
+      ([name, error]) => error !== undefined
     );
     if (remainingErrors.length) {
-      remainingErrors.forEach((error) =>
+      remainingErrors.reverse();
+      const firstErrorName = remainingErrors[0][0];
+      const firstErrorField = document.getElementsByName(firstErrorName)[0] as
+        | HTMLInputElement
+        | HTMLSelectElement;
+      firstErrorField.focus();
+      remainingErrors.forEach(([name, error]) =>
         showError(toast, "Please correct before submitting", error)
       );
       setErrors(newErrors);
