@@ -5,12 +5,12 @@ import { displayFullName } from "../utils";
 import classnames from "classnames";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
+import { capitalizeText } from "../utils/text";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import PatientUpload from "./PatientUpload";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 import ArchivePersonModal from "./ArchivePersonModal";
-import { Menu, MenuButton, MenuItem } from "@szhsin/react-menu";
-import { faEllipsisH } from "@fortawesome/free-solid-svg-icons";
+import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -47,6 +47,7 @@ const patientQuery = gql`
       middleName
       birthDate
       isDeleted
+      role
       lastTest {
         dateAdded
       }
@@ -61,6 +62,7 @@ export interface Patient {
   middleName: string;
   birthDate: string;
   isDeleted: boolean;
+  role: string;
   lastTest: {
     dateAdded: string;
   };
@@ -71,19 +73,19 @@ interface Props {
   canEditUser: boolean;
   canDeleteUser: boolean;
   currentPage?: number;
-  pageCount: number;
-  entriesPerPage?: number;
+  entriesPerPage: number;
+  totalEntries: number;
   showDeleted?: boolean;
   data: { patients: Patient[] };
   refetch: () => null;
 }
 
 export const DetachedManagePatients = ({
-  activeFacilityId,
   canEditUser,
   data,
   currentPage = 1,
-  pageCount,
+  entriesPerPage,
+  totalEntries,
   refetch,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
@@ -110,7 +112,10 @@ export const DetachedManagePatients = ({
 
       let editUserLink =
         canEditUser && !patient.isDeleted ? (
-          <LinkWithQuery to={`/patient/${patient.internalId}`}>
+          <LinkWithQuery
+            to={`/patient/${patient.internalId}`}
+            className="sr-patient-edit-link"
+          >
             {fullName}
           </LinkWithQuery>
         ) : (
@@ -126,7 +131,8 @@ export const DetachedManagePatients = ({
           )}
         >
           <th scope="row">{editUserLink}</th>
-          <td> {patient.birthDate}</td>
+          <td>{moment(patient.birthDate).format("MM/DD/yyyy")}</td>
+          <td>{capitalizeText(patient.role)}</td>
           <td>
             {patient.lastTest
               ? `${daysSince(moment(patient.lastTest.dateAdded))}`
@@ -134,18 +140,14 @@ export const DetachedManagePatients = ({
           </td>
           <td>
             {canEditUser && !patient.isDeleted && (
-              <Menu
-                menuButton={
-                  <MenuButton className="sr-modal-menu-button">
-                    <FontAwesomeIcon icon={faEllipsisH} size="2x" />
-                    <span className="usa-sr-only">More actions</span>
-                  </MenuButton>
-                }
-              >
-                <MenuItem onClick={() => setArchivePerson(patient)}>
-                  Archive record
-                </MenuItem>
-              </Menu>
+              <ActionsMenu
+                items={[
+                  {
+                    name: "Archive record",
+                    action: () => setArchivePerson(patient),
+                  },
+                ]}
+              />
             )}
           </td>
         </tr>
@@ -161,11 +163,13 @@ export const DetachedManagePatients = ({
             <div className="usa-card__header">
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
-                {pageCount > 0 && ` (Page ${currentPage} of ${pageCount})`}
+                <span className="sr-showing-patients-on-page">
+                  Showing {entriesPerPage} of {totalEntries}
+                </span>
               </h2>
               {canEditUser ? (
                 <LinkWithQuery
-                  className="usa-button usa-button--outline"
+                  className="usa-button usa-button--primary"
                   to={`/add-patient`}
                   id="add-patient-button"
                 >
@@ -180,12 +184,21 @@ export const DetachedManagePatients = ({
                   <tr>
                     <th scope="col">Name</th>
                     <th scope="col">Date of Birth</th>
+                    <th scope="col">Type</th>
                     <th scope="col">Days since last test</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
                 <tbody>{patientRows(data.patients)}</tbody>
               </table>
+            </div>
+            <div className="usa-card__footer">
+              <Pagination
+                baseRoute="/patients"
+                currentPage={currentPage}
+                entriesPerPage={entriesPerPage}
+                totalEntries={totalEntries}
+              />
             </div>
           </div>
           <PatientUpload onSuccess={refetch} />
@@ -196,7 +209,10 @@ export const DetachedManagePatients = ({
 };
 
 const ManagePatients = (
-  props: Omit<Props, InjectedQueryWrapperProps | "pageCount">
+  props: Omit<
+    Props,
+    InjectedQueryWrapperProps | "pageCount" | "entriesPerPage" | "totalEntries"
+  >
 ) => {
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
@@ -222,8 +238,8 @@ const ManagePatients = (
     throw error;
   }
 
-  const entriesPerPage = props.entriesPerPage || 20;
-  const pageCount = Math.ceil(totalPatients.patientsCount / entriesPerPage);
+  const totalEntries = totalPatients.patientsCount;
+  const entriesPerPage = 20;
   const pageNumber = props.currentPage || 1;
   return (
     <QueryWrapper<Props>
@@ -240,17 +256,11 @@ const ManagePatients = (
       Component={DetachedManagePatients}
       componentProps={{
         ...props,
-        pageCount,
+        totalEntries,
+        currentPage: pageNumber,
+        entriesPerPage,
       }}
-    >
-      <Pagination
-        baseRoute="/patients"
-        currentPage={pageNumber}
-        entriesPerPage={entriesPerPage}
-        totalEntries={totalPatients.patientsCount}
-        className="prime-home padding-bottom-5"
-      />
-    </QueryWrapper>
+    />
   );
 };
 

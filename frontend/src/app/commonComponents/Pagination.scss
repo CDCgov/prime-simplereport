@@ -1,6 +1,8 @@
 // https://codepen.io/USWDS/pen/eVzGzq
+
 .usa-pagination {
-  text-align: center;
+  text-align: right;
+  margin-right: 1rem;
 
   ol {
     list-style-type: none;
@@ -16,8 +18,9 @@
     text-decoration: none;
 
     &.is-active {
-      font-weight: bold;
-      color: #111;
+      background-color: #0071bc; //$color-primary;
+      border-radius: 100%;
+      color: white;
     }
   }
 

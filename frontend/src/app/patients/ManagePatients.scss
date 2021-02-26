@@ -1,3 +1,11 @@
+.sr-showing-patients-on-page {
+  margin-left: 2rem;
+  color: #555;
+  font-size: 50%;
+  vertical-align: text-top;
+  font-weight: normal;
+}
+
 .sr-patient-list {
   .sr-patient-row th,
   .sr-patient-row td {
@@ -11,6 +19,14 @@
 
   .sr-patient-row--removed {
     text-decoration: line-through;
+  }
+
+  .sr-patient-edit-link {
+    text-decoration: none;
+    font-weight: 600;
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   .rc-menu-button {

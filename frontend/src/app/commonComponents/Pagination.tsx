@@ -20,7 +20,7 @@ interface Props {
 // * Use elipsis if gaps between group and first/last
 //
 
-// Always make this odd, current page is in the middle
+// Always make this odd, so current page is in the middle
 const defaultGroupSize = 7;
 
 const Pagination = ({
@@ -31,9 +31,9 @@ const Pagination = ({
   pageGroupSize = defaultGroupSize,
   className,
 }: Props) => {
-  const groupGutter = Math.floor(pageGroupSize / 2);
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const currentPage = Math.min(Math.max(+rawCurrentPage || 0, 1), totalPages);
+  const groupGutter = Math.floor(pageGroupSize / 2);
   const minGroupPage = Math.max(1, currentPage - groupGutter);
   const maxGroupPage = Math.min(currentPage + groupGutter, totalPages);
   const pageList = [];
@@ -92,7 +92,7 @@ const Pagination = ({
               </Link>
             </li>
           ) : (
-            <li key={`elp${index}`} aria-hidden="true">
+            <li key={`dots${index}`} aria-hidden="true">
               …
             </li>
           )
