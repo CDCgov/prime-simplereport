@@ -16,7 +16,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.model.DeviceTypeHolder;
+import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
@@ -35,7 +35,7 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
 
     @Test
     void createOrganization_standardUser_error() {
-        DeviceTypeHolder holder = getDeviceConfig();
+        DeviceSpecimenTypeHolder holder = getDeviceConfig();
         assertSecurityError(() -> {
             StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "",
                     "");
@@ -45,18 +45,18 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
         });
     }
 
-    private DeviceTypeHolder getDeviceConfig() {
+    private DeviceSpecimenTypeHolder getDeviceConfig() {
         DeviceType device = _dataFactory.createDeviceType("Bill", "Weasleys", "1", "12345-6", "E");
         SpecimenType specimen = _dataFactory.getGenericSpecimen();
         DeviceSpecimenType dst = _dataFactory.createDeviceSpecimen(device, specimen);
-        DeviceTypeHolder holder = new DeviceTypeHolder(dst, List.of(dst));
+        DeviceSpecimenTypeHolder holder = new DeviceSpecimenTypeHolder(dst, List.of(dst));
         return holder;
     }
 
     @Test
     @WithSimpleReportSiteAdminUser
     void createOrganization_adminUser_success() {
-        DeviceTypeHolder holder = getDeviceConfig();
+        DeviceSpecimenTypeHolder holder = getDeviceConfig();
         StreetAddress addy = new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
         PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
         Organization org = _service.createOrganization("Tim's org", "d6b3951b-6698-4ee7-9d63-aaadee85bac0",

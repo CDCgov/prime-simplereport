@@ -18,4 +18,6 @@ simple-report:
     - qrk8@cdc.gov # Sparkle
     - David.w.methvin@omb.eop.gov
     - thomas.a.nielsen@omb.eop.gov
+    - adam@skylight.digital
+    - josh@skylight.digital
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
