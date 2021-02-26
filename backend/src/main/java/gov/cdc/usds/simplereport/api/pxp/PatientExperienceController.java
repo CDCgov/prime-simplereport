@@ -27,6 +27,7 @@ import gov.cdc.usds.simplereport.api.model.AoEQuestions;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
@@ -35,6 +36,7 @@ import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 
 @ConditionalOnProperty(name="simple-report.feature-flags.patient-links", havingValue="true")
 @PreAuthorize("@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
@@ -56,6 +58,9 @@ public class PatientExperienceController {
   @Autowired
   private TestEventService tes;
 
+  @Autowired
+  private TimeOfConsentService tocs;
+
   @PostConstruct
   private void init() {
     LOG.info("Patient Experience REST endpoints enabled");
@@ -67,9 +72,13 @@ public class PatientExperienceController {
    * throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) throws InvalidPatientLinkException {
+  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
+      throws InvalidPatientLinkException {
+    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
     Person p = pls.getPatientFromLink(body.getPatientLinkId());
     TestEvent te = tes.getLastTestResultsForPatient(p);
+    tocs.storeTimeOfConsent(pl);
+
     return new PxpPersonWrapper(p, te);
   }
 

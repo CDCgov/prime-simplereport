@@ -6,9 +6,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -26,14 +29,16 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class PatientExperienceControllerTest  {
+class PatientExperienceControllerTest {
   @Autowired
   private MockMvc _mockMvc;
 
@@ -42,6 +47,9 @@ class PatientExperienceControllerTest  {
 
   @Autowired
   private PatientLinkService _patientLinkService;
+
+  @Autowired
+  private TimeOfConsentService _tocService;
 
   @Autowired
   private PatientExperienceController _controller;
@@ -112,6 +120,23 @@ class PatientExperienceControllerTest  {
   }
 
   @Test
+  void verifyLinkSavesTimeOfConsent() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder = put("/pxp/link/verify").contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON).characterEncoding("UTF-8").content(requestBody);
+
+    // THEN
+    _mockMvc.perform(builder).andExpect(status().isOk());
+    List<TimeOfConsent> tocList = _tocService.getTimeOfConsent(_patientLink);
+    assertNotNull(tocList);
+    assertNotEquals(tocList.size(), 0);
+  }
+
+  @Test
   void updatePatientReturnsUpdatedPerson() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -138,7 +163,10 @@ class PatientExperienceControllerTest  {
     boolean noSymptoms = false;
     String symptomOnsetDate = "2021-02-01";
     String requestBody = "{\"patientLinkId\":\"" + _patientLink.getInternalId() + "\",\"dateOfBirth\":\"" + dob
-        + "\",\"data\":{\"noSymptoms\":"+noSymptoms+",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\"" + symptomOnsetDate+"\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
+        + "\",\"data\":{\"noSymptoms\":" + noSymptoms
+        + ",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\""
+        + symptomOnsetDate
+        + "\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
 
     // WHEN
     MockHttpServletRequestBuilder builder = put("/pxp/questions").contentType(MediaType.APPLICATION_JSON_VALUE)
