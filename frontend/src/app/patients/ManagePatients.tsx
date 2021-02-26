@@ -143,7 +143,7 @@ export const DetachedManagePatients = ({
                 }
               >
                 <MenuItem onClick={() => setArchivePerson(patient)}>
-                  Archive this record
+                  Archive record
                 </MenuItem>
               </Menu>
             )}
@@ -161,7 +161,7 @@ export const DetachedManagePatients = ({
             <div className="usa-card__header">
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
-                {pageCount > 0 ? ` (Page {currentPage} of {pageCount})` : ""}
+                {pageCount > 0 && ` (Page ${currentPage} of ${pageCount})`}
               </h2>
               {canEditUser ? (
                 <LinkWithQuery
