@@ -191,6 +191,14 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   let shouldRenderQueue =
     localQueue.length > 0 && facility.deviceTypes.length > 0;
 
+  const removePatientFromLocalQueue = (id: string) => {
+    setToRemove((r) => {
+      const newToRemove = new Set(r);
+      newToRemove.add(id);
+      return newToRemove;
+    });
+  };
+
   const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
       ? patientQueue.map(
@@ -221,6 +229,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                   facilityId={activeFacilityId}
                   dateTestedProp={dateTested}
                   patientLinkId={patientLink?.internalId || null}
+                  removePatientFromLocalQueue={removePatientFromLocalQueue}
                 />
               </div>
             );
