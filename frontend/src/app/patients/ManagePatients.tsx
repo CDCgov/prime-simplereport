@@ -110,7 +110,7 @@ export const DetachedManagePatients = ({
         patient.lastName
       );
 
-      let editUserLink =
+      const editUserLink =
         canEditUser && !patient.isDeleted ? (
           <LinkWithQuery
             to={`/patient/${patient.internalId}`}
@@ -208,11 +208,10 @@ export const DetachedManagePatients = ({
   );
 };
 
+type InjectedContainerProps = "pageCount" | "entriesPerPage" | "totalEntries";
+
 const ManagePatients = (
-  props: Omit<
-    Props,
-    InjectedQueryWrapperProps | "pageCount" | "entriesPerPage" | "totalEntries"
-  >
+  props: Omit<Props, InjectedQueryWrapperProps | InjectedContainerProps>
 ) => {
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
