@@ -80,6 +80,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
         assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
         assertEquals("Fred", _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).get(0).getFirstName());
+    }
+
+    @Test
+    @WithSimpleReportStandardUser
+    void accessArchievedPatient_standardUser_error() {
+        Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        UUID facilityId =fac.getInternalId();
+
+        Person p = _service.addPatient(facilityId, "FOO", "Fred", null, "Fosbury", "Sr.", LocalDate.of(1865, 12, 25), "123 Main",
+                "Apartment 3", "Hicksville", "NY",
+                "11801", "5555555555", PersonRole.STAFF, null, "Nassau", null, null, null, false, false);
 
         assertSecurityError(() -> _service.getAllArchivedPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE));
         assertSecurityError(() -> _service.getArchivedPatients(facilityId, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE));
