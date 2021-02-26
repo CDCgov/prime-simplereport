@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 import javax.servlet.http.Part;
 
+import liquibase.pro.packaged.E;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -36,8 +37,11 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
     }
 
     public String uploadPatients(Part part) throws Exception {
-        InputStream people = part.getInputStream();
-        return _us.processPersonCSV(people);
+        try (InputStream people = part.getInputStream()) {
+            return _us.processPersonCSV(people);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
     public void addPatient(
