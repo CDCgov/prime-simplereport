@@ -19,6 +19,8 @@ simple-report:
     - qrk8@cdc.gov # Sparkle
     - David.w.methvin@omb.eop.gov
     - thomas.a.nielsen@omb.eop.gov
+    - adam@skylight.digital
+    - josh@skylight.digital
   data-hub:
     upload-enabled: true
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"
