@@ -554,7 +554,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             <div
               className="prime-previous-test-display margin-top-2"
             >
-              SimpleReport did not find any previous test data
+              No previous test data found
             </div>
             <fieldset
               className="usa-fieldset prime-radios"

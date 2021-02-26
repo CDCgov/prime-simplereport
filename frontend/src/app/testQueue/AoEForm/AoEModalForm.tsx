@@ -67,7 +67,7 @@ const SmsModalContents = (props: SmsModalProps) => {
         {!props.smsSuccess ? (
           <Button
             className="margin-right-205"
-            label="Text link to complete on smartphone"
+            label="Text link"
             type={"button"}
             onClick={() => props.sendSms()}
           />
@@ -103,7 +103,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     {
       label: (
         <>
-          Text message
+          Text link to complete on smartphone
           <span className="radio__label-description--checked usa-radio__label-description text-base">
             {patient.telephone}
           </span>
