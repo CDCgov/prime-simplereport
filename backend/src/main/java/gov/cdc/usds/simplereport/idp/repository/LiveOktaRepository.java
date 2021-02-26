@@ -20,11 +20,11 @@ import com.okta.sdk.resource.user.UserList;
 import com.okta.sdk.resource.user.UserStatus;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.application.Application;
-import com.okta.sdk.resource.application.ApplicationList;
 import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupType;
 import com.okta.sdk.resource.group.GroupBuilder;
+import com.okta.sdk.resource.ResourceException;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +37,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationException;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
@@ -53,17 +54,21 @@ public class LiveOktaRepository implements OktaRepository {
 
     private String _rolePrefix;
     private Client _client;
-
-    @Value("${okta.oauth2.client-id}")
-    private String _clientId;
+    private Application _app;
 
     public LiveOktaRepository(AuthorizationProperties authorizationProperties,
-                       OktaClientProperties oktaClientProperties) {
+                       OktaClientProperties oktaClientProperties,
+                       @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId) {
         _rolePrefix = authorizationProperties.getRolePrefix();
         _client = Clients.builder()
                 .setOrgUrl(oktaClientProperties.getOrgUrl())
                 .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
                 .build();
+        try {
+            _app = _client.getApplication(oktaOAuth2ClientId);
+        } catch (ResourceException e) {
+            throw new MisconfiguredApplicationException("Cannot find Okta application with id="+oktaOAuth2ClientId);
+        }
     }
 
     public Optional<OrganizationRoleClaims> createUser(IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
@@ -203,22 +208,15 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     public void createOrganization(String name, String externalId) {
-        ApplicationList apps = _client.listApplications();
-        Optional<Application> appMatch = apps.stream().filter(a->a.getId().equals(_clientId)).findFirst();
-        if (appMatch.isEmpty()) {
-            throw new IllegalGraphqlArgumentException("Cannot add organization to Okta application with unrecognized id="+_clientId);
-        }
-        Application app = appMatch.get();
-
         for (OrganizationRole role : OrganizationRole.values()) {
             Group g = GroupBuilder.instance()
                     .setName(generateGroupName(externalId, role))
                     .setDescription(generateGroupDescription(name, role))
                     .buildAndCreate(_client);
-            app.createApplicationGroupAssignment(g.getId());
+            _app.createApplicationGroupAssignment(g.getId());
         }
 
-        app.update();
+        _app.update();
     }
 
     public void deleteOrganization(String externalId) {
