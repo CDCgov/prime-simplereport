@@ -5,9 +5,34 @@ import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
-import "./TestQueue.scss";
 
 const pollInterval = 10_000;
+
+const pxToNumber = (px: string | undefined): number =>
+  px ? Number(px.replace("px", "")) : 0;
+
+const getQueueItemStyles = (id: string, remove: boolean) => {
+  const defaultStyle = { opacity: 1 };
+  if (!remove) {
+    return defaultStyle;
+  }
+  const element = document.querySelector(
+    `#queue-container-${id} .prime-queue-item`
+  );
+  if (!element) {
+    return defaultStyle;
+  }
+  const computed = getComputedStyle(element);
+  const computedHeight =
+    pxToNumber(computed.height) + pxToNumber(computed.marginBottom);
+  return {
+    opacity: 0,
+    transitionProperty: "opacity, margin-bottom",
+    transitionDuration: "1s",
+    transitionTimingFunction: "ease",
+    marginBottom: -1 * computedHeight,
+  };
+};
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -177,30 +202,29 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             dateTested,
             patientLink,
             ...questions
-          }) => (
-            <div
-              key={internalId}
-              className={
-                toRemove.has(internalId)
-                  ? "sr-queue-item-remove"
-                  : "sr-queue-item"
-              }
-            >
-              <QueueItem
-                internalId={internalId}
-                patient={patient}
-                askOnEntry={questions}
-                selectedDeviceId={deviceType?.internalId || null}
-                selectedTestResult={result}
-                devices={facility.deviceTypes}
-                defaultDevice={facility.defaultDeviceType}
-                refetchQueue={refetchQueue}
-                facilityId={activeFacilityId}
-                dateTestedProp={dateTested}
-                patientLinkId={patientLink?.internalId || null}
-              />
-            </div>
-          )
+          }) => {
+            return (
+              <div
+                key={internalId}
+                id={`queue-container-${internalId}`}
+                style={getQueueItemStyles(internalId, toRemove.has(internalId))}
+              >
+                <QueueItem
+                  internalId={internalId}
+                  patient={patient}
+                  askOnEntry={questions}
+                  selectedDeviceId={deviceType?.internalId || null}
+                  selectedTestResult={result}
+                  devices={facility.deviceTypes}
+                  defaultDevice={facility.defaultDeviceType}
+                  refetchQueue={refetchQueue}
+                  facilityId={activeFacilityId}
+                  dateTestedProp={dateTested}
+                  patientLinkId={patientLink?.internalId || null}
+                />
+              </div>
+            );
+          }
         )
       : emptyQueueMessage;
 
