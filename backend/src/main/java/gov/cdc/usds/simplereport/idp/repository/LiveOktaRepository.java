@@ -67,7 +67,7 @@ public class LiveOktaRepository implements OktaRepository {
         try {
             _app = _client.getApplication(oktaOAuth2ClientId);
         } catch (ResourceException e) {
-            throw new MisconfiguredApplicationException("Cannot find Okta application with id="+oktaOAuth2ClientId);
+            throw new MisconfiguredApplicationException("Cannot find Okta application with id="+oktaOAuth2ClientId, e);
         }
     }
 

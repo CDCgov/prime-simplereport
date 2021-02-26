@@ -8,6 +8,10 @@ public class MisconfiguredApplicationException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
+    public MisconfiguredApplicationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public MisconfiguredApplicationException(String message) {
         super(message);
     }
