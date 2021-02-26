@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
-import gov.cdc.usds.simplereport.service.SmsService;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 
 @Component
