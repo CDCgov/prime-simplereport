@@ -25,7 +25,7 @@ public class SmsService {
   private static final Logger LOG = LoggerFactory.getLogger(SmsService.class);
 
   @Value("${twilio.from-number}")
-  private String FROM_NUMBER;
+  private String rawFromNumber;
 
   @Autowired
   PatientLinkService pls;
@@ -36,8 +36,8 @@ public class SmsService {
 
   @PostConstruct
   public void init() throws NumberParseException {
-    this.fromNumber = new PhoneNumber(formatNumber(FROM_NUMBER));
-    LOG.info("Twilio is enabled, sending from {}", FROM_NUMBER);
+    this.fromNumber = new PhoneNumber(formatNumber(rawFromNumber));
+    LOG.info("Twilio is enabled, sending from {}", rawFromNumber);
   }
 
   public String sendToPatientLink(String plid, String text) {
