@@ -64,6 +64,8 @@ jobs:
         env: 
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+          TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
