@@ -22,7 +22,7 @@ import gov.cdc.usds.simplereport.service.PatientLinkService;
 public class SmsService {
   private static final Logger LOG = LoggerFactory.getLogger(SmsService.class);
 
-  @Value("${twilio.from-number}")
+  @Value("${twilio.from-number:+14045312484}")
   private String rawFromNumber;
 
   @Autowired
