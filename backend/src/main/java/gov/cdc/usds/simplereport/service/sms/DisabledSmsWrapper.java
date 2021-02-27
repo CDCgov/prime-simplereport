@@ -9,5 +9,4 @@ public class DisabledSmsWrapper implements SmsProviderWrapper {
   public String send(PhoneNumber to, PhoneNumber from, String message) {
     return null;
   }
-  
 }

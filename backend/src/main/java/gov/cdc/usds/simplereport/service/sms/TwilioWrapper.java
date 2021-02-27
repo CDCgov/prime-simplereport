@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 /**
  * This wrapper might feel silly, but it allows for IOC and easy mocking
  * of an otherwise-static and untouchable thing, so that we can get good 
- * coverage * of the SmsService
+ * coverage of the SmsService
  */
 @ConditionalOnProperty(name="twilio.enabled", havingValue="true")
 @Primary
