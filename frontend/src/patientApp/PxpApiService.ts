@@ -1,5 +1,4 @@
-const API_URL = process.env.REACT_APP_BACKEND_URL;
-const PXP_API_URL = API_URL + "/pxp";
+const API_URL = process.env.REACT_APP_BACKEND_URL + "/pxp";
 const headers = {
   "Content-Type": "application/json",
   Accept: "application/json",
@@ -10,7 +9,7 @@ export class PxpApi {
     patientLinkId: string,
     dateOfBirth: string
   ): Promise<any> {
-    return fetch(`${PXP_API_URL}/link/verify`, {
+    return fetch(`${API_URL}/link/verify`, {
       method: "put",
       mode: "cors",
       headers,
@@ -31,7 +30,7 @@ export class PxpApi {
     dateOfBirth: string,
     data: any
   ) {
-    return fetch(`${PXP_API_URL}/questions`, {
+    return fetch(`${API_URL}/questions`, {
       method: "put",
       mode: "cors",
       headers,
@@ -44,7 +43,7 @@ export class PxpApi {
   }
 
   static updatePatient(patientLinkId: string, dateOfBirth: string, data: any) {
-    return fetch(`${PXP_API_URL}/patient`, {
+    return fetch(`${API_URL}/patient`, {
       method: "put",
       mode: "cors",
       headers,
