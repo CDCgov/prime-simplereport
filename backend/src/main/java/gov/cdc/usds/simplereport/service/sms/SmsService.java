@@ -38,7 +38,7 @@ public class SmsService {
   @PostConstruct
   void init() throws NumberParseException {
     this.fromNumber = new PhoneNumber(formatNumber(rawFromNumber));
-    LOG.info("Twilio is enabled, sending from {}", rawFromNumber);
+    LOG.debug("SmsService will send from {}", rawFromNumber);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTest

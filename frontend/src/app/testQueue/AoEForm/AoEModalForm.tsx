@@ -53,37 +53,50 @@ interface AoEModalProps {
 interface SmsModalProps {
   smsSuccess: boolean;
   telephone: string;
-  sendSms: () => void;
+  patientLinkId: string | null;
+  patientResponse: any;
+  sendSmsMutation: any;
+  setSmsSuccess: (val: boolean) => void;
+  saveCallback: (a: any) => string | void;
   continueModal: () => void;
 }
 
-const SmsModalContents = (props: SmsModalProps) => {
+const SmsModalContents = ({ smsSuccess, telephone, patientLinkId, patientResponse, sendSmsMutation, setSmsSuccess, saveCallback,  continueModal}: SmsModalProps) => {
+  const sendSms = async () => {
+    const internalId = patientLinkId || (await saveCallback(patientResponse));
+    try {
+      await sendSmsMutation({ variables: { internalId } });
+      setSmsSuccess(true);
+    } catch (e) {
+      showError(toast, "SMS error", e);
+    }
+  };
   return (
     <>
-      {props.smsSuccess && (
+      {smsSuccess && (
         <div className="usa-alert usa-alert--success outline-0">
           <div className="usa-alert__body">
             <h3 className="usa-alert__heading">Text message sent</h3>
             <p className="usa-alert__text">
-              The link was sent to {props.telephone}
+              The link was sent to {telephone}
             </p>
           </div>
         </div>
       )}
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-        {!props.smsSuccess ? (
+        {!smsSuccess ? (
           <Button
             className="margin-right-205"
             label="Text link"
             type={"button"}
-            onClick={() => props.sendSms()}
+            onClick={() => sendSms()}
           />
         ) : (
           <Button
             className="margin-right-205"
             label="Continue"
             type={"button"}
-            onClick={() => props.continueModal()}
+            onClick={() => continueModal()}
           />
         )}
       </div>
@@ -189,16 +202,6 @@ const AoEModalForm = (props: AoEModalProps) => {
     </div>
   );
 
-  const sendSms = async () => {
-    const internalId = patientLinkId || (await saveCallback(patientResponse));
-    try {
-      await sendSmsMutation({ variables: { internalId } });
-      setSmsSuccess(true);
-    } catch (error) {
-      showError(toast, "SMS error", error);
-    }
-  };
-
   const verbalForm = (
     <AoEForm
       saveButtonText="Continue"
@@ -228,9 +231,13 @@ const AoEModalForm = (props: AoEModalProps) => {
         innerContents = (
           <SmsModalContents
             smsSuccess={smsSuccess}
+            setSmsSuccess={setSmsSuccess}
             telephone={patient.telephone}
-            sendSms={sendSms}
             continueModal={continueModal}
+            patientLinkId={patientLinkId}
+            sendSmsMutation={sendSmsMutation}
+            patientResponse={patientResponse}
+            saveCallback={saveCallback}
           />
         );
         break;

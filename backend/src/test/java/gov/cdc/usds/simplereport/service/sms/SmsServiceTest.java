@@ -73,6 +73,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     // THEN
     verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
-    assertEquals(toNumber, _smsService.formatNumber(_person.getTelephone()));
+    assertEquals(toNumber, new PhoneNumber(_person.getTelephone()));
   }
 }
