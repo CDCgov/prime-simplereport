@@ -5,6 +5,7 @@ graphql.servlet.cors:
     - https://simple-report-api-training.azurewebsites.net
     - https://simple-report-training.azureedge.net
     - https://training.simplereport.gov
+simple-report:
   patient-link-url: https://training.simplereport.gov/app/pxp?plid=
   feature-flags:
     patient-links: true

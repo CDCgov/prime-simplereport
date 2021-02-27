@@ -33,5 +33,35 @@
     "name": "simple-report.demo-users",
     "type": "gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration",
     "description": "A description for 'simple-report.demo-users.default-user.authorization.granted-roles'"
+  },
+  {
+    "name": "simple-report.patient-link-url",
+    "type": "java.lang.String",
+    "description": "The prefix for the Magic Link text messaged to patients"
+  },
+  {
+    "name": "simple-report.feature-flags",
+    "type": "java.util.Map<java.lang.String,java.lang.Boolean>",
+    "description": "Back-end feature flags"
+  },
+  {
+    "name": "simple-report.feature-flags.patient-links",
+    "type": "java.lang.Boolean",
+    "description": "Enable or disable the Patient Experience"
+  },
+  {
+    "name": "twilio",
+    "type": "java.util.Map<java.lang.String,java.lang.Object>",
+    "description": "Enable or disable the Patient Experience"
+  },
+  {
+    "name": "twilio.enabled",
+    "type": "java.lang.Boolean",
+    "description": "Is Twilio enabled for SMS in this environment?"
+  },
+  {
+    "name": "twilio.from-number",
+    "type": "java.lang.String",
+    "description": "From what number should Twilio send SMS messages?"
   }
 ]}
