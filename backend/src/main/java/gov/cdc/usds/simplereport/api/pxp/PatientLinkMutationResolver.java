@@ -18,7 +18,7 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Autowired
     private SmsService smsService;
   
-    @Value("${simple-report.patient-link-url}")
+    @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
     private String patientLinkUrl;
   
     public String sendPatientLinkSms(String internalId) {
