@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.sms;
 
 import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
@@ -42,6 +43,7 @@ public class SmsService {
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTest
+  @Transactional
   public String sendToPatientLink(String plid, String text) {
     PatientLink pl = pls.getPatientLink(plid);
     return sendToPerson(pl.getTestOrder().getPatient(), text);

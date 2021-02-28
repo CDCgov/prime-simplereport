@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -22,7 +21,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
-import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
 
@@ -36,9 +34,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Autowired
   SmsService _smsService;
 
-  @Autowired
-  PatientLinkService _patientLinkService;
-
   Person _person;
   PatientLink _patientLink;
   String _patientLinkId;
@@ -50,7 +45,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
       Facility site = _dataFactory.createValidFacility(org);
       _person = _dataFactory.createFullPerson(org);
       TestOrder to = _dataFactory.createTestOrder(_person, site);
-      _patientLink = _patientLinkService.createPatientLink(to.getInternalId());
+      _patientLink = _dataFactory.createPatientLink(to);
       _patientLinkId = _patientLink.getInternalId().toString();
   }
 
@@ -64,7 +59,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   ArgumentCaptor<String> message;
 
   @Test
-  @Disabled
   @WithSimpleReportSiteAdminUser
   void sendPatientLinkSms() throws NumberParseException {
     // GIVEN
@@ -73,6 +67,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     // THEN
     verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
-    assertEquals(toNumber.getValue(), new PhoneNumber(_person.getTelephone()));
+    assertEquals(toNumber.getValue(), new PhoneNumber(_smsService.formatNumber(_person.getTelephone())));
   }
 }
