@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "../../commonComponents/Button";
-import AoeModalForm from "../AoEForm/AoEModalForm";
+import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 
 interface SearchResultsProps {
@@ -73,7 +73,7 @@ const SearchResults = ({
   return (
     <>
       {dialogPatient !== null && (
-        <AoeModalForm
+        <AoEModalForm
           saveButtonText="Continue"
           patient={dialogPatient}
           onClose={() => {

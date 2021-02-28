@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
@@ -30,6 +31,7 @@ import gov.cdc.usds.simplereport.db.repository.DeviceTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
 import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
@@ -58,6 +60,8 @@ public class TestDataFactory {
     private TestEventRepository _testEventRepo;
     @Autowired
     private PatientAnswersRepository _patientAnswerRepo;
+    @Autowired
+    private PatientLinkRepository _patientLinkRepository;
     @Autowired
     private SpecimenTypeRepository _specimenRepo;
     @Autowired
@@ -99,6 +103,10 @@ public class TestDataFactory {
     }
 
     public Person createFullPerson(Organization org) {
+        return createFullPersonWithTelephone(org, "202-123-4567");
+    }
+
+    public Person createFullPersonWithTelephone(Organization org, String telephone) {
         // consts are to keep style check happy othewise it complains about
         // "magic numbers"
         final int BIRTH_YEAR = 1899;
@@ -106,7 +114,7 @@ public class TestDataFactory {
         final int BIRTH_DAY = 10;
         Person p = new Person(
                 org, "HELLOTHERE", "Fred", null, "Astaire", null, LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
-                new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), "202-123-4567",
+                new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"), telephone,
                 PersonRole.RESIDENT, null,
                 "W", null, "M", false, false);
         return _personRepo.save(p);
@@ -140,6 +148,13 @@ public class TestDataFactory {
         order.markComplete();
         _testOrderRepo.save(order);
         return event;
+    }
+
+    @Transactional
+    public PatientLink createPatientLink(TestOrder order) {
+        TestOrder to = _testOrderRepo.findById(order.getInternalId()).orElseThrow();
+        PatientLink pl = new PatientLink(to);
+        return _patientLinkRepository.save(pl);
     }
 
     @Transactional

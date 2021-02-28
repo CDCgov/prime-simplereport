@@ -25,3 +25,4 @@ simple-report:
     - thomas.a.nielsen@omb.eop.gov
     - adam@skylight.digital
     - josh@skylight.digital
+  patient-link-url: https://simplereport.gov/app/pxp?plid=

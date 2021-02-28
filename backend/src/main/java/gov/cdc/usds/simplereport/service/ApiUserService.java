@@ -29,7 +29,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-import gov.cdc.usds.simplereport.service.OrganizationService;
 
 @Service
 @Transactional(readOnly = false)

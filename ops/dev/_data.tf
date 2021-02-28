@@ -76,6 +76,16 @@ data "azurerm_key_vault_secret" "okta_client_secret" {
   name         = "okta-${local.env}-client-secret"
 }
 
+data "azurerm_key_vault_secret" "twilio_account_sid" {
+  name         = "twilio-account-sid"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "twilio_auth_token" {
+  name         = "twilio-auth-token"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
