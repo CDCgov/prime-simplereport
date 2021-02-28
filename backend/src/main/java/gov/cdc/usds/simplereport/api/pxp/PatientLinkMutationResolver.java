@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,7 +23,7 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
     private String patientLinkUrl;
   
-    public String sendPatientLinkSms(String internalId) {
+    public String sendPatientLinkSms(String internalId) throws NumberParseException {
       return smsService.sendToPatientLink(internalId,
           "Please fill out your Covid-19 pre-test questionnaire: " + patientLinkUrl + internalId);
     }

@@ -6,6 +6,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.type.PhoneNumber;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -34,19 +35,23 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Autowired
   SmsService _smsService;
 
+  Organization _org;
+  Facility _site;
   Person _person;
   PatientLink _patientLink;
   String _patientLinkId;
 
   @BeforeEach
   void setupData() {
-      initSampleData();
-      Organization org = _dataFactory.createValidOrg();
-      Facility site = _dataFactory.createValidFacility(org);
-      _person = _dataFactory.createFullPerson(org);
-      TestOrder to = _dataFactory.createTestOrder(_person, site);
-      _patientLink = _dataFactory.createPatientLink(to);
-      _patientLinkId = _patientLink.getInternalId().toString();
+    initSampleData();
+    _org = _dataFactory.createValidOrg();
+    _site = _dataFactory.createValidFacility(_org);
+  }
+
+  void createTestOrderAndPatientLink(Person person) {
+    TestOrder to = _dataFactory.createTestOrder(person, _site);
+    _patientLink = _dataFactory.createPatientLink(to);
+    _patientLinkId = _patientLink.getInternalId().toString();
   }
 
   @Captor
@@ -62,11 +67,26 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @WithSimpleReportSiteAdminUser
   void sendPatientLinkSms() throws NumberParseException {
     // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    createTestOrderAndPatientLink(_person);
+
     // WHEN
     _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");
 
     // THEN
     verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
     assertEquals(toNumber.getValue(), new PhoneNumber(_smsService.formatNumber(_person.getTelephone())));
+  }
+
+  @Test
+  @WithSimpleReportSiteAdminUser
+  void sendPatientLinkSmsThrowsOnBadNumber() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPersonWithTelephone(_org, "ABCD THIS ISN'T A PHONE NUMBER");
+    createTestOrderAndPatientLink(_person);
+
+    // WHEN + THEN
+    assertThrows(NumberParseException.class, 
+      () -> { _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"); });
   }
 }

@@ -44,20 +44,20 @@ public class SmsService {
 
   @AuthorizationConfiguration.RequirePermissionStartTest
   @Transactional
-  public String sendToPatientLink(String plid, String text) {
+  public String sendToPatientLink(String plid, String text) throws NumberParseException {
     PatientLink pl = pls.getPatientLink(plid);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
   }
 
-  private String sendToPerson(Person p, String text) {
+  private String sendToPerson(Person p, String text) throws NumberParseException {
     try {
       String msgId = sms.send(new PhoneNumber(formatNumber(p.getTelephone())), fromNumber, text);
       LOG.debug("SMS send initiated {}", msgId);
       return msgId;
     } catch (NumberParseException npe) {
-      LOG.error("Failed to parse phone number {}", fromNumber);
+      LOG.error("Failed to parse phone number: \"{}\"", fromNumber);
+      throw npe;
     }
-    return "";
   }
 
   String formatNumber(String number) throws NumberParseException {
