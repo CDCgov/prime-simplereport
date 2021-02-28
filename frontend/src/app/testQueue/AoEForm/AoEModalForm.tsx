@@ -61,7 +61,16 @@ interface SmsModalProps {
   continueModal: () => void;
 }
 
-const SmsModalContents = ({ smsSuccess, telephone, patientLinkId, patientResponse, sendSmsMutation, setSmsSuccess, saveCallback,  continueModal}: SmsModalProps) => {
+const SmsModalContents = ({
+  smsSuccess,
+  telephone,
+  patientLinkId,
+  patientResponse,
+  sendSmsMutation,
+  setSmsSuccess,
+  saveCallback,
+  continueModal,
+}: SmsModalProps) => {
   const sendSms = async () => {
     const internalId = patientLinkId || (await saveCallback(patientResponse));
     try {
@@ -77,9 +86,7 @@ const SmsModalContents = ({ smsSuccess, telephone, patientLinkId, patientRespons
         <div className="usa-alert usa-alert--success outline-0">
           <div className="usa-alert__body">
             <h3 className="usa-alert__heading">Text message sent</h3>
-            <p className="usa-alert__text">
-              The link was sent to {telephone}
-            </p>
+            <p className="usa-alert__text">The link was sent to {telephone}</p>
           </div>
         </div>
       )}
