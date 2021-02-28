@@ -12,23 +12,19 @@ import classnames from "classnames";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
-import AoeModalForm from "./AoEForm/AoEModalForm";
+import AoEModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import { ALERT_CONTENT } from "./constants";
-import { displayFullName } from "../utils";
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
+import { displayFullName, showNotification } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
-import { QUEUE_NOTIFICATION_TYPES } from "./constants";
-import { showNotification } from "../utils";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
 import Checkboxes from "../commonComponents/Checkboxes";
 import moment from "moment";
-
 import "./QueueItem.scss";
-import { getUrl } from "../utils/url";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
@@ -535,13 +531,13 @@ const QueueItem: any = ({
                         onClick={openAoeModal}
                       />
                       {isAoeModalOpen && (
-                        <AoeModalForm
+                        <AoEModalForm
                           saveButtonText="Continue"
                           onClose={closeAoeModal}
                           patient={patient}
                           loadState={aoeAnswers}
                           saveCallback={saveAoeCallback}
-                          qrCodeValue={`${getUrl()}pxp?plid=${patientLinkId}`}
+                          patientLinkId={patientLinkId}
                         />
                       )}
                       <p>

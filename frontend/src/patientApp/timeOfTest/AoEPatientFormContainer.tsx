@@ -29,7 +29,6 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
       await PxpApi.submitQuestions(plid as string, patient.birthDate, data);
       setNextPage(true);
     } catch (e) {
-      console.error(e);
       showError("There was an error submitting your responses");
       return;
     }

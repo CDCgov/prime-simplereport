@@ -38,6 +38,11 @@ import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 
+/**
+ * Note that this controller self-authorizes by means of this @PreAuthorize annotation
+ * and its routes are set to permitAll() in SecurityConfiguration. If this changes,
+ * please update the documentation on both sides
+ */
 @ConditionalOnProperty(name="simple-report.feature-flags.patient-links", havingValue="true")
 @PreAuthorize("@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @RestController

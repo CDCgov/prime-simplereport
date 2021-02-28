@@ -31,7 +31,6 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
-import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -44,9 +43,6 @@ class PatientExperienceControllerTest {
 
   @Autowired
   private TestDataFactory _dataFactory;
-
-  @Autowired
-  private PatientLinkService _patientLinkService;
 
   @Autowired
   private TimeOfConsentService _tocService;
@@ -67,7 +63,7 @@ class PatientExperienceControllerTest {
     _site = _dataFactory.createValidFacility(_org);
     _person = _dataFactory.createFullPerson(_org);
     _testOrder = _dataFactory.createTestOrder(_person, _site);
-    _patientLink = _patientLinkService.createPatientLink(_testOrder.getInternalId());
+    _patientLink = _dataFactory.createPatientLink(_testOrder);
   }
 
   private Person _person;

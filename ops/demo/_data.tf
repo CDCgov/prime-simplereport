@@ -62,6 +62,16 @@ data "azurerm_key_vault_secret" "slack_notify_webhook_url" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "twilio_account_sid" {
+  name         = "twilio-account-sid"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "twilio_auth_token" {
+  name         = "twilio-auth-token"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"

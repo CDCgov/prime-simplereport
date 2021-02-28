@@ -26,5 +26,9 @@ simple-report:
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"
     upload-schedule: "0 0/15 * * * *" # every 15min on the clock 1:00, 1:15, 1:30, etc
     max-csv-rows: 25
+  patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   feature-flags:
     patient-links: true
+twilio:
+  enabled: true
+  from-number: "+14045312484"

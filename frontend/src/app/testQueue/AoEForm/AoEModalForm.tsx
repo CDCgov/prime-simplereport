@@ -4,10 +4,11 @@ import Modal from "react-modal";
 import AoEForm from "./AoEForm";
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { displayFullName } from "../../utils";
+import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -34,49 +35,75 @@ export const LAST_TEST_QUERY = gql`
   }
 `;
 
+export const SEND_SMS_MUTATION = gql`
+  mutation sendPatientLinkSms($internalId: String!) {
+    sendPatientLinkSms(internalId: $internalId)
+  }
+`;
+
 interface AoEModalProps {
   saveButtonText?: string;
   onClose: () => void;
   patient: any;
   loadState?: any;
   saveCallback: (a: any) => string | void;
-  qrCodeValue?: string;
+  patientLinkId?: string;
 }
 
 interface SmsModalProps {
   smsSuccess: boolean;
   telephone: string;
-  sendSms: () => void;
+  patientLinkId: string | null;
+  patientResponse: any;
+  sendSmsMutation: any;
+  setSmsSuccess: (val: boolean) => void;
+  saveCallback: (a: any) => string | void;
   continueModal: () => void;
 }
 
-const SmsModalContents = (props: SmsModalProps) => {
+const SmsModalContents = ({
+  smsSuccess,
+  telephone,
+  patientLinkId,
+  patientResponse,
+  sendSmsMutation,
+  setSmsSuccess,
+  saveCallback,
+  continueModal,
+}: SmsModalProps) => {
+  const sendSms = async () => {
+    const internalId = patientLinkId || (await saveCallback(patientResponse));
+    try {
+      await sendSmsMutation({ variables: { internalId } });
+      setSmsSuccess(true);
+    } catch (e) {
+      showError(toast, "SMS error", e);
+    }
+  };
   return (
     <>
-      {props.smsSuccess && (
+      {smsSuccess && (
         <div className="usa-alert usa-alert--success outline-0">
           <div className="usa-alert__body">
             <h3 className="usa-alert__heading">Text message sent</h3>
-            <p className="usa-alert__text">
-              The link was sent to {props.telephone}
-            </p>
+            <p className="usa-alert__text">The link was sent to {telephone}</p>
           </div>
         </div>
       )}
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
-        {!props.smsSuccess ? (
+        {!smsSuccess ? (
           <Button
             className="margin-right-205"
             label="Text link"
             type={"button"}
-            onClick={() => props.sendSms()}
+            onClick={() => sendSms()}
           />
         ) : (
           <Button
             className="margin-right-205"
             label="Continue"
             type={"button"}
-            onClick={() => props.continueModal()}
+            onClick={() => continueModal()}
           />
         )}
       </div>
@@ -91,7 +118,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     patient,
     loadState = {},
     saveCallback,
-    qrCodeValue = "",
+    patientLinkId = "",
   } = props;
 
   const [modalView, setModalView] = useState("");
@@ -131,6 +158,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     symptoms: JSON.stringify(symptomsResponse),
   };
 
+  const [sendSmsMutation] = useMutation(SEND_SMS_MUTATION);
   const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
     fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
@@ -161,8 +189,9 @@ const AoEModalForm = (props: AoEModalProps) => {
     if (view === "smartphone") {
       // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
       setPatientLink(
-        qrCodeValue ||
-          `${getUrl()}pxp?plid=${await saveCallback(patientResponse)}`
+        `${getUrl()}pxp?plid=${
+          patientLinkId || (await saveCallback(patientResponse))
+        }`
       );
     }
     setModalView(view);
@@ -179,10 +208,6 @@ const AoEModalForm = (props: AoEModalProps) => {
       />
     </div>
   );
-
-  const sendSms = () => {
-    setSmsSuccess(true);
-  };
 
   const verbalForm = (
     <AoEForm
@@ -213,9 +238,13 @@ const AoEModalForm = (props: AoEModalProps) => {
         innerContents = (
           <SmsModalContents
             smsSuccess={smsSuccess}
+            setSmsSuccess={setSmsSuccess}
             telephone={patient.telephone}
-            sendSms={sendSms}
             continueModal={continueModal}
+            patientLinkId={patientLinkId}
+            sendSmsMutation={sendSmsMutation}
+            patientResponse={patientResponse}
+            saveCallback={saveCallback}
           />
         );
         break;

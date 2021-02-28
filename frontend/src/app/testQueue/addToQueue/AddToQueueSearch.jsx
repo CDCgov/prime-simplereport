@@ -24,6 +24,7 @@ export const QUERY_PATIENT = gql`
       middleName
       birthDate
       gender
+      telephone
     }
   }
 `;
