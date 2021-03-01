@@ -48,8 +48,6 @@ public class ApiUserService {
 
   @Autowired private CurrentPatientContextHolder _contextHolder;
 
-  @Autowired private PatientLinkService _patientLinkService;
-
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
   public ApiUserService() {}

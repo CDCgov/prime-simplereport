@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
@@ -43,7 +44,8 @@ import org.springframework.security.test.context.support.WithMockUser;
   OrganizationExtractor.class,
   OrganizationService.class,
   ApiUserService.class,
-  OrganizationInitializingService.class
+  OrganizationInitializingService.class,
+  CurrentPatientContextHolder.class
 })
 @EnableConfigurationProperties({
   InitialSetupProperties.class,
