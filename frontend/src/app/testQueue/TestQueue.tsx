@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
+import { useLocalQueue } from "./useLocalQueue";
 
 const pollInterval = 10_000;
+
+const transitionDuration = 1000;
 
 const pxToNumber = (px: string | undefined): number =>
   px ? Number(px.replace("px", "")) : 0;
@@ -28,7 +31,7 @@ const getQueueItemStyles = (id: string, remove: boolean) => {
   return {
     opacity: 0,
     transitionProperty: "opacity, margin-bottom",
-    transitionDuration: "1s",
+    transitionDuration: `${transitionDuration}ms`,
     transitionTimingFunction: "ease",
     marginBottom: -1 * computedHeight,
   };
@@ -98,7 +101,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-interface QueueItemData {
+export interface QueueItemData {
   internalId: string;
   pregnancy: string;
   dateAdded: string;
@@ -131,43 +134,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     pollInterval,
   });
 
-  const [localQueue, setLocalQueue] = useState<QueueItemData[]>();
-  const [toRemove, setToRemove] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
-    if (!data?.queue) {
-      return;
-    }
-    // Immediately set local queue if nonexistent
-    if (localQueue === undefined) {
-      setLocalQueue(data.queue);
-      return;
-    }
-    // Get discrepancies
-    const newIds = new Set(
-      data.queue.map(({ internalId }: QueueItemData) => internalId)
-    );
-    const toRemove = localQueue
-      .filter(({ internalId }) => !newIds.has(internalId))
-      .map(({ internalId }) => internalId);
-    setToRemove(new Set(toRemove));
-
-    // Only requires animation on remove
-    if (toRemove.length === 0) {
-      setLocalQueue(data.queue);
-      return;
-    }
-    // Catch local queue up after small delay
-    timeout = setTimeout(() => {
-      setToRemove(new Set());
-      setLocalQueue(data.queue);
-    }, 1300);
-    // cleanup the timeout on unmount
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [data, localQueue]);
+  const { localQueue, toRemove, setToRemove } = useLocalQueue(
+    data?.queue,
+    transitionDuration
+  );
 
   if (error) {
     throw error;
