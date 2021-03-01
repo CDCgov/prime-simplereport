@@ -16,7 +16,7 @@ public class CsvProcessingException extends RuntimeException implements GraphQLE
 
     @Override
     public List<SourceLocation> getLocations() {
-        return null;
+        return List.of();
     }
 
     @Override
