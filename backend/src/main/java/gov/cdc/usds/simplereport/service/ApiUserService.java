@@ -2,12 +2,15 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -24,6 +27,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,26 +36,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-  private SiteAdminEmailList _siteAdmins;
-  private ApiUserRepository _apiUserRepo;
-  private IdentitySupplier _supplier;
-  private OrganizationService _orgService;
-  private OktaRepository _oktaRepo;
+  @Autowired private SiteAdminEmailList _siteAdmins;
+
+  @Autowired private ApiUserRepository _apiUserRepo;
+
+  @Autowired private IdentitySupplier _supplier;
+
+  @Autowired private OrganizationService _orgService;
+
+  @Autowired private OktaRepository _oktaRepo;
+
+  @Autowired private CurrentPatientContextHolder _contextHolder;
+
+  @Autowired private PatientLinkService _patientLinkService;
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
-  public ApiUserService(
-      ApiUserRepository apiUserRepo,
-      IdentitySupplier supplier,
-      SiteAdminEmailList admins,
-      OrganizationService orgService,
-      OktaRepository oktaRepo) {
-    _apiUserRepo = apiUserRepo;
-    _supplier = supplier;
-    _siteAdmins = admins;
-    _orgService = orgService;
-    _oktaRepo = oktaRepo;
-  }
+  public ApiUserService() {}
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
@@ -197,8 +198,46 @@ public class ApiUserService {
     return getCurrentApiUser();
   }
 
+  private ApiUser getPatientApiUser() {
+    TestOrder order = _contextHolder.getLinkedOrder();
+    if (order == null) {
+      return null;
+    }
+
+    PatientLink link = _patientLinkService.getFromTestOrder(order);
+    String username = getPatientLinkEmail(link);
+    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(username);
+    if (found.isPresent()) {
+      LOG.debug("Patient has logged in before: retrieving user record.");
+      ApiUser user = found.get();
+      user.updateLastSeen();
+      user = _apiUserRepo.save(user);
+      return user;
+    } else {
+      LOG.info("Initial login for patient: creating user record.");
+      ApiUser user = new ApiUser(username, order.getPatient().getNameInfo());
+      user.updateLastSeen();
+      user = _apiUserRepo.save(user);
+
+      LOG.info(
+          "Patient user with id={} self-created from link {}",
+          user.getInternalId(),
+          link.getInternalId());
+      return user;
+    }
+  }
+
+  private String getPatientLinkEmail(PatientLink link) {
+    return link.getInternalId() + "-noreply@simplereport.gov";
+  }
+
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
+    if (userIdentity == null) {
+      // we're in a patient experience interaction
+      return getPatientApiUser();
+    }
+
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
     if (found.isPresent()) {
       LOG.debug("User has logged in before: retrieving user record.");

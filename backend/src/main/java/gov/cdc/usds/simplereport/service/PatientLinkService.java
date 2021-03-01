@@ -13,6 +13,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,6 +76,10 @@ public class PatientLinkService {
                 () -> new IllegalGraphqlArgumentException("No test order with that ID was found"));
     PatientLink pl = new PatientLink(to);
     return plrepo.save(pl);
+  }
+
+  public PatientLink getFromTestOrder(TestOrder to) throws NoSuchElementException {
+    return plrepo.findByTestOrder(to).orElseThrow();
   }
 
   public PatientLink refreshPatientLink(String internalId) {
