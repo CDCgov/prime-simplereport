@@ -100,7 +100,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				LOG.info("Anonymous principal String is... {}", principal);
 				throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass() + " with content: " + principal);
 			}
-			throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass());
+				throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass() + " with content: " + principal);
 		};
 	}
 }
