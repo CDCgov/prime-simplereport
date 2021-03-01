@@ -46,7 +46,6 @@ const ADD_PATIENT = gql`
     $telephone: String!
     $role: String
     $email: String
-    $county: String
     $race: String
     $ethnicity: String
     $gender: String
@@ -67,7 +66,7 @@ const ADD_PATIENT = gql`
       telephone: $telephone
       role: $role
       email: $email
-      county: $county
+      county: ""
       race: $race
       ethnicity: $ethnicity
       gender: $gender
@@ -93,7 +92,6 @@ const UPDATE_PATIENT = gql`
     $telephone: String!
     $role: String
     $email: String
-    $county: String
     $race: String
     $ethnicity: String
     $gender: String
@@ -115,7 +113,7 @@ const UPDATE_PATIENT = gql`
       telephone: $telephone
       role: $role
       email: $email
-      county: $county
+      county: ""
       race: $race
       ethnicity: $ethnicity
       gender: $gender
@@ -332,7 +330,6 @@ const PatientForm = (props: Props) => {
       telephone: patient.telephone,
       role: patient.role,
       email: patient.email,
-      county: patient.county,
       race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
@@ -348,7 +345,6 @@ const PatientForm = (props: Props) => {
         streetTwo,
         city,
         state,
-        county,
         zipCode,
         ...withoutAddress
       } = variables;
@@ -358,7 +354,6 @@ const PatientForm = (props: Props) => {
           street: [street, streetTwo],
           city,
           state,
-          county,
           zipCode,
         },
       }).then((updatedPatientFromApi: any) => {
@@ -629,12 +624,6 @@ const PatientForm = (props: Props) => {
               label="City"
               name="city"
               value={patient.city}
-              onChange={onChange}
-            />
-            <TextInput
-              label="County"
-              name="county"
-              value={patient.county}
               onChange={onChange}
             />
             <div className="grid-row grid-gap">

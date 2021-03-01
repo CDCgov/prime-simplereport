@@ -88,14 +88,6 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label="County"
-            name="county"
-            value={facility.county}
-            onChange={onChange}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
             label="Zip code"
             name="zipCode"
             value={facility.zipCode}

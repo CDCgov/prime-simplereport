@@ -17,7 +17,8 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/17/20 */
 @Component
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
-
+  private final String FACILITY_DISPLAY_NAME = "Facility";
+  private final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
 
@@ -55,15 +56,15 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
+        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        new StreetAddress(
+        Translators.parseAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
             orderingProviderState,
             orderingProviderZipCode,
-            orderingProviderCounty);
+            PROVIDER_DISPLAY_NAME);
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,
@@ -113,17 +114,22 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String defaultDeviceId) {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
+    StreetAddress facilityAddress =
+        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+    StreetAddress providerAddress =
+        Translators.parseAddress(
+            orderingProviderStreet,
+            orderingProviderStreetTwo,
+            orderingProviderCity,
+            orderingProviderState,
+            orderingProviderZipCode,
+            PROVIDER_DISPLAY_NAME);
     Facility facility =
         _os.updateFacility(
             facilityId,
             testingFacilityName,
             cliaNumber,
-            street,
-            streetTwo,
-            city,
-            county,
-            Translators.parseState(state),
-            zipCode,
+            facilityAddress,
             Translators.parsePhoneNumber(phone),
             Translators.parseEmail(email),
             orderingProviderFirstName,
@@ -131,12 +137,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderLastName,
             orderingProviderSuffix,
             orderingProviderNPI,
-            orderingProviderStreet,
-            orderingProviderStreetTwo,
-            orderingProviderCity,
-            orderingProviderCounty,
-            Translators.parseState(orderingProviderState),
-            orderingProviderZipCode,
+            providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
             deviceSpecimenTypes);
     return new ApiFacility(facility);
@@ -172,15 +173,15 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        new StreetAddress(street, streetTwo, city, Translators.parseState(state), zipCode, county);
+        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        new StreetAddress(
+        Translators.parseAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
-            Translators.parseState(orderingProviderState),
+            orderingProviderState,
             orderingProviderZipCode,
-            orderingProviderCounty);
+            PROVIDER_DISPLAY_NAME);
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,

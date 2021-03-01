@@ -22,7 +22,6 @@ const GET_FACILITY_QUERY = gql`
         street
         streetTwo
         city
-        county
         state
         zipCode
         phone
@@ -42,7 +41,6 @@ const GET_FACILITY_QUERY = gql`
           street
           streetTwo
           city
-          county
           state
           zipCode
           phone
@@ -64,7 +62,6 @@ const UPDATE_FACILITY_MUTATION = gql`
     $street: String
     $streetTwo: String
     $city: String
-    $county: String
     $state: String
     $zipCode: String!
     $phone: String
@@ -77,7 +74,6 @@ const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderCounty: String
     $orderingProviderState: String
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
@@ -91,7 +87,7 @@ const UPDATE_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: $county
+      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -104,7 +100,7 @@ const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: $orderingProviderCounty
+      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
@@ -121,7 +117,6 @@ const ADD_FACILITY_MUTATION = gql`
     $street: String
     $streetTwo: String
     $city: String
-    $county: String
     $state: String
     $zipCode: String!
     $phone: String
@@ -134,7 +129,6 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderCounty: String
     $orderingProviderState: String
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
@@ -147,7 +141,7 @@ const ADD_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: $county
+      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -160,7 +154,7 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: $orderingProviderCounty
+      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
@@ -214,7 +208,6 @@ const FacilityFormContainer: any = (props: Props) => {
         street: facility.street,
         streetTwo: facility.streetTwo,
         city: facility.city,
-        county: facility.county,
         state: facility.state,
         zipCode: facility.zipCode,
         phone: facility.phone,
@@ -227,7 +220,6 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderStreet: provider.street,
         orderingProviderStreetTwo: provider.streetTwo,
         orderingProviderCity: provider.city,
-        orderingProviderCounty: provider.county,
         orderingProviderState: provider.state,
         orderingProviderZipCode: provider.zipCode,
         orderingProviderPhone: provider.phone,
@@ -270,7 +262,6 @@ const FacilityFormContainer: any = (props: Props) => {
       street: "",
       streetTwo: "",
       city: "",
-      county: "",
       state: "",
       zipCode: "",
       phone: "",
@@ -284,7 +275,6 @@ const FacilityFormContainer: any = (props: Props) => {
         street: "",
         streetTwo: "",
         city: "",
-        county: "",
         state: "",
         zipCode: "",
         phone: "",

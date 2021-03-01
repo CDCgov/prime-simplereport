@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,6 +22,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestOrderService _testOrderService;
+  @Autowired private TestDataFactory _dataFactory;
 
   @BeforeEach
   void setupData() {
@@ -40,15 +42,10 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -86,15 +83,10 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -131,15 +123,10 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,

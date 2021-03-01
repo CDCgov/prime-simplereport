@@ -1,17 +1,18 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import static gov.cdc.usds.simplereport.api.Translators.parseAddress;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
-import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 /** Mutations for creating and updating patient records. */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver {
+  private final String PERSON_DISPLAY_NAME = "Person";
 
   private static final Logger LOG = LoggerFactory.getLogger(PatientMutationResolver.class);
 
@@ -71,6 +73,10 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
+
+    StreetAddress address =
+        parseAddress(street, street2, city, state, zipCode, PERSON_DISPLAY_NAME);
+
     _ps.addPatient(
         facilityId,
         parseString(lookupId),
@@ -79,15 +85,10 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseString(lastName),
         parseString(suffix),
         birthDate,
-        parseString(street),
-        parseString(street2),
-        parseString(city),
-        parseState(state),
-        parseString(zipCode),
+        address,
         parsePhoneNumber(telephone),
         parsePersonRole(role),
         parseEmail(email),
-        parseString(county),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),
@@ -118,6 +119,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
+    StreetAddress address =
+        parseAddress(street, street2, city, state, zipCode, PERSON_DISPLAY_NAME);
     _ps.updatePatient(
         facilityId,
         patientId,
@@ -127,15 +130,10 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseString(lastName),
         parseString(suffix),
         birthDate,
-        parseString(street),
-        parseString(street2),
-        parseString(city),
-        parseState(state),
-        parseString(zipCode),
+        address,
         parsePhoneNumber(telephone),
         parsePersonRole(role),
         parseEmail(email),
-        parseString(county),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),

@@ -18,7 +18,6 @@ const GET_PATIENT = gql`
       telephone
       role
       email
-      county
       race
       ethnicity
       gender

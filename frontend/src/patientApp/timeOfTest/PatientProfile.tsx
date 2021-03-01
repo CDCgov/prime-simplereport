@@ -40,7 +40,6 @@ const PatientProfile = ({ patient }: Props) => {
     street: patient.street,
     streetTwo: patient.streetTwo,
     city: patient.city,
-    county: patient.county,
     state: patient.state,
     zipCode: patient.zipCode,
   });

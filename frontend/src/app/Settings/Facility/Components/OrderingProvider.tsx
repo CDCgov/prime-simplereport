@@ -108,14 +108,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
           </div>
           <div className="tablet:grid-col">
             <TextInput
-              label="County"
-              name="county"
-              value={provider.county}
-              onChange={onChange}
-            />
-          </div>
-          <div className="tablet:grid-col">
-            <TextInput
               label="Zip code"
               name="zipCode"
               value={provider.zipCode}

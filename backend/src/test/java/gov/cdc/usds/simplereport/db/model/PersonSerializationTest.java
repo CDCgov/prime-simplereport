@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,14 +74,14 @@ class PersonSerializationTest {
         new DeviceSpecimenType(
             new DeviceType("Bill", "Weasleys", "1", "12345-6", "E"),
             new SpecimenType("Troll Bogies", "000111222"));
-    StreetAddress addy =
-        new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
+    StreetAddress address =
+        new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
     p.setFacility(
         new Facility(
             fakeOrg,
             "Nice Place",
             "YOUGOTHERE",
-            addy,
+            address,
             "555-867-5309",
             "facility@test.com",
             mccoy,
@@ -97,7 +96,7 @@ class PersonSerializationTest {
   }
 
   private Person makeSerializablePerson(Organization fakeOrg) {
-    StreetAddress addy =
+    StreetAddress address =
         new StreetAddress(
             List.of("1600 Pennsylvania Avenue", "Right Side Door", "Down the Steps"),
             "Washington",
@@ -113,7 +112,7 @@ class PersonSerializationTest {
             "Jingleheimer-Jones",
             "Jr.",
             LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
-            addy,
+            address,
             "1234556",
             null,
             "a@b.c",
