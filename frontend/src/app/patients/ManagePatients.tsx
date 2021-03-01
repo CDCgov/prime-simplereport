@@ -164,7 +164,8 @@ export const DetachedManagePatients = ({
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
-                  Showing {entriesPerPage} of {totalEntries}
+                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                  {totalEntries}
                 </span>
               </h2>
               {canEditUser ? (
@@ -224,6 +225,7 @@ const ManagePatients = (
     refetch: refetchCount,
   } = useQuery(patientsCountQuery, {
     variables: { facilityId: activeFacilityId, showDeleted: false },
+    fetchPolicy: "no-cache",
   });
 
   if (activeFacilityId.length < 1) {
