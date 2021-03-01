@@ -1101,8 +1101,8 @@ databaseChangeLog:
                   name: correction_status
                   type: ${database.defaultSchemaName}.test_correction_status
                   remarks: Enumeration of type of correction. This column is used for non-delete corrections.
-                  defaultValue: 'ORIGINAL'
-                  value: 'ORIGINAL'
+                  defaultValue: "ORIGINAL"
+                  value: "ORIGINAL"
                   constraints:
                     nullable: false
               - column:
@@ -1131,8 +1131,8 @@ databaseChangeLog:
                   name: correction_status
                   type: ${database.defaultSchemaName}.test_correction_status
                   remarks: Enumeration of type of correction.
-                  defaultValue: 'ORIGINAL'
-                  value: 'ORIGINAL'
+                  defaultValue: "ORIGINAL"
+                  value: "ORIGINAL"
                   constraints:
                     nullable: false
               - column:
@@ -1202,8 +1202,8 @@ databaseChangeLog:
       changes:
         - addColumn:
             tableName: api_user
-            # while we would love to use the proper (non-nullable) reference column below, there are 
-            # already records in this table and we cannot add default values to the existing reference 
+            # while we would love to use the proper (non-nullable) reference column below, there are
+            # already records in this table and we cannot add default values to the existing reference
             # column without recreating it entirely
             columns:
               - column:
@@ -1363,7 +1363,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
             expectedResult: 1
       changes:
         - sql:
@@ -1444,7 +1444,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
             expectedResult: 1
       changes:
         - sql:
@@ -1470,18 +1470,14 @@ databaseChangeLog:
   - changeSet:
       id: add-time-of-consent-table
       author: nclyde@skylight.digital
-      comment: Update constraints for newly-added columns referencing device_specimen_type.
+      comment: Add a table which stores the time at which patients accept the terms of consent for patient links
       changes:
         - createTable:
             tableName: time_of_consent
-            remarks: A type of specimen collection from a patient.
+            remarks: This table stores the time at which patients accept the terms of consent for patient links
             columns:
               - column: *pk_column
               - column: *created_at_column
-              - column: *created_by_column
-              - column: *updated_at_column
-              - column: *updated_by_column
-              - column: *soft_delete_column
               - column:
                   name: patient_link_id
                   remarks: The patient link that was consented to

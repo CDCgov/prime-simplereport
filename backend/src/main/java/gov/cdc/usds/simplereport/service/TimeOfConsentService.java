@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.repository.TimeOfConsentRepository;
 
-@Service("timeOfConsentService")
+@Service
 @Transactional(readOnly = false)
 public class TimeOfConsentService {
     @Autowired
