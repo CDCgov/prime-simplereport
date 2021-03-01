@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
+import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
@@ -200,7 +201,7 @@ public class ApiUserService {
     TestOrder order = _contextHolder.getLinkedOrder();
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null || order == null) {
-      return null;
+      throw new UnidentifiedUserException();
     }
 
     String username = getPatientLinkEmail(patientLink);
