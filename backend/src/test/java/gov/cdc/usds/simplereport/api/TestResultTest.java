@@ -3,90 +3,89 @@ package gov.cdc.usds.simplereport.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.db.model.DeviceType;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import gov.cdc.usds.simplereport.db.model.Facility;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import gov.cdc.usds.simplereport.db.model.DeviceType;
-
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-
 class TestResultTest extends BaseApiTest {
 
-    @Autowired
-    private TestDataFactory _dataFactory;
-    @Autowired
-    private OrganizationService _orgService;
+  @Autowired private TestDataFactory _dataFactory;
+  @Autowired private OrganizationService _orgService;
 
-    private Organization _org;
-    private Facility _site;
+  private Organization _org;
+  private Facility _site;
 
-    @BeforeEach
-    public void init() {
-        _org = _orgService.getCurrentOrganization();
-        _site = _orgService.getFacilities(_org).get(0);
-    }
+  @BeforeEach
+  public void init() {
+    _org = _orgService.getCurrentOrganization();
+    _site = _orgService.getFacilities(_org).get(0);
+  }
 
-    @Test
-    void fetchTestResults() throws Exception {
-        Person p = _dataFactory.createFullPerson(_org);
-        _dataFactory.createTestEvent(p, _site);
-        _dataFactory.createTestEvent(p, _site);
-        _dataFactory.createTestEvent(p, _site);
-  
-        ObjectNode variables = getFacilityScopedArguments();
-        ArrayNode testResults = fetchTestResults(variables);
-        assertEquals(3, testResults.size());
-        assertEquals("SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
-                testResults.get(0).get("testPerformed").get("name").asText());
+  @Test
+  void fetchTestResults() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
+    _dataFactory.createTestEvent(p, _site);
 
-        variables.put("nameType", "short");
-        testResults = fetchTestResults(variables);
-        assertEquals(3, testResults.size());
-        assertEquals("SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
-                testResults.get(0).get("testPerformed").get("name").asText());
-    }
+    ObjectNode variables = getFacilityScopedArguments();
+    ArrayNode testResults = fetchTestResults(variables);
+    assertEquals(3, testResults.size());
+    assertEquals(
+        "SARS-CoV+SARS-CoV-2 (COVID-19) Ag [Presence] in Respiratory specimen by Rapid immunoassay",
+        testResults.get(0).get("testPerformed").get("name").asText());
 
-    private ObjectNode getFacilityScopedArguments() {
-        return JsonNodeFactory.instance.objectNode()
-                .put("facilityId", _site.getInternalId().toString());
-    }
+    variables.put("nameType", "short");
+    testResults = fetchTestResults(variables);
+    assertEquals(3, testResults.size());
+    assertEquals(
+        "SARS-CoV+SARS-CoV-2 Ag Resp Ql IA.rapid",
+        testResults.get(0).get("testPerformed").get("name").asText());
+  }
 
-    private ArrayNode fetchTestResults(ObjectNode variables) {
-        return (ArrayNode) runQuery("test-result-query", variables).get("testResults");
-    }
-    
-    @Test
-    void submitTestResult() throws Exception {
-        Person p = _dataFactory.createFullPerson(_org);
-        DeviceType d = _dataFactory.getGenericDevice();
-        _dataFactory.createTestOrder(p, _site);
-        String dateTested = "2020-12-31T14:30:30.001Z";
+  private ObjectNode getFacilityScopedArguments() {
+    return JsonNodeFactory.instance
+        .objectNode()
+        .put("facilityId", _site.getInternalId().toString());
+  }
 
-        ObjectNode variables = JsonNodeFactory.instance.objectNode()
+  private ArrayNode fetchTestResults(ObjectNode variables) {
+    return (ArrayNode) runQuery("test-result-query", variables).get("testResults");
+  }
+
+  @Test
+  void submitTestResult() throws Exception {
+    Person p = _dataFactory.createFullPerson(_org);
+    DeviceType d = _dataFactory.getGenericDevice();
+    _dataFactory.createTestOrder(p, _site);
+    String dateTested = "2020-12-31T14:30:30.001Z";
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
             .put("deviceId", d.getInternalId().toString())
             .put("patientId", p.getInternalId().toString())
             .put("result", TestResult.NEGATIVE.toString())
             .put("dateTested", dateTested);
-        submitTestResult(variables);
+    submitTestResult(variables);
 
-        ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
+    ArrayNode testResults = fetchTestResults(getFacilityScopedArguments());
 
-        assertTrue(testResults.has(0), "Has at least one submitted test result=");
-        assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
-    }
+    assertTrue(testResults.has(0), "Has at least one submitted test result=");
+    assertEquals(testResults.get(0).get("dateTested").asText(), dateTested);
+  }
 
-    private ObjectNode submitTestResult(ObjectNode variables) {
-        return runQuery("add-test-result-mutation", variables);
-    }
-
+  private ObjectNode submitTestResult(ObjectNode variables) {
+    return runQuery("add-test-result-mutation", variables);
+  }
 }

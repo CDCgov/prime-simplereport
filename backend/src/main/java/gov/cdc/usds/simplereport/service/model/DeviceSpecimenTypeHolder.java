@@ -1,26 +1,26 @@
 package gov.cdc.usds.simplereport.service.model;
 
+import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import java.util.Collections;
 import java.util.List;
 
-import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
-
 public class DeviceSpecimenTypeHolder {
 
-    private DeviceSpecimenType _default;
-    private List<DeviceSpecimenType> _all;
+  private DeviceSpecimenType _default;
+  private List<DeviceSpecimenType> _all;
 
-    public DeviceSpecimenTypeHolder(DeviceSpecimenType defaultType, List<DeviceSpecimenType> configuredTypes) {
-        super();
-        this._default = defaultType;
-        this._all = Collections.unmodifiableList(configuredTypes);
-    }
+  public DeviceSpecimenTypeHolder(
+      DeviceSpecimenType defaultType, List<DeviceSpecimenType> configuredTypes) {
+    super();
+    this._default = defaultType;
+    this._all = Collections.unmodifiableList(configuredTypes);
+  }
 
-    public DeviceSpecimenType getDefault() {
-        return _default;
-    }
+  public DeviceSpecimenType getDefault() {
+    return _default;
+  }
 
-    public List<DeviceSpecimenType> getFullList() {
-        return _all;
-    }
+  public List<DeviceSpecimenType> getFullList() {
+    return _all;
+  }
 }
