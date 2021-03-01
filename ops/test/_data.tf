@@ -93,12 +93,12 @@ data "azurerm_key_vault_secret" "twilio_auth_token" {
 
 data "azurerm_key_vault_secret" "smarty_auth_id" {
   name         = "smarty-auth-id"
-  key_vault_id = data.azurerm_key_vault.global.id
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
 data "azurerm_key_vault_secret" "smarty_auth_token" {
   name         = "smarty-auth-token"
-  key_vault_id = data.azurerm_key_vault.global.id
+  key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
 # logs
