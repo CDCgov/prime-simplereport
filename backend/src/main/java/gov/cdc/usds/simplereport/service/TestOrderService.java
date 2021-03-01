@@ -110,7 +110,7 @@ public class TestOrderService {
   public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
       DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
-    Person person = _ps.getPatient(patientId, org);
+    Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
     TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
@@ -188,7 +188,7 @@ private void updateTimeOfTest(TestOrder order, String pregnancy, Map<String, Boo
 
   private TestOrder retrieveTestOrder(String patientId) {
     Organization org = _os.getCurrentOrganization();
-    Person patient = _ps.getPatient(patientId, org);
+    Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 

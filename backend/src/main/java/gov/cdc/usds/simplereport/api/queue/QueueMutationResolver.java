@@ -46,8 +46,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
-    TestOrder to = _tos.addPatientToQueue(UUID.fromString(facilityID), _ps.getPatient(patientID), pregnancy,
-        symptomsMap, firstTest, priorTestDate, priorTestType,
+    TestOrder to = _tos.addPatientToQueue(UUID.fromString(facilityID), _ps.getPatientNoPermissionsCheck(patientID),
+        pregnancy, symptomsMap, firstTest, priorTestDate, priorTestType,
         (priorTestResult == null) ? null : TestResult.valueOf(priorTestResult), symptomOnset, noSymptoms);
 
     return to.getPatientLink().getInternalId().toString();
