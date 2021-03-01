@@ -1,32 +1,29 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import java.util.List;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-
 /**
- * Real-world implementation of AuthorizationService: should eventually be able
- * to be the only implementation, when we have fully mocked-out
- * local-dev/demo/test authentication.
+ * Real-world implementation of AuthorizationService: should eventually be able to be the only
+ * implementation, when we have fully mocked-out local-dev/demo/test authentication.
  */
 public class LoggedInAuthorizationService implements AuthorizationService {
 
-    private OrganizationExtractor _extractor;
+  private OrganizationExtractor _extractor;
 
-    public LoggedInAuthorizationService(OrganizationExtractor extractor) {
-        this._extractor = extractor;
-    }
+  public LoggedInAuthorizationService(OrganizationExtractor extractor) {
+    this._extractor = extractor;
+  }
 
-    @Override
-    public List<OrganizationRoleClaims> findAllOrganizationRoles() {
-        Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
-        if (currentAuth == null) {
-            throw new RuntimeException("Nobody is currently authenticated");
-        }
-        return _extractor.convert(currentAuth.getAuthorities());
+  @Override
+  public List<OrganizationRoleClaims> findAllOrganizationRoles() {
+    Authentication currentAuth = SecurityContextHolder.getContext().getAuthentication();
+    if (currentAuth == null) {
+      throw new RuntimeException("Nobody is currently authenticated");
     }
+    return _extractor.convert(currentAuth.getAuthorities());
+  }
 }

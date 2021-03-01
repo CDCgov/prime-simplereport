@@ -7,8 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class SimpleReportApplicationTests {
 
-    @Test
-    void contextLoads() {
-        // no-op
-    }
+  @Test
+  void contextLoads() {
+    // no-op
+  }
 }

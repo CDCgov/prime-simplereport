@@ -520,6 +520,11 @@ exports[`PatientForm snapshot 1`] = `
                     FL
                   </option>
                   <option
+                    value="FM"
+                  >
+                    FM
+                  </option>
+                  <option
                     value="GA"
                   >
                     GA
@@ -585,6 +590,11 @@ exports[`PatientForm snapshot 1`] = `
                     ME
                   </option>
                   <option
+                    value="MH"
+                  >
+                    MH
+                  </option>
+                  <option
                     value="MI"
                   >
                     MI
@@ -598,6 +608,11 @@ exports[`PatientForm snapshot 1`] = `
                     value="MO"
                   >
                     MO
+                  </option>
+                  <option
+                    value="MP"
+                  >
+                    MP
                   </option>
                   <option
                     value="MS"
@@ -673,6 +688,11 @@ exports[`PatientForm snapshot 1`] = `
                     value="PR"
                   >
                     PR
+                  </option>
+                  <option
+                    value="PW"
+                  >
+                    PW
                   </option>
                   <option
                     value="RI"

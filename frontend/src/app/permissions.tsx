@@ -2,6 +2,7 @@ export type UserPermission =
   | "READ_PATIENT_LIST"
   | "READ_RESULT_LIST"
   | "EDIT_PATIENT"
+  | "ARCHIVE_PATIENT"
   | "EDIT_FACILITY"
   | "EDIT_ORGANIZATION"
   | "START_TEST"
@@ -58,6 +59,7 @@ interface AppPermissions {
   people: {
     canView: UserPermission[];
     canEdit: UserPermission[];
+    canDelete: UserPermission[];
   };
   results: {
     canView: UserPermission[];
@@ -86,6 +88,7 @@ const appPermissions: AppPermissions = {
   people: {
     canView: ["READ_PATIENT_LIST"],
     canEdit: ["EDIT_PATIENT"],
+    canDelete: ["ARCHIVE_PATIENT"],
   },
   results: {
     canView: ["READ_RESULT_LIST"],
