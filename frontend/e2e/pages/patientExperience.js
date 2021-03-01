@@ -24,7 +24,7 @@ function verifyBirthDate(birthDate) {
   const dobDate = new Date(birthDate);
   const formattedDob = `${padSmallNumbers(
     dobDate.getMonth() + 1
-  )}/${padSmallNumbers(dobDate.getDate())}/${dobDate.getFullYear()}`;
+  )}/${padSmallNumbers(dobDate.getDate() + 1)}/${dobDate.getFullYear()}`;
   this.section.app.setValue('@dobInput', formattedDob);
   this.section.app.click('@dobSubmitButton');
   this.expect.section('@app').to.be.visible;
