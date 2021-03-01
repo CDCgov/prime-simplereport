@@ -200,13 +200,14 @@ public class ApiUserService {
 
   private ApiUser getPatientApiUser() {
     TestOrder order = _contextHolder.getLinkedOrder();
-    if (order == null) {
+    PatientLink patientLink = _contextHolder.getPatientLink();
+    if (patientLink == null || order == null) {
       return null;
     }
 
-    PatientLink link = _patientLinkService.getFromTestOrder(order);
-    String username = getPatientLinkEmail(link);
+    String username = getPatientLinkEmail(patientLink);
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(username);
+
     if (found.isPresent()) {
       LOG.debug("Patient has logged in before: retrieving user record.");
       ApiUser user = found.get();
@@ -222,7 +223,7 @@ public class ApiUserService {
       LOG.info(
           "Patient user with id={} self-created from link {}",
           user.getInternalId(),
-          link.getInternalId());
+          patientLink.getInternalId());
       return user;
     }
   }

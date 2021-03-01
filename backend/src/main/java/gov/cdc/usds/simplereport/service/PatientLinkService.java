@@ -54,6 +54,7 @@ public class PatientLinkService {
       PatientLink pl = getPatientLink(internalId);
       TestOrder testOrder = pl.getTestOrder();
       if (testOrder.getPatient().getBirthDate().equals(birthDate)) {
+        contextHolder.setPatientLink(pl);
         contextHolder.setLinkedOrder(testOrder);
         return true;
       }
