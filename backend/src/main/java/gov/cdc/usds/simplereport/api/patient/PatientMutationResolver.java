@@ -9,11 +9,16 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
 import javax.servlet.http.Part;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -27,6 +32,8 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver  {
 
+    private static final Logger LOG = LoggerFactory.getLogger(PatientMutationResolver.class);
+
     private final PersonService _ps;
     private final UploadService _us;
 
@@ -35,9 +42,15 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
         _us = us;
     }
 
-    public String uploadPatients(Part part) throws Exception {
-        InputStream people = part.getInputStream();
-        return _us.processPersonCSV(people);
+    public String uploadPatients(Part part) {
+        try (InputStream people = part.getInputStream()) {
+            return _us.processPersonCSV(people);
+        } catch (IllegalGraphqlArgumentException e) {
+            throw e;
+        } catch (IOException e) {
+            LOG.error("Patient CSV upload failed", e);
+            throw new CsvProcessingException("Unable to complete patient CSV upload");
+        }
     }
 
     public void addPatient(

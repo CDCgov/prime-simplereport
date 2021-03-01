@@ -91,7 +91,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
                                    String orderingProviderZipCode,
                                    String orderingProviderTelephone,
                                    List<String> deviceIds,
-                                   String defaultDeviceId) throws Exception {
+                                   String defaultDeviceId) {
         DeviceSpecimenTypeHolder deviceSpecimenTypes = _dts.getTypesForFacility(defaultDeviceId, deviceIds);
         Facility facility = _os.updateFacility(
           facilityId,
