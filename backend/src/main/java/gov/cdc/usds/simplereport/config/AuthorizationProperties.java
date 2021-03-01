@@ -7,19 +7,19 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 public class AuthorizationProperties {
 
-    private String roleClaim;
-    private String rolePrefix;
+  private String roleClaim;
+  private String rolePrefix;
 
-    public AuthorizationProperties(String roleClaim, String rolePrefix) {
-        this.roleClaim = roleClaim;
-        this.rolePrefix = rolePrefix;
-    }
+  public AuthorizationProperties(String roleClaim, String rolePrefix) {
+    this.roleClaim = roleClaim;
+    this.rolePrefix = rolePrefix;
+  }
 
-    public String getRoleClaim() {
-        return roleClaim;
-    }
+  public String getRoleClaim() {
+    return roleClaim;
+  }
 
-    public String getRolePrefix() {
-        return rolePrefix;
-    }
+  public String getRolePrefix() {
+    return rolePrefix;
+  }
 }
