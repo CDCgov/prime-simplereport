@@ -66,8 +66,7 @@ public class SliceTestConfiguration {
     return () -> {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       if (auth == null) {
-        // needed for running the commandlinerunner that we don't actually need
-        return TestUserIdentities.STANDARD_USER_ATTRIBUTES;
+        throw new IllegalStateException("No authentication found for test");
       }
       String username = auth.getName();
       LoggerFactory.getLogger(SliceTestConfiguration.class)
