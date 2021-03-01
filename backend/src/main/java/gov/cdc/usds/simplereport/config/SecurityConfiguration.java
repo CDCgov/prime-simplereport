@@ -70,35 +70,37 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     Okta.configureResourceServer401ResponseBody(http);
   }
 
-  @Bean
-  public IdentitySupplier getRealIdentity() {
-    return () -> {
-      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-      if (principal instanceof OidcUser) {
-        OidcUser me = (OidcUser) principal;
-        LOG.debug("OIDC user found with attributes {}", me.getAttributes());
-        String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
-        String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
-        String email = me.getAttribute(OktaAttributes.EMAIL);
-        if (lastName == null) {
-          lastName = email;
-        }
-        LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
-        return new IdentityAttributes(email, firstName, null, lastName, null);
-      } else if (principal instanceof Jwt) {
-        Jwt token = (Jwt) principal;
-        LOG.debug("JWT user found with claims {}", token.getClaims());
-        String email = token.getSubject();
-        String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
-        String lastName = token.getClaim(OktaAttributes.LAST_NAME);
-        if (lastName == null) {
-          lastName = email;
-        }
-        LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
-        return new IdentityAttributes(email, firstName, null, lastName, null);
-      }
-      throw new RuntimeException(
-          "Unexpected authentication principal of type " + principal.getClass());
-    };
-  }
+	@Bean
+	public IdentitySupplier getRealIdentity() {
+		return () -> {
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if (principal instanceof OidcUser) {
+				OidcUser me = (OidcUser) principal;
+				LOG.debug("OIDC user found with attributes {}", me.getAttributes());
+				String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
+				String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
+				String email = me.getAttribute(OktaAttributes.EMAIL);
+				if (lastName == null) {
+					lastName = email;
+				}
+				LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
+				return new IdentityAttributes(email, firstName, null, lastName, null);
+			} else if (principal instanceof Jwt) {
+				Jwt token = (Jwt) principal;
+				LOG.debug("JWT user found with claims {}", token.getClaims());
+				String email = token.getSubject();
+				String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
+				String lastName = token.getClaim(OktaAttributes.LAST_NAME);
+				if (lastName == null) {
+					lastName = email;
+				}
+				LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
+				return new IdentityAttributes(email, firstName, null, lastName, null);
+			} else if (principal instanceof String) {
+				LOG.info("Anonymous principal String is... {}", principal);
+				throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass() + " with content: " + principal);
+			}
+			throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass());
+		};
+	}
 }
