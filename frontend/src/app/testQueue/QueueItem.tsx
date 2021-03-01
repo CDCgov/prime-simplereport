@@ -317,6 +317,7 @@ const QueueItem: any = ({
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
+      setConfirmationType("none");
       submitTestResult({
         variables: {
           patientId: patient.internalId,
