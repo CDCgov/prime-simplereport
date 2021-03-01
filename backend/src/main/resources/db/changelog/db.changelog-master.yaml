@@ -1478,6 +1478,7 @@ databaseChangeLog:
             columns:
               - column: *pk_column
               - column: *created_at_column
+              - column: *updated_at_column
               - column:
                   name: patient_link_id
                   remarks: The patient link that was consented to
