@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 
+import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import java.io.InputStream;
 import java.time.LocalDate;
@@ -45,9 +46,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver  {
             return _us.processPersonCSV(people);
         } catch (IllegalGraphqlArgumentException e) {
             throw e;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             LOG.error("Patient CSV upload failed", e);
-            throw new IllegalGraphqlArgumentException("Unable to complete patient CSV upload");
+            throw new CsvProcessingException("Unable to complete patient CSV upload");
         }
     }
 
