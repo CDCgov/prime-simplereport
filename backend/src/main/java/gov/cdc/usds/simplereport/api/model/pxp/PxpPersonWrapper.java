@@ -1,18 +1,17 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
 import java.util.Date;
 
-import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-
 /**
- * This Person POJO wrapper exists solely for serialization for the Patient
- * Experience endpoints. You'd think we could just use Person, because that
- * serializes just fine on its own – unfortunately the JsonIgnores include stuff
- * we need, which somehow get serialized in the GraphQL endpoints
+ * This Person POJO wrapper exists solely for serialization for the Patient Experience endpoints.
+ * You'd think we could just use Person, because that serializes just fine on its own
+ * – unfortunately the JsonIgnores include stuff we need, which somehow get serialized in the
+ * GraphQL endpoints
  */
 public class PxpPersonWrapper {
   private Person p;

@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,39 +14,31 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
-
-/**
- * Stub no-op configuration for development and test environments.
- */
+/** Stub no-op configuration for development and test environments. */
 @Profile(BeanProfiles.NO_SECURITY)
 @Configuration
 @ConditionalOnWebApplication
-public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter implements WebMvcConfigurer {
+public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter
+    implements WebMvcConfigurer {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DevSecurityConfiguration.class);
+  private static final Logger LOG = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
-    @Autowired
-    private DemoUserConfiguration _demoUsers;
+  @Autowired private DemoUserConfiguration _demoUsers;
 
-    @Override
-    public void configure(HttpSecurity http) throws Exception {
-        LOG.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
-        http.cors()
-                .and().authorizeRequests().antMatchers("/**").permitAll()
-                .and().csrf().disable()
-                ;
-    }
+  @Override
+  public void configure(HttpSecurity http) throws Exception {
+    LOG.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
+    http.cors().and().authorizeRequests().antMatchers("/**").permitAll().and().csrf().disable();
+  }
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        LOG.warn("CORS ENABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
-        registry.addMapping("/**").allowedMethods("*");
-    }
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    LOG.warn("CORS ENABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
+    registry.addMapping("/**").allowedMethods("*");
+  }
 
-    @Bean
-    public IdentitySupplier getDemoIdentitySupplier() {
-        return () -> _demoUsers.getDefaultUser().getIdentity();
-    }
+  @Bean
+  public IdentitySupplier getDemoIdentitySupplier() {
+    return () -> _demoUsers.getDefaultUser().getIdentity();
+  }
 }

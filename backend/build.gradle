@@ -1,11 +1,12 @@
 plugins {
-	id 'org.springframework.boot' version '2.4.1'
-	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
-	id 'java'
-	id 'checkstyle'
-	id 'jacoco'
-	id 'org.sonarqube'  version '3.0'
-	id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id 'org.springframework.boot' version '2.4.1'
+    id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+    id 'java'
+    id 'checkstyle'
+    id 'jacoco'
+    id 'org.sonarqube'  version '3.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.2.0'
+    id "com.diffplug.spotless" version "5.10.2"
 }
 
 group = 'gov.cdc.usds'
@@ -13,50 +14,50 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-	kickstartVersion = '8.0.0'
+    kickstartVersion = '8.0.0'
 }
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	// core infrastructure
-	implementation 'org.springframework.boot:spring-boot-starter-web'
+    // core infrastructure
+    implementation 'org.springframework.boot:spring-boot-starter-web'
 
-	// data layer dependencies
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
-	implementation 'org.liquibase:liquibase-core'
-	runtimeOnly 'org.postgresql:postgresql'
-	implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
+    // data layer dependencies
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
+    implementation 'org.liquibase:liquibase-core'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
 
-	// UI layer dependencies
-	implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
-	implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
-	implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0"
-	implementation 'org.json:json:20201115'
-	implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+    // UI layer dependencies
+    implementation "com.graphql-java-kickstart:graphql-spring-boot-starter:${kickstartVersion}"
+    implementation "com.graphql-java-kickstart:graphiql-spring-boot-starter:${kickstartVersion}"
+    implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0"
+    implementation 'org.json:json:20201115'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
 
-	//	Okta dependencies
-	implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
-	implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
-	runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
-	runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
+    // Okta dependencies
+    implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
+    implementation 'com.okta.sdk:okta-sdk-api:3.0.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-impl:3.0.1'
+    runtimeOnly 'com.okta.sdk:okta-sdk-httpclient:3.0.1'
 
-	// App insights instrumentation
-	implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
+    // App insights instrumentation
+    implementation 'com.microsoft.azure:applicationinsights-core:2.6.2'
 
-	// Twilio for SMS
-	implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
+    // Twilio for SMS
+    implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
 
-	// test/check dependencies
-	testImplementation('org.springframework.boot:spring-boot-starter-test') {
-		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-	}
-	testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
-	testImplementation 'org.springframework.security:spring-security-test'
-	testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+    // test/check dependencies
+    testImplementation('org.springframework.boot:spring-boot-starter-test') {
+        exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+    }
+    testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
 }
 
 springBoot {
@@ -70,12 +71,12 @@ test {
 }
 
 configurations {
-	compileClasspath {
-		resolutionStrategy.activateDependencyLocking()
-	}
-	runtimeClasspath {
-		resolutionStrategy.activateDependencyLocking()
-	}
+    compileClasspath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+    runtimeClasspath {
+        resolutionStrategy.activateDependencyLocking()
+    }
 }
 
 checkstyleTest {
@@ -83,22 +84,30 @@ checkstyleTest {
 }
 
 jacocoTestReport {
-	reports {
-		xml.enabled = true
-	}
-	dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.enabled = true
+    }
+    dependsOn test // tests are required to run before generating the report
 }
 
 sonarqube {
-	properties {
-		property "sonar.projectKey", "CDCgov_prime-data-input-client"
-		property "sonar.organization", "cdcgov"
-		property "sonar.host.url", "https://sonarcloud.io"
-		// In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
-		property "sonar.sources", "backend/src/main/java,frontend/src"
-		property "sonar.exclusions", "frontend/src/**/*.test.*"
-		property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
-	}
+    properties {
+        property "sonar.projectKey", "CDCgov_prime-data-input-client"
+        property "sonar.organization", "cdcgov"
+        property "sonar.host.url", "https://sonarcloud.io"
+        // In order to get both the frontend and backend code to report, we need to set the sonar project to the root directory.
+        property "sonar.sources", "backend/src/main/java,frontend/src"
+        property "sonar.exclusions", "frontend/src/**/*.test.*"
+        property "sonar.javascript.lcov.reportPaths", "frontend/coverage/lcov.info"
+    }
+}
+
+spotless {
+    java {
+        importOrder()
+        removeUnusedImports()
+        googleJavaFormat()
+    }
 }
 
 task testDbStart(type: Exec) {

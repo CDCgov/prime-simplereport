@@ -1,23 +1,20 @@
 package gov.cdc.usds.simplereport.service.sms;
 
-import javax.annotation.PostConstruct;
-import javax.transaction.Transactional;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.PhoneNumberUtil.PhoneNumberFormat;
 import com.twilio.type.PhoneNumber;
-
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.service.PatientLinkService;
+import javax.annotation.PostConstruct;
+import javax.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.service.PatientLinkService;
 
 @Service
 public class SmsService {
@@ -26,11 +23,9 @@ public class SmsService {
   @Value("${twilio.from-number:+14045312484}")
   private String rawFromNumber;
 
-  @Autowired
-  PatientLinkService pls;
+  @Autowired PatientLinkService pls;
 
-  @Autowired
-  SmsProviderWrapper sms;
+  @Autowired SmsProviderWrapper sms;
 
   private PhoneNumber fromNumber;
 

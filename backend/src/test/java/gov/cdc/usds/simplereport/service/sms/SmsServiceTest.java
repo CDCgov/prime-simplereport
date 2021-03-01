@@ -1,21 +1,12 @@
 package gov.cdc.usds.simplereport.service.sms;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.type.PhoneNumber;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -24,16 +15,19 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 class SmsServiceTest extends BaseServiceTest<SmsService> {
-  @MockBean
-  SmsProviderWrapper mockTwilio;
+  @MockBean SmsProviderWrapper mockTwilio;
 
-  @Autowired
-  DbTruncator _truncator;
+  @Autowired DbTruncator _truncator;
 
-  @Autowired
-  SmsService _smsService;
+  @Autowired SmsService _smsService;
 
   Organization _org;
   Facility _site;
@@ -54,14 +48,11 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     _patientLinkId = _patientLink.getInternalId().toString();
   }
 
-  @Captor
-  ArgumentCaptor<PhoneNumber> fromNumber;
+  @Captor ArgumentCaptor<PhoneNumber> fromNumber;
 
-  @Captor
-  ArgumentCaptor<PhoneNumber> toNumber;
+  @Captor ArgumentCaptor<PhoneNumber> toNumber;
 
-  @Captor
-  ArgumentCaptor<String> message;
+  @Captor ArgumentCaptor<String> message;
 
   @Test
   @WithSimpleReportSiteAdminUser
@@ -75,7 +66,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
     // THEN
     verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
-    assertEquals(toNumber.getValue(), new PhoneNumber(_smsService.formatNumber(_person.getTelephone())));
+    assertEquals(
+        toNumber.getValue(), new PhoneNumber(_smsService.formatNumber(_person.getTelephone())));
   }
 
   @Test
@@ -86,7 +78,10 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
-    assertThrows(NumberParseException.class, 
-      () -> { _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"); });
+    assertThrows(
+        NumberParseException.class,
+        () -> {
+          _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");
+        });
   }
 }
