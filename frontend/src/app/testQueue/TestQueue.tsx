@@ -17,10 +17,6 @@ const onExiting = (node: HTMLElement) => {
   node.style.opacity = "0";
   node.style.transition = `opacity ${transitionDuration}ms ease-out, margin ${transitionDuration}ms ease-out`;
 };
-const onExit = (node: HTMLElement) => {
-  node.style.marginBottom = `0`;
-  node.style.opacity = "";
-};
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -171,7 +167,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 in={!toRemove.has(internalId)}
                 timeout={transitionDuration}
                 classNames="alert"
-                onExit={onExit}
                 onExiting={onExiting}
                 unmountOnExit
               >
