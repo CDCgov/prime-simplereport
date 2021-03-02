@@ -102,6 +102,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
       } else if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+        LOG.debug("User is unauthenticated");
         Person patient = _contextHolder.getPatient();
         if (patient != null) {
           LOG.debug(
