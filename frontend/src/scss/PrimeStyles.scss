@@ -633,12 +633,32 @@
 }
 
 .sr-time-of-test-buttons {
-  text-align: right;
+  // bottom: units(6);
+  // text-align: right;
 
-  button {
-    @include at-media("mobile-lg") {
-      margin-left: 1em;
-    }
+  // button {
+  //   @include at-media("mobile-lg") {
+  //     margin-left: 1em;
+  //   }
+  // }
+}
+
+.modal-sticky-footer {
+  bottom: units(6);
+  z-index: 1;
+}
+
+.ReactModal__Content {
+  &::after {
+    background: pink;
+    content: " ";
+    width: 48%;
+    height: 60px;
+    max-width: 48%;
+    position: fixed;
+    display: block;
+    bottom: 30px;
+    z-index: 0;
   }
 }
 

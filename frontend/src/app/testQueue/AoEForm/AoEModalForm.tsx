@@ -200,12 +200,6 @@ const AoEModalForm = (props: AoEModalProps) => {
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
       <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      <Button
-        className="margin-right-0"
-        label={saveButtonText}
-        type={"button"}
-        onClick={() => continueModal()}
-      />
     </div>
   );
 

@@ -194,10 +194,10 @@ const AoEForm: React.FC<Props> = ({
   };
 
   const buttonGroup = (
-    <div className="sr-time-of-test-buttons display-flex flex-justify-end">
+    <div className="sr-time-of-test-buttons">
       <Button
         id="aoe-form-save-button"
-        className={classnames(isModal ? "margin-right-205" : "margin-right-0")}
+        className="margin-right-0"
         label={saveButtonText}
         type={"submit"}
       />
@@ -206,7 +206,7 @@ const AoEForm: React.FC<Props> = ({
 
   return (
     <>
-      <form onSubmit={saveAnswers} ref={formRef}>
+      <form className="display-flex flex-column padding-bottom-5" onSubmit={saveAnswers} ref={formRef}>
         {isModal && (
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
@@ -258,7 +258,7 @@ const AoEForm: React.FC<Props> = ({
         <div
           className={classnames(
             isModal
-              ? "margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205"
+              ? "modal-sticky-footer bg-pink position-fixed"
               : "margin-top-3"
           )}
         >
