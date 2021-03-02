@@ -28,6 +28,13 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Person extends OrganizationScopedEternalEntity {
 
+  // these field names strings are used by Specification builders
+  public static final String PersonName = "nameInfo";
+  public static final String IsDeleted = "isDeleted";
+  public static final String Facility = "facility";
+  public static final String Organization = "organization";
+  public static final String InternalId = "internalId";
+
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
   @ManyToOne(optional = true)

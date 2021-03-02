@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.UserAuthorizationVerifier;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -10,10 +12,15 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,22 +29,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class PersonService {
 
-  private OrganizationService _os;
-  private PersonRepository _repo;
-  private final CurrentPatientContextHolder _patientContext;
-
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
-  // currently loads ALL patients and filters locally.
+  static final int MINIMUMCHARFORSEARCH = 2;
 
   private static final Sort NAME_SORT =
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
+  private final CurrentPatientContextHolder _patientContext;
+  private final OrganizationService _os;
+  // currently loads ALL patients and filters locally.
+  private final PersonRepository _repo;
+  private final UserAuthorizationVerifier _auth;
 
   public PersonService(
-      OrganizationService os, PersonRepository repo, CurrentPatientContextHolder patientContext) {
+      OrganizationService os,
+      PersonRepository repo,
+      CurrentPatientContextHolder patientContext,
+      UserAuthorizationVerifier auth) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
+    _auth = auth;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -50,65 +62,160 @@ public class PersonService {
     person.setFacility(facility);
   }
 
+  // For readablility below. Get the OrgId for the currently logged in user.
+  // don't trust an id provided by the user.
+  private UUID getOrgId() {
+    return _os.getCurrentOrganization().getInternalId();
+  }
+
+  // Specifications for queries
+
+  private Specification<Person> inWholeOrganization() {
+    return (root, query, cb) ->
+        cb.equal(root.get(Person.Organization).get(Person.InternalId), getOrgId());
+  }
+
+  // Note: Patients with NULL facilityIds appear in ALL facilities.
+  private Specification<Person> inFacility(@NotNull UUID facilityId) {
+    return (root, query, cb) ->
+        cb.and(
+            cb.equal(root.get(Person.Organization).get(Person.InternalId), getOrgId()),
+            cb.or(
+                cb.isNull(root.get(Person.Facility)), // null check first
+                cb.equal(root.get(Person.Facility).get(Person.InternalId), facilityId)));
+  }
+
+  private Specification<Person> nameMatches(
+      @Size(min = MINIMUMCHARFORSEARCH) String namePrefixMatch) {
+    String likeString = namePrefixMatch.toLowerCase() + "%";
+    return (root, query, cb) ->
+        cb.or(
+            cb.like(cb.lower(root.get(Person.PersonName).get("firstName")), likeString),
+            cb.like(cb.lower(root.get(Person.PersonName).get("middleName")), likeString),
+            cb.like(cb.lower(root.get(Person.PersonName).get("lastName")), likeString));
+  }
+
+  private Specification<Person> isDeleted(boolean isDeleted) {
+    return (root, query, cb) -> cb.equal(root.get(Person.IsDeleted), isDeleted);
+  }
+
+  // called by List function and Count function
+  private boolean checkPermissionsForListFunc(
+      UUID facilityId, boolean isArchived, String searchTerm) {
+    if (_auth.userHasSiteAdminRole()) { // site admins skip all other checks
+      return true;
+    }
+
+    ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
+    perms.add(UserPermission.READ_PATIENT_LIST); // always required
+    if (facilityId == null) {
+      perms.add(UserPermission.MANAGE_USERS);
+    }
+    if (isArchived) {
+      perms.add(UserPermission.ARCHIVE_PATIENT);
+    }
+    if (searchTerm != null) {
+      perms.add(UserPermission.SEARCH_PATIENTS);
+    }
+
+    // check all the permissions in one call.
+    return _auth.userHasPermissions(perms);
+  }
+
+  // called by List function and Count function
+  public Specification<Person> buildFilterForListFunc(
+      UUID facilityId, boolean isArchived, String searchTerm) {
+    // build up filter based on params
+    Specification<Person> filter = isDeleted(isArchived);
+    if (facilityId == null) { // admin call to get all users
+      filter = filter.and(inWholeOrganization());
+    } else {
+      filter = filter.and(inFacility(facilityId));
+    }
+
+    if (searchTerm != null) {
+      filter = filter.and(nameMatches(searchTerm.trim()));
+    }
+    return filter;
+  }
+
+  // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
+  public List<Person> getPatients(
+      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm)
+      throws AccessException {
+    // first check permissions
+    if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
+      // we do it this way so the permission checking code passes through the same code path
+      // on failure. Hopefully, this will make maintenance easier?
+      throw new AccessException("Access is denied");
+    }
+
+    return _repo.findAll(
+        buildFilterForListFunc(facilityId, isArchived, searchTerm),
+        PageRequest.of(pageOffset, pageSize, NAME_SORT));
+  }
+
+  public long getPatientsCount(UUID facilityId, boolean isArchived, String searchTerm)
+      throws AccessException {
+    // first check permissions
+    if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
+      // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
+      // we do it this way so the permission checking code passes through the same code path
+      // on failure. Hopefully, this will make maintenance easier.
+      throw new AccessException("Access is denied");
+    }
+
+    return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
+  }
+
+  // Types of queries with permissions checks.
   @AuthorizationConfiguration.RequirePermissionReadPatientList
   public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
-    return _repo
-        .findByFacilityAndOrganization(
-            _os.getFacilityInCurrentOrg(facilityId),
-            _os.getCurrentOrganization(),
-            false,
-            PageRequest.of(pageOffset, pageSize, NAME_SORT))
-        .toList();
+    Specification<Person> filter = isDeleted(false).and(inFacility(facilityId));
+    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
   @AuthorizationConfiguration.RequirePermissionReadPatientList
   public long getPatientsCount(UUID facilityId) {
-    return _repo.countAllByFacilityAndOrganization(
-        _os.getFacilityInCurrentOrg(facilityId), _os.getCurrentOrganization(), false);
+    Specification<Person> filter = isDeleted(false).and(inFacility(facilityId));
+    return _repo.count(filter);
   }
 
   @AuthorizationConfiguration.RequirePermissionReadPatientList
   public List<Person> getAllPatients(int pageOffset, int pageSize) {
-    return _repo
-        .findAllByOrganization(
-            _os.getCurrentOrganization(), false, PageRequest.of(pageOffset, pageSize, NAME_SORT))
-        .toList();
+    Specification<Person> filter = isDeleted(false).and(inWholeOrganization());
+    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
   @AuthorizationConfiguration.RequirePermissionReadPatientList
   public long getAllPatientsCount() {
-    return _repo.countAllByOrganization(_os.getCurrentOrganization(), false);
+    Specification<Person> filter = isDeleted(false).and(inWholeOrganization());
+    return _repo.count(filter);
   }
 
   // FYI archived is not just a parameter because it requires different permissions.
   @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
-    return _repo
-        .findByFacilityAndOrganization(
-            _os.getFacilityInCurrentOrg(facilityId),
-            _os.getCurrentOrganization(),
-            true,
-            PageRequest.of(pageOffset, pageSize, NAME_SORT))
-        .toList();
+    Specification<Person> filter = isDeleted(true).and(inFacility(facilityId));
+    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
   @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public long getArchivedPatientsCount(UUID facilityId) {
-    return _repo.countAllByFacilityAndOrganization(
-        _os.getFacilityInCurrentOrg(facilityId), _os.getCurrentOrganization(), true);
+    Specification<Person> filter = isDeleted(true).and(inFacility(facilityId));
+    return _repo.count(filter);
   }
 
   @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public List<Person> getAllArchivedPatients(int pageOffset, int pageSize) {
-    return _repo
-        .findAllByOrganization(
-            _os.getCurrentOrganization(), true, PageRequest.of(pageOffset, pageSize, NAME_SORT))
-        .toList();
+    Specification<Person> filter = isDeleted(true).and(inWholeOrganization());
+    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
   @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public long getAllArchivedPatientsCount() {
-    return _repo.countAllByOrganization(_os.getCurrentOrganization(), true);
+    Specification<Person> filter = isDeleted(true).and(inWholeOrganization());
+    return _repo.count(filter);
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
