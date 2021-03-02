@@ -361,41 +361,31 @@ const PatientForm = (props: Props) => {
           county,
           zipCode,
         },
-      }).then(
-        (updatedPatientFromApi: any) => {
-          showNotification(
-            toast,
-            <Alert
-              type="success"
-              title={`Your profile changes have been saved`}
-            />
-          );
+      }).then((updatedPatientFromApi: any) => {
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title={`Your profile changes have been saved`}
+          />
+        );
 
-          const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-            ? "YES"
-            : "NO";
-          const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-            ? "YES"
-            : "NO";
+        const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
+          ? "YES"
+          : "NO";
+        const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
+          ? "YES"
+          : "NO";
 
-          dispatch(
-            reduxSetPatient({
-              ...updatedPatientFromApi,
-              residentCongregateSetting,
-              employedInHealthcare,
-            })
-          );
-          setSubmitted(true);
-        },
-        (error: any) => {
-          appInsights.trackException(error);
-          showError(
-            toast,
-            `${PATIENT_TERM_CAP} Data Error`,
-            "Please check for missing data or typos."
-          );
-        }
-      );
+        dispatch(
+          reduxSetPatient({
+            ...updatedPatientFromApi,
+            residentCongregateSetting,
+            employedInHealthcare,
+          })
+        );
+        setSubmitted(true);
+      });
     } else if (props.patientId) {
       trackUpdatePatient({});
       updatePatient({
@@ -403,50 +393,30 @@ const PatientForm = (props: Props) => {
           patientId: props.patientId,
           ...variables,
         },
-      }).then(
-        () => {
-          showNotification(
-            toast,
-            <Alert
-              type="success"
-              title={`${PATIENT_TERM_CAP} Record Saved`}
-              body="Information record has been updated."
-            />
-          );
-          setSubmitted(true);
-        },
-        (error) => {
-          appInsights.trackException(error);
-          showError(
-            toast,
-            `${PATIENT_TERM_CAP} Data Error`,
-            "Please check for missing data or typos."
-          );
-        }
-      );
+      }).then(() => {
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title={`${PATIENT_TERM_CAP} Record Saved`}
+            body="Information record has been updated."
+          />
+        );
+        setSubmitted(true);
+      });
     } else {
       trackAddPatient({});
-      addPatient({ variables }).then(
-        () => {
-          showNotification(
-            toast,
-            <Alert
-              type="success"
-              title={`${PATIENT_TERM_CAP} Record Created`}
-              body="New information record has been created."
-            />
-          );
-          setSubmitted(true);
-        },
-        (error) => {
-          appInsights.trackException(error);
-          showError(
-            toast,
-            `${PATIENT_TERM_CAP} Data Error`,
-            "Please check for missing data or typos."
-          );
-        }
-      );
+      addPatient({ variables }).then(() => {
+        showNotification(
+          toast,
+          <Alert
+            type="success"
+            title={`${PATIENT_TERM_CAP} Record Created`}
+            body="New information record has been created."
+          />
+        );
+        setSubmitted(true);
+      });
     }
   };
   // after the submit was success, redirect back to the List page
