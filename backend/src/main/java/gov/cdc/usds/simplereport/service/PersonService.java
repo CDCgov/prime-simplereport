@@ -143,6 +143,13 @@ public class PersonService {
   // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
   public List<Person> getPatients(
       UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm) {
+    if (pageOffset < 0) {
+      pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = DEFAULT_PAGINATION_PAGESIZE;
+    }
+
     // first check permissions
     if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
       throw new AccessDeniedException("Access is denied");
