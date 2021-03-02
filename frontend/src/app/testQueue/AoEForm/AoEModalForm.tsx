@@ -9,6 +9,7 @@ import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constan
 import { getUrl } from "../../utils/url";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { toast } from "react-toastify";
+import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -199,7 +200,14 @@ const AoEModalForm = (props: AoEModalProps) => {
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      <Button variant="unstyled" label="Cancel" onClick={onClose} />
+      {/* <Button variant="unstyled" label="Cancel" onClick={onClose} /> */}
+      <button
+        className="modal__close-button"
+        style={{ cursor: "pointer" }}
+        onClick={onClose}
+      >
+        <img className="modal__close-img" src={iconClose} alt="Close" />
+      </button>
     </div>
   );
 
@@ -300,7 +308,6 @@ const AoEModalForm = (props: AoEModalProps) => {
       style={{
         content: {
           margin: "40px 0",
-          maxHeight: "-webkit-fill-available",
           width: "40em",
           position: "initial",
         },

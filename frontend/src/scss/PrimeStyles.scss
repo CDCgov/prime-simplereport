@@ -662,6 +662,11 @@
     z-index: -1;
   }
 }
+[aria-label="Test questionnaire"] {
+  max-height: -moz-available;
+  max-height: -webkit-fill-available;
+  max-height: fill-available;
+}
 
 .patient-app--landing {
   [data-icon="check-circle"] {
