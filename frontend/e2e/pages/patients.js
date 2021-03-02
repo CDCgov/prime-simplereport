@@ -2,13 +2,13 @@
 const faker = require('faker');
 const dayjs = require('dayjs');
 
-function addPatient() {
+function addPatient(dobFormat) {
   // Generate a random patient
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.past(100));
-  const dobForInput = dob.format('YYYY-MM-DD');
+  const dobForInput = dob.format(dobFormat);
   const dobForPatientLink = dob.format('MM/DD/YYYY');
   const phone = faker.phone.phoneNumberFormat(0);
   const address = faker.address.streetAddress();
