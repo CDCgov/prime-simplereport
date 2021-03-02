@@ -6,3 +6,6 @@
 .eslintcache
 yarn-error.log
 coverage
+geckodriver.log
+chromedriver.log
+tests_output/
