@@ -102,10 +102,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
         LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
-      } else if (principal instanceof String) {
-        String principalString = (String) principal;
-        if ("anonymousUser".equals(principalString)) {
-          Person patient = _contextHolder.getPatient();
+      } else if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+        Person patient = _contextHolder.getPatient();
+        if (patient != null) {
+
           return new IdentityAttributes(
               ApiUserService.getPatientIdEmail(patient),
               patient.getFirstName(),
