@@ -223,7 +223,7 @@ public class ApiUserService {
     }
   }
 
-  private String getPatientIdEmail(Person patient) {
+  public static String getPatientIdEmail(Person patient) {
     return patient.getInternalId() + "-noreply@simplereport.gov";
   }
 
