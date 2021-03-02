@@ -21,7 +21,7 @@ import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.expression.AccessException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -110,10 +110,10 @@ public class PersonService {
     ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
     perms.add(UserPermission.READ_PATIENT_LIST); // always required
     if (facilityId == null) {
-      perms.add(UserPermission.MANAGE_USERS);
+      perms.add(UserPermission.READ_PATIENT_LIST); // this is NOT right
     }
     if (isArchived) {
-      perms.add(UserPermission.ARCHIVE_PATIENT);
+      perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
     if (searchTerm != null) {
       perms.add(UserPermission.SEARCH_PATIENTS);
@@ -142,13 +142,10 @@ public class PersonService {
 
   // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
   public List<Person> getPatients(
-      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm)
-      throws AccessException {
+      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm) {
     // first check permissions
     if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
-      // we do it this way so the permission checking code passes through the same code path
-      // on failure. Hopefully, this will make maintenance easier?
-      throw new AccessException("Access is denied");
+      throw new AccessDeniedException("Access is denied");
     }
 
     return _repo.findAll(
@@ -156,67 +153,45 @@ public class PersonService {
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
-  public long getPatientsCount(UUID facilityId, boolean isArchived, String searchTerm)
-      throws AccessException {
+  public long getPatientsCount(UUID facilityId, boolean isArchived, String searchTerm) {
     // first check permissions
     if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
-      // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
-      // we do it this way so the permission checking code passes through the same code path
-      // on failure. Hopefully, this will make maintenance easier.
-      throw new AccessException("Access is denied");
+      throw new AccessDeniedException("Access is denied");
     }
-
     return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
   }
 
-  // Types of queries with permissions checks.
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
   public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
-    Specification<Person> filter = isDeleted(false).and(inFacility(facilityId));
-    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
+    return getPatients(facilityId, pageOffset, pageSize, false, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
   public long getPatientsCount(UUID facilityId) {
-    Specification<Person> filter = isDeleted(false).and(inFacility(facilityId));
-    return _repo.count(filter);
+    return getPatientsCount(facilityId, false, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
   public List<Person> getAllPatients(int pageOffset, int pageSize) {
-    Specification<Person> filter = isDeleted(false).and(inWholeOrganization());
-    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
+    return getPatients(null, pageOffset, pageSize, false, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
   public long getAllPatientsCount() {
-    Specification<Person> filter = isDeleted(false).and(inWholeOrganization());
-    return _repo.count(filter);
+    return getPatientsCount(null, false, null);
   }
 
   // FYI archived is not just a parameter because it requires different permissions.
-  @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
-    Specification<Person> filter = isDeleted(true).and(inFacility(facilityId));
-    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
+    return getPatients(facilityId, pageOffset, pageSize, true, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public long getArchivedPatientsCount(UUID facilityId) {
-    Specification<Person> filter = isDeleted(true).and(inFacility(facilityId));
-    return _repo.count(filter);
+    return getPatientsCount(facilityId, true, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public List<Person> getAllArchivedPatients(int pageOffset, int pageSize) {
-    Specification<Person> filter = isDeleted(true).and(inWholeOrganization());
-    return _repo.findAll(filter, PageRequest.of(pageOffset, pageSize, NAME_SORT));
+    return getPatients(null, pageOffset, pageSize, true, null);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadArchivedPatientList
   public long getAllArchivedPatientsCount() {
-    Specification<Person> filter = isDeleted(true).and(inWholeOrganization());
-    return _repo.count(filter);
+    return getPatientsCount(null, true, null);
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
