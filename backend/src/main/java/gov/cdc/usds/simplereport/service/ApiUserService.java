@@ -11,6 +11,7 @@ import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -196,13 +197,12 @@ public class ApiUserService {
   }
 
   private ApiUser getPatientApiUser() {
-    TestOrder order = _contextHolder.getLinkedOrder();
-    PatientLink patientLink = _contextHolder.getPatientLink();
-    if (patientLink == null || order == null) {
+    Person patient = _contextHolder.getPatient();
+    if (patient == null) {
       throw new UnidentifiedUserException();
     }
 
-    String username = getPatientLinkEmail(patientLink);
+    String username = getPatientIdEmail(patient);
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(username);
 
     if (found.isPresent()) {
@@ -213,20 +213,20 @@ public class ApiUserService {
       return user;
     } else {
       LOG.info("Initial login for patient: creating user record.");
-      ApiUser user = new ApiUser(username, order.getPatient().getNameInfo());
+      ApiUser user = new ApiUser(username, patient.getNameInfo());
       user.updateLastSeen();
       user = _apiUserRepo.save(user);
 
       LOG.info(
           "Patient user with id={} self-created from link {}",
           user.getInternalId(),
-          patientLink.getInternalId());
+          _contextHolder.getPatientLink().getInternalId());
       return user;
     }
   }
 
-  private String getPatientLinkEmail(PatientLink link) {
-    return link.getInternalId() + "-noreply@simplereport.gov";
+  private String getPatientIdEmail(Person patient) {
+    return patient.getInternalId() + "-noreply@simplereport.gov";
   }
 
   private ApiUser getCurrentApiUser() {
