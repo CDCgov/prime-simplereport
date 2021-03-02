@@ -1467,3 +1467,23 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: test_order
             columnName: device_specimen_type_id
+  - changeSet:
+      id: add-time-of-consent-table
+      author: nclyde@skylight.digital
+      comment: Add a table which stores the time at which patients accept the terms of consent for patient links
+      changes:
+        - createTable:
+            tableName: time_of_consent
+            remarks: This table stores the time at which patients accept the terms of consent for patient links
+            columns:
+              - column: *pk_column
+              - column: *created_at_column
+              - column: *updated_at_column
+              - column:
+                  name: patient_link_id
+                  remarks: The patient link that was consented to
+                  type: *idtype
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__patient_link__time_of_consent
+                    references: patient_link

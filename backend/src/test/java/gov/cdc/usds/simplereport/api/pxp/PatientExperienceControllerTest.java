@@ -3,6 +3,8 @@ package gov.cdc.usds.simplereport.api.pxp;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -12,11 +14,14 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -34,6 +39,8 @@ class PatientExperienceControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private TestDataFactory _dataFactory;
+
+  @Autowired private TimeOfConsentService _tocService;
 
   @Autowired private PatientExperienceController _controller;
 
@@ -125,6 +132,32 @@ class PatientExperienceControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
         .andExpect(jsonPath("$.lastName", is(_person.getLastName())));
+  }
+
+  @Test
+  void verifyLinkSavesTimeOfConsent() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        put("/pxp/link/verify")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc.perform(builder).andExpect(status().isOk());
+    List<TimeOfConsent> tocList = _tocService.getTimeOfConsent(_patientLink);
+    assertNotNull(tocList);
+    assertNotEquals(tocList.size(), 0);
   }
 
   @Test
