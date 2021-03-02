@@ -164,6 +164,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
           }) => {
             return (
               <CSSTransition
+                key={internalId}
                 in={!toRemove.has(internalId)}
                 timeout={transitionDuration}
                 onExiting={onExiting}
