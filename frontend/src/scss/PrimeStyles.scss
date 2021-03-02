@@ -648,10 +648,10 @@
   z-index: 1;
 
   &::before {
-    @include u-margin-x('neg-205');
-    background: color('white');
-    border-bottom-right-radius: units('2px');
-    border-top: 1px solid color('base-lighter');
+    @include u-margin-x("neg-205");
+    background: color("white");
+    border-bottom-right-radius: units("2px");
+    border-top: 1px solid color("base-lighter");
     box-shadow: 0 -4px 8px 0 rgba(0, 0, 0, 0.1);
     content: " ";
     width: 638px;
@@ -662,7 +662,6 @@
     z-index: -1;
   }
 }
-
 
 .patient-app--landing {
   [data-icon="check-circle"] {
