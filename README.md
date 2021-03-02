@@ -158,7 +158,7 @@ Run them with the following commands while the app (both front and backends) is 
 
 ```bash
 cd frontend
-npm run e2e
+yarn e2e
 ```
 
 ### Local Settings
