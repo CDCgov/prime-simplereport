@@ -40,7 +40,8 @@ public class CurrentPatientContextHolder {
     this._currentPatient = currentPatient;
   }
 
-  public void setContext(PatientLink currentPatientLink, TestOrder currentLinkedOrder, Person currentPatient) {
+  public void setContext(
+      PatientLink currentPatientLink, TestOrder currentLinkedOrder, Person currentPatient) {
     setLinkedOrder(currentLinkedOrder);
     setPatientLink(currentPatientLink);
     setPatient(currentPatient);
