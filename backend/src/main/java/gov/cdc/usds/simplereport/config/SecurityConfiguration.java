@@ -1,13 +1,10 @@
 package gov.cdc.usds.simplereport.config;
 
 import com.okta.spring.boot.oauth.Okta;
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
-import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.info.InfoEndpoint;
@@ -34,8 +31,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
   public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
   private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
-
-  @Autowired private CurrentPatientContextHolder _contextHolder;
 
   public interface OktaAttributes {
     public static String EMAIL = "email";
@@ -101,28 +96,14 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
         LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
-      } else if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
-        LOG.debug("User is unauthenticated");
-        Person patient = _contextHolder.getPatient();
-        if (patient != null) {
-          LOG.debug(
-              "Creating IdentityAttributes for Person {} from PatientLink {}",
-              patient.getInternalId(),
-              _contextHolder.getPatientLink().getInternalId());
-          return new IdentityAttributes(
-              getPatientIdEmail(patient),
-              patient.getFirstName(),
-              patient.getMiddleName(),
-              patient.getLastName(),
-              patient.getSuffix());
+      } else if (principal instanceof String) {
+        String principalString = (String) principal;
+        if ("anonymousUser".equals(principalString)) {
+          return new IdentityAttributes(null, null, null, null, null);
         }
       }
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
     };
-  }
-
-  public static String getPatientIdEmail(Person patient) {
-    return patient.getInternalId() + "-noreply@simplereport.gov";
   }
 }
