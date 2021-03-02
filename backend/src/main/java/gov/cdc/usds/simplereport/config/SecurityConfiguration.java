@@ -105,7 +105,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       } else if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
         Person patient = _contextHolder.getPatient();
         if (patient != null) {
-
+          LOG.debug(
+              "Creating IdentityAttributes for Person {} from PatientLink {}",
+              patient.getInternalId(),
+              _contextHolder.getPatientLink().getInternalId());
           return new IdentityAttributes(
               ApiUserService.getPatientIdEmail(patient),
               patient.getFirstName(),
