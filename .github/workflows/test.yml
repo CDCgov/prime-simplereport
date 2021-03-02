@@ -61,7 +61,7 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
-        env: 
+        env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
           TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
@@ -129,6 +129,8 @@ jobs:
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
       - name: Run Checkstyle
         run: ./gradlew checkstyleMain checkstyleTest --continue
+      - name: Run Spotless
+        run: ./gradlew spotlessCheck
   frontend-lint-and-build:
     runs-on: ubuntu-latest
     steps:
@@ -146,10 +148,9 @@ jobs:
       - name: Node setup
         working-directory: ./frontend
         run: yarn
-      - name: Lint front-end 
+      - name: Lint front-end
         working-directory: ./frontend
         run: yarn lint
       - name: Build release
         working-directory: ./frontend
         run: yarn build
-
