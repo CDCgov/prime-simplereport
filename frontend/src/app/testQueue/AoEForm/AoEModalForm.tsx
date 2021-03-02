@@ -299,7 +299,8 @@ const AoEModalForm = (props: AoEModalProps) => {
       isOpen={true}
       style={{
         content: {
-          maxHeight: "90vh",
+          margin: "40px 0",
+          maxHeight: "-webkit-fill-available",
           width: "40em",
           position: "initial",
         },

@@ -644,23 +644,25 @@
 }
 
 .modal-sticky-footer {
-  bottom: units(6);
+  bottom: units(7);
   z-index: 1;
-}
 
-.ReactModal__Content {
-  &::after {
-    background: pink;
+  &::before {
+    @include u-margin-x('neg-205');
+    background: color('white');
+    border-bottom-right-radius: units('2px');
+    border-top: 1px solid color('base-lighter');
+    box-shadow: 0 -4px 8px 0 rgba(0, 0, 0, 0.1);
     content: " ";
-    width: 48%;
-    height: 60px;
-    max-width: 48%;
+    width: 638px;
+    height: 72px;
     position: fixed;
     display: block;
-    bottom: 30px;
-    z-index: 0;
+    bottom: 41px;
+    z-index: -1;
   }
 }
+
 
 .patient-app--landing {
   [data-icon="check-circle"] {

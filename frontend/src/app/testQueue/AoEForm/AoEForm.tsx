@@ -206,7 +206,11 @@ const AoEForm: React.FC<Props> = ({
 
   return (
     <>
-      <form className="display-flex flex-column padding-bottom-5" onSubmit={saveAnswers} ref={formRef}>
+      <form
+        className="display-flex flex-column padding-bottom-10"
+        onSubmit={saveAnswers}
+        ref={formRef}
+      >
         {isModal && (
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
