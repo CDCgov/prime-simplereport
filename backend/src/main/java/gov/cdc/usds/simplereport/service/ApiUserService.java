@@ -194,46 +194,8 @@ public class ApiUserService {
     return getCurrentApiUser();
   }
 
-  private ApiUser getPatientApiUser() {
-    Person patient = _contextHolder.getPatient();
-    if (patient == null) {
-      throw new UnidentifiedUserException();
-    }
-
-    String username = getPatientIdEmail(patient);
-    Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(username);
-
-    if (found.isPresent()) {
-      LOG.debug("Patient has logged in before: retrieving user record.");
-      ApiUser user = found.get();
-      user.updateLastSeen();
-      user = _apiUserRepo.save(user);
-      return user;
-    } else {
-      LOG.info("Initial login for patient: creating user record.");
-      ApiUser user = new ApiUser(username, patient.getNameInfo());
-      user.updateLastSeen();
-      user = _apiUserRepo.save(user);
-
-      LOG.info(
-          "Patient user with id={} self-created from link {}",
-          user.getInternalId(),
-          _contextHolder.getPatientLink().getInternalId());
-      return user;
-    }
-  }
-
-  public static String getPatientIdEmail(Person patient) {
-    return patient.getInternalId() + "-noreply@simplereport.gov";
-  }
-
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
-    if (userIdentity == null || userIdentity.getUsername() == null) {
-      // we're in a patient experience interaction
-      return getPatientApiUser();
-    }
-
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
     if (found.isPresent()) {
       LOG.debug("User has logged in before: retrieving user record.");

@@ -110,7 +110,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
               patient.getInternalId(),
               _contextHolder.getPatientLink().getInternalId());
           return new IdentityAttributes(
-              ApiUserService.getPatientIdEmail(patient),
+              getPatientIdEmail(patient),
               patient.getFirstName(),
               patient.getMiddleName(),
               patient.getLastName(),
@@ -120,5 +120,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
     };
+  }
+
+  public static String getPatientIdEmail(Person patient) {
+    return patient.getInternalId() + "-noreply@simplereport.gov";
   }
 }
