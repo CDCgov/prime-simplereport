@@ -30,7 +30,7 @@ export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
-const REMOVE_PATIENT_FROM_QUEUE = gql`
+export const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
     removePatientFromQueue(patientId: $patientId)
   }
@@ -140,6 +140,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     }}
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
+    ariaHideApp={process.env.NODE_ENV !== "test"}
   >
     <div className="sr-modal-content">{children}</div>
     <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
