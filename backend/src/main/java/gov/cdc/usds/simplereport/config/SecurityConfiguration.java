@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.config;
 import com.okta.spring.boot.oauth.Okta;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import org.slf4j.Logger;
