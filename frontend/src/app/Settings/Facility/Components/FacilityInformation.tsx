@@ -64,6 +64,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="street"
             value={facility.street}
             onChange={onChange}
+            required
           />
         </div>
       </div>
@@ -104,6 +105,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             defaultSelect
             className="sr-width-sm"
             onChange={onChange}
+            required
           />
         </div>
       </div>

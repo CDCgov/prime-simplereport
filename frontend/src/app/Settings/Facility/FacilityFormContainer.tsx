@@ -59,10 +59,10 @@ const UPDATE_FACILITY_MUTATION = gql`
     $facilityId: String!
     $testingFacilityName: String!
     $cliaNumber: String
-    $street: String
+    $street: String!
     $streetTwo: String
     $city: String
-    $state: String
+    $state: String!
     $zipCode: String!
     $phone: String
     $email: String
@@ -71,10 +71,10 @@ const UPDATE_FACILITY_MUTATION = gql`
     $orderingProviderLastName: String!
     $orderingProviderSuffix: String
     $orderingProviderNPI: String!
-    $orderingProviderStreet: String
+    $orderingProviderStreet: String!
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String
+    $orderingProviderState: String!
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
     $devices: [String]!
@@ -114,10 +114,10 @@ const ADD_FACILITY_MUTATION = gql`
   mutation AddFacility(
     $testingFacilityName: String!
     $cliaNumber: String
-    $street: String
+    $street: String!
     $streetTwo: String
     $city: String
-    $state: String
+    $state: String!
     $zipCode: String!
     $phone: String
     $email: String
@@ -126,10 +126,10 @@ const ADD_FACILITY_MUTATION = gql`
     $orderingProviderLastName: String!
     $orderingProviderSuffix: String
     $orderingProviderNPI: String!
-    $orderingProviderStreet: String
+    $orderingProviderStreet: String!
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String
+    $orderingProviderState: String!
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
     $devices: [String]!

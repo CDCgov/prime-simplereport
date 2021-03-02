@@ -203,11 +203,11 @@ type Mutation {
     facilityId: String!
     testingFacilityName: String!
     cliaNumber: String
-    street: String
+    street: String!
     streetTwo: String
     city: String
     county: String
-    state: String
+    state: String!
     zipCode: String!
     phone: String
     email: String
@@ -216,11 +216,11 @@ type Mutation {
     orderingProviderLastName: String!
     orderingProviderSuffix: String
     orderingProviderNPI: String!
-    orderingProviderStreet: String
+    orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    orderingProviderState: String
+    orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String
     deviceTypes: [String]!
@@ -229,11 +229,11 @@ type Mutation {
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
-    street: String
+    street: String!
     streetTwo: String
     city: String
     county: String
-    state: String
+    state: String!
     zipCode: String!
     phone: String
     email: String
@@ -242,11 +242,11 @@ type Mutation {
     orderingProviderLastName: String!
     orderingProviderSuffix: String
     orderingProviderNPI: String!
-    orderingProviderStreet: String
+    orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    orderingProviderState: String
+    orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String
     deviceTypes: [String]!
@@ -258,11 +258,11 @@ type Mutation {
     externalId: String!
     testingFacilityName: String!
     cliaNumber: String
-    street: String
+    street: String!
     streetTwo: String
     city: String
     county: String
-    state: String
+    state: String!
     zipCode: String!
     phone: String
     email: String
@@ -271,11 +271,11 @@ type Mutation {
     orderingProviderLastName: String!
     orderingProviderSuffix: String
     orderingProviderNPI: String!
-    orderingProviderStreet: String
+    orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
     orderingProviderCounty: String
-    orderingProviderState: String
+    orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String
     deviceTypes: [String]!

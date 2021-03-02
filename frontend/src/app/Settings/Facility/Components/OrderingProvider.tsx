@@ -84,6 +84,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="street"
               value={provider.street}
               onChange={onChange}
+              required
             />
           </div>
         </div>
@@ -124,6 +125,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               defaultSelect
               className="sr-width-sm"
               onChange={onChange}
+              required
             />
           </div>
         </div>

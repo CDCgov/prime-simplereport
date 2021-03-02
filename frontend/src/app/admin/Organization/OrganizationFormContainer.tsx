@@ -27,10 +27,10 @@ const CREATE_ORGANIZATION_MUTATION = gql`
     $externalId: String!
     $testingFacilityName: String!
     $cliaNumber: String
-    $street: String
+    $street: String!
     $streetTwo: String
     $city: String
-    $state: String
+    $state: String!
     $zipCode: String!
     $phone: String
     $email: String
@@ -39,10 +39,10 @@ const CREATE_ORGANIZATION_MUTATION = gql`
     $orderingProviderLastName: String!
     $orderingProviderSuffix: String
     $orderingProviderNPI: String!
-    $orderingProviderStreet: String
+    $orderingProviderStreet: String!
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String
+    $orderingProviderState: String!
     $orderingProviderZipCode: String!
     $orderingProviderPhone: String
     $deviceTypes: [String]!
