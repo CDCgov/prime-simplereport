@@ -1,4 +1,4 @@
-import { NavLink, NavLinkProps, useLocation } from "react-router-dom";
+import { NavLink, NavLinkProps, useLocation } from 'react-router-dom';
 
 export const LinkWithQuery: React.FC<NavLinkProps> = ({
   children,

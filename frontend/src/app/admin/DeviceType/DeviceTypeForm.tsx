@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import Button from "../../commonComponents/Button";
-import TextInput from "../../commonComponents/TextInput";
-import { Device } from "./DeviceTypeFormContainer";
+import React, { useState } from 'react';
+
+import Button from '../../commonComponents/Button';
+import TextInput from '../../commonComponents/TextInput';
+
+import { Device } from './DeviceTypeFormContainer';
 
 interface Props {
   saveDeviceType: (device: Device) => void;
@@ -9,11 +11,11 @@ interface Props {
 
 const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
   const [device, updateDevice] = useState<Device>({
-    name: "",
-    manufacturer: "",
-    model: "",
-    loincCode: "",
-    swabType: "",
+    name: '',
+    manufacturer: '',
+    model: '',
+    loincCode: '',
+    swabType: '',
   });
   const [formChanged, updateFormChanged] = useState<boolean>(false);
   const onChange = (
@@ -33,9 +35,9 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
               </div>
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Button

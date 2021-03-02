@@ -1,5 +1,6 @@
-import React from "react";
-import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import React from 'react';
+
+import { LinkWithQuery } from '../commonComponents/LinkWithQuery';
 
 const SettingsNav = () => {
   return (
@@ -15,7 +16,7 @@ const SettingsNav = () => {
             Manage Facilities
           </LinkWithQuery>
         </li>
-        {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
+        {process.env.REACT_APP_USER_SETTINGS_ENABLED === 'true' ? (
           <li className="usa-nav__secondary-item">
             <LinkWithQuery to={`/settings/users`} activeClassName="active">
               Manage Users

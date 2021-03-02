@@ -1,23 +1,24 @@
-import React, { FunctionComponent, useEffect } from "react";
-import { ToastContainer } from "react-toastify";
-import { useDispatch, connect, useSelector } from "react-redux";
-import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
-import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
-import { reactPlugin } from "../app/AppInsights";
+import React, { FunctionComponent, useEffect } from 'react';
+import { ToastContainer } from 'react-toastify';
+import { useDispatch, connect, useSelector } from 'react-redux';
+import 'react-toastify/dist/ReactToastify.css';
+import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
+import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
 
-import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
-import USAGovBanner from "../app/commonComponents/USAGovBanner";
-import { setInitialState } from "../app/store";
-import { getPatientLinkIdFromUrl } from "../app/utils/url";
-import PatientHeader from "./PatientHeader";
-import TermsOfService from "./timeOfTest/TermsOfService";
-import DOB from "./timeOfTest/DOB";
-import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
-import PatientLanding from "./timeOfTest/PatientLanding";
-import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
-import PatientFormContainer from "./timeOfTest/PatientFormContainer";
-import Patient404 from "./timeOfTest/Patient404";
+import { reactPlugin } from '../app/AppInsights';
+import PrimeErrorBoundary from '../app/PrimeErrorBoundary';
+import USAGovBanner from '../app/commonComponents/USAGovBanner';
+import { setInitialState } from '../app/store';
+import { getPatientLinkIdFromUrl } from '../app/utils/url';
+
+import PatientHeader from './PatientHeader';
+import TermsOfService from './timeOfTest/TermsOfService';
+import DOB from './timeOfTest/DOB';
+import AoEPatientFormContainer from './timeOfTest/AoEPatientFormContainer';
+import PatientLanding from './timeOfTest/PatientLanding';
+import PatientProfileContainer from './timeOfTest/PatientProfileContainer';
+import PatientFormContainer from './timeOfTest/PatientFormContainer';
+import Patient404 from './timeOfTest/Patient404';
 
 interface WrapperProps {
   plid: string;

@@ -1,15 +1,15 @@
-import moment from "moment";
+import moment from 'moment';
+import { Redirect } from 'react-router-dom';
 
-import { Redirect } from "react-router-dom";
-import { formatFullName } from "../../app/utils/user";
-import { formatAddress } from "../../app/utils/address";
-import { capitalizeText } from "../../app/utils/text";
+import { formatFullName } from '../../app/utils/user';
+import { formatAddress } from '../../app/utils/address';
+import { capitalizeText } from '../../app/utils/text';
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
-} from "../../app/constants";
-import { getPatientLinkIdFromUrl } from "../../app/utils/url";
+} from '../../app/constants';
+import { getPatientLinkIdFromUrl } from '../../app/utils/url';
 
 interface Props {
   patient: any;
@@ -27,9 +27,9 @@ const PatientProfile = ({ patient }: Props) => {
   const gender = GENDER_VALUES.find((val) => val.value === patient.gender)
     ?.label;
 
-  const newLineSpan = ({ text = "" }) => {
+  const newLineSpan = ({ text = '' }) => {
     let key = 1;
-    return text.split("\n").map((str) => (
+    return text.split('\n').map((str) => (
       <span className="display-block" key={`newLineSpan${++key}`}>
         {str}
       </span>
@@ -44,7 +44,7 @@ const PatientProfile = ({ patient }: Props) => {
     state: patient.state,
     zipCode: patient.zipCode,
   });
-  const notProvided = "Not provided";
+  const notProvided = 'Not provided';
 
   return (
     <div className="prime-formgroup usa-prose">
@@ -56,7 +56,7 @@ const PatientProfile = ({ patient }: Props) => {
       <h3 className="font-heading-sm">Date of birth</h3>
       <p>
         {patient.birthDate
-          ? moment(patient.birthDate).format("MM/DD/yyyy")
+          ? moment(patient.birthDate).format('MM/DD/yyyy')
           : notProvided}
       </p>
       <h3 className="font-heading-sm">Phone number</h3>

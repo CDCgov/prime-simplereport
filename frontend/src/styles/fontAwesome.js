@@ -1,5 +1,5 @@
 //Icon Imports
-import { library } from "@fortawesome/fontawesome-svg-core";
+import { library } from '@fortawesome/fontawesome-svg-core';
 import {
   faArrowRight,
   faBook,
@@ -26,7 +26,7 @@ import {
   faSignOutAlt,
   faWindowClose,
   faEdit,
-} from "@fortawesome/free-solid-svg-icons";
+} from '@fortawesome/free-solid-svg-icons';
 
 library.add(
   faArrowRight,

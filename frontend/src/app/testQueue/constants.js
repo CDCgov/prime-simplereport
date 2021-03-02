@@ -1,4 +1,4 @@
-import { displayFullName } from "../utils";
+import { displayFullName } from '../utils';
 
 export const QUEUE_NOTIFICATION_TYPES = {
   ADDED_TO_QUEUE__SUCCESS: 1,
@@ -8,24 +8,24 @@ export const QUEUE_NOTIFICATION_TYPES = {
 export const ALERT_CONTENT = {
   [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (patient) => {
     return {
-      type: "success",
+      type: 'success',
       title: `${displayFullName(
         patient.firstName,
         patient.middleName,
         patient.lastName
       )} was added to the queue`,
-      body: "Newly added patients go to the bottom of the queue",
+      body: 'Newly added patients go to the bottom of the queue',
     };
   },
   [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient) => {
     return {
-      type: "success",
+      type: 'success',
       title: `Result was saved and reported for ${displayFullName(
         patient.firstName,
         patient.middleName,
         patient.lastName
       )}.`,
-      body: "See results to review past test results",
+      body: 'See results to review past test results',
     };
   },
 };

@@ -1,17 +1,17 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+import { gql, useQuery, useMutation } from '@apollo/client';
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+} from '@microsoft/applicationinsights-react-js';
 
-import Alert from "../../commonComponents/Alert";
-import SearchInput from "./SearchInput";
-import SearchResults from "./SearchResults";
-import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
-import { showNotification } from "../../utils";
-import { displayFullName } from "../../utils";
+import Alert from '../../commonComponents/Alert';
+import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from '../constants';
+import { showNotification, displayFullName } from '../../utils';
+
+import SearchResults from './SearchResults';
+import SearchInput from './SearchInput';
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
@@ -87,18 +87,18 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const appInsights = useAppInsightsContext();
   const trackAddPatientToQueue = useTrackEvent(
     appInsights,
-    "Add Patient to Queue"
+    'Add Patient to Queue'
   );
 
   const { data, loading, error } = useQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: 'no-cache',
     variables: { facilityId },
   });
 
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [queryString, setQueryString] = useState("");
+  const [queryString, setQueryString] = useState('');
   const [suggestions, updateSuggestions] = useState([]);
 
   if (loading) {
@@ -157,10 +157,10 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestDate,
       priorTestType,
     },
-    createOrUpdate = "create"
+    createOrUpdate = 'create'
   ) => {
     updateSuggestions([]);
-    setQueryString("");
+    setQueryString('');
     trackAddPatientToQueue();
     let callback;
     const variables = {
@@ -174,7 +174,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestType,
       priorTestResult,
     };
-    if (createOrUpdate === "create") {
+    if (createOrUpdate === 'create') {
       callback = addPatientToQueue;
       variables.facilityId = facilityId;
     } else {
@@ -190,7 +190,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         let alert = <Alert type={type} title={title} body={body} />;
         showNotification(toast, alert);
         refetchQueue();
-        if (createOrUpdate === "create") {
+        if (createOrUpdate === 'create') {
           const patientLinkId = res.data.addPatientToQueue;
           return patientLinkId;
         }

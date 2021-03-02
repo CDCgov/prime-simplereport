@@ -1,23 +1,24 @@
-import Alert from "../commonComponents/Alert";
-import React from "react";
+import React from 'react';
+
+import Alert from '../commonComponents/Alert';
 
 export const displayFullName = (first, middle, last, lastFirst = true) => {
   if (lastFirst) {
-    return `${last || "?"}, ${first || "?"} ${middle || ""}`
-      .replace(/ +/g, " ")
+    return `${last || '?'}, ${first || '?'} ${middle || ''}`
+      .replace(/ +/g, ' ')
       .trim();
   }
-  return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
+  return `${first || '?'} ${middle || ''} ${last || '?'}`.replace(/ +/g, ' ');
 };
 
 export const displayFullNameInOrder = (first, middle, last) => {
-  return `${first || "?"} ${middle || ""} ${last || ""}`
-    .replace(/ +/g, " ")
+  return `${first || '?'} ${middle || ''} ${last || ''}`
+    .replace(/ +/g, ' ')
     .trim();
 };
 
 export const isLocalHost = () =>
-  Boolean(window.location.hostname === "localhost");
+  Boolean(window.location.hostname === 'localhost');
 
 export const showNotification = (toast, children) => {
   try {
@@ -32,8 +33,8 @@ export const showNotification = (toast, children) => {
 
 export const showError = (
   toast,
-  message = "Please check for missing data or typos.",
-  title = "Problems saving data to server"
+  message = 'Please check for missing data or typos.',
+  title = 'Problems saving data to server'
 ) => {
   const err_msg = message.substr(0, 512);
   showNotification(toast, <Alert type="error" title={title} body={err_msg} />);

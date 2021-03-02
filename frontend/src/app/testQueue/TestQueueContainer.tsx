@@ -1,7 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import TestQueue from "./TestQueue";
+import TestQueue from './TestQueue';
 
 const TestQueueContainer = () => {
   const activeFacilityId = useSelector(

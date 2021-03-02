@@ -1,15 +1,16 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import Modal from "react-modal";
-import Button from "../commonComponents/Button";
-import { displayFullName, showNotification } from "../utils";
-import "./TestResultCorrectionModal.scss";
+import React, { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import Modal from 'react-modal';
+import { toast } from 'react-toastify';
+
+import Button from '../commonComponents/Button';
+import { displayFullName, showNotification } from '../utils';
+import './TestResultCorrectionModal.scss';
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from "../commonComponents/QueryWrapper";
-import Alert from "../commonComponents/Alert";
-import { toast } from "react-toastify";
+} from '../commonComponents/QueryWrapper';
+import Alert from '../commonComponents/Alert';
 
 export const testQuery = gql`
   query getTestResultForCorrection($id: String!) {
@@ -51,7 +52,7 @@ export const DetachedTestResultCorrectionModal = ({
 }: Props) => {
   const [markTestAsError] = useMutation(MARK_TEST_AS_ERROR);
   const { patient } = data.testResult;
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState('');
   const markAsError = () => {
     markTestAsError({
       variables: {
@@ -80,12 +81,12 @@ export const DetachedTestResultCorrectionModal = ({
       <p>
         Are you sure you want to mark this test result for
         <b>
-          {" "}
+          {' '}
           {displayFullName(
             patient.firstName,
             patient.middleName,
             patient.lastName
-          )}{" "}
+          )}{' '}
         </b>
         as an error?
       </p>

@@ -1,7 +1,8 @@
-import React from "react";
-import { stateCodes } from "../../../../config/constants";
-import Dropdown from "../../../commonComponents/Dropdown";
-import TextInput from "../../../commonComponents/TextInput";
+import React from 'react';
+
+import { stateCodes } from '../../../../config/constants';
+import Dropdown from '../../../commonComponents/Dropdown';
+import TextInput from '../../../commonComponents/TextInput';
 
 interface Props {
   facility: Facility;

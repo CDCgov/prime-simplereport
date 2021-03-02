@@ -2,12 +2,13 @@
   TODO: This is a WIP
 */
 
-import React, { useRef, useState, useEffect } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useRef, useState, useEffect } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import Button from "../../commonComponents/Button";
-import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
-import "./ManageUsers.scss";
+import Button from '../../commonComponents/Button';
+
+import { SettingsUser, UserFacilitySetting } from './ManageUsersContainer';
+import './ManageUsers.scss';
 
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
@@ -38,9 +39,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   };
 
   useEffect(() => {
-    document.addEventListener("click", handleClickOutside);
+    document.addEventListener('click', handleClickOutside);
     return () => {
-      document.removeEventListener("click", handleClickOutside);
+      document.removeEventListener('click', handleClickOutside);
     };
   });
 
@@ -54,7 +55,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     const updatedFacilityList = currentFacilities
       ? [...currentFacilities, facilityToAdd]
       : [facilityToAdd];
-    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
+    onUpdateUser(activeUser.id, 'facilities', updatedFacilityList);
   };
 
   const onRemoveFacility = (
@@ -64,19 +65,19 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     const updatedFacilityList = currentFacilities
       ? currentFacilities.filter((f) => f.id !== selectedFacilityId)
       : [];
-    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
+    onUpdateUser(activeUser.id, 'facilities', updatedFacilityList);
   };
 
   const onAddAllFacilities = () => {
     setIsComponentVisible(false);
-    onUpdateUser(activeUser.id, "facilities", allFacilities);
+    onUpdateUser(activeUser.id, 'facilities', allFacilities);
   };
 
   const facilityAccessDescription =
     !currentFacilities || currentFacilities.length === 0
-      ? "This user currently does not have access to any facilities"
-      : activeUser.roleDescription === "admin"
-      ? "Admins have access to all facilities"
+      ? 'This user currently does not have access to any facilities'
+      : activeUser.roleDescription === 'admin'
+      ? 'Admins have access to all facilities'
       : null;
 
   const userFacilities = currentFacilities
@@ -84,12 +85,12 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         <tr key={facility.id}>
           <td>{facility.name}</td>
           <td>
-            {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
+            {process.env.REACT_APP_EDIT_USER_FACILITIES === 'true' ? (
               <div
                 className="remove-tag"
                 onClick={() => onRemoveFacility(activeUser, facility.id)}
               >
-                <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
+                <FontAwesomeIcon icon={'trash'} className={'prime-red-icon'} />
               </div>
             ) : null}
           </td>
@@ -108,7 +109,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             onClick={() => onAddFacility(activeUser, facility.id)}
           />
         ) : (
-          "Already Assigned"
+          'Already Assigned'
         )}
       </td>
     </tr>
@@ -144,11 +145,11 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       <p>{facilityAccessDescription}</p>
       <table
         className="usa-table usa-table--borderless"
-        style={{ width: "100%" }}
+        style={{ width: '100%' }}
       >
         <tbody>{userFacilities}</tbody>
       </table>
-      {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
+      {process.env.REACT_APP_EDIT_USER_FACILITIES === 'true' ? (
         <Button
           variant="outline"
           type="button"

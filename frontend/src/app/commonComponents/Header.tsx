@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
-import classNames from "classnames";
-import { v4 as uuidv4 } from "uuid";
-import useComponentVisible from "./ComponentVisible";
-import Dropdown from "./Dropdown";
-import { useSelector } from "react-redux";
-import { connect } from "react-redux";
-import Button from "./Button";
-import { formatFullName } from "../utils/user";
-import siteLogo from "../../img/simplereport-logo-color.svg";
-import { hasPermission, appPermissions } from "../permissions";
-import { LinkWithQuery } from "./LinkWithQuery";
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import classNames from 'classnames';
+import { v4 as uuidv4 } from 'uuid';
+import { useSelector, connect } from 'react-redux';
+
+import { PATIENT_TERM_PLURAL_CAP } from '../../config/constants';
+import { formatFullName } from '../utils/user';
+import siteLogo from '../../img/simplereport-logo-color.svg';
+import { hasPermission, appPermissions } from '../permissions';
+
+import Button from './Button';
+import Dropdown from './Dropdown';
+import useComponentVisible from './ComponentVisible';
+import { LinkWithQuery } from './LinkWithQuery';
 
 const Header: React.FC<{}> = () => {
   const organization = useSelector(
@@ -21,7 +22,7 @@ const Header: React.FC<{}> = () => {
     (state) => ((state as any).facilities as Facility[]) || []
   );
   const facility = useSelector(
-    (state) => ((state as any).facility as Facility) || { id: "", name: "" }
+    (state) => ((state as any).facility as Facility) || { id: '', name: '' }
   );
   const user = useSelector((state) => (state as any).user as User);
   const [menuVisible, setMenuVisible] = useState(false);
@@ -60,16 +61,16 @@ const Header: React.FC<{}> = () => {
 
   const logout = () => {
     // Fetch the id_token from local storage
-    const id_token = localStorage.getItem("id_token");
+    const id_token = localStorage.getItem('id_token');
     const state = uuidv4();
     // Remove auth data from local_storage
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("id_token");
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('id_token');
     window.location.replace(
-      "https://hhs-prime.okta.com/oauth2/default/v1/logout" +
-        `?id_token_hint=${encodeURIComponent(id_token || "")}` +
+      'https://hhs-prime.okta.com/oauth2/default/v1/logout' +
+        `?id_token_hint=${encodeURIComponent(id_token || '')}` +
         `&post_logout_redirect_uri=${encodeURIComponent(
-          process.env.REACT_APP_OKTA_URL || ""
+          process.env.REACT_APP_OKTA_URL || ''
         )}` +
         `&state=${state}`
     );
@@ -100,20 +101,20 @@ const Header: React.FC<{}> = () => {
         <nav
           aria-label="Primary navigation"
           className={classNames(
-            "usa-nav",
-            "prime-nav",
-            "desktop:display-none",
+            'usa-nav',
+            'prime-nav',
+            'desktop:display-none',
             {
-              "is-visible": menuVisible,
+              'is-visible': menuVisible,
             }
           )}
         >
           <button
             className="fa-layers fa-fw fa-2x usa-nav__close prime-nav-close-button"
             onClick={() => setMenuVisible(false)}
-            title={"close menu"}
+            title={'close menu'}
           >
-            <FontAwesomeIcon icon={"window-close"} />
+            <FontAwesomeIcon icon={'window-close'} />
           </button>
 
           <ul className="usa-nav__primary usa-accordion">
@@ -125,7 +126,7 @@ const Header: React.FC<{}> = () => {
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   Conduct Tests
@@ -140,7 +141,7 @@ const Header: React.FC<{}> = () => {
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   Results
@@ -155,7 +156,7 @@ const Header: React.FC<{}> = () => {
                   activeClassName="active-nav-item"
                   className="prime-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
@@ -164,9 +165,9 @@ const Header: React.FC<{}> = () => {
             ) : null}
             <li className="usa-nav__primary-item prime-staff-infobox-sidemenu prime-settings-hidden">
               <FontAwesomeIcon
-                icon={"user-circle"}
+                icon={'user-circle'}
                 style={{
-                  fill: "white",
+                  fill: 'white',
                 }}
               />
             </li>
@@ -196,10 +197,10 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
-                  <FontAwesomeIcon icon={"cog"} /> Settings
+                  <FontAwesomeIcon icon={'cog'} /> Settings
                 </LinkWithQuery>
               </li>
             ) : null}
@@ -217,7 +218,7 @@ const Header: React.FC<{}> = () => {
                   className="prime-nav-link"
                   id="conduct-test-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   Conduct Tests
@@ -233,7 +234,7 @@ const Header: React.FC<{}> = () => {
                   className="prime-nav-link"
                   id="results-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   Results
@@ -249,7 +250,7 @@ const Header: React.FC<{}> = () => {
                   className="prime-nav-link"
                   id="patient-nav-link"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
                   {PATIENT_TERM_PLURAL_CAP}
@@ -279,17 +280,17 @@ const Header: React.FC<{}> = () => {
                 activeClassName="active-nav-item"
               >
                 <FontAwesomeIcon
-                  icon={"user-circle"}
+                  icon={'user-circle'}
                   style={{
-                    color: staffDetailsVisible ? "white" : "",
+                    color: staffDetailsVisible ? 'white' : '',
                   }}
                 />
               </LinkWithQuery>
               <div
                 ref={staffDefailsRef}
                 aria-label="Primary navigation"
-                className={classNames("shadow-3", "prime-staff-infobox", {
-                  "is-prime-staff-infobox-visible": staffDetailsVisible,
+                className={classNames('shadow-3', 'prime-staff-infobox', {
+                  'is-prime-staff-infobox-visible': staffDetailsVisible,
                 })}
               >
                 <ul className="usa-sidenav__sublist">
@@ -320,10 +321,10 @@ const Header: React.FC<{}> = () => {
                   onClick={() => setMenuVisible(false)}
                   activeClassName="active-nav-item"
                   activeStyle={{
-                    color: "white",
+                    color: 'white',
                   }}
                 >
-                  <FontAwesomeIcon icon={"cog"} />
+                  <FontAwesomeIcon icon={'cog'} />
                 </LinkWithQuery>
               </li>
             ) : null}

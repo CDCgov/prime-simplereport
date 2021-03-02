@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { Prompt } from "react-router-dom";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from 'react';
+import { Prompt } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
-import Alert from "../../commonComponents/Alert";
-import Button from "../../commonComponents/Button";
-import CreateUserModal from "./CreateUserModal";
-import DeleteUserModal from "./DeleteUserModal";
-import InProgressModal from "./InProgressModal";
-import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
-import UserRoleSettingsForm from "./UserRoleSettingsForm";
-import UsersSideNav from "./UsersSideNav";
-import {
-  SettingsUser,
-  UserFacilitySetting,
-  NewUserInvite,
-} from "./ManageUsersContainer";
+import Alert from '../../commonComponents/Alert';
+import Button from '../../commonComponents/Button';
 import {
   showNotification,
   displayFullNameInOrder,
   displayFullName,
-} from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
+} from '../../utils';
+import { OrganizationRole, RoleDescription } from '../../permissions';
 
-import "./ManageUsers.scss";
+import CreateUserModal from './CreateUserModal';
+import DeleteUserModal from './DeleteUserModal';
+import InProgressModal from './InProgressModal';
+import UserFacilitiesSettingsForm from './UserFacilitiesSettingsForm';
+import UserRoleSettingsForm from './UserRoleSettingsForm';
+import UsersSideNav from './UsersSideNav';
+import {
+  SettingsUser,
+  UserFacilitySetting,
+  NewUserInvite,
+} from './ManageUsersContainer';
+
+import './ManageUsers.scss';
 
 const RoleDescriptionToOrgRole = {
-  "Admin user": "ADMIN",
-  "Standard user": "USER",
-  "Test-entry user": "ENTRY_ONLY",
+  'Admin user': 'ADMIN',
+  'Standard user': 'USER',
+  'Test-entry user': 'ENTRY_ONLY',
 };
 
 interface Props {
@@ -171,7 +172,7 @@ const ManageUsers: React.FC<Props> = ({
         variables: { firstName, lastName, email, role: role || undefined },
       });
       await getUsers();
-      const fullName = displayFullNameInOrder(firstName, "", lastName);
+      const fullName = displayFullNameInOrder(firstName, '', lastName);
       showNotification(
         toast,
         <Alert
@@ -237,7 +238,7 @@ const ManageUsers: React.FC<Props> = ({
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
-        {process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
+        {process.env.REACT_APP_ADD_NEW_USER_ENABLED === 'true' ? (
           <Button
             variant="outline"
             onClick={() => updateShowAddUserModal(true)}
@@ -257,7 +258,7 @@ const ManageUsers: React.FC<Props> = ({
         <div className="usa-card__body">
           <div className="grid-row">
             <UsersSideNav
-              activeUserId={activeUser.id || ""}
+              activeUserId={activeUser.id || ''}
               users={sortedUsers}
               onChangeActiveUser={onChangeActiveUser}
             />
@@ -289,7 +290,7 @@ const ManageUsers: React.FC<Props> = ({
                   />
                 }
 
-                {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
+                {process.env.REACT_APP_VIEW_USER_FACILITIES === 'true' ? (
                   <UserFacilitiesSettingsForm
                     activeUser={activeUser}
                     allFacilities={allFacilities}
@@ -298,7 +299,7 @@ const ManageUsers: React.FC<Props> = ({
                 ) : null}
               </div>
               <div className="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0">
-                {process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
+                {process.env.REACT_APP_DELETE_USER_ENABLED === 'true' ? (
                   <Button
                     variant="outline"
                     icon="trash"
@@ -311,11 +312,11 @@ const ManageUsers: React.FC<Props> = ({
                 <Button
                   type="button"
                   onClick={() => handleUpdateUser()}
-                  label={isUpdating ? "Saving..." : "Save changes"}
+                  label={isUpdating ? 'Saving...' : 'Save changes'}
                   disabled={
                     // enabled only if the user has been edited AND the loggedInUser is an org admin or super admin
                     !isUserEdited ||
-                    !["Admin user", "Admin user (SU)"].includes(
+                    !['Admin user', 'Admin user (SU)'].includes(
                       loggedInUser.roleDescription
                     ) ||
                     isUpdating
@@ -336,7 +337,7 @@ const ManageUsers: React.FC<Props> = ({
                 />
               ) : null}
               {showAddUserModal &&
-              process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
+              process.env.REACT_APP_ADD_NEW_USER_ENABLED === 'true' ? (
                 <CreateUserModal
                   isUpdating={isUpdating}
                   onClose={() => updateShowAddUserModal(false)}
@@ -344,7 +345,7 @@ const ManageUsers: React.FC<Props> = ({
                 />
               ) : null}
               {showDeleteUserModal &&
-              process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
+              process.env.REACT_APP_DELETE_USER_ENABLED === 'true' ? (
                 <DeleteUserModal
                   user={activeUser}
                   onClose={() => updateShowDeleteUserModal(false)}

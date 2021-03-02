@@ -1,6 +1,7 @@
-import React from "react";
+import React from 'react';
+
 // import { SeverityLevel } from "@microsoft/applicationinsights-web";
-import { appInsights } from "./AppInsights";
+import { appInsights } from './AppInsights';
 
 export default class PrimeErrorBoundary extends React.Component {
   state = { hasError: false, error: null };
@@ -18,7 +19,7 @@ export default class PrimeErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       const { onError } = this.props;
-      return typeof onError === "function"
+      return typeof onError === 'function'
         ? onError(this.state.error)
         : React.createElement(onError);
     }

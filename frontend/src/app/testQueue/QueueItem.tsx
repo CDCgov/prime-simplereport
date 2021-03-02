@@ -1,34 +1,35 @@
-import React, { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { toast } from "react-toastify";
-import { gql, useMutation } from "@apollo/client";
-import Modal from "react-modal";
+import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
+import { gql, useMutation } from '@apollo/client';
+import Modal from 'react-modal';
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
-import classnames from "classnames";
+} from '@microsoft/applicationinsights-react-js';
+import classnames from 'classnames';
+import moment from 'moment';
 
-import Alert from "../commonComponents/Alert";
-import Button from "../commonComponents/Button";
-import AoEModalForm from "./AoEForm/AoEModalForm";
-import Dropdown from "../commonComponents/Dropdown";
-import TextInput from "../commonComponents/TextInput";
-import LabeledText from "../commonComponents/LabeledText";
-import TestResultInputForm from "../testResults/TestResultInputForm";
-import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
-import { displayFullName, showNotification } from "../utils";
-import { patientPropType, devicePropType } from "../propTypes";
-import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
-import Checkboxes from "../commonComponents/Checkboxes";
-import moment from "moment";
-import "./QueueItem.scss";
+import Alert from '../commonComponents/Alert';
+import Button from '../commonComponents/Button';
+import Dropdown from '../commonComponents/Dropdown';
+import TextInput from '../commonComponents/TextInput';
+import LabeledText from '../commonComponents/LabeledText';
+import TestResultInputForm from '../testResults/TestResultInputForm';
+import { displayFullName, showNotification } from '../utils';
+import { patientPropType, devicePropType } from '../propTypes';
+import Checkboxes from '../commonComponents/Checkboxes';
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from './constants';
+import AskOnEntryTag, { areAnswersComplete } from './AskOnEntryTag';
+import { removeTimer, TestTimerWidget, useTestTimer } from './TestTimer';
+import AoEModalForm from './AoEForm/AoEModalForm';
+import './QueueItem.scss';
 
-const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
+export type TestResult = 'POSITIVE' | 'NEGATIVE' | 'UNDETERMINED';
+
+const EARLIEST_TEST_DATE = new Date('01/01/2020 12:00:00 AM');
 
 const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
@@ -133,9 +134,9 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     isOpen={true}
     style={{
       content: {
-        maxHeight: "90vh",
-        width: "40em",
-        position: "initial",
+        maxHeight: '90vh',
+        width: '40em',
+        position: 'initial',
       },
     }}
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
@@ -151,8 +152,8 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
   </Modal>
 );
 
-if (process.env.NODE_ENV !== "test") {
-  Modal.setAppElement("#root");
+if (process.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
 }
 
 /*
@@ -219,17 +220,17 @@ const QueueItem: any = ({
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
     appInsights,
-    "Remove Patient From Queue",
+    'Remove Patient From Queue',
     {}
   );
   const trackSubmitTestResult = useTrackEvent(
     appInsights,
-    "Submit Test Result",
+    'Submit Test Result',
     {}
   );
   const trackUpdateAoEResponse = useTrackEvent(
     appInsights,
-    "Update AoE Response",
+    'Update AoE Response',
     {}
   );
 
@@ -253,7 +254,7 @@ const QueueItem: any = ({
   );
 
   const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
-    dateTestedProp ? "false" : "true"
+    dateTestedProp ? 'false' : 'true'
   );
   // this is an ISO string
   // always assume the current date unless provided something else
@@ -263,7 +264,7 @@ const QueueItem: any = ({
 
   // helper method to work around the annoying string-booleans
   function shouldUseCurrentDateTime() {
-    return useCurrentDateTime === "true";
+    return useCurrentDateTime === 'true';
   }
 
   function isValidCustomDateTested(customDate: string | undefined) {
@@ -289,8 +290,8 @@ const QueueItem: any = ({
   >(selectedTestResult || undefined);
 
   const [confirmationType, setConfirmationType] = useState<
-    "submitResult" | "removeFromQueue" | "none"
-  >("none");
+    'submitResult' | 'removeFromQueue' | 'none'
+  >('none');
 
   const [removePatientId, setRemovePatientId] = useState<string>();
 
@@ -332,7 +333,7 @@ const QueueItem: any = ({
           if (e) e.currentTarget.disabled = false;
         });
     } else {
-      setConfirmationType("submitResult");
+      setConfirmationType('submitResult');
     }
   };
 
@@ -350,7 +351,7 @@ const QueueItem: any = ({
       },
     })
       .then((response) => {
-        if (!response.data) throw Error("updateQueueItem null response");
+        if (!response.data) throw Error('updateQueueItem null response');
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
       })
@@ -389,7 +390,7 @@ const QueueItem: any = ({
   };
 
   const removeFromQueue = () => {
-    setConfirmationType("none");
+    setConfirmationType('none');
     trackRemovePatientFromQueue({});
     removePatientFromQueue({
       variables: {
@@ -430,12 +431,12 @@ const QueueItem: any = ({
   const onUseCurrentDateChange = () => {
     // if we want to use a custom date
     if (shouldUseCurrentDateTime()) {
-      updateUseCurrentDateTime("false");
+      updateUseCurrentDateTime('false');
     }
     // if we want to use the current date time
     else {
       updateDateTested(undefined);
-      updateUseCurrentDateTime("true");
+      updateUseCurrentDateTime('true');
     }
   };
 
@@ -461,20 +462,20 @@ const QueueItem: any = ({
     <button
       onClick={() => {
         setRemovePatientId(patient.internalId);
-        setConfirmationType("removeFromQueue");
+        setConfirmationType('removeFromQueue');
       }}
       className="prime-close-button"
       aria-label="Close"
     >
       <span className="fa-layers">
-        <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-        <FontAwesomeIcon icon={"times-circle"} size="2x" />
+        <FontAwesomeIcon icon={'circle'} size="2x" inverse />
+        <FontAwesomeIcon icon={'times-circle'} size="2x" />
       </span>
     </button>
   );
 
   const testDateFields =
-    useCurrentDateTime === "false" ? (
+    useCurrentDateTime === 'false' ? (
       <li className="prime-li">
         <TextInput
           type="datetime-local"
@@ -482,7 +483,7 @@ const QueueItem: any = ({
           name="meeting-time"
           value={isoDateToDatetimeLocal(dateTested)}
           min="2020-01-01T00:00"
-          max={moment().add(1, "days").format("YYYY-MM-DDThh:mm")} // TODO: is this a reasonable max?
+          max={moment().add(1, 'days').format('YYYY-MM-DDThh:mm')} // TODO: is this a reasonable max?
           onChange={onDateTestedChange}
         />
       </li>
@@ -491,11 +492,11 @@ const QueueItem: any = ({
   const timer = useTestTimer(internalId);
 
   const containerClasses = classnames(
-    "grid-container",
-    "prime-container",
-    "prime-queue-item usa-card__container",
-    timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
-    timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
+    'grid-container',
+    'prime-container',
+    'prime-queue-item usa-card__container',
+    timer.countdown < 0 && !testResultValue && 'prime-queue-item__ready',
+    timer.countdown < 0 && testResultValue && 'prime-queue-item__completed'
   );
 
   return (
@@ -520,7 +521,7 @@ const QueueItem: any = ({
                     </li>
                     <li className="prime-li">
                       <LabeledText
-                        text={moment(patient.birthDate).format("MM/DD/yyyy")}
+                        text={moment(patient.birthDate).format('MM/DD/yyyy')}
                         label="Date of birth"
                       />
                     </li>
@@ -563,17 +564,17 @@ const QueueItem: any = ({
                         boxes={[
                           {
                             value: useCurrentDateTime,
-                            label: "Use current date",
-                            checked: useCurrentDateTime === "true",
+                            label: 'Use current date',
+                            checked: useCurrentDateTime === 'true',
                           },
                         ]}
                         className={
-                          useCurrentDateTime === "false"
-                            ? "testdate-checkbox"
-                            : ""
+                          useCurrentDateTime === 'false'
+                            ? 'testdate-checkbox'
+                            : ''
                         }
                         legend={
-                          useCurrentDateTime === "true" ? "Test date" : null
+                          useCurrentDateTime === 'true' ? 'Test date' : null
                         }
                         name="currentDateTime"
                         onChange={onUseCurrentDateChange}
@@ -584,17 +585,17 @@ const QueueItem: any = ({
               </div>
             </div>
             <div className="tablet:grid-col-3 prime-test-result">
-              {confirmationType !== "none" && (
+              {confirmationType !== 'none' && (
                 <AreYouSure
                   cancelText="No, go back"
                   continueText={
-                    confirmationType === "submitResult"
-                      ? "Submit anyway"
+                    confirmationType === 'submitResult'
+                      ? 'Submit anyway'
                       : "Yes, I'm sure"
                   }
-                  cancelHandler={() => setConfirmationType("none")}
+                  cancelHandler={() => setConfirmationType('none')}
                   continueHandler={
-                    confirmationType === "submitResult"
+                    confirmationType === 'submitResult'
                       ? () => {
                           forceSubmit = true;
                           onTestResultSubmit();
@@ -602,16 +603,16 @@ const QueueItem: any = ({
                       : removeFromQueue
                   }
                 >
-                  {confirmationType === "submitResult" ? (
+                  {confirmationType === 'submitResult' ? (
                     <p className="usa-prose">
-                      The test questionnaire for{" "}
+                      The test questionnaire for{' '}
                       <b> {` ${patientFullName} `} </b> has not been completed.
                       Do you want to submit results anyway?
                     </p>
                   ) : (
                     <>
                       <p className="usa-prose">
-                        Are you sure you want to stop <b>{patientFullName}'s</b>{" "}
+                        Are you sure you want to stop <b>{patientFullName}'s</b>{' '}
                         test?
                       </p>
                       <p className="usa-prose">

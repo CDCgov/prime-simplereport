@@ -1,9 +1,10 @@
-import React from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { useSelector } from 'react-redux';
 
-import ManageUsers from "./ManageUsers";
-import { UserRole, UserPermission } from "../../permissions";
+import { UserRole, UserPermission } from '../../permissions';
+
+import ManageUsers from './ManageUsers';
 
 const GET_USERS = gql`
   query GetUsers {
@@ -112,7 +113,7 @@ const ManageUsersContainer: any = () => {
 
   const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
     GET_USERS,
-    { fetchPolicy: "no-cache" }
+    { fetchPolicy: 'no-cache' }
   );
 
   const {
@@ -120,7 +121,7 @@ const ManageUsersContainer: any = () => {
     loading: loadingFacilities,
     error: errorFacilities,
   } = useQuery<FacilityData, {}>(GET_FACILITIES, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: 'no-cache',
   });
 
   if (loading || loadingFacilities) {

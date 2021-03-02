@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
-import Button from "../commonComponents/Button";
-import { formatFullName } from "../utils/user";
+import Button from '../commonComponents/Button';
+import { formatFullName } from '../utils/user';
 
-import "./FacilitySelect.scss";
+import './FacilitySelect.scss';
 
 interface Props {
   setActiveFacility: (facility: Facility) => void;

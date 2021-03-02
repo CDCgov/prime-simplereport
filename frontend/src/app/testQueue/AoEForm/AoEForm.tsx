@@ -1,17 +1,19 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
+import classnames from 'classnames';
+
 import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
-} from "../../../patientApp/timeOfTest/constants";
-import RadioGroup from "../../commonComponents/RadioGroup";
-import Button from "../../commonComponents/Button";
-import FormGroup from "../../commonComponents/FormGroup";
-import RequiredMessage from "../../commonComponents/RequiredMessage";
-import "./AoEForm.scss";
-import SymptomInputs from "./SymptomInputs";
-import PriorTestInputs from "./PriorTestInputs";
-import classnames from "classnames";
+} from '../../../patientApp/timeOfTest/constants';
+import RadioGroup from '../../commonComponents/RadioGroup';
+import Button from '../../commonComponents/Button';
+import FormGroup from '../../commonComponents/FormGroup';
+import RequiredMessage from '../../commonComponents/RequiredMessage';
+
+import './AoEForm.scss';
+import SymptomInputs from './SymptomInputs';
+import PriorTestInputs from './PriorTestInputs';
 
 // Get the value associate with a button label
 // TODO: move to utility?
@@ -81,8 +83,8 @@ const AoEForm: React.FC<Props> = ({
 
     symptomConfig.forEach((opt) => {
       const val = opt.value;
-      if (typeof loadedSymptoms[val] === "string") {
-        initialSymptoms[val] = loadedSymptoms[val] === "true";
+      if (typeof loadedSymptoms[val] === 'string') {
+        initialSymptoms[val] = loadedSymptoms[val] === 'true';
       } else {
         initialSymptoms[val] = loadedSymptoms[val] as boolean;
       }
@@ -120,7 +122,7 @@ const AoEForm: React.FC<Props> = ({
       (key) => currentSymptoms[key]
     );
     if (!noSymptoms && !hasSymptoms) {
-      setSymptomError("Select your symptoms");
+      setSymptomError('Select your symptoms');
       setSymptomOnsetError(undefined);
       symptomRef?.current?.focus();
       return false;
@@ -134,7 +136,7 @@ const AoEForm: React.FC<Props> = ({
 
     if (hasSymptoms && !onsetDate) {
       setSymptomError(undefined);
-      setSymptomOnsetError("Enter the date of symptom onset");
+      setSymptomOnsetError('Enter the date of symptom onset');
       symptomOnsetRef?.current?.focus();
       return false;
     }
@@ -148,8 +150,8 @@ const AoEForm: React.FC<Props> = ({
 
   // Auto-answer pregnancy question for males
   const pregnancyResponses = getPregnancyResponses();
-  if (patient.gender === "male" && !pregnancyResponse) {
-    setPregnancyResponse(findValueForLabel("No", pregnancyResponses));
+  if (patient.gender === 'male' && !pregnancyResponse) {
+    setPregnancyResponse(findValueForLabel('No', pregnancyResponses));
   }
 
   const saveAnswers = (e: React.FormEvent) => {
@@ -197,9 +199,9 @@ const AoEForm: React.FC<Props> = ({
     <div className="sr-time-of-test-buttons display-flex flex-justify-end">
       <Button
         id="aoe-form-save-button"
-        className={classnames(isModal ? "margin-right-205" : "margin-right-0")}
+        className={classnames(isModal ? 'margin-right-205' : 'margin-right-0')}
         label={saveButtonText}
-        type={"submit"}
+        type={'submit'}
       />
     </div>
   );
@@ -243,7 +245,7 @@ const AoEForm: React.FC<Props> = ({
           </div>
         </FormGroup>
 
-        {patient.gender !== "male" && (
+        {patient.gender !== 'male' && (
           <FormGroup title="Pregnancy">
             <RadioGroup
               legend="Currently pregnant?"
@@ -258,8 +260,8 @@ const AoEForm: React.FC<Props> = ({
         <div
           className={classnames(
             isModal
-              ? "margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205"
-              : "margin-top-3"
+              ? 'margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205'
+              : 'margin-top-3'
           )}
         >
           {buttonGroup}

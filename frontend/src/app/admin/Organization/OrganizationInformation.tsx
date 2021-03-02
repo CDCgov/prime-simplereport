@@ -1,5 +1,6 @@
-import React from "react";
-import TextInput from "../../commonComponents/TextInput";
+import React from 'react';
+
+import TextInput from '../../commonComponents/TextInput';
 
 interface Props {
   organization: Organization;

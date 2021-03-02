@@ -1,8 +1,9 @@
-import React from "react";
+import React from 'react';
 
-import RadioGroup from "../../commonComponents/RadioGroup";
-import { SettingsUser } from "./ManageUsersContainer";
-import { RoleDescription } from "../../permissions";
+import RadioGroup from '../../commonComponents/RadioGroup';
+import { RoleDescription } from '../../permissions';
+
+import { SettingsUser } from './ManageUsersContainer';
 
 interface RoleButton {
   value: RoleDescription;
@@ -11,16 +12,16 @@ interface RoleButton {
 
 const ROLES: RoleButton[] = [
   {
-    value: "Admin user",
-    label: "Admin (full permissions)",
+    value: 'Admin user',
+    label: 'Admin (full permissions)',
   },
   {
-    value: "Standard user",
-    label: "Standard user (manage results and profiles)",
+    value: 'Standard user',
+    label: 'Standard user (manage results and profiles)',
   },
   {
-    value: "Test-entry user",
-    label: "Entry only (conduct tests)",
+    value: 'Test-entry user',
+    label: 'Entry only (conduct tests)',
   },
 ];
 
@@ -58,7 +59,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRole(e)}
         disabled={
           activeUser.id === loggedInUser.id ||
-          process.env.REACT_APP_EDIT_USER_ROLE === "false"
+          process.env.REACT_APP_EDIT_USER_ROLE === 'false'
         }
       />
     </React.Fragment>

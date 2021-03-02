@@ -8,10 +8,10 @@ function ToS() {
         Control and Prevention (CDC) and the U.S.Department of Health and Human
         Services (HHS), in a CDC cloud environment (&quot; CDC Platform&quot;),
         you acknowledge and agree that you are solely responsible for and shall
-        abide by these Terms of Service, as well as any relevant sections of{" "}
+        abide by these Terms of Service, as well as any relevant sections of{' '}
         <a href="https://www.cdc.gov/other/information.html">
           CDC&#39;s Privacy Policies
-        </a>{" "}
+        </a>{' '}
         (collectively, Terms).
       </p>
       <h2 id="scope">Scope</h2>
@@ -81,7 +81,7 @@ function ToS() {
         the Application, you agree to strictly abide by all applicable federal
         and state laws regarding the collection, use, protection and disclosure
         of information obtained or sent through the Application.If you would
-        like more information about the application of the Privacy Act at CDC,{" "}
+        like more information about the application of the Privacy Act at CDC,{' '}
         <a href="https://www.cms.gov/Research-Statistics-Data-and-Systems/Computer-Data-and-Systems/Privacy/PrivacyActof1974.html">
           click here
         </a>
@@ -121,7 +121,7 @@ function ToS() {
         COVID-19 test results will be automatically reported to the appropriate
         STLT Public Health Agency based on both the testing facility ZIP code
         and the Patient&#39; s ZIP code, including all relevant fields as
-        defined in the{" "}
+        defined in the{' '}
         <a href="https://www.hhs.gov/sites/default/files/covid-19-laboratory-data-reporting-guidance.pdf">
           HHS COVID-19 Laboratory Reporting Requirements
         </a>

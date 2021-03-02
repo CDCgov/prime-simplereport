@@ -1,6 +1,7 @@
-import { render } from "@testing-library/react";
-import Pagination from "./Pagination";
-import { MemoryRouter } from "react-router-dom";
+import { render } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+
+import Pagination from './Pagination';
 
 /*
 // Cases (_n_ represents currentPage):
@@ -20,20 +21,20 @@ const defaults = {
   totalEntries: 2,
   pageGroupSize: 5,
   className: undefined,
-  baseRoute: "",
+  baseRoute: '',
 };
 
 const testCases = {
-  "with baseRoute": { baseRoute: "/patients" },
-  "with className": { className: "unique-class-name" },
-  "undefined currentPage": { currentPage: undefined },
-  "2 pages": { totalEntries: 18, currentPage: 2 },
-  "7 pages": { totalEntries: 61, currentPage: 4 },
-  "10 pages": { entriesPerPage: 5, totalEntries: 48, currentPage: 8 },
+  'with baseRoute': { baseRoute: '/patients' },
+  'with className': { className: 'unique-class-name' },
+  'undefined currentPage': { currentPage: undefined },
+  '2 pages': { totalEntries: 18, currentPage: 2 },
+  '7 pages': { totalEntries: 61, currentPage: 4 },
+  '10 pages': { entriesPerPage: 5, totalEntries: 48, currentPage: 8 },
 };
 
-describe("Pagination", () => {
-  it("should render Pagination cases", () => {
+describe('Pagination', () => {
+  it('should render Pagination cases', () => {
     Object.entries(testCases).forEach(([name, tc], index) => {
       const props = { ...defaults, ...tc } as any;
       const { container } = render(

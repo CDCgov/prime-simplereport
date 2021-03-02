@@ -1,16 +1,17 @@
-import React from "react";
-import { useDispatch, connect } from "react-redux";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
+import React from 'react';
+import { useDispatch, connect } from 'react-redux';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { toast } from 'react-toastify';
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+} from '@microsoft/applicationinsights-react-js';
 
-import Alert from "../commonComponents/Alert";
-import { showNotification } from "../utils";
-import ManageOrganization from "./ManageOrganization";
-import { updateOrganization } from "../store";
+import Alert from '../commonComponents/Alert';
+import { showNotification } from '../utils';
+import { updateOrganization } from '../store';
+
+import ManageOrganization from './ManageOrganization';
 
 interface Data {
   organization: {
@@ -34,14 +35,14 @@ const SET_ORGANIZATION = gql`
 
 const ManageOrganizationContainer: any = () => {
   const { data, loading, error } = useQuery<Data, {}>(GET_ORGANIZATION, {
-    fetchPolicy: "no-cache",
+    fetchPolicy: 'no-cache',
   });
   const dispatch = useDispatch();
   const [setOrganization] = useMutation(SET_ORGANIZATION);
   const appInsights = useAppInsightsContext();
   const trackSaveSettings = useTrackEvent(
     appInsights,
-    "Save Organization",
+    'Save Organization',
     null,
     false
   );

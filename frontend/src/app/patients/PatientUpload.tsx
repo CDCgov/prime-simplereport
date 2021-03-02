@@ -1,10 +1,10 @@
-import React from "react";
-import { gql, useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
-import { showError, showNotification } from "../utils";
-import { toast } from "react-toastify";
+import React from 'react';
+import { gql, useMutation } from '@apollo/client';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
-import Alert from "../commonComponents/Alert";
+import { showError, showNotification } from '../utils';
+import Alert from '../commonComponents/Alert';
 
 const uploadPatients = gql`
   mutation UploadPatients($patientList: Upload!) {
@@ -31,7 +31,7 @@ const PatientUpload = ({ onSuccess }: Props) => {
   }: React.ChangeEvent<HTMLInputElement>) => {
     const fileList = files;
     if (fileList === null) {
-      showError(toast, "Error", "File not found");
+      showError(toast, 'Error', 'File not found');
       return;
     }
     upload({ variables: { patientList: fileList[0] } }).then((response) => {

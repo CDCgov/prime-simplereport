@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import Button from "../../commonComponents/Button";
-import RequiredMessage from "../../commonComponents/RequiredMessage";
-import ManageDevices from "../../Settings/Facility/Components/ManageDevices";
-import OrderingProviderSettings from "../../Settings/Facility/Components/OrderingProvider";
-import FacilityInformation from "../../Settings/Facility/Components/FacilityInformation";
-import OrganizationInformation from "./OrganizationInformation";
+import Button from '../../commonComponents/Button';
+import RequiredMessage from '../../commonComponents/RequiredMessage';
+import ManageDevices from '../../Settings/Facility/Components/ManageDevices';
+import OrderingProviderSettings from '../../Settings/Facility/Components/OrderingProvider';
+import FacilityInformation from '../../Settings/Facility/Components/FacilityInformation';
+
+import OrganizationInformation from './OrganizationInformation';
 
 interface Props {
   organization: Organization;
@@ -70,9 +71,9 @@ const OrganizationForm: React.FC<Props> = (props) => {
               </div>
               <div
                 style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
                 }}
               >
                 <Button

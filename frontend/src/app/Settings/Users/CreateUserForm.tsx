@@ -1,13 +1,14 @@
-import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import Button from "../../commonComponents/Button";
-import TextInput from "../../commonComponents/TextInput";
-import Dropdown from "../../commonComponents/Dropdown";
-import { NewUserInvite } from "./ManageUsersContainer";
+import Button from '../../commonComponents/Button';
+import TextInput from '../../commonComponents/TextInput';
+import Dropdown from '../../commonComponents/Dropdown';
+import { OrganizationRole } from '../../permissions';
 
-import "./ManageUsers.scss";
-import { OrganizationRole } from "../../permissions";
+import { NewUserInvite } from './ManageUsersContainer';
+
+import './ManageUsers.scss';
 
 interface Props {
   onClose: () => void;
@@ -16,25 +17,25 @@ interface Props {
 }
 
 const initialFormState: NewUserInvite = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  role: "",
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: '',
 };
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
 const ROLE_OPTIONS: { value: OrganizationRole; label: string }[] = [
   {
-    value: "ENTRY_ONLY",
-    label: "Entry only (conduct tests)",
+    value: 'ENTRY_ONLY',
+    label: 'Entry only (conduct tests)',
   },
   {
-    value: "USER",
-    label: "Standard user (manage results and profiles)",
+    value: 'USER',
+    label: 'Standard user (manage results and profiles)',
   },
   {
-    value: "ADMIN",
-    label: "Admin (full permissions)",
+    value: 'ADMIN',
+    label: 'Admin (full permissions)',
   },
 ];
 
@@ -47,7 +48,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
   };
 
   const setUserRole =
-    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === "true" ? (
+    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === 'true' ? (
       <>
         <Dropdown
           options={ROLE_OPTIONS}
@@ -79,8 +80,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
         </h1>
         <button onClick={onClose} className="close-button" aria-label="Close">
           <span className="fa-layers">
-            <FontAwesomeIcon icon={"circle"} size="2x" inverse />
-            <FontAwesomeIcon icon={"times-circle"} size="2x" />
+            <FontAwesomeIcon icon={'circle'} size="2x" inverse />
+            <FontAwesomeIcon icon={'times-circle'} size="2x" />
           </span>
         </button>
       </div>
@@ -129,7 +130,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           <Button
             className="margin-right-205"
             onClick={() => onSubmit(newUser)}
-            label={isUpdating ? "Sending" : "Send invite"}
+            label={isUpdating ? 'Sending' : 'Send invite'}
             disabled={isUpdating}
           />
         </div>

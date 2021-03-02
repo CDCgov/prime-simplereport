@@ -1,33 +1,34 @@
-import React from "react";
-import classnames from "classnames";
-import useUniqueId from "./useUniqueIds";
-import Required from "./Required";
-import Optional from "./Optional";
+import React from 'react';
+import classnames from 'classnames';
+
+import useUniqueId from './useUniqueIds';
+import Required from './Required';
+import Optional from './Optional';
 
 interface Props {
   id?: string;
   name: string;
   type?:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "month"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url"
-    | "week"
-    | "bday";
+    | 'date'
+    | 'datetime-local'
+    | 'email'
+    | 'month'
+    | 'number'
+    | 'password'
+    | 'search'
+    | 'tel'
+    | 'text'
+    | 'time'
+    | 'url'
+    | 'week'
+    | 'bday';
   label: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
   required?: boolean;
   errorMessage?: React.ReactNode;
   groupClassName?: string;
-  validationStatus?: "error" | "success";
+  validationStatus?: 'error' | 'success';
   autoComplete?: string;
   size?: number;
   pattern?: string;
@@ -41,7 +42,7 @@ interface Props {
   formatMessage?: string;
 }
 
-type InputProps = JSX.IntrinsicElements["input"];
+type InputProps = JSX.IntrinsicElements['input'];
 
 export const TextInput = ({
   id,
@@ -67,23 +68,23 @@ export const TextInput = ({
   formatMessage,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
-  const [autoId] = useUniqueId("text", 1);
+  const [autoId] = useUniqueId('text', 1);
   const widgetId = id || autoId;
   const errorId = `${widgetId}__error`;
 
   return (
     <div
       className={classnames(
-        "usa-form-group",
+        'usa-form-group',
         className,
-        validationStatus === "error" && "usa-form-group--error"
+        validationStatus === 'error' && 'usa-form-group--error'
       )}
     >
       <label
         className={classnames(
-          "usa-label",
-          labelSrOnly && "usa-sr-only",
-          validationStatus === "error" && "usa-label--error"
+          'usa-label',
+          labelSrOnly && 'usa-sr-only',
+          validationStatus === 'error' && 'usa-label--error'
         )}
         htmlFor={widgetId}
         aria-describedby={ariaDescribedBy}
@@ -92,12 +93,12 @@ export const TextInput = ({
           <Required label={label} />
         ) : (
           <Optional
-            className={hideOptional ? "display-none" : ""}
+            className={hideOptional ? 'display-none' : ''}
             label={label}
           />
         )}
       </label>
-      {validationStatus === "error" && (
+      {validationStatus === 'error' && (
         <span className="usa-error-message" id={errorId} role="alert">
           <span className="usa-sr-only">Error: </span>
           {errorMessage}
@@ -106,14 +107,14 @@ export const TextInput = ({
       {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
       <input
         className={classnames(
-          "usa-input",
-          validationStatus === "error" && "usa-input-error"
+          'usa-input',
+          validationStatus === 'error' && 'usa-input-error'
         )}
         id={widgetId}
         name={name}
-        value={value || ""}
-        type={type || "text"}
-        aria-required={required || "false"}
+        value={value || ''}
+        type={type || 'text'}
+        aria-required={required || 'false'}
         onChange={onChange}
         autoComplete={autoComplete}
         size={size}
@@ -123,8 +124,8 @@ export const TextInput = ({
         data-format={format}
         data-format-message={formatMessage}
         {...inputProps}
-        {...(validationStatus === "error"
-          ? { "aria-describedby": errorId }
+        {...(validationStatus === 'error'
+          ? { 'aria-describedby': errorId }
           : null)}
       />
     </div>

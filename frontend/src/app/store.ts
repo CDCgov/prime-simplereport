@@ -1,30 +1,30 @@
-import { createStore } from "redux";
+import { createStore } from 'redux';
 
-const SET_INITIAL_STATE = "SET_INITIAL_STATE";
-const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
-const UPDATE_FACILITY = "UPDATE_FACILITY";
-const SET_PATIENT = "SET_PATIENT";
+const SET_INITIAL_STATE = 'SET_INITIAL_STATE';
+const UPDATE_ORGANIZATION = 'UPDATE_ORGANIZATION';
+const UPDATE_FACILITY = 'UPDATE_FACILITY';
+const SET_PATIENT = 'SET_PATIENT';
 
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
 const initialState = {
   organization: {
-    name: "",
+    name: '',
   },
   facilities: [],
   facility: {
-    id: "",
-    name: "",
+    id: '',
+    name: '',
   },
   user: {
-    id: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    suffix: "",
-    email: "",
+    id: '',
+    firstName: '',
+    middleName: '',
+    lastName: '',
+    suffix: '',
+    email: '',
     permissions: [],
-    roleDescription: "",
+    roleDescription: '',
     isAdmin: false,
   },
 };

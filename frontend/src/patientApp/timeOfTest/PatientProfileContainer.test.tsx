@@ -1,29 +1,29 @@
-import renderer from "react-test-renderer";
-import { MockedProvider } from "@apollo/client/testing";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
+import renderer from 'react-test-renderer';
+import { MockedProvider } from '@apollo/client/testing';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 
-import PatientProfileContainer from "./PatientProfileContainer";
+import PatientProfileContainer from './PatientProfileContainer';
 
 const mockStore = configureStore([]);
 
-jest.mock("react-router-dom", () => ({
+jest.mock('react-router-dom', () => ({
   useHistory: () => ({
     listen: jest.fn(),
     push: jest.fn(),
   }),
 }));
 
-describe("PatientProfileContainer", () => {
-  it("snapshot", () => {
+describe('PatientProfileContainer', () => {
+  it('snapshot', () => {
     const store = mockStore({
       patient: {
-        residentCongregateSetting: "Yes",
-        employedInHealthcare: "Yes",
-        birthDate: "",
-        street: "8 Pine Ct",
+        residentCongregateSetting: 'Yes',
+        employedInHealthcare: 'Yes',
+        birthDate: '',
+        street: '8 Pine Ct',
       },
-      plid: "definitely not null I promise",
+      plid: 'definitely not null I promise',
     });
     const component = renderer.create(
       <Provider store={store}>

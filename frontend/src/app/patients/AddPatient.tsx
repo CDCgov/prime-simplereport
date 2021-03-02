@@ -1,7 +1,7 @@
-import React from "react";
-import { useSelector } from "react-redux";
+import React from 'react';
+import { useSelector } from 'react-redux';
 
-import PatientForm from "./PatientForm";
+import PatientForm from './PatientForm';
 
 const AddPatient = () => {
   const activeFacilityId: string = useSelector(
@@ -12,7 +12,7 @@ const AddPatient = () => {
   }
   return (
     <PatientForm
-      patient={{ patientId: "" }}
+      patient={{ patientId: '' }}
       activeFacilityId={activeFacilityId}
       isPxpView={false}
     />

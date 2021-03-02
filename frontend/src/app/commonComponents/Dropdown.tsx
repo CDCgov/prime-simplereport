@@ -1,8 +1,10 @@
-import React from "react";
-import useUniqueIds from "./useUniqueIds";
-import classnames from "classnames";
-import Required from "../commonComponents/Required";
-import Optional from "./Optional";
+import React from 'react';
+import classnames from 'classnames';
+
+import Required from '../commonComponents/Required';
+
+import useUniqueIds from './useUniqueIds';
+import Optional from './Optional';
 
 export interface Option {
   label: string;
@@ -22,10 +24,10 @@ interface Props {
   defaultSelect?: boolean;
   required?: boolean;
   errorMessage?: React.ReactNode;
-  validationStatus?: "error" | "success";
+  validationStatus?: 'error' | 'success';
 }
 
-type SelectProps = JSX.IntrinsicElements["select"];
+type SelectProps = JSX.IntrinsicElements['select'];
 
 const Dropdown: React.FC<Props & SelectProps> = ({
   options,
@@ -42,13 +44,13 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   errorMessage,
   ...inputProps
 }) => {
-  const [selectId] = useUniqueIds("drop", 1);
+  const [selectId] = useUniqueIds('drop', 1);
 
   return (
     <div
       className={classnames(
-        "usa-form-group prime-dropdown ",
-        validationStatus === "error" && "usa-form-group--error",
+        'usa-form-group prime-dropdown ',
+        validationStatus === 'error' && 'usa-form-group--error',
         className
       )}
     >
@@ -57,7 +59,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           {required ? <Required label={label} /> : <Optional label={label} />}
         </label>
       )}
-      {validationStatus === "error" && (
+      {validationStatus === 'error' && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
           {errorMessage}
@@ -67,9 +69,9 @@ const Dropdown: React.FC<Props & SelectProps> = ({
         className="usa-select"
         name={name}
         id={selectId}
-        aria-required={required || "false"}
+        aria-required={required || 'false'}
         onChange={onChange}
-        value={selectedValue || defaultOption || ""}
+        value={selectedValue || defaultOption || ''}
         disabled={disabled}
         {...inputProps}
       >

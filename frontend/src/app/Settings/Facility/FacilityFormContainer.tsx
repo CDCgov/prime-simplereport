@@ -1,14 +1,15 @@
-import React from "react";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
+import React from 'react';
+import { gql, useQuery, useMutation } from '@apollo/client';
+import { toast } from 'react-toastify';
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
+} from '@microsoft/applicationinsights-react-js';
 
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
-import FacilityForm from "./FacilityForm";
+import Alert from '../../commonComponents/Alert';
+import { showNotification } from '../../utils';
+
+import FacilityForm from './FacilityForm';
 
 const GET_FACILITY_QUERY = gql`
   query GetFacilities {
@@ -177,7 +178,7 @@ const FacilityFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<FacilityData, {}>(
     GET_FACILITY_QUERY,
     {
-      fetchPolicy: "no-cache",
+      fetchPolicy: 'no-cache',
     }
   );
   const appInsights = useAppInsightsContext();
@@ -185,7 +186,7 @@ const FacilityFormContainer: any = (props: Props) => {
   const [addFacility] = useMutation(ADD_FACILITY_MUTATION);
   const trackSaveSettings = useTrackEvent(
     appInsights,
-    "Save Settings",
+    'Save Settings',
     null,
     false
   );
@@ -258,35 +259,35 @@ const FacilityFormContainer: any = (props: Props) => {
         deviceTypes: deviceTypes,
         defaultDevice: facility.defaultDeviceType
           ? facility.defaultDeviceType.internalId
-          : "",
+          : '',
       };
     }
     const defaultDevice = data.deviceType[0].internalId;
     return {
-      id: "",
-      name: "",
-      cliaNumber: "",
-      street: "",
-      streetTwo: "",
-      city: "",
-      county: "",
-      state: "",
-      zipCode: "",
-      phone: "",
-      email: "",
+      id: '',
+      name: '',
+      cliaNumber: '',
+      street: '',
+      streetTwo: '',
+      city: '',
+      county: '',
+      state: '',
+      zipCode: '',
+      phone: '',
+      email: '',
       orderingProvider: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        suffix: "",
-        NPI: "",
-        street: "",
-        streetTwo: "",
-        city: "",
-        county: "",
-        state: "",
-        zipCode: "",
-        phone: "",
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        suffix: '',
+        NPI: '',
+        street: '',
+        streetTwo: '',
+        city: '',
+        county: '',
+        state: '',
+        zipCode: '',
+        phone: '',
       },
       deviceTypes: [defaultDevice],
       defaultDevice,

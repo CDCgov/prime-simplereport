@@ -1,9 +1,9 @@
-import renderer from "react-test-renderer";
-import { render, fireEvent, RenderResult } from "@testing-library/react";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
+import renderer from 'react-test-renderer';
+import { render, fireEvent, RenderResult } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 
-import DOB from "./DOB";
+import DOB from './DOB';
 
 const mockStore = configureStore([]);
 const mockContainer = (store: any) => (
@@ -12,51 +12,51 @@ const mockContainer = (store: any) => (
   </Provider>
 );
 
-jest.mock("../PxpApiService", () => {
-  validateDateOfBirth: jest.fn();
+jest.mock('../PxpApiService', () => {
+  jest.fn();
 });
 
-describe("DOB", () => {
-  describe("snapshot", () => {
+describe('DOB', () => {
+  describe('snapshot', () => {
     let component: renderer.ReactTestRenderer;
     beforeEach(() => {
       const store = mockStore({
-        plid: "foo",
+        plid: 'foo',
       });
       component = renderer.create(mockContainer(store));
     });
-    it("matches", () => {
+    it('matches', () => {
       expect(component.toJSON()).toMatchSnapshot();
     });
   });
 
-  describe("behavior", () => {
+  describe('behavior', () => {
     let utils: RenderResult;
 
     async function setup(utils: RenderResult) {
-      const input = await utils.findByRole("textbox");
-      const button = await utils.findByRole("button");
+      const input = await utils.findByRole('textbox');
+      const button = await utils.findByRole('button');
       return { input, button };
     }
 
     beforeEach(() => {
       const store = mockStore({
-        plid: "foo",
+        plid: 'foo',
       });
       utils = render(mockContainer(store));
     });
 
-    it("validates birthdays", async () => {
+    it('validates birthdays', async () => {
       // GIVEN
       const { input, button } = await setup(utils);
 
       // WHEN
-      fireEvent.change(input, { target: { value: "99-99-9999" } });
+      fireEvent.change(input, { target: { value: '99-99-9999' } });
       fireEvent.submit(button);
-      const error = await utils.findByRole("alert");
+      const error = await utils.findByRole('alert');
 
       // THEN
-      expect(error.textContent).toEqual("Error: Enter your date of birth");
+      expect(error.textContent).toEqual('Error: Enter your date of birth');
     });
   });
 });

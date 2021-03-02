@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-import TextInput from "../commonComponents/TextInput";
-import Button from "../commonComponents/Button";
-import RequiredMessage from "../commonComponents/RequiredMessage";
+import TextInput from '../commonComponents/TextInput';
+import Button from '../commonComponents/Button';
+import RequiredMessage from '../commonComponents/RequiredMessage';
 
 interface Props {
   name: string;

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import { toast } from 'react-toastify';
+import { Redirect } from 'react-router-dom';
 
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
-import DeviceTypeForm from "./DeviceTypeForm";
-import { Redirect } from "react-router-dom";
+import Alert from '../../commonComponents/Alert';
+import { showNotification } from '../../utils';
+
+import DeviceTypeForm from './DeviceTypeForm';
 
 const CREATE_DEVICE_TYPE_MUTATION = gql`
   mutation createDeviceType(

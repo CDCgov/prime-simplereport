@@ -1,18 +1,20 @@
-import { gql } from "@apollo/client";
-import React, { useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import moment from "moment";
-import classnames from "classnames";
-import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
-import TestResultPrintModal from "./TestResultPrintModal";
-import TestResultCorrectionModal from "./TestResultCorrectionModal";
-import "./TestResultsList.scss";
+import { gql } from '@apollo/client';
+import React, { useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import moment from 'moment';
+import classnames from 'classnames';
+
+import { PATIENT_TERM_CAP } from '../../config/constants';
+import { displayFullName } from '../utils';
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from "../commonComponents/QueryWrapper";
-import { ActionsMenu } from "../commonComponents/ActionsMenu";
+} from '../commonComponents/QueryWrapper';
+import { ActionsMenu } from '../commonComponents/ActionsMenu';
+
+import TestResultPrintModal from './TestResultPrintModal';
+import TestResultCorrectionModal from './TestResultCorrectionModal';
+import './TestResultsList.scss';
 
 const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
@@ -99,23 +101,23 @@ export const DetachedTestResultsList: any = ({
 
     // `sort` mutates the array, so make a copy
     return [...testResults].sort(byDateTested).map((r) => {
-      const removed = r.correctionStatus === "REMOVED";
+      const removed = r.correctionStatus === 'REMOVED';
       const actionItems = [
-        { name: "Print result", action: () => setPrintModalId(r.internalId) },
+        { name: 'Print result', action: () => setPrintModalId(r.internalId) },
       ];
       if (!removed) {
         actionItems.push({
-          name: "Mark as error",
+          name: 'Mark as error',
           action: () => setMarkErrorId(r.internalId),
         });
       }
       return (
         <tr
           key={r.internalId}
-          title={removed ? "Marked as error" : ""}
+          title={removed ? 'Marked as error' : ''}
           className={classnames(
-            "sr-test-result-row",
-            removed && "sr-test-result-row--removed"
+            'sr-test-result-row',
+            removed && 'sr-test-result-row--removed'
           )}
         >
           <th scope="row">
@@ -125,7 +127,7 @@ export const DetachedTestResultsList: any = ({
               r.patient.lastName
             )}
           </th>
-          <td>{moment(r.dateTested).format("lll")}</td>
+          <td>{moment(r.dateTested).format('lll')}</td>
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
           <td>
@@ -142,7 +144,7 @@ export const DetachedTestResultsList: any = ({
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>Test Results {showAll ? "(all)" : "(past two days)"}</h2>
+              <h2>Test Results {showAll ? '(all)' : '(past two days)'}</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -177,7 +179,7 @@ export const DetachedTestResultsList: any = ({
 };
 
 const TestResultsList = (
-  props: Omit<Props, InjectedQueryWrapperProps | "showAll" | "setShowAll">
+  props: Omit<Props, InjectedQueryWrapperProps | 'showAll' | 'setShowAll'>
 ) => {
   const [showAll, setShowAll] = useState(false);
   const activeFacilityId = useSelector(
@@ -189,7 +191,7 @@ const TestResultsList = (
   }
 
   // This gives us midnight of the previous day
-  const startDate = moment().subtract(1, "day").format("YYYY-MM-DD");
+  const startDate = moment().subtract(1, 'day').format('YYYY-MM-DD');
   return (
     <QueryWrapper<Props>
       query={testResultQuery}

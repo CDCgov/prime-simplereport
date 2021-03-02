@@ -1,35 +1,35 @@
-import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
+import React, { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import { toast } from 'react-toastify';
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
-import moment from "moment";
-import { Prompt, Redirect } from "react-router-dom";
-import Modal from "react-modal";
+} from '@microsoft/applicationinsights-react-js';
+import moment from 'moment';
+import { Prompt, Redirect } from 'react-router-dom';
+import Modal from 'react-modal';
+import { useDispatch, useSelector } from 'react-redux';
+import classnames from 'classnames';
+
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
   stateCodes,
-} from "../../config/constants";
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
-
-import Breadcrumbs from "../commonComponents/Breadcrumbs";
-import TextInput from "../commonComponents/TextInput";
-import RadioGroup from "../commonComponents/RadioGroup";
-import RequiredMessage from "../commonComponents/RequiredMessage";
-import Dropdown from "../commonComponents/Dropdown";
-import { displayFullName, showError, showNotification } from "../utils";
-import "./EditPatient.scss";
-import Alert from "../commonComponents/Alert";
-import FormGroup from "../commonComponents/FormGroup";
-import Button from "../../app/commonComponents/Button";
-import { useDispatch, useSelector } from "react-redux";
-import classnames from "classnames";
-import { setPatient as reduxSetPatient } from "../../app/store";
-import { PxpApi } from "../../patientApp/PxpApiService";
-import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg";
+} from '../../config/constants';
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from '../constants';
+import Breadcrumbs from '../commonComponents/Breadcrumbs';
+import TextInput from '../commonComponents/TextInput';
+import RadioGroup from '../commonComponents/RadioGroup';
+import RequiredMessage from '../commonComponents/RequiredMessage';
+import Dropdown from '../commonComponents/Dropdown';
+import { displayFullName, showError, showNotification } from '../utils';
+import './EditPatient.scss';
+import Alert from '../commonComponents/Alert';
+import FormGroup from '../commonComponents/FormGroup';
+import Button from '../../app/commonComponents/Button';
+import { setPatient as reduxSetPatient } from '../../app/store';
+import { PxpApi } from '../../patientApp/PxpApiService';
+import iconClose from '../../../node_modules/uswds/dist/img/usa-icons/close.svg';
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -136,8 +136,8 @@ interface Props {
 
 const PatientForm = (props: Props) => {
   const appInsights = useAppInsightsContext();
-  const trackAddPatient = useTrackEvent(appInsights, "Add Patient", {});
-  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient", {});
+  const trackAddPatient = useTrackEvent(appInsights, 'Add Patient', {});
+  const trackUpdatePatient = useTrackEvent(appInsights, 'Update Patient', {});
 
   const dispatch = useDispatch();
 
@@ -154,7 +154,7 @@ const PatientForm = (props: Props) => {
   const plid = useSelector((state: any) => state.plid);
   const patientInStore = useSelector((state: any) => state.patient);
 
-  const allFacilities = "~~ALL-FACILITIES~~";
+  const allFacilities = '~~ALL-FACILITIES~~';
   const [currentFacilityId, setCurrentFacilityId] = useState(
     patient.facility === null ? allFacilities : patient.facility?.id
   );
@@ -165,15 +165,15 @@ const PatientForm = (props: Props) => {
     label: f.name,
     value: f.id,
   }));
-  facilityList.unshift({ label: "All facilities", value: allFacilities });
-  facilityList.unshift({ label: "-Select-", value: "" });
+  facilityList.unshift({ label: 'All facilities', value: allFacilities });
+  facilityList.unshift({ label: '-Select-', value: '' });
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     let name: string | null = e.target.name;
     let value: string | null = e.target.value;
-    if (e.target.type === "checkbox") {
+    if (e.target.type === 'checkbox') {
       value = {
         ...patient[e.target.name],
         [e.target.value]: (e.target as any).checked,
@@ -206,17 +206,17 @@ const PatientForm = (props: Props) => {
 
     // For radio groups, value should indicate whether one radio is checked or not
     if (
-      name === "residentCongregateSetting" ||
-      name === "employedInHealthcare"
+      name === 'residentCongregateSetting' ||
+      name === 'employedInHealthcare'
     ) {
       // Two parents above the input is div.usa-form-group, which contains both radio buttons
       const radioInputs = target?.parentElement?.parentElement?.getElementsByTagName(
-        "input"
+        'input'
       );
       // If either is checked, return a value, if neither is checked, value is null
       value = [0, 1].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
         .length
-        ? "true"
+        ? 'true'
         : null;
       // The label for a RadioGroup comes from the text in fieldset.prime-radios legend
       label =
@@ -226,22 +226,22 @@ const PatientForm = (props: Props) => {
 
     // Get validation relevant properties of the input, required and format
     const required: boolean =
-      target.getAttribute("aria-required") === "true" ||
-      target.getAttribute("data-required") === "true";
-    const format: string | null = target.getAttribute("data-format");
+      target.getAttribute('aria-required') === 'true' ||
+      target.getAttribute('data-required') === 'true';
+    const format: string | null = target.getAttribute('data-format');
 
     // Initialize error message
     let errorMessage = undefined;
 
     // Required validation check
-    if ((!value || value === "- Select -") && required) {
+    if ((!value || value === '- Select -') && required) {
       errorMessage = `${label} is required`;
       // Format validation check
     } else if (format) {
       const regex = new RegExp(format);
       if (value && !value.match(regex)) {
         const formatMessage: string | null = target.getAttribute(
-          "data-format-message"
+          'data-format-message'
         );
         errorMessage = formatMessage || `${label} has an incorrect format`;
       }
@@ -272,11 +272,11 @@ const PatientForm = (props: Props) => {
         ...errors,
         [name]: undefined,
       });
-      return "success";
+      return 'success';
     } else if (errors[name] === undefined) {
-      return "success";
+      return 'success';
     } else {
-      return "error";
+      return 'error';
     }
   };
 
@@ -310,7 +310,7 @@ const PatientForm = (props: Props) => {
         | HTMLSelectElement;
       firstErrorField.focus();
       remainingErrors.forEach(([name, error]) =>
-        showError(toast, "Please correct before submitting", error)
+        showError(toast, 'Please correct before submitting', error)
       );
       setErrors(newErrors);
       return;
@@ -336,8 +336,8 @@ const PatientForm = (props: Props) => {
       race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
-      residentCongregateSetting: patient.residentCongregateSetting === "YES",
-      employedInHealthcare: patient.employedInHealthcare === "YES",
+      residentCongregateSetting: patient.residentCongregateSetting === 'YES',
+      employedInHealthcare: patient.employedInHealthcare === 'YES',
     };
     if (props.isPxpView) {
       // due to @JsonIgnores on Person to avoid duplicate recording, we have to
@@ -371,11 +371,11 @@ const PatientForm = (props: Props) => {
         );
 
         const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-          ? "YES"
-          : "NO";
+          ? 'YES'
+          : 'NO';
         const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-          ? "YES"
-          : "NO";
+          ? 'YES'
+          : 'NO';
 
         dispatch(
           reduxSetPatient({
@@ -429,7 +429,7 @@ const PatientForm = (props: Props) => {
           <Redirect
             push
             to={{
-              pathname: "/patient-info-confirm",
+              pathname: '/patient-info-confirm',
             }}
           />
         );
@@ -441,19 +441,19 @@ const PatientForm = (props: Props) => {
   return (
     <main
       className={classnames(
-        "prime-edit-patient prime-home",
-        props.isPxpView && "padding-top-0"
+        'prime-edit-patient prime-home',
+        props.isPxpView && 'padding-top-0'
       )}
     >
       <div
         className={classnames(
-          !props.isPxpView && "grid-container margin-bottom-4"
+          !props.isPxpView && 'grid-container margin-bottom-4'
         )}
       >
         <Prompt
           when={formChanged}
           message={(location) =>
-            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
+            '\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing.'
           }
         />
         {!props.isPxpView && (
@@ -465,7 +465,7 @@ const PatientForm = (props: Props) => {
                   text: PATIENT_TERM_PLURAL_CAP,
                 },
                 {
-                  link: "",
+                  link: '',
                   text: !props.patientId
                     ? `Add New ${PATIENT_TERM_CAP}`
                     : fullName,
@@ -497,7 +497,7 @@ const PatientForm = (props: Props) => {
               value={patient.firstName}
               onChange={onChange}
               onBlur={validateField}
-              validationStatus={validationStatus("firstName")}
+              validationStatus={validationStatus('firstName')}
               errorMessage={errors.firstName}
               required
             />
@@ -513,7 +513,7 @@ const PatientForm = (props: Props) => {
               value={patient.lastName}
               onChange={onChange}
               onBlur={validateField}
-              validationStatus={validationStatus("lastName")}
+              validationStatus={validationStatus('lastName')}
               errorMessage={errors.lastName}
               required
             />
@@ -531,11 +531,11 @@ const PatientForm = (props: Props) => {
               selectedValue={patient.role}
               onChange={onChange}
               options={[
-                { label: "-Select-", value: "" },
-                { label: "Staff", value: "STAFF" },
-                { label: "Resident", value: "RESIDENT" },
-                { label: "Student", value: "STUDENT" },
-                { label: "Visitor", value: "VISITOR" },
+                { label: '-Select-', value: '' },
+                { label: 'Staff', value: 'STAFF' },
+                { label: 'Resident', value: 'RESIDENT' },
+                { label: 'Student', value: 'STUDENT' },
+                { label: 'Visitor', value: 'VISITOR' },
               ]}
             />
             {!props.isPxpView && (
@@ -548,7 +548,7 @@ const PatientForm = (props: Props) => {
                   setFormChanged(true);
                 }}
                 onBlur={validateField}
-                validationStatus={validationStatus("currentFacilityId")}
+                validationStatus={validationStatus('currentFacilityId')}
                 errorMessage={errors.currentFacilityId}
                 options={facilityList}
                 required
@@ -563,7 +563,7 @@ const PatientForm = (props: Props) => {
               value={patient.birthDate}
               onChange={onChange}
               onBlur={validateField}
-              validationStatus={validationStatus("birthDate")}
+              validationStatus={validationStatus('birthDate')}
               errorMessage={errors.birthDate}
               required
             />
@@ -580,12 +580,12 @@ const PatientForm = (props: Props) => {
                   value={patient.telephone}
                   onChange={onChange}
                   onBlur={validateField}
-                  validationStatus={validationStatus("telephone")}
+                  validationStatus={validationStatus('telephone')}
                   errorMessage={errors.telephone}
                   format={
-                    "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
+                    '^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$'
                   }
-                  formatMessage={"Phone number should have 10 digits"}
+                  formatMessage={'Phone number should have 10 digits'}
                   required
                 />
               </div>
@@ -597,7 +597,7 @@ const PatientForm = (props: Props) => {
               value={patient.email}
               onChange={onChange}
               onBlur={validateField}
-              validationStatus={validationStatus("email")}
+              validationStatus={validationStatus('email')}
               errorMessage={errors.email}
               format={
                 '^(([^<>()[\\]\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\.,;:\\s@\\"]+)*)|(\\".+\\"))@(([^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\"]{2,})$'
@@ -611,7 +611,7 @@ const PatientForm = (props: Props) => {
               value={patient.street}
               onChange={onChange}
               onBlur={validateField}
-              validationStatus={validationStatus("street")}
+              validationStatus={validationStatus('street')}
               errorMessage={errors.street}
               required
             />
@@ -647,7 +647,7 @@ const PatientForm = (props: Props) => {
                   defaultSelect
                   onChange={onChange}
                   onBlur={validateField}
-                  validationStatus={validationStatus("state")}
+                  validationStatus={validationStatus('state')}
                   errorMessage={errors.state}
                   required
                 />
@@ -659,10 +659,10 @@ const PatientForm = (props: Props) => {
                   value={patient.zipCode}
                   onChange={onChange}
                   onBlur={validateField}
-                  validationStatus={validationStatus("zipCode")}
+                  validationStatus={validationStatus('zipCode')}
                   errorMessage={errors.zipCode}
-                  format={"^\\d{5}(-\\d{4})?$"}
-                  formatMessage={"Zip code should have 5 digits"}
+                  format={'^\\d{5}(-\\d{4})?$'}
+                  formatMessage={'Zip code should have 5 digits'}
                   required
                 />
               </div>
@@ -704,13 +704,13 @@ const PatientForm = (props: Props) => {
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
             buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
+              { label: 'Yes', value: 'YES' },
+              { label: 'No', value: 'NO' },
             ]}
             selectedRadio={patient.residentCongregateSetting}
             onChange={onChange}
             onBlur={validateField}
-            validationStatus={validationStatus("residentCongregateSetting")}
+            validationStatus={validationStatus('residentCongregateSetting')}
             errorMessage={errors.residentCongregateSetting}
             required
           />
@@ -718,13 +718,13 @@ const PatientForm = (props: Props) => {
             legend="Work in Healthcare?"
             name="employedInHealthcare"
             buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
+              { label: 'Yes', value: 'YES' },
+              { label: 'No', value: 'NO' },
             ]}
             selectedRadio={patient.employedInHealthcare}
             onChange={onChange}
             onBlur={validateField}
-            validationStatus={validationStatus("employedInHealthcare")}
+            validationStatus={validationStatus('employedInHealthcare')}
             errorMessage={errors.employedInHealthcare}
             required
           />
@@ -742,7 +742,7 @@ const PatientForm = (props: Props) => {
                 <tbody>
                   {patient.testResults.map((r: any, i: number) => (
                     <tr key={i}>
-                      <td>{moment(r.dateTested).format("lll")}</td>
+                      <td>{moment(r.dateTested).format('lll')}</td>
                       <td>{r.result}</td>
                     </tr>
                   ))}
@@ -754,22 +754,22 @@ const PatientForm = (props: Props) => {
         <div
           className={
             props.isPxpView
-              ? "mobile-lg:display-flex flex-justify-end margin-top-2"
-              : "prime-edit-patient-heading"
+              ? 'mobile-lg:display-flex flex-justify-end margin-top-2'
+              : 'prime-edit-patient-heading'
           }
         >
           <Button
             id="edit-patient-save-lower"
-            className={props.isPxpView ? "" : "prime-save-patient-changes"}
+            className={props.isPxpView ? '' : 'prime-save-patient-changes'}
             disabled={!formChanged}
             onClick={savePatientData}
-            label={props.isPxpView ? "Save and continue" : "Save changes"}
+            label={props.isPxpView ? 'Save and continue' : 'Save changes'}
           />
           {props.isPxpView && (
             <Button
               className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
               variant="outline"
-              label={"Back"}
+              label={'Back'}
               onClick={props.backCallback}
             />
           )}
@@ -781,7 +781,7 @@ const PatientForm = (props: Props) => {
         onRequestClose={() => setHelpModalOpen(false)}
         style={{
           content: {
-            position: "initial",
+            position: 'initial',
           },
         }}
         overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
@@ -789,7 +789,7 @@ const PatientForm = (props: Props) => {
         <div className="modal__container">
           <button
             className="modal__close-button"
-            style={{ cursor: "pointer" }}
+            style={{ cursor: 'pointer' }}
             onClick={() => setHelpModalOpen(false)}
           >
             <img className="modal__close-img" src={iconClose} alt="Close" />

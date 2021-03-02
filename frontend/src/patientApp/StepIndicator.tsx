@@ -1,5 +1,5 @@
-import React from "react";
-import classnames from "classnames";
+import React from 'react';
+import classnames from 'classnames';
 
 interface Props {
   steps: {
@@ -16,7 +16,7 @@ const StepIndicator = ({
 }: Props): React.ReactElement => {
   const currentStep = steps.find(({ value }) => value === currentStepValue) || {
     order: 0,
-    label: "",
+    label: '',
   };
 
   return (
@@ -29,11 +29,11 @@ const StepIndicator = ({
           <li
             key={step.value}
             className={classnames(
-              "usa-step-indicator__segment",
+              'usa-step-indicator__segment',
               step.value === currentStepValue &&
-                "usa-step-indicator__segment--current",
+                'usa-step-indicator__segment--current',
               currentStep.order > step.order &&
-                "usa-step-indicator__segment--complete"
+                'usa-step-indicator__segment--complete'
             )}
             aria-current={step.value === currentStepValue}
           >

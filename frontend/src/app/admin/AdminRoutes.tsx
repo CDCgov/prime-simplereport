@@ -1,9 +1,9 @@
-import React from "react";
-import { Redirect, Route } from "react-router-dom";
+import React from 'react';
+import { Redirect, Route } from 'react-router-dom';
 
-import OrganizationFormContainer from "./Organization/OrganizationFormContainer";
-import DeviceTypeFormContainer from "./DeviceType/DeviceTypeFormContainer";
-import Admin from "./Admin";
+import OrganizationFormContainer from './Organization/OrganizationFormContainer';
+import DeviceTypeFormContainer from './DeviceType/DeviceTypeFormContainer';
+import Admin from './Admin';
 
 interface Props {
   match: { url: string };
@@ -16,7 +16,7 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
       <Route
         path={match.url}
         render={({ location }) => (
-          <Redirect to={{ ...location, pathname: "/queue" }} />
+          <Redirect to={{ ...location, pathname: '/queue' }} />
         )}
       />
     );
@@ -31,7 +31,7 @@ const AdminRoutes: React.FC<Props> = ({ match, isAdmin }) => {
         path={`${match.url}/create-device-type`}
         render={() => <DeviceTypeFormContainer />}
       />
-      <Route path={"/admin"} exact={true} render={() => <Admin />} />
+      <Route path={'/admin'} exact={true} render={() => <Admin />} />
     </>
   );
 };
