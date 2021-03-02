@@ -51,8 +51,6 @@ public class ApiUserService {
 
   private static final Logger LOG = LoggerFactory.getLogger(ApiUserService.class);
 
-  public ApiUserService() {}
-
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
       String username,

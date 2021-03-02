@@ -98,17 +98,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return new IdentityAttributes(email, firstName, null, lastName, null);
       } else if (principal instanceof String) {
         String principalString = (String) principal;
-        if (!"anonymousUser".equals(principalString)) {
-          throw new RuntimeException(
-              "Unexpected authentication principal of type " + principalString);
+        if ("anonymousUser".equals(principalString)) {
+          return new IdentityAttributes(null, null, null, null, null);
         }
-        return new IdentityAttributes(null, null, null, null, null);
       }
       throw new RuntimeException(
-          "Unexpected authentication principal of type "
-              + principal.getClass()
-              + " with content: "
-              + principal);
+          "Unexpected authentication principal of type " + principal.getClass());
     };
   }
 }
