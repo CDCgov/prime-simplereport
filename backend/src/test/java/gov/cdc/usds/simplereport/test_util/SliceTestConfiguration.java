@@ -5,30 +5,26 @@ import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.AuthorizationServiceConfig;
+import gov.cdc.usds.simplereport.config.authorization.DemoUserIdentitySupplier;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
-import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.slf4j.LoggerFactory;
+import java.util.List;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
 
 /**
@@ -58,21 +54,10 @@ public class SliceTestConfiguration {
 
   @Bean
   public IdentitySupplier testIdentityProvider() {
-    final Map<String, IdentityAttributes> identityLookup =
-        Stream.of(
-                TestUserIdentities.STANDARD_USER_ATTRIBUTES,
-                TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)
-            .collect(Collectors.toMap(IdentityAttributes::getUsername, i -> i));
-    return () -> {
-      Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      if (auth == null) {
-        throw new IllegalStateException("No authentication found for test");
-      }
-      String username = auth.getName();
-      LoggerFactory.getLogger(SliceTestConfiguration.class)
-          .warn("Found username {} for auth {}", username, auth);
-      return identityLookup.get(username);
-    };
+    return new DemoUserIdentitySupplier(
+        List.of(
+            new DemoUser(null, TestUserIdentities.STANDARD_USER_ATTRIBUTES),
+            new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)));
   }
 
   @Retention(RetentionPolicy.RUNTIME)
