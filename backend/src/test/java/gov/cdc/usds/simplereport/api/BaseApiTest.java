@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -33,6 +34,8 @@ import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
+
+  private static final Logger LOG = LoggerFactory.getLogger(BaseApiTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
@@ -68,22 +71,21 @@ public abstract class BaseApiTest {
   }
 
   protected void useOrgUser() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
+    LOG.info("Configuring auth service mock for org user");
     when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
     _initService.initCurrentUser();
   }
 
   protected void useOutsideOrgUser() {
-    LoggerFactory.getLogger(BaseApiTest.class)
-        .info("Configuring auth service mock for outside org user");
+    LOG.info("Configuring auth service mock for outside org user");
     when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
     _initService.initCurrentUser();
   }
 
   protected void useOrgAdmin() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
+    LOG.info("Configuring auth service mock for org admin");
     when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
     _initService.initCurrentUser();
@@ -96,15 +98,14 @@ public abstract class BaseApiTest {
   }
 
   protected void useOrgEntryOnly() {
-    LoggerFactory.getLogger(BaseApiTest.class)
-        .info("Configuring auth service mock for org entry-only");
+    LOG.info("Configuring auth service mock for org entry-only");
     when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
     when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
     _initService.initCurrentUser();
   }
 
   protected void useSuperUser() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
+    LOG.info("Configuring supplier mock for super user");
     when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
     _initService.initCurrentUser();
   }
