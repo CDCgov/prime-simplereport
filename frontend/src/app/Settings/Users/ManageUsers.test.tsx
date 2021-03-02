@@ -85,6 +85,37 @@ describe("ManageUsers", () => {
     expect(container).toMatchSnapshot();
   });
   it("passes user details to the addUserToOrg function", async () => {
+    const { getByText, findAllByRole, getByLabelText } = render(
+      <ManageUsers
+        users={users}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
+    );
+
+    const newUser = {
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane@smith.co",
+      role: "ADMIN",
+    };
+
+    fireEvent.click(getByText("New User", { exact: false }));
+    const [first, last, email] = await findAllByRole("textbox");
+    const select = getByLabelText("Access Level", { exact: false });
+    fireEvent.change(first, inputValue(newUser.firstName));
+    fireEvent.change(last, inputValue(newUser.lastName));
+    fireEvent.change(email, inputValue(newUser.email));
+    fireEvent.change(select, inputValue("ADMIN"));
+    fireEvent.click(getByText("Send invite", { exact: false }));
+    await waitFor(() => expect(addUserToOrg).toBeCalled());
+    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+  });
+  it("passes user details to the addUserToOrg function without a role", async () => {
     const { getByText, findAllByRole } = render(
       <ManageUsers
         users={users}
