@@ -1,5 +1,6 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
+import { CSSTransition } from "react-transition-group";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
@@ -10,31 +11,15 @@ import { useLocalQueue } from "./useLocalQueue";
 const pollInterval = 10_000;
 
 const transitionDuration = 1000;
-
-const pxToNumber = (px: string | undefined): number =>
-  px ? Number(px.replace("px", "")) : 0;
-
-const getQueueItemStyles = (id: string, remove: boolean) => {
-  const defaultStyle = { opacity: 1 };
-  if (!remove) {
-    return defaultStyle;
-  }
-  const element = document.querySelector(
-    `#queue-container-${id} .prime-queue-item`
-  );
-  if (!element) {
-    return defaultStyle;
-  }
-  const computed = getComputedStyle(element);
-  const computedHeight =
-    pxToNumber(computed.height) + pxToNumber(computed.marginBottom);
-  return {
-    opacity: 0,
-    transitionProperty: "opacity, margin-bottom",
-    transitionDuration: `${transitionDuration}ms`,
-    transitionTimingFunction: "ease",
-    marginBottom: -1 * computedHeight,
-  };
+const removeDelay = 200;
+const onExiting = (node: HTMLElement) => {
+  node.style.marginBottom = `-${node.offsetHeight}px`;
+  node.style.opacity = "0";
+  node.style.transition = `opacity ${transitionDuration}ms ease-out, margin ${transitionDuration}ms ease-out`;
+};
+const onExit = (node: HTMLElement) => {
+  node.style.marginBottom = `0`;
+  node.style.opacity = "";
 };
 
 const emptyQueueMessage = (
@@ -136,7 +121,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   const { localQueue, toRemove, setToRemove } = useLocalQueue(
     data?.queue,
-    transitionDuration
+    transitionDuration + removeDelay
   );
 
   if (error) {
@@ -182,10 +167,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             ...questions
           }) => {
             return (
-              <div
-                key={internalId}
-                id={`queue-container-${internalId}`}
-                style={getQueueItemStyles(internalId, toRemove.has(internalId))}
+              <CSSTransition
+                in={!toRemove.has(internalId)}
+                timeout={transitionDuration}
+                classNames="alert"
+                onExit={onExit}
+                onExiting={onExiting}
+                unmountOnExit
               >
                 <QueueItem
                   internalId={internalId}
@@ -201,7 +189,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                   patientLinkId={patientLink?.internalId || null}
                   removePatientFromLocalQueue={removePatientFromLocalQueue}
                 />
-              </div>
+              </CSSTransition>
             );
           }
         )
