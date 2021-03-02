@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
@@ -72,17 +73,17 @@ public class PersonService {
 
   private Specification<Person> inWholeOrganization() {
     return (root, query, cb) ->
-        cb.equal(root.get(Person.Organization).get(Person.InternalId), getOrgId());
+        cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId());
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.
   private Specification<Person> inFacility(@NotNull UUID facilityId) {
     return (root, query, cb) ->
         cb.and(
-            cb.equal(root.get(Person.Organization).get(Person.InternalId), getOrgId()),
+            cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId()),
             cb.or(
-                cb.isNull(root.get(Person.Facility)), // null check first
-                cb.equal(root.get(Person.Facility).get(Person.InternalId), facilityId)));
+                cb.isNull(root.get(SpecField.Facility)), // null check first
+                cb.equal(root.get(SpecField.Facility).get(SpecField.InternalId), facilityId)));
   }
 
   private Specification<Person> nameMatches(
@@ -90,13 +91,13 @@ public class PersonService {
     String likeString = namePrefixMatch.toLowerCase() + "%";
     return (root, query, cb) ->
         cb.or(
-            cb.like(cb.lower(root.get(Person.PersonName).get("firstName")), likeString),
-            cb.like(cb.lower(root.get(Person.PersonName).get("middleName")), likeString),
-            cb.like(cb.lower(root.get(Person.PersonName).get("lastName")), likeString));
+            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.FirstName)), likeString),
+            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.MiddleName)), likeString),
+            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.LastName)), likeString));
   }
 
   private Specification<Person> isDeleted(boolean isDeleted) {
-    return (root, query, cb) -> cb.equal(root.get(Person.IsDeleted), isDeleted);
+    return (root, query, cb) -> cb.equal(root.get(SpecField.IsDeleted), isDeleted);
   }
 
   // called by List function and Count function

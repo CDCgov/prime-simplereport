@@ -28,13 +28,6 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Person extends OrganizationScopedEternalEntity {
 
-  // these field names strings are used by Specification builders
-  public static final String PersonName = "nameInfo";
-  public static final String IsDeleted = "isDeleted";
-  public static final String Facility = "facility";
-  public static final String Organization = "organization";
-  public static final String InternalId = "internalId";
-
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
   @ManyToOne(optional = true)
@@ -266,5 +259,17 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public PersonRole getRole() {
     return role;
+  }
+
+  // these field names strings are used by Specification builders
+  public static class SpecField {
+    public static String PersonName = "nameInfo";
+    public static String IsDeleted = "isDeleted";
+    public static String Facility = "facility";
+    public static String Organization = "organization";
+    public static String InternalId = "internalId";
+    public static String FirstName = "firstName";
+    public static String MiddleName = "middleName";
+    public static String LastName = "lastName";
   }
 }
