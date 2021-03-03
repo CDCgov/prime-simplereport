@@ -30,6 +30,8 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-52:2.10.0'
     implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
+
+    // data validation
     implementation 'com.googlecode.libphonenumber:libphonenumber:8.12.15'
     implementation 'com.smartystreets.api:smartystreets-java-sdk:3.7.2'
 
