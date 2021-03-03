@@ -229,9 +229,12 @@ public class ApiUserService {
 
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
-    if (userIdentity == null && _contextHolder.hasPatientLink()) {
-      // we're in a patient experience interaction
-      return getPatientApiUser();
+    if (userIdentity == null) {
+      if (_contextHolder.hasPatientLink()) {
+        // we're in a patient experience interaction
+        return getPatientApiUser();
+      }
+      throw new UnidentifiedUserException();
     }
 
     Optional<ApiUser> found = _apiUserRepo.findByLoginEmail(userIdentity.getUsername());
