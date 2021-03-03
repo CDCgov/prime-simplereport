@@ -229,7 +229,7 @@ public class ApiUserService {
 
   private ApiUser getCurrentApiUser() {
     IdentityAttributes userIdentity = _supplier.get();
-    if (userIdentity == null || userIdentity.getUsername() == null) {
+    if (userIdentity == null && _contextHolder.hasPatientLink()) {
       // we're in a patient experience interaction
       return getPatientApiUser();
     }

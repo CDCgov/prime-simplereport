@@ -97,8 +97,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
       } else if (principal instanceof String) {
-        String principalString = (String) principal;
-        if ("anonymousUser".equals(principalString)) {
+        if ("anonymousUser".equals((String)principal)) {
           return null;
         }
       }
