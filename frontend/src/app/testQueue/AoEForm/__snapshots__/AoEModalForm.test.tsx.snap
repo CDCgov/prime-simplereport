@@ -31,7 +31,7 @@ Array [
     </div>
   </div>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-1"
   />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
@@ -146,7 +146,7 @@ Array [
     </div>
   </div>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-1"
   />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
@@ -250,7 +250,7 @@ Array [
     </div>
   </div>,
   <div
-    className="border-top border-base-lighter margin-x-neg-205 margin-top-205"
+    className="border-top border-base-lighter margin-x-neg-205 margin-top-1"
   />,
   <h2
     className="font-heading-lg margin-top-205 margin-bottom-0"
