@@ -1,7 +1,4 @@
 /* eslint no-unused-expressions: 0 */
-function padSmallNumbers(num) {
-  return num < 10 ? `0${num}` : num;
-}
 
 function acceptTos() {
   this.expect.section('@app').to.be.visible;
@@ -21,11 +18,7 @@ function verifyBirthDate(birthDate) {
       'Enter your date of birth to access your COVID-19 Testing Portal.'
     );
   this.section.app.expect.element('@dobInput').to.be.visible;
-  const dobDate = new Date(birthDate);
-  const formattedDob = `${padSmallNumbers(
-    dobDate.getMonth() + 1
-  )}/${padSmallNumbers(dobDate.getDate())}/${dobDate.getFullYear()}`;
-  this.section.app.setValue('@dobInput', formattedDob);
+  this.section.app.setValue('@dobInput', birthDate);
   this.section.app.click('@dobSubmitButton');
   this.expect.section('@app').to.be.visible;
   this.expect.section('@app').to.contain.text('Profile information');

@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
 import Button from "../commonComponents/Button";
-import { displayFullName, showNotification, showError } from "../utils";
+import { displayFullName, showNotification } from "../utils";
 import "./ArchivePersonModal.scss";
 import { Patient } from "./ManagePatients";
 import Alert from "../commonComponents/Alert";
@@ -42,9 +42,6 @@ const ArchivePersonModal = ({ person, closeModal }: Props) => {
       .then(() => {
         const alert = <Alert type="success" title="Record archived" body="" />;
         showNotification(toast, alert);
-      })
-      .catch((e) => {
-        showError(toast, String(e));
       })
       .finally(() => {
         closeModal();

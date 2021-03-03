@@ -50,10 +50,11 @@ public class PatientLinkService {
 
   public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
     try {
-      PatientLink pl = getPatientLink(internalId);
-      TestOrder testOrder = pl.getTestOrder();
+      PatientLink patientLink = getPatientLink(internalId);
+      TestOrder testOrder = patientLink.getTestOrder();
+      Person patient = testOrder.getPatient();
       if (testOrder.getPatient().getBirthDate().equals(birthDate)) {
-        contextHolder.setLinkedOrder(testOrder);
+        contextHolder.setContext(patientLink, testOrder, patient);
         return true;
       }
       return false;

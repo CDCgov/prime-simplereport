@@ -6,7 +6,7 @@ import graphql.GraphQLError;
 import graphql.language.SourceLocation;
 import java.util.List;
 
-/** Exception to throw when a user does not exist. */
+/** Exception to throw when a user can't be identified */
 public class UnidentifiedUserException extends RuntimeException implements GraphQLError {
 
   private static final long serialVersionUID = 1L;
