@@ -43,10 +43,11 @@ okta:
   client:
     org-url: https://hhs-prime.okta.com
     token: ${OKTA_API_KEY:MISSING}
+smarty-streets:
+    auth-id: ${SMARTY_AUTH_ID:MISSING}
+    auth-token: ${SMARTY_AUTH_TOKEN:MISSING}
 simple-report:
-  address-validation:
-    smarty-auth-id: ${SMARTY_AUTH_ID:MISSING}
-    smarty-auth-token: ${SMARTY_AUTH_TOKEN:MISSING}
+
   data-hub:
     # these are overridden by application-dev, -prod, -test, etc
     upload-enabled: false

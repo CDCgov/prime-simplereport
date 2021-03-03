@@ -7,7 +7,7 @@ import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.MatchType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.simplereport.SmartyStreetsConfig;
+import gov.cdc.usds.simplereport.config.SmartyStreetsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import java.io.IOException;
@@ -26,9 +26,7 @@ public class AddressValidationService {
 
   @Autowired
   public AddressValidationService(SmartyStreetsConfig config) {
-    _client =
-        new ClientBuilder(config.getSmartyAuthId(), config.getSmartyAuthToken())
-            .buildUsStreetApiClient();
+    _client = new ClientBuilder(config.getAuthId(), config.getAuthToken()).buildUsStreetApiClient();
   }
 
   public Lookup createLookup(
