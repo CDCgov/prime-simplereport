@@ -214,7 +214,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
           />
         </div>
-
         {createQueueItems(data.queue)}
       </div>
     </main>
