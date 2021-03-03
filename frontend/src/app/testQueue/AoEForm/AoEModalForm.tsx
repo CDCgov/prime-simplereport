@@ -9,6 +9,7 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
+import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
 import AoEForm from "./AoEForm";
 
@@ -201,13 +202,14 @@ const AoEModalForm = (props: AoEModalProps) => {
 
   const buttonGroup = (
     <div className="sr-time-of-test-buttons">
-      <Button variant="unstyled" label="Cancel" onClick={onClose} />
-      <Button
-        className="margin-right-0"
-        label={saveButtonText}
-        type={"button"}
-        onClick={() => continueModal()}
-      />
+      {/* <Button variant="unstyled" label="Cancel" onClick={onClose} /> */}
+      <button
+        className="modal__close-button"
+        style={{ cursor: "pointer" }}
+        onClick={onClose}
+      >
+        <img className="modal__close-img" src={iconClose} alt="Close" />
+      </button>
     </div>
   );
 
@@ -307,8 +309,6 @@ const AoEModalForm = (props: AoEModalProps) => {
       isOpen={true}
       style={{
         content: {
-          maxHeight: "90vh",
-          width: "40em",
           position: "initial",
         },
       }}
@@ -325,7 +325,7 @@ const AoEModalForm = (props: AoEModalProps) => {
         </h1>
         {buttonGroup}
       </div>
-      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
       {modalContents()}
     </Modal>
   );
