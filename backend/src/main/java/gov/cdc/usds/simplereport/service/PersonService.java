@@ -69,15 +69,14 @@ public class PersonService {
     return _os.getCurrentOrganization().getInternalId();
   }
 
-  // Specifications for queries
-
-  private Specification<Person> inWholeOrganization() {
+  // Specifications filters for queries
+  private Specification<Person> inWholeOrganizationFilter() {
     return (root, query, cb) ->
         cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId());
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.
-  private Specification<Person> inFacility(@NotNull UUID facilityId) {
+  private Specification<Person> inFacilityFilter(@NotNull UUID facilityId) {
     return (root, query, cb) ->
         cb.and(
             cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId()),
@@ -86,7 +85,7 @@ public class PersonService {
                 cb.equal(root.get(SpecField.Facility).get(SpecField.InternalId), facilityId)));
   }
 
-  private Specification<Person> nameMatches(
+  private Specification<Person> nameMatchesFilter(
       @Size(min = MINIMUMCHARFORSEARCH) String namePrefixMatch) {
     String likeString = namePrefixMatch.toLowerCase() + "%";
     return (root, query, cb) ->
@@ -96,7 +95,7 @@ public class PersonService {
             cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.LastName)), likeString));
   }
 
-  private Specification<Person> isDeleted(boolean isDeleted) {
+  private Specification<Person> isDeletedFilter(boolean isDeleted) {
     return (root, query, cb) -> cb.equal(root.get(SpecField.IsDeleted), isDeleted);
   }
 
@@ -110,7 +109,7 @@ public class PersonService {
     ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
     perms.add(UserPermission.READ_PATIENT_LIST); // always required
     if (facilityId == null) {
-      perms.add(UserPermission.READ_PATIENT_LIST); // this is NOT right
+      perms.add(UserPermission.READ_PATIENT_LIST); // this is NOT right, but tests fail if changed
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
@@ -127,15 +126,15 @@ public class PersonService {
   public Specification<Person> buildFilterForListFunc(
       UUID facilityId, boolean isArchived, String searchTerm) {
     // build up filter based on params
-    Specification<Person> filter = isDeleted(isArchived);
+    Specification<Person> filter = isDeletedFilter(isArchived);
     if (facilityId == null) { // admin call to get all users
-      filter = filter.and(inWholeOrganization());
+      filter = filter.and(inWholeOrganizationFilter());
     } else {
-      filter = filter.and(inFacility(facilityId));
+      filter = filter.and(inFacilityFilter(facilityId));
     }
 
     if (searchTerm != null) {
-      filter = filter.and(nameMatches(searchTerm.trim()));
+      filter = filter.and(nameMatchesFilter(searchTerm.trim()));
     }
     return filter;
   }
