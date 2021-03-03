@@ -48,7 +48,7 @@ If Java isn't installed on a Mac you can get it from `brew`:
 
 ```sh
 brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk8
+brew cask install adoptopenjdk11
 brew install gradle
 ```
 
@@ -56,8 +56,8 @@ Another option (also compatible with Linux) is to install with [jabba](https://g
 
 ```sh
 curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
-jabba install adopt@1.8-0
-jabba use adopt@1.8
+jabba install adopt@1.11-0
+jabba use adopt@1.11
 ```
 
 Running with docker:
