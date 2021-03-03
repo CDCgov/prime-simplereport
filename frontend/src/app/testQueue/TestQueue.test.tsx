@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import TestQueue, { queueQuery } from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
@@ -30,14 +36,12 @@ describe("TestQueue", () => {
         <TestQueue activeFacilityId="a1" />
       </MockedProvider>
     );
-    jest.advanceTimersToNextTimer();
+    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
     const removeButton = (await screen.findAllByLabelText("Close"))[0];
     fireEvent.click(removeButton);
     const confirmButton = await screen.findByText("Yes", { exact: false });
     fireEvent.click(confirmButton);
-    waitFor(() => {
-      jest.advanceTimersToNextTimer();
-    });
+    await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
     expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });
 });
@@ -197,7 +201,7 @@ const mocks = [
     result: {
       data: {
         ...result.data,
-        queue: [result.data.queue[1]],
+        queue: result.data.queue.slice(1),
       },
     },
   },
