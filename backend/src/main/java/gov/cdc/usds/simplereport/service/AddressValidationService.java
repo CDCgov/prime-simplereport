@@ -10,8 +10,8 @@ import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.MatchType;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.SmartyStreetsConfig;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +28,12 @@ public class AddressValidationService {
   }
 
   @Autowired
-  public AddressValidationService(SmartyStreetsConfig config) {
-    _client = new ClientBuilder(config.getAuthId(), config.getAuthToken()).buildUsStreetApiClient();
+  public AddressValidationService(SmartyStreetsProperties config) {
+    _client = new ClientBuilder(config.getId(), config.getToken()).buildUsStreetApiClient();
   }
 
-  private Lookup getStrictLookup(String street1, String street2, String city, String state, String postalCode) {
+  private Lookup getStrictLookup(
+      String street1, String street2, String city, String state, String postalCode) {
     Lookup lookup = new Lookup();
     lookup.setStreet(parseString(street1));
     // Smartystreets defines Street2 as "Any extra address information (e.g., Leave it on the front
@@ -59,9 +60,9 @@ public class AddressValidationService {
 
     if (results.isEmpty()) {
       String errorMessage =
-      fieldName != null
-          ? "The " + fieldName + " address could not be verified"
-          : "The address you entered could not be verified";
+          fieldName != null
+              ? "The " + fieldName + " address could not be verified"
+              : "The address you entered could not be verified";
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
 
@@ -76,7 +77,13 @@ public class AddressValidationService {
   }
 
   /** Returns a StreetAddress if the address is valid and throws an exception if it is not */
-  public StreetAddress getValidatedAddress(String street1, String street2, String city, String state, String postalCode, String fieldName) {
+  public StreetAddress getValidatedAddress(
+      String street1,
+      String street2,
+      String city,
+      String state,
+      String postalCode,
+      String fieldName) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
     return getValidatedAddress(lookup, fieldName);
   }

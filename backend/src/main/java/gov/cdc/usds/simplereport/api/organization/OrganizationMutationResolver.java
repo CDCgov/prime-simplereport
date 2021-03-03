@@ -23,7 +23,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final DeviceTypeService _dts;
   private final AddressValidationService _avs;
 
-  public OrganizationMutationResolver(OrganizationService os, DeviceTypeService dts, AddressValidationService avs) {
+  public OrganizationMutationResolver(
+      OrganizationService os, DeviceTypeService dts, AddressValidationService avs) {
     _os = os;
     _dts = dts;
     _avs = avs;
@@ -58,7 +59,8 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(
+            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         _avs.getValidatedAddress(
             orderingProviderStreet,
@@ -117,9 +119,10 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(
+            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-     _avs.getValidatedAddress(
+        _avs.getValidatedAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
@@ -175,15 +178,16 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-    _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(
+            street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-    _avs.getValidatedAddress(
+        _avs.getValidatedAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
             orderingProviderState,
             orderingProviderZipCode,
-            PROVIDER_DISPLAY_NAME);
+            _avs.PROVIDER_DISPLAY_NAME);
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,

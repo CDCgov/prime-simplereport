@@ -12,7 +12,6 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.Metadata;
-
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
@@ -38,7 +37,7 @@ class AddressValidationServiceTest {
 
     IllegalGraphqlArgumentException caught =
         assertThrows(
-          IllegalGraphqlArgumentException.class,
+            IllegalGraphqlArgumentException.class,
             () -> {
               s.getValidatedAddress(lookup, null);
             });
