@@ -129,7 +129,7 @@ public abstract class BaseApiTest {
     truncateDb();
     _oktaRepo.reset();
     useOrgUser();
-    when(_addressValidation.getValidatedAddress(any())).thenReturn(_dataFactory.getAddress());
+    when(_addressValidation.getValidatedAddress(any(), any())).thenReturn(_dataFactory.getAddress());
     _initService.initAll();
   }
 

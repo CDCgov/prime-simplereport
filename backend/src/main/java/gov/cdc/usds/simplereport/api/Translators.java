@@ -2,12 +2,8 @@ package gov.cdc.usds.simplereport.api;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.smartystreets.api.us_street.Lookup;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
-import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -18,7 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -27,16 +22,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class Translators {
-
-  private static AddressValidationService _avs;
   private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy");
   private static final int MAX_STRING_LENGTH = 500;
-
-  @Autowired
-  public Translators(AddressValidationService avs) {
-    Translators._avs = avs;
-  }
 
   public static final LocalDate parseUserShortDate(String d) {
     String date = parseString(d);
@@ -225,30 +213,5 @@ public class Translators {
       symptomsMap.put(key, value);
     }
     return symptomsMap;
-  }
-
-  public static StreetAddress parseAddress(
-      String street1,
-      String street2,
-      String city,
-      String state,
-      String postalCode,
-      String fieldName) {
-    Lookup lookup =
-        _avs.createLookup(
-            parseString(street1),
-            parseString(street2),
-            parseString(city),
-            parseState(state),
-            parseString(postalCode));
-    try {
-      return _avs.getValidatedAddress(lookup);
-    } catch (InvalidAddressException _e) {
-      String errorMessage =
-          fieldName != null
-              ? "The " + fieldName + " address could not be verified"
-              : "The address you entered could not be verified";
-      throw new IllegalGraphqlArgumentException(errorMessage);
-    }
   }
 }

@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -21,10 +22,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
+  private final AddressValidationService _avs;
 
-  public OrganizationMutationResolver(OrganizationService os, DeviceTypeService dts) {
+  public OrganizationMutationResolver(OrganizationService os, DeviceTypeService dts, AddressValidationService avs) {
     _os = os;
     _dts = dts;
+    _avs = avs;
   }
 
   public ApiFacility addFacility(
@@ -56,9 +59,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        Translators.parseAddress(
+        _avs.getValidatedAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
@@ -115,9 +118,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        Translators.parseAddress(
+     _avs.getValidatedAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,
@@ -173,9 +176,9 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        Translators.parseAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+    _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        Translators.parseAddress(
+    _avs.getValidatedAddress(
             orderingProviderStreet,
             orderingProviderStreetTwo,
             orderingProviderCity,

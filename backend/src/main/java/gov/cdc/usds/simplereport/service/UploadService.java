@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import static gov.cdc.usds.simplereport.api.Translators.parseAddress;
 import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
@@ -37,10 +36,12 @@ public class UploadService {
   private static final int MAX_LINE_LENGTH = 1024 * 6;
 
   private final PersonService _ps;
+  private final AddressValidationService _avs;
   private boolean hasHeaderRow = false;
 
-  public UploadService(PersonService ps) {
+  public UploadService(PersonService ps, AddressValidationService avs) {
     this._ps = ps;
+    this._avs = avs;
   }
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -101,7 +102,7 @@ public class UploadService {
       rowNumber++;
       try {
         StreetAddress address =
-            parseAddress(
+            _avs.getValidatedAddress(
                 getRow(row, "Street", true),
                 getRow(row, "Street2", false),
                 getRow(row, "City", false),

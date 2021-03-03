@@ -12,8 +12,9 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.Metadata;
+
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.service.errors.InvalidAddressException;
 import java.io.IOException;
 import java.util.ArrayList;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,11 +36,11 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(new ArrayList<Candidate>());
 
-    InvalidAddressException caught =
+    IllegalGraphqlArgumentException caught =
         assertThrows(
-            InvalidAddressException.class,
+          IllegalGraphqlArgumentException.class,
             () -> {
-              s.getValidatedAddress(lookup);
+              s.getValidatedAddress(lookup, null);
             });
     assertEquals("Address entered could not be validated", caught.getMessage());
   }
@@ -51,7 +52,7 @@ class AddressValidationServiceTest {
     Lookup lookup = mock(Lookup.class);
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup);
+    StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("District of Columbia", address.getCounty());
   }
@@ -64,7 +65,7 @@ class AddressValidationServiceTest {
     when(lookup.getStreet()).thenReturn("User entered street");
     when(lookup.getResult()).thenReturn(results);
 
-    StreetAddress address = s.getValidatedAddress(lookup);
+    StreetAddress address = s.getValidatedAddress(lookup, null);
 
     assertEquals("User entered street", address.getStreetOne());
   }
