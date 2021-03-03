@@ -80,7 +80,7 @@ interface Props {
   activeFacilityId: string;
 }
 
-export interface QueueItemData {
+interface QueueItemData {
   internalId: string;
   pregnancy: string;
   dateAdded: string;

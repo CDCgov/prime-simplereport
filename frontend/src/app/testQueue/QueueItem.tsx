@@ -196,7 +196,6 @@ interface QueueItemProps {
   refetchQueue: () => void;
   facilityId: string;
   patientLinkId: string;
-  removePatientFromLocalQueue?: (id: string) => void;
 }
 
 interface updateQueueItemProps {
@@ -217,7 +216,6 @@ const QueueItem: any = ({
   facilityId,
   dateTestedProp,
   patientLinkId,
-  removePatientFromLocalQueue,
 }: QueueItemProps) => {
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
@@ -393,10 +391,6 @@ const QueueItem: any = ({
   };
 
   const removeFromQueue = () => {
-    if (removePatientId && removePatientFromLocalQueue) {
-      removePatientFromLocalQueue(removePatientId);
-    }
-
     setConfirmationType("none");
     trackRemovePatientFromQueue({});
     removePatientFromQueue({
