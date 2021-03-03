@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 /** Mutations for creating and updating patient records. */
 @Component
 public class PatientMutationResolver implements GraphQLMutationResolver {
-  private final String PERSON_DISPLAY_NAME = "Person";
 
   private static final Logger LOG = LoggerFactory.getLogger(PatientMutationResolver.class);
 
@@ -75,7 +74,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       Boolean employedInHealthcare) {
 
     StreetAddress address =
-        parseAddress(street, street2, city, state, zipCode, PERSON_DISPLAY_NAME);
+        parseAddress(street, street2, city, state, zipCode, null);
 
     _ps.addPatient(
         facilityId,
@@ -120,7 +119,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
     StreetAddress address =
-        parseAddress(street, street2, city, state, zipCode, PERSON_DISPLAY_NAME);
+        parseAddress(street, street2, city, state, zipCode, null);
     _ps.updatePatient(
         facilityId,
         patientId,

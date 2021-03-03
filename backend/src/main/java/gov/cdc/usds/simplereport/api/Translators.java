@@ -244,8 +244,11 @@ public class Translators {
     try {
       return _avs.getValidatedAddress(lookup);
     } catch (InvalidAddressException _e) {
-      throw new IllegalGraphqlArgumentException(
-          "The address you entered for the " + fieldName + " could not be verified.");
+      String errorMessage =
+          fieldName != null
+              ? "The " + fieldName + " address could not be verified"
+              : "The address you entered could not be verified";
+      throw new IllegalGraphqlArgumentException(errorMessage);
     }
   }
 }

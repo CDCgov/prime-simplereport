@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UploadService {
   private static final String FACILITY_ID = "facilityId";
   private static final int MAX_LINE_LENGTH = 1024 * 6;
-  private static final String PATIENT_DISPLAY_NAME = "Patient";
 
   private final PersonService _ps;
   private boolean hasHeaderRow = false;
@@ -108,7 +107,7 @@ public class UploadService {
                 getRow(row, "City", false),
                 getRow(row, "State", true),
                 getRow(row, "ZipCode", true),
-                PATIENT_DISPLAY_NAME);
+                null);
         _ps.addPatient(
             parseUUID(getRow(row, FACILITY_ID, false)),
             null, // lookupID. this field is deprecated

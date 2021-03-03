@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/17/20 */
 @Component
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
-  private final String FACILITY_DISPLAY_NAME = "Facility";
+  private final String FACILITY_DISPLAY_NAME = "facility";
   private final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
