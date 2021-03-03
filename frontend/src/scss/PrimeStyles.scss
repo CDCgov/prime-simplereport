@@ -672,7 +672,14 @@
 [aria-label="Test questionnaire"] {
   margin: units(5) 0;
   max-height: stretch;
+  max-height: calc(100vh - #{units(10)});
   width: units("tablet");
+}
+
+@-moz-document url-prefix() {
+  [aria-label="Test questionnaire"] {
+    max-height: calc(100vh - #{units(10)});
+  }
 }
 
 .patient-app--landing {
