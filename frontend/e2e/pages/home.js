@@ -24,8 +24,14 @@ function conductTest(patientName) {
   this.section.modal.expect.element('@noSymptoms').to.be.visible;
   this.section.modal.click('@noSymptoms');
   this.section.modal.expect.element('@firstTest').to.be.visible;
+  this.api.execute(
+    'document.querySelector(\'input[name="prior_test_flag"][value="yes"]+label\').scrollIntoView()'
+  );
   this.section.modal.click('@firstTest');
   this.section.modal.expect.element('@pregnant').to.be.visible;
+  this.api.execute(
+    'document.querySelector(\'input[name="pregnancy"][value="60001007"]+label\').scrollIntoView()'
+  );
   this.section.modal.click('@pregnant');
   this.section.modal.expect.element('@continueButton').to.be.visible;
   this.section.modal.click('@continueButton');
