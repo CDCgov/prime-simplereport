@@ -11,7 +11,6 @@ import { useLocalQueue } from "./useLocalQueue";
 const pollInterval = 10_000;
 
 const transitionDuration = 1000;
-const removeDelay = 200;
 const onExiting = (node: HTMLElement) => {
   node.style.marginBottom = `-${node.offsetHeight}px`;
   node.style.opacity = "0";
@@ -117,7 +116,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
 
   const { localQueue, toRemove, setToRemove } = useLocalQueue(
     data?.queue,
-    transitionDuration + removeDelay
+    transitionDuration
   );
 
   if (error) {
