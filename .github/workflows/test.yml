@@ -127,10 +127,8 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest --continue
-      - name: Run Spotless
-        run: ./gradlew spotlessCheck
+      - name: Run Style checks
+        run: ./gradlew checkstyleMain checkstyleTest spotlessCheck --continue
   frontend-lint-and-build:
     runs-on: ubuntu-latest
     steps:
