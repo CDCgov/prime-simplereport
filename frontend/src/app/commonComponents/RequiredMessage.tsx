@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import Required from './Required';
+import Required from "./Required";
 
 const RequiredMessage = () => (
   <p>

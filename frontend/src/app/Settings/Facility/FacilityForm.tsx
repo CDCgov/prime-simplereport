@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from '../../commonComponents/Button';
-import RequiredMessage from '../../commonComponents/RequiredMessage';
-import { LinkWithQuery } from '../../commonComponents/LinkWithQuery';
+import Button from "../../commonComponents/Button";
+import RequiredMessage from "../../commonComponents/RequiredMessage";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
-import ManageDevices from './Components/ManageDevices';
-import OrderingProviderSettings from './Components/OrderingProvider';
-import FacilityInformation from './Components/FacilityInformation';
+import ManageDevices from "./Components/ManageDevices";
+import OrderingProviderSettings from "./Components/OrderingProvider";
+import FacilityInformation from "./Components/FacilityInformation";
 
 interface Props {
   facility: Facility;
@@ -52,18 +52,18 @@ const FacilityForm: React.FC<Props> = (props) => {
       <div className="prime-container usa-card__container">
         <div className="usa-card__header">
           <div>
-            <FontAwesomeIcon icon={'arrow-left'} color="#888" />
+            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
             <LinkWithQuery to={`/settings/facilities`}>
-              {' '}
+              {" "}
               All facilities
             </LinkWithQuery>
             <h2>{facility.name}</h2>
           </div>
           <div
             style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <Button

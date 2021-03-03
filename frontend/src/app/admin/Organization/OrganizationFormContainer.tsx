@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import { gql, useMutation, useQuery } from '@apollo/client';
-import { toast } from 'react-toastify';
+import React, { useState } from "react";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { toast } from "react-toastify";
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from '@microsoft/applicationinsights-react-js';
-import { Redirect } from 'react-router-dom';
+} from "@microsoft/applicationinsights-react-js";
+import { Redirect } from "react-router-dom";
 
-import Alert from '../../commonComponents/Alert';
-import { showNotification } from '../../utils';
+import Alert from "../../commonComponents/Alert";
+import { showNotification } from "../../utils";
 
-import OrganizationForm from './OrganizationForm';
+import OrganizationForm from "./OrganizationForm";
 
 const GET_DEVICES_QUERY = gql`
   query GetDevices {
@@ -92,14 +92,14 @@ const OrganizationFormContainer: any = (props: Props) => {
   const { data, loading, error } = useQuery<DeviceTypes, {}>(
     GET_DEVICES_QUERY,
     {
-      fetchPolicy: 'no-cache',
+      fetchPolicy: "no-cache",
     }
   );
   const appInsights = useAppInsightsContext();
   const [createOrganization] = useMutation(CREATE_ORGANIZATION_MUTATION);
   const trackSaveSettings = useTrackEvent(
     appInsights,
-    'Save Settings',
+    "Save Settings",
     null,
     false
   );
@@ -163,30 +163,30 @@ const OrganizationFormContainer: any = (props: Props) => {
   const getFacilityData = (): Facility => {
     const defaultDevice = data.deviceType[0].internalId;
     return {
-      id: '',
-      name: '',
-      cliaNumber: '',
-      street: '',
-      streetTwo: '',
-      city: '',
-      county: '',
-      state: '',
-      zipCode: '',
-      phone: '',
-      email: '',
+      id: "",
+      name: "",
+      cliaNumber: "",
+      street: "",
+      streetTwo: "",
+      city: "",
+      county: "",
+      state: "",
+      zipCode: "",
+      phone: "",
+      email: "",
       orderingProvider: {
-        firstName: '',
-        middleName: '',
-        lastName: '',
-        suffix: '',
-        NPI: '',
-        street: '',
-        streetTwo: '',
-        city: '',
-        county: '',
-        state: '',
-        zipCode: '',
-        phone: '',
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        suffix: "",
+        NPI: "",
+        street: "",
+        streetTwo: "",
+        city: "",
+        county: "",
+        state: "",
+        zipCode: "",
+        phone: "",
       },
       deviceTypes: [defaultDevice],
       defaultDevice,
@@ -200,9 +200,9 @@ const OrganizationFormContainer: any = (props: Props) => {
   return (
     <OrganizationForm
       organization={{
-        name: '',
-        internalId: '',
-        externalId: '',
+        name: "",
+        internalId: "",
+        externalId: "",
         testingFacility: [getFacilityData()],
       }}
       facility={getFacilityData()}

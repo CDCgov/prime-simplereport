@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 export const areAnswersComplete = (answers) => {
   if (!answers.noSymptoms) {
     const symptoms = JSON.parse(answers.symptoms);
     //TODO: real booleans rather than Pinocchio boolean strings
-    const filled = Object.values(symptoms).some((v) => String(v) === 'true');
+    const filled = Object.values(symptoms).some((v) => String(v) === "true");
     if (!filled || !answers.symptomOnset) {
       return false;
     }

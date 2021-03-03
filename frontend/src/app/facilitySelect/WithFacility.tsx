@@ -1,11 +1,11 @@
-import React from 'react';
-import { useDispatch, useSelector, connect } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import React from "react";
+import { useDispatch, useSelector, connect } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-import { updateFacility } from '../store';
-import { getFacilityIdFromUrl } from '../utils/url';
+import { updateFacility } from "../store";
+import { getFacilityIdFromUrl } from "../utils/url";
 
-import FacilitySelect from './FacilitySelect';
+import FacilitySelect from "./FacilitySelect";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Provides one of four standard alert types.
@@ -19,8 +19,8 @@ import React from 'react';
  */
 
 interface Props {
-  type: 'info' | 'success' | 'warning' | 'error';
-  role?: 'alert' | 'alertdialog' | 'region';
+  type: "info" | "success" | "warning" | "error";
+  role?: "alert" | "alertdialog" | "region";
   title: React.ReactNode;
   body?: React.ReactNode;
   children?: React.ReactNode;
@@ -29,7 +29,7 @@ const Alert = ({ type, title, body, role, children }: Props) => (
   <div
     className={`usa-alert usa-alert--${type}`}
     // eslint-disable-next-line jsx-a11y/aria-props
-    aria-role={role ? role : type === 'error' ? 'alert' : 'region'}
+    aria-role={role ? role : type === "error" ? "alert" : "region"}
   >
     <div className="usa-alert__body">
       <h3 className="usa-alert__heading">{title}</h3>

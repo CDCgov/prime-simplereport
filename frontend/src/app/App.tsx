@@ -1,27 +1,27 @@
-import React, { useEffect } from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { ToastContainer } from 'react-toastify';
-import { useDispatch, connect } from 'react-redux';
-import 'react-toastify/dist/ReactToastify.css';
-import { Redirect, Route, Switch } from 'react-router-dom';
-import { AppInsightsContext } from '@microsoft/applicationinsights-react-js';
+import React, { useEffect } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { ToastContainer } from "react-toastify";
+import { useDispatch, connect } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
+import { Redirect, Route, Switch } from "react-router-dom";
+import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 
-import { reactPlugin } from './AppInsights';
-import ProtectedRoute from './commonComponents/ProtectedRoute';
-import PrimeErrorBoundary from './PrimeErrorBoundary';
-import Header from './commonComponents/Header';
-import USAGovBanner from './commonComponents/USAGovBanner';
-import LoginView from './LoginView';
-import { setInitialState } from './store';
-import TestResultsList from './testResults/TestResultsList';
-import TestQueueContainer from './testQueue/TestQueueContainer';
-import ManagePatientsContainer from './patients/ManagePatientsContainer';
-import EditPatientContainer from './patients/EditPatientContainer';
-import AddPatient from './patients/AddPatient';
-import AdminRoutes from './admin/AdminRoutes';
-import WithFacility from './facilitySelect/WithFacility';
-import { appPermissions } from './permissions';
-import Settings from './Settings/Settings';
+import { reactPlugin } from "./AppInsights";
+import ProtectedRoute from "./commonComponents/ProtectedRoute";
+import PrimeErrorBoundary from "./PrimeErrorBoundary";
+import Header from "./commonComponents/Header";
+import USAGovBanner from "./commonComponents/USAGovBanner";
+import LoginView from "./LoginView";
+import { setInitialState } from "./store";
+import TestResultsList from "./testResults/TestResultsList";
+import TestQueueContainer from "./testQueue/TestQueueContainer";
+import ManagePatientsContainer from "./patients/ManagePatientsContainer";
+import EditPatientContainer from "./patients/EditPatientContainer";
+import AddPatient from "./patients/AddPatient";
+import AdminRoutes from "./admin/AdminRoutes";
+import WithFacility from "./facilitySelect/WithFacility";
+import { appPermissions } from "./permissions";
+import Settings from "./Settings/Settings";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -49,7 +49,7 @@ const WHOAMI_QUERY = gql`
 const App = () => {
   const dispatch = useDispatch();
   const { data, loading, error } = useQuery(WHOAMI_QUERY, {
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   useEffect(() => {
@@ -116,7 +116,7 @@ const App = () => {
                     <Redirect
                       to={{
                         ...location,
-                        pathname: data.whoami.isAdmin ? '/admin' : '/queue',
+                        pathname: data.whoami.isAdmin ? "/admin" : "/queue",
                       }}
                     />
                   )}
@@ -158,7 +158,7 @@ const App = () => {
                   userPermissions={data.whoami.permissions}
                 />
                 <Route
-                  path={'/admin'}
+                  path={"/admin"}
                   render={({ match }) => (
                     <AdminRoutes match={match} isAdmin={data.whoami.isAdmin} />
                   )}

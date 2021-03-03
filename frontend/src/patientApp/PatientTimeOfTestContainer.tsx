@@ -1,9 +1,9 @@
-import React from 'react';
-import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { getTimeOfTestSteps } from './timeOfTest/constants';
-import StepIndicator from './StepIndicator';
+import { getTimeOfTestSteps } from "./timeOfTest/constants";
+import StepIndicator from "./StepIndicator";
 
 interface Props {
   children: React.ReactNode;
@@ -20,7 +20,7 @@ const PatientTimeOfTestContainer = ({ children, currentPage }: Props) => {
   };
 
   if (plid == null) {
-    throw new Error('Patient Link ID from URL was null');
+    throw new Error("Patient Link ID from URL was null");
   } else {
     setPatientLinkId(plid);
   }

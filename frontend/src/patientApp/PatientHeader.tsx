@@ -1,6 +1,6 @@
-import { useSelector } from 'react-redux';
+import { useSelector } from "react-redux";
 
-import siteLogo from '../img/simplereport-logomark-color.svg';
+import siteLogo from "../img/simplereport-logomark-color.svg";
 
 const PatientHeader = () => {
   const organization = useSelector(

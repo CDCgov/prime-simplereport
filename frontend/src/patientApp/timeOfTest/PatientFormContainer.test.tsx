@@ -1,20 +1,20 @@
-import renderer from 'react-test-renderer';
-import { MockedProvider } from '@apollo/client/testing';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import renderer from "react-test-renderer";
+import { MockedProvider } from "@apollo/client/testing";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 
-import PatientFormContainer from './PatientFormContainer';
+import PatientFormContainer from "./PatientFormContainer";
 
 const mockStore = configureStore([]);
 
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   useHistory: () => ({
     listen: jest.fn(),
     push: jest.fn(),
   }),
 }));
 
-jest.mock('../../app/patients/PatientForm', () => () => (
+jest.mock("../../app/patients/PatientForm", () => () => (
   <div>Patient Form Mock</div>
 ));
 
@@ -25,17 +25,17 @@ jest.mock('../../app/patients/PatientForm', () => () => (
 //   useTrackEvent: jest.fn(),
 // }));
 
-describe('PatientFormContainer', () => {
-  it('snapshot', () => {
+describe("PatientFormContainer", () => {
+  it("snapshot", () => {
     const store = mockStore({
       patient: {
         residentCongregateSetting: true,
         employedInHealthcare: true,
-        birthDate: '',
+        birthDate: "",
       },
-      plid: 'foo',
+      plid: "foo",
       facility: {
-        id: '123',
+        id: "123",
       },
       facilities: [],
     });

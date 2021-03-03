@@ -1,13 +1,13 @@
-import renderer from 'react-test-renderer';
-import { MockedProvider } from '@apollo/client/testing';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
+import renderer from "react-test-renderer";
+import { MockedProvider } from "@apollo/client/testing";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 
-import PatientForm from './PatientForm';
+import PatientForm from "./PatientForm";
 
 const mockStore = configureStore([]);
 
-jest.mock('react-router-dom', () => ({
+jest.mock("react-router-dom", () => ({
   Prompt: (props: any) => <></>,
   useHistory: () => ({
     listen: jest.fn(),
@@ -15,38 +15,38 @@ jest.mock('react-router-dom', () => ({
   }),
 }));
 
-jest.mock('@microsoft/applicationinsights-react-js', () => ({
+jest.mock("@microsoft/applicationinsights-react-js", () => ({
   useAppInsightsContext: () => {},
   useTrackEvent: jest.fn(),
 }));
 
-describe('PatientForm', () => {
-  it('snapshot', () => {
+describe("PatientForm", () => {
+  it("snapshot", () => {
     const store = mockStore({
       patient: {
-        internalId: '51c73542-dc64-4ee8-8368-926fcc61b39e',
+        internalId: "51c73542-dc64-4ee8-8368-926fcc61b39e",
         residentCongregateSetting: true,
         employedInHealthcare: true,
-        birthDate: '1987-01-31',
+        birthDate: "1987-01-31",
       },
-      plid: 'foo',
+      plid: "foo",
       facility: {
-        id: '123',
+        id: "123",
       },
       facilities: [],
     });
     const patient = {
-      internalId: '51c73542-dc64-4ee8-8368-926fcc61b39e',
-      firstName: 'Malik',
-      lastName: 'Massey',
-      middleName: 'McKenzie Albert',
-      birthDate: '1987-01-31',
+      internalId: "51c73542-dc64-4ee8-8368-926fcc61b39e",
+      firstName: "Malik",
+      lastName: "Massey",
+      middleName: "McKenzie Albert",
+      birthDate: "1987-01-31",
       residentCongregateSetting: true,
       employedInHealthcare: true,
       gender: null,
     };
     const facility = {
-      id: '123',
+      id: "123",
     };
     const component = renderer.create(
       <Provider store={store}>

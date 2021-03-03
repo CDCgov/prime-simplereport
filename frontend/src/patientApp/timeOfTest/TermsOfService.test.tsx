@@ -1,18 +1,18 @@
-import renderer from 'react-test-renderer';
-import { MockedProvider } from '@apollo/client/testing';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import { Router } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import renderer from "react-test-renderer";
+import { MockedProvider } from "@apollo/client/testing";
+import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import { Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
-import TermsOfService from './TermsOfService';
+import TermsOfService from "./TermsOfService";
 
 const mockStore = configureStore([]);
 
-describe('TermsOfService', () => {
-  it('snapshot', () => {
+describe("TermsOfService", () => {
+  it("snapshot", () => {
     const store = mockStore({
-      plid: 'foo',
+      plid: "foo",
     });
     const component = renderer.create(
       <Router history={createMemoryHistory()}>

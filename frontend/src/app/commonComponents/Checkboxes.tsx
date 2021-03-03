@@ -1,10 +1,10 @@
-import React from 'react';
-import classnames from 'classnames';
+import React from "react";
+import classnames from "classnames";
 
-import Required from '../commonComponents/Required';
-import Optional from '../commonComponents/Optional';
+import Required from "../commonComponents/Required";
+import Optional from "../commonComponents/Optional";
 
-import useUniqueIds from './useUniqueIds';
+import useUniqueIds from "./useUniqueIds";
 
 // Checkbox objects need a value and label but also can have intrinsic `input`
 // DOM properties such as `disabled`, `readonly`, `aria-xxx` etc.
@@ -12,7 +12,7 @@ export type CheckboxProps = {
   value: string;
   label: string;
 };
-type InputProps = JSX.IntrinsicElements['input'];
+type InputProps = JSX.IntrinsicElements["input"];
 type Checkbox = CheckboxProps & InputProps;
 interface Props {
   boxes: Checkbox[];
@@ -23,7 +23,7 @@ interface Props {
   disabled?: boolean;
   className?: string;
   errorMessage?: string;
-  validationStatus?: 'error' | 'success';
+  validationStatus?: "error" | "success";
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
@@ -42,26 +42,26 @@ const Checkboxes = (props: Props) => {
     required,
     inputRef,
   } = props;
-  const checkboxIds = useUniqueIds('check', boxes.length);
+  const checkboxIds = useUniqueIds("check", boxes.length);
 
   return (
     <fieldset
       className={classnames(
-        'usa-fieldset prime-checkboxes',
-        validationStatus === 'error' && 'usa-form-group--error',
+        "usa-fieldset prime-checkboxes",
+        validationStatus === "error" && "usa-form-group--error",
         props.className
       )}
     >
       <legend
         className={classnames(
-          'usa-legend',
-          validationStatus === 'error' && 'usa-label--error',
-          legendSrOnly && 'usa-sr-only'
+          "usa-legend",
+          validationStatus === "error" && "usa-label--error",
+          legendSrOnly && "usa-sr-only"
         )}
       >
         {required ? <Required label={legend} /> : <Optional label={legend} />}
       </legend>
-      {validationStatus === 'error' && (
+      {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
           {errorMessage}
@@ -69,8 +69,8 @@ const Checkboxes = (props: Props) => {
       )}
       <div
         className={classnames(
-          'usa-form-group',
-          validationStatus === 'error' && 'usa-form-group--error'
+          "usa-form-group",
+          validationStatus === "error" && "usa-form-group--error"
         )}
       >
         {boxes.map(({ value, label, disabled, checked, ...inputProps }, i) => (

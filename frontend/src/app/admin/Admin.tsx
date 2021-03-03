@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Admin = () => {
   return (
@@ -14,13 +14,13 @@ const Admin = () => {
             </div>
             <div className="usa-card__body">
               <div>
-                {' '}
+                {" "}
                 <Link to="/admin/create-organization">
                   Create new organization
                 </Link>
               </div>
               <div>
-                {' '}
+                {" "}
                 <Link to="/admin/create-device-type">
                   Create new device type
                 </Link>

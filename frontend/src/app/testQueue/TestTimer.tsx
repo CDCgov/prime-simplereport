@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStopwatch, faRedo } from '@fortawesome/free-solid-svg-icons';
-import './TestTimer.scss';
+import React, { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
+import "./TestTimer.scss";
 
 type DateTimeStamp = ReturnType<typeof Date.now>;
 type TimerId = string;
@@ -23,7 +23,7 @@ const initialTimerCount = 15 * 60 * 1000;
 const timers: Timer[] = [];
 
 // Initialized timer values, id is always created unique
-const initialTimerValues: Omit<Timer, 'id'> = {
+const initialTimerValues: Omit<Timer, "id"> = {
   alarmAt: 0,
   startedAt: 0,
   countdown: initialTimerCount,
@@ -34,7 +34,7 @@ const initialTimerValues: Omit<Timer, 'id'> = {
 // React-scripts 4.x (or a dependency) changed the way `require`
 // returns the name of the file. New: a `Module` with a `default`
 // string having the file name; Old: the actual file name.
-const alarmModule = require('./test-timer.mp3');
+const alarmModule = require("./test-timer.mp3");
 
 const alarmSound = new Audio(alarmModule.default || alarmModule);
 
@@ -59,7 +59,7 @@ const timerTick = () => {
 };
 
 const saveTimers = () => {
-  localStorage.setItem('timers', JSON.stringify(timers));
+  localStorage.setItem("timers", JSON.stringify(timers));
 };
 
 // On load, retrieve timers from localStorage and prune them;
@@ -71,7 +71,7 @@ const saveTimers = () => {
 
   let oldTimers: Timer[] = [];
   try {
-    const storage = localStorage.getItem('timers') || '[]';
+    const storage = localStorage.getItem("timers") || "[]";
     const cutoff = Date.now() - staleTimerCount;
     oldTimers = JSON.parse(storage).filter((t: Timer) => t.alarmAt > cutoff);
   } catch (e) {}
@@ -139,7 +139,7 @@ export const TestTimerWidget = ({ timer }: Props) => {
   const mmss = (t: number) => {
     const mins = Math.floor(Math.abs(t) / 60);
     const secs = Math.abs(t) % 60;
-    return `${mins}:${('0' + secs).slice(-2)}`;
+    return `${mins}:${("0" + secs).slice(-2)}`;
   };
   if (!running) {
     return (
@@ -158,8 +158,8 @@ export const TestTimerWidget = ({ timer }: Props) => {
   return (
     <div>
       <button className="timer-button timer-ready" onClick={reset}>
-        <span className="result-ready">RESULT READY</span>{' '}
-        <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{' '}
+        <span className="result-ready">RESULT READY</span>{" "}
+        <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
         <FontAwesomeIcon icon={faRedo} />
       </button>
     </div>

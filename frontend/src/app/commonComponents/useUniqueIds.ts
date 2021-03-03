@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 // Use predictable id values in snapshots
-const IS_TEST = process.env.NODE_ENV === 'test';
+const IS_TEST = process.env.NODE_ENV === "test";
 
 // Global to track unique instance creations
 let instanceCount = 0;
@@ -21,6 +21,6 @@ export default function useUniqueIds(prefix: string, numberOfIds: number) {
   }
 
   return Array(numberOfIds)
-    .fill(`${prefix}-${IS_TEST ? 'test' : instance || instanceCount}-`)
+    .fill(`${prefix}-${IS_TEST ? "test" : instance || instanceCount}-`)
     .map((prefix, i) => prefix + (i + 1));
 }

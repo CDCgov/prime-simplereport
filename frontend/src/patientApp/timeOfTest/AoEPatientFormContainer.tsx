@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import { useHistory, Redirect } from 'react-router-dom';
-import { connect, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useHistory, Redirect } from "react-router-dom";
+import { connect, useSelector } from "react-redux";
 
-import AoEForm from '../../app/testQueue/AoEForm/AoEForm';
-import { showError } from '../../app/utils';
-import { getPatientLinkIdFromUrl } from '../../app/utils/url';
-import PatientTimeOfTestContainer from '../PatientTimeOfTestContainer';
-import { PxpApi } from '../PxpApiService';
+import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
+import { showError } from "../../app/utils";
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
+import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
+import { PxpApi } from "../PxpApiService";
 
 interface Props {
   page: string;
@@ -29,13 +29,13 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
       await PxpApi.submitQuestions(plid as string, patient.birthDate, data);
       setNextPage(true);
     } catch (e) {
-      showError('There was an error submitting your responses');
+      showError("There was an error submitting your responses");
       return;
     }
   };
 
   history.listen((loc, action) => {
-    if (action === 'POP') {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });
@@ -44,7 +44,7 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
     return (
       <Redirect
         to={{
-          pathname: '/success',
+          pathname: "/success",
         }}
       />
     );
@@ -55,14 +55,14 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-confirm',
+          pathname: "/patient-info-confirm",
         }}
       />
     );
   }
 
   return (
-    <PatientTimeOfTestContainer currentPage={'symptoms'}>
+    <PatientTimeOfTestContainer currentPage={"symptoms"}>
       <AoEForm
         patient={patient}
         isModal={false}

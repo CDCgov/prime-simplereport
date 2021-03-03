@@ -1,26 +1,26 @@
-import { gql, useQuery } from '@apollo/client';
-import React, { useState } from 'react';
-import moment from 'moment';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useSelector } from 'react-redux';
+import { gql, useQuery } from "@apollo/client";
+import React, { useState } from "react";
+import moment from "moment";
+import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
-import { displayFullName } from '../utils';
-import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from '../../config/constants';
-import { daysSince } from '../utils/date';
-import { capitalizeText } from '../utils/text';
-import { LinkWithQuery } from '../commonComponents/LinkWithQuery';
-import { ActionsMenu } from '../commonComponents/ActionsMenu';
+import { displayFullName } from "../utils";
+import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
+import { daysSince } from "../utils/date";
+import { capitalizeText } from "../utils/text";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
-} from '../commonComponents/QueryWrapper';
-import Pagination from '../commonComponents/Pagination';
+} from "../commonComponents/QueryWrapper";
+import Pagination from "../commonComponents/Pagination";
 
-import PatientUpload from './PatientUpload';
-import ArchivePersonModal from './ArchivePersonModal';
+import PatientUpload from "./PatientUpload";
+import ArchivePersonModal from "./ArchivePersonModal";
 
-import './ManagePatients.scss';
+import "./ManagePatients.scss";
 
 const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
@@ -129,24 +129,24 @@ export const DetachedManagePatients = ({
         <tr
           key={patient.internalId}
           className={classnames(
-            'sr-patient-row',
-            patient.isDeleted && 'sr-patient-row--removed'
+            "sr-patient-row",
+            patient.isDeleted && "sr-patient-row--removed"
           )}
         >
           <th scope="row">{editUserLink}</th>
-          <td>{moment(patient.birthDate).format('MM/DD/yyyy')}</td>
+          <td>{moment(patient.birthDate).format("MM/DD/yyyy")}</td>
           <td>{capitalizeText(patient.role)}</td>
           <td>
             {patient.lastTest
               ? `${daysSince(moment(patient.lastTest.dateAdded))}`
-              : 'N/A'}
+              : "N/A"}
           </td>
           <td>
             {canEditUser && !patient.isDeleted && (
               <ActionsMenu
                 items={[
                   {
-                    name: 'Archive record',
+                    name: "Archive record",
                     action: () => setArchivePerson(patient),
                   },
                 ]}
@@ -167,7 +167,7 @@ export const DetachedManagePatients = ({
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
-                  Showing {Math.min(entriesPerPage, totalEntries)} of{' '}
+                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
                   {totalEntries}
                 </span>
               </h2>
@@ -212,7 +212,7 @@ export const DetachedManagePatients = ({
   );
 };
 
-type InjectedContainerProps = 'pageCount' | 'entriesPerPage' | 'totalEntries';
+type InjectedContainerProps = "pageCount" | "entriesPerPage" | "totalEntries";
 
 const ManagePatients = (
   props: Omit<Props, InjectedQueryWrapperProps | InjectedContainerProps>
@@ -228,7 +228,7 @@ const ManagePatients = (
     refetch: refetchCount,
   } = useQuery(patientsCountQuery, {
     variables: { facilityId: activeFacilityId, showDeleted: false },
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   if (activeFacilityId.length < 1) {

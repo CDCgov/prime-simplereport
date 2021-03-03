@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import moment from 'moment';
+import React, { useState } from "react";
+import moment from "moment";
 
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from '../../constants';
-import RadioGroup from '../../commonComponents/RadioGroup';
-import Dropdown, { Option } from '../../commonComponents/Dropdown';
-import TextInput from '../../commonComponents/TextInput';
-import Optional from '../../commonComponents/Optional';
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
+import RadioGroup from "../../commonComponents/RadioGroup";
+import Dropdown, { Option } from "../../commonComponents/Dropdown";
+import TextInput from "../../commonComponents/TextInput";
+import Optional from "../../commonComponents/Optional";
 
 interface Props {
   testTypeConfig: Option[];
@@ -37,7 +37,7 @@ const PriorTestInputs: React.FC<Props> = ({
   setPriorTestType,
   lastTest,
 }) => {
-  const recentDate = (lastTest?.dateTested || '').split('T')[0];
+  const recentDate = (lastTest?.dateTested || "").split("T")[0];
   const filledPriorTest =
     priorTestDate &&
     recentDate === priorTestDate &&
@@ -47,8 +47,8 @@ const PriorTestInputs: React.FC<Props> = ({
     !priorTestDate || isFirstTest === undefined
       ? undefined
       : filledPriorTest
-      ? 'yes'
-      : 'no'
+      ? "yes"
+      : "no"
   );
   const previousTestEntry = (
     <>
@@ -58,14 +58,14 @@ const PriorTestInputs: React.FC<Props> = ({
         name="prior_test_date"
         value={priorTestDate}
         onChange={(e) => setPriorTestDate(e.target.value)}
-        max={new Date().toISOString().split('T')[0]}
+        max={new Date().toISOString().split("T")[0]}
         min="2020-02-01"
       />
       <Dropdown
         options={testTypeConfig}
         label="Type of Prior Test"
         name="prior_test_type"
-        selectedValue={priorTestType || ''}
+        selectedValue={priorTestType || ""}
         onChange={(e) => setPriorTestType(e.target.value)}
         defaultSelect
       />
@@ -86,7 +86,7 @@ const PriorTestInputs: React.FC<Props> = ({
         ]}
         label="Result of Prior Test"
         name="prior_test_result"
-        selectedValue={priorTestResult || ''}
+        selectedValue={priorTestResult || ""}
         defaultSelect
         onChange={(e) => setPriorTestResult(e.target.value)}
       />
@@ -105,7 +105,7 @@ const PriorTestInputs: React.FC<Props> = ({
         </div>
         <p className="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
-          {moment(lastTest.dateTested).format('LLLL')}
+          {moment(lastTest.dateTested).format("LLLL")}
           <br />
           <b>Type: </b>
           Antigen
@@ -120,18 +120,18 @@ const PriorTestInputs: React.FC<Props> = ({
         {legendIsh}
         <RadioGroup
           buttons={[
-            { label: 'Yes', value: 'yes' },
-            { label: 'No', value: 'no' },
+            { label: "Yes", value: "yes" },
+            { label: "No", value: "no" },
           ]}
           selectedRadio={lastTestAnswer}
           onChange={(e) => {
             setIsFirstTest(false);
             setlastTestAnswer(e.target.value);
-            if (e.target.value === 'yes') {
+            if (e.target.value === "yes") {
               // Fill in last test info using this data
               // TODO: update when test history has test type
-              setPriorTestType('2');
-              setPriorTestDate((lastTest.dateTested || '').split('T')[0]);
+              setPriorTestType("2");
+              setPriorTestDate((lastTest.dateTested || "").split("T")[0]);
               setPriorTestResult(lastTest?.result);
             } else {
               setPriorTestType(undefined);
@@ -144,7 +144,7 @@ const PriorTestInputs: React.FC<Props> = ({
           name="most_recent_flag"
           variant="horizontal"
         />
-        {lastTestAnswer === 'no' && previousTestEntry}
+        {lastTestAnswer === "no" && previousTestEntry}
       </>
     );
   }
@@ -161,14 +161,14 @@ const PriorTestInputs: React.FC<Props> = ({
 
       <RadioGroup
         buttons={[
-          { label: 'Yes', value: 'yes' },
-          { label: 'No', value: 'no' },
+          { label: "Yes", value: "yes" },
+          { label: "No", value: "no" },
         ]}
         selectedRadio={
-          isFirstTest === true ? 'yes' : isFirstTest === false ? 'no' : ''
+          isFirstTest === true ? "yes" : isFirstTest === false ? "no" : ""
         }
         onChange={(e) => {
-          setIsFirstTest(e.target.value === 'yes');
+          setIsFirstTest(e.target.value === "yes");
         }}
         legend="Is this your first covid test?"
         legendSrOnly

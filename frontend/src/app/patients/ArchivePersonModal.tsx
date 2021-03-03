@@ -1,14 +1,14 @@
-import React from 'react';
-import { gql, useMutation } from '@apollo/client';
-import Modal from 'react-modal';
-import { toast } from 'react-toastify';
+import React from "react";
+import { gql, useMutation } from "@apollo/client";
+import Modal from "react-modal";
+import { toast } from "react-toastify";
 
-import Button from '../commonComponents/Button';
-import { displayFullName, showNotification } from '../utils';
-import './ArchivePersonModal.scss';
-import Alert from '../commonComponents/Alert';
+import Button from "../commonComponents/Button";
+import { displayFullName, showNotification } from "../utils";
+import "./ArchivePersonModal.scss";
+import Alert from "../commonComponents/Alert";
 
-import { Patient } from './ManagePatients';
+import { Patient } from "./ManagePatients";
 
 const ARCHIVE_PERSON_RECORD = gql`
   mutation ArchivePerson($id: String!, $deleted: Boolean!) {
@@ -58,7 +58,7 @@ const ArchivePersonModal = ({ person, closeModal }: Props) => {
       contentLabel="Archive record"
     >
       <p>
-        Are you sure you want to archive the record for{' '}
+        Are you sure you want to archive the record for{" "}
         <b>
           {displayFullName(
             person.firstName,

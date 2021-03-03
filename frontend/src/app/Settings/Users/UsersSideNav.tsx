@@ -1,11 +1,11 @@
-import React from 'react';
-import classnames from 'classnames';
+import React from "react";
+import classnames from "classnames";
 
-import { displayFullName } from '../../utils';
+import { displayFullName } from "../../utils";
 
-import { SettingsUser } from './ManageUsersContainer';
+import { SettingsUser } from "./ManageUsersContainer";
 
-import './ManageUsers.scss';
+import "./ManageUsers.scss";
 
 interface Props {
   activeUserId: string;
@@ -30,13 +30,13 @@ const UsersSideNav: React.FC<Props> = ({
               key={user.id}
             >
               <button
-                style={{ cursor: 'pointer' }}
+                style={{ cursor: "pointer" }}
                 className={classnames(
-                  'usa-button--unstyled',
-                  'text-ink',
-                  'text-no-underline',
-                  'padding-105 padding-right-2',
-                  activeUserId === user.id && 'usa-current'
+                  "usa-button--unstyled",
+                  "text-ink",
+                  "text-no-underline",
+                  "padding-105 padding-right-2",
+                  activeUserId === user.id && "usa-current"
                 )}
               >
                 <span className="sidenav-user-name">

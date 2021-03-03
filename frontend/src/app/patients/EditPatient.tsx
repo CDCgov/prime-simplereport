@@ -1,7 +1,7 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
 
-import PatientForm from './PatientForm';
+import PatientForm from "./PatientForm";
 
 const GET_PATIENT = gql`
   query GetPatientDetails($id: String!) {
@@ -38,8 +38,8 @@ interface Props {
 
 const EditPatient = (props: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
-    variables: { id: props.patientId || '' },
-    fetchPolicy: 'no-cache',
+    variables: { id: props.patientId || "" },
+    fetchPolicy: "no-cache",
   });
 
   if (loading) {
@@ -50,9 +50,9 @@ const EditPatient = (props: Props) => {
   }
 
   const residentCongregateSetting = data.patient.residentCongregateSetting
-    ? 'YES'
-    : 'NO';
-  const employedInHealthcare = data.patient.employedInHealthcare ? 'YES' : 'NO';
+    ? "YES"
+    : "NO";
+  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">

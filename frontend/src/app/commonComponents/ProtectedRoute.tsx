@@ -1,7 +1,7 @@
-import React from 'react';
-import { Redirect, Route } from 'react-router-dom';
+import React from "react";
+import { Redirect, Route } from "react-router-dom";
 
-import { UserPermission } from '../permissions';
+import { UserPermission } from "../permissions";
 
 interface Props {
   requiredPermissions: UserPermission[];

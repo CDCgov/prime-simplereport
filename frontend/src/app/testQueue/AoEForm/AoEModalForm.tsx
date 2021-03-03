@@ -1,20 +1,20 @@
-import React, { useRef, useState } from 'react';
-import QRCode from 'react-qr-code';
-import Modal from 'react-modal';
-import { gql, useQuery, useMutation } from '@apollo/client';
-import { toast } from 'react-toastify';
+import React, { useRef, useState } from "react";
+import QRCode from "react-qr-code";
+import Modal from "react-modal";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
 
-import Button from '../../commonComponents/Button';
-import RadioGroup from '../../commonComponents/RadioGroup';
-import { displayFullName, showError } from '../../utils';
-import { globalSymptomDefinitions } from '../../../patientApp/timeOfTest/constants';
-import { getUrl } from '../../utils/url';
+import Button from "../../commonComponents/Button";
+import RadioGroup from "../../commonComponents/RadioGroup";
+import { displayFullName, showError } from "../../utils";
+import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
+import { getUrl } from "../../utils/url";
 
-import AoEForm from './AoEForm';
+import AoEForm from "./AoEForm";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
-  ? [{ label: 'Complete on smartphone', value: 'smartphone' }]
+  ? [{ label: "Complete on smartphone", value: "smartphone" }]
   : [];
 
 interface LastTestData {
@@ -79,7 +79,7 @@ const SmsModalContents = ({
       await sendSmsMutation({ variables: { internalId } });
       setSmsSuccess(true);
     } catch (e) {
-      showError(toast, 'SMS error', e);
+      showError(toast, "SMS error", e);
     }
   };
   return (
@@ -97,14 +97,14 @@ const SmsModalContents = ({
           <Button
             className="margin-right-205"
             label="Text link"
-            type={'button'}
+            type={"button"}
             onClick={() => sendSms()}
           />
         ) : (
           <Button
             className="margin-right-205"
             label="Continue"
-            type={'button'}
+            type={"button"}
             onClick={() => continueModal()}
           />
         )}
@@ -115,16 +115,16 @@ const SmsModalContents = ({
 
 const AoEModalForm = (props: AoEModalProps) => {
   const {
-    saveButtonText = 'Continue',
+    saveButtonText = "Continue",
     onClose,
     patient,
     loadState = {},
     saveCallback,
-    patientLinkId = '',
+    patientLinkId = "",
   } = props;
 
-  const [modalView, setModalView] = useState('');
-  const [patientLink, setPatientLink] = useState('');
+  const [modalView, setModalView] = useState("");
+  const [patientLink, setPatientLink] = useState("");
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -138,10 +138,10 @@ const AoEModalForm = (props: AoEModalProps) => {
           </span>
         </>
       ),
-      value: 'text',
+      value: "text",
     },
     ...qrCodeOption,
-    { label: 'Complete questionnaire verbally', value: 'verbal' },
+    { label: "Complete questionnaire verbally", value: "verbal" },
   ];
 
   const symptomsResponse: { [key: string]: boolean } = {};
@@ -162,7 +162,7 @@ const AoEModalForm = (props: AoEModalProps) => {
 
   const [sendSmsMutation] = useMutation(SEND_SMS_MUTATION);
   const { data, loading, error } = useQuery<LastTestData, {}>(LAST_TEST_QUERY, {
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
     variables: { patientId: patient.internalId },
   });
   if (loading) {
@@ -175,20 +175,20 @@ const AoEModalForm = (props: AoEModalProps) => {
 
   const continueModal = () => {
     // No need to save form if in "smartphone" mode
-    if (modalView === 'smartphone') {
+    if (modalView === "smartphone") {
       return onClose();
     }
     // Save default if form doesn't exist, otherwise submit form
     if (!formRef?.current) {
       saveCallback(patientResponse);
     } else {
-      formRef.current.dispatchEvent(new Event('submit'));
+      formRef.current.dispatchEvent(new Event("submit"));
     }
     return onClose();
   };
 
   const chooseModalView = async (view: string) => {
-    if (view === 'smartphone') {
+    if (view === "smartphone") {
       // if we already have a truthy qrCodeValue, we do not need to save the test order to generate a PLID
       setPatientLink(
         `${getUrl()}pxp?plid=${
@@ -205,7 +205,7 @@ const AoEModalForm = (props: AoEModalProps) => {
       <Button
         className="margin-right-0"
         label={saveButtonText}
-        type={'button'}
+        type={"button"}
         onClick={() => continueModal()}
       />
     </div>
@@ -227,16 +227,16 @@ const AoEModalForm = (props: AoEModalProps) => {
 
   const modalContents = () => {
     // the pre-patient-experience situation is way simpler!
-    if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== 'true') {
+    if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== "true") {
       return verbalForm;
     }
 
     let innerContents = null;
     switch (modalView) {
-      case 'verbal':
+      case "verbal":
         innerContents = verbalForm;
         break;
-      case 'text':
+      case "text":
         innerContents = (
           <SmsModalContents
             smsSuccess={smsSuccess}
@@ -250,7 +250,7 @@ const AoEModalForm = (props: AoEModalProps) => {
           />
         );
         break;
-      case 'smartphone':
+      case "smartphone":
         innerContents = (
           <>
             <section className="display-flex flex-justify-center margin-top-4 padding-top-5 border-top border-base-lighter">
@@ -272,7 +272,7 @@ const AoEModalForm = (props: AoEModalProps) => {
               <Button
                 className="margin-right-205"
                 label={saveButtonText}
-                type={'button'}
+                type={"button"}
                 onClick={() => continueModal()}
               />
             </div>
@@ -307,9 +307,9 @@ const AoEModalForm = (props: AoEModalProps) => {
       isOpen={true}
       style={{
         content: {
-          maxHeight: '90vh',
-          width: '40em',
-          position: 'initial',
+          maxHeight: "90vh",
+          width: "40em",
+          position: "initial",
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"

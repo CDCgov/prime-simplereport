@@ -1,9 +1,9 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { useSelector } from "react-redux";
 
-import { hasPermission, appPermissions } from '../permissions';
+import { hasPermission, appPermissions } from "../permissions";
 
-import ManagePatients from './ManagePatients';
+import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
   const activeFacilityId = useSelector(

@@ -1,13 +1,13 @@
-import { Route, RouteComponentProps, Switch } from 'react-router-dom';
+import { Route, RouteComponentProps, Switch } from "react-router-dom";
 
-import PrimeErrorBoundary from '../PrimeErrorBoundary';
-import Button from '../commonComponents/Button';
+import PrimeErrorBoundary from "../PrimeErrorBoundary";
+import Button from "../commonComponents/Button";
 
-import ManageOrganizationContainer from './ManageOrganizationContainer';
-import ManageFacilitiesContainer from './Facility/ManageFacilitiesContainer';
-import FacilityFormContainer from './Facility/FacilityFormContainer';
-import ManageUsersContainer from './Users/ManageUsersContainer';
-import SettingsNav from './SettingsNav';
+import ManageOrganizationContainer from "./ManageOrganizationContainer";
+import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
+import FacilityFormContainer from "./Facility/FacilityFormContainer";
+import ManageUsersContainer from "./Users/ManageUsersContainer";
+import SettingsNav from "./SettingsNav";
 
 interface Params {
   facilityId: string;
@@ -42,23 +42,23 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
           <SettingsNav />
           <Switch>
             <Route
-              path={match.url + '/facilities'}
+              path={match.url + "/facilities"}
               component={ManageFacilitiesContainer}
             />
             <Route
-              path={match.url + '/facility/:facilityId'}
+              path={match.url + "/facility/:facilityId"}
               render={({ match }: RouteComponentProps<Params>) => (
                 <FacilityFormContainer facilityId={match.params.facilityId} />
               )}
             />
             <Route
-              path={match.url + '/add-facility/'}
+              path={match.url + "/add-facility/"}
               render={({ match }: RouteComponentProps<Params>) => (
                 <FacilityFormContainer facilityId={match.params.facilityId} />
               )}
             />
             <Route
-              path={match.url + '/users'}
+              path={match.url + "/users"}
               component={ManageUsersContainer}
             />
             <Route component={ManageOrganizationContainer} />

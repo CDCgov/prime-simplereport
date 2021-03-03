@@ -1,7 +1,7 @@
-import React from 'react';
-import { useSelector } from 'react-redux';
+import React from "react";
+import { useSelector } from "react-redux";
 
-import EditPatient from './EditPatient';
+import EditPatient from "./EditPatient";
 
 interface Props {
   patientId: string;

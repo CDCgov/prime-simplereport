@@ -1,13 +1,13 @@
-import renderer from 'react-test-renderer';
-import MockDate from 'mockdate';
+import renderer from "react-test-renderer";
+import MockDate from "mockdate";
 
-import SymptomInputs from './SymptomInputs';
+import SymptomInputs from "./SymptomInputs";
 
-describe('SymptomInputs', () => {
+describe("SymptomInputs", () => {
   let component: renderer.ReactTestRenderer;
   let setNoSymptoms: jest.Mock;
   beforeEach(() => {
-    MockDate.set('2021-02-08');
+    MockDate.set("2021-02-08");
     setNoSymptoms = jest.fn();
     component = renderer.create(
       <SymptomInputs
@@ -15,7 +15,7 @@ describe('SymptomInputs', () => {
         setNoSymptoms={setNoSymptoms}
         currentSymptoms={{}}
         setSymptoms={jest.fn()}
-        onsetDate={''}
+        onsetDate={""}
         setOnsetDate={jest.fn()}
         symptomError={undefined}
         symptomOnsetError={undefined}
@@ -23,38 +23,38 @@ describe('SymptomInputs', () => {
     );
   });
 
-  it('renders', () => {
+  it("renders", () => {
     expect(component.toJSON()).toMatchSnapshot();
   });
 
-  describe('setting has symptoms', () => {
-    describe('no symptoms', () => {
+  describe("setting has symptoms", () => {
+    describe("no symptoms", () => {
       beforeEach(async () => {
         renderer.act(() => {
           component.root
-            .findByProps({ name: 'no_symptoms' })
+            .findByProps({ name: "no_symptoms" })
             .props.onChange({ target: { checked: false } });
         });
       });
-      it('calls setNoSymptoms', () => {
+      it("calls setNoSymptoms", () => {
         expect(setNoSymptoms).toHaveBeenCalledTimes(1);
       });
-      it('calls setNoSymptoms with true', () => {
+      it("calls setNoSymptoms with true", () => {
         expect(setNoSymptoms).toHaveBeenCalledWith(false);
       });
     });
-    describe('symptoms', () => {
+    describe("symptoms", () => {
       beforeEach(async () => {
         renderer.act(() => {
           component.root
-            .findByProps({ name: 'no_symptoms' })
+            .findByProps({ name: "no_symptoms" })
             .props.onChange({ target: { checked: true } });
         });
       });
-      it('calls setNoSymptoms', () => {
+      it("calls setNoSymptoms", () => {
         expect(setNoSymptoms).toHaveBeenCalledTimes(1);
       });
-      it('calls setNoSymptoms with true', () => {
+      it("calls setNoSymptoms with true", () => {
         expect(setNoSymptoms).toHaveBeenCalledWith(true);
       });
     });

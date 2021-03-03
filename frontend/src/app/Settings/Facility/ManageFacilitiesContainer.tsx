@@ -1,7 +1,7 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
 
-import ManageFacilities from './ManageFacilities';
+import ManageFacilities from "./ManageFacilities";
 
 const GET_FACILITIES = gql`
   query GetFacilities {
@@ -45,7 +45,7 @@ const GET_FACILITIES = gql`
 
 const ManageFacilitiesContainer: any = () => {
   const { data, loading, error } = useQuery<SettingsData, {}>(GET_FACILITIES, {
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
   });
 
   if (loading) {
@@ -62,7 +62,7 @@ const ManageFacilitiesContainer: any = () => {
   const facilities: Facility[] = data.organization.testingFacility.map((f) => {
     return {
       ...f,
-      defaultDevice: f.defaultDeviceType ? f.defaultDeviceType.internalId : '',
+      defaultDevice: f.defaultDeviceType ? f.defaultDeviceType.internalId : "",
       deviceTypes: Object.values(f.deviceTypes).map((d) => d.internalId),
     };
   });

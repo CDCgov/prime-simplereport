@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import usdsLogo from '../../img/usds-logo.png';
+import usdsLogo from "../../img/usds-logo.png";
 
 class Footer extends React.Component {
   render() {

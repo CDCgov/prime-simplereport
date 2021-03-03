@@ -1,11 +1,11 @@
-import React from 'react';
-import { gql, useQuery } from '@apollo/client';
-import { toast } from 'react-toastify';
+import React from "react";
+import { gql, useQuery } from "@apollo/client";
+import { toast } from "react-toastify";
 
-import { showError } from '../utils';
+import { showError } from "../utils";
 
-import AddToQueueSearch from './addToQueue/AddToQueueSearch';
-import QueueItem from './QueueItem';
+import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
+import QueueItem from "./QueueItem";
 
 const pollInterval = 10_000;
 
@@ -14,7 +14,7 @@ const emptyQueueMessage = (
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
-          There are no tests running. Search for a person to start their test{' '}
+          There are no tests running. Search for a person to start their test{" "}
         </p>
       </div>
     </div>
@@ -99,7 +99,7 @@ interface QueueItemData {
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
-    fetchPolicy: 'no-cache',
+    fetchPolicy: "no-cache",
     variables: {
       facilityId: activeFacilityId,
     },
@@ -122,7 +122,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   if (facility.deviceTypes.length === 0) {
     showError(
       toast,
-      'This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device.'
+      "This facility does not have any testing devices. Go into Settings -> Manage facilities and add a device."
     );
   }
   let shouldRenderQueue =

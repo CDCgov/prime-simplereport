@@ -1,6 +1,6 @@
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 
-import { COVID_RESULTS } from '../constants';
+import { COVID_RESULTS } from "../constants";
 
 export const patientPropType = PropTypes.shape({
   patientId: PropTypes.string,

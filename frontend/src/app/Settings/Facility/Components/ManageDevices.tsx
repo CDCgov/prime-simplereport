@@ -1,9 +1,9 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import Button from '../../../commonComponents/Button';
-import Dropdown from '../../../commonComponents/Dropdown';
-import Checkboxes from '../../../commonComponents/Checkboxes';
+import Button from "../../../commonComponents/Button";
+import Dropdown from "../../../commonComponents/Dropdown";
+import Checkboxes from "../../../commonComponents/Checkboxes";
 
 interface Props {
   deviceTypes: string[];
@@ -71,8 +71,8 @@ const ManageDevices: React.FC<Props> = ({
               name="default_device"
               boxes={[
                 {
-                  value: '1',
-                  label: 'Set as default',
+                  value: "1",
+                  label: "Set as default",
                   checked: deviceId === defaultDevice,
                 },
               ]}
@@ -80,7 +80,7 @@ const ManageDevices: React.FC<Props> = ({
           </td>
           <td>
             <div onClick={() => onDeviceRemove(deviceId)}>
-              <FontAwesomeIcon icon={'trash'} className={'prime-red-icon'} />
+              <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
             </div>
           </td>
         </tr>
@@ -95,7 +95,7 @@ const ManageDevices: React.FC<Props> = ({
     return (
       <table
         className="usa-table usa-table--borderless"
-        style={{ width: '100%' }}
+        style={{ width: "100%" }}
       >
         <thead>
           <tr>

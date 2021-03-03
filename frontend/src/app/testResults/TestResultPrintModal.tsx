@@ -1,17 +1,17 @@
-import React from 'react';
-import { gql } from '@apollo/client';
-import Modal from 'react-modal';
-import moment from 'moment';
-import classnames from 'classnames';
+import React from "react";
+import { gql } from "@apollo/client";
+import Modal from "react-modal";
+import moment from "moment";
+import classnames from "classnames";
 
-import Button from '../commonComponents/Button';
-import { displayFullName } from '../utils';
-import './TestResultPrintModal.scss';
-import logo from '../../img/simplereport-logo-black.svg';
-import { QueryWrapper } from '../commonComponents/QueryWrapper';
+import Button from "../commonComponents/Button";
+import { displayFullName } from "../utils";
+import "./TestResultPrintModal.scss";
+import logo from "../../img/simplereport-logo-black.svg";
+import { QueryWrapper } from "../commonComponents/QueryWrapper";
 
 const formatDate = (date: string | undefined) =>
-  moment(date)?.format('MM/DD/yyyy');
+  moment(date)?.format("MM/DD/yyyy");
 
 export const testQuery = gql`
   query getTestResultForPrint($id: String!) {
@@ -87,8 +87,8 @@ export const DetachedTestResultPrintModal = ({
       {buttonGroup}
       <div
         className={classnames(
-          'sr-test-result-report',
-          correctionStatus === 'REMOVED' && 'sr-removed-result'
+          "sr-test-result-report",
+          correctionStatus === "REMOVED" && "sr-removed-result"
         )}
       >
         <header>
@@ -183,7 +183,7 @@ export const DetachedTestResultPrintModal = ({
           </section>
           <section className="sr-result-section sr-result-next-steps">
             <h2>Notes</h2>
-            {data.testResult.result !== 'POSITIVE' && (
+            {data.testResult.result !== "POSITIVE" && (
               <>
                 <p>
                   Antigen tests can return inaccurate or false results and
@@ -207,7 +207,7 @@ export const DetachedTestResultPrintModal = ({
                 </ul>
               </>
             )}
-            {data.testResult.result === 'POSITIVE' && (
+            {data.testResult.result === "POSITIVE" && (
               <>
                 <p>
                   Most people who get COVID-19 will be able to recover at home.
@@ -252,7 +252,7 @@ export const DetachedTestResultPrintModal = ({
                   If someone is showing any of these signs, seek emergency
                   medical care immediately:
                 </p>
-                <ul className="sr-multi-column" style={{ height: '5ex' }}>
+                <ul className="sr-multi-column" style={{ height: "5ex" }}>
                   <li>Trouble breathing</li>
                   <li>Persistent chest pain/pressure</li>
                   <li>New confusion</li>
@@ -277,7 +277,7 @@ export const DetachedTestResultPrintModal = ({
   );
 };
 
-const TestResultPrintModal = (props: Omit<Props, 'data'>) => (
+const TestResultPrintModal = (props: Omit<Props, "data">) => (
   <QueryWrapper<Props>
     query={testQuery}
     queryOptions={{ variables: { id: props.testResultId } }}

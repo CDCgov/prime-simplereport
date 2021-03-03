@@ -1,67 +1,67 @@
-import { formatFullName } from './user';
+import { formatFullName } from "./user";
 
-describe('formatFullName', () => {
-  test('empty user', () => {
+describe("formatFullName", () => {
+  test("empty user", () => {
     const user: any = {
-      firstName: '',
-      lastName: '',
-      middleName: '',
-      suffix: '',
+      firstName: "",
+      lastName: "",
+      middleName: "",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe('');
+    expect(formatFullName(user)).toBe("");
   });
-  test('user with only firstName', () => {
+  test("user with only firstName", () => {
     const user: any = {
-      firstName: 'Kim',
-      lastName: '',
-      middleName: '',
-      suffix: '',
+      firstName: "Kim",
+      lastName: "",
+      middleName: "",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe('Kim');
+    expect(formatFullName(user)).toBe("Kim");
   });
-  test('user with only middleName', () => {
+  test("user with only middleName", () => {
     const user: any = {
-      firstName: '',
-      lastName: '',
-      middleName: 'Rebecca',
-      suffix: '',
+      firstName: "",
+      lastName: "",
+      middleName: "Rebecca",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe(' Rebecca');
+    expect(formatFullName(user)).toBe(" Rebecca");
   });
-  test('user with only lastName', () => {
+  test("user with only lastName", () => {
     const user: any = {
-      firstName: '',
-      lastName: 'Mendoza',
-      middleName: '',
-      suffix: '',
+      firstName: "",
+      lastName: "Mendoza",
+      middleName: "",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe(' Mendoza');
+    expect(formatFullName(user)).toBe(" Mendoza");
   });
-  test('user no middle name', () => {
+  test("user no middle name", () => {
     const user: any = {
-      firstName: 'Kim',
-      lastName: 'Mendoza',
-      middleName: '',
-      suffix: '',
+      firstName: "Kim",
+      lastName: "Mendoza",
+      middleName: "",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe('Kim Mendoza');
+    expect(formatFullName(user)).toBe("Kim Mendoza");
   });
-  test('user full name', () => {
+  test("user full name", () => {
     const user: any = {
-      firstName: 'Kim',
-      lastName: 'Mendoza',
-      middleName: 'Rebecca',
-      suffix: '',
+      firstName: "Kim",
+      lastName: "Mendoza",
+      middleName: "Rebecca",
+      suffix: "",
     };
-    expect(formatFullName(user)).toBe('Kim Rebecca Mendoza');
+    expect(formatFullName(user)).toBe("Kim Rebecca Mendoza");
   });
-  test('user full name and suffix', () => {
+  test("user full name and suffix", () => {
     const user: any = {
-      firstName: 'Kim',
-      lastName: 'Mendoza',
-      middleName: 'Rebecca',
-      suffix: 'PhD',
+      firstName: "Kim",
+      lastName: "Mendoza",
+      middleName: "Rebecca",
+      suffix: "PhD",
     };
-    expect(formatFullName(user)).toBe('Kim Rebecca Mendoza, PhD');
+    expect(formatFullName(user)).toBe("Kim Rebecca Mendoza, PhD");
   });
 });

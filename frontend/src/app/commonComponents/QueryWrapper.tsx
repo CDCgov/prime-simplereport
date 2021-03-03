@@ -1,20 +1,20 @@
-import React from 'react';
-import { gql, QueryHookOptions, useQuery } from '@apollo/client';
+import React from "react";
+import { gql, QueryHookOptions, useQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
-} from '@microsoft/applicationinsights-react-js';
+} from "@microsoft/applicationinsights-react-js";
 
 export type InjectedQueryWrapperProps =
-  | 'data'
-  | 'trackAction'
-  | 'refetch'
-  | 'startPolling'
-  | 'stopPolling';
+  | "data"
+  | "trackAction"
+  | "refetch"
+  | "startPolling"
+  | "stopPolling";
 
 const defaultQueryOptions: QueryHookOptions = {
   variables: {},
-  fetchPolicy: 'cache-and-network',
+  fetchPolicy: "cache-and-network",
 };
 
 export function QueryWrapper<ComponentProps>({
@@ -33,7 +33,7 @@ export function QueryWrapper<ComponentProps>({
   componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
 }): React.ReactElement {
   const appInsights = useAppInsightsContext();
-  const trackAction = useTrackEvent(appInsights, 'User Action', {});
+  const trackAction = useTrackEvent(appInsights, "User Action", {});
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     query,
     {

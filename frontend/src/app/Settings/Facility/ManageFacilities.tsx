@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 
-import { LinkWithQuery } from '../../commonComponents/LinkWithQuery';
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 interface Props {
   facilities: Facility[];

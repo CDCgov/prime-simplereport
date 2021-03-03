@@ -1,10 +1,10 @@
-import React from 'react';
-import classnames from 'classnames';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleLeft, faAngleRight } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
 
-import './Pagination.scss';
-import { LinkWithQuery } from '../commonComponents/LinkWithQuery';
+import "./Pagination.scss";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 interface Props {
   baseRoute: string;
@@ -57,7 +57,7 @@ const Pagination = ({
   }) => (
     <LinkWithQuery
       to={`${baseRoute}/${props.to}`}
-      className={classnames(props.active && 'is-active')}
+      className={classnames(props.active && "is-active")}
       aria-label={props.label}
     >
       {props.children}
@@ -83,7 +83,7 @@ const Pagination = ({
 
   return (
     <nav
-      className={classnames('usa-pagination', className)}
+      className={classnames("usa-pagination", className)}
       role="navigation"
       aria-label="Pagination"
     >

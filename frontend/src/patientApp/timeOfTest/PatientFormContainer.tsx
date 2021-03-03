@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { connect, useSelector } from 'react-redux';
-import { useHistory, Redirect } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { connect, useSelector } from "react-redux";
+import { useHistory, Redirect } from "react-router-dom";
 
-import PatientForm from '../../app/patients/PatientForm';
-import PatientTimeOfTestContainer from '../PatientTimeOfTestContainer';
+import PatientForm from "../../app/patients/PatientForm";
+import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 
 const PatientFormContainer = () => {
   const [prevPage, setPrevPage] = useState(false);
@@ -17,7 +17,7 @@ const PatientFormContainer = () => {
 
   const history = useHistory();
   history.listen((loc, action) => {
-    if (action === 'POP') {
+    if (action === "POP") {
       setPrevPage(true);
     }
   });
@@ -30,7 +30,7 @@ const PatientFormContainer = () => {
     return (
       <Redirect
         to={{
-          pathname: '/patient-info-confirm',
+          pathname: "/patient-info-confirm",
         }}
       />
     );
@@ -41,14 +41,14 @@ const PatientFormContainer = () => {
       <Redirect
         push
         to={{
-          pathname: '/patient-info-symptoms',
+          pathname: "/patient-info-symptoms",
         }}
       />
     );
   }
 
   return (
-    <PatientTimeOfTestContainer currentPage={'profile'}>
+    <PatientTimeOfTestContainer currentPage={"profile"}>
       <PatientForm
         patient={patient}
         activeFacilityId={facility.id}
