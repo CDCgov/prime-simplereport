@@ -34,7 +34,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   @BeforeEach
   void setupData() {
     initSampleData();
-    initSampleData();
     when(_addressValidation.getValidatedAddress(any())).thenReturn(address);
   }
 

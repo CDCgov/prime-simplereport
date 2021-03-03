@@ -131,7 +131,7 @@ public abstract class BaseApiTest {
     useOrgUser();
     _initService.initAll();
     when(_addressValidation.getValidatedAddress(any())).thenReturn(_dataFactory.getAddress());
-    _initService.initCurrentUser();
+    // _initService.initCurrentUser();
   }
 
   @AfterEach
