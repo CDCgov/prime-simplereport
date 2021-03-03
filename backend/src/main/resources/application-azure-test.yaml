@@ -24,4 +24,4 @@ simple-report:
   feature-flags:
     patient-links: true
 twilio:
-  enabled: false
+  enabled: true
