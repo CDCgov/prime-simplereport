@@ -57,7 +57,7 @@ public class AddressValidationService {
     ArrayList<Candidate> results = lookup.getResult();
 
     if (results.isEmpty()) {
-      throw new InvalidAddressException("Address entered could not be validated");
+      throw new InvalidAddressException();
     }
 
     Candidate addressMatch = results.get(0);
