@@ -167,39 +167,6 @@ public class PersonService {
     return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
   }
 
-  public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
-    return getPatients(facilityId, pageOffset, pageSize, false, null);
-  }
-
-  public long getPatientsCount(UUID facilityId) {
-    return getPatientsCount(facilityId, false, null);
-  }
-
-  public List<Person> getAllPatients(int pageOffset, int pageSize) {
-    return getPatients(null, pageOffset, pageSize, false, null);
-  }
-
-  public long getAllPatientsCount() {
-    return getPatientsCount(null, false, null);
-  }
-
-  // FYI archived is not just a parameter because it requires different permissions.
-  public List<Person> getArchivedPatients(UUID facilityId, int pageOffset, int pageSize) {
-    return getPatients(facilityId, pageOffset, pageSize, true, null);
-  }
-
-  public long getArchivedPatientsCount(UUID facilityId) {
-    return getPatientsCount(facilityId, true, null);
-  }
-
-  public List<Person> getAllArchivedPatients(int pageOffset, int pageSize) {
-    return getPatients(null, pageOffset, pageSize, true, null);
-  }
-
-  public long getAllArchivedPatientsCount() {
-    return getPatientsCount(null, true, null);
-  }
-
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
   public Person getPatientNoPermissionsCheck(String id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
