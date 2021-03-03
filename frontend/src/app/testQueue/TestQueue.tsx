@@ -1,12 +1,11 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
-import { CSSTransition } from "react-transition-group";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 import { showError } from "../utils";
 import { toast } from "react-toastify";
-import { useLocalQueue } from "./useLocalQueue";
 
 const pollInterval = 10_000;
 
@@ -114,15 +113,10 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     pollInterval,
   });
 
-  const { localQueue, toRemove, setToRemove } = useLocalQueue(
-    data?.queue,
-    transitionDuration
-  );
-
   if (error) {
     throw error;
   }
-  if (loading || !localQueue) {
+  if (loading) {
     return <p>Loading patients...</p>;
   }
 
@@ -139,15 +133,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     );
   }
   let shouldRenderQueue =
-    localQueue.length > 0 && facility.deviceTypes.length > 0;
-
-  const removePatientFromLocalQueue = (id: string) => {
-    setToRemove((r) => {
-      const newToRemove = new Set(r);
-      newToRemove.add(id);
-      return newToRemove;
-    });
-  };
+    data.queue.length > 0 && facility.deviceTypes.length > 0;
 
   const createQueueItems = (patientQueue: QueueItemData[]) =>
     shouldRenderQueue
@@ -164,10 +150,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             return (
               <CSSTransition
                 key={internalId}
-                in={!toRemove.has(internalId)}
-                timeout={transitionDuration}
                 onExiting={onExiting}
-                unmountOnExit
+                timeout={transitionDuration}
               >
                 <QueueItem
                   internalId={internalId}
@@ -181,7 +165,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                   facilityId={activeFacilityId}
                   dateTestedProp={dateTested}
                   patientLinkId={patientLink?.internalId || null}
-                  removePatientFromLocalQueue={removePatientFromLocalQueue}
                 />
               </CSSTransition>
             );
@@ -189,7 +172,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
         )
       : emptyQueueMessage;
 
-  const patientsInQueue = localQueue.map(
+  const patientsInQueue = data.queue.map(
     (q: QueueItemData) => q.patient.internalId
   );
 
@@ -203,7 +186,13 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
           />
         </div>
-        {createQueueItems(localQueue)}
+        <TransitionGroup
+          timeout={transitionDuration}
+          component={null}
+          unmountOnExit
+        >
+          {createQueueItems(data.queue)}
+        </TransitionGroup>
       </div>
     </main>
   );
