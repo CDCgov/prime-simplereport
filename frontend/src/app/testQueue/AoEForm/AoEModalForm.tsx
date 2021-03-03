@@ -173,8 +173,8 @@ const AoEModalForm = (props: AoEModalProps) => {
   const lastTest = data?.patient.lastTest;
 
   const continueModal = () => {
-    // No need to save form if in "smartphone" mode
-    if (modalView === "smartphone") {
+    // No need to save form if in "smartphone" or "text" mode
+    if (modalView === "smartphone" || modalView === "text") {
       return onClose();
     }
     // Save default if form doesn't exist, otherwise submit form
