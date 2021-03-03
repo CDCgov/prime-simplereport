@@ -2,17 +2,23 @@ package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
+  @Autowired private TestDataFactory _dataFactory;
+
+  @Autowired private CurrentPatientContextHolder _currentPatientContextHolder;
 
   @BeforeEach
   void setupData() {

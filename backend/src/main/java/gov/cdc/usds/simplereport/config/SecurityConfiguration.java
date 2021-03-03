@@ -96,6 +96,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         }
         LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
         return new IdentityAttributes(email, firstName, null, lastName, null);
+      } else if (principal instanceof String && "anonymousUser".equals(principal)) {
+        return null;
       }
       throw new RuntimeException(
           "Unexpected authentication principal of type " + principal.getClass());
