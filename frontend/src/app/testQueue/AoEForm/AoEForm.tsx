@@ -194,7 +194,7 @@ const AoEForm: React.FC<Props> = ({
   };
 
   const buttonGroup = (
-    <div className="sr-time-of-test-buttons">
+    <div className="sr-time-of-test-buttons sr-time-of-test-buttons-footer">
       <Button
         id="aoe-form-save-button"
         className="margin-right-0"
@@ -262,7 +262,7 @@ const AoEForm: React.FC<Props> = ({
         <div
           className={classnames(
             isModal
-              ? "modal-sticky-footer bg-pink position-fixed"
+              ? "modal-sticky-footer position-fixed flex-align-self-end"
               : "margin-top-3"
           )}
         >

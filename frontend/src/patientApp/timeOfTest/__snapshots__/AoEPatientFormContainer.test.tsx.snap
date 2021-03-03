@@ -82,9 +82,12 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       </div>
     </div>
     <form
+      className="display-flex flex-column padding-bottom-10"
       onSubmit={[Function]}
     >
-      <p>
+      <p
+        className="message--required"
+      >
         All fields marked with 
         <span
           className="usa-sr-only"
@@ -717,7 +720,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
         className="margin-top-3"
       >
         <div
-          className="sr-time-of-test-buttons display-flex flex-justify-end"
+          className="sr-time-of-test-buttons"
         >
           <button
             className="usa-button margin-right-0"

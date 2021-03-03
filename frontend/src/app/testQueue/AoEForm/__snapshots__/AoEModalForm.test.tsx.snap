@@ -14,18 +14,19 @@ Array [
       className="sr-time-of-test-buttons"
     >
       <button
-        className="usa-button usa-button--unstyled"
+        className="modal__close-button"
         onClick={[MockFunction]}
-        type="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
       >
-        Cancel
-      </button>
-      <button
-        className="usa-button margin-right-0"
-        onClick={[Function]}
-        type="button"
-      >
-        save
+        <img
+          alt="Close"
+          className="modal__close-img"
+          src="close.svg"
+        />
       </button>
     </div>
   </div>,
@@ -128,18 +129,19 @@ Array [
       className="sr-time-of-test-buttons"
     >
       <button
-        className="usa-button usa-button--unstyled"
+        className="modal__close-button"
         onClick={[MockFunction]}
-        type="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
       >
-        Cancel
-      </button>
-      <button
-        className="usa-button margin-right-0"
-        onClick={[Function]}
-        type="button"
-      >
-        save
+        <img
+          alt="Close"
+          className="modal__close-img"
+          src="close.svg"
+        />
       </button>
     </div>
   </div>,
@@ -231,18 +233,19 @@ Array [
       className="sr-time-of-test-buttons"
     >
       <button
-        className="usa-button usa-button--unstyled"
+        className="modal__close-button"
         onClick={[MockFunction]}
-        type="button"
+        style={
+          Object {
+            "cursor": "pointer",
+          }
+        }
       >
-        Cancel
-      </button>
-      <button
-        className="usa-button margin-right-0"
-        onClick={[Function]}
-        type="button"
-      >
-        save
+        <img
+          alt="Close"
+          className="modal__close-img"
+          src="close.svg"
+        />
       </button>
     </div>
   </div>,

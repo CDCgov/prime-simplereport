@@ -307,8 +307,6 @@ const AoEModalForm = (props: AoEModalProps) => {
       isOpen={true}
       style={{
         content: {
-          margin: "40px 0",
-          width: "40em",
           position: "initial",
         },
       }}
@@ -325,7 +323,7 @@ const AoEModalForm = (props: AoEModalProps) => {
         </h1>
         {buttonGroup}
       </div>
-      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-205"></div>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
       {modalContents()}
     </Modal>
   );
