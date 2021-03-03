@@ -9,7 +9,6 @@ export function useLocalQueue(
   const [toRemove, setToRemove] = useState(new Set<string>());
 
   useEffect(() => {
-    let timeout: ReturnType<typeof setTimeout>;
     if (!remoteQueue) {
       return;
     }
@@ -22,18 +21,18 @@ export function useLocalQueue(
     const newIds = new Set(
       remoteQueue.map(({ internalId }: QueueItemData) => internalId)
     );
-    const toRemove = localQueue
+    const removed = localQueue
       .filter(({ internalId }) => !newIds.has(internalId))
       .map(({ internalId }) => internalId);
-    setToRemove(new Set(toRemove));
+    setToRemove(new Set(removed));
 
     // Only requires animation on remove
-    if (toRemove.length === 0) {
+    if (removed.length === 0) {
       setLocalQueue(remoteQueue);
       return;
     }
     // Catch local queue up after small delay
-    timeout = setTimeout(() => {
+    const timeout = setTimeout(() => {
       setToRemove(new Set());
       setLocalQueue(remoteQueue);
     }, refreshTime);
