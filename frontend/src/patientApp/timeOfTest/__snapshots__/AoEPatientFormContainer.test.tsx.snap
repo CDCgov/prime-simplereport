@@ -720,7 +720,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
         className="margin-top-3"
       >
         <div
-          className="sr-time-of-test-buttons"
+          className="sr-time-of-test-buttons sr-time-of-test-buttons-footer"
         >
           <button
             className="usa-button margin-right-0"
