@@ -11,7 +11,6 @@ const pollInterval = 10_000;
 
 const transitionDuration = 1000;
 const onEntering = (node: HTMLElement) => {
-  node.style.marginBottom = "auto";
   node.style.opacity = "1";
 };
 const onExiting = (node: HTMLElement) => {
