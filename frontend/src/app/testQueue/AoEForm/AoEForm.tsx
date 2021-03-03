@@ -262,7 +262,7 @@ const AoEForm: React.FC<Props> = ({
         <div
           className={classnames(
             isModal
-              ? "modal-sticky-footer position-fixed flex-align-self-end"
+              ? "modal__footer--sticky position-fixed flex-align-self-end"
               : "margin-top-3"
           )}
         >
