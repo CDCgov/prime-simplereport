@@ -76,7 +76,7 @@
     "maintenance-azure-beta": "mkdir -p /tmp/maintenance && /bin/cp -f public/maintenance.html /tmp/maintenance/index.html && az storage blob upload-batch -s /tmp/maintenance/ -d '$web' --account-name usdssimplereportbeta --destination-path '/'"
   },
   "prettier": {
-    "singleQuote": true
+    "singleQuote": false
   },
   "eslintConfig": {
     "extends": [

@@ -3,18 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
-    "husky": "4",
-    "lerna": "^3.22.1"
+    "husky": "4"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lerna run --concurrency 1 --stream precommit"
+      "pre-commit": "./precommit.sh"
     }
   },
   "scripts": {
     "test:ui": "cd ui; yarn test; cd ..",
     "test:api": "cd api; ./gradlew test --info; cd ..",
-    "e2e": "cd ui; npm run e2e; cd ..",
+    "e2e": "cd ui; yarn e2e; cd ..",
     "spotless": "cd api; ./gradlew spotlessApply; cd ..",
     "db": "docker-compose -f backend/docker-compose.yml exec db psql -U postgres simple_report"
   }
