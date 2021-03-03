@@ -99,7 +99,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       } else if (principal instanceof String) {
         String principalString = (String) principal;
         if ("anonymousUser".equals(principalString)) {
-          return new IdentityAttributes(null, null, null, null, null);
+          return null;
         }
       }
       throw new RuntimeException(
