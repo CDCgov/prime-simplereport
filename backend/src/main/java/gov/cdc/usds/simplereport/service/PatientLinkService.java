@@ -79,10 +79,6 @@ public class PatientLinkService {
     return plrepo.save(pl);
   }
 
-  public PatientLink getFromTestOrder(TestOrder to) throws NoSuchElementException {
-    return plrepo.findByTestOrder(to).orElseThrow();
-  }
-
   public PatientLink refreshPatientLink(String internalId) {
     PatientLink pl = getPatientLink(internalId);
     pl.refresh();
