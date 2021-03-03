@@ -18,8 +18,7 @@ import org.springframework.stereotype.Component;
 /** Created by nickrobison on 11/17/20 */
 @Component
 public class OrganizationMutationResolver implements GraphQLMutationResolver {
-  private final String FACILITY_DISPLAY_NAME = "facility";
-  private final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
+
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
   private final AddressValidationService _avs;
@@ -59,7 +58,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
         _avs.getValidatedAddress(
             orderingProviderStreet,
@@ -67,7 +66,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderCity,
             orderingProviderState,
             orderingProviderZipCode,
-            PROVIDER_DISPLAY_NAME);
+            _avs.PROVIDER_DISPLAY_NAME);
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,
@@ -118,7 +117,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
-        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, FACILITY_DISPLAY_NAME);
+        _avs.getValidatedAddress(street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
      _avs.getValidatedAddress(
             orderingProviderStreet,
@@ -126,7 +125,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderCity,
             orderingProviderState,
             orderingProviderZipCode,
-            PROVIDER_DISPLAY_NAME);
+            _avs.PROVIDER_DISPLAY_NAME);
     Facility facility =
         _os.updateFacility(
             facilityId,

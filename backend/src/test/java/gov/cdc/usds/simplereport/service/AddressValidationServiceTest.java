@@ -42,7 +42,7 @@ class AddressValidationServiceTest {
             () -> {
               s.getValidatedAddress(lookup, null);
             });
-    assertEquals("Address entered could not be validated", caught.getMessage());
+    assertEquals("The address you entered could not be verified", caught.getMessage());
   }
 
   @Test
