@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -28,18 +29,18 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   // I'll have you know that I didn't actually mean to do this...
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
-  private static final PersonName CHARLES = new PersonName("Charles", null, "Albemarle", "Sr.");
+  private static final PersonName CHARLES = new PersonName("Charles", "Mathew", "Albemarle", "Sr.");
   private static final PersonName DEXTER = new PersonName("Dexter", null, "Jones", null);
   private static final PersonName ELIZABETH =
-      new PersonName("Elizabeth", null, "Merriwether", null);
-  private static final PersonName FRANK = new PersonName("Frank", null, "Bones", "3");
+      new PersonName("Elizabeth", "Martha", "Merriwether", null);
+  private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
 
   // used for pagination
-  private static final PersonName GALE = new PersonName("Gale", "S", "Vittorio", "PhD");
-  private static final PersonName HEINRICK = new PersonName("Heinrick", "M", "Silver", "III");
+  private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
+  private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
   private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);
-  private static final PersonName JANNELLE = new PersonName("Jannelle", "T", "Cromack", null);
-  private static final PersonName KACEY = new PersonName("Kacey", "G", "Marthe", null);
+  private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
+  private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
 
   @Autowired private OrganizationService _orgService;
@@ -47,6 +48,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private Organization _org;
   private Facility _site1;
   private Facility _site2;
+
+  private static void assertPatientList(List<Person> found, PersonName... expected) {
+    // check common elements first
+    for (int i = 0; i < expected.length && i < found.size(); i++) {
+      assertEquals(expected[i], found.get(i).getNameInfo());
+    }
+    // *then* check if there are extras
+    if (expected.length != found.size()) {
+      fail("Expected" + expected.length + " items but found " + found.size());
+    }
+  }
 
   @BeforeEach
   void setupData() {
@@ -285,6 +297,46 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
+  void getPatients_search() {
+    makedata(true);
+
+    // delete some data to verify achived works as expepected
+    // delete Charles (_site1)
+    Person charles = _service.getPatients(null, 0, 5, false, null).get(0);
+    _service.setIsDeleted(charles.getInternalId(), true);
+    // Delete Frank (_site2)
+    Person frank = _service.getPatients(_site2.getInternalId(), 0, 5, false, null).get(0);
+    _service.setIsDeleted(frank.getInternalId(), true);
+
+    // all facilities, not deleted, "ma"
+    List<Person> patients = _service.getPatients(null, 0, 100, false, "ma");
+    assertPatientList(patients, JANNELLE, KACEY, ELIZABETH, HEINRICK, GALE);
+
+    // site2, not deleted, "ma"
+    patients = _service.getPatients(_site2.getInternalId(), 0, 100, false, "ma");
+    assertPatientList(patients, JANNELLE, KACEY);
+
+    // site1, IS deleted, "ma"
+    patients = _service.getPatients(_site1.getInternalId(), 0, 100, true, "ma");
+    assertPatientList(patients, CHARLES);
+
+    // all facilities, not deleted, "mar"
+    patients = _service.getPatients(null, 0, 100, false, "mar");
+    assertPatientList(patients, JANNELLE, ELIZABETH, HEINRICK, GALE);
+
+    // all facilities, not deleted, "MARTHA"
+    patients = _service.getPatients(null, 0, 100, false, "MARTHA");
+    assertPatientList(patients, JANNELLE, ELIZABETH);
+
+    // what to do when search term is too short? Return all?
+    assertThrows(
+        IllegalArgumentException.class, () -> _service.getPatients(null, 0, 100, false, "M"));
+    assertThrows(
+        IllegalArgumentException.class, () -> _service.getPatients(null, 0, 100, false, ""));
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
   void getPatients_counts() {
     makedata(true);
 
@@ -306,6 +358,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertEquals(6, _service.getPatientsCount(_site2.getInternalId(), false, null));
     assertEquals(2, _service.getPatientsCount(null, true, null));
     assertEquals(1, _service.getPatientsCount(_site2.getInternalId(), true, null));
+
+    // counts for name filtering
+    assertEquals(5, _service.getPatientsCount(null, false, "ma"));
+    assertEquals(2, _service.getPatientsCount(_site2.getInternalId(), false, "ma"));
+    assertEquals(1, _service.getPatientsCount(_site1.getInternalId(), true, "ma"));
+    assertEquals(4, _service.getPatientsCount(null, false, "mar"));
+    assertEquals(2, _service.getPatientsCount(null, false, "MARTHA"));
+
+    // what to do when search term is too short? Return all?
+    assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false, "M"));
+    assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false, ""));
   }
 
   @Test
@@ -357,17 +420,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
       _dataFactory.createMinimalPerson(_org, _site2, JANNELLE);
       _dataFactory.createMinimalPerson(_org, _site2, KACEY);
       _dataFactory.createMinimalPerson(_org, _site2, LEELOO);
-    }
-  }
-
-  private static void assertPatientList(List<Person> found, PersonName... expected) {
-    // check common elements first
-    for (int i = 0; i < expected.length && i < found.size(); i++) {
-      assertEquals(expected[i], found.get(i).getNameInfo());
-    }
-    // *then* check if there are extras
-    if (expected.length != found.size()) {
-      fail("Expected" + expected.length + " items but found " + found.size());
     }
   }
 }

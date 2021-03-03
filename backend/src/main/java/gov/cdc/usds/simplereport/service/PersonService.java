@@ -87,7 +87,7 @@ public class PersonService {
 
   private Specification<Person> nameMatchesFilter(
       @Size(min = MINIMUMCHARFORSEARCH) String namePrefixMatch) {
-    String likeString = namePrefixMatch.toLowerCase() + "%";
+    String likeString = namePrefixMatch.trim().toLowerCase() + "%";
     return (root, query, cb) ->
         cb.or(
             cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.FirstName)), likeString),
@@ -134,12 +134,20 @@ public class PersonService {
     }
 
     if (searchTerm != null) {
-      filter = filter.and(nameMatchesFilter(searchTerm.trim()));
+      filter = filter.and(nameMatchesFilter(searchTerm));
     }
     return filter;
   }
 
-  // NOTE: ExceptionWrappingManager means this actually throws ThrowableGraphQLError.
+  /**
+   * @param facilityId If null, then it means across whole organization
+   * @param pageOffset Pagination offset is zero based
+   * @param pageSize How many results to return, zero will result in the default page size (large)
+   * @param isArchived Default is false. true will ONLY show deleted users
+   * @param searchTerm Null returns all users, any string will filter by first,middle,last names
+   *     that start with these characters. Case insenstive. If fewer than
+   * @return A list of matching patients.
+   */
   public List<Person> getPatients(
       UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm) {
     if (pageOffset < 0) {
@@ -147,6 +155,11 @@ public class PersonService {
     }
     if (pageSize < 1) {
       pageSize = DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
+      throw new IllegalGraphqlArgumentException(
+          "Search string must be at least two characters in length");
     }
 
     // first check permissions
@@ -163,6 +176,10 @@ public class PersonService {
     // first check permissions
     if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
       throw new AccessDeniedException("Access is denied");
+    }
+    if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
+      throw new IllegalGraphqlArgumentException(
+          "Search string must be at least two characters in length");
     }
     return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
   }
