@@ -2,7 +2,7 @@ import React from "react";
 import Required from "./Required";
 
 const RequiredMessage = () => (
-  <p>
+  <p className="message--required">
     All fields marked with <Required /> are required
   </p>
 );

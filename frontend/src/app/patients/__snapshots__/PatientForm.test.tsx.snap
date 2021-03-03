@@ -7,7 +7,9 @@ exports[`PatientForm snapshot 1`] = `
   <div
     className=""
   >
-    <p>
+    <p
+      className="message--required"
+    >
       All fields marked with 
       <span
         className="usa-sr-only"
