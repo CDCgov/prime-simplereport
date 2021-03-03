@@ -11,7 +11,7 @@ const pollInterval = 10_000;
 
 const transitionDuration = 1000;
 const onEmptyQueueEntering = (node: HTMLElement) => {
-  node.style.display = "block";
+  node.style.opacity = "1";
 };
 const onEmptyQueueExiting = (node: HTMLElement) => {
   node.style.display = "none";
@@ -143,51 +143,60 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
   const createQueueItems = (patientQueue: QueueItemData[]) => {
-    if (!shouldRenderQueue) {
-      return (
-        <CSSTransition
-          key="empty-queue"
-          onEntering={onEmptyQueueEntering}
-          onExiting={onEmptyQueueExiting}
-          timeout={transitionDuration}
-        >
-          {emptyQueueMessage}
-        </CSSTransition>
+    const queue =
+      shouldRenderQueue &&
+      patientQueue.map(
+        ({
+          internalId,
+          deviceType,
+          patient,
+          result,
+          dateTested,
+          patientLink,
+          ...questions
+        }) => {
+          return (
+            <CSSTransition
+              key={internalId}
+              onExiting={onExiting}
+              timeout={transitionDuration}
+            >
+              <QueueItem
+                internalId={internalId}
+                patient={patient}
+                askOnEntry={questions}
+                selectedDeviceId={deviceType?.internalId || null}
+                selectedTestResult={result}
+                devices={facility.deviceTypes}
+                defaultDevice={facility.defaultDeviceType}
+                refetchQueue={refetchQueue}
+                facilityId={activeFacilityId}
+                dateTestedProp={dateTested}
+                patientLinkId={patientLink?.internalId || null}
+              />
+            </CSSTransition>
+          );
+        }
       );
-    }
 
-    return patientQueue.map(
-      ({
-        internalId,
-        deviceType,
-        patient,
-        result,
-        dateTested,
-        patientLink,
-        ...questions
-      }) => {
-        return (
+    return (
+      <TransitionGroup
+        timeout={transitionDuration}
+        component={null}
+        unmountOnExit
+      >
+        {queue}
+        {!shouldRenderQueue && (
           <CSSTransition
-            key={internalId}
-            onExiting={onExiting}
+            key="empty-queue"
+            onEntering={onEmptyQueueEntering}
+            onExiting={onEmptyQueueExiting}
             timeout={transitionDuration}
           >
-            <QueueItem
-              internalId={internalId}
-              patient={patient}
-              askOnEntry={questions}
-              selectedDeviceId={deviceType?.internalId || null}
-              selectedTestResult={result}
-              devices={facility.deviceTypes}
-              defaultDevice={facility.defaultDeviceType}
-              refetchQueue={refetchQueue}
-              facilityId={activeFacilityId}
-              dateTestedProp={dateTested}
-              patientLinkId={patientLink?.internalId || null}
-            />
+            {emptyQueueMessage}
           </CSSTransition>
-        );
-      }
+        )}
+      </TransitionGroup>
     );
   };
 
@@ -205,13 +214,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
             patientsInQueue={patientsInQueue}
           />
         </div>
-        <TransitionGroup
-          timeout={transitionDuration}
-          component={null}
-          unmountOnExit
-        >
-          {createQueueItems(data.queue)}
-        </TransitionGroup>
+
+        {createQueueItems(data.queue)}
       </div>
     </main>
   );
