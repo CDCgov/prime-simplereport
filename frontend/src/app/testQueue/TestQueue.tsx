@@ -10,9 +10,13 @@ import { toast } from "react-toastify";
 const pollInterval = 10_000;
 
 const transitionDuration = 1000;
-const onEntering = (node: HTMLElement) => {
-  node.style.opacity = "1";
+const onEmptyQueueEntering = (node: HTMLElement) => {
+  node.style.display = "block";
 };
+const onEmptyQueueExiting = (node: HTMLElement) => {
+  node.style.display = "none";
+};
+
 const onExiting = (node: HTMLElement) => {
   node.style.marginBottom = `-${node.offsetHeight}px`;
   node.style.opacity = "0";
@@ -138,43 +142,54 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
-  const createQueueItems = (patientQueue: QueueItemData[]) =>
-    shouldRenderQueue
-      ? patientQueue.map(
-          ({
-            internalId,
-            deviceType,
-            patient,
-            result,
-            dateTested,
-            patientLink,
-            ...questions
-          }) => {
-            return (
-              <CSSTransition
-                key={internalId}
-                onEntering={onEntering}
-                onExiting={onExiting}
-                timeout={transitionDuration}
-              >
-                <QueueItem
-                  internalId={internalId}
-                  patient={patient}
-                  askOnEntry={questions}
-                  selectedDeviceId={deviceType?.internalId || null}
-                  selectedTestResult={result}
-                  devices={facility.deviceTypes}
-                  defaultDevice={facility.defaultDeviceType}
-                  refetchQueue={refetchQueue}
-                  facilityId={activeFacilityId}
-                  dateTestedProp={dateTested}
-                  patientLinkId={patientLink?.internalId || null}
-                />
-              </CSSTransition>
-            );
-          }
-        )
-      : emptyQueueMessage;
+  const createQueueItems = (patientQueue: QueueItemData[]) => {
+    if (!shouldRenderQueue) {
+      return (
+        <CSSTransition
+          key="empty-queue"
+          onEntering={onEmptyQueueEntering}
+          onExiting={onEmptyQueueExiting}
+          timeout={transitionDuration}
+        >
+          {emptyQueueMessage}
+        </CSSTransition>
+      );
+    }
+
+    return patientQueue.map(
+      ({
+        internalId,
+        deviceType,
+        patient,
+        result,
+        dateTested,
+        patientLink,
+        ...questions
+      }) => {
+        return (
+          <CSSTransition
+            key={internalId}
+            onExiting={onExiting}
+            timeout={transitionDuration}
+          >
+            <QueueItem
+              internalId={internalId}
+              patient={patient}
+              askOnEntry={questions}
+              selectedDeviceId={deviceType?.internalId || null}
+              selectedTestResult={result}
+              devices={facility.deviceTypes}
+              defaultDevice={facility.defaultDeviceType}
+              refetchQueue={refetchQueue}
+              facilityId={activeFacilityId}
+              dateTestedProp={dateTested}
+              patientLinkId={patientLink?.internalId || null}
+            />
+          </CSSTransition>
+        );
+      }
+    );
+  };
 
   const patientsInQueue = data.queue.map(
     (q: QueueItemData) => q.patient.internalId
