@@ -8,7 +8,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import graphql.ErrorType;
@@ -25,11 +24,10 @@ class PatientMutationResolverTest {
   void io_exceptions_are_surfaced_as_graphql_errors() throws IOException {
     var personService = mock(PersonService.class);
     var uploadService = mock(UploadService.class);
-    var addressValidationService = mock(AddressValidationService.class);
     var input = mock(Part.class);
     when(input.getInputStream()).thenThrow(new IOException("Some TCP error, probably."));
 
-    var sut = new PatientMutationResolver(personService, uploadService, addressValidationService);
+    var sut = new PatientMutationResolver(personService, uploadService);
 
     try {
       sut.uploadPatients(input);
@@ -48,14 +46,13 @@ class PatientMutationResolverTest {
   void validation_exceptions_are_propagated_without_change() throws IOException {
     var personService = mock(PersonService.class);
     var uploadService = mock(UploadService.class);
-    var addressValidationService = mock(AddressValidationService.class);
     when(uploadService.processPersonCSV(any(InputStream.class)))
         .thenThrow(new IllegalGraphqlArgumentException("PANIC"));
 
     var input = mock(Part.class);
     when(input.getInputStream()).thenReturn(new ByteArrayInputStream(new byte[0]));
 
-    var sut = new PatientMutationResolver(personService, uploadService, addressValidationService);
+    var sut = new PatientMutationResolver(personService, uploadService);
 
     assertThrows(IllegalGraphqlArgumentException.class, () -> sut.uploadPatients(input));
   }
