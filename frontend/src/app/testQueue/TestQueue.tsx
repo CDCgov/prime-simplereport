@@ -1,6 +1,7 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import { showError } from "../utils";
 
@@ -8,6 +9,20 @@ import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
 
 const pollInterval = 10_000;
+
+const transitionDuration = 1000;
+const onEmptyQueueEntering = (node: HTMLElement) => {
+  node.style.opacity = "1";
+};
+const onEmptyQueueExiting = (node: HTMLElement) => {
+  node.style.display = "none";
+};
+
+const onExiting = (node: HTMLElement) => {
+  node.style.marginBottom = `-${node.offsetHeight}px`;
+  node.style.opacity = "0";
+  node.style.transition = `opacity ${transitionDuration}ms ease-out, margin ${transitionDuration}ms ease-out`;
+};
 
 const emptyQueueMessage = (
   <div className="grid-container prime-center usa-card__container">
@@ -127,35 +142,64 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   }
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
-  const createQueueItems = (patientQueue: QueueItemData[]) =>
-    shouldRenderQueue
-      ? patientQueue.map(
-          ({
-            internalId,
-            deviceType,
-            patient,
-            result,
-            dateTested,
-            patientLink,
-            ...questions
-          }) => (
-            <QueueItem
+
+  const createQueueItems = (patientQueue: QueueItemData[]) => {
+    const queue =
+      shouldRenderQueue &&
+      patientQueue.map(
+        ({
+          internalId,
+          deviceType,
+          patient,
+          result,
+          dateTested,
+          patientLink,
+          ...questions
+        }) => {
+          return (
+            <CSSTransition
               key={internalId}
-              internalId={internalId}
-              patient={patient}
-              askOnEntry={questions}
-              selectedDeviceId={deviceType?.internalId || null}
-              selectedTestResult={result}
-              devices={facility.deviceTypes}
-              defaultDevice={facility.defaultDeviceType}
-              refetchQueue={refetchQueue}
-              facilityId={activeFacilityId}
-              dateTestedProp={dateTested}
-              patientLinkId={patientLink?.internalId || null}
-            />
-          )
-        )
-      : emptyQueueMessage;
+              onExiting={onExiting}
+              timeout={transitionDuration}
+            >
+              <QueueItem
+                internalId={internalId}
+                patient={patient}
+                askOnEntry={questions}
+                selectedDeviceId={deviceType?.internalId || null}
+                selectedTestResult={result}
+                devices={facility.deviceTypes}
+                defaultDevice={facility.defaultDeviceType}
+                refetchQueue={refetchQueue}
+                facilityId={activeFacilityId}
+                dateTestedProp={dateTested}
+                patientLinkId={patientLink?.internalId || null}
+              />
+            </CSSTransition>
+          );
+        }
+      );
+
+    return (
+      <TransitionGroup
+        timeout={transitionDuration}
+        component={null}
+        unmountOnExit
+      >
+        {queue}
+        {!shouldRenderQueue && (
+          <CSSTransition
+            key="empty-queue"
+            onEntering={onEmptyQueueEntering}
+            onExiting={onEmptyQueueExiting}
+            timeout={transitionDuration}
+          >
+            {emptyQueueMessage}
+          </CSSTransition>
+        )}
+      </TransitionGroup>
+    );
+  };
 
   const patientsInQueue = data.queue.map(
     (q: QueueItemData) => q.patient.internalId

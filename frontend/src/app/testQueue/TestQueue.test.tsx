@@ -1,30 +1,49 @@
-import { render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 
 import TestQueue, { queueQuery } from "./TestQueue";
+import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";
 
 jest.mock("@microsoft/applicationinsights-react-js", () => {
   return {
     useAppInsightsContext: jest.fn(),
-    useTrackEvent: jest.fn(),
+    useTrackEvent: () => jest.fn(),
   };
 });
 
 describe("TestQueue", () => {
   it("should render the test queue", async () => {
-    const { container, getByText, getByLabelText } = render(
+    const { container } = render(
       <MockedProvider mocks={mocks}>
         <TestQueue activeFacilityId="a1" />
       </MockedProvider>
     );
-
-    await waitFor(() => getByLabelText("Search"));
-    await waitFor(() => new Promise((res) => setTimeout(res, 0)));
-
-    expect(getByText("Doe, John A")).toBeInTheDocument();
-    expect(getByText("Smith, Jane")).toBeInTheDocument();
+    await screen.findByLabelText("Search");
+    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+    expect(await screen.findByText("Smith, Jane")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
+  });
+  it("should remove items queue using the transition group", async () => {
+    jest.useFakeTimers();
+    render(
+      <MockedProvider mocks={mocks}>
+        <TestQueue activeFacilityId="a1" />
+      </MockedProvider>
+    );
+    expect(await screen.findByText("Doe, John A")).toBeInTheDocument();
+    const removeButton = (await screen.findAllByLabelText("Close"))[0];
+    fireEvent.click(removeButton);
+    const confirmButton = await screen.findByText("Yes", { exact: false });
+    fireEvent.click(confirmButton);
+    await waitForElementToBeRemoved(() => screen.queryByText("Doe, John A"));
+    expect(screen.queryByText("Doe, John A")).not.toBeInTheDocument();
   });
 });
 
@@ -163,5 +182,28 @@ const mocks = [
       },
     },
     result: {},
+  },
+  {
+    request: {
+      query: REMOVE_PATIENT_FROM_QUEUE,
+      variables: {
+        patientId: "31d42f7a-0a14-46b7-bc8a-38b3b1e78659",
+      },
+    },
+    result: {},
+  },
+  {
+    request: {
+      query: queueQuery,
+      variables: {
+        facilityId: "a1",
+      },
+    },
+    result: {
+      data: {
+        ...result.data,
+        queue: result.data.queue.slice(1),
+      },
+    },
   },
 ];
