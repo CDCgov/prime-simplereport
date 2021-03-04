@@ -4,17 +4,17 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
-import gov.cdc.usds.simplereport.config.authorization.AuthorizationServiceConfig;
-import gov.cdc.usds.simplereport.config.authorization.DemoUserIdentitySupplier;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration.DemoUserIdentitySupplier;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -75,7 +75,6 @@ import org.springframework.security.test.context.support.WithMockUser;
   TestDataFactory.class,
   AuditingConfig.class,
   DemoOktaRepository.class,
-  AuthorizationServiceConfig.class,
   OrganizationExtractor.class,
   OrganizationService.class,
   ApiUserService.class,
@@ -87,7 +86,6 @@ import org.springframework.security.test.context.support.WithMockUser;
   AuthorizationProperties.class,
   SiteAdminEmailList.class,
   DataHubConfig.class,
-  DemoUserConfiguration.class,
 })
 public class SliceTestConfiguration {
 
@@ -100,6 +98,11 @@ public class SliceTestConfiguration {
             // test user permissions here and wonders why it doesn't work
             new DemoUser(null, TestUserIdentities.STANDARD_USER_ATTRIBUTES),
             new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)));
+  }
+
+  @Bean
+  public AuthorizationService realAuthorizationService(OrganizationExtractor extractor) {
+    return new LoggedInAuthorizationService(extractor);
   }
 
   @Retention(RetentionPolicy.RUNTIME)

@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
-import gov.cdc.usds.simplereport.config.authorization.DemoUserIdentitySupplier;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration.DemoUserIdentitySupplier;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
