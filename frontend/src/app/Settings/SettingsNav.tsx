@@ -1,4 +1,5 @@
 import React from "react";
+
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SettingsNav = () => {

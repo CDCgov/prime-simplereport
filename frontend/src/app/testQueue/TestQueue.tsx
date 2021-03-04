@@ -1,11 +1,12 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
+import { toast } from "react-toastify";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
+
+import { showError } from "../utils";
 
 import AddToQueueSearch from "./addToQueue/AddToQueueSearch";
 import QueueItem from "./QueueItem";
-import { showError } from "../utils";
-import { toast } from "react-toastify";
 
 const pollInterval = 10_000;
 

@@ -22,6 +22,7 @@ https://simplereport.gov/
     - [Twilio](#twilio)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
+  - [Linters](#linters)
   - [Deploy](#deploy)
     - [Cloud Environments](#cloud-environments)
     - [Manually-trigger-deploy](#manually-trigger-deploy)
@@ -47,8 +48,16 @@ If Java isn't installed on a Mac you can get it from `brew`:
 
 ```sh
 brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk8
+brew cask install adoptopenjdk11
 brew install gradle
+```
+
+Another option (also compatible with Linux) is to install with [jabba](https://github.com/shyiko/jabba), the Java version manager:
+
+```sh
+curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
+jabba install adopt@1.11-0
+jabba use adopt@1.11
 ```
 
 Running with docker:
@@ -237,6 +246,17 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 1. `yarn start`
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
+
+## Linters
+
+This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) as frontend linters,
+and [spotless](https://github.com/diffplug/spotless) and [google-java-format](https://github.com/google/google-java-format) for the backend.
+GitHub Actions is configured to run these linters on every pull request, so you must resolve all mismatches/errors prior to merging.
+There are a few ways to manage this:
+
+1. Run `yarn lint:write` in the `frontend/` dir, and `./gradlew spotlessApply` in the `backend/` dir, before every commit
+1. Enable the optional pre-commit hook by running `yarn install` in the root dir
+1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
 ## Deploy
 See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md

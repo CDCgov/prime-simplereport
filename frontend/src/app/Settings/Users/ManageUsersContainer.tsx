@@ -2,8 +2,9 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import ManageUsers from "./ManageUsers";
 import { UserRole, UserPermission } from "../../permissions";
+
+import ManageUsers from "./ManageUsers";
 
 const GET_USERS = gql`
   query GetUsers {

@@ -4,10 +4,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
+import { OrganizationRole } from "../../permissions";
+
 import { NewUserInvite } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
-import { OrganizationRole } from "../../permissions";
 
 interface Props {
   onClose: () => void;

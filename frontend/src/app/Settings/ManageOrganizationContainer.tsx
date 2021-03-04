@@ -9,8 +9,9 @@ import {
 
 import Alert from "../commonComponents/Alert";
 import { showNotification } from "../utils";
-import ManageOrganization from "./ManageOrganization";
 import { updateOrganization } from "../store";
+
+import ManageOrganization from "./ManageOrganization";
 
 interface Data {
   organization: {

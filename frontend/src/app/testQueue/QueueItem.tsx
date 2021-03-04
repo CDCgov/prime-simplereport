@@ -9,21 +9,22 @@ import {
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
 import classnames from "classnames";
+import moment from "moment";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
-import AoEModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { displayFullName, showNotification } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
+import Checkboxes from "../commonComponents/Checkboxes";
+
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
-import Checkboxes from "../commonComponents/Checkboxes";
-import moment from "moment";
+import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";

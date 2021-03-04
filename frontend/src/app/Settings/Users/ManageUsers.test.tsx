@@ -1,6 +1,8 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
 import { displayFullName } from "../../utils";
+
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };

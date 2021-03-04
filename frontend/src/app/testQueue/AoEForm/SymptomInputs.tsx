@@ -1,7 +1,6 @@
 import React from "react";
 
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
-
 import Checkboxes from "../../commonComponents/Checkboxes";
 import TextInput from "../../commonComponents/TextInput";
 

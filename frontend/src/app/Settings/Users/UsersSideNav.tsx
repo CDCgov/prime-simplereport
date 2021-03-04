@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 
 import { displayFullName } from "../../utils";
+
 import { SettingsUser } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";

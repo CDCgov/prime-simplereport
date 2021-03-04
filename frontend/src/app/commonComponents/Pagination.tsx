@@ -2,6 +2,7 @@ import React from "react";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAngleLeft, faAngleRight } from "@fortawesome/free-solid-svg-icons";
+
 import "./Pagination.scss";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 

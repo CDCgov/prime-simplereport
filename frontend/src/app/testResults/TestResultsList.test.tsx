@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+
 import { DetachedTestResultsList } from "./TestResultsList";
 
 // Data copied from Chrome network window
