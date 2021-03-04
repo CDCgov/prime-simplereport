@@ -9,13 +9,21 @@ import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 @Configuration
@@ -23,7 +31,38 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @ConditionalOnWebApplication
 public class DemoAuthenticationConfiguration {
 
+  public static final String DEMO_AUTHORIZATION_FLAG = "Bearer SR-DEMO-LOGIN ";
+
   private static final Logger LOG = LoggerFactory.getLogger(DemoAuthenticationConfiguration.class);
+
+  /**
+   * Creates and registers a {@link Filter} that runs before each request is processed by the
+   * servlet. It checks for an Authorization header that starts with {@link
+   * #DEMO_AUTHORIZATION_FLAG}, and if it finds one it "logs in" a user with the username found in
+   * the rest of that Authorization header. Interpreting the resulting {@link Authentication} is
+   * expected to be the problem of the other beans created by this configuration class.
+   */
+  @Bean
+  public FilterRegistrationBean<Filter> identityFilter() {
+    Filter filter =
+        (ServletRequest request, ServletResponse response, FilterChain chain) -> {
+          SecurityContext securityContext = SecurityContextHolder.getContext();
+          LOG.info(
+              "Filter happened via dev security: current auth is {}",
+              securityContext.getAuthentication());
+          HttpServletRequest req2 = (HttpServletRequest) request;
+          String authHeader = req2.getHeader("Authorization");
+          LOG.info("Auth type is {}, header is {}", req2.getAuthType(), authHeader);
+          if (authHeader != null && authHeader.startsWith(DEMO_AUTHORIZATION_FLAG)) {
+            LOG.trace("Parsing authorization header [{}]", authHeader);
+            String userName = authHeader.substring(DEMO_AUTHORIZATION_FLAG.length());
+            securityContext.setAuthentication(
+                new TestingAuthenticationToken(userName, null, List.of()));
+          }
+          chain.doFilter(request, response);
+        };
+    return new FilterRegistrationBean<>(filter);
+  }
 
   @Bean
   public AuthorizationService getDemoAuthorizationService(DemoUserConfiguration config) {
