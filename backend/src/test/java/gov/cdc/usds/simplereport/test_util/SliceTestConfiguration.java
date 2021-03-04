@@ -95,6 +95,9 @@ public class SliceTestConfiguration {
   public IdentitySupplier testIdentityProvider() {
     return new DemoUserIdentitySupplier(
         List.of(
+            // these objects will be used only to resolve the user's identity, not their
+            // permissions: leaving the role claims blank to make sure nobody tries to update
+            // test user permissions here and wonders why it doesn't work
             new DemoUser(null, TestUserIdentities.STANDARD_USER_ATTRIBUTES),
             new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)));
   }
