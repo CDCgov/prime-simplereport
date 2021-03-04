@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
-import useComponentVisible from "./ComponentVisible";
-import Dropdown from "./Dropdown";
-import { useSelector } from "react-redux";
-import { connect } from "react-redux";
-import Button from "./Button";
+import { useSelector, connect } from "react-redux";
+
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
+
+import Button from "./Button";
+import Dropdown from "./Dropdown";
+import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 
 const Header: React.FC<{}> = () => {

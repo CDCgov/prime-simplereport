@@ -1,15 +1,17 @@
 import React, { useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
-import AoEForm from "./AoEForm";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
+
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
+
+import AoEForm from "./AoEForm";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -173,8 +175,8 @@ const AoEModalForm = (props: AoEModalProps) => {
   const lastTest = data?.patient.lastTest;
 
   const continueModal = () => {
-    // No need to save form if in "smartphone" mode
-    if (modalView === "smartphone") {
+    // No need to save form if in "smartphone" or "text" mode
+    if (modalView === "smartphone" || modalView === "text") {
       return onClose();
     }
     // Save default if form doesn't exist, otherwise submit form

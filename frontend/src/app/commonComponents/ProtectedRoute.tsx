@@ -1,5 +1,6 @@
 import React from "react";
 import { Redirect, Route } from "react-router-dom";
+
 import { UserPermission } from "../permissions";
 
 interface Props {

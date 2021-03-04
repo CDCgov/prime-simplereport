@@ -1,9 +1,9 @@
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
-import { showError, showNotification } from "../utils";
 import { toast } from "react-toastify";
 
+import { showError, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 
 const uploadPatients = gql`

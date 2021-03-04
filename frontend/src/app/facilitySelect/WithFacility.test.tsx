@@ -3,8 +3,9 @@ import { Provider } from "react-redux";
 import renderer from "react-test-renderer";
 import configureStore from "redux-mock-store";
 
-import WithFacility from "./WithFacility";
 import { updateFacility } from "../store";
+
+import WithFacility from "./WithFacility";
 
 const mockStore = configureStore([]);
 const mockHistoryPush = jest.fn();

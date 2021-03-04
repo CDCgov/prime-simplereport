@@ -1,78 +1,78 @@
 /* eslint no-unused-expressions: 0 */
 
 function conductTest(patientName) {
-  this.expect.section('@navbar').to.be.visible;
-  this.section.navbar.expect.element('@conductTestLink').to.be.visible;
-  this.section.navbar.click('@conductTestLink');
-  this.section.app.expect.element('@searchBar').to.be.visible;
-  this.section.app.setValue('@searchBar', patientName);
-  this.expect.section('@searchResults').to.be.visible;
-  this.section.searchResults.expect.element('@beginTest').to.be.visible;
+  this.expect.section("@navbar").to.be.visible;
+  this.section.navbar.expect.element("@conductTestLink").to.be.visible;
+  this.section.navbar.click("@conductTestLink");
+  this.section.app.expect.element("@searchBar").to.be.visible;
+  this.section.app.setValue("@searchBar", patientName);
+  this.expect.section("@searchResults").to.be.visible;
+  this.section.searchResults.expect.element("@beginTest").to.be.visible;
   this.section.searchResults.expect
-    .element('@beginTest')
-    .to.contain.text('Begin test');
-  this.section.searchResults.click('@beginTest');
-  this.expect.section('@modal').to.be.visible;
+    .element("@beginTest")
+    .to.contain.text("Begin test");
+  this.section.searchResults.click("@beginTest");
+  this.expect.section("@modal").to.be.visible;
   this.expect
-    .section('@modal')
-    .to.contain.text('Complete questionnaire verbally');
-  this.section.modal.expect.element('@verbalRadio').to.be.visible;
-  this.section.modal.click('@verbalRadio');
+    .section("@modal")
+    .to.contain.text("Complete questionnaire verbally");
+  this.section.modal.expect.element("@verbalRadio").to.be.visible;
+  this.section.modal.click("@verbalRadio");
   this.expect
-    .section('@modal')
-    .to.contain.text('Are you experiencing any of the following symptoms?');
-  this.section.modal.expect.element('@noSymptoms').to.be.visible;
-  this.section.modal.click('@noSymptoms');
-  this.section.modal.expect.element('@firstTest').to.be.visible;
+    .section("@modal")
+    .to.contain.text("Are you experiencing any of the following symptoms?");
+  this.section.modal.expect.element("@noSymptoms").to.be.visible;
+  this.section.modal.click("@noSymptoms");
+  this.section.modal.expect.element("@firstTest").to.be.visible;
   this.api.execute(
     'document.querySelector(\'input[name="prior_test_flag"][value="yes"]+label\').scrollIntoView()'
   );
-  this.section.modal.click('@firstTest');
-  this.section.modal.expect.element('@pregnant').to.be.visible;
+  this.section.modal.click("@firstTest");
+  this.section.modal.expect.element("@pregnant").to.be.visible;
   this.api.execute(
     'document.querySelector(\'input[name="pregnancy"][value="60001007"]+label\').scrollIntoView()'
   );
-  this.section.modal.click('@pregnant');
-  this.section.modal.expect.element('@continueButton').to.be.visible;
-  this.section.modal.click('@continueButton');
-  this.expect.section('@queueCard').to.be.visible;
-  this.expect.section('@queueCard').to.contain.text(patientName);
-  this.expect.section('@queueCard').to.contain.text('SARS-CoV-2 results');
-  this.section.queueCard.expect.element('@negativeResult').to.be.visible;
-  this.section.queueCard.click('@negativeResult');
-  this.section.queueCard.expect.element('@submitResultButton').to.be.visible;
-  this.section.queueCard.click('@submitResultButton');
+  this.section.modal.click("@pregnant");
+  this.section.modal.expect.element("@continueButton").to.be.visible;
+  this.section.modal.click("@continueButton");
+  this.expect.section("@queueCard").to.be.visible;
+  this.expect.section("@queueCard").to.contain.text(patientName);
+  this.expect.section("@queueCard").to.contain.text("SARS-CoV-2 results");
+  this.section.queueCard.expect.element("@negativeResult").to.be.visible;
+  this.section.queueCard.click("@negativeResult");
+  this.section.queueCard.expect.element("@submitResultButton").to.be.visible;
+  this.section.queueCard.click("@submitResultButton");
   this.expect
-    .section('@app')
+    .section("@app")
     .to.contain.text(`Result was saved and reported for ${patientName}`);
-  this.expect.section('@cardContainer').to.not.contain.text(patientName);
-  this.section.navbar.click('@resultsLink');
-  this.section.app.expect.element('@resultsTable').to.be.visible;
-  this.section.app.expect.element('@resultsTable').to.contain.text(patientName);
+  this.expect.section("@cardContainer").to.not.contain.text(patientName);
+  this.section.navbar.click("@resultsLink");
+  this.section.app.expect.element("@resultsTable").to.be.visible;
+  this.section.app.expect.element("@resultsTable").to.contain.text(patientName);
 }
 
 function getPatientLink(patientName) {
-  this.expect.section('@navbar').to.be.visible;
-  this.section.navbar.expect.element('@conductTestLink').to.be.visible;
-  this.section.navbar.click('@conductTestLink');
-  this.section.app.expect.element('@searchBar').to.be.visible;
-  this.section.app.setValue('@searchBar', patientName);
-  this.expect.section('@searchResults').to.be.visible;
-  this.section.searchResults.expect.element('@beginTest').to.be.visible;
+  this.expect.section("@navbar").to.be.visible;
+  this.section.navbar.expect.element("@conductTestLink").to.be.visible;
+  this.section.navbar.click("@conductTestLink");
+  this.section.app.expect.element("@searchBar").to.be.visible;
+  this.section.app.setValue("@searchBar", patientName);
+  this.expect.section("@searchResults").to.be.visible;
+  this.section.searchResults.expect.element("@beginTest").to.be.visible;
   this.section.searchResults.expect
-    .element('@beginTest')
-    .to.contain.text('Begin test');
-  this.section.searchResults.click('@beginTest');
-  this.expect.section('@modal').to.be.visible;
-  this.section.modal.expect.element('@smartphoneRadio').to.be.visible;
-  this.section.modal.click('@smartphoneRadio');
+    .element("@beginTest")
+    .to.contain.text("Begin test");
+  this.section.searchResults.click("@beginTest");
+  this.expect.section("@modal").to.be.visible;
+  this.section.modal.expect.element("@smartphoneRadio").to.be.visible;
+  this.section.modal.click("@smartphoneRadio");
   this.expect
-    .section('@modal')
-    .to.contain.text('Point your camera at the QR code');
+    .section("@modal")
+    .to.contain.text("Point your camera at the QR code");
   return new Promise((resolve) => {
     this.getAttribute(
-      '#patient-link-qr-code',
-      'data-patient-link',
+      "#patient-link-qr-code",
+      "data-patient-link",
       ({ value: patientLink }) => {
         resolve(patientLink);
       }
@@ -81,30 +81,30 @@ function getPatientLink(patientName) {
 }
 
 function verifyQuestionnaireCompleted(patientName) {
-  this.expect.section('@queueCard').to.be.visible;
-  this.expect.section('@queueCard').to.contain.text(patientName);
-  this.expect.section('@queueCard').to.contain.text('SARS-CoV-2 results');
-  this.section.queueCard.expect.element('@questionnaireCompletedTag').to.be
+  this.expect.section("@queueCard").to.be.visible;
+  this.expect.section("@queueCard").to.contain.text(patientName);
+  this.expect.section("@queueCard").to.contain.text("SARS-CoV-2 results");
+  this.section.queueCard.expect.element("@questionnaireCompletedTag").to.be
     .visible;
   this.section.queueCard.expect
-    .element('@questionnaireCompletedTag')
-    .to.contain.text('COMPLETED');
-  this.section.queueCard.expect.element('@negativeResult').to.be.visible;
-  this.section.queueCard.click('@negativeResult');
-  this.section.queueCard.expect.element('@submitResultButton').to.be.visible;
-  this.section.queueCard.click('@submitResultButton');
+    .element("@questionnaireCompletedTag")
+    .to.contain.text("COMPLETED");
+  this.section.queueCard.expect.element("@negativeResult").to.be.visible;
+  this.section.queueCard.click("@negativeResult");
+  this.section.queueCard.expect.element("@submitResultButton").to.be.visible;
+  this.section.queueCard.click("@submitResultButton");
   this.expect
-    .section('@app')
+    .section("@app")
     .to.contain.text(`Result was saved and reported for ${patientName}`);
-  this.expect.section('@cardContainer').to.not.contain.text(patientName);
-  this.section.navbar.click('@resultsLink');
-  this.section.app.expect.element('@resultsTable').to.be.visible;
-  this.section.app.expect.element('@resultsTable').to.contain.text(patientName);
+  this.expect.section("@cardContainer").to.not.contain.text(patientName);
+  this.section.navbar.click("@resultsLink");
+  this.section.app.expect.element("@resultsTable").to.be.visible;
+  this.section.app.expect.element("@resultsTable").to.contain.text(patientName);
 }
 
 module.exports = {
   url: function () {
-    return this.api.launchUrl + '/';
+    return this.api.launchUrl + "/";
   },
   commands: [
     {
@@ -115,45 +115,45 @@ module.exports = {
   ],
   sections: {
     app: {
-      selector: '.App',
+      selector: ".App",
       elements: {
-        searchBar: '#search-field-small',
-        resultsTable: '.usa-table',
+        searchBar: "#search-field-small",
+        resultsTable: ".usa-table",
       },
     },
     navbar: {
-      selector: '.usa-nav-container',
+      selector: ".usa-nav-container",
       elements: {
-        conductTestLink: '#conduct-test-nav-link',
-        resultsLink: '#results-nav-link',
+        conductTestLink: "#conduct-test-nav-link",
+        resultsLink: "#results-nav-link",
       },
     },
     searchResults: {
-      selector: '.results-dropdown',
+      selector: ".results-dropdown",
       elements: {
-        beginTest: 'button.usa-button--unstyled:first-of-type',
+        beginTest: "button.usa-button--unstyled:first-of-type",
       },
     },
     modal: {
-      selector: '.ReactModal__Content',
+      selector: ".ReactModal__Content",
       elements: {
         smartphoneRadio: 'input[name="qr-code"][value="smartphone"]+label',
         verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         firstTest: 'input[name="prior_test_flag"][value="yes"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',
-        continueButton: '#aoe-form-save-button',
+        continueButton: "#aoe-form-save-button",
       },
     },
     cardContainer: {
-      selector: '.prime-home .grid-container',
+      selector: ".prime-home .grid-container",
     },
     queueCard: {
-      selector: 'div.prime-queue-item:last-of-type',
+      selector: "div.prime-queue-item:last-of-type",
       elements: {
         negativeResult: '.prime-radios input[value="NEGATIVE"]+label',
-        submitResultButton: '.prime-test-result-submit button',
-        questionnaireCompletedTag: 'span.usa-tag',
+        submitResultButton: ".prime-test-result-submit button",
+        questionnaireCompletedTag: "span.usa-tag",
       },
     },
   },

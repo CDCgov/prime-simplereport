@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
+import {
+  showNotification,
+  displayFullNameInOrder,
+  displayFullName,
+} from "../../utils";
+import { OrganizationRole, RoleDescription } from "../../permissions";
+
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import InProgressModal from "./InProgressModal";
@@ -15,12 +22,6 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import {
-  showNotification,
-  displayFullNameInOrder,
-  displayFullName,
-} from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import "./ManageUsers.scss";
 

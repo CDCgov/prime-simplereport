@@ -6,6 +6,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
+
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 

@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, useSelector } from "react-redux";
+
 import { formatFullName } from "../../app/utils/user";
 
 const PatientLanding = () => {

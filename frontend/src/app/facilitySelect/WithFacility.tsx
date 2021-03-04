@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 
 import { updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
+
 import FacilitySelect from "./FacilitySelect";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;

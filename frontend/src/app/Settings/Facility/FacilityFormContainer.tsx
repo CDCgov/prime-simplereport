@@ -8,6 +8,7 @@ import {
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+
 import FacilityForm from "./FacilityForm";
 
 const GET_FACILITY_QUERY = gql`

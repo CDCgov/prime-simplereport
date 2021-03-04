@@ -1,23 +1,26 @@
 import { gql, useQuery } from "@apollo/client";
 import React, { useState } from "react";
 import moment from "moment";
-import { displayFullName } from "../utils";
 import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
+
+import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
 import { capitalizeText } from "../utils/text";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PatientUpload from "./PatientUpload";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
-import ArchivePersonModal from "./ArchivePersonModal";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
-import "./ManagePatients.scss";
-import { useSelector } from "react-redux";
 import Pagination from "../commonComponents/Pagination";
+
+import PatientUpload from "./PatientUpload";
+import ArchivePersonModal from "./ArchivePersonModal";
+
+import "./ManagePatients.scss";
 
 const patientsCountQuery = gql`
   query GetPatientsCountByFacility(

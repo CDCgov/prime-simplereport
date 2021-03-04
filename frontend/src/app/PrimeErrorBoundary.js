@@ -1,4 +1,5 @@
 import React from "react";
+
 // import { SeverityLevel } from "@microsoft/applicationinsights-web";
 import { appInsights } from "./AppInsights";
 

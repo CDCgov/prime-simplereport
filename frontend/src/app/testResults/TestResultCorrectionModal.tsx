@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { gql, useMutation } from "@apollo/client";
 import Modal from "react-modal";
+import { toast } from "react-toastify";
+
 import Button from "../commonComponents/Button";
 import { displayFullName, showNotification } from "../utils";
 import "./TestResultCorrectionModal.scss";
@@ -9,7 +11,6 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Alert from "../commonComponents/Alert";
-import { toast } from "react-toastify";
 
 export const testQuery = gql`
   query getTestResultForCorrection($id: String!) {

@@ -1,8 +1,9 @@
 import React from "react";
 
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { SettingsUser } from "./ManageUsersContainer";
 import { RoleDescription } from "../../permissions";
+
+import { SettingsUser } from "./ManageUsersContainer";
 
 interface RoleButton {
   value: RoleDescription;

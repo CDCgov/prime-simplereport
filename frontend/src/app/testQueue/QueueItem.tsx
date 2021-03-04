@@ -9,28 +9,29 @@ import {
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
 import classnames from "classnames";
+import moment from "moment";
 
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
-import AoEModalForm from "./AoEForm/AoEModalForm";
 import Dropdown from "../commonComponents/Dropdown";
 import TextInput from "../commonComponents/TextInput";
 import LabeledText from "../commonComponents/LabeledText";
 import TestResultInputForm from "../testResults/TestResultInputForm";
-import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import { displayFullName, showNotification } from "../utils";
 import { patientPropType, devicePropType } from "../propTypes";
+import Checkboxes from "../commonComponents/Checkboxes";
+
+import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
 import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
-import Checkboxes from "../commonComponents/Checkboxes";
-import moment from "moment";
+import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
-const REMOVE_PATIENT_FROM_QUEUE = gql`
+export const REMOVE_PATIENT_FROM_QUEUE = gql`
   mutation RemovePatientFromQueue($patientId: String!) {
     removePatientFromQueue(patientId: $patientId)
   }
@@ -140,6 +141,7 @@ const AreYouSure: React.FC<AreYouSureProps> = ({
     }}
     overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
     contentLabel="Questions not answered"
+    ariaHideApp={process.env.NODE_ENV !== "test"}
   >
     <div className="sr-modal-content">{children}</div>
     <div className="margin-top-4 padding-top-205 border-top border-base-lighter margin-x-neg-205">
@@ -315,6 +317,7 @@ const QueueItem: any = ({
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
+      setConfirmationType("none");
       submitTestResult({
         variables: {
           patientId: patient.internalId,

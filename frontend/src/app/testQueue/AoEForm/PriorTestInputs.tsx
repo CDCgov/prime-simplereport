@@ -1,11 +1,11 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import moment from "moment";
+
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
 import Optional from "../../commonComponents/Optional";
-import moment from "moment";
 
 interface Props {
   testTypeConfig: Option[];
