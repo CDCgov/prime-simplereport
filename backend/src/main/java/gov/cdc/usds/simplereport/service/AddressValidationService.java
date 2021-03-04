@@ -66,6 +66,9 @@ public class AddressValidationService {
       throw new IllegalGraphqlArgumentException(errorMessage);
     }
 
+    // If the address is invalid then Smarty street returns 0 results.
+    // If the address is valid the results are returned and the first result is the best match
+    // and is the one we should be using to get the County metadata
     Candidate addressMatch = results.get(0);
     return new StreetAddress(
         lookup.getStreet(),

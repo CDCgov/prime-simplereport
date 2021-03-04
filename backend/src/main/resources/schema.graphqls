@@ -206,7 +206,7 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
+    county: String @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -219,7 +219,7 @@ type Mutation {
     orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String
+    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String
@@ -232,7 +232,7 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
+    county: String @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -245,7 +245,7 @@ type Mutation {
     orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String
+    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String
@@ -261,7 +261,7 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String
+    county: String @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
@@ -274,7 +274,7 @@ type Mutation {
     orderingProviderStreet: String!
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String
+    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
     orderingProviderState: String!
     orderingProviderZipCode: String!
     orderingProviderPhone: String

@@ -406,6 +406,30 @@ exports[`PatientForm snapshot 1`] = `
             />
           </div>
           <div
+            className="usa-form-group"
+          >
+            <label
+              className="usa-label"
+              htmlFor="text-test-1"
+            >
+              County
+              <span
+                className="usa-hint"
+              >
+                 (optional)
+              </span>
+            </label>
+            <input
+              aria-required="false"
+              className="usa-input"
+              id="text-test-1"
+              name="county"
+              onChange={[Function]}
+              type="text"
+              value=""
+            />
+          </div>
+          <div
             className="grid-row grid-gap"
           >
             <div
