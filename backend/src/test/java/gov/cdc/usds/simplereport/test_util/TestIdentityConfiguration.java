@@ -40,8 +40,8 @@ public class TestIdentityConfiguration {
   }
 
   /**
-   * Set the security context to hold the "default" user ({@link TestUserIdentities#STANDARD_USER}), then run some
-   * code, then reset the user.
+   * Set the security context to hold the "default" user ({@link TestUserIdentities#STANDARD_USER}),
+   * then run some code, then reset the user.
    *
    * @param nested a lambda to run
    */
