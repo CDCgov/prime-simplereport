@@ -1,8 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.okta.spring.boot.oauth.Okta;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
@@ -18,98 +18,89 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.RequestCache;
-import org.springframework.security.web.savedrequest.SimpleSavedRequest;
-
-import com.okta.spring.boot.oauth.Okta;
-
-import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 
 /**
- * Live (with Okta integration) request-level security configuration. Not to be
- * confused with {@link AuthorizationConfiguration}, which is not
- * environment-specific and handles method-level or object-level security.
+ * Live (with Okta integration) request-level security configuration. Not to be confused with {@link
+ * AuthorizationConfiguration}, which is not environment-specific and handles method-level or
+ * object-level security.
  */
 @Configuration
 @Profile("!" + BeanProfiles.NO_SECURITY) // Activate this profile to disable security
 @ConditionalOnWebApplication
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-	public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
-	private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
+  public static final String SAVED_REQUEST_HEADER = "SPRING_SECURITY_SAVED_REQUEST";
+  private static final Logger LOG = LoggerFactory.getLogger(SecurityConfiguration.class);
 
-	public interface OktaAttributes {
-		public static String EMAIL = "email";
-		public static String FIRST_NAME = "given_name";
-		public static String LAST_NAME = "family_name";
-	}
+  public interface OktaAttributes {
+    public static String EMAIL = "email";
+    public static String FIRST_NAME = "given_name";
+    public static String LAST_NAME = "family_name";
+  }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-			.antMatchers("/").permitAll()
-			.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-			.antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK).permitAll()
-			.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll()
-			.requestMatchers(EndpointRequest.to(InfoEndpoint.class)).permitAll()
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
+    http.authorizeRequests()
+        .antMatchers("/")
+        .permitAll()
+        .antMatchers(HttpMethod.OPTIONS, "/**")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
+        .permitAll()
+        .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
+        .permitAll()
+        .requestMatchers(EndpointRequest.to(InfoEndpoint.class))
+        .permitAll()
 
-			// Patient experience authorization is handled in PatientExperienceController
-			// If this configuration changes, please update the documentation on both sides
-			.antMatchers(HttpMethod.PUT, WebConfiguration.PATIENT_EXPERIENCE).permitAll()
+        // Patient experience authorization is handled in PatientExperienceController
+        // If this configuration changes, please update the documentation on both sides
+        .antMatchers(HttpMethod.PUT, WebConfiguration.PATIENT_EXPERIENCE)
+        .permitAll()
 
-			// Anything else goes through Okta
-			.anyRequest().authenticated()
+        // Anything else goes through Okta
+        .anyRequest()
+        .authenticated()
 
-			// We don't have sessions, so can't have CSRF. Spring's automatic CSRF support
-			// breaks the REST controller, so, disable it:
-			.and().csrf().disable();
+        // We don't have sessions, so can't have CSRF. Spring's automatic CSRF support
+        // breaks the REST controller, so, disable it:
+        .and()
+        .csrf()
+        .disable();
 
-		Okta.configureResourceServer401ResponseBody(http);
-	}
+    Okta.configureResourceServer401ResponseBody(http);
+  }
 
-	@Bean
-	public RequestCache refererRequestCache() {
-		return new HttpSessionRequestCache() {
-			@Override
-			public void saveRequest(HttpServletRequest request, HttpServletResponse response) {
-				final String referrer = request.getHeader("referer");
-				if (referrer != null) {
-					request.getSession().setAttribute(SAVED_REQUEST_HEADER, new SimpleSavedRequest(referrer));
-				}
-			}
-		};
-	}
-
-	@Bean
-	public IdentitySupplier getRealIdentity() {
-		return () -> {
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (principal instanceof OidcUser) {
-				OidcUser me = (OidcUser) principal;
-				LOG.debug("OIDC user found with attributes {}", me.getAttributes());
-				String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
-				String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
-				String email = me.getAttribute(OktaAttributes.EMAIL);
-				if (lastName == null) {
-					lastName = email;
-				}
-				LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
-				return new IdentityAttributes(email, firstName, null, lastName, null);
-			} else if (principal instanceof Jwt) {
-				Jwt token = (Jwt) principal;
-				LOG.debug("JWT user found with claims {}", token.getClaims());
-				String email = token.getSubject();
-				String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
-				String lastName = token.getClaim(OktaAttributes.LAST_NAME);
-				if (lastName == null) {
-					lastName = email;
-				}
-				LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
-				return new IdentityAttributes(email, firstName, null, lastName, null);
-			}
-			throw new RuntimeException("Unexpected authentication principal of type " + principal.getClass());
-		};
-	}
+  @Bean
+  public IdentitySupplier getRealIdentity() {
+    return () -> {
+      Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      if (principal instanceof OidcUser) {
+        OidcUser me = (OidcUser) principal;
+        LOG.debug("OIDC user found with attributes {}", me.getAttributes());
+        String firstName = me.getAttribute(OktaAttributes.FIRST_NAME);
+        String lastName = me.getAttribute(OktaAttributes.LAST_NAME);
+        String email = me.getAttribute(OktaAttributes.EMAIL);
+        if (lastName == null) {
+          lastName = email;
+        }
+        LOG.debug("Hello OIDC user {} {} ({})", firstName, lastName, email);
+        return new IdentityAttributes(email, firstName, null, lastName, null);
+      } else if (principal instanceof Jwt) {
+        Jwt token = (Jwt) principal;
+        LOG.debug("JWT user found with claims {}", token.getClaims());
+        String email = token.getSubject();
+        String firstName = token.getClaim(OktaAttributes.FIRST_NAME);
+        String lastName = token.getClaim(OktaAttributes.LAST_NAME);
+        if (lastName == null) {
+          lastName = email;
+        }
+        LOG.debug("Hello JWT user {} {} ({})", firstName, lastName, email);
+        return new IdentityAttributes(email, firstName, null, lastName, null);
+      } else if (principal instanceof String && "anonymousUser".equals(principal)) {
+        return null;
+      }
+      throw new RuntimeException(
+          "Unexpected authentication principal of type " + principal.getClass());
+    };
+  }
 }

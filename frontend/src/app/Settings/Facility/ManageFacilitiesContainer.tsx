@@ -1,5 +1,6 @@
 import React from "react";
 import { gql, useQuery } from "@apollo/client";
+
 import ManageFacilities from "./ManageFacilities";
 
 const GET_FACILITIES = gql`

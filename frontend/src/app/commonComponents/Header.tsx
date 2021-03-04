@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import classNames from "classnames";
 import { v4 as uuidv4 } from "uuid";
-import useComponentVisible from "./ComponentVisible";
-import Dropdown from "./Dropdown";
-import { useSelector } from "react-redux";
-import { connect } from "react-redux";
-import Button from "./Button";
+import { useSelector, connect } from "react-redux";
+
+import { PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { formatFullName } from "../utils/user";
 import siteLogo from "../../img/simplereport-logo-color.svg";
 import { hasPermission, appPermissions } from "../permissions";
+
+import Button from "./Button";
+import Dropdown from "./Dropdown";
+import useComponentVisible from "./ComponentVisible";
 import { LinkWithQuery } from "./LinkWithQuery";
 
 const Header: React.FC<{}> = () => {
@@ -33,7 +34,9 @@ const Header: React.FC<{}> = () => {
 
   const onFacilitySelect = (e: React.FormEvent<HTMLSelectElement>) => {
     const id = (e.target as HTMLSelectElement).value;
-    window.location.href = `${window.location.pathname}?facility=${id}`;
+    window.location.href = `${
+      window.location.pathname
+    }?facility=${encodeURIComponent(id)}`;
   };
 
   const canViewSettings = hasPermission(
@@ -64,7 +67,12 @@ const Header: React.FC<{}> = () => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("id_token");
     window.location.replace(
-      `https://hhs-prime.okta.com/oauth2/default/v1/logout?id_token_hint=${id_token}&post_logout_redirect_uri=${process.env.REACT_APP_OKTA_URL}&state=${state}`
+      "https://hhs-prime.okta.com/oauth2/default/v1/logout" +
+        `?id_token_hint=${encodeURIComponent(id_token || "")}` +
+        `&post_logout_redirect_uri=${encodeURIComponent(
+          process.env.REACT_APP_OKTA_URL || ""
+        )}` +
+        `&state=${state}`
     );
   };
 

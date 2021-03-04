@@ -3,10 +3,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
-import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 
 interface Props {
   facility: Facility;

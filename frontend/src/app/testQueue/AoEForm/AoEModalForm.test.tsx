@@ -1,9 +1,9 @@
 import renderer, { act } from "react-test-renderer";
 import { MockedProvider } from "@apollo/client/testing";
 import MockDate from "mockdate";
+import ReactDOM from "react-dom";
 
 import AoEModalForm, { LAST_TEST_QUERY } from "./AoEModalForm";
-import ReactDOM from "react-dom";
 
 jest.mock("./AoEForm", () => () => <></>);
 jest.mock("react-modal", () => (props: any) => <>{props.children}</>);

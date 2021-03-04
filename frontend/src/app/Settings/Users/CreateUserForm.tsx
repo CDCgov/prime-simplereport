@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
+import { OrganizationRole } from "../../permissions";
+
 import { NewUserInvite } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
@@ -22,17 +24,17 @@ const initialFormState: NewUserInvite = {
 };
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
-const ROLE_OPTIONS = [
+const ROLE_OPTIONS: { value: OrganizationRole; label: string }[] = [
   {
-    value: "entry-only",
+    value: "ENTRY_ONLY",
     label: "Entry only (conduct tests)",
   },
   {
-    value: "user",
-    label: "Basic (manage results and profiles)",
+    value: "USER",
+    label: "Standard user (manage results and profiles)",
   },
   {
-    value: "admin",
+    value: "ADMIN",
     label: "Admin (full permissions)",
   },
 ];
@@ -47,15 +49,21 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
 
   const setUserRole =
     process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === "true" ? (
-      <Dropdown
-        options={ROLE_OPTIONS}
-        label="Access Level"
-        name="role"
-        selectedValue={newUser.role as string}
-        defaultSelect
-        className="grid-col"
-        onChange={onChange}
-      />
+      <>
+        <Dropdown
+          options={ROLE_OPTIONS}
+          label="Access Level"
+          name="role"
+          selectedValue={newUser.role as string}
+          defaultSelect
+          className="grid-col"
+          onChange={onChange}
+        />
+        <p>
+          If no role is selected, the user will be assigned the "Standard user
+          (manage results and profiles)" role by default.
+        </p>
+      </>
     ) : (
       <p>
         New users will be assigned as Standard Users, which allows them to
@@ -109,8 +117,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           onChange={onChange}
           disabled={isUpdating}
         />
-        <div className="grid-row">{setUserRole}</div>
       </div>
+      <div className="grid-row">{setUserRole}</div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
         <div className="display-flex flex-justify-end">
           <Button

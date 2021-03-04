@@ -5,12 +5,11 @@ import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
+
 import { reactPlugin } from "./AppInsights";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
-
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
@@ -131,9 +130,9 @@ const App = () => {
                   userPermissions={data.whoami.permissions}
                 />
                 <ProtectedRoute
-                  path={`/patients`}
-                  render={() => {
-                    return <ManagePatientsContainer />;
+                  path={`/patients/:page?`}
+                  render={({ match }: any) => {
+                    return <ManagePatientsContainer page={match.params.page} />;
                   }}
                   requiredPermissions={appPermissions.people.canView}
                   userPermissions={data.whoami.permissions}

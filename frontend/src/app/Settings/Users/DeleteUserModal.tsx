@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
 import { displayFullName } from "../../utils";
+
 import { SettingsUser } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
 

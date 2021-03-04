@@ -2,8 +2,9 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import ManageUsers from "./ManageUsers";
 import { UserRole, UserPermission } from "../../permissions";
+
+import ManageUsers from "./ManageUsers";
 
 const GET_USERS = gql`
   query GetUsers {
@@ -62,11 +63,13 @@ const ADD_USER_TO_ORG = gql`
     $firstName: String
     $lastName: String!
     $email: String!
+    $role: OrganizationRole
   ) {
     addUserToCurrentOrg(
       firstName: $firstName
       lastName: $lastName
       email: $email
+      role: $role
     ) {
       id
     }

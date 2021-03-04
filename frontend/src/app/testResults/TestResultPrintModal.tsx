@@ -1,13 +1,14 @@
 import React from "react";
 import { gql } from "@apollo/client";
 import Modal from "react-modal";
+import moment from "moment";
+import classnames from "classnames";
+
 import Button from "../commonComponents/Button";
 import { displayFullName } from "../utils";
-import moment from "moment";
 import "./TestResultPrintModal.scss";
 import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
-import classnames from "classnames";
 
 const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");

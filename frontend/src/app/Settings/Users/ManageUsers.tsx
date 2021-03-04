@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
+import {
+  showNotification,
+  displayFullNameInOrder,
+  displayFullName,
+} from "../../utils";
+import { OrganizationRole, RoleDescription } from "../../permissions";
+
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import InProgressModal from "./InProgressModal";
@@ -15,12 +22,6 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import {
-  showNotification,
-  displayFullNameInOrder,
-  displayFullName,
-} from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import "./ManageUsers.scss";
 
@@ -166,13 +167,9 @@ const ManageUsers: React.FC<Props> = ({
     // TODO: validate form
     try {
       setIsUpdating(true);
-      const { firstName, lastName, email } = { ...newUserInvite };
+      const { firstName, lastName, email, role } = { ...newUserInvite };
       const { data } = await addUserToOrg({
-        variables: {
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-        },
+        variables: { firstName, lastName, email, role: role || undefined },
       });
       await getUsers();
       const fullName = displayFullNameInOrder(firstName, "", lastName);

@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+
 import siteLogo from "../img/simplereport-logomark-color.svg";
 
 const PatientHeader = () => {

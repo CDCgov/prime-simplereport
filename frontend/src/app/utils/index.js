@@ -1,5 +1,6 @@
-import Alert from "../commonComponents/Alert";
 import React from "react";
+
+import Alert from "../commonComponents/Alert";
 
 export const displayFullName = (first, middle, last, lastFirst = true) => {
   if (lastFirst) {

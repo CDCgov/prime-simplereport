@@ -10,6 +10,7 @@ on:
 env:
   NODE_VERSION: 14
   JAVA_VERSION: 11
+  FIREFOX_VERSION: latest
   PROJECT_ROOT: /home/runner/work/prime-simplereport/prime-simplereport # Hardcoding this here because env.WORKSPACE_ROOT gets overridden by one of the steps downstream. We only need this for Sonar.
   REACT_APP_PATIENT_EXPERIENCE_ENABLED: true
   REACT_APP_QR_CODE_ENABLED: true
@@ -67,7 +68,8 @@ jobs:
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
-        run: cd backend; ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
+        working-directory: ./backend
+        run: ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
         uses: actions/setup-node@v1
         with:
@@ -79,10 +81,15 @@ jobs:
             ./frontend/node_modules
           key: npm-${{matrix.node}}-${{ hashFiles('frontend/yarn.lock', 'frontend/package.json') }}
       - name: Node setup
-        run: cd frontend; yarn
+        working-directory: ./frontend
+        run: yarn
       - name: Run frontend
-        run: cd frontend; yarn start &> ../yarn-log.txt &
-      - name: Build e2e container images
-        run: cd frontend/e2e; docker-compose build
+        working-directory: ./frontend
+        run: yarn start &> ../yarn-log.txt &
+      - name: Setup firefox
+        uses: browser-actions/setup-firefox@latest
+        with:
+          firefox-version: ${{ env.FIREFOX_VERSION }}
       - name: Run e2e tests
-        run: cd frontend/e2e; docker-compose run nightwatch ./nightwatch-entrypoint.bash;
+        working-directory: ./frontend
+        run: yarn e2e

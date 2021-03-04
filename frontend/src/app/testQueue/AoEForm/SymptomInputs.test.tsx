@@ -1,6 +1,7 @@
 import renderer from "react-test-renderer";
-import SymptomInputs from "./SymptomInputs";
 import MockDate from "mockdate";
+
+import SymptomInputs from "./SymptomInputs";
 
 describe("SymptomInputs", () => {
   let component: renderer.ReactTestRenderer;

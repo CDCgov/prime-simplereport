@@ -1,33 +1,18 @@
-@GenericGenerators( {
-	@GenericGenerator(
-		name = "UUID4",
-		strategy = "org.hibernate.id.UUIDGenerator"
-	),
-	@GenericGenerator(
-		name = "UUID1",
-		strategy = "org.hibernate.id.UUIDGenerator",
-		parameters = {
-			@Parameter(
-				name = "uuid_gen_strategy_class",
-				value = "org.hibernate.id.uuid.CustomVersionOneStrategy"
-			)
-		}
-	)
-
+@GenericGenerators({
+  @GenericGenerator(name = "UUID4", strategy = "org.hibernate.id.UUIDGenerator"),
+  @GenericGenerator(
+      name = "UUID1",
+      strategy = "org.hibernate.id.UUIDGenerator",
+      parameters = {
+        @Parameter(
+            name = "uuid_gen_strategy_class",
+            value = "org.hibernate.id.uuid.CustomVersionOneStrategy")
+      })
 })
 @TypeDefs({
-	@TypeDef(
-		name = "jsonb",
-		typeClass=JsonBinaryType.class
-	),
-	@TypeDef(
-		name = "list-array",
-		typeClass = ListArrayType.class
-	),
-	@TypeDef(
-	    name = "pg_enum",
-	    typeClass = PostgreSQLEnumType.class
-	)
+  @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class),
+  @TypeDef(name = "list-array", typeClass = ListArrayType.class),
+  @TypeDef(name = "pg_enum", typeClass = PostgreSQLEnumType.class)
 })
 package gov.cdc.usds.simplereport.db.model;
 

@@ -3,16 +3,18 @@ import React, { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
+
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName } from "../utils";
-import TestResultPrintModal from "./TestResultPrintModal";
-import TestResultCorrectionModal from "./TestResultCorrectionModal";
-import "./TestResultsList.scss";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
+
+import TestResultPrintModal from "./TestResultPrintModal";
+import TestResultCorrectionModal from "./TestResultCorrectionModal";
+import "./TestResultsList.scss";
 
 const testResultQuery = gql`
   query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {

@@ -1,22 +1,56 @@
 import { gql, useQuery } from "@apollo/client";
-import React from "react";
+import React, { useState } from "react";
 import moment from "moment";
-import { displayFullName } from "../utils";
+import classnames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
+import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
 import { daysSince } from "../utils/date";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import PatientUpload from "./PatientUpload";
+import { capitalizeText } from "../utils/text";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import { ActionsMenu } from "../commonComponents/ActionsMenu";
+import {
+  InjectedQueryWrapperProps,
+  QueryWrapper,
+} from "../commonComponents/QueryWrapper";
+import Pagination from "../commonComponents/Pagination";
+
+import PatientUpload from "./PatientUpload";
+import ArchivePersonModal from "./ArchivePersonModal";
+
+import "./ManagePatients.scss";
+
+const patientsCountQuery = gql`
+  query GetPatientsCountByFacility(
+    $facilityId: String!
+    $showDeleted: Boolean!
+  ) {
+    patientsCount(facilityId: $facilityId, showDeleted: $showDeleted)
+  }
+`;
 
 const patientQuery = gql`
-  query GetPatientsByFacility($facilityId: String!) {
-    patients(facilityId: $facilityId) {
+  query GetPatientsByFacility(
+    $facilityId: String!
+    $pageNumber: Int!
+    $pageSize: Int!
+    $showDeleted: Boolean
+  ) {
+    patients(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+      showDeleted: $showDeleted
+    ) {
       internalId
       firstName
       lastName
       middleName
       birthDate
+      isDeleted
+      role
       lastTest {
         dateAdded
       }
@@ -24,33 +58,52 @@ const patientQuery = gql`
   }
 `;
 
-interface Patient {
+export interface Patient {
   internalId: string;
   firstName: string;
   lastName: string;
   middleName: string;
   birthDate: string;
+  isDeleted: boolean;
+  role: string;
   lastTest: {
     dateAdded: string;
   };
 }
 
-interface Data {
-  patients: Patient[];
-}
-
 interface Props {
   activeFacilityId: string;
   canEditUser: boolean;
+  canDeleteUser: boolean;
+  currentPage?: number;
+  entriesPerPage: number;
+  totalEntries: number;
+  showDeleted?: boolean;
+  data: { patients: Patient[] };
+  refetch: () => null;
 }
 
-const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
-  const { data, loading, error, refetch } = useQuery<Data, {}>(patientQuery, {
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId: activeFacilityId,
-    },
-  });
+export const DetachedManagePatients = ({
+  canEditUser,
+  data,
+  currentPage = 1,
+  entriesPerPage,
+  totalEntries,
+  refetch,
+}: Props) => {
+  const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
+
+  if (archivePerson) {
+    return (
+      <ArchivePersonModal
+        person={archivePerson}
+        closeModal={() => {
+          setArchivePerson(null);
+          refetch();
+        }}
+      />
+    );
+  }
 
   const patientRows = (patients: Patient[]) => {
     return patients.map((patient: Patient) => {
@@ -60,22 +113,45 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
         patient.lastName
       );
 
-      let editUserLink = canEditUser ? (
-        <LinkWithQuery to={`/patient/${patient.internalId}`}>
-          {fullName}
-        </LinkWithQuery>
-      ) : (
-        <span>{fullName}</span>
-      );
+      const editUserLink =
+        canEditUser && !patient.isDeleted ? (
+          <LinkWithQuery
+            to={`/patient/${patient.internalId}`}
+            className="sr-patient-edit-link"
+          >
+            {fullName}
+          </LinkWithQuery>
+        ) : (
+          <span>{fullName}</span>
+        );
 
       return (
-        <tr key={patient.internalId}>
+        <tr
+          key={patient.internalId}
+          className={classnames(
+            "sr-patient-row",
+            patient.isDeleted && "sr-patient-row--removed"
+          )}
+        >
           <th scope="row">{editUserLink}</th>
-          <td> {patient.birthDate}</td>
+          <td>{moment(patient.birthDate).format("MM/DD/yyyy")}</td>
+          <td>{capitalizeText(patient.role)}</td>
           <td>
             {patient.lastTest
               ? `${daysSince(moment(patient.lastTest.dateAdded))}`
               : "N/A"}
+          </td>
+          <td>
+            {canEditUser && !patient.isDeleted && (
+              <ActionsMenu
+                items={[
+                  {
+                    name: "Archive record",
+                    action: () => setArchivePerson(patient),
+                  },
+                ]}
+              />
+            )}
           </td>
         </tr>
       );
@@ -88,10 +164,16 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
         <div className="grid-row">
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
-              <h2>{PATIENT_TERM_PLURAL_CAP}</h2>
+              <h2>
+                {PATIENT_TERM_PLURAL_CAP}
+                <span className="sr-showing-patients-on-page">
+                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                  {totalEntries}
+                </span>
+              </h2>
               {canEditUser ? (
                 <LinkWithQuery
-                  className="usa-button usa-button--outline"
+                  className="usa-button usa-button--primary"
                   to={`/add-patient`}
                   id="add-patient-button"
                 >
@@ -100,31 +182,89 @@ const ManagePatients = ({ activeFacilityId, canEditUser }: Props) => {
                 </LinkWithQuery>
               ) : null}
             </div>
-            <div className="usa-card__body">
-              {error ? (
-                <p>Error in loading patients</p>
-              ) : loading ? (
-                <p>Loading patients...</p>
-              ) : data ? (
-                <table className="usa-table usa-table--borderless width-full">
-                  <thead>
-                    <tr>
-                      <th scope="col">Name</th>
-                      <th scope="col">Date of Birth</th>
-                      <th scope="col">Days since last test</th>
-                    </tr>
-                  </thead>
-                  <tbody>{patientRows(data.patients)}</tbody>
-                </table>
-              ) : (
-                <p> no patients found</p>
-              )}
+            <div className="usa-card__body sr-patient-list">
+              <table className="usa-table usa-table--borderless width-full">
+                <thead>
+                  <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Date of Birth</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Days since last test</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>{patientRows(data.patients)}</tbody>
+              </table>
+            </div>
+            <div className="usa-card__footer">
+              <Pagination
+                baseRoute="/patients"
+                currentPage={currentPage}
+                entriesPerPage={entriesPerPage}
+                totalEntries={totalEntries}
+              />
             </div>
           </div>
           <PatientUpload onSuccess={refetch} />
         </div>
       </div>
     </main>
+  );
+};
+
+type InjectedContainerProps = "pageCount" | "entriesPerPage" | "totalEntries";
+
+const ManagePatients = (
+  props: Omit<Props, InjectedQueryWrapperProps | InjectedContainerProps>
+) => {
+  const activeFacilityId = useSelector(
+    (state) => (state as any).facility.id as string
+  );
+
+  const {
+    data: totalPatients,
+    loading,
+    error,
+    refetch: refetchCount,
+  } = useQuery(patientsCountQuery, {
+    variables: { facilityId: activeFacilityId, showDeleted: false },
+    fetchPolicy: "no-cache",
+  });
+
+  if (activeFacilityId.length < 1) {
+    return <div>"No facility selected"</div>;
+  }
+
+  if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    throw error;
+  }
+
+  const totalEntries = totalPatients.patientsCount;
+  const entriesPerPage = 20;
+  const pageNumber = props.currentPage || 1;
+  return (
+    <QueryWrapper<Props>
+      query={patientQuery}
+      queryOptions={{
+        variables: {
+          facilityId: activeFacilityId,
+          pageNumber: pageNumber - 1,
+          pageSize: entriesPerPage,
+          showDeleted: props.showDeleted || false,
+        },
+      }}
+      onRefetch={refetchCount}
+      Component={DetachedManagePatients}
+      componentProps={{
+        ...props,
+        totalEntries,
+        currentPage: pageNumber,
+        entriesPerPage,
+      }}
+    />
   );
 };
 

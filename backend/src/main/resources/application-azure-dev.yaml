@@ -22,7 +22,7 @@ simple-report:
     - adam@skylight.digital
     - josh@skylight.digital
   data-hub:
-    upload-enabled: true
+    upload-enabled: false
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"
     upload-schedule: "0 0/15 * * * *" # every 15min on the clock 1:00, 1:15, 1:30, etc
     max-csv-rows: 25
@@ -31,4 +31,3 @@ simple-report:
     patient-links: true
 twilio:
   enabled: true
-  from-number: "+14045312484"

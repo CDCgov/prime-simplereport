@@ -1,15 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-
-import App from "./app/App";
-import PatientApp from "./patientApp/PatientApp";
-import HealthChecks from "./app/HealthChecks";
-
-import * as serviceWorker from "./serviceWorker";
-import "./styles/App.css";
-import { store } from "./app/store";
-import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
@@ -17,11 +8,19 @@ import {
   InMemoryCache,
   concat,
 } from "@apollo/client";
+import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
 import { createUploadLink } from "apollo-upload-client";
 import { onError } from "@apollo/client/link/error";
-import { showError } from "./app/utils";
 import { toast } from "react-toastify";
 import Modal from "react-modal";
+
+import App from "./app/App";
+import PatientApp from "./patientApp/PatientApp";
+import HealthChecks from "./app/HealthChecks";
+import * as serviceWorker from "./serviceWorker";
+import "./styles/App.css";
+import { store } from "./app/store";
+import { showError } from "./app/utils";
 
 // Define the root element for modals
 if (process.env.NODE_ENV !== "test") {
