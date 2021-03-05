@@ -20,7 +20,7 @@ resource "azurerm_postgresql_server" "db" {
   tags = var.tags
 
   threat_detection_policy {
-    enabled = true
+    enabled              = true
     email_account_admins = true
   }
 
