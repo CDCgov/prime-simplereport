@@ -11,6 +11,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+/**
+ * This class is intended to manage identities and authorizations for controller/graphql API tests.
+ * At the moment, it is only used by PatientExperienceControllerTest, to override the default
+ * IdentitySupplier (which is unrealistic and masked a serious bug). In the future it may either
+ * expand to cover BaseApiTest and its descendants, or go away entirely.
+ */
 public class TestIdentityConfiguration {
 
   @Bean
