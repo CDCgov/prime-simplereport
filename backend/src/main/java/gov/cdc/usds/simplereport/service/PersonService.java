@@ -107,7 +107,7 @@ public class PersonService {
     }
 
     ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
-    perms.add(UserPermission.READ_PATIENT_LIST); // always required
+
     if (facilityId == null) {
       perms.add(UserPermission.READ_PATIENT_LIST); // this is NOT right, but tests fail if changed
     }
