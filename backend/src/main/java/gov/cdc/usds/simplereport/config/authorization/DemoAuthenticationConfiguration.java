@@ -116,10 +116,6 @@ public class DemoAuthenticationConfiguration {
       _getCurrentUser = getCurrentDemoUserSupplier(config);
     }
 
-    public DemoUserAuthorizationService(List<DemoUser> users) {
-      this(new DemoUserConfiguration(users));
-    }
-
     @Override
     public List<OrganizationRoleClaims> findAllOrganizationRoles() {
       return _getCurrentUser.get().map(DemoUser::getAuthorization).map(List::of).orElse(List.of());

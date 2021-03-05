@@ -60,3 +60,46 @@ simple-report-initialization:
       model: CareStart COVID-19 Antigen test*
       loinc-code: "94558-4"
       swab-type: "258500001"
+simple-report:
+  site-admin-emails:
+    - ruby@example.com
+  demo-users:
+    default-user:
+      identity:
+        username: bob@sample.com
+        first-name: Bob
+        last-name: Bobberoo
+      authorization:
+        organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
+        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}
+    alternate-users:
+      - identity:
+          username: ruby@example.com
+          first-name: Ruby
+          middle-name: Raven
+          last-name: Reynolds
+      - identity:
+          username: ben@sample.com
+          first-name: Ben
+          middle-name: Billy
+          last-name: Barnes
+          suffix: III
+        authorization:
+          organization-external-id: DIS_ORG
+          granted-roles: USER
+      - identity:
+          username: jamar@sample.com
+          first-name: Jamar
+          middle-name: Donald
+          last-name: Jackson
+        authorization:
+          organization-external-id: DIS_ORG
+          granted-roles: USER, ENTRY_ONLY
+      - identity:
+          username: sarah@sample.com
+          first-name: Sarah
+          middle-name: Sally
+          last-name: Samuels
+        authorization:
+          organization-external-id: DIS_ORG
+          granted-roles: USER, ADMIN
