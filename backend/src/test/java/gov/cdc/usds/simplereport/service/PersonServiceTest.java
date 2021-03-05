@@ -50,17 +50,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private Facility _site1;
   private Facility _site2;
 
-  private static void assertPatientList(List<Person> found, PersonName... expected) {
-    // check common elements first
-    for (int i = 0; i < expected.length && i < found.size(); i++) {
-      assertEquals(expected[i], found.get(i).getNameInfo());
-    }
-    // *then* check if there are extras
-    if (expected.length != found.size()) {
-      fail("Expected" + expected.length + " items but found " + found.size());
-    }
-  }
-
   @BeforeEach
   void setupData() {
     initSampleData();
@@ -459,6 +448,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
       _dataFactory.createMinimalPerson(_org, _site2, JANNELLE);
       _dataFactory.createMinimalPerson(_org, _site2, KACEY);
       _dataFactory.createMinimalPerson(_org, _site2, LEELOO);
+    }
+  }
+
+  private static void assertPatientList(List<Person> found, PersonName... expected) {
+    // check common elements first
+    for (int i = 0; i < expected.length && i < found.size(); i++) {
+      assertEquals(expected[i], found.get(i).getNameInfo());
+    }
+    // *then* check if there are extras
+    if (expected.length != found.size()) {
+      fail("Expected" + expected.length + " items but found " + found.size());
     }
   }
 }

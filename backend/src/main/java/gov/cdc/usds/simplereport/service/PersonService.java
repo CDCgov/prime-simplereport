@@ -29,6 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = false)
 public class PersonService {
+  private final CurrentPatientContextHolder _patientContext;
+  private final OrganizationService _os;
+  // currently loads ALL patients and filters locally.
+  private final PersonRepository _repo;
+  private final UserAuthorizationVerifier _auth;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -36,11 +41,6 @@ public class PersonService {
 
   private static final Sort NAME_SORT =
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
-  private final CurrentPatientContextHolder _patientContext;
-  private final OrganizationService _os;
-  // currently loads ALL patients and filters locally.
-  private final PersonRepository _repo;
-  private final UserAuthorizationVerifier _auth;
 
   public PersonService(
       OrganizationService os,
