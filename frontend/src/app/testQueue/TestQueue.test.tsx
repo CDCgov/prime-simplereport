@@ -198,7 +198,6 @@ const mocks = [
       query: queueQuery,
       variables: {
         facilityId: "a1",
-        searchTerm: null,
       },
     },
     result: {
