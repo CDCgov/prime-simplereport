@@ -26,3 +26,5 @@ simple-report:
     - adam@skylight.digital
     - josh@skylight.digital
   patient-link-url: https://simplereport.gov/app/pxp?plid=
+  feature-flags:
+    patient-links: true
