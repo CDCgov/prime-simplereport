@@ -49,7 +49,7 @@ public class DemoUserConfiguration {
   }
 
   public DemoUser getByUsername(String username) {
-    return byUsername.getOrDefault(username, defaultUser);
+    return byUsername.get(username);
   }
 
   @ConstructorBinding

@@ -21,6 +21,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -47,8 +49,8 @@ public class DemoAuthenticationConfiguration {
     Filter filter =
         (ServletRequest request, ServletResponse response, FilterChain chain) -> {
           SecurityContext securityContext = SecurityContextHolder.getContext();
-          LOG.info(
-              "Filter happened via dev security: current auth is {}",
+          LOG.debug(
+              "Processing request for demo authentication: current auth is {}",
               securityContext.getAuthentication());
           HttpServletRequest req2 = (HttpServletRequest) request;
           String authHeader = req2.getHeader("Authorization");
@@ -78,25 +80,29 @@ public class DemoAuthenticationConfiguration {
    * Creates and returns a {@link Supplier} that examines the current security context, finds the
    * username of the current user, and returns the {@link DemoUser} that matches that username. If a
    * default user has been configured, that user will be returned in the event that there is no
-   * username or the username does not match any known DemoUser.
+   * username.
    *
    * @param config the configured list of DemoUsers, with or without a default user set.
+   * @throws BadCredentialsException if a username is supplied but is invalid
    */
   private static Supplier<Optional<DemoUser>> getCurrentDemoUserSupplier(
       DemoUserConfiguration config) {
     return () -> {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String userName = null;
+      DemoUser found;
       if (auth == null) { // have to allow defaulting to work even when there is no authentication
         LOG.warn("No authentication found: current user will be default (if available)");
-      } else if (auth.isAuthenticated()) {
-        userName = auth.getName();
-      } else {
+        found = config.getDefaultUser();
+      } else if (auth instanceof AnonymousAuthenticationToken) {
         LOG.info("Unauthenticated user in demo mode: current user will be default (if available)");
-      }
-      DemoUser found = config.getByUsername(userName);
-      if (found == null) {
-        LOG.error("Invalid user {} in demo mode", userName);
+        found = config.getDefaultUser();
+      } else {
+        String userName = auth.getName();
+        found = config.getByUsername(userName);
+        if (found == null) {
+          LOG.error("Invalid user {} in demo mode", userName);
+          throw new BadCredentialsException("Invalid username supplied.");
+        }
       }
       return Optional.ofNullable(found);
     };
