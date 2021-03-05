@@ -19,6 +19,11 @@ resource "azurerm_postgresql_server" "db" {
 
   tags = var.tags
 
+  threat_detection_policy {
+    enabled = true
+    email_account_admins = true
+  }
+
   lifecycle {
     ignore_changes = [
       identity
