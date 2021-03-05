@@ -56,10 +56,10 @@ jobs:
         run: yarn install
       - name: Build deploy artifact
         env:
-          REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b
-          REACT_APP_BASE_URL=https://simplereport.gov
-          REACT_APP_BACKEND_URL=https://simplereport.gov/api
-          PUBLIC_URL=/app/
+          REACT_APP_APPINSIGHTS_KEY: ec65665e-358e-4f07-9292-3d80f23bcc3b
+          REACT_APP_BASE_URL: https://simplereport.gov
+          REACT_APP_BACKEND_URL: https://simplereport.gov/api
+          PUBLIC_URL: /app/
         run: yarn run build
       - uses: azure/login@v1
         with:
