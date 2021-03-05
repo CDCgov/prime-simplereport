@@ -55,11 +55,16 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build deploy artifact
+        env:
+          REACT_APP_APPINSIGHTS_KEY=ec65665e-358e-4f07-9292-3d80f23bcc3b
+          REACT_APP_OKTA_URL=https://simplereport.gov
+          REACT_APP_BACKEND_URL=https://simplereport.gov/api
+          PUBLIC_URL=/app/
         run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: yarn run deploy-azure-${{ matrix.deploy_env }}
+        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereportprodapp --destination-path '/app'
       - name: Purge CDN
         run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait
