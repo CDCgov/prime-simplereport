@@ -24,18 +24,18 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     initSampleData();
     List<UserInfo> users = _service.getUsersInCurrentOrg();
     Collections.sort(users, new UserInfoEmailComparator());
-    BiConsumer<UserInfo, Set<OrganizationRole>> roleChecker =
+    BiConsumer<UserInfo, Set<OrganizationRole>> roleCheck =
         (u, expected) -> {
           EnumSet<OrganizationRole> actual = EnumSet.copyOf(u.getRoles());
           assertEquals(expected, actual);
         };
     assertEquals(users.size(), 3);
     assertEquals(users.get(0).getEmail(), "admin@example.com");
-    roleChecker.accept(users.get(0), EnumSet.of(OrganizationRole.USER, OrganizationRole.ADMIN));
+    roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.USER, OrganizationRole.ADMIN));
     assertEquals(users.get(1).getEmail(), "bobbity@example.com");
-    roleChecker.accept(users.get(1), EnumSet.of(OrganizationRole.USER));
+    roleCheck.accept(users.get(1), EnumSet.of(OrganizationRole.USER));
     assertEquals(users.get(2).getEmail(), "nobody@example.com");
-    roleChecker.accept(users.get(2), EnumSet.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+    roleCheck.accept(users.get(2), EnumSet.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
   }
 
   @Test
