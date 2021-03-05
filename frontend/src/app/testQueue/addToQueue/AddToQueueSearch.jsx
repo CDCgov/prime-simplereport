@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import {
@@ -8,7 +8,7 @@ import {
 
 import Alert from "../../commonComponents/Alert";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
-import { showNotification, displayFullName } from "../../utils";
+import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
@@ -168,8 +168,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         showNotification(toast, alert);
         refetchQueue();
         if (createOrUpdate === "create") {
-          const patientLinkId = res.data.addPatientToQueue;
-          return patientLinkId;
+          return res.data.addPatientToQueue;
         }
       })
       .catch((error) => {
