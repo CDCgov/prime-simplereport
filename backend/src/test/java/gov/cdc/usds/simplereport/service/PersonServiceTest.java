@@ -298,7 +298,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getPatients_search() {
+  void getPatients_search_OrgAdminUser() {
     makedata(true);
 
     // delete some data to verify achived works as expepected
@@ -329,11 +329,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     patients = _service.getPatients(null, 0, 100, false, "MARTHA");
     assertPatientList(patients, JANNELLE, ELIZABETH);
 
-    // what to do when search term is too short? Return all?
-    assertThrows(
-        IllegalArgumentException.class, () -> _service.getPatients(null, 0, 100, false, "M"));
-    assertThrows(
-        IllegalArgumentException.class, () -> _service.getPatients(null, 0, 100, false, ""));
+    // what to do when search term is too short? Returning empty data is easier to handle on the
+    // client
+    assertEquals(0, _service.getPatientsCount(null, false, "M"));
+    assertEquals(0, _service.getPatientsCount(null, false, ""));
+    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
+    // "M"));
+    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
+    // ""));
   }
 
   @Test
