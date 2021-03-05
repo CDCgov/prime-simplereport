@@ -66,7 +66,7 @@ public class UserAuthorizationVerifier {
           "Permission request for {} failed. No roles for org defined.", permissions.toString());
       return false;
     }
-    // check that all the granted peremssions contain this permission.
+    // check that all the granted permissions contain this permission.
     List<UserPermission> failedChecks =
         permissions.stream()
             .filter((permission) -> !orgRoles.get().getGrantedPermissions().contains(permission))
