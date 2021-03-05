@@ -45,7 +45,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()
-        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK)
+        .antMatchers(HttpMethod.GET, WebConfiguration.HEALTH_CHECK, "/echo/**", "/authTest/**")
         .permitAll()
         .requestMatchers(EndpointRequest.to(HealthEndpoint.class))
         .permitAll()
