@@ -179,6 +179,7 @@ const mocks = [
       query: QUERY_PATIENT,
       variables: {
         facilityId: "a1",
+        searchTerm: "",
       },
     },
     result: {},
@@ -197,6 +198,7 @@ const mocks = [
       query: queueQuery,
       variables: {
         facilityId: "a1",
+        searchTerm: null,
       },
     },
     result: {

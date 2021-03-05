@@ -182,6 +182,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         onSearchClick={onSearchClick}
         onInputChange={onInputChange}
         queryString={queryString}
+        disabled={queryString.length < MIN_SEARCH_CHARACTER_COUNT}
       />
       <SearchResults
         patients={data?.patients || []}
