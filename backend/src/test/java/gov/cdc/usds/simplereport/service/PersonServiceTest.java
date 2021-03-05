@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
@@ -366,9 +367,44 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertEquals(4, _service.getPatientsCount(null, false, "mar"));
     assertEquals(2, _service.getPatientsCount(null, false, "MARTHA"));
 
+    // what to do when search term is too short? Returning empty data is easier to handle on the
+    // client
+    assertEquals(0, _service.getPatientsCount(null, false, "M"));
+    assertEquals(0, _service.getPatientsCount(null, false, ""));
+    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
+    // "M"));
+    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
+    // ""));
+  }
+
+  @Test
+  @WithSimpleReportEntryOnlyUser
+  void getPatients_counts_entryonlyuser() {
+    makedata(true);
+
+    // the list query and the count query use the same filters and security checks, so to
+    // simplify tests, we'll just call the count function
+    assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, false, null));
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getPatientsCount(_site2.getInternalId(), false, null));
+    assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, true, null));
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getPatientsCount(_site1.getInternalId(), true, null));
+
+    // counts for name filtering
+    assertEquals(3, _service.getPatientsCount(_site2.getInternalId(), false, "ma"));
+    // this fails because of the isArchive is true
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.getPatientsCount(_site1.getInternalId(), true, "ma"));
+    // this fails because it searches across all facilities
+    assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, false, "ma"));
+
     // what to do when search term is too short? Return all?
-    assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false, "M"));
-    assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false, ""));
+    assertEquals(0, _service.getPatientsCount(_site1.getInternalId(), false, "M"));
+    assertEquals(0, _service.getPatientsCount(_site1.getInternalId(), false, ""));
   }
 
   @Test

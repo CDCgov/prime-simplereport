@@ -109,13 +109,18 @@ public class PersonService {
     ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
 
     if (facilityId == null) {
-      perms.add(UserPermission.READ_PATIENT_LIST); // this is NOT right, but tests fail if changed
+      // READ_PATIENT_LIST does NOT seem right, probably an admin role to see all patients across
+      // facilities?
+      perms.add(UserPermission.READ_PATIENT_LIST);
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
     if (searchTerm != null) {
       perms.add(UserPermission.SEARCH_PATIENTS);
+    } else {
+      // because searchTerm is null, they are reading permissions across all patients
+      perms.add(UserPermission.READ_PATIENT_LIST);
     }
 
     // check all the permissions in one call.
