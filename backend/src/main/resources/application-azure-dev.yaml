@@ -21,6 +21,8 @@ simple-report:
     - thomas.a.nielsen@omb.eop.gov
     - adam@skylight.digital
     - josh@skylight.digital
+    - qom5@cdc.gov # Heather
+    - qpu1@cdc.gov # Katherine
   data-hub:
     upload-enabled: false
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"
