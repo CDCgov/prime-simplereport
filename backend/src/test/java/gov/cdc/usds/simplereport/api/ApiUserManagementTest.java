@@ -66,7 +66,6 @@ class ApiUserManagementTest extends BaseApiTest {
   @Test
   void whoami_superuser_okResponses() {
     useSuperUser();
-    setRoles(null);
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Super Admin", who.get("roleDescription").asText());
     assertTrue(who.get("isAdmin").asBoolean());
@@ -75,7 +74,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
   @Test
   void whoami_nobody_okResponses() {
-    setRoles(null);
+    useBrokenUser();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Misconfigured user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());

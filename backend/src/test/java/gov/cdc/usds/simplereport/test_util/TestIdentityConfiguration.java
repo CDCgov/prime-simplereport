@@ -1,11 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
-import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration.DemoUserIdentitySupplier;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -18,15 +13,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
  * expand to cover BaseApiTest and its descendants, or go away entirely.
  */
 public class TestIdentityConfiguration {
-
-  @Bean
-  @Primary
-  public IdentitySupplier testIdentityProvider() {
-    return new DemoUserIdentitySupplier(
-        List.of(
-            new DemoUser(null, TestUserIdentities.STANDARD_USER_ATTRIBUTES),
-            new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)));
-  }
 
   /**
    * Set the security context to hold a particular user, then run some code, then reset the user.
