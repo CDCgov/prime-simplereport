@@ -116,7 +116,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     queueQuery,
     {
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "no-cache",
       variables: {
         facilityId: activeFacilityId,
       },
