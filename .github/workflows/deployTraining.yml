@@ -51,7 +51,7 @@ jobs:
         run: yarn install
       - name: Build deploy artifact
         env:
-          REACT_APP_OKTA_URL=https://training.simplereport.gov
+          REACT_APP_BASE_URL=https://training.simplereport.gov
           REACT_APP_BACKEND_URL=https://training.simplereport.gov/api
           REACT_APP_IS_TRAINING_SITE=true
           PUBLIC_URL=/app/ 
