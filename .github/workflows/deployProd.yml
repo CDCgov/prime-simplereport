@@ -61,3 +61,5 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
         run: yarn run deploy-azure-${{ matrix.deploy_env }}
+      - name: Purge CDN
+        run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait
