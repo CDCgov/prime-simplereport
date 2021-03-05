@@ -24,6 +24,8 @@ logging:
 simple-report:
   authorization:
     role-prefix: "SR-UNITTEST-TENANT:"
+  feature-flags:
+    patient-links: true
 simple-report-initialization:
   organization:
     org-name: Dis Organization
@@ -46,6 +48,11 @@ simple-report-initialization:
   configured-device-types:
     - LumiraDX
     - Quidel Sofia 2
+  specimen-types:
+    - name: Swab of the Nose
+      type-code: "445297001"
+      collection-location-name: "NOSE"
+      collection-location-code: "71836000"
   device-types:
     - name: Abbott IDNow
       manufacturer: Abbott
@@ -72,5 +79,3 @@ simple-report-initialization:
       model: LumiraDx SARS-CoV-2 Ag Test*
       loinc-code: "95209-3"
       swab-type: "445297001"
-feature-flags:
-  patient-links: true

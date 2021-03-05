@@ -2,13 +2,15 @@
 const faker = require('faker');
 const dayjs = require('dayjs');
 
-function addPatient() {
+function addPatient(dobFormat) {
   // Generate a random patient
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
-  const fullName = `${firstName} ${lastName}`;
-  const dob = dayjs(faker.date.past(100)).format('YYYY-MM-DD');
-  const phone = faker.phone.phoneNumber();
+  const fullName = `${lastName}, ${firstName}`;
+  const dob = dayjs(faker.date.past(100));
+  const dobForInput = dob.format(dobFormat);
+  const dobForPatientLink = dob.format('MM/DD/YYYY');
+  const phone = faker.phone.phoneNumberFormat(0);
   const address = faker.address.streetAddress();
   const state = faker.address.stateAbbr();
   const zip = faker.address.zipCodeByState(state);
@@ -22,9 +24,12 @@ function addPatient() {
   this.expect.section('@editPatient').to.be.visible;
   this.expect.section('@editPatient').to.contain.text('Add New Person');
   this.section.editPatient.setValue('@firstName', firstName);
+  this.section.editPatient.click('@saveButton');
+  this.expect.section('@editPatient').to.contain.text('Last name is required');
+  this.expect.section('@editPatient').to.contain.text('Facility is required');
   this.section.editPatient.setValue('@lastName', lastName);
-  this.section.editPatient.setValue('@facility', '~~ALL-FACILITIES~~');
-  this.section.editPatient.setValue('@dob', dob);
+  this.section.editPatient.setValue('@facility', 'All facilities');
+  this.section.editPatient.setValue('@dob', dobForInput);
   this.section.editPatient.setValue('@phone', phone);
   this.section.editPatient.setValue('@address', address);
   this.section.editPatient.setValue('@state', state);
@@ -35,7 +40,7 @@ function addPatient() {
   this.expect.section('@patientList').to.be.visible;
   this.expect.section('@patientList').to.contain.text(fullName);
 
-  return { patientName: fullName, birthDate: dob };
+  return { patientName: fullName, birthDate: dobForPatientLink };
 }
 
 module.exports = {

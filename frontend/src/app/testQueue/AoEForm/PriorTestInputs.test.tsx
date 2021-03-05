@@ -1,6 +1,7 @@
 import renderer from "react-test-renderer";
-import PriorTestInputs from "./PriorTestInputs";
 import MockDate from "mockdate";
+
+import PriorTestInputs from "./PriorTestInputs";
 
 describe("PriorTestInputs", () => {
   beforeEach(() => {
@@ -18,7 +19,7 @@ describe("PriorTestInputs", () => {
         setPriorTestResult={jest.fn()}
         priorTestType={""}
         setPriorTestType={jest.fn()}
-        mostRecentTest={undefined}
+        lastTest={undefined}
       />
     );
 

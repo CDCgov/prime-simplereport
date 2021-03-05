@@ -13,25 +13,25 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @ConditionalOnWebApplication
 public class WebConfiguration implements WebMvcConfigurer {
 
-    public static final String HEALTH_CHECK = "/health";
+  public static final String HEALTH_CHECK = "/health";
+  public static final String PATIENT_EXPERIENCE = "/pxp/**";
 
-    @Override
-    public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addStatusController(HEALTH_CHECK, HttpStatus.OK);
-    }
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addStatusController(HEALTH_CHECK, HttpStatus.OK);
+  }
 
-    /**
-     * We want (at least for now) to be able to lazy-load JPA relationships in the
-     * graphql resolver, even after exiting service-layer transactions.
-     *
-     * Since the graphql servlet does not register a handler with Spring, the Spring
-     * HandlerInterceptor does not work: instead, register a servlet filter with the
-     * same effect.
-     *
-     * @return
-     */
-    @Bean
-    public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
-        return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
-    }
+  /**
+   * We want (at least for now) to be able to lazy-load JPA relationships in the graphql resolver,
+   * even after exiting service-layer transactions.
+   *
+   * <p>Since the graphql servlet does not register a handler with Spring, the Spring
+   * HandlerInterceptor does not work: instead, register a servlet filter with the same effect.
+   *
+   * @return
+   */
+  @Bean
+  public FilterRegistrationBean<OpenEntityManagerInViewFilter> openInViewFilter() {
+    return new FilterRegistrationBean<>(new OpenEntityManagerInViewFilter());
+  }
 }

@@ -5,3 +5,9 @@ graphql.servlet.cors:
     - https://simple-report-api-demo.azurewebsites.net
     - https://simple-report-demo.azureedge.net
     - https://demo.simplereport.gov
+simple-report:
+  patient-link-url: https://demo.simplereport.gov/app/pxp?plid=
+  feature-flags:
+    patient-links: true
+twilio:
+  enabled: false

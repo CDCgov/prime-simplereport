@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+
 import { DetachedTestResultsList } from "./TestResultsList";
 
 // Data copied from Chrome network window
@@ -47,7 +48,7 @@ describe("TestResultsList", () => {
       <DetachedTestResultsList data={{ testResults }} />
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
-    expect(getByText("Cheez Whizzz")).toBeInTheDocument();
+    expect(getByText("Whizzz, Cheez")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
   });
 });

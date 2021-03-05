@@ -9,6 +9,7 @@ https://simplereport.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
+    - [Running the app with Make](#running-the-app-with-make)
     - [Updating user role](#updating-user-role)
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
@@ -18,9 +19,13 @@ https://simplereport.gov/
     - [E2E Tests](#e2e-tests)
     - [Local Settings](#local-settings)
     - [SchemaSpy](#schemaspy)
+    - [Twilio](#twilio)
   - [Frontend](#frontend)
     - [Frontend-Setup](#frontend-setup)
-    - [Deploy](#deploy)
+  - [Linters](#linters)
+  - [Deploy](#deploy)
+    - [Cloud Environments](#cloud-environments)
+    - [Manually-trigger-deploy](#manually-trigger-deploy)
 
 ## Setup
 
@@ -43,8 +48,16 @@ If Java isn't installed on a Mac you can get it from `brew`:
 
 ```sh
 brew tap adoptopenjdk/openjdk
-brew cask install adoptopenjdk8
+brew cask install adoptopenjdk11
 brew install gradle
+```
+
+Another option (also compatible with Linux) is to install with [jabba](https://github.com/shyiko/jabba), the Java version manager:
+
+```sh
+curl -sL https://github.com/shyiko/jabba/raw/master/install.sh | bash && . ~/.jabba/jabba.sh
+jabba install adopt@1.11-0
+jabba use adopt@1.11
 ```
 
 Running with docker:
@@ -111,7 +124,7 @@ You can make the default user a site admin by adding the following to `applicati
 ```
 simple-report:
   site-admin-emails:
-    - bob@bobby.bob
+    - bob@sample.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -138,7 +151,7 @@ Go to `localhost:8080` to see interact with the graphql api. You would need to p
 
 ### Tests
 
-All the test can be run with `gradle test`
+All the tests can be run with `gradle test`. Make sure that you do not have `SPRING_PROFILES_ACTIVE` set in your shell environment.
 
 Running a single test with a full stacktrace can be accomplished by supping the path to `gradle test`. Example
 
@@ -154,7 +167,7 @@ Run them with the following commands while the app (both front and backends) is 
 
 ```bash
 cd frontend
-npm run e2e
+yarn e2e
 ```
 
 ### Local Settings
@@ -175,7 +188,7 @@ Useful local settings
 ```
 simple-report:
   site-admin-emails:
-    - bob@example.com
+    - bob@sample.com
 ```
 
 - make SQL pretty
@@ -189,8 +202,9 @@ spring:
 ```
 - enable the patient links QR code feature flag
 ```
-feature-flags:
-  patient-links: true
+simple-report:
+  feature-flags:
+    patient-links: true
 ```
 
 ### SchemaSpy
@@ -207,6 +221,18 @@ SR_SCHEMASPY_PORT=8082 docker-compose up --build schemaspy
 
 visit http://localhost:8081
 
+### Twilio
+
+Twilio's Java SDK auto-configures based on two environment variables: `TWILIO_ACCOUNT_SID` and `TWILIO_AUTH_TOKEN`. SMS is also disabled by default, and can be enabled in application.yml:
+
+```
+twilio:
+  enabled: true
+  from-number: +13214560987
+```
+
+These can also be set by environment variable if desired.
+
 ## Frontend
 
 The frontend is a React app. The app uses [Apollo](https://www.apollographql.com/) to manage the graphql API. For styling the app leverages the [U.S. Web Design System (USWDS)](https://designsystem.digital.gov/)
@@ -221,6 +247,39 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 1. view site at http://localhost:3000
    - Note: frontend need the backend to be running to work
 
-### Deploy
+## Linters
 
+This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) as frontend linters,
+and [spotless](https://github.com/diffplug/spotless) and [google-java-format](https://github.com/google/google-java-format) for the backend.
+GitHub Actions is configured to run these linters on every pull request, so you must resolve all mismatches/errors prior to merging.
+There are a few ways to manage this:
+
+1. Run `yarn lint:write` in the `frontend/` dir, and `./gradlew spotlessApply` in the `backend/` dir, before every commit
+1. Enable the optional pre-commit hook by running `yarn install` in the root dir
+1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
+
+## Deploy
 See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md
+
+### Cloud Environments
+
+**Type**|**Frontend**|**API**|**Deployment**|**How to trigger**
+:-----:|:-----:|:-----:|:-----:|:-----:
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Manual & Daily cron|[Github Actions](#manually-trigger-deploy)
+Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Automed on merge to `main`|[Github Actions](#manually-trigger-deploy)
+Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+
+### Manually-trigger-deploy
+
+Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
+![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
+1. Select the environment you want to deploy to from the workflows list on the left. In this case we are selecting the `test` environment
+2. Click the "Run workflow" button
+3. Select the branch you want to deploy. In this case we are deploying the latest commit on `main`
+4. Click the green "Run workflow" button.
+5. After the workflow is completed you can verify the changes are live by Checking the deployed commit hash. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`

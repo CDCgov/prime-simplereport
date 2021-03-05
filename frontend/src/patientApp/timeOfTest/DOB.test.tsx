@@ -1,25 +1,62 @@
 import renderer from "react-test-renderer";
-import { MockedProvider } from "@apollo/client/testing";
+import { render, fireEvent, RenderResult } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 
 import DOB from "./DOB";
 
 const mockStore = configureStore([]);
+const mockContainer = (store: any) => (
+  <Provider store={store}>
+    <DOB />
+  </Provider>
+);
+
+jest.mock("../PxpApiService", () => {
+  jest.fn();
+});
 
 describe("DOB", () => {
-  it("snapshot", () => {
-    const store = mockStore({
-      plid: "foo",
+  describe("snapshot", () => {
+    let component: renderer.ReactTestRenderer;
+    beforeEach(() => {
+      const store = mockStore({
+        plid: "foo",
+      });
+      component = renderer.create(mockContainer(store));
     });
-    const component = renderer.create(
-      <Provider store={store}>
-        <MockedProvider mocks={[]} addTypename={false}>
-          <DOB />
-        </MockedProvider>
-      </Provider>
-    );
+    it("matches", () => {
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+  });
 
-    expect(component.toJSON()).toMatchSnapshot();
+  describe("behavior", () => {
+    let utils: RenderResult;
+
+    async function setup(utils: RenderResult) {
+      const input = await utils.findByRole("textbox");
+      const button = await utils.findByRole("button");
+      return { input, button };
+    }
+
+    beforeEach(() => {
+      const store = mockStore({
+        plid: "foo",
+      });
+      utils = render(mockContainer(store));
+    });
+
+    it("validates birthdays", async () => {
+      // GIVEN
+      const { input, button } = await setup(utils);
+
+      // WHEN
+      fireEvent.change(input, { target: { value: "99-99-9999" } });
+      fireEvent.submit(button);
+      const error = await utils.findByRole("alert");
+
+      // THEN
+      expect(error.textContent).toEqual("Error: Enter your date of birth");
+    });
   });
 });

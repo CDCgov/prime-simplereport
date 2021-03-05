@@ -15,7 +15,7 @@ Array [
   <div
     className="prime-previous-test-display margin-top-2"
   >
-    SimpleReport did not find any previous test data
+    No previous test data found
   </div>,
   <fieldset
     className="usa-fieldset prime-radios"
@@ -39,6 +39,7 @@ Array [
         <input
           checked={false}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_yes_0"
           name="prior_test_flag"
@@ -59,6 +60,7 @@ Array [
         <input
           checked={true}
           className="usa-radio__input"
+          data-required="false"
           disabled={false}
           id="radio-test-1_no_1"
           name="prior_test_flag"
@@ -116,6 +118,7 @@ Array [
       </span>
     </label>
     <select
+      aria-required="false"
       className="usa-select"
       id="drop-test-1"
       name="prior_test_type"
@@ -142,6 +145,7 @@ Array [
       </span>
     </label>
     <select
+      aria-required="false"
       className="usa-select"
       id="drop-test-1"
       name="prior_test_result"

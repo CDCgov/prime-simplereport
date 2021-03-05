@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 *.orig
 *.rej
+/db-setup/snapshots
 
 # Local properties for Spring Boot--can be a .properties file or .yml/.yaml
 /src/main/resources/application-local.*

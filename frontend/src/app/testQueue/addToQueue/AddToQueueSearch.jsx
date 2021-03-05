@@ -7,15 +7,15 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../../commonComponents/Alert";
-import SearchInput from "./SearchInput";
-import SearchResults from "./SearchResults";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
-import { showNotification } from "../../utils";
-import { displayFullName } from "../../utils";
+import { showNotification, displayFullName } from "../../utils";
+
+import SearchResults from "./SearchResults";
+import SearchInput from "./SearchInput";
 
 const MIN_SEARCH_CHARACTER_COUNT = 3;
 
-const QUERY_PATIENT = gql`
+export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: String!) {
     patients(facilityId: $facilityId) {
       internalId
@@ -24,6 +24,7 @@ const QUERY_PATIENT = gql`
       middleName
       birthDate
       gender
+      telephone
     }
   }
 `;

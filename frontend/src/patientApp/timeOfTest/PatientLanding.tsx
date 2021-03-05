@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { connect, useSelector } from "react-redux";
+
 import { formatFullName } from "../../app/utils/user";
 
 const PatientLanding = () => {
@@ -10,7 +11,7 @@ const PatientLanding = () => {
     <main className="patient-app patient-app--landing padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <h1 className="font-heading-lg margin-top-3 margin-bottom-2">
-          Hello, {fullName}
+          {fullName}
         </h1>
         <div className="prime-formgroup usa-prose">
           <h2 className="font-heading-lg">Test questionnaire</h2>
@@ -19,11 +20,9 @@ const PatientLanding = () => {
               icon={"check-circle"}
               className="usa-media-block__img margin-right-2"
             />
-            <div className="usa-mmedia-block__body usa-prose">
+            <div className="usa-media-block__body usa-prose margin-top-105">
               <h3 className="font-heading-sm">Questionnaire complete</h3>
-              <p className="margin-top-05">
-                You will receive a text notification when your result is ready.
-              </p>
+              {/* <p className="margin-top-05"></p> */}
             </div>
           </div>
           {/* <Button

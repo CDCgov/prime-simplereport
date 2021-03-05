@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
@@ -47,53 +48,52 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container usa-card__container">
-            <div className="usa-card__header">
-              <div>
-                <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-                <NavLink to={`/settings/facilities`}> All facilities</NavLink>
-                <h2>{facility.name}</h2>
-              </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Button
-                  type="button"
-                  onClick={() => props.saveFacility(facility)}
-                  label="Save changes"
-                  disabled={!formChanged}
-                />
-              </div>
-            </div>
-            <div className="usa-card__body">
-              <RequiredMessage />
-              <FacilityInformation
-                facility={facility}
-                updateFacility={updateFacility}
-              />
-            </div>
+    <div className="grid-row">
+      <div className="prime-container usa-card__container">
+        <div className="usa-card__header">
+          <div>
+            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
+            <LinkWithQuery to={`/settings/facilities`}>
+              {" "}
+              All facilities
+            </LinkWithQuery>
+            <h2>{facility.name}</h2>
           </div>
-          <OrderingProviderSettings
-            provider={facility.orderingProvider}
-            updateProvider={updateProvider}
-          />
-          <ManageDevices
-            deviceTypes={facility.deviceTypes}
-            defaultDevice={facility.defaultDevice}
-            updateDeviceTypes={updateDeviceTypes}
-            updateDefaultDevice={updateDefaultDevice}
-            deviceOptions={props.deviceOptions}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Button
+              type="button"
+              onClick={() => props.saveFacility(facility)}
+              label="Save changes"
+              disabled={!formChanged}
+            />
+          </div>
+        </div>
+        <div className="usa-card__body">
+          <RequiredMessage />
+          <FacilityInformation
+            facility={facility}
+            updateFacility={updateFacility}
           />
         </div>
       </div>
-    </main>
+      <OrderingProviderSettings
+        provider={facility.orderingProvider}
+        updateProvider={updateProvider}
+      />
+      <ManageDevices
+        deviceTypes={facility.deviceTypes}
+        defaultDevice={facility.defaultDevice}
+        updateDeviceTypes={updateDeviceTypes}
+        updateDefaultDevice={updateDefaultDevice}
+        deviceOptions={props.deviceOptions}
+      />
+    </div>
   );
 };
 

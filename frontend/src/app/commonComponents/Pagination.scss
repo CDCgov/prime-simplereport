@@ -1,0 +1,30 @@
+// https://codepen.io/USWDS/pen/eVzGzq
+
+.usa-pagination {
+  text-align: right;
+  margin-right: 1rem;
+
+  ol {
+    list-style-type: none;
+    padding-left: 2rem;
+  }
+
+  li {
+    display: inline;
+  }
+
+  a {
+    padding: 4px 10px;
+    text-decoration: none;
+
+    &.is-active {
+      background-color: #0071bc; //$color-primary;
+      border-radius: 100%;
+      color: white;
+    }
+  }
+
+  .fa-angle-right {
+    margin-left: 3px;
+  }
+}

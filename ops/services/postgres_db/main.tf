@@ -19,6 +19,11 @@ resource "azurerm_postgresql_server" "db" {
 
   tags = var.tags
 
+  threat_detection_policy {
+    enabled              = true
+    email_account_admins = true
+  }
+
   lifecycle {
     ignore_changes = [
       identity
@@ -37,6 +42,7 @@ resource "azurerm_postgresql_database" "simple_report" {
 # These parameters and names need to be exact: https://github.com/MicrosoftDocs/azure-docs/issues/20758
 # It looks like this only works if we enable public access. Otherwise, we need to use virtual network rules.
 resource "azurerm_postgresql_firewall_rule" "allow_access_to_azure_services" {
+  count               = var.public_access ? 1 : 0
   name                = "AllowAllAzureIps"
   resource_group_name = var.rg_name
   server_name         = azurerm_postgresql_server.db.name

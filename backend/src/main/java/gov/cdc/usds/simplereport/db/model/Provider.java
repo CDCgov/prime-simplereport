@@ -1,112 +1,119 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-
 @Entity
-public class Provider extends EternalEntity {
+public class Provider extends EternalAuditedEntity {
 
-	@Embedded
-	@JsonUnwrapped
-	private PersonName nameInfo;
-	@Column(nullable = false)
-	private String providerId;
-	@Embedded
-	private StreetAddress address;
-	@Column
-	private String telephone;
+  @Embedded @JsonUnwrapped private PersonName nameInfo;
 
-	protected Provider() { /* for hibernate */ }
+  @Column(nullable = false)
+  private String providerId;
 
-	@ConstructorBinding
-	public Provider(String firstName, String middleName, String lastName, String suffix, String providerId, StreetAddress address, String telephone) {
-		this(new PersonName(firstName, middleName, lastName, suffix), providerId, address, telephone);
-	}
+  @Embedded private StreetAddress address;
+  @Column private String telephone;
 
-	public Provider(PersonName providerName, String providerId, StreetAddress providerAddress,
-			String providerTelephone) {
-		this.nameInfo = providerName;
-		this.providerId = providerId;
-		this.address = providerAddress;
-		this.telephone = providerTelephone;
-	}
+  protected Provider() {
+    /* for hibernate */
+  }
 
-	public PersonName getNameInfo() {
-		return nameInfo;
-	}
+  @ConstructorBinding
+  public Provider(
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      String providerId,
+      StreetAddress address,
+      String telephone) {
+    this(new PersonName(firstName, middleName, lastName, suffix), providerId, address, telephone);
+  }
 
-	public String getProviderId() {
-		return providerId;
-	}
+  public Provider(
+      PersonName providerName,
+      String providerId,
+      StreetAddress providerAddress,
+      String providerTelephone) {
+    this.nameInfo = providerName;
+    this.providerId = providerId;
+    this.address = providerAddress;
+    this.telephone = providerTelephone;
+  }
 
-	public void setProviderId(String providerId) {
-		this.providerId = providerId;
-	}
+  public PersonName getNameInfo() {
+    return nameInfo;
+  }
 
-	public StreetAddress getAddress() {
-		return address;
-	}
+  public String getProviderId() {
+    return providerId;
+  }
 
-	public void setAddress(StreetAddress address) {
-		this.address = address;
-	}
+  public void setProviderId(String providerId) {
+    this.providerId = providerId;
+  }
 
-	@JsonIgnore
-	public String getStreet() {
-		return address == null ? "" : address.getStreetOne();
-	}
+  public StreetAddress getAddress() {
+    return address;
+  }
 
-	@JsonIgnore
-	public String getStreetTwo() {
-		return address == null ? "" : address.getStreetTwo();
-	}
+  public void setAddress(StreetAddress address) {
+    this.address = address;
+  }
 
-	@JsonIgnore
-	public String getCity() {
-		if(address == null) {
-			return "";
-		}
-		return address.getCity();
-	}
+  @JsonIgnore
+  public String getStreet() {
+    return address == null ? "" : address.getStreetOne();
+  }
 
-	@JsonIgnore
-	public String getState() {
-		if(address == null) {
-			return "";
-		}
-		return address.getState();
-	}
+  @JsonIgnore
+  public String getStreetTwo() {
+    return address == null ? "" : address.getStreetTwo();
+  }
 
-	@JsonIgnore
-	public String getZipCode() {
-		if(address == null) {
-			return "";
-		}
-		return address.getPostalCode();
-	}
+  @JsonIgnore
+  public String getCity() {
+    if (address == null) {
+      return "";
+    }
+    return address.getCity();
+  }
 
-	@JsonIgnore
-	public String getCounty() {
-		if(address == null) {
-			return "";
-		}
-		return address.getCounty();
-	}
+  @JsonIgnore
+  public String getState() {
+    if (address == null) {
+      return "";
+    }
+    return address.getState();
+  }
 
-	public String getTelephone() {
-		return telephone;
-	}
+  @JsonIgnore
+  public String getZipCode() {
+    if (address == null) {
+      return "";
+    }
+    return address.getPostalCode();
+  }
 
-	public void setTelephone(String telephone) {
-		this.telephone = telephone;
-	}
+  @JsonIgnore
+  public String getCounty() {
+    if (address == null) {
+      return "";
+    }
+    return address.getCounty();
+  }
+
+  public String getTelephone() {
+    return telephone;
+  }
+
+  public void setTelephone(String telephone) {
+    this.telephone = telephone;
+  }
 }

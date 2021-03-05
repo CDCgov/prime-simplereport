@@ -1,8 +1,20 @@
-import Alert from "../commonComponents/Alert";
 import React from "react";
 
-export const displayFullName = (first, middle, last) => {
+import Alert from "../commonComponents/Alert";
+
+export const displayFullName = (first, middle, last, lastFirst = true) => {
+  if (lastFirst) {
+    return `${last || "?"}, ${first || "?"} ${middle || ""}`
+      .replace(/ +/g, " ")
+      .trim();
+  }
   return `${first || "?"} ${middle || ""} ${last || "?"}`.replace(/ +/g, " ");
+};
+
+export const displayFullNameInOrder = (first, middle, last) => {
+  return `${first || "?"} ${middle || ""} ${last || ""}`
+    .replace(/ +/g, " ")
+    .trim();
 };
 
 export const isLocalHost = () =>

@@ -11,4 +11,6 @@ GRANT SELECT, INSERT, DELETE, UPDATE, TRUNCATE ON TABLES TO simple_report_app;
 ALTER DEFAULT PRIVILEGES FOR USER simple_report_migrations IN SCHEMA simple_report
 GRANT SELECT, UPDATE ON SEQUENCES TO simple_report_app;
 GRANT USAGE ON LANGUAGE plpgsql to simple_report_app;
+DROP EXTENSION IF EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS pgcrypto SCHEMA simple_report;
 

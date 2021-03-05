@@ -1,6 +1,13 @@
 /* eslint no-unused-expressions: 0 */
-function padSmallNumbers(num) {
-  return num < 10 ? `0${num}` : num;
+
+function acceptTos() {
+  this.expect.section('@app').to.be.visible;
+  this.expect
+    .section('@app')
+    .to.contain.text('I consent to the Terms of Service');
+  this.section.app.expect.element('@tosConsentButton').to.be.visible;
+  this.section.app.click('@tosConsentButton');
+  return this;
 }
 
 function verifyBirthDate(birthDate) {
@@ -11,11 +18,7 @@ function verifyBirthDate(birthDate) {
       'Enter your date of birth to access your COVID-19 Testing Portal.'
     );
   this.section.app.expect.element('@dobInput').to.be.visible;
-  const dobDate = new Date(birthDate);
-  const formattedDob = `${padSmallNumbers(
-    dobDate.getMonth() + 1
-  )}/${padSmallNumbers(dobDate.getDate())}/${dobDate.getFullYear()}`;
-  this.section.app.setValue('@dobInput', formattedDob);
+  this.section.app.setValue('@dobInput', birthDate);
   this.section.app.click('@dobSubmitButton');
   this.expect.section('@app').to.be.visible;
   this.expect.section('@app').to.contain.text('Profile information');
@@ -53,17 +56,13 @@ function completeQuestionnaire() {
   this.section.app.click('@pregnant');
   this.section.app.expect.element('@continueButton').to.be.visible;
   this.section.app.click('@continueButton');
-  this.expect
-    .section('@app')
-    .to.contain.text(
-      'You will receive a text notification when your result is ready.'
-    );
 }
 
 module.exports = {
   url: (url) => url,
   commands: [
     {
+      acceptTos,
       verifyBirthDate,
       updateEmail,
       verifyEmail,
@@ -74,11 +73,12 @@ module.exports = {
     app: {
       selector: '.App',
       elements: {
+        tosConsentButton: '#tos-consent-button',
         dobInput: 'input[name="birthDate"]',
         dobSubmitButton: '#dob-submit-button',
         editPatientButton: '#edit-patient-profile-button',
         emailInput: 'input[name="email"]',
-        savePatientButton: 'button.prime-save-patient-changes',
+        savePatientButton: '#edit-patient-save-lower',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         mostRecent: 'input[name="most_recent_flag"][value="yes"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',

@@ -61,9 +61,11 @@ jobs:
           chmod 0600 $PGPASSFILE
           db-setup/create-db.sh
       - name: Run Java Tests
-        env: 
+        env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+          TWILIO_ACCOUNT_SID: ${{secrets.TWILIO_TEST_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{secrets.TWILIO_TEST_AUTH_TOKEN }}
         run: ./gradlew jacocoTestReport -PtestDbPort=5432
       - name: Archive Test Results
         uses: actions/upload-artifact@v2
@@ -125,8 +127,8 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: gradle-${{ hashFiles('*.gradle', 'gradle/dependency-locks/*') }}
-      - name: Run Checkstyle
-        run: ./gradlew checkstyleMain checkstyleTest --continue
+      - name: Run Style checks
+        run: ./gradlew checkstyleMain checkstyleTest spotlessCheck --continue
   frontend-lint-and-build:
     runs-on: ubuntu-latest
     steps:
@@ -144,10 +146,9 @@ jobs:
       - name: Node setup
         working-directory: ./frontend
         run: yarn
-      - name: Lint front-end 
+      - name: Lint front-end
         working-directory: ./frontend
         run: yarn lint
       - name: Build release
         working-directory: ./frontend
         run: yarn build
-

@@ -1,4 +1,5 @@
 import { useSelector } from "react-redux";
+
 import siteLogo from "../img/simplereport-logomark-color.svg";
 
 const PatientHeader = () => {
@@ -23,7 +24,7 @@ const PatientHeader = () => {
               />
               <div className="logo-text margin-left-1 display-flex flex-column">
                 <span className="prime-organization-name margin-left-0 font-body-md text-primary-darker text-bold">
-                  {organization.name}
+                  {organization?.name}
                 </span>
                 <span className="prime-organization-name margin-left-0 margin-top-05 text-primary-darker">
                   COVID-19 Testing Portal

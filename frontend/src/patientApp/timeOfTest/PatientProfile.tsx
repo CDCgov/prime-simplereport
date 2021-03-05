@@ -1,4 +1,5 @@
 import moment from "moment";
+import { Redirect } from "react-router-dom";
 
 import { formatFullName } from "../../app/utils/user";
 import { formatAddress } from "../../app/utils/address";
@@ -8,12 +9,16 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
 } from "../../app/constants";
+import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 
 interface Props {
   patient: any;
 }
 
 const PatientProfile = ({ patient }: Props) => {
+  if (!patient) {
+    return <Redirect to={`/?plid=${getPatientLinkIdFromUrl()}`} />;
+  }
   const fullName = formatFullName(patient);
   const race = RACE_VALUES.find((val) => val.value === patient.race)?.label;
   const ethnicity = ETHNICITY_VALUES.find(

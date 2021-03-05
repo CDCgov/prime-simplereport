@@ -1,11 +1,11 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import moment from "moment";
+
 import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
 import Optional from "../../commonComponents/Optional";
-import moment from "moment";
 
 interface Props {
   testTypeConfig: Option[];
@@ -17,7 +17,7 @@ interface Props {
   setPriorTestResult: (priorTestResult: string | undefined) => void;
   priorTestType: string | undefined;
   setPriorTestType: (priorTestType: string | undefined) => void;
-  mostRecentTest:
+  lastTest:
     | {
         dateTested: string;
         result: string;
@@ -35,15 +35,15 @@ const PriorTestInputs: React.FC<Props> = ({
   setPriorTestResult,
   priorTestType,
   setPriorTestType,
-  mostRecentTest,
+  lastTest,
 }) => {
-  const recentDate = (mostRecentTest?.dateTested || "").split("T")[0];
+  const recentDate = (lastTest?.dateTested || "").split("T")[0];
   const filledPriorTest =
     priorTestDate &&
     recentDate === priorTestDate &&
-    mostRecentTest &&
-    mostRecentTest.result === priorTestResult;
-  const [mostRecentTestAnswer, setMostRecentTestAnswer] = useState(
+    lastTest &&
+    lastTest.result === priorTestResult;
+  const [lastTestAnswer, setlastTestAnswer] = useState(
     !priorTestDate || isFirstTest === undefined
       ? undefined
       : filledPriorTest
@@ -93,8 +93,8 @@ const PriorTestInputs: React.FC<Props> = ({
     </>
   );
 
-  // If mostRecentTest matches priorTest, offer to fill it
-  if (mostRecentTest) {
+  // If lastTest matches priorTest, offer to fill it
+  if (lastTest) {
     // Suggest a prior test
     // TODO: ARIA/508 compliance
     const legendIsh = (
@@ -105,13 +105,13 @@ const PriorTestInputs: React.FC<Props> = ({
         </div>
         <p className="prime-previous-test-display margin-top-2 margin-bottom-0 line-height-sans-5">
           <b>Date: </b>
-          {moment(mostRecentTest.dateTested).format("LLLL")}
+          {moment(lastTest.dateTested).format("LLLL")}
           <br />
           <b>Type: </b>
           Antigen
           <br />
           <b>Result: </b>
-          {mostRecentTest.result}
+          {lastTest.result}
         </p>
       </>
     );
@@ -123,16 +123,16 @@ const PriorTestInputs: React.FC<Props> = ({
             { label: "Yes", value: "yes" },
             { label: "No", value: "no" },
           ]}
-          selectedRadio={mostRecentTestAnswer}
+          selectedRadio={lastTestAnswer}
           onChange={(e) => {
             setIsFirstTest(false);
-            setMostRecentTestAnswer(e.target.value);
+            setlastTestAnswer(e.target.value);
             if (e.target.value === "yes") {
               // Fill in last test info using this data
               // TODO: update when test history has test type
               setPriorTestType("2");
-              setPriorTestDate((mostRecentTest.dateTested || "").split("T")[0]);
-              setPriorTestResult(mostRecentTest?.result);
+              setPriorTestDate((lastTest.dateTested || "").split("T")[0]);
+              setPriorTestResult(lastTest?.result);
             } else {
               setPriorTestType(undefined);
               setPriorTestDate(undefined);
@@ -144,7 +144,7 @@ const PriorTestInputs: React.FC<Props> = ({
           name="most_recent_flag"
           variant="horizontal"
         />
-        {mostRecentTestAnswer === "no" && previousTestEntry}
+        {lastTestAnswer === "no" && previousTestEntry}
       </>
     );
   }
@@ -156,7 +156,7 @@ const PriorTestInputs: React.FC<Props> = ({
         <Optional />
       </div>
       <div className="prime-previous-test-display margin-top-2">
-        SimpleReport did not find any previous test data
+        No previous test data found
       </div>
 
       <RadioGroup

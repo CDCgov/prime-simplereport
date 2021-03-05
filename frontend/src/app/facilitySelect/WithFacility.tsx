@@ -4,6 +4,7 @@ import { useHistory } from "react-router-dom";
 
 import { updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
+
 import FacilitySelect from "./FacilitySelect";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
@@ -24,7 +25,7 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   const facilityInStore = useSelector(
     (state) => (state as any).facility as Facility
   );
-  const facilityFromUrl = facilities.find(
+  const facilityFromUrl = facilities?.find(
     (f) => f.id === getFacilityIdFromUrl()
   );
 
@@ -36,6 +37,10 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     dispatch(updateFacility(facility));
     setFacilityProp(facility.id);
   };
+
+  if (facilities === undefined) {
+    return <>{children}</>;
+  }
 
   if (facilities.length === 0) {
     return <Loading />;

@@ -17,3 +17,16 @@ div.usa-form-group--error {
     }
   }
 }
+
+// Checked label description
+.usa-radio__input + .usa-radio__label {
+  .radio__label-description--checked {
+    display: none;
+  }
+}
+
+.usa-radio__input:checked + .usa-radio__label {
+  .radio__label-description--checked {
+    display: block;
+  }
+}

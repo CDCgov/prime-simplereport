@@ -2,12 +2,24 @@ export type UserPermission =
   | "READ_PATIENT_LIST"
   | "READ_RESULT_LIST"
   | "EDIT_PATIENT"
+  | "ARCHIVE_PATIENT"
   | "EDIT_FACILITY"
   | "EDIT_ORGANIZATION"
   | "START_TEST"
   | "UPDATE_TEST"
   | "SUBMIT_TEST"
   | "SEARCH_PATIENTS";
+
+export type UserRole = "admin" | "user" | "entry-only";
+
+// this is what the server sends back in the user.roleDescription field. It is used as the display value (most of the time)
+export type RoleDescription =
+  | "Admin user"
+  | "Standard user"
+  | "Test-entry user";
+
+// when changing a user's role, the server expects one of these values as the roleDescription. It's annoying how its not consistent with RoleDescription
+export type OrganizationRole = "ADMIN" | "USER" | "ENTRY_ONLY";
 
 /* 
     TODO: this is a quick v0
@@ -47,6 +59,7 @@ interface AppPermissions {
   people: {
     canView: UserPermission[];
     canEdit: UserPermission[];
+    canDelete: UserPermission[];
   };
   results: {
     canView: UserPermission[];
@@ -75,6 +88,7 @@ const appPermissions: AppPermissions = {
   people: {
     canView: ["READ_PATIENT_LIST"],
     canEdit: ["EDIT_PATIENT"],
+    canDelete: ["ARCHIVE_PATIENT"],
   },
   results: {
     canView: ["READ_RESULT_LIST"],

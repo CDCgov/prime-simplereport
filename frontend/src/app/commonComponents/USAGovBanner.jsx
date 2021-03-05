@@ -1,4 +1,5 @@
 import React from "react";
+
 import iconDotGov from "../../../node_modules/uswds/dist/img/icon-dot-gov.svg";
 import usFlagSmall from "../../../node_modules/uswds/dist/img/us_flag_small.png";
 import iconHttps from "../../../node_modules/uswds/dist/img/icon-https.svg";
@@ -96,6 +97,14 @@ export default class USAGovBanner extends React.Component {
                 </span>
               </button>
             </div>
+            {process.env.REACT_APP_IS_TRAINING_SITE === "true" ? (
+              <div className="usa-banner__inner">
+                <p className="usa-banner__header-text">
+                  This is a publicly available website to be used for training
+                  purposes only
+                </p>
+              </div>
+            ) : null}
           </header>
           {this.renderAccordionContent()}
         </div>

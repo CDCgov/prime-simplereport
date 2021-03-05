@@ -1,13 +1,15 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PatientProfileFormContainer snapshot 1`] = `
+exports[`PatientForm snapshot 1`] = `
 <main
   className="prime-edit-patient prime-home padding-top-0"
 >
   <div
     className=""
   >
-    <p>
+    <p
+      className="message--required"
+    >
       All fields marked with 
       <span
         className="usa-sr-only"
@@ -59,6 +61,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-input"
               id="text-test-1"
               name="firstName"
+              onBlur={[Function]}
               onChange={[Function]}
               type="text"
               value="Malik"
@@ -112,6 +115,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-input"
               id="text-test-1"
               name="lastName"
+              onBlur={[Function]}
               onChange={[Function]}
               type="text"
               value="Massey"
@@ -152,7 +156,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-label"
               htmlFor="drop-test-1"
             >
-              Role (optional)
+              Role
               <span
                 className="usa-hint"
               >
@@ -160,6 +164,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               </span>
             </label>
             <select
+              aria-required="false"
               className="usa-select"
               id="drop-test-1"
               name="role"
@@ -221,6 +226,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-input"
               id="text-test-1"
               name="birthDate"
+              onBlur={[Function]}
               onChange={[Function]}
               type="date"
               value="1987-01-31"
@@ -271,8 +277,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 <input
                   aria-required={true}
                   className="usa-input"
+                  data-format="^\\\\(?([0-9]{3})\\\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
+                  data-format-message="Phone number should have 10 digits"
                   id="text-test-1"
                   name="telephone"
+                  onBlur={[Function]}
                   onChange={[Function]}
                   type="tel"
                   value=""
@@ -297,8 +306,10 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
             <input
               aria-required="false"
               className="usa-input"
+              data-format="^(([^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+(\\\\.[^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+)*)|(\\\\\\".+\\\\\\"))@(([^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+\\\\.)+[^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]{2,})$"
               id="text-test-1"
               name="email"
+              onBlur={[Function]}
               onChange={[Function]}
               type="email"
               value=""
@@ -332,6 +343,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               className="usa-input"
               id="text-test-1"
               name="street"
+              onBlur={[Function]}
               onChange={[Function]}
               type="text"
               value=""
@@ -443,9 +455,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                   </span>
                 </label>
                 <select
+                  aria-required={true}
                   className="usa-select"
                   id="drop-test-1"
                   name="state"
+                  onBlur={[Function]}
                   onChange={[Function]}
                   value=""
                 >
@@ -506,6 +520,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                     value="FL"
                   >
                     FL
+                  </option>
+                  <option
+                    value="FM"
+                  >
+                    FM
                   </option>
                   <option
                     value="GA"
@@ -573,6 +592,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                     ME
                   </option>
                   <option
+                    value="MH"
+                  >
+                    MH
+                  </option>
+                  <option
                     value="MI"
                   >
                     MI
@@ -586,6 +610,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                     value="MO"
                   >
                     MO
+                  </option>
+                  <option
+                    value="MP"
+                  >
+                    MP
                   </option>
                   <option
                     value="MS"
@@ -661,6 +690,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                     value="PR"
                   >
                     PR
+                  </option>
+                  <option
+                    value="PW"
+                  >
+                    PW
                   </option>
                   <option
                     value="RI"
@@ -755,8 +789,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
                 <input
                   aria-required={true}
                   className="usa-input"
+                  data-format="^\\\\d{5}(-\\\\d{4})?$"
+                  data-format-message="Zip code should have 5 digits"
                   id="text-test-1"
                   name="zipCode"
+                  onBlur={[Function]}
                   onChange={[Function]}
                   type="text"
                   value=""
@@ -778,6 +815,13 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
         >
           Demographics
         </legend>
+        <button
+          className="usa-button usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
+          onClick={[Function]}
+          type="button"
+        >
+          Why are we asking for this information?
+        </button>
         <fieldset
           className="usa-fieldset prime-radios"
         >
@@ -800,6 +844,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_native_0"
                 name="race"
@@ -820,6 +865,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_asian_1"
                 name="race"
@@ -840,6 +886,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_black_2"
                 name="race"
@@ -860,6 +907,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_pacific_3"
                 name="race"
@@ -880,6 +928,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_white_4"
                 name="race"
@@ -900,6 +949,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_unknown_5"
                 name="race"
@@ -920,6 +970,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_refused_6"
                 name="race"
@@ -958,6 +1009,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_hispanic_0"
                 name="ethnicity"
@@ -978,6 +1030,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_not_hispanic_1"
                 name="ethnicity"
@@ -1016,6 +1069,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_male_0"
                 name="gender"
@@ -1036,6 +1090,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_female_1"
                 name="gender"
@@ -1056,6 +1111,7 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required="false"
                 disabled={false}
                 id="radio-test-1_other_2"
                 name="gender"
@@ -1112,9 +1168,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required={true}
                 disabled={false}
                 id="radio-test-1_YES_0"
                 name="residentCongregateSetting"
+                onBlur={[Function]}
                 onChange={[Function]}
                 type="radio"
                 value="YES"
@@ -1132,9 +1190,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required={true}
                 disabled={false}
                 id="radio-test-1_NO_1"
                 name="residentCongregateSetting"
+                onBlur={[Function]}
                 onChange={[Function]}
                 type="radio"
                 value="NO"
@@ -1175,9 +1235,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required={true}
                 disabled={false}
                 id="radio-test-1_YES_0"
                 name="employedInHealthcare"
+                onBlur={[Function]}
                 onChange={[Function]}
                 type="radio"
                 value="YES"
@@ -1195,9 +1257,11 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
               <input
                 checked={false}
                 className="usa-radio__input"
+                data-required={true}
                 disabled={false}
                 id="radio-test-1_NO_1"
                 name="employedInHealthcare"
+                onBlur={[Function]}
                 onChange={[Function]}
                 type="radio"
                 value="NO"
@@ -1214,11 +1278,12 @@ exports[`PatientProfileFormContainer snapshot 1`] = `
       </fieldset>
     </div>
     <div
-      className="mobile-lg:display-flex flex-justify-end margin-top-2 prime-edit-patient-heading"
+      className="mobile-lg:display-flex flex-justify-end margin-top-2"
     >
       <button
-        className="usa-button usa-button-disabled prime-save-patient-changes"
+        className="usa-button usa-button-disabled"
         disabled={true}
+        id="edit-patient-save-lower"
         onClick={[Function]}
         type="button"
       >

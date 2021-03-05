@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+
 import Button from "../../commonComponents/Button";
-import AoeModalForm from "../AoEForm/AoEModalForm";
+import AoEModalForm from "../AoEForm/AoEModalForm";
 import { displayFullName } from "../../utils";
 
 interface SearchResultsProps {
@@ -73,7 +74,7 @@ const SearchResults = ({
   return (
     <>
       {dialogPatient !== null && (
-        <AoeModalForm
+        <AoEModalForm
           saveButtonText="Continue"
           patient={dialogPatient}
           onClose={() => {
@@ -82,7 +83,6 @@ const SearchResults = ({
           saveCallback={(a: any) =>
             onAddToQueue(dialogPatient, a, canAddToQueue ? "create" : "update")
           }
-          canAddToTestQueue={canAddToQueue}
         />
       )}
       {shouldShowSuggestions && results}

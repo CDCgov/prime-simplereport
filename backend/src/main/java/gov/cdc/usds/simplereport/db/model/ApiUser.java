@@ -1,58 +1,56 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NaturalId;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-
 /**
- * The bare minimum required to link an authenticated identity to actions and
- * data elsewhere in the schema.
+ * The bare minimum required to link an authenticated identity to actions and data elsewhere in the
+ * schema.
  */
 @Entity
 @DynamicUpdate
-public class ApiUser extends SystemManagedEntity {
+public class ApiUser extends EternalSystemManagedEntity {
 
-    @Column(nullable = false, updatable = true, unique = true)
-    @NaturalId(mutable = true)
-    private String loginEmail;
-    @Embedded
-    private PersonName nameInfo;
-    @Column(nullable = true)
-    private Date lastSeen;
+  @Column(nullable = false, updatable = true, unique = true)
+  @NaturalId(mutable = true)
+  private String loginEmail;
 
-    protected ApiUser() {
-        /* for hibernate */ }
+  @Embedded private PersonName nameInfo;
 
-    public ApiUser(String email, PersonName name) {
-        loginEmail = email;
-        nameInfo = name;
-        lastSeen = null;
-    }
+  @Column(nullable = true)
+  private Date lastSeen;
 
-    public String getLoginEmail() {
-        return loginEmail;
-    }
+  protected ApiUser() {
+    /* for hibernate */ }
 
-    public void setLoginEmail(String newEmail) {
-        loginEmail = newEmail;
-    }
+  public ApiUser(String email, PersonName name) {
+    loginEmail = email;
+    nameInfo = name;
+    lastSeen = null;
+  }
 
-    public Date getLastSeen() {
-        return lastSeen;
-    }
+  public String getLoginEmail() {
+    return loginEmail;
+  }
 
-    public void updateLastSeen() {
-        lastSeen = new Date();
-    }
+  public void setLoginEmail(String newEmail) {
+    loginEmail = newEmail;
+  }
 
-    public PersonName getNameInfo() {
-        return nameInfo;
-    }
+  public Date getLastSeen() {
+    return lastSeen;
+  }
+
+  public void updateLastSeen() {
+    lastSeen = new Date();
+  }
+
+  public PersonName getNameInfo() {
+    return nameInfo;
+  }
 }

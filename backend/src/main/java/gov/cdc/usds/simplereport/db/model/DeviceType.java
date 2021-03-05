@@ -2,76 +2,79 @@ package gov.cdc.usds.simplereport.db.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-
 import org.springframework.boot.context.properties.ConstructorBinding;
 
-/**
- * The durable (and non-deletable) representation of a POC test device model.
- */
+/** The durable (and non-deletable) representation of a POC test device model. */
 @Entity
-public class DeviceType extends EternalEntity {
+public class DeviceType extends EternalAuditedEntity {
 
-    @Column(nullable = false)
-    private String name;
-    @Column(nullable = false)
-    private String loincCode;
-    @Column(nullable = false)
-    private String manufacturer;
-    @Column(nullable = false)
-    private String model;
-    @Column(nullable = false)
-    private String swabType;
+  @Column(nullable = false)
+  private String name;
 
+  @Column(nullable = false)
+  private String loincCode;
 
-    protected DeviceType() { /* no-op for hibernate */ }
+  @Column(nullable = false)
+  private String manufacturer;
 
-    @ConstructorBinding
-    public DeviceType(String name, String manufacturer, String model, String loincCode, String swabType) {
-        super();
-        this.name = name;
-        this.manufacturer = manufacturer;
-        this.model = model;
-        this.loincCode = loincCode;
-        this.swabType = swabType;
-    }
+  @Column(nullable = false)
+  private String model;
 
-    public String getName() {
-        return name;
-    }
+  @Column(nullable = false)
+  private String swabType;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  protected DeviceType() {
+    /* no-op for hibernate */
+  }
 
-    public String getManufacturer() {
-        return manufacturer;
-    }
+  @ConstructorBinding
+  public DeviceType(
+      String name, String manufacturer, String model, String loincCode, String swabType) {
+    super();
+    this.name = name;
+    this.manufacturer = manufacturer;
+    this.model = model;
+    this.loincCode = loincCode;
+    this.swabType = swabType;
+  }
 
-    public void setManufacturer(String manufacturer) {
-        this.manufacturer = manufacturer;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getModel() {
-        return model;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
+  public String getManufacturer() {
+    return manufacturer;
+  }
 
-    public String getLoincCode() {
-        return loincCode;
-    }
+  public void setManufacturer(String manufacturer) {
+    this.manufacturer = manufacturer;
+  }
 
-    public void setLoincCode(String loincCode) {
-        this.loincCode = loincCode;
-    }
+  public String getModel() {
+    return model;
+  }
 
-    public String getSwabType() {
-        return swabType;
-    }
+  public void setModel(String model) {
+    this.model = model;
+  }
 
-    public void setSwabType(String swabType) {
-        this.swabType = swabType;
-    }
+  public String getLoincCode() {
+    return loincCode;
+  }
+
+  public void setLoincCode(String loincCode) {
+    this.loincCode = loincCode;
+  }
+
+  public String getSwabType() {
+    return swabType;
+  }
+
+  public void setSwabType(String swabType) {
+    this.swabType = swabType;
+  }
 }

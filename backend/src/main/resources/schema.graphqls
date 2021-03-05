@@ -12,12 +12,14 @@ enum ResultValue {
 
 enum UserPermission {
   READ_PATIENT_LIST
+  READ_ARCHIVED_PATIENT_LIST
+  SEARCH_PATIENTS
   READ_RESULT_LIST
   EDIT_PATIENT
+  ARCHIVE_PATIENT
   EDIT_FACILITY
   EDIT_ORGANIZATION
   MANAGE_USERS
-  SEARCH_PATIENTS
   START_TEST
   UPDATE_TEST
   SUBMIT_TEST
@@ -70,6 +72,7 @@ type Patient {
   telephone: String
   email: String
   role: String
+  isDeleted: Boolean
   residentCongregateSetting: Boolean
   employedInHealthcare: Boolean
   lastTest: TestResult
@@ -183,7 +186,8 @@ type PatientLink {
 
 type Query {
   deviceType: [DeviceType]
-  patients(facilityId: String): [Patient]
+  patients(facilityId: String, pageNumber: Int, pageSize: Int, showDeleted: Boolean): [Patient]
+  patientsCount(facilityId: String, showDeleted: Boolean): Int
   patient(id: String!): Patient
   organization: Organization
   organizations: [Organization]
@@ -192,8 +196,6 @@ type Query {
   testResult(id: String!): TestResult
   users: [User]
   whoami: User!
-  patientLinkCurrent(internalId: String!): Organization
-  patientLinkVerify(internalId: String!, birthDate: LocalDate!): Patient
 }
 type Mutation {
   uploadPatients(patientList: Upload!): String
@@ -286,16 +288,26 @@ type Mutation {
     suffix: String
     email: String!
     organizationExternalId: String!
+    role: OrganizationRole
   ): User
-  updateUser(
+  addUserToCurrentOrg(
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
-    newEmail: String!
-    # oldEmail serves as the unique identifier for the user to be updated
-    oldEmail: String!
+    email: String!
+    role: OrganizationRole
   ): User
+  updateUser(
+    id: ID!
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+  ): User
+  updateUserRole(id: ID!, role: OrganizationRole!): OrganizationRole
+  setUserIsDeleted(id: ID!, deleted: Boolean!): User
   addPatient(
     facilityId: String
     lookupId: String
@@ -398,40 +410,5 @@ type Mutation {
     swabType: String
   ): DeviceType
   refreshPatientLink(internalId: String!): PatientLink
-  patientLinkSubmit(
-    internalId: String!
-    birthDate: LocalDate!
-    pregnancy: String
-    symptoms: String
-    firstTest: Boolean
-    priorTestDate: LocalDate
-    priorTestType: String
-    priorTestResult: String
-    symptomOnset: LocalDate
-    noSymptoms: Boolean
-  ): String
-  patientLinkUpdatePatient(
-    internalId: String!
-    oldBirthDate: LocalDate!
-    lookupId: String
-    firstName: String!
-    middleName: String
-    lastName: String!
-    suffix: String
-    newBirthDate: LocalDate!
-    street: String!
-    streetTwo: String
-    city: String
-    state: String!
-    zipCode: String!
-    telephone: String!
-    role: String
-    email: String
-    county: String
-    race: String
-    ethnicity: String
-    gender: String
-    residentCongregateSetting: Boolean!
-    employedInHealthcare: Boolean!
-  ): Patient
+  sendPatientLinkSms(internalId: String!): String
 }

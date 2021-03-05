@@ -1,5 +1,8 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -7,129 +10,136 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import org.hibernate.annotations.Type;
 
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
-
-import java.util.Date;
-
 @MappedSuperclass
-public abstract class BaseTestInfo extends AuditedEntity
-        implements OrganizationScoped {
+public abstract class BaseTestInfo extends AuditedEntity implements OrganizationScoped {
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "patient_id", updatable = false)
-    private Person patient;
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
+  @JoinColumn(name = "patient_id", updatable = false)
+  private Person patient;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "organization_id", updatable = false)
-    private Organization organization;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "organization_id", updatable = false)
+  private Organization organization;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "facility_id", updatable = false)
-    private Facility facility;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "facility_id", updatable = false)
+  private Facility facility;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "device_type_id")
-    private DeviceType deviceType;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "device_specimen_type_id")
+  private DeviceSpecimenType deviceSpecimen;
 
-    @Column(nullable = true)
-    @Type(type = "pg_enum")
-    @Enumerated(EnumType.STRING)
-    private TestResult result;
+  @ManyToOne(optional = false)
+  @JoinColumn(name = "device_type_id")
+  private DeviceType deviceType;
 
-    @Column
-    private Date dateTestedBackdate;
+  @Column(nullable = true)
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
+  private TestResult result;
 
-    @Column
-    @Type(type = "pg_enum")
-    @Enumerated(EnumType.STRING)
-    private TestCorrectionStatus correctionStatus;
+  @Column private Date dateTestedBackdate;
 
-    @Column(nullable = true)
-    private String reasonForCorrection;
+  @Column
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
+  private TestCorrectionStatus correctionStatus;
 
-    protected BaseTestInfo() {
-        super();
-    }
+  @Column(nullable = true)
+  private String reasonForCorrection;
 
-    public BaseTestInfo(Person patient, Facility facility, DeviceType deviceType, TestResult result) {
-        super();
-        this.patient = patient;
-        this.facility = facility;
-        this.organization = facility.getOrganization();
-        this.deviceType = deviceType;
-        this.result = result;
-        this.correctionStatus = TestCorrectionStatus.ORIGINAL;
-    }
+  protected BaseTestInfo() {
+    super();
+  }
 
-    protected BaseTestInfo(Person patient, Facility facility) {
-        this(patient, facility, facility.getDefaultDeviceType(), null);
-    }
+  protected BaseTestInfo(BaseTestInfo orig) {
+    this(orig.getPatient(), orig.getFacility(), orig.getDeviceSpecimen(), orig.getResult());
+  }
 
-    protected BaseTestInfo(BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
-        this(cloneInfo.patient, cloneInfo.facility, cloneInfo.deviceType, cloneInfo.result);
-        this.reasonForCorrection = reasonForCorrection;
-        this.correctionStatus = correctionStatus;
-    }
+  protected BaseTestInfo(
+      Person patient, Facility facility, DeviceSpecimenType deviceSpecimen, TestResult result) {
+    super();
+    this.patient = patient;
+    this.facility = facility;
+    this.organization = facility.getOrganization();
+    this.deviceSpecimen = deviceSpecimen;
+    this.deviceType = deviceSpecimen.getDeviceType();
+    this.result = result;
+    this.correctionStatus = TestCorrectionStatus.ORIGINAL;
+  }
 
-    public Person getPatient() {
-        return patient;
-    }
+  protected BaseTestInfo(Person patient, Facility facility) {
+    this(patient, facility, facility.getDefaultDeviceSpecimen(), null);
+  }
 
-    @Override
-    public Organization getOrganization() {
-        return organization;
-    }
+  protected BaseTestInfo(
+      BaseTestInfo cloneInfo, TestCorrectionStatus correctionStatus, String reasonForCorrection) {
+    this(cloneInfo);
+    this.reasonForCorrection = reasonForCorrection;
+    this.correctionStatus = correctionStatus;
+  }
 
-    public Facility getFacility() {
-        return facility;
-    }
+  public Person getPatient() {
+    return patient;
+  }
 
-    public DeviceType getDeviceType() {
-        return deviceType;
-    }
+  @Override
+  public Organization getOrganization() {
+    return organization;
+  }
 
-    public TestResult getResult() {
-        return result;
-    }
+  public Facility getFacility() {
+    return facility;
+  }
 
-    // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
-    // in this base class
-    // and exposed only in TestOrder.
+  public DeviceType getDeviceType() {
+    return deviceType;
+  }
 
-    public Date getDateTestedBackdate() {
-        return dateTestedBackdate;
-    }
+  public DeviceSpecimenType getDeviceSpecimen() {
+    return deviceSpecimen;
+  }
 
-    protected void setDateTestedBackdate(Date dateTestedBackdate) {
-        this.dateTestedBackdate = dateTestedBackdate;
-    }
+  public TestResult getResult() {
+    return result;
+  }
 
-    protected void setTestResult(TestResult newResult) {
-        result = newResult;
-    }
+  // FYI Setters shouldn't be allowed in TestEvent, so they are always *protected*
+  // in this base class
+  // and exposed only in TestOrder.
 
-    protected void setDeviceType(DeviceType deviceType) {
-        this.deviceType = deviceType;
-    }
+  public Date getDateTestedBackdate() {
+    return dateTestedBackdate;
+  }
 
-    public TestCorrectionStatus getCorrectionStatus() {
-        return correctionStatus;
-    }
+  protected void setDateTestedBackdate(Date dateTestedBackdate) {
+    this.dateTestedBackdate = dateTestedBackdate;
+  }
 
-    protected void setCorrectionStatus(TestCorrectionStatus correctionStatus) {
-        this.correctionStatus = correctionStatus;
-    }
+  protected void setTestResult(TestResult newResult) {
+    result = newResult;
+  }
 
-    public String getReasonForCorrection() {
-        return reasonForCorrection;
-    }
+  protected void setDeviceSpecimen(DeviceSpecimenType deviceSpecimen) {
+    this.deviceSpecimen = deviceSpecimen;
+    this.deviceType = deviceSpecimen.getDeviceType();
+  }
 
-    protected void setReasonForCorrection(String reasonForCorrection) {
-        this.reasonForCorrection = reasonForCorrection;
-    }
+  public TestCorrectionStatus getCorrectionStatus() {
+    return correctionStatus;
+  }
 
+  protected void setCorrectionStatus(TestCorrectionStatus correctionStatus) {
+    this.correctionStatus = correctionStatus;
+  }
+
+  public String getReasonForCorrection() {
+    return reasonForCorrection;
+  }
+
+  protected void setReasonForCorrection(String reasonForCorrection) {
+    this.reasonForCorrection = reasonForCorrection;
+  }
 }
