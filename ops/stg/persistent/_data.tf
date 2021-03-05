@@ -34,8 +34,3 @@ data "azurerm_key_vault_key" "db_encryption_key" {
   name         = local.env
   key_vault_id = data.azurerm_key_vault.db_keys.id
 }
-
-data "azurerm_key_vault_secret" "psql_connect_password" {
-  name         = "psql-connect-password-${local.env}"
-  key_vault_id = data.azurerm_key_vault.global.id
-}

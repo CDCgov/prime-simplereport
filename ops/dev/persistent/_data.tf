@@ -35,11 +35,6 @@ data "azurerm_key_vault" "global" {
   resource_group_name = data.azurerm_resource_group.global.name
 }
 
-data "azurerm_key_vault_secret" "psql_connect_password" {
-  name         = "psql-connect-password-${local.env}"
-  key_vault_id = data.azurerm_key_vault.global.id
-}
-
 data "azurerm_key_vault" "db_keys" {
   name                = "simple-report-db-keys"
   resource_group_name = data.azurerm_resource_group.global.name
