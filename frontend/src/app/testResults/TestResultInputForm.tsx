@@ -32,9 +32,13 @@ const TestResultInputForm: React.FC<Props> = ({
     }
   };
 
+  const allowSubmit = testResultValue && !isSubmitDisabled;
+
   const onResultSubmit = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    onSubmit();
+    if (allowSubmit) {
+      onSubmit();
+    }
   };
 
   return (
@@ -67,7 +71,7 @@ const TestResultInputForm: React.FC<Props> = ({
           <Button
             onClick={onResultSubmit}
             type="submit"
-            disabled={!testResultValue || !!isSubmitDisabled}
+            disabled={!allowSubmit}
             variant="outline"
             label="Submit"
           />

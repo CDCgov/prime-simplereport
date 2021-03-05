@@ -250,6 +250,8 @@ const QueueItem: any = ({
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
   );
@@ -313,6 +315,7 @@ const QueueItem: any = ({
   };
 
   const onTestResultSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
+    setIsSubmitting(true);
     if (e) e.preventDefault();
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       if (e) e.currentTarget.disabled = true;
@@ -332,6 +335,7 @@ const QueueItem: any = ({
         .catch((error) => {
           updateMutationError(error);
           // Re-enable Submit in the hopes it will work
+          setIsSubmitting(false);
           if (e) e.currentTarget.disabled = false;
         });
     } else {
@@ -629,8 +633,9 @@ const QueueItem: any = ({
                 queueItemId={internalId}
                 testResultValue={testResultValue}
                 isSubmitDisabled={
-                  !shouldUseCurrentDateTime() &&
-                  !isValidCustomDateTested(dateTested)
+                  isSubmitting ||
+                  (!shouldUseCurrentDateTime() &&
+                    !isValidCustomDateTested(dateTested))
                 }
                 onSubmit={onTestResultSubmit}
                 onChange={onTestResultChange}
