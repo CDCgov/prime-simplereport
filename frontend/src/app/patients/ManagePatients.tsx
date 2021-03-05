@@ -37,12 +37,14 @@ const patientQuery = gql`
     $pageNumber: Int!
     $pageSize: Int!
     $showDeleted: Boolean
+    $searchTerm: String
   ) {
     patients(
       facilityId: $facilityId
       pageNumber: $pageNumber
       pageSize: $pageSize
       showDeleted: $showDeleted
+      searchTerm: $searchTerm
     ) {
       internalId
       firstName

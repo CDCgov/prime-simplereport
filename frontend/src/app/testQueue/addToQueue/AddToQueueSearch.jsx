@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { toast } from "react-toastify";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import {
@@ -13,11 +13,17 @@ import { showNotification, displayFullName } from "../../utils";
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 
-const MIN_SEARCH_CHARACTER_COUNT = 3;
+const MIN_SEARCH_CHARACTER_COUNT = 2;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!) {
-    patients(facilityId: $facilityId) {
+  query GetPatientsByFacility($facilityId: String!, $searchTerm: String) {
+    patients(
+      facilityId: $facilityId
+      pageNumber: 0
+      pageSize: 20
+      showDeleted: false
+      searchTerm: $searchTerm
+    ) {
       internalId
       firstName
       lastName
@@ -89,21 +95,15 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     appInsights,
     "Add Patient to Queue"
   );
-
-  const { data, loading, error } = useQuery(QUERY_PATIENT, {
+  const [queryString, setQueryString] = useState("");
+  const { data, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: { facilityId },
+    variables: { facilityId, searchTerm: queryString },
   });
-
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [queryString, setQueryString] = useState("");
-  const [suggestions, updateSuggestions] = useState([]);
 
-  if (loading) {
-    return <p> Loading patient data... </p>;
-  }
   if (error) {
     throw error;
   }
@@ -111,38 +111,16 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     throw mutationError;
   }
 
-  let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
-
-  const getSuggestionsFromQueryString = (queryString) => {
-    if (data && data.patients) {
-      let formattedQueryString = queryString.toLowerCase();
-      let searchResults = data.patients.filter((patient) => {
-        return (
-          displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )
-            .toLowerCase()
-            .indexOf(formattedQueryString) > -1
-        );
-      });
-      return searchResults;
-    }
-    return [];
-  };
-
   const onInputChange = (event) => {
     let newValue = event.target.value;
+    // debouncing helps reduce traffic, but introduces a lag in results.
+    // until performance becomes an issue, don't debounce.
+    // (FYI lodash.debounce() is available)
     setQueryString(newValue);
-    if (newValue.length > 2) {
-      updateSuggestions(getSuggestionsFromQueryString(newValue));
-    }
   };
 
   const onSearchClick = (event) => {
     event.preventDefault();
-    updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
   const onAddToQueue = (
@@ -159,7 +137,6 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     },
     createOrUpdate = "create"
   ) => {
-    updateSuggestions([]);
     setQueryString("");
     trackAddPatientToQueue();
     let callback;
@@ -206,14 +183,13 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         onSearchClick={onSearchClick}
         onInputChange={onInputChange}
         queryString={queryString}
-        disabled={!shouldShowSuggestions}
       />
       <SearchResults
-        patients={suggestions}
+        patients={data?.patients || []}
         onAddToQueue={onAddToQueue}
         facilityId={facilityId}
         patientsInQueue={patientsInQueue}
-        shouldShowSuggestions={shouldShowSuggestions}
+        shouldShowSuggestions={queryString.length >= MIN_SEARCH_CHARACTER_COUNT}
       />
     </React.Fragment>
   );

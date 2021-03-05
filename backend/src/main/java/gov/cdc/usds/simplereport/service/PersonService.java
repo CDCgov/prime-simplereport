@@ -133,7 +133,7 @@ public class PersonService {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
-    if (searchTerm != null) {
+    if (searchTerm != null && !searchTerm.isEmpty()) {
       filter = filter.and(nameMatchesFilter(searchTerm));
     }
     return filter;
@@ -158,8 +158,7 @@ public class PersonService {
     }
 
     if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
-      throw new IllegalGraphqlArgumentException(
-          "Search string must be at least two characters in length");
+      return List.of(); // empty list
     }
 
     // first check permissions
@@ -178,8 +177,7 @@ public class PersonService {
       throw new AccessDeniedException("Access is denied");
     }
     if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
-      throw new IllegalGraphqlArgumentException(
-          "Search string must be at least two characters in length");
+      return 0;
     }
     return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
   }
