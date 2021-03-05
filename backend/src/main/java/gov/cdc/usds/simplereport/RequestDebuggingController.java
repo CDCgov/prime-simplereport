@@ -30,7 +30,7 @@ public class RequestDebuggingController {
     return headers;
   }
 
-  @GetMapping
+  @RequestMapping
   public Map<String, Object> echoBasics(HttpServletRequest req) {
     Map<String, Object> deets = new HashMap<>();
     deets.put("remoteAddr", req.getRemoteAddr());
@@ -39,6 +39,7 @@ public class RequestDebuggingController {
     deets.put("requestUri", req.getRequestURI());
     deets.put("serverName", req.getServerName());
     deets.put("serverPort", req.getServerPort());
+    deets.put("method", req.getMethod());
     return deets;
   }
 
