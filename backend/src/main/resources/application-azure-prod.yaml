@@ -28,3 +28,5 @@ simple-report:
   patient-link-url: https://simplereport.gov/app/pxp?plid=
   feature-flags:
     patient-links: true
+twilio:
+  enabled: true
