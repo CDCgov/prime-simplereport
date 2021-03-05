@@ -67,4 +67,4 @@ jobs:
       - name: Deploy frontend app
         run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereportprodapp --destination-path '/app'
       - name: Purge CDN
-        run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait
+        run: az cdn endpoint purge --resource-group prime-simple-report-${{ matrix.deploy_env }} --profile-name simple-report-${{ matrix.deploy_env }} --name simple-report-${{ matrix.deploy_env }} --content-paths "/app/*" --no-wait
