@@ -19,7 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import gov.cdc.usds.simplereport.test_util.TestIdentityConfiguration;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -53,7 +53,7 @@ class PatientExperienceControllerTest {
   @BeforeEach
   void init() {
     _truncator.truncateAll();
-    TestIdentityConfiguration.withStandardUser(
+    TestUserIdentities.withStandardUser(
         () -> {
           _org = _dataFactory.createValidOrg();
           _site = _dataFactory.createValidFacility(_org);

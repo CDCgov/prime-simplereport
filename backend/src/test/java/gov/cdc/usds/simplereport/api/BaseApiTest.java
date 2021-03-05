@@ -16,7 +16,6 @@ import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import gov.cdc.usds.simplereport.test_util.TestIdentityConfiguration;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -89,7 +88,7 @@ public abstract class BaseApiTest {
   public void setup() {
     truncateDb();
     _oktaRepo.reset();
-    TestIdentityConfiguration.withStandardUser(
+    TestUserIdentities.withStandardUser(
         () -> {
           _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
           _initService.initAll();

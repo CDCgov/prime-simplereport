@@ -10,7 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
-import gov.cdc.usds.simplereport.test_util.TestIdentityConfiguration;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class PatientManagementTest extends BaseApiTest {
   @Test
   void queryPatientWithFacility() throws Exception {
     final MutableObject<String> facilityId = new MutableObject<>(); // LOL
-    TestIdentityConfiguration.withStandardUser(
+    TestUserIdentities.withStandardUser(
         () -> {
           Organization org = _orgService.getCurrentOrganization();
           Facility place = _orgService.getFacilities(org).get(0);
