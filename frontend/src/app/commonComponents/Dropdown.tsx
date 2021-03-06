@@ -1,7 +1,9 @@
 import React from "react";
-import useUniqueIds from "./useUniqueIds";
 import classnames from "classnames";
+
 import Required from "../commonComponents/Required";
+
+import useUniqueIds from "./useUniqueIds";
 import Optional from "./Optional";
 
 export interface Option {

@@ -1,6 +1,7 @@
 import { render } from "@testing-library/react";
-import Pagination from "./Pagination";
 import { MemoryRouter } from "react-router-dom";
+
+import Pagination from "./Pagination";
 
 /*
 // Cases (_n_ represents currentPage):

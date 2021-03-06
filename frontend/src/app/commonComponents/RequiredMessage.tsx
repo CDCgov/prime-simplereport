@@ -1,4 +1,5 @@
 import React from "react";
+
 import Required from "./Required";
 
 const RequiredMessage = () => (

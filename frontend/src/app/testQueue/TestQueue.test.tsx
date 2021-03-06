@@ -6,6 +6,7 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
+
 import TestQueue, { queueQuery } from "./TestQueue";
 import { REMOVE_PATIENT_FROM_QUEUE } from "./QueueItem";
 import { QUERY_PATIENT } from "./addToQueue/AddToQueueSearch";

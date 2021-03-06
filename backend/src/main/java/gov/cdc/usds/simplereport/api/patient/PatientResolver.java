@@ -42,7 +42,7 @@ public class PatientResolver implements GraphQLQueryResolver {
     return showDeleted ? ps.getArchivedPatientsCount(facilityId) : ps.getPatientsCount(facilityId);
   }
 
-  @AuthorizationConfiguration.RequirePermissionEditPatient
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public Person getPatient(String id) {
     return ps.getPatientNoPermissionsCheck(id);
   }

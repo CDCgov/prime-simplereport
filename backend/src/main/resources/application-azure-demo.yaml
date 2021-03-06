@@ -1,5 +1,5 @@
 spring:
-  profiles.include: no-security, single-tenant, no-okta-mgmt, create-sample-data
+  profiles.include: no-security, no-okta-mgmt, create-sample-data
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-demo.azurewebsites.net
@@ -10,4 +10,4 @@ simple-report:
   feature-flags:
     patient-links: true
 twilio:
-  enabled: true
+  enabled: false

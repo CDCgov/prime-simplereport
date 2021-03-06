@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import classnames from "classnames";
+
 import {
   globalSymptomDefinitions,
   getTestTypes,
@@ -8,10 +10,10 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button";
 import FormGroup from "../../commonComponents/FormGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
+
 import "./AoEForm.scss";
 import SymptomInputs from "./SymptomInputs";
 import PriorTestInputs from "./PriorTestInputs";
-import classnames from "classnames";
 
 // Get the value associate with a button label
 // TODO: move to utility?

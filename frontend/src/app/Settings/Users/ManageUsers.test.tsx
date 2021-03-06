@@ -1,6 +1,8 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+
 import { displayFullName } from "../../utils";
+
 import ManageUsers, { SettingsUsers } from "./ManageUsers";
 
 const organization = { testingFacility: [{ id: "a1", name: "Foo Org" }] };
@@ -202,5 +204,33 @@ describe("ManageUsers", () => {
     );
     const noUsers = await findByText("no users", { exact: false });
     expect(noUsers).toBeInTheDocument();
+  });
+  it("adds a user when zero users exist", async () => {
+    const { getByText, findAllByRole } = render(
+      <ManageUsers
+        users={[]}
+        loggedInUser={loggedInUser}
+        allFacilities={allFacilities}
+        updateUserRole={updateUserRole}
+        addUserToOrg={addUserToOrg}
+        deleteUser={deleteUser}
+        getUsers={getUsers}
+      />
+    );
+
+    const newUser = {
+      firstName: "Jane",
+      lastName: "Smith",
+      email: "jane@smith.co",
+    };
+
+    fireEvent.click(getByText("New User", { exact: false }));
+    const [first, last, email] = await findAllByRole("textbox");
+    fireEvent.change(first, inputValue(newUser.firstName));
+    fireEvent.change(last, inputValue(newUser.lastName));
+    fireEvent.change(email, inputValue(newUser.email));
+    fireEvent.click(getByText("Send invite", { exact: false }));
+    await waitFor(() => expect(addUserToOrg).toBeCalled());
+    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
   });
 });

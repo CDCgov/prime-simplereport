@@ -1,7 +1,4 @@
 import renderer from "react-test-renderer";
-import { MockedProvider } from "@apollo/client/testing";
-import { Provider } from "react-redux";
-import configureStore from "redux-mock-store";
 
 import PatientProfile from "./PatientProfile";
 

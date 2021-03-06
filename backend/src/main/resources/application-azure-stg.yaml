@@ -20,4 +20,6 @@ simple-report:
     - thomas.a.nielsen@omb.eop.gov
     - adam@skylight.digital
     - josh@skylight.digital
+    - qom5@cdc.gov # Heather
+    - qpu1@cdc.gov # Katherine
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=

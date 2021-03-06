@@ -1,6 +1,6 @@
 import moment from "moment";
-
 import { Redirect } from "react-router-dom";
+
 import { formatFullName } from "../../app/utils/user";
 import { formatAddress } from "../../app/utils/address";
 import { capitalizeText } from "../../app/utils/text";

@@ -66,7 +66,6 @@ class ApiUserManagementTest extends BaseApiTest {
   @Test
   void whoami_superuser_okResponses() {
     useSuperUser();
-    setRoles(null);
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Super Admin", who.get("roleDescription").asText());
     assertTrue(who.get("isAdmin").asBoolean());
@@ -75,7 +74,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
   @Test
   void whoami_nobody_okResponses() {
-    setRoles(null);
+    useBrokenUser();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Misconfigured user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
@@ -411,6 +410,26 @@ class ApiUserManagementTest extends BaseApiTest {
             .put("role", OrganizationRole.ADMIN.name());
 
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
+  }
+
+  @Test
+  void updateUserRole_orgAdmin_roleUpdated() {
+    useOrgEntryOnly();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Test-entry user", who.get("roleDescription").asText());
+    String id = who.get("id").asText();
+
+    useOrgAdmin();
+    ObjectNode updateRoleVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", id)
+            .put("role", OrganizationRole.ADMIN.name());
+    runQuery("update-user-role", updateRoleVariables);
+
+    useOrgEntryOnly();
+    who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Admin user", who.get("roleDescription").asText());
   }
 
   @Test

@@ -3,133 +3,107 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
-import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.opentest4j.AssertionFailedError;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
+
+  private static final Logger LOG = LoggerFactory.getLogger(BaseApiTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
 
   @Autowired private DbTruncator _truncator;
   @Autowired protected OrganizationInitializingService _initService;
+  @Autowired private TestDataFactory _dataFactory;
   @Autowired protected DemoOktaRepository _oktaRepo;
   @Autowired protected GraphQLTestTemplate _template; // screw delegation
-  @MockBean protected AuthorizationService _authService;
-  @MockBean protected IdentitySupplier _supplier;
+  @Autowired private DemoUserConfiguration _users;
 
-  private static final List<OrganizationRoleClaims> USER_ORG_ROLES =
-      Collections.singletonList(
-          new OrganizationRoleClaims("DIS_ORG", Set.of(OrganizationRole.USER)));
-  private static final List<OrganizationRoleClaims> OUTSIDE_USER_ORG_ROLES =
-      Collections.singletonList(
-          new OrganizationRoleClaims("DAT_ORG", Set.of(OrganizationRole.USER)));
-  private static final List<OrganizationRoleClaims> ADMIN_ORG_ROLES =
-      Collections.singletonList(
-          new OrganizationRoleClaims(
-              "DIS_ORG", Set.of(OrganizationRole.USER, OrganizationRole.ADMIN)));
-  private static final List<OrganizationRoleClaims> OUTSIDE_ADMIN_ORG_ROLES =
-      Collections.singletonList(
-          new OrganizationRoleClaims(
-              "DAT_ORG", Set.of(OrganizationRole.USER, OrganizationRole.ADMIN)));
-  private static final List<OrganizationRoleClaims> ENTRY_ONLY_ORG_ROLES =
-      Collections.singletonList(
-          new OrganizationRoleClaims(
-              "DIS_ORG", Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY)));
+  private String _userName = null;
 
   protected void truncateDb() {
     _truncator.truncateAll();
   }
 
   protected void useOrgUser() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org user");
-    when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
-    when(_authService.findAllOrganizationRoles()).thenReturn(USER_ORG_ROLES);
-    _initService.initCurrentUser();
+    LOG.info("Configuring auth service mock for org user");
+    _userName = TestUserIdentities.STANDARD_USER;
   }
 
   protected void useOutsideOrgUser() {
-    LoggerFactory.getLogger(BaseApiTest.class)
-        .info("Configuring auth service mock for outside org user");
-    when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
-    when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_USER_ORG_ROLES);
-    _initService.initCurrentUser();
+    LOG.info("Configuring auth service mock for outside org user");
+    _userName = "intruder@pirate.com";
   }
 
   protected void useOrgAdmin() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring auth service mock for org admin");
-    when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
-    when(_authService.findAllOrganizationRoles()).thenReturn(ADMIN_ORG_ROLES);
-    _initService.initCurrentUser();
+    _userName = "admin@example.com";
+    LOG.info(
+        "Configuring auth service mock for org admin: {}",
+        _users.getByUsername(_userName).getAuthorization().getGrantedPermissions());
   }
 
   protected void useOutsideOrgAdmin() {
-    when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
-    when(_authService.findAllOrganizationRoles()).thenReturn(OUTSIDE_ADMIN_ORG_ROLES);
-    _initService.initCurrentUser();
+    _userName = "captain@pirate.com";
   }
 
   protected void useOrgEntryOnly() {
-    LoggerFactory.getLogger(BaseApiTest.class)
-        .info("Configuring auth service mock for org entry-only");
-    when(_supplier.get()).thenReturn(TestUserIdentities.STANDARD_USER_ATTRIBUTES);
-    when(_authService.findAllOrganizationRoles()).thenReturn(ENTRY_ONLY_ORG_ROLES);
-    _initService.initCurrentUser();
+    _userName = "nobody@example.com";
   }
 
   protected void useSuperUser() {
-    LoggerFactory.getLogger(BaseApiTest.class).info("Configuring supplier mock for super user");
-    when(_supplier.get()).thenReturn(TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES);
-    _initService.initCurrentUser();
+    LOG.info("Configuring supplier mock for super user");
+    _userName = TestUserIdentities.SITE_ADMIN_USER;
   }
 
-  protected void setRoles(Set<OrganizationRole> roles) {
-    List<OrganizationRoleClaims> orgRoles;
-    if (roles != null && !roles.isEmpty()) {
-      orgRoles = Collections.singletonList(new OrganizationRoleClaims("DIS_ORG", roles));
-    } else {
-      orgRoles = Collections.emptyList();
-    }
-    when(_authService.findAllOrganizationRoles()).thenReturn(orgRoles);
+  protected void useBrokenUser() {
+    _userName = "castaway@pirate.com";
   }
 
   @BeforeEach
   public void setup() {
     truncateDb();
     _oktaRepo.reset();
+    TestUserIdentities.withStandardUser(
+        () -> {
+          _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
+          _initService.initAll();
+        });
     useOrgUser();
-    _initService.initAll();
+    LOG.warn("Current configuration default user is {}", _users.getDefaultUser());
+    LOG.warn(
+        "Usernames configured: {}",
+        _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
   }
 
   @AfterEach
   public void cleanup() {
     truncateDb();
+    _userName = null;
     _oktaRepo.reset();
   }
 
@@ -144,6 +118,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName) {
     try {
+      setTemplateAuthorization();
       GraphQLResponse response = _template.postForResource(queryFileName);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -152,6 +127,12 @@ public abstract class BaseApiTest {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private void setTemplateAuthorization() {
+    _template.clearHeaders();
+    _template.addHeader(
+        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName);
   }
 
   /**
@@ -170,6 +151,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
     try {
+      setTemplateAuthorization();
       GraphQLResponse response = _template.perform(queryFileName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -224,6 +206,7 @@ public abstract class BaseApiTest {
             .put("birthDate", birthDate)
             .put("telephone", phone)
             .put("lookupId", lookupId);
+    setTemplateAuthorization();
     return _template.perform("add-person", variables);
   }
 }

@@ -10,7 +10,9 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,14 +24,19 @@ class PatientManagementTest extends BaseApiTest {
 
   @Test
   void queryPatientWithFacility() throws Exception {
-    Organization org = _orgService.getCurrentOrganization();
-    Facility place = _orgService.getFacilities(org).get(0);
-    _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
-    _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
+    final MutableObject<String> facilityId = new MutableObject<>(); // LOL
+    TestUserIdentities.withStandardUser(
+        () -> {
+          Organization org = _orgService.getCurrentOrganization();
+          Facility place = _orgService.getFacilities(org).get(0);
+          _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
+          _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
+          facilityId.setValue(place.getInternalId().toString());
+        });
+    useOrgUser();
     JsonNode patients = fetchPatientsWithFacility();
     assertEquals(true, patients.get(0).get("facility").isNull());
-    assertEquals(
-        place.getInternalId().toString(), patients.get(1).get("facility").get("id").asText());
+    assertEquals(facilityId.getValue(), patients.get(1).get("facility").get("id").asText());
   }
 
   @Test

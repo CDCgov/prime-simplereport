@@ -1,11 +1,13 @@
 import { Route, RouteComponentProps, Switch } from "react-router-dom";
+
+import PrimeErrorBoundary from "../PrimeErrorBoundary";
+import Button from "../commonComponents/Button";
+
 import ManageOrganizationContainer from "./ManageOrganizationContainer";
 import ManageFacilitiesContainer from "./Facility/ManageFacilitiesContainer";
 import FacilityFormContainer from "./Facility/FacilityFormContainer";
 import ManageUsersContainer from "./Users/ManageUsersContainer";
 import SettingsNav from "./SettingsNav";
-import PrimeErrorBoundary from "../PrimeErrorBoundary";
-import Button from "../commonComponents/Button";
 
 interface Params {
   facilityId: string;

@@ -8,13 +8,15 @@ import {
 import moment from "moment";
 import { Prompt, Redirect } from "react-router-dom";
 import Modal from "react-modal";
+import { useDispatch, useSelector } from "react-redux";
+import classnames from "classnames";
+
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../config/constants";
 import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
-
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -25,8 +27,6 @@ import "./EditPatient.scss";
 import Alert from "../commonComponents/Alert";
 import FormGroup from "../commonComponents/FormGroup";
 import Button from "../../app/commonComponents/Button";
-import { useDispatch, useSelector } from "react-redux";
-import classnames from "classnames";
 import { setPatient as reduxSetPatient } from "../../app/store";
 import { PxpApi } from "../../patientApp/PxpApiService";
 import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg";

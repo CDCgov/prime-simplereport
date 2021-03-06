@@ -5,11 +5,12 @@ import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
+import { Redirect } from "react-router-dom";
 
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+
 import OrganizationForm from "./OrganizationForm";
-import { Redirect } from "react-router-dom";
 
 const GET_DEVICES_QUERY = gql`
   query GetDevices {

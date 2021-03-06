@@ -2,9 +2,15 @@ package gov.cdc.usds.simplereport.config.simplereport;
 
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Optional;
 import java.util.Set;
 
+=======
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+>>>>>>> benwarfield-usds/demo-auth-refactor
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -18,32 +24,43 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  * make demo login more useful.
  */
 @ConfigurationProperties(prefix = "simple-report.demo-users")
-@ConstructorBinding
 public class DemoUserConfiguration {
 
   private static final String ALL_FACILITIES_ACCESS = "ALL_FACILITIES";
 
   private DemoUser defaultUser;
-  private List<DemoUser> alternateUsers;
+  private List<DemoUser> users;
+  private Map<String, DemoUser> byUsername;
 
+  public DemoUserConfiguration(List<DemoUser> allUsers) {
+    this(null, allUsers);
+  }
+
+  @ConstructorBinding
   public DemoUserConfiguration(DemoUser defaultUser, List<DemoUser> alternateUsers) {
     super();
     this.defaultUser = defaultUser;
-    this.alternateUsers = alternateUsers == null ? List.of() : alternateUsers;
+    this.users = new ArrayList<>();
+    if (defaultUser != null) {
+      users.add(defaultUser);
+    }
+    if (alternateUsers != null) {
+      users.addAll(alternateUsers);
+    }
+    byUsername =
+        users.stream().collect(Collectors.toMap(DemoUser::getUsername, Function.identity()));
   }
 
   public DemoUser getDefaultUser() {
     return defaultUser;
   }
 
-  public List<DemoUser> getAlternateUsers() {
-    return alternateUsers;
+  public List<DemoUser> getAllUsers() {
+    return users;
   }
 
-  public List<DemoUser> getAllUsers() {
-    List<DemoUser> allUsers = new ArrayList<>(getAlternateUsers());
-    allUsers.add(getDefaultUser());
-    return allUsers;
+  public DemoUser getByUsername(String username) {
+    return byUsername.get(username);
   }
 
   @ConstructorBinding
@@ -63,6 +80,10 @@ public class DemoUserConfiguration {
 
     public IdentityAttributes getIdentity() {
       return identity;
+    }
+
+    public String getUsername() {
+      return identity.getUsername();
     }
 
     @ConstructorBinding

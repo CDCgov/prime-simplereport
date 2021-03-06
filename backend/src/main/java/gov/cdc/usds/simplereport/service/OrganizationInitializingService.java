@@ -4,8 +4,10 @@ import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser.DemoAuthorization;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -27,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,27 +127,47 @@ public class OrganizationInitializingService {
     Map<String, Facility> facilitiesByName =
         _facilityRepo.findAll().stream().collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
     
-
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     for (DemoUser user : users) {
-      OrganizationRole role =
-          user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
-      Organization org =
-          _orgRepo
-              .findByExternalId(user.getAuthorization().getOrganizationExternalId())
-              .orElseThrow(MisconfiguredUserException::new);
-      Optional<Set<Facility>> facilityRestrictions = user.getAuthorization().getFacilityRestrictions()
-          .map(f_set -> f_set.stream()
-              .map(f -> facilitiesByName.get(f))
-                  .collect(Collectors.toSet()));
       IdentityAttributes identity = user.getIdentity();
       Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
       if (!userProbe.isPresent()) {
         _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
       }
-      initOktaUser(identity, org, facilityRestrictions, role);
+      DemoAuthorization authorization = user.getAuthorization();
+      if (authorization != null) {
+        OrganizationRole role =
+            authorization.getEffectiveRole().orElse(OrganizationRole.getDefault());
+        Organization org =
+            _orgRepo
+                .findByExternalId(authorization.getOrganizationExternalId())
+                .orElseThrow(MisconfiguredUserException::new);
+        LOG.info(
+          "User={} will have role={} in organization={}",
+          identity.getUsername(),
+          role,
+          authorization.getOrganizationExternalId());
+        Optional<Set<Facility>> facilityRestrictions = authorization.getFacilityRestrictions()
+            .map(f_set -> f_set.stream()
+                .map(f -> facilitiesByName.get(f))
+                    .collect(Collectors.toSet()));
+        if (facilityRestrictions.isEmpty()) {
+          LOG.info(
+            "User={} will have access to all facilities in organization={}",
+            identity.getUsername(),
+            authorization.getOrganizationExternalId());
+        } else {
+          LOG.info(
+            "User={} will have access to facilities={} in organization={}",
+            identity.getUsername(),
+            authorization.getFacilityRestrictions().get(),
+            authorization.getOrganizationExternalId());
+        }
+        
+        initOktaUser(identity, org, facilityRestrictions, role);
+      }
     }
   }
 

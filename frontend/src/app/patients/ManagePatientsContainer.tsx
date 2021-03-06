@@ -1,8 +1,9 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import ManagePatients from "./ManagePatients";
 import { hasPermission, appPermissions } from "../permissions";
+
+import ManagePatients from "./ManagePatients";
 
 const ManagePatientsContainer = (props: { page?: number }) => {
   const activeFacilityId = useSelector(

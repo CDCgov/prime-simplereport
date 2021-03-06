@@ -50,9 +50,16 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build deploy artifact
+        env:
+          REACT_APP_BASE_URL: https://training.simplereport.gov
+          REACT_APP_BACKEND_URL: https://training.simplereport.gov/api
+          REACT_APP_IS_TRAINING_SITE: true
+          PUBLIC_URL: /app/
         run: yarn run build
       - uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: yarn run deploy-azure-${{ env.DEPLOY_ENV }}
+        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereporttrainingapp --destination-path '/app'
+      - name: Purge CDN
+        run: az cdn endpoint purge --resource-group prime-simple-report-${{ env.DEPLOY_ENV }} --profile-name simple-report-${{ env.DEPLOY_ENV }} --name simple-report-${{ env.DEPLOY_ENV }} --content-paths "/app/*" --no-wait

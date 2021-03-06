@@ -4,6 +4,13 @@ import { toast } from "react-toastify";
 
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
+import {
+  showNotification,
+  displayFullNameInOrder,
+  displayFullName,
+} from "../../utils";
+import { OrganizationRole, RoleDescription } from "../../permissions";
+
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
 import InProgressModal from "./InProgressModal";
@@ -15,12 +22,6 @@ import {
   UserFacilitySetting,
   NewUserInvite,
 } from "./ManageUsersContainer";
-import {
-  showNotification,
-  displayFullNameInOrder,
-  displayFullName,
-} from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import "./ManageUsers.scss";
 
@@ -245,6 +246,14 @@ const ManageUsers: React.FC<Props> = ({
           />
         ) : null}
       </div>
+      {showAddUserModal &&
+      process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
+        <CreateUserModal
+          isUpdating={isUpdating}
+          onClose={() => updateShowAddUserModal(false)}
+          onSubmit={handleAddUserToOrg}
+        />
+      ) : null}
       {!activeUser || !localUsers.length ? (
         <div className="usa-card__body">
           {!localUsers.length ? (
@@ -333,14 +342,6 @@ const ManageUsers: React.FC<Props> = ({
                 <Prompt
                   when={isUserEdited}
                   message="You have unsaved changes. Do you want to continue?"
-                />
-              ) : null}
-              {showAddUserModal &&
-              process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
-                <CreateUserModal
-                  isUpdating={isUpdating}
-                  onClose={() => updateShowAddUserModal(false)}
-                  onSubmit={handleAddUserToOrg}
                 />
               ) : null}
               {showDeleteUserModal &&

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import Button from "../../app/commonComponents/Button";
-import ToS from "./ToS";
 import { Redirect, RouteComponentProps, withRouter } from "react-router";
+
+import Button from "../../app/commonComponents/Button";
+
+import ToS from "./ToS";
 
 const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
   props

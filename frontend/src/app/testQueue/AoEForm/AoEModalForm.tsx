@@ -1,15 +1,17 @@
 import React, { useRef, useState } from "react";
 import QRCode from "react-qr-code";
 import Modal from "react-modal";
-import AoEForm from "./AoEForm";
+import { gql, useQuery, useMutation } from "@apollo/client";
+import { toast } from "react-toastify";
+
 import Button from "../../commonComponents/Button";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import { displayFullName, showError } from "../../utils";
 import { globalSymptomDefinitions } from "../../../patientApp/timeOfTest/constants";
 import { getUrl } from "../../utils/url";
-import { gql, useQuery, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
 import iconClose from "../../../../node_modules/uswds/dist/img/usa-icons/close.svg";
+
+import AoEForm from "./AoEForm";
 
 // the QR code is separately feature flagged – we need it for the e2e tests currently
 const qrCodeOption = process.env.REACT_APP_QR_CODE_ENABLED
@@ -72,11 +74,14 @@ const SmsModalContents = ({
   saveCallback,
   continueModal,
 }: SmsModalProps) => {
+  const [patientLink, setPatientLink] = useState("");
+
   const sendSms = async () => {
     const internalId = patientLinkId || (await saveCallback(patientResponse));
     try {
       await sendSmsMutation({ variables: { internalId } });
       setSmsSuccess(true);
+      setPatientLink(`${getUrl()}pxp?plid=${internalId}`);
     } catch (e) {
       showError(toast, "SMS error", e);
     }
@@ -84,7 +89,10 @@ const SmsModalContents = ({
   return (
     <>
       {smsSuccess && (
-        <div className="usa-alert usa-alert--success outline-0">
+        <div
+          className="usa-alert usa-alert--success outline-0"
+          data-patient-link={patientLink}
+        >
           <div className="usa-alert__body">
             <h3 className="usa-alert__heading">Text message sent</h3>
             <p className="usa-alert__text">The link was sent to {telephone}</p>

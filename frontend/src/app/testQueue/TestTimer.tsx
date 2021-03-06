@@ -35,6 +35,7 @@ const initialTimerValues: Omit<Timer, "id"> = {
 // returns the name of the file. New: a `Module` with a `default`
 // string having the file name; Old: the actual file name.
 const alarmModule = require("./test-timer.mp3");
+
 const alarmSound = new Audio(alarmModule.default || alarmModule);
 
 const timerTick = () => {

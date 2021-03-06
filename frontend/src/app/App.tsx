@@ -5,12 +5,11 @@ import { useDispatch, connect } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
+
 import { reactPlugin } from "./AppInsights";
 import ProtectedRoute from "./commonComponents/ProtectedRoute";
-
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import Header from "./commonComponents/Header";
-
 import USAGovBanner from "./commonComponents/USAGovBanner";
 import LoginView from "./LoginView";
 import { setInitialState } from "./store";
