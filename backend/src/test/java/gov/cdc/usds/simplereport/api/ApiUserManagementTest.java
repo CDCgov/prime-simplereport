@@ -413,6 +413,26 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUserRole_orgAdmin_roleUpdated() {
+    useOrgEntryOnly();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Test-entry user", who.get("roleDescription").asText());
+    String id = who.get("id").asText();
+
+    useOrgAdmin();
+    ObjectNode updateRoleVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", id)
+            .put("role", OrganizationRole.ADMIN.name());
+    runQuery("update-user-role", updateRoleVariables);
+
+    useOrgEntryOnly();
+    who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Admin user", who.get("roleDescription").asText());
+  }
+
+  @Test
   void setUserIsDeleted_adminUser_success() {
     useOrgAdmin();
 

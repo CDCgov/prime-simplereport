@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.config.authorization;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -67,8 +68,9 @@ public class DemoAuthenticationConfiguration {
   }
 
   @Bean
-  public AuthorizationService getDemoAuthorizationService(DemoUserConfiguration config) {
-    return new DemoUserAuthorizationService(config);
+  public AuthorizationService getDemoAuthorizationService(
+      DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
+    return new DemoOktaAuthorizationService(oktaRepo, config);
   }
 
   @Bean
@@ -110,21 +112,27 @@ public class DemoAuthenticationConfiguration {
 
   /**
    * An {@link AuthorizationService} that looks up the username of the current authenticated user in
-   * the list of configured demo users, falling back to the default if one is configured, and
-   * returns the claims for that {@link DemoUser}. See {@link DemoUserIdentitySupplier} for snarky
-   * comments about this idea.
+   * the list of configured demo users, falling back to the default if one is configured, then looks
+   * up that user in {@link DemoOktaRepository} (explicitly the Demo version, not Live) to find
+   * their authorization information.
    */
-  public static class DemoUserAuthorizationService implements AuthorizationService {
+  public static class DemoOktaAuthorizationService implements AuthorizationService {
 
     private final Supplier<Optional<DemoUser>> _getCurrentUser;
+    private final DemoOktaRepository _oktaRepo;
 
-    public DemoUserAuthorizationService(DemoUserConfiguration config) {
-      _getCurrentUser = getCurrentDemoUserSupplier(config);
+    public DemoOktaAuthorizationService(DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
+      super();
+      this._getCurrentUser = getCurrentDemoUserSupplier(config);
+      this._oktaRepo = oktaRepo;
     }
 
     @Override
     public List<OrganizationRoleClaims> findAllOrganizationRoles() {
-      return _getCurrentUser.get().map(DemoUser::getAuthorization).map(List::of).orElse(List.of());
+      String username = _getCurrentUser.get().orElseThrow().getUsername();
+      Optional<OrganizationRoleClaims> claims =
+          _oktaRepo.getOrganizationRoleClaimsForUser(username);
+      return claims.isEmpty() ? List.of() : List.of(claims.get());
     }
   }
 
