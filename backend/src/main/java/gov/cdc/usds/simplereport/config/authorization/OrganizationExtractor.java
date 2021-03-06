@@ -1,22 +1,31 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 
+// Note: will be renaming `OrganizationRoleClaims` in a PR soon, and will change this class name to mimic that
 @Component
 public class OrganizationExtractor
     implements Converter<Collection<? extends GrantedAuthority>, List<OrganizationRoleClaims>> {
 
+  private static final String CLAIM_SEPARATOR = ":";
+  private static final String FACILITY_ACCESS_MARKER = "FACILITY_ACCESS";
+  private static final String ALL_FACILITY_ACCESS = "ALL_FACILITIES";
   private static final Logger LOG = LoggerFactory.getLogger(OrganizationExtractor.class);
 
   private AuthorizationProperties properties;
@@ -25,35 +34,87 @@ public class OrganizationExtractor
     this.properties = properties;
   }
 
-  @Override
-  public List<OrganizationRoleClaims> convert(Collection<? extends GrantedAuthority> source) {
+  /**
+   * There are two kinds of claims we care about - role claims and facility claims.
+   * Role claims take the format SR-<ENV>-TENANT:<ORG_EXTERNAL_ID>:<ROLE>
+   * Facility claims take the format SR-<ENV>-TENANT:<ORG_EXTERNAL_ID>:FACILITY_ACCESS:<FACILITY_UUID>
+   */
+  public List<OrganizationRoleClaims> convertClaims(Collection<? extends String> claims) {
+    // Map of orgs to facilities the user can access therein
+    Map<String, Set<UUID>> facilitiesFound = new HashMap<>();
+    Set<String> orgsWithAllFacilityAccess = new HashSet<>();
+    // Map of orgs to roles the user has therein
     Map<String, EnumSet<OrganizationRole>> rolesFound = new HashMap<>();
-    for (GrantedAuthority granted : source) {
-      String claimed = granted.getAuthority();
-      if (!claimed.startsWith(properties.getRolePrefix())) {
-        continue;
-      }
-      int roleOffset = claimed.lastIndexOf(":");
-      String claimedOrg = claimed.substring(properties.getRolePrefix().length(), roleOffset);
-      String claimedRole =
-          claimed.substring(roleOffset + 1); // the separator is part of neither string
+    for (String claimed : claims) {
       try {
-        OrganizationRole claimedRoleValidated = OrganizationRole.valueOf(claimedRole);
-        EnumSet<OrganizationRole> existingRoles = rolesFound.get(claimedOrg);
-        if (existingRoles == null) {
-          rolesFound.put(claimedOrg, EnumSet.of(claimedRoleValidated));
-        } else {
-          existingRoles.add(claimedRoleValidated);
+        if (!claimed.startsWith(properties.getRolePrefix())) {
+          continue;
         }
-      } catch (IllegalArgumentException e) {
-        LOG.debug("Unexpected role constant {}", claimedRole);
+        if (claimed.contains(FACILITY_ACCESS_MARKER)) {
+          int facilityOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
+          String claimedFacility = claimed.substring(facilityOffset + CLAIM_SEPARATOR.length());
+          int facilityMarkerOffset = claimed.lastIndexOf(CLAIM_SEPARATOR + FACILITY_ACCESS_MARKER);
+          String claimedOrg = claimed.substring(properties.getRolePrefix().length(), facilityMarkerOffset);
+          if (claimedFacility.equals(ALL_FACILITY_ACCESS)) {
+            orgsWithAllFacilityAccess.add(claimedOrg);
+            facilitiesFound.remove(claimedOrg);
+            continue;
+          } else if (orgsWithAllFacilityAccess.contains(claimedOrg)) {
+            continue;
+          }
+          try {
+            UUID claimedFacilityValidated = UUID.fromString(claimedFacility);
+            Set<UUID> existingFacilities = facilitiesFound.get(claimedOrg);
+            if (existingFacilities == null) {
+              facilitiesFound.put(claimedOrg, new HashSet<>(Arrays.asList(claimedFacilityValidated)));
+            } else {
+              existingFacilities.add(claimedFacilityValidated);
+            }
+          } catch (IllegalArgumentException e) {
+            LOG.warn("Unexpected facility_id={} for organization={}", claimedFacility, claimedOrg);
+          }
+        } else {
+          int roleOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
+          String claimedOrg = claimed.substring(properties.getRolePrefix().length(), roleOffset);
+          String claimedRole = claimed.substring(roleOffset + CLAIM_SEPARATOR.length()); // the separator is part of neither string
+          try {
+            OrganizationRole claimedRoleValidated = OrganizationRole.valueOf(claimedRole);
+            EnumSet<OrganizationRole> existingRoles = rolesFound.get(claimedOrg);
+            if (existingRoles == null) {
+              rolesFound.put(claimedOrg, EnumSet.of(claimedRoleValidated));
+            } else {
+              existingRoles.add(claimedRoleValidated);
+            }
+          } catch (IllegalArgumentException e) {
+            LOG.warn("Unexpected role_constant={}", claimedRole);
+          }
+        }
+      } catch (Exception e) {
+        LOG.error("Cannot process unexpected claim={}", claimed);
       }
+    }
+    if (facilitiesFound.isEmpty() && orgsWithAllFacilityAccess.isEmpty()) {
+      LOG.error("No tenant organization facilities found!");
     }
     if (rolesFound.isEmpty()) {
       LOG.error("No tenant organization roles found!");
     }
-    return rolesFound.entrySet().stream()
-        .map(e -> new OrganizationRoleClaims(e.getKey(), e.getValue()))
+    Set<String> orgsFound = new HashSet<>();
+    orgsFound.addAll(facilitiesFound.keySet());
+    orgsFound.addAll(orgsWithAllFacilityAccess);
+    orgsFound.addAll(rolesFound.keySet());
+    return orgsFound.stream()
+        .map(o -> new OrganizationRoleClaims(o, 
+                                             orgsWithAllFacilityAccess.contains(o) 
+                                                ? Optional.empty()
+                                                : Optional.of(facilitiesFound.getOrDefault(o, Set.of())),
+                                             rolesFound.getOrDefault(o, EnumSet.noneOf(OrganizationRole.class))))
         .collect(Collectors.toList());
+
+  }
+
+  @Override
+  public List<OrganizationRoleClaims> convert(Collection<? extends GrantedAuthority> source) {
+    return convertClaims(source.stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
   }
 }

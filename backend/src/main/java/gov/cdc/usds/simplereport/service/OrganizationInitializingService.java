@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +66,7 @@ public class OrganizationInitializingService {
       return; // one and done
     }
     Provider savedProvider = _providerRepo.save(_props.getProvider());
-    Map<String, DeviceType> byName =
+    Map<String, DeviceType> deviceTypesByName =
         _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
     Map<String, SpecimenType> specimenTypesByName =
         _specimenTypeRepo.findAll().stream().collect(Collectors.toMap(s -> s.getName(), s -> s));
@@ -78,13 +80,13 @@ public class OrganizationInitializingService {
       specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
     }
 
-    Map<String, DeviceSpecimenType> dsForDeviceName = new HashMap<>();
+    Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
     for (DeviceType d : _props.getDeviceTypes()) {
-      DeviceType deviceType = byName.get(d.getName());
+      DeviceType deviceType = deviceTypesByName.get(d.getName());
       if (null == deviceType) {
         LOG.info("Creating device {}", d.getName());
         deviceType = _deviceTypeRepo.save(d);
-        byName.put(deviceType.getName(), deviceType);
+        deviceTypesByName.put(deviceType.getName(), deviceType);
       }
       SpecimenType defaultTypeForDevice = specimenTypesByCode.get(deviceType.getSwabType());
       if (defaultTypeForDevice == null) {
@@ -94,17 +96,17 @@ public class OrganizationInitializingService {
       Optional<DeviceSpecimenType> deviceSpecimen =
           _deviceSpecimenRepo.find(deviceType, defaultTypeForDevice);
       if (deviceSpecimen.isEmpty()) {
-        dsForDeviceName.put(
+        dsByDeviceName.put(
             deviceType.getName(),
             _deviceSpecimenRepo.save(new DeviceSpecimenType(deviceType, defaultTypeForDevice)));
       } else {
-        dsForDeviceName.put(deviceType.getName(), deviceSpecimen.get());
+        dsByDeviceName.put(deviceType.getName(), deviceSpecimen.get());
       }
     }
 
     List<DeviceSpecimenType> configured =
         _props.getConfiguredDeviceTypeNames().stream()
-            .map(dsForDeviceName::get)
+            .map(dsByDeviceName::get)
             .collect(Collectors.toList());
     DeviceSpecimenType defaultDeviceSpecimen = configured.get(0);
 
@@ -121,6 +123,9 @@ public class OrganizationInitializingService {
         defaultFacility.getFacilityName(),
         configured.size());
     _facilityRepo.save(defaultFacility);
+    Map<String, Facility> facilitiesByName =
+        _facilityRepo.findAll().stream().collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
+    
 
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
@@ -132,12 +137,16 @@ public class OrganizationInitializingService {
           _orgRepo
               .findByExternalId(user.getAuthorization().getOrganizationExternalId())
               .orElseThrow(MisconfiguredUserException::new);
+      Optional<Set<Facility>> facilityRestrictions = user.getAuthorization().getFacilityRestrictions()
+          .map(f_set -> f_set.stream()
+              .map(f -> facilitiesByName.get(f))
+                  .collect(Collectors.toSet()));
       IdentityAttributes identity = user.getIdentity();
       Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
       if (!userProbe.isPresent()) {
         _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
       }
-      initOktaUser(identity, org, role);
+      initOktaUser(identity, org, facilityRestrictions, role);
     }
   }
 
@@ -149,16 +158,19 @@ public class OrganizationInitializingService {
   private void initOktaOrg(Organization org) {
     try {
       LOG.info("Creating organization {} in Okta", org.getOrganizationName());
-      _oktaRepo.createOrganization(org.getOrganizationName(), org.getExternalId());
+      _oktaRepo.createOrganization(org);
     } catch (ResourceException e) {
       LOG.info("Organization {} already exists in Okta", org.getOrganizationName());
     }
   }
 
-  private void initOktaUser(IdentityAttributes user, Organization org, OrganizationRole role) {
+  private void initOktaUser(IdentityAttributes user, 
+                            Organization org, 
+                            Optional<Set<Facility>> facilityRestrictions, 
+                            OrganizationRole role) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
-      _oktaRepo.createUser(user, org, role);
+      _oktaRepo.createUser(user, org, facilityRestrictions, role);
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }

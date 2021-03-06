@@ -1,11 +1,17 @@
 package gov.cdc.usds.simplereport.config.simplereport;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
+
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 /**
  * Bound configuration for the default demo user, and possibly more demo users in the future if we
@@ -14,6 +20,8 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConfigurationProperties(prefix = "simple-report.demo-users")
 @ConstructorBinding
 public class DemoUserConfiguration {
+
+  private static final String ALL_FACILITIES_ACCESS = "ALL_FACILITIES";
 
   private DemoUser defaultUser;
   private List<DemoUser> alternateUsers;
@@ -40,21 +48,52 @@ public class DemoUserConfiguration {
 
   @ConstructorBinding
   public static class DemoUser {
-    private OrganizationRoleClaims authorization;
+    private DemoAuthorization authorization;
     private IdentityAttributes identity;
 
-    public DemoUser(OrganizationRoleClaims authorization, IdentityAttributes identity) {
+    public DemoUser(DemoAuthorization authorization, IdentityAttributes identity) {
       super();
       this.authorization = authorization;
       this.identity = identity;
     }
 
-    public OrganizationRoleClaims getAuthorization() {
+    public DemoAuthorization getAuthorization() {
       return authorization;
     }
 
     public IdentityAttributes getIdentity() {
       return identity;
     }
+
+    @ConstructorBinding
+    public static class DemoAuthorization implements PermissionHolder {    
+      private String organizationExternalId;
+      private Optional<Set<String>> facilityRestrictions;
+      private Set<OrganizationRole> grantedRoles;
+  
+      public DemoAuthorization(String organizationExternalId, 
+                               Set<String> facilityRestrictions,
+                               Set<OrganizationRole> grantedRoles) {
+        super();
+        this.organizationExternalId = organizationExternalId;
+        this.grantedRoles = grantedRoles;
+        if (facilityRestrictions.contains(ALL_FACILITIES_ACCESS)) {
+          this.facilityRestrictions = Optional.empty();
+        } else {
+          this.facilityRestrictions = Optional.of(facilityRestrictions);
+        }
+      }
+  
+      public String getOrganizationExternalId() {
+        return organizationExternalId;
+      }
+
+      public Optional<Set<String>> getFacilityRestrictions() {
+        return facilityRestrictions;
+      }
+  
+      public Set<OrganizationRole> getGrantedRoles() {
+        return grantedRoles;
+      }
   }
 }

@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -21,6 +22,7 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -86,9 +88,10 @@ public class ApiUserService {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, role);
+    // for now, all new users can access all facilities
+    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, Optional.empty(), role);
     Optional<OrganizationRoles> orgRoles =
-        roleClaims.map(c -> new OrganizationRoles(org, c.getGrantedRoles()));
+        roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -122,12 +125,7 @@ public class ApiUserService {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
-    Optional<OrganizationRoles> orgRoles =
-        roleClaims.map(
-            c ->
-                new OrganizationRoles(
-                    _orgService.getOrganization(c.getOrganizationExternalId()),
-                    c.getGrantedRoles()));
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c ->_orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -170,16 +168,6 @@ public class ApiUserService {
     }
     ApiUser user = found.get();
     return user;
-  }
-
-  private Set<ApiUser> getApiUsersInCurrentOrg(OrganizationRole role) {
-    Set<String> usernames =
-        _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
-    return _apiUserRepo.findAllByLoginEmailIn(usernames);
-  }
-
-  private Set<String> getUsernamesInCurrentOrg(OrganizationRole role) {
-    return _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
   }
 
   public boolean isAdmin(ApiUser user) {
@@ -267,21 +255,28 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<UserInfo> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    Set<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
-    Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
-    Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
+    Map<String, OrganizationRoleClaims> userClaims = _oktaRepo.getAllUsersForOrganization(org);
+    Set<ApiUser> apiUsers = _apiUserRepo.findAllByLoginEmailIn(userClaims.keySet());
+    // will add facilities to their users in a subsequent PR
+    List<Facility> facilities = _orgService.getFacilities(org);
+    Set<Facility> facilitiesSet = new HashSet<>(facilities);
+    Map<UUID, Facility> facilitiesByUUID = 
+        facilities.stream().collect(Collectors.toMap(f -> f.getInternalId(), f -> f));
     return apiUsers.stream()
         .map(
             u -> {
-              Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
-              String email = u.getLoginEmail();
-              if (admins.contains(email)) {
-                roles.add(OrganizationRole.ADMIN);
-              }
-              if (entryOnly.contains(email)) {
-                roles.add(OrganizationRole.ENTRY_ONLY);
-              }
-              OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
+              OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
+              boolean allFacilityAccess = claims.getFacilityRestrictions().isEmpty();
+              Set<Facility> accessibleFacilities = allFacilityAccess 
+                  ? facilitiesSet
+                  : claims.getFacilityRestrictions().get().stream()
+                      .map(uuid -> facilitiesByUUID.get(uuid))
+                      .collect(Collectors.toSet());
+              OrganizationRoles orgRoles = 
+                  new OrganizationRoles(org, 
+                                        allFacilityAccess,
+                                        accessibleFacilities,
+                                        claims.getGrantedRoles());
               return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
             })
         .collect(Collectors.toList());

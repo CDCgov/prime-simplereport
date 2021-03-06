@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +18,7 @@ import java.util.Set;
 public interface OktaRepository {
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, OrganizationRole role);
+      IdentityAttributes userIdentity, Organization org, Optional<Set<Facility>> facilities, OrganizationRole role);
 
   public Optional<OrganizationRoleClaims> updateUser(
       String oldUsername, IdentityAttributes userIdentity);
@@ -25,11 +28,15 @@ public interface OktaRepository {
 
   public void setUserIsActive(String username, Boolean active);
 
-  public Set<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role);
+  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org);
 
-  public void createOrganization(String name, String externalId);
+  public void createOrganization(Organization org);
 
-  public void deleteOrganization(String externalId);
+  public void createFacility(Facility facility);
+
+  public void deleteOrganization(Organization org);
+
+  public void deleteFacility(Facility facility);
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 }

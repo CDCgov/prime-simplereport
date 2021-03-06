@@ -1,5 +1,21 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
@@ -19,22 +35,11 @@ import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationException;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -50,27 +55,30 @@ public class LiveOktaRepository implements OktaRepository {
   private String _rolePrefix;
   private Client _client;
   private Application _app;
+  private OrganizationExtractor _extractor;
 
   public LiveOktaRepository(
-      AuthorizationProperties authorizationProperties,
-      OktaClientProperties oktaClientProperties,
-      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId) {
+    AuthorizationProperties authorizationProperties,
+    OktaClientProperties oktaClientProperties,
+    @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
+    OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
-            .setOrgUrl(oktaClientProperties.getOrgUrl())
-            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
-            .build();
+        .setOrgUrl(oktaClientProperties.getOrgUrl())
+        .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+        .build();
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
       throw new MisconfiguredApplicationException(
           "Cannot find Okta application with id=" + oktaOAuth2ClientId, e);
     }
+    _extractor = organizationExtractor;
   }
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
+      IdentityAttributes userIdentity, Organization org, Optional<Set<Facility>> facilities, OrganizationRole role) {
     // need to validate fields before adding them because Maps don't like nulls
     Map<String, Object> userProfileMap = new HashMap<String, Object>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -101,10 +109,24 @@ public class LiveOktaRepository implements OktaRepository {
     String organizationExternalId = org.getExternalId();
     Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
     Set<String> groupIds = new HashSet<>();
+    Set<String> groupNames = new HashSet<>();
 
     for (OrganizationRole r : roles) {
-      String groupName = generateGroupName(organizationExternalId, r);
+      String groupName = generateRoleGroupName(organizationExternalId, r);
+      groupNames.add(groupName);
+    }
 
+    if (facilities.isEmpty()) {
+      String groupName = generateAllFacilityAccessGroupName(organizationExternalId);
+      groupNames.add(groupName);
+    } else {
+      for (Facility f : facilities.get()) {
+        String groupName = generateFacilityGroupName(organizationExternalId, f.getInternalId());
+        groupNames.add(groupName);
+      }
+    }
+
+    for (String groupName : groupNames) {
       // Okta SDK's way of getting a group by group name
       GroupList groups = _client.listGroups(groupName, null, null);
       if (groups.stream().count() == 0) {
@@ -120,24 +142,41 @@ public class LiveOktaRepository implements OktaRepository {
         .setGroups(groupIds)
         .buildAndCreate(_client);
 
-    return Optional.of(new OrganizationRoleClaims(organizationExternalId, roles));
+    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
+    if (claims.size() != 1) {
+      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
+      return Optional.empty();
+    }
+    return Optional.of(claims.get(0));
   }
 
-  public Set<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
-    String groupName = generateGroupName(org.getExternalId(), role);
+  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org) {
 
-    GroupList groups = _client.listGroups(groupName, null, null);
+    GroupList groups = _client.listGroups(generateGroupOrgPrefix(org.getExternalId()), null, null);
     if (groups.stream().count() == 0) {
-      LOG.warn(
-          "Okta group for org={}, role={} is nonexistent; returning zero usernames",
-          org.getExternalId(),
-          role.name());
-      return Set.of();
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users for org="+org.getExternalId()+
+          ": Okta groups are nonexistent");
     }
-    Group group = groups.single();
-    return group.listUsers().stream()
-        .map(u -> u.getProfile().getEmail())
-        .collect(Collectors.toSet());
+
+    // Create a map from each user to their Okta groups...
+    Map<String, Set<String>> usersToGroupNames = new HashMap<>();
+    groups.forEach(g -> {
+      String groupName = g.getProfile().getName();
+      g.listUsers().forEach(u -> {
+        String username = u.getProfile().getEmail();
+        if (!usersToGroupNames.containsKey(username)) {
+          usersToGroupNames.put(username, new HashSet<>());
+        }
+        usersToGroupNames.get(username).add(groupName);
+      });
+    });
+
+    // ...then convert each user's relevant Okta groups to an OrganizationRoleClaims object
+    return usersToGroupNames.entrySet().stream().collect(Collectors.toMap(
+        e -> e.getKey(), 
+        e -> _extractor.convertClaims(e.getValue()).get(0)
+    ));
   }
 
   public Optional<OrganizationRoleClaims> updateUser(
@@ -178,7 +217,7 @@ public class LiveOktaRepository implements OktaRepository {
     Set<String> roleGroupsToRemove =
         Stream.of(OrganizationRole.values())
             .filter(r -> r != OrganizationRole.getDefault())
-            .map(r -> generateGroupName(orgId, r))
+            .map(r -> generateRoleGroupName(orgId, r))
             .collect(Collectors.toSet());
     for (Group g : user.listGroups()) {
       if (g.getType() == GroupType.OKTA_GROUP
@@ -188,7 +227,7 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     // Add user to new group
-    String groupName = generateGroupName(orgId, role);
+    String groupName = generateRoleGroupName(orgId, role);
 
     // Okta SDK's way of getting a group by group name
     GroupList groups = _client.listGroups(groupName, null, null);
@@ -216,27 +255,64 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
-  public void createOrganization(String name, String externalId) {
+  public void createOrganization(Organization org) {
+    String name = org.getOrganizationName();
+    String externalId = org.getExternalId();
     for (OrganizationRole role : OrganizationRole.values()) {
       Group g =
           GroupBuilder.instance()
-              .setName(generateGroupName(externalId, role))
-              .setDescription(generateGroupDescription(name, role))
+              .setName(generateRoleGroupName(externalId, role))
+              .setDescription(generateRoleGroupDescription(name, role))
               .buildAndCreate(_client);
       _app.createApplicationGroupAssignment(g.getId());
     }
 
+    Group g =
+        GroupBuilder.instance()
+            .setName(generateAllFacilityAccessGroupName(externalId))
+            .setDescription(generateAllFacilityAccessGroupDescription(name))
+            .buildAndCreate(_client);
+    _app.createApplicationGroupAssignment(g.getId());
+
     _app.update();
   }
 
-  public void deleteOrganization(String externalId) {
-    for (OrganizationRole role : OrganizationRole.values()) {
-      String groupName = generateGroupName(externalId, role);
-      GroupList groups = _client.listGroups(groupName, null, null);
-      if (groups.stream().count() == 0) {
-        Group group = groups.single();
-        group.delete();
-      }
+  public void createFacility(Facility facility) {
+    // Only create the facility group if the facility's organization has already been created
+    String orgExternalId = facility.getOrganization().getExternalId();
+    GroupList groups = _client.listGroups(generateGroupOrgPrefix(orgExternalId), null, null);
+    if (groups.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot create Okta group for facility="+facility.getFacilityName()+
+          ": facility's org="+facility.getOrganization().getExternalId()+
+          " has not yet been created in Okta");
+    }
+
+    String orgName = facility.getOrganization().getOrganizationName();
+    Group g =
+        GroupBuilder.instance()
+            .setName(generateFacilityGroupName(orgExternalId, facility.getInternalId()))
+            .setDescription(generateFacilityGroupDescription(orgName, facility.getFacilityName()))
+            .buildAndCreate(_client);
+    _app.createApplicationGroupAssignment(g.getId());
+
+    _app.update();
+  }
+
+  public void deleteFacility(Facility facility) {
+    String orgExternalId = facility.getOrganization().getExternalId();
+    String groupName = generateFacilityGroupName(orgExternalId, facility.getInternalId());
+    GroupList groups = _client.listGroups(groupName, null, null);
+    for (Group group : groups) {
+      group.delete();
+    }
+  } 
+
+  public void deleteOrganization(Organization org) {
+    String externalId = org.getExternalId();
+    GroupList groups = _client.listGroups(generateGroupOrgPrefix(externalId), null, null);
+    for (Group group : groups) {
+      group.delete();
     }
   }
 
@@ -256,46 +332,52 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
-    Set<String> orgExternalIds = new HashSet<>();
-    Set<OrganizationRole> roles = new HashSet<>();
+    List<String> groupNames = user.listGroups().stream()
+        .filter(g -> g.getType() == GroupType.OKTA_GROUP)
+        .map(g -> g.getProfile().getName())
+        .collect(Collectors.toList());
+    List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
 
-    for (Group g : user.listGroups()) {
-      String groupName = g.getProfile().getName();
-      for (OrganizationRole role : OrganizationRole.values()) {
-        if (g.getType().equals(GroupType.OKTA_GROUP)
-            && groupName.startsWith(_rolePrefix)
-            && groupName.endsWith(generateRoleSuffix(role))) {
-          orgExternalIds.add(getOrganizationExternalIdFromGroupName(groupName, role));
-          roles.add(role);
-          break;
-        }
-      }
-    }
-
-    if (orgExternalIds.size() != 1) {
-      LOG.warn("User is in {} Okta organizations, not 1", orgExternalIds.size());
+    if (claims.size() != 1) {
+      LOG.warn("User is in {} Okta organizations, not 1", claims.size());
       return Optional.empty();
     }
-
-    String orgExternalId = orgExternalIds.stream().collect(Collectors.toList()).get(0);
-    return Optional.of(new OrganizationRoleClaims(orgExternalId, roles));
+    return Optional.of(claims.get(0));
   }
 
-  private String generateGroupName(String externalId, OrganizationRole role) {
-    return String.format("%s%s%s", _rolePrefix, externalId, generateRoleSuffix(role));
+  private String generateGroupOrgPrefix(String orgExternalId) {
+    return String.format("%s%s", _rolePrefix, orgExternalId);
   }
 
-  private String getOrganizationExternalIdFromGroupName(String groupName, OrganizationRole role) {
-    int roleSuffixOffset = groupName.lastIndexOf(generateRoleSuffix(role));
-    String externalId = groupName.substring(_rolePrefix.length(), roleSuffixOffset);
-    return externalId;
+  private String generateRoleGroupName(String orgExternalId, OrganizationRole role) {
+    return String.format("%s%s%s", _rolePrefix, orgExternalId, generateRoleSuffix(role));
   }
 
-  private String generateGroupDescription(String orgName, OrganizationRole role) {
+  private String generateAllFacilityAccessGroupName(String orgExternalId) {
+    return String.format("%s%s%s", _rolePrefix, orgExternalId, generateFacilitySuffix("ALL_FACILITIES"));
+  }
+
+  private String generateFacilityGroupName(String orgExternalId, UUID facilityId) {
+    return String.format("%s%s%s", _rolePrefix, orgExternalId, generateFacilitySuffix(facilityId.toString()));
+  }
+
+  private String generateRoleGroupDescription(String orgName, OrganizationRole role) {
     return String.format("%s - %ss", orgName, role.getDescription());
+  }
+
+  private String generateAllFacilityAccessGroupDescription(String orgName) {
+    return String.format("%s - Facility Access - ALL", orgName);
+  }
+
+  private String generateFacilityGroupDescription(String orgName, String facilityName) {
+    return String.format("%s - Facility Access - %s", orgName, facilityName);
   }
 
   private String generateRoleSuffix(OrganizationRole role) {
     return ":" + role.name();
+  }
+
+  private String generateFacilitySuffix(String facilityId) {
+    return ":FACILITY_ACCESS:" + facilityId;
   }
 }
