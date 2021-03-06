@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,10 +39,10 @@ public abstract class BaseApiTest {
       "Current user does not have permission for this action";
 
   @Autowired private DbTruncator _truncator;
-  @Autowired protected OrganizationInitializingService _initService;
+  @Autowired private OrganizationInitializingService _initService;
   @Autowired private TestDataFactory _dataFactory;
-  @Autowired protected DemoOktaRepository _oktaRepo;
-  @Autowired protected GraphQLTestTemplate _template; // screw delegation
+  @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
 
   private String _userName = null;
@@ -51,37 +52,31 @@ public abstract class BaseApiTest {
   }
 
   protected void useOrgUser() {
-    LOG.info("Configuring auth service mock for org user");
     _userName = TestUserIdentities.STANDARD_USER;
   }
 
   protected void useOutsideOrgUser() {
-    LOG.info("Configuring auth service mock for outside org user");
-    _userName = "intruder@pirate.com";
+    _userName = TestUserIdentities.OTHER_ORG_USER;
   }
 
   protected void useOrgAdmin() {
-    _userName = "admin@example.com";
-    LOG.info(
-        "Configuring auth service mock for org admin: {}",
-        _users.getByUsername(_userName).getAuthorization().getGrantedPermissions());
+    _userName = TestUserIdentities.ORG_ADMIN_USER;
   }
 
   protected void useOutsideOrgAdmin() {
-    _userName = "captain@pirate.com";
+    _userName = TestUserIdentities.OTHER_ORG_ADMIN;
   }
 
   protected void useOrgEntryOnly() {
-    _userName = "nobody@example.com";
+    _userName = TestUserIdentities.ENTRY_ONLY_USER;
   }
 
   protected void useSuperUser() {
-    LOG.info("Configuring supplier mock for super user");
     _userName = TestUserIdentities.SITE_ADMIN_USER;
   }
 
   protected void useBrokenUser() {
-    _userName = "castaway@pirate.com";
+    _userName = TestUserIdentities.BROKEN_USER;
   }
 
   @BeforeEach
@@ -118,7 +113,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName) {
     try {
-      setTemplateAuthorization();
+      setQueryUser(_userName);
       GraphQLResponse response = _template.postForResource(queryFileName);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -129,10 +124,11 @@ public abstract class BaseApiTest {
     }
   }
 
-  private void setTemplateAuthorization() {
+  private void setQueryUser(String username) {
+    LOG.info("Setting up graphql template authorization for {}", username);
     _template.clearHeaders();
     _template.addHeader(
-        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName);
+        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + username);
   }
 
   /**
@@ -151,7 +147,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
     try {
-      setTemplateAuthorization();
+      setQueryUser(_userName);
       GraphQLResponse response = _template.perform(queryFileName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -195,8 +191,13 @@ public abstract class BaseApiTest {
     }
   }
 
-  protected GraphQLResponse executeAddPersonMutation(
-      String firstName, String lastName, String birthDate, String phone, String lookupId)
+  protected ObjectNode executeAddPersonMutation(
+      String firstName,
+      String lastName,
+      String birthDate,
+      String phone,
+      String lookupId,
+      Optional<String> expectedError)
       throws IOException {
     ObjectNode variables =
         JsonNodeFactory.instance
@@ -206,7 +207,6 @@ public abstract class BaseApiTest {
             .put("birthDate", birthDate)
             .put("telephone", phone)
             .put("lookupId", lookupId);
-    setTemplateAuthorization();
-    return _template.perform("add-person", variables);
+    return runQuery("add-person", variables, expectedError.orElse(null));
   }
 }
