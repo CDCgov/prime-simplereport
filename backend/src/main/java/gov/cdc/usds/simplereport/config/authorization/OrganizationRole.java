@@ -78,10 +78,10 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
 
   public static final class EffectiveRoleComparator implements Comparator<OrganizationRole> {
     public int compare(OrganizationRole one, OrganizationRole other) {
-      if (one.getGrantedPermissions().size() == other.getGrantedPermissions().size()) {
-        return one.compareTo(other);
+      if (other.getGrantedPermissions().size() == one.getGrantedPermissions().size()) {
+        return other.compareTo(one);
       }
-      return Integer.compare(one.getGrantedPermissions().size(), other.getGrantedPermissions().size());
+      return Integer.compare(other.getGrantedPermissions().size(), one.getGrantedPermissions().size());
     }
   }
 

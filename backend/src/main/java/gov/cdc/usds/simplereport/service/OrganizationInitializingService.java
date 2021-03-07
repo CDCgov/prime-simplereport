@@ -4,9 +4,7 @@ import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser.DemoAuthorization;
@@ -123,16 +121,16 @@ public class OrganizationInitializingService {
             .stream()
             .map(f -> f.makeRealFacility(realOrg, savedProvider, defaultDeviceSpecimen, configured))
             .collect(Collectors.toList());
-    LOG.info(
-        "Creating facilities {} with {} devices configured",
-        String.join(", ", facilities.stream().map(Facility::getFacilityName).collect(Collectors.toList())),
-        configured.size());
     facilities.stream().forEach(f -> {
       Facility facility = _facilityRepo.save(f);
       initOktaFacility(facility);
     });
     Map<String, Facility> facilitiesByName =
         _facilityRepo.findAll().stream().collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
+    LOG.info(
+        "Creating facilities {} with {} devices configured",
+        facilitiesByName.keySet(),
+        configured.size());
     
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
@@ -156,8 +154,17 @@ public class OrganizationInitializingService {
           roles,
           authorization.getOrganizationExternalId());
         Set<Facility> authorizedFacilities = authorization.getFacilities().stream()
-            .map(f -> facilitiesByName.get(f))
-                .collect(Collectors.toSet());
+            .map(f -> {
+              Facility facility = facilitiesByName.get(f);
+              if (facility == null) {
+                throw new RuntimeException(
+                    "User's facility=" + f + " was not initialized. Valid facilities=" + 
+                    facilitiesByName.keySet().toString()
+                    );
+              }
+              return facility;
+              })
+            .collect(Collectors.toSet());
         if (PermissionHolder.grantsAllFacilityAccess(roles)) {
           LOG.info(
             "User={} will have access to all facilities in organization={}",

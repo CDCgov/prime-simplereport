@@ -115,8 +115,8 @@ public class DemoOktaRepository implements OktaRepository {
 
   public void createOrganization(Organization org) {
     String externalId = org.getExternalId();
-    orgUsernamesMap.put(externalId, new HashSet<>());
-    orgFacilitiesMap.put(externalId, new HashSet<>());
+    orgUsernamesMap.putIfAbsent(externalId, new HashSet<>());
+    orgFacilitiesMap.putIfAbsent(externalId, new HashSet<>());
   }
 
   public void createFacility(Facility facility) {

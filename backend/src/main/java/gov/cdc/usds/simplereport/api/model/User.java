@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class User {
 
@@ -59,5 +60,11 @@ public class User {
 
   public List<OrganizationRole> getRoles() {
     return wrapped.getRoles();
+  }
+
+  public List<ApiFacility> getFacilities() {
+    return wrapped.getFacilities().stream()
+        .map(f -> new ApiFacility(f))
+        .collect(Collectors.toList());
   }
 }

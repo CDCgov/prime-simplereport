@@ -79,7 +79,6 @@ simple-report:
         last-name: Bobberoo
       authorization:
         organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
-        facilities:
         granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}
     alternate-users:
       - identity:
@@ -87,6 +86,12 @@ simple-report:
           first-name: Ruby
           middle-name: Raven
           last-name: Reynolds
+        authorization:
+          organization-external-id: DIS_ORG
+          facilities: 
+            - Testing Site
+            - Injection Site
+          granted-roles: USER
       - identity:
           username: ben@example.com
           first-name: Ben
@@ -95,7 +100,9 @@ simple-report:
           suffix: III
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER
+          facilities: 
+            - Testing Site
+          granted-roles: MEMBER
       - identity:
           username: jamar@example.com
           first-name: Jamar
@@ -103,7 +110,7 @@ simple-report:
           last-name: Jackson
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER, ENTRY_ONLY
+          granted-roles: ENTRY_ONLY, ALL_FACILITIES
       - identity:
           username: sarah@example.com
           first-name: Sarah
@@ -111,4 +118,4 @@ simple-report:
           last-name: Samuels
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER, ADMIN
+          granted-roles: ADMIN

@@ -28,6 +28,8 @@ enum UserPermission {
 }
 
 enum OrganizationRole {
+  MEMBER
+  ALL_FACILITIES
   ENTRY_ONLY
   USER
   ADMIN
@@ -176,6 +178,7 @@ type User {
   permissions: [UserPermission!]!
   organization: Organization
   roles: [OrganizationRole!]
+  facilities: [Facility!]
 }
 
 type PatientLink {
@@ -307,8 +310,19 @@ type Mutation {
     suffix: String
     email: String!
   ): User
-  updateUserRole(id: ID!, role: OrganizationRole!): OrganizationRole
-  setUserIsDeleted(id: ID!, deleted: Boolean!): User
+  updateUserRole(
+    id: ID!
+    role: OrganizationRole!
+  ): OrganizationRole
+  updateUserPrivileges(
+    id: ID!
+    facilities: [String!]!
+    roles: [OrganizationRole!]!
+  ): User
+  setUserIsDeleted(
+    id: ID!
+    deleted: Boolean!
+  ): User
   addPatient(
     facilityId: String
     lookupId: String

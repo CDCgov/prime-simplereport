@@ -5,6 +5,9 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+
+import java.util.HashSet;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
@@ -59,6 +62,11 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
 
   public OrganizationRole updateUserRole(UUID id, OrganizationRole role) {
     return _us.updateUserRole(id, role);
+  }
+
+  public User updateUserPrivileges(UUID id, List<String> facilities, List<OrganizationRole> role) {
+    UserInfo user = _us.updateUserPrivileges(id, new HashSet<>(facilities), new HashSet<>(role));
+    return new User(user);
   }
 
   public User setUserIsDeleted(UUID id, boolean deleted) {
