@@ -28,7 +28,7 @@ public interface PermissionHolder {
   }
 
   /**
-   * Iterate over all granted roles from highest to lowest precedence, until all
+   * Iterate over all granted roles from most to least permission-granting, until all
    * granted permissions are covered by the roles added thus far, then stop and return
    * that set of roles.
    */
