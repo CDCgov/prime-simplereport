@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.model;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -27,16 +28,19 @@ public class UserInfo {
     this.roles =
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    Optional<OrganizationRole> effectiveRole =
-        orgwrapper.flatMap(OrganizationRoles::getEffectiveRole);
-    this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
-    effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
+    Optional<Set<OrganizationRole>> effectiveRoles =
+        orgwrapper.map(s -> s.getEffectiveRoles());
+    this.roleDescription = buildRoleDescription(effectiveRoles, isAdmin);
+    effectiveRoles.map(s -> PermissionHolder.getPermissionsFromRoles(s)).ifPresent(permissions::addAll);
     this.isAdmin = isAdmin;
   }
 
-  private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
-    if (role.isPresent()) {
-      String desc = role.get().getDescription();
+  private String buildRoleDescription(Optional<Set<OrganizationRole>> roles, boolean isAdmin) {
+    if (roles.isPresent()) {
+      String desc = String.join(" | ", 
+          roles.get().stream()
+              .map(OrganizationRole::getDescription)
+              .collect(Collectors.toList()));
       return isAdmin ? desc + " (SU)" : desc;
     } else {
       return isAdmin ? "Super Admin" : "Misconfigured user";

@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,7 +24,6 @@ public class OrganizationExtractor
 
   private static final String CLAIM_SEPARATOR = ":";
   private static final String FACILITY_ACCESS_MARKER = "FACILITY_ACCESS";
-  private static final String ALL_FACILITY_ACCESS = "ALL_FACILITIES";
   private static final Logger LOG = LoggerFactory.getLogger(OrganizationExtractor.class);
 
   private AuthorizationProperties properties;
@@ -42,7 +40,6 @@ public class OrganizationExtractor
   public List<OrganizationRoleClaims> convertClaims(Collection<? extends String> claims) {
     // Map of orgs to facilities the user can access therein
     Map<String, Set<UUID>> facilitiesFound = new HashMap<>();
-    Set<String> orgsWithAllFacilityAccess = new HashSet<>();
     // Map of orgs to roles the user has therein
     Map<String, EnumSet<OrganizationRole>> rolesFound = new HashMap<>();
     for (String claimed : claims) {
@@ -55,13 +52,6 @@ public class OrganizationExtractor
           String claimedFacility = claimed.substring(facilityOffset + CLAIM_SEPARATOR.length());
           int facilityMarkerOffset = claimed.lastIndexOf(CLAIM_SEPARATOR + FACILITY_ACCESS_MARKER);
           String claimedOrg = claimed.substring(properties.getRolePrefix().length(), facilityMarkerOffset);
-          if (claimedFacility.equals(ALL_FACILITY_ACCESS)) {
-            orgsWithAllFacilityAccess.add(claimedOrg);
-            facilitiesFound.remove(claimedOrg);
-            continue;
-          } else if (orgsWithAllFacilityAccess.contains(claimedOrg)) {
-            continue;
-          }
           try {
             UUID claimedFacilityValidated = UUID.fromString(claimedFacility);
             Set<UUID> existingFacilities = facilitiesFound.get(claimedOrg);
@@ -93,7 +83,9 @@ public class OrganizationExtractor
         LOG.error("Cannot process unexpected claim={}", claimed);
       }
     }
-    if (facilitiesFound.isEmpty() && orgsWithAllFacilityAccess.isEmpty()) {
+    if (facilitiesFound.isEmpty() && 
+        rolesFound.entrySet().stream()
+            .noneMatch(e -> PermissionHolder.grantsAllFacilityAccess(e.getValue()))) {
       LOG.error("No tenant organization facilities found!");
     }
     if (rolesFound.isEmpty()) {
@@ -101,13 +93,13 @@ public class OrganizationExtractor
     }
     Set<String> orgsFound = new HashSet<>();
     orgsFound.addAll(facilitiesFound.keySet());
-    orgsFound.addAll(orgsWithAllFacilityAccess);
     orgsFound.addAll(rolesFound.keySet());
     return orgsFound.stream()
         .map(o -> new OrganizationRoleClaims(o, 
-                                             orgsWithAllFacilityAccess.contains(o) 
-                                                ? Optional.empty()
-                                                : Optional.of(facilitiesFound.getOrDefault(o, Set.of())),
+                                             rolesFound.containsKey(o) && 
+                                                PermissionHolder.grantsAllFacilityAccess(rolesFound.get(o))
+                                                ? Set.of()
+                                                : facilitiesFound.getOrDefault(o, Set.of()),
                                              rolesFound.getOrDefault(o, EnumSet.noneOf(OrganizationRole.class))))
         .collect(Collectors.toList());
 

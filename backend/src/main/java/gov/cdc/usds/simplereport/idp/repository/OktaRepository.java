@@ -18,13 +18,13 @@ import java.util.Set;
 public interface OktaRepository {
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, Optional<Set<Facility>> facilities, OrganizationRole role);
+      IdentityAttributes userIdentity, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
   public Optional<OrganizationRoleClaims> updateUser(
       String oldUsername, IdentityAttributes userIdentity);
 
-  public Optional<OrganizationRoleClaims> updateUserRole(
-      String username, Organization org, OrganizationRole role);
+  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+      String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
   public void setUserIsActive(String username, Boolean active);
 

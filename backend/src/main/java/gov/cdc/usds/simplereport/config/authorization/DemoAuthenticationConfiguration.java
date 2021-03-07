@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.config.authorization;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -69,8 +69,8 @@ public class DemoAuthenticationConfiguration {
 
   @Bean
   public AuthorizationService getDemoAuthorizationService(
-      DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
-    return new DemoOktaAuthorizationService(oktaRepo, config);
+      OktaRepository oktaRepo, DemoUserConfiguration config) {
+    return new DemoAuthorizationService(oktaRepo, config);
   }
 
   @Bean
@@ -113,15 +113,14 @@ public class DemoAuthenticationConfiguration {
   /**
    * An {@link AuthorizationService} that looks up the username of the current authenticated user in
    * the list of configured demo users, falling back to the default if one is configured, then looks
-   * up that user in {@link DemoOktaRepository} (explicitly the Demo version, not Live) to find
-   * their authorization information.
+   * up that user in {@link OktaRepository} to find their authorization information.
    */
-  public static class DemoOktaAuthorizationService implements AuthorizationService {
+  public static class DemoAuthorizationService implements AuthorizationService {
 
     private final Supplier<Optional<DemoUser>> _getCurrentUser;
-    private final DemoOktaRepository _oktaRepo;
+    private final OktaRepository _oktaRepo;
 
-    public DemoOktaAuthorizationService(DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
+    public DemoAuthorizationService(OktaRepository oktaRepo, DemoUserConfiguration config) {
       super();
       this._getCurrentUser = getCurrentDemoUserSupplier(config);
       this._oktaRepo = oktaRepo;

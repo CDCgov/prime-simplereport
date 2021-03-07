@@ -22,11 +22,11 @@ public class InitialSetupProperties {
   private List<SpecimenType> specimenTypes;
   private List<? extends DeviceType> deviceTypes;
   private List<String> configuredDeviceTypes;
-  private ConfigFacility facility;
+  private List<ConfigFacility> facilities;
 
   public InitialSetupProperties(
       Organization organization,
-      ConfigFacility facility,
+      List<ConfigFacility> facilities,
       Provider provider,
       List<SpecimenType> specimenTypes,
       List<DeviceType> deviceTypes,
@@ -36,11 +36,11 @@ public class InitialSetupProperties {
     this.specimenTypes = specimenTypes;
     this.deviceTypes = deviceTypes;
     this.configuredDeviceTypes = configuredDeviceTypes;
-    this.facility = facility;
+    this.facilities = facilities;
   }
 
-  public ConfigFacility getFacility() {
-    return facility;
+  public List<ConfigFacility> getFacilities() {
+    return facilities;
   }
 
   public List<String> getConfiguredDeviceTypeNames() {

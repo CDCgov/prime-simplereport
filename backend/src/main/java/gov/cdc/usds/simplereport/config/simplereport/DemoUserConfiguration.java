@@ -1,16 +1,12 @@
 package gov.cdc.usds.simplereport.config.simplereport;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Optional;
 import java.util.Set;
-
-=======
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
->>>>>>> benwarfield-usds/demo-auth-refactor
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -25,8 +21,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
  */
 @ConfigurationProperties(prefix = "simple-report.demo-users")
 public class DemoUserConfiguration {
-
-  private static final String ALL_FACILITIES_ACCESS = "ALL_FACILITIES";
 
   private DemoUser defaultUser;
   private List<DemoUser> users;
@@ -89,19 +83,21 @@ public class DemoUserConfiguration {
     @ConstructorBinding
     public static class DemoAuthorization implements PermissionHolder {    
       private String organizationExternalId;
-      private Optional<Set<String>> facilityRestrictions;
+      private Set<String> facilities;
       private Set<OrganizationRole> grantedRoles;
   
       public DemoAuthorization(String organizationExternalId, 
-                               Set<String> facilityRestrictions,
+                               Set<String> facilities,
                                Set<OrganizationRole> grantedRoles) {
         super();
         this.organizationExternalId = organizationExternalId;
         this.grantedRoles = grantedRoles;
-        if (facilityRestrictions.contains(ALL_FACILITIES_ACCESS)) {
-          this.facilityRestrictions = Optional.empty();
+        if (grantedRoles.contains(OrganizationRole.ALL_FACILITIES)) {
+          this.facilities = Set.of();
         } else {
-          this.facilityRestrictions = Optional.of(facilityRestrictions);
+          this.facilities = (facilities == null)
+              ? Set.of()
+              : facilities;
         }
       }
   
@@ -109,12 +105,13 @@ public class DemoUserConfiguration {
         return organizationExternalId;
       }
 
-      public Optional<Set<String>> getFacilityRestrictions() {
-        return facilityRestrictions;
+      public Set<String> getFacilities() {
+        return Collections.unmodifiableSet(facilities);
       }
   
       public Set<OrganizationRole> getGrantedRoles() {
-        return grantedRoles;
+        return Collections.unmodifiableSet(grantedRoles);
       }
+    }
   }
 }

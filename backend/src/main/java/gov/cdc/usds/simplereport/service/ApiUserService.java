@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -89,7 +90,11 @@ public class ApiUserService {
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users can access all facilities
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, Optional.empty(), role);
+    Set<OrganizationRole> roles = 
+        PermissionHolder.getEffectiveRoles(EnumSet.of(role, 
+                                                      OrganizationRole.ALL_FACILITIES, 
+                                                      OrganizationRole.getDefault()));
+    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
     Optional<OrganizationRoles> orgRoles =
         roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
@@ -137,6 +142,11 @@ public class ApiUserService {
     return user;
   }
 
+  /**
+   * this exists only for backward compatibility -- going forward, we should allow
+   * for a user to be updated with multiple roles at once, as in {@code updateUserPrivileges()}
+   */ 
+  @Deprecated 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
   public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
     ApiUser user = getApiUser(userId);
@@ -146,10 +156,38 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Optional<OrganizationRoleClaims> newOrgClaims = _oktaRepo.updateUserRole(username, org, role);
-    Optional<OrganizationRole> newRole =
-        newOrgClaims.map(c -> c.getEffectiveRole().orElseThrow(MisconfiguredUserException::new));
-    return newRole.orElseThrow(MisconfiguredUserException::new);
+    Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
+    _oktaRepo.updateUserPrivileges(username, org, facilities, Set.of(role));
+
+    LOG.info(
+        "User with id={} updated by user with id={}",
+        user.getInternalId(),
+        getCurrentApiUser().getInternalId().toString());
+
+    return role;
+  }
+
+  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  public UserInfo updateUserPrivileges(UUID userId, Set<UUID> facilities, Set<OrganizationRole> roles) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilities);
+    Optional<OrganizationRoleClaims> newOrgClaims = 
+        _oktaRepo.updateUserPrivileges(username, org, facilitiesFound, PermissionHolder.getEffectiveRoles(roles));
+    Optional<OrganizationRoles> orgRoles = newOrgClaims.map(c ->_orgService.getOrganizationRoles(org, c));
+    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+
+    LOG.info(
+        "User with id={} updated by user with id={}",
+        apiUser.getInternalId(),
+        getCurrentApiUser().getInternalId().toString());
+
+    return user;
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
@@ -266,15 +304,14 @@ public class ApiUserService {
         .map(
             u -> {
               OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
-              boolean allFacilityAccess = claims.getFacilityRestrictions().isEmpty();
+              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
               Set<Facility> accessibleFacilities = allFacilityAccess 
                   ? facilitiesSet
-                  : claims.getFacilityRestrictions().get().stream()
+                  : claims.getFacilities().stream()
                       .map(uuid -> facilitiesByUUID.get(uuid))
                       .collect(Collectors.toSet());
               OrganizationRoles orgRoles = 
                   new OrganizationRoles(org, 
-                                        allFacilityAccess,
                                         accessibleFacilities,
                                         claims.getGrantedRoles());
               return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));

@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -42,13 +43,21 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, Optional<Set<Facility>> facilities, OrganizationRole role) {
+      IdentityAttributes userIdentity, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
     String organizationExternalId = org.getExternalId();
-    Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
-    Optional<Set<UUID>> facilityRestrictions = facilities.map(f_set -> f_set.stream()
-        .map(f->f.getInternalId()).collect(Collectors.toSet()));
+    Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
+    rolesToCreate.addAll(roles);
+    Set<UUID> facilityUUIDs = facilities.stream()
+        // create an empty set of facilities if user can access all facilities anyway
+        .filter(f -> !PermissionHolder.grantsAllFacilityAccess(rolesToCreate))
+        .map(f->f.getInternalId()).collect(Collectors.toSet());
+    if (!orgFacilitiesMap.containsKey(organizationExternalId) ||
+        !orgFacilitiesMap.get(organizationExternalId).containsAll(facilityUUIDs)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot add Okta user to nonexistent organization or facility.");
+    }
 
-    OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, facilityRestrictions, roles);
+    OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, facilityUUIDs, rolesToCreate);
     usernameOrgRolesMap.putIfAbsent(userIdentity.getUsername(), orgRoles);
 
     orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
@@ -69,18 +78,22 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(orgRoles);
   }
 
-  public Optional<OrganizationRoleClaims> updateUserRole(
-      String username, Organization org, OrganizationRole role) {
+  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+      String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
     String orgId = org.getExternalId();
     if (!orgUsernamesMap.get(orgId).contains(username)) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot update user role for organization they are not in.");
+          "Cannot update user privileges for organization they are not in.");
     }
-    OrganizationRoleClaims oldRoleClaims = usernameOrgRolesMap.get(username);
-    Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
+    Set<OrganizationRole> newRoles = EnumSet.of(OrganizationRole.getDefault());
+    newRoles.addAll(roles);
+    Set<UUID> facilityUUIDs = facilities.stream()
+        // create an empty set of facilities if user can access all facilities anyway
+        .filter(f -> !PermissionHolder.grantsAllFacilityAccess(newRoles))
+        .map(f -> f.getInternalId()).collect(Collectors.toSet());
     OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(orgId, 
-                                                                      oldRoleClaims.getFacilityRestrictions(), 
-                                                                      roles);
+                                                                      facilityUUIDs, 
+                                                                      newRoles);
     usernameOrgRolesMap.put(username, newRoleClaims);
 
     return Optional.of(newRoleClaims);
@@ -130,12 +143,12 @@ public class DemoOktaRepository implements OktaRepository {
         .collect(Collectors.toMap(e -> e.getKey(), 
                                   e -> {
             OrganizationRoleClaims oldRoleClaims = e.getValue();
-            Optional<Set<UUID>> newFacilityRestrictions = 
-                oldRoleClaims.getFacilityRestrictions().map(f_set -> f_set.stream()
+            Set<UUID> newFacilities = 
+                oldRoleClaims.getFacilities().stream()
                     .filter(f -> !f.equals(facility.getInternalId()))
-                    .collect(Collectors.toSet()));
+                    .collect(Collectors.toSet());
             return new OrganizationRoleClaims(orgExternalId, 
-                                              newFacilityRestrictions, 
+                                              newFacilities, 
                                               oldRoleClaims.getGrantedRoles());
         }));
   }

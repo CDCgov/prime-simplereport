@@ -16,6 +16,8 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Optional;
@@ -84,7 +86,6 @@ public class OrganizationService {
 
   public OrganizationRoles getOrganizationRoles(Organization org, OrganizationRoleClaims roleClaims) {
     return new OrganizationRoles(org, 
-                                 roleClaims.getFacilityRestrictions().isEmpty(), 
                                  getAccessibleFacilities(org, roleClaims), 
                                  roleClaims.getGrantedRoles());
   }
@@ -104,13 +105,17 @@ public class OrganizationService {
 
   public Set<Facility> getAccessibleFacilities(Organization org, OrganizationRoleClaims roleClaims) {
     // If there are no facility restrictions, get all facilities in org; otherwise, get specified list.
-    return roleClaims.getFacilityRestrictions().isEmpty() 
+    return roleClaims.grantsAllFacilityAccess()
         ? _facilityRepo.findAllByOrganization(org)
-        : _facilityRepo.findAllByOrganizationAndInternalId(org, roleClaims.getFacilityRestrictions().get());
+        : _facilityRepo.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());
   }
 
   public List<Facility> getFacilities(Organization org) {
     return _facilityRepo.findByOrganizationOrderByFacilityName(org);
+  }
+
+  public Set<Facility> getFacilities(Organization org, Collection<UUID> facilityIds) {
+    return _facilityRepo.findAllByOrganizationAndInternalId(org, facilityIds);
   }
 
   public Facility getFacilityInCurrentOrg(UUID facilityId) {
@@ -243,6 +248,7 @@ public class OrganizationService {
             deviceSpecimenTypes.getFullList());
     _facilityRepo.save(facility);
     _oktaRepo.createOrganization(org);
+    _oktaRepo.createFacility(facility);
     return org;
   }
 
@@ -282,6 +288,8 @@ public class OrganizationService {
             orderingProvider,
             deviceSpecimenTypes.getDefault(),
             deviceSpecimenTypes.getFullList());
-    return _facilityRepo.save(facility);
+    facility = _facilityRepo.save(facility);
+    _oktaRepo.createFacility(facility);
+    return facility;
   }
 }

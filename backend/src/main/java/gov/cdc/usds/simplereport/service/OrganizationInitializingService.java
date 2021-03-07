@@ -5,6 +5,8 @@ import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser.DemoAuthorization;
@@ -115,15 +117,20 @@ public class OrganizationInitializingService {
     Organization realOrg = _orgRepo.save(emptyOrg);
     // in the unlikely event DB and Okta fall out of sync
     initOktaOrg(realOrg);
-    Facility defaultFacility =
+    List<Facility> facilities =
         _props
-            .getFacility()
-            .makeRealFacility(realOrg, savedProvider, defaultDeviceSpecimen, configured);
+            .getFacilities()
+            .stream()
+            .map(f -> f.makeRealFacility(realOrg, savedProvider, defaultDeviceSpecimen, configured))
+            .collect(Collectors.toList());
     LOG.info(
-        "Creating facility {} with {} devices configured",
-        defaultFacility.getFacilityName(),
+        "Creating facilities {} with {} devices configured",
+        String.join(", ", facilities.stream().map(Facility::getFacilityName).collect(Collectors.toList())),
         configured.size());
-    _facilityRepo.save(defaultFacility);
+    facilities.stream().forEach(f -> {
+      Facility facility = _facilityRepo.save(f);
+      initOktaFacility(facility);
+    });
     Map<String, Facility> facilitiesByName =
         _facilityRepo.findAll().stream().collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
     
@@ -138,22 +145,20 @@ public class OrganizationInitializingService {
       }
       DemoAuthorization authorization = user.getAuthorization();
       if (authorization != null) {
-        OrganizationRole role =
-            authorization.getEffectiveRole().orElse(OrganizationRole.getDefault());
+        Set<OrganizationRole> roles = authorization.getEffectiveRoles();
         Organization org =
             _orgRepo
                 .findByExternalId(authorization.getOrganizationExternalId())
                 .orElseThrow(MisconfiguredUserException::new);
         LOG.info(
-          "User={} will have role={} in organization={}",
+          "User={} will have roles={} in organization={}",
           identity.getUsername(),
-          role,
+          roles,
           authorization.getOrganizationExternalId());
-        Optional<Set<Facility>> facilityRestrictions = authorization.getFacilityRestrictions()
-            .map(f_set -> f_set.stream()
-                .map(f -> facilitiesByName.get(f))
-                    .collect(Collectors.toSet()));
-        if (facilityRestrictions.isEmpty()) {
+        Set<Facility> authorizedFacilities = authorization.getFacilities().stream()
+            .map(f -> facilitiesByName.get(f))
+                .collect(Collectors.toSet());
+        if (PermissionHolder.grantsAllFacilityAccess(roles)) {
           LOG.info(
             "User={} will have access to all facilities in organization={}",
             identity.getUsername(),
@@ -162,11 +167,11 @@ public class OrganizationInitializingService {
           LOG.info(
             "User={} will have access to facilities={} in organization={}",
             identity.getUsername(),
-            authorization.getFacilityRestrictions().get(),
+            authorization.getFacilities(),
             authorization.getOrganizationExternalId());
         }
         
-        initOktaUser(identity, org, facilityRestrictions, role);
+        initOktaUser(identity, org, authorizedFacilities, roles);
       }
     }
   }
@@ -185,13 +190,22 @@ public class OrganizationInitializingService {
     }
   }
 
+  private void initOktaFacility(Facility facility) {
+    try {
+      LOG.info("Creating facility={} in Okta", facility.getFacilityName());
+      _oktaRepo.createFacility(facility);
+    } catch (ResourceException e) {
+      LOG.info("Facility={} already exists in Okta", facility.getFacilityName());
+    }
+  }
+
   private void initOktaUser(IdentityAttributes user, 
                             Organization org, 
-                            Optional<Set<Facility>> facilityRestrictions, 
-                            OrganizationRole role) {
+                            Set<Facility> facilities, 
+                            Set<OrganizationRole> roles) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
-      _oktaRepo.createUser(user, org, facilityRestrictions, role);
+      _oktaRepo.createUser(user, org, facilities, roles);
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }

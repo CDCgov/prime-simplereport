@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.Set;
-import org.springframework.core.Ordered;
 
 /**
  * The roles that can be granted (via Okta) to a user. Since multiple roles can be granted, this
@@ -15,6 +14,20 @@ import org.springframework.core.Ordered;
  * first role in the list is the "effective" role for the applicable user.
  */
 public enum OrganizationRole implements Comparable<OrganizationRole> {
+  /**
+   * This is the base role that we expect every user to have. Any other role that has more specific
+   * permissions takes precedence over this role.
+   */
+  MEMBER(
+      "Member",
+      EnumSet.noneOf(UserPermission.class)),
+  /**
+   * This is the role that gives you access to all facilities in your organization; admins also
+   * have all-facility access by default.
+   */
+  ALL_FACILITIES(
+      "All-facility-access user", 
+      EnumSet.of(UserPermission.ACCESS_ALL_FACILITIES)),
   /**
    * This is the role for users who are only permitted to create and submit tests, but cannot view
    * historical data or read the entire patient roster.
@@ -27,12 +40,11 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
           UserPermission.UPDATE_TEST,
           UserPermission.SUBMIT_TEST)),
   /**
-   * This is the base role that we expect every user to have. Any other role that has more specific
-   * permissions takes precedence over this role.
+   * This is the standard role for users who can view and edit patients, create and submit tests, and view
+   * historical test results.
    */
   USER(
       "Standard user",
-      Ordered.LOWEST_PRECEDENCE,
       EnumSet.of(
           UserPermission.READ_PATIENT_LIST,
           UserPermission.SEARCH_PATIENTS,
@@ -46,20 +58,14 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
    * your role, so other roles you may have are moot. This role's permission (which is to say all of
    * them) take precedence over any other roles.
    */
-  ADMIN("Admin user", Ordered.HIGHEST_PRECEDENCE, EnumSet.allOf(UserPermission.class));
+  ADMIN("Admin user", EnumSet.allOf(UserPermission.class));
 
   private String description;
   private Set<UserPermission> grantedPermissions;
-  private int precedence;
-
-  private OrganizationRole(String description, int precedence, Set<UserPermission> permissions) {
-    this.description = description;
-    this.grantedPermissions = Collections.unmodifiableSet(EnumSet.copyOf(permissions));
-    this.precedence = precedence;
-  }
 
   private OrganizationRole(String description, Set<UserPermission> permissions) {
-    this(description, 0, permissions);
+    this.description = description;
+    this.grantedPermissions = Collections.unmodifiableSet(EnumSet.copyOf(permissions));
   }
 
   public String getDescription() {
@@ -72,14 +78,14 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
 
   public static final class EffectiveRoleComparator implements Comparator<OrganizationRole> {
     public int compare(OrganizationRole one, OrganizationRole other) {
-      if (one.precedence == other.precedence) {
+      if (one.getGrantedPermissions().size() == other.getGrantedPermissions().size()) {
         return one.compareTo(other);
       }
-      return Integer.compare(one.precedence, other.precedence);
+      return Integer.compare(one.getGrantedPermissions().size(), other.getGrantedPermissions().size());
     }
   }
 
   public static final OrganizationRole getDefault() {
-    return USER;
+    return MEMBER;
   }
 }

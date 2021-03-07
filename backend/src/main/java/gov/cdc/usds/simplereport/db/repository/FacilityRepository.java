@@ -21,9 +21,6 @@ public interface FacilityRepository extends EternalAuditedEntityRepository<Facil
 
 	@Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organization = :org and e.id in (:ids)")
 	public Set<Facility> findAllByOrganizationAndInternalId(Organization org, Collection<UUID> ids);
-	
-	@Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organizationId = :orgId and e.id = :id")
-	public Optional<Facility> findByOrganizationInternalIdAndInternalId(UUID orgId, UUID id);
 
 	@Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.organization = :org and e.facilityName = :facilityName")
 	public Optional<Facility> findByOrganizationAndFacilityName(Organization org, String facilityName);

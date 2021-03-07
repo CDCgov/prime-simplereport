@@ -10,27 +10,20 @@ import java.util.Set;
 public class OrganizationRoles implements PermissionHolder {
 
   private Organization _organization;
-  private boolean _allFacilityAccess;
   private Set<Facility> _facilities;
   private Set<OrganizationRole> _roles;
 
   public OrganizationRoles(Organization organization, 
-                           boolean allFacilityAccess, 
                            Set<Facility> facilities, 
                            Set<OrganizationRole> roles) {
     super();
     this._organization = organization;
-    this._allFacilityAccess = allFacilityAccess;
     this._facilities = facilities;
     this._roles = EnumSet.copyOf(roles);
   }
 
   public Organization getOrganization() {
     return _organization;
-  }
-
-  public boolean getAllFacilityAccess() {
-    return _allFacilityAccess;
   }
 
   public Set<Facility> getFacilities() {
