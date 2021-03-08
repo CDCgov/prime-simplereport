@@ -84,7 +84,7 @@ public class OrganizationExtractor
             LOG.warn("Unexpected role_constant={}", claimedRole);
           }
         }
-      } catch (Exception e) {
+      } catch (IndexOutOfBoundsException e) {
         LOG.error("Cannot process unexpected claim={}", claimed);
       }
     }
