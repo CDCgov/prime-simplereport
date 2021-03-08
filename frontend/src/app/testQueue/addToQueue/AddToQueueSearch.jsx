@@ -12,8 +12,10 @@ import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
+import { useDebounce } from "./useDebounce";
 
 const MIN_SEARCH_CHARACTER_COUNT = 2;
+const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: String!, $searchTerm: String) {
@@ -95,7 +97,11 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     appInsights,
     "Add Patient to Queue"
   );
-  const [queryString, setQueryString] = useState("");
+  const [queryString, debounced, setDebounced] = useDebounce("", {
+    debounceTime: SEARCH_DEBOUNCE_TIME,
+    runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
+  });
+
   const { data, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: { facilityId, searchTerm: queryString },
@@ -103,6 +109,8 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
+
+  const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
 
   if (error) {
     throw error;
@@ -112,11 +120,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   }
 
   const onInputChange = (event) => {
-    let newValue = event.target.value;
-    // debouncing helps reduce traffic, but introduces a lag in results.
-    // until performance becomes an issue, don't debounce.
-    // (FYI lodash.debounce() is available)
-    setQueryString(newValue);
+    setDebounced(event.target.value);
   };
 
   const onSearchClick = (event) => {
@@ -137,7 +141,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     },
     createOrUpdate = "create"
   ) => {
-    setQueryString("");
+    setDebounced("");
     trackAddPatientToQueue();
     let callback;
     const variables = {
@@ -181,15 +185,16 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       <SearchInput
         onSearchClick={onSearchClick}
         onInputChange={onInputChange}
-        queryString={queryString}
-        disabled={queryString.length < MIN_SEARCH_CHARACTER_COUNT}
+        queryString={debounced}
+        disabled={!allowQuery}
       />
       <SearchResults
         patients={data?.patients || []}
         onAddToQueue={onAddToQueue}
         facilityId={facilityId}
         patientsInQueue={patientsInQueue}
-        shouldShowSuggestions={queryString.length >= MIN_SEARCH_CHARACTER_COUNT}
+        shouldShowSuggestions={allowQuery}
+        loading={debounced !== queryString}
       />
     </React.Fragment>
   );
