@@ -89,8 +89,6 @@ jobs:
         uses: browser-actions/setup-firefox@latest
         with:
           firefox-version: ${{ env.FIREFOX_VERSION }}
-      - name: Print logs
-        run: sleep 300 && cat gradle-log.txt && cat yarn-log.txt
       - name: Run e2e tests
         working-directory: ./frontend
         run: yarn e2e
