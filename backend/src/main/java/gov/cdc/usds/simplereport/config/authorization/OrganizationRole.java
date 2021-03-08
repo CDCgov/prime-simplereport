@@ -16,12 +16,15 @@ import java.util.Set;
 public enum OrganizationRole implements Comparable<OrganizationRole> {
   /**
    * This is the base role that we expect every user to have. Any other role that has more specific
-   * permissions takes precedence over this role.
+   * permissions takes precedence over this role. NOTE: this role does not give you any meaningful
+   * permissions, and thus must be accompanied by other roles for a user to be able to use the app.
    */
   MEMBER("Member", EnumSet.noneOf(UserPermission.class)),
   /**
    * This is the role that gives you access to all facilities in your organization; admins also have
-   * all-facility access by default.
+   * all-facility access by default. NOTE: this role does not give you any meaningful permissions
+   * besides the ability to exercise other permissioned features on all facilities, and thus must be
+   * accompanied by other roles for a user to be able to use the app.
    */
   ALL_FACILITIES("All-facility-access user", EnumSet.of(UserPermission.ACCESS_ALL_FACILITIES)),
   /**
