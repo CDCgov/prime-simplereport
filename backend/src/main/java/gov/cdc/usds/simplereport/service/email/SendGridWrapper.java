@@ -38,7 +38,10 @@ public class SendGridWrapper implements EmailProviderWrapper {
       request.setBody(mail.build());
       LOG.debug("Initiating SendGrid request...");
       Response response = sg.api(request);
-      LOG.debug("Sendgrid response status code is {}, headers are [{}]", response.getStatusCode(), response.getHeaders());
+      LOG.debug(
+          "Sendgrid response status code is {}, headers are [{}]",
+          response.getStatusCode(),
+          response.getHeaders());
       LOG.debug("Sendgrid response body is [{}]", response.getBody());
       return response.getBody();
     } catch (IOException ex) {

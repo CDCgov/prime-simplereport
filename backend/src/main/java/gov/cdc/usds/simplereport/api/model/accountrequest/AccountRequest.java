@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
-public class AccountRequestWrapper {
+public class AccountRequest {
   private String name;
   private String email;
   private String phone;
@@ -8,9 +8,9 @@ public class AccountRequestWrapper {
   private String organization;
   private String referral;
 
-  public AccountRequestWrapper() {}
+  public AccountRequest() {}
 
-  public AccountRequestWrapper(
+  public AccountRequest(
       String name, String email, String phone, String state, String organization, String referral) {
     this.name = name;
     this.email = email;

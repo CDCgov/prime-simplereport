@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.api.accountrequest;
 
-import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequestWrapper;
+import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -34,7 +34,7 @@ public class AccountRequestController {
   }
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("/submit")
-  public String submitAccountRequest(@RequestBody AccountRequestWrapper body) throws IOException {
+  public String submitAccountRequest(@RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     String newLine = "<br>";
     String content =
