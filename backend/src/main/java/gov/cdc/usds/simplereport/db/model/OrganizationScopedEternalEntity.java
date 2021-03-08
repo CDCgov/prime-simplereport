@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
@@ -9,7 +10,7 @@ import javax.persistence.MappedSuperclass;
 public abstract class OrganizationScopedEternalEntity extends EternalAuditedEntity
     implements OrganizationScoped {
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_id", updatable = false)
   @JsonIgnore
   private Organization organization;

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.EntityListeners;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -39,12 +40,12 @@ public abstract class AuditedEntity {
 
   @CreatedBy
   @Immutable // not sure this is needed. Not sure it works if it is. :-(
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "created_by", updatable = false)
   private ApiUser createdBy;
 
   @LastModifiedBy
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "updated_by")
   private ApiUser updatedBy;
 

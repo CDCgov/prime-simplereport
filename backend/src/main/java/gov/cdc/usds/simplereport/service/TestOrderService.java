@@ -64,7 +64,7 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionStartTest
   public List<TestOrder> getQueue(String facilityId) {
     Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
-    return _repo.fetchQueue(fac.getOrganization(), fac);
+    return _repo.fetchQueue(_os.getCurrentOrganization(), fac);
   }
 
   @Transactional(readOnly = true)

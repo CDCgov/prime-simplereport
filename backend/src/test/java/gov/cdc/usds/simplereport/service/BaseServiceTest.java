@@ -3,13 +3,16 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -32,19 +35,33 @@ import org.springframework.security.access.AccessDeniedException;
 @WithSimpleReportStandardUser
 public abstract class BaseServiceTest<T> {
 
+  private static final String SPRING_SECURITY_DENIED = "Access is denied";
+  @Autowired protected TestDataFactory _dataFactory;
+  @Autowired protected T _service;
+  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
-  @Autowired protected TestDataFactory _dataFactory;
-  @Autowired protected T _service;
 
-  private static final String SPRING_SECURITY_DENIED = "Access is denied";
+  protected static void assertSecurityError(Executable e) {
+    AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
+    assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
+  }
 
   @BeforeEach
-  protected void before() {
+  protected void beforeEach() {
     clearDb();
+    _hibernateQueryInterceptor.startQueryCount(); // also resets count
     resetOkta();
     initCurrentUser();
+  }
+
+  @AfterEach
+  protected void afterEach() {
+    // see output saved to backend/build/test-results/test
+    long sqlQueryCountAfter = _hibernateQueryInterceptor.getQueryCount();
+    LoggerFactory.getLogger(BaseServiceTest.class)
+        .info("Hibernate Total queries: {}", sqlQueryCountAfter);
   }
 
   public void clearDb() {
@@ -65,10 +82,5 @@ public abstract class BaseServiceTest<T> {
 
   protected void reset() {
     _truncator.truncateAll();
-  }
-
-  protected static void assertSecurityError(Executable e) {
-    AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
-    assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
   }
 }

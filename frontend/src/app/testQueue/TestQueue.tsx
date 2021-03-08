@@ -113,6 +113,8 @@ interface QueueItemData {
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
+  console.log("GetFacilityQueue");
+  debugger;
   const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
     queueQuery,
     {
