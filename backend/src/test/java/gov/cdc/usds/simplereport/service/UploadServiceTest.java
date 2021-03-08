@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -18,16 +20,22 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGEOFFSET = 0;
   public static final int PATIENT_PAGESIZE = 1000;
 
   @Autowired private PersonService _ps;
+  @MockBean protected AddressValidationService _addressValidation;
+  private final StreetAddress address =
+      new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
 
   @BeforeEach
   void setupData() {
     initSampleData();
+    when(_addressValidation.getValidatedAddress(any(), any(), any(), any(), any(), any()))
+        .thenReturn(address);
   }
 
   @Test
@@ -58,8 +66,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
       this._service.processPersonCSV(inputStream);
     }
 
-    final StreetAddress address =
-        new StreetAddress("123 Main Street", null, "Washington", "DC", "20008", null);
     final List<Person> patients = this._ps.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
     assertAll(
         () -> assertEquals(1, patients.size()),

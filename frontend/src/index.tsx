@@ -67,7 +67,11 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       );
       return message;
     });
-    showError(toast, messages.join(" "));
+    showError(
+      toast,
+      "Please check for errors and try again",
+      messages.join(" ")
+    );
     console.error("graphql error", graphQLErrors);
   }
 });
