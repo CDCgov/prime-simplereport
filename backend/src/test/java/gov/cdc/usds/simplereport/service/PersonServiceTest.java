@@ -122,10 +122,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false);
 
-    assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
-    assertEquals(
-        "Fred",
-        _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).get(0).getFirstName());
+    // works for regular users
+    _service.setIsDeleted(p.getInternalId(), true);
+    assertEquals(0, _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
   }
 
   @Test
