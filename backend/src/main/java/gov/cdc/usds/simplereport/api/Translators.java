@@ -14,13 +14,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 
 /**
  * Static package for utilities to translate things to or from wireline format in non copy-paste
  * ways.
  */
-@Component
 public class Translators {
   private static final DateTimeFormatter US_SLASHDATE_SHORT_FORMATTER =
       DateTimeFormatter.ofPattern("M/d/yyyy");
