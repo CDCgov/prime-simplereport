@@ -50,7 +50,7 @@ public class PersonService {
     person.setFacility(facility);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
     return _repo
         .findByFacilityAndOrganization(
@@ -61,13 +61,13 @@ public class PersonService {
         .toList();
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public long getPatientsCount(UUID facilityId) {
     return _repo.countAllByFacilityAndOrganization(
         _os.getFacilityInCurrentOrg(facilityId), _os.getCurrentOrganization(), false);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public List<Person> getAllPatients(int pageOffset, int pageSize) {
     return _repo
         .findAllByOrganization(
@@ -75,7 +75,7 @@ public class PersonService {
         .toList();
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public long getAllPatientsCount() {
     return _repo.countAllByOrganization(_os.getCurrentOrganization(), false);
   }

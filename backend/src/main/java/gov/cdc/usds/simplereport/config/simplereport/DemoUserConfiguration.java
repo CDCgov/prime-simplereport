@@ -49,6 +49,10 @@ public class DemoUserConfiguration {
       this.identity = identity;
     }
 
+    public String getUsername() {
+      return identity.getUsername();
+    }
+
     public OrganizationRoleClaims getAuthorization() {
       return authorization;
     }

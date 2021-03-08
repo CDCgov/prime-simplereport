@@ -74,11 +74,14 @@ const SmsModalContents = ({
   saveCallback,
   continueModal,
 }: SmsModalProps) => {
+  const [patientLink, setPatientLink] = useState("");
+
   const sendSms = async () => {
     const internalId = patientLinkId || (await saveCallback(patientResponse));
     try {
       await sendSmsMutation({ variables: { internalId } });
       setSmsSuccess(true);
+      setPatientLink(`${getUrl()}pxp?plid=${internalId}`);
     } catch (e) {
       showError(toast, "SMS error", e);
     }
@@ -86,7 +89,10 @@ const SmsModalContents = ({
   return (
     <>
       {smsSuccess && (
-        <div className="usa-alert usa-alert--success outline-0">
+        <div
+          className="usa-alert usa-alert--success outline-0"
+          data-patient-link={patientLink}
+        >
           <div className="usa-alert__body">
             <h3 className="usa-alert__heading">Text message sent</h3>
             <p className="usa-alert__text">The link was sent to {telephone}</p>

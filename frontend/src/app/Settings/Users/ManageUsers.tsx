@@ -246,6 +246,14 @@ const ManageUsers: React.FC<Props> = ({
           />
         ) : null}
       </div>
+      {showAddUserModal &&
+      process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
+        <CreateUserModal
+          isUpdating={isUpdating}
+          onClose={() => updateShowAddUserModal(false)}
+          onSubmit={handleAddUserToOrg}
+        />
+      ) : null}
       {!activeUser || !localUsers.length ? (
         <div className="usa-card__body">
           {!localUsers.length ? (
@@ -334,14 +342,6 @@ const ManageUsers: React.FC<Props> = ({
                 <Prompt
                   when={isUserEdited}
                   message="You have unsaved changes. Do you want to continue?"
-                />
-              ) : null}
-              {showAddUserModal &&
-              process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (
-                <CreateUserModal
-                  isUpdating={isUpdating}
-                  onClose={() => updateShowAddUserModal(false)}
-                  onSubmit={handleAddUserToOrg}
                 />
               ) : null}
               {showDeleteUserModal &&

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { TransitionGroup, CSSTransition } from "react-transition-group";
@@ -113,13 +113,21 @@ interface QueueItemData {
 }
 
 const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
-  const { data, loading, error, refetch: refetchQueue } = useQuery(queueQuery, {
-    fetchPolicy: "no-cache",
-    variables: {
-      facilityId: activeFacilityId,
-    },
-    pollInterval,
-  });
+  const { data, loading, error, refetch, startPolling, stopPolling } = useQuery(
+    queueQuery,
+    {
+      fetchPolicy: "no-cache",
+      variables: {
+        facilityId: activeFacilityId,
+      },
+    }
+  );
+
+  useEffect(() => {
+    // Start polling on creation, stop on componenent teardown
+    startPolling(pollInterval);
+    return stopPolling;
+  }, [startPolling, stopPolling]);
 
   if (error) {
     throw error;
@@ -170,7 +178,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 defaultDevice={facility.defaultDeviceType}
-                refetchQueue={refetchQueue}
+                refetchQueue={refetch}
                 facilityId={activeFacilityId}
                 dateTestedProp={dateTested}
                 patientLinkId={patientLink?.internalId || null}
@@ -210,7 +218,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
       <div className="grid-container">
         <div className="grid-row position-relative">
           <AddToQueueSearch
-            refetchQueue={refetchQueue}
+            refetchQueue={refetch}
             facilityId={activeFacilityId}
             patientsInQueue={patientsInQueue}
           />
