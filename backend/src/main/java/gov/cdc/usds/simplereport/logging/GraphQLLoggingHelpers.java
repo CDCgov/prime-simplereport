@@ -42,19 +42,19 @@ public class GraphQLLoggingHelpers {
     final String fieldName = field.getName();
 
     final SelectionSet selections = field.getSelectionSet();
+    final String formattedFieldName;
+    if (parentName.isBlank()) {
+      formattedFieldName = fieldName;
+    } else {
+      formattedFieldName = String.format("%s.%s", parentName, fieldName);
+    }
     if (selections == null) {
-      final String formattedFieldName;
-      if (parentName.isBlank()) {
-        formattedFieldName = fieldName;
-      } else {
-        formattedFieldName = String.format("%s.%s", parentName, fieldName);
-      }
       return Stream.of(formattedFieldName);
     }
 
     return selections.getSelections().stream()
         .filter(s -> s instanceof Field)
-        .flatMap(f -> GraphQLLoggingHelpers.walkFields(fieldName, f));
+        .flatMap(f -> GraphQLLoggingHelpers.walkFields(formattedFieldName, f));
   }
 
   /**
