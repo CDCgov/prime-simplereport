@@ -57,6 +57,9 @@ dependencies {
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.7.2'
 
+    // Jsoup for input sanitization
+    implementation 'org.jsoup:jsoup:1.13.1'
+
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'

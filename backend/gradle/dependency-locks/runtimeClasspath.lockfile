@@ -110,6 +110,7 @@ org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.4.2
 org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.4.2
 org.jetbrains:annotations:13.0
 org.json:json:20201115
+org.jsoup:jsoup:1.13.1
 org.latencyutils:LatencyUtils:2.0.3
 org.liquibase:liquibase-core:3.10.3
 org.ow2.asm:asm:5.0.4
