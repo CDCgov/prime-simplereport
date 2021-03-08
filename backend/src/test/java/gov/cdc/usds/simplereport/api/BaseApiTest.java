@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,10 +14,12 @@ import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.Collections;
@@ -38,11 +41,13 @@ public abstract class BaseApiTest {
       "Current user does not have permission for this action";
 
   @Autowired private DbTruncator _truncator;
+  @Autowired private TestDataFactory _dataFactory;
   @Autowired protected OrganizationInitializingService _initService;
   @Autowired protected DemoOktaRepository _oktaRepo;
   @Autowired protected GraphQLTestTemplate _template; // screw delegation
   @MockBean protected AuthorizationService _authService;
   @MockBean protected IdentitySupplier _supplier;
+  @MockBean protected AddressValidationService _addressValidation;
 
   private static final List<OrganizationRoleClaims> USER_ORG_ROLES =
       Collections.singletonList(
@@ -124,6 +129,8 @@ public abstract class BaseApiTest {
     truncateDb();
     _oktaRepo.reset();
     useOrgUser();
+    when(_addressValidation.getValidatedAddress(any(), any()))
+        .thenReturn(_dataFactory.getAddress());
     _initService.initAll();
   }
 

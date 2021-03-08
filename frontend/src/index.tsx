@@ -55,10 +55,10 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const logoutLink = onError(({ networkError, graphQLErrors }) => {
-  if (networkError && process.env.REACT_APP_OKTA_URL) {
+  if (networkError && process.env.REACT_APP_BASE_URL) {
     console.error("network error", networkError);
-    console.log("redirecting to", process.env.REACT_APP_OKTA_URL);
-    window.location.replace(process.env.REACT_APP_OKTA_URL);
+    console.log("redirecting to", process.env.REACT_APP_BASE_URL);
+    window.location.replace(process.env.REACT_APP_BASE_URL);
   }
   if (graphQLErrors) {
     const messages = graphQLErrors.map(({ message, locations, path }) => {
@@ -67,7 +67,11 @@ const logoutLink = onError(({ networkError, graphQLErrors }) => {
       );
       return message;
     });
-    showError(toast, messages.join(" "));
+    showError(
+      toast,
+      "Please check for errors and try again",
+      messages.join(" ")
+    );
     console.error("graphql error", graphQLErrors);
   }
 });

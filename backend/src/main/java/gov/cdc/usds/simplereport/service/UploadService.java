@@ -6,7 +6,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRaceDisplayValue;
-import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
@@ -19,6 +18,7 @@ import com.fasterxml.jackson.dataformat.csv.CsvParser;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,10 +36,12 @@ public class UploadService {
   private static final int MAX_LINE_LENGTH = 1024 * 6;
 
   private final PersonService _ps;
+  private final AddressValidationService _avs;
   private boolean hasHeaderRow = false;
 
-  public UploadService(PersonService ps) {
+  public UploadService(PersonService ps, AddressValidationService avs) {
     this._ps = ps;
+    this._avs = avs;
   }
 
   private MappingIterator<Map<String, String>> getIteratorForCsv(InputStream csvStream)
@@ -99,6 +101,14 @@ public class UploadService {
       final Map<String, String> row = getNextRow(valueIterator);
       rowNumber++;
       try {
+        StreetAddress address =
+            _avs.getValidatedAddress(
+                getRow(row, "Street", true),
+                getRow(row, "Street2", false),
+                getRow(row, "City", false),
+                getRow(row, "State", true),
+                getRow(row, "ZipCode", true),
+                null);
         _ps.addPatient(
             parseUUID(getRow(row, FACILITY_ID, false)),
             null, // lookupID. this field is deprecated
@@ -107,15 +117,10 @@ public class UploadService {
             parseString(getRow(row, "LastName", true)),
             parseString(getRow(row, "Suffix", false)),
             parseUserShortDate(getRow(row, "DOB", true)),
-            parseString(getRow(row, "Street", true)),
-            parseString(getRow(row, "Street2", false)),
-            parseString(getRow(row, "City", false)),
-            parseState(getRow(row, "State", true)),
-            parseString(getRow(row, "ZipCode", true)),
+            address,
             parsePhoneNumber(getRow(row, "PhoneNumber", true)),
             parsePersonRole(getRow(row, "Role", false)),
             parseEmail(getRow(row, "Email", false)),
-            parseString(getRow(row, "County", false)),
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
             parseGender(getRow(row, "biologicalSex", false)),

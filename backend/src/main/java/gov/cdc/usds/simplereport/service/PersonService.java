@@ -50,7 +50,7 @@ public class PersonService {
     person.setFacility(facility);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public List<Person> getPatients(UUID facilityId, int pageOffset, int pageSize) {
     return _repo
         .findByFacilityAndOrganization(
@@ -61,13 +61,13 @@ public class PersonService {
         .toList();
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public long getPatientsCount(UUID facilityId) {
     return _repo.countAllByFacilityAndOrganization(
         _os.getFacilityInCurrentOrg(facilityId), _os.getCurrentOrganization(), false);
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public List<Person> getAllPatients(int pageOffset, int pageSize) {
     return _repo
         .findAllByOrganization(
@@ -75,7 +75,7 @@ public class PersonService {
         .toList();
   }
 
-  @AuthorizationConfiguration.RequirePermissionReadPatientList
+  @AuthorizationConfiguration.RequirePermissionSearchPatients
   public long getAllPatientsCount() {
     return _repo.countAllByOrganization(_os.getCurrentOrganization(), false);
   }
@@ -142,22 +142,15 @@ public class PersonService {
       String lastName,
       String suffix,
       LocalDate birthDate,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
+      StreetAddress address,
       String telephone,
       PersonRole role,
       String email,
-      String county,
       String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    StreetAddress patientAddress =
-        new StreetAddress(street, streetTwo, city, state, zipCode, county);
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -167,7 +160,7 @@ public class PersonService {
             lastName,
             suffix,
             birthDate,
-            patientAddress,
+            address,
             telephone,
             role,
             email,
@@ -228,22 +221,15 @@ public class PersonService {
       String lastName,
       String suffix,
       LocalDate birthDate,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
+      StreetAddress address,
       String telephone,
       PersonRole role,
       String email,
-      String county,
       String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    StreetAddress patientAddress =
-        new StreetAddress(street, streetTwo, city, state, zipCode, county);
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -252,7 +238,7 @@ public class PersonService {
         lastName,
         suffix,
         birthDate,
-        patientAddress,
+        address,
         telephone,
         role,
         email,

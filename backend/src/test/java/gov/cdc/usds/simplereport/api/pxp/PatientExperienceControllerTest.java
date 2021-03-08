@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestIdentityConfiguration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -29,12 +30,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @AutoConfigureMockMvc
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Import(TestIdentityConfiguration.class)
 class PatientExperienceControllerTest {
   @Autowired private MockMvc _mockMvc;
 
@@ -52,11 +55,14 @@ class PatientExperienceControllerTest {
   @BeforeEach
   void init() {
     _truncator.truncateAll();
-    _org = _dataFactory.createValidOrg();
-    _site = _dataFactory.createValidFacility(_org);
-    _person = _dataFactory.createFullPerson(_org);
-    _testOrder = _dataFactory.createTestOrder(_person, _site);
-    _patientLink = _dataFactory.createPatientLink(_testOrder);
+    TestIdentityConfiguration.withStandardUser(
+        () -> {
+          _org = _dataFactory.createValidOrg();
+          _site = _dataFactory.createValidFacility(_org);
+          _person = _dataFactory.createFullPerson(_org);
+          _testOrder = _dataFactory.createTestOrder(_person, _site);
+          _patientLink = _dataFactory.createPatientLink(_testOrder);
+        });
   }
 
   private Person _person;

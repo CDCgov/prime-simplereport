@@ -34,19 +34,6 @@ module "bastion" {
   tags = local.management_tags
 }
 
-module "psql_connect" {
-  source                  = "../../services/basic_vm"
-  name                    = "psql-connect"
-  env                     = local.env
-  resource_group_location = data.azurerm_resource_group.test.location
-  resource_group_name     = data.azurerm_resource_group.test.name
-
-  subnet_id                = azurerm_subnet.vms.id
-  bastion_connect_password = data.azurerm_key_vault_secret.psql_connect_password.value
-
-  tags = local.management_tags
-}
-
 module "db" {
   source      = "../../services/postgres_db"
   env         = local.env
