@@ -11,13 +11,10 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 class EmailServiceTest extends BaseServiceTest<EmailService> {
-  @MockBean EmailProviderWrapper mockSendGrid;
-
-  @Autowired EmailService _emailService;
+  @MockBean EmailProvider mockSendGrid;
 
   @Captor ArgumentCaptor<Mail> mail;
 
@@ -30,7 +27,7 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     String message = "Here's a message for ya";
 
     // WHEN
-    _emailService.send(toEmail, subject, message);
+    _service.send(toEmail, subject, message);
 
     // THEN
     verify(mockSendGrid, times(1)).send(mail.capture());

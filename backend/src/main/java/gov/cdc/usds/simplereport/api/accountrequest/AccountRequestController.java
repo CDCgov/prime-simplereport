@@ -1,13 +1,13 @@
 package gov.cdc.usds.simplereport.api.accountrequest;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,8 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AccountRequestController {
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
-  @Value("${simple-report.account-request.send-to:admin@simplereport.gov}")
-  private String toEmail;
+  @Autowired SendGridProperties sendGridProperties;
 
   @Autowired EmailService emailService;
 
@@ -34,7 +33,7 @@ public class AccountRequestController {
   }
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("/submit")
-  public String submitAccountRequest(@RequestBody AccountRequest body) throws IOException {
+  public void submitAccountRequest(@RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     String newLine = "<br>";
     String content =
@@ -48,6 +47,6 @@ public class AccountRequestController {
             "<b>State: </b>" + body.getState(),
             "<b>Organization: </b>" + body.getOrganization(),
             "<b>Referral: </b>" + body.getReferral());
-    return emailService.send(toEmail, subject, content);
+    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
   }
 }

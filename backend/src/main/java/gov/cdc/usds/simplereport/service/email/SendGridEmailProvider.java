@@ -9,19 +9,22 @@ import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.sendgrid.SendGridProperties;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-@ConditionalOnProperty(name = "sendgrid.enabled", havingValue = "true")
+@ConditionalOnProperty(name = "simple-report.sendgrid.enabled", havingValue = "true")
 @Primary
 @Component
-public class SendGridWrapper implements EmailProviderWrapper {
-  @Value("${sendgrid.api-key:N/A}")
-  private String sendGridApiKey;
+public class SendGridEmailProvider implements EmailProvider {
+  private static final Logger LOG = LoggerFactory.getLogger(SendGridEmailProvider.class);
 
-  private static final Logger LOG = LoggerFactory.getLogger(SendGridWrapper.class);
+  private String apiKey;
+
+  public SendGridEmailProvider(SendGridProperties config) {
+    apiKey = config.getApiKey();
+  }
 
   @PostConstruct
   void init() {
@@ -30,7 +33,7 @@ public class SendGridWrapper implements EmailProviderWrapper {
 
   @Override
   public String send(Mail mail) throws IOException {
-    SendGrid sg = new SendGrid(sendGridApiKey);
+    SendGrid sg = new SendGrid(apiKey);
     Request request = new Request();
     try {
       request.setMethod(Method.POST);

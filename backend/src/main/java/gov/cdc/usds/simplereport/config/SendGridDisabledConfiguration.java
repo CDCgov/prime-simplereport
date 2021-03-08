@@ -1,23 +1,21 @@
 package gov.cdc.usds.simplereport.config;
 
 import com.sendgrid.helpers.mail.Mail;
-import gov.cdc.usds.simplereport.service.email.EmailProviderWrapper;
+import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
 
 @Configuration
 public class SendGridDisabledConfiguration {
   @ConditionalOnMissingBean
-  EmailProviderWrapper defaultToBypassSendGrid() {
-    return new DisabledEmailWrapper();
+  EmailProvider defaultToBypassSendGrid() {
+    return new DisabledEmailProvider();
   }
-}
 
-@Component
-class DisabledEmailWrapper implements EmailProviderWrapper {
-  @Override
-  public String send(Mail mail) {
-    return null;
+  public static class DisabledEmailProvider implements EmailProvider {
+    @Override
+    public String send(Mail mail) {
+      return null;
+    }
   }
 }
