@@ -302,6 +302,8 @@ public class LiveOktaRepository implements OktaRepository {
     String name = org.getOrganizationName();
     String externalId = org.getExternalId();
 
+    // After the first migration, the migration code below will amount to a no-op,
+    // until we change the next line to new OrganizationRole's
     Set<OrganizationRole> migrationDestRoles = Set.of(OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES);
     List<String> migrationDestGroupIds = new ArrayList<>();
     List<String> migrationDestGroupNames = new ArrayList<>();
@@ -328,7 +330,6 @@ public class LiveOktaRepository implements OktaRepository {
         }
       } catch (ResourceException e) {
         if (migration) {
-          Group g = _client.listGroups(roleGroupName, null, null).single();
           migrationSourceGroupNames.add(roleGroupName);
         } else {
           // ignore attempts to create groups that already exist if this is in migration mode
@@ -354,7 +355,6 @@ public class LiveOktaRepository implements OktaRepository {
 
       } catch (ResourceException e) {
         if (migration) {
-          Group g = _client.listGroups(facilityGroupName, null, null).single();
           migrationSourceGroupNames.add(facilityGroupName);
         } else {
           // ignore attempts to create groups that already exist if this is in migration mode
