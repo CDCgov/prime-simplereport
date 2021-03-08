@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -125,7 +124,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
     // works for regular users
     _service.setIsDeleted(p.getInternalId(), true);
-    assertNull(_service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).get(0));
+    assertEquals(0, _service.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size());
   }
 
   @Test
