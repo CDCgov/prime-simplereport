@@ -61,12 +61,8 @@ public class OrganizationInitializingService {
     initCurrentUser();
 
     LOG.debug("Organization init called (again?)");
-    Organization emptyOrg = _props.getOrganization();
-    Optional<Organization> orgProbe = _orgRepo.findByExternalId(emptyOrg.getExternalId());
-    if (orgProbe.isPresent()) {
-      return; // one and done
-    }
     Provider savedProvider = _providerRepo.save(_props.getProvider());
+
     Map<String, DeviceType> deviceTypesByName =
         _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
     Map<String, SpecimenType> specimenTypesByName =
@@ -105,33 +101,55 @@ public class OrganizationInitializingService {
       }
     }
 
-    List<DeviceSpecimenType> configured =
+    List<DeviceSpecimenType> configuredDs =
         _props.getConfiguredDeviceTypeNames().stream()
             .map(dsByDeviceName::get)
             .collect(Collectors.toList());
-    DeviceSpecimenType defaultDeviceSpecimen = configured.get(0);
+    DeviceSpecimenType defaultDeviceSpecimen = configuredDs.get(0);
 
-    LOG.info("Creating organization {}", emptyOrg.getOrganizationName());
-    Organization realOrg = _orgRepo.save(emptyOrg);
-    // in the unlikely event DB and Okta fall out of sync
-    initOktaOrg(realOrg);
-    List<Facility> facilities =
-        _props
-            .getFacilities()
-            .stream()
-            .map(f -> f.makeRealFacility(realOrg, savedProvider, defaultDeviceSpecimen, configured))
-            .collect(Collectors.toList());
-    facilities.stream().forEach(f -> {
-      Facility facility = _facilityRepo.save(f);
-      initOktaFacility(facility);
-    });
+    List<Organization> emptyOrgs = _props.getOrganizations();
+    Map<String, Organization> orgsByExternalId =
+        emptyOrgs.stream()
+            .map(
+                o -> {
+                  Optional<Organization> orgProbe = _orgRepo.findByExternalId(o.getExternalId());
+                  if (orgProbe.isPresent()) {
+                    return orgProbe.get();
+                  } else {
+                    LOG.info("Creating organization {}", o.getOrganizationName());
+                    return _orgRepo.save(o);
+                  }
+                })
+            .collect(Collectors.toMap(o -> o.getExternalId(), o -> o));
+    orgsByExternalId.values().forEach(o -> initOktaOrg(o));
+
     Map<String, Facility> facilitiesByName =
-        _facilityRepo.findAll().stream().collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
+        _facilityRepo.findAll().stream()
+            .collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
+    List<Facility> facilities =
+        _props.getFacilities().stream()
+            .map(
+                f ->
+                    facilitiesByName.containsKey(f.getName())
+                        ? facilitiesByName.get(f.getName())
+                        : f.makeRealFacility(
+                            orgsByExternalId.get(f.getOrganizationExternalId()),
+                            savedProvider,
+                            defaultDeviceSpecimen,
+                            configuredDs))
+            .collect(Collectors.toList());
     LOG.info(
         "Creating facilities {} with {} devices configured",
         facilitiesByName.keySet(),
-        configured.size());
-    
+        configuredDs.size());
+    facilities.stream()
+        .forEach(
+            f -> {
+              Facility facility = _facilityRepo.save(f);
+              facilitiesByName.put(facility.getFacilityName(), facility);
+              initOktaFacility(facility);
+            });
+
     // Abusing the class name "OrganizationInitializingService" a little, but the
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
@@ -149,35 +167,38 @@ public class OrganizationInitializingService {
                 .findByExternalId(authorization.getOrganizationExternalId())
                 .orElseThrow(MisconfiguredUserException::new);
         LOG.info(
-          "User={} will have roles={} in organization={}",
-          identity.getUsername(),
-          roles,
-          authorization.getOrganizationExternalId());
-        Set<Facility> authorizedFacilities = authorization.getFacilities().stream()
-            .map(f -> {
-              Facility facility = facilitiesByName.get(f);
-              if (facility == null) {
-                throw new RuntimeException(
-                    "User's facility=" + f + " was not initialized. Valid facilities=" + 
-                    facilitiesByName.keySet().toString()
-                    );
-              }
-              return facility;
-              })
-            .collect(Collectors.toSet());
+            "User={} will have roles={} in organization={}",
+            identity.getUsername(),
+            roles,
+            authorization.getOrganizationExternalId());
+        Set<Facility> authorizedFacilities =
+            authorization.getFacilities().stream()
+                .map(
+                    f -> {
+                      Facility facility = facilitiesByName.get(f);
+                      if (facility == null) {
+                        throw new RuntimeException(
+                            "User's facility="
+                                + f
+                                + " was not initialized. Valid facilities="
+                                + facilitiesByName.keySet().toString());
+                      }
+                      return facility;
+                    })
+                .collect(Collectors.toSet());
         if (PermissionHolder.grantsAllFacilityAccess(roles)) {
           LOG.info(
-            "User={} will have access to all facilities in organization={}",
-            identity.getUsername(),
-            authorization.getOrganizationExternalId());
+              "User={} will have access to all facilities in organization={}",
+              identity.getUsername(),
+              authorization.getOrganizationExternalId());
         } else {
           LOG.info(
-            "User={} will have access to facilities={} in organization={}",
-            identity.getUsername(),
-            authorization.getFacilities(),
-            authorization.getOrganizationExternalId());
+              "User={} will have access to facilities={} in organization={}",
+              identity.getUsername(),
+              authorization.getFacilities(),
+              authorization.getOrganizationExternalId());
         }
-        
+
         initOktaUser(identity, org, authorizedFacilities, roles);
       }
     }
@@ -206,10 +227,11 @@ public class OrganizationInitializingService {
     }
   }
 
-  private void initOktaUser(IdentityAttributes user, 
-                            Organization org, 
-                            Set<Facility> facilities, 
-                            Set<OrganizationRole> roles) {
+  private void initOktaUser(
+      IdentityAttributes user,
+      Organization org,
+      Set<Facility> facilities,
+      Set<OrganizationRole> roles) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
       _oktaRepo.createUser(user, org, facilities, roles);
@@ -218,7 +240,8 @@ public class OrganizationInitializingService {
     }
   }
 
+  // arbitrary decision to make the first organization the default
   public Organization getDefaultOrganization() {
-    return _props.getOrganization();
+    return _props.getOrganizations().get(0);
   }
 }

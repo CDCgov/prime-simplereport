@@ -28,9 +28,8 @@ public interface PermissionHolder {
   }
 
   /**
-   * Iterate over all granted roles from most to least permission-granting, until all
-   * granted permissions are covered by the roles added thus far, then stop and return
-   * that set of roles.
+   * Iterate over all granted roles from most to least permission-granting, until all granted
+   * permissions are covered by the roles added thus far, then stop and return that set of roles.
    */
   public static Set<OrganizationRole> getEffectiveRoles(Collection<OrganizationRole> roles) {
     List<OrganizationRole> grantedRoles = new ArrayList<>(roles);
@@ -59,10 +58,11 @@ public interface PermissionHolder {
   }
 
   public static Set<UserPermission> getPermissionsFromRoles(Collection<OrganizationRole> roles) {
-    Set<UserPermission> granted = roles.stream()
-        .map(r -> r.getGrantedPermissions())
-        .flatMap(Set::stream)
-        .collect(Collectors.toSet());
+    Set<UserPermission> granted =
+        roles.stream()
+            .map(r -> r.getGrantedPermissions())
+            .flatMap(Set::stream)
+            .collect(Collectors.toSet());
 
     return granted;
   }

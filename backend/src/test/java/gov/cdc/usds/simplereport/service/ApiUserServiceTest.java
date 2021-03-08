@@ -29,13 +29,19 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
           EnumSet<OrganizationRole> actual = EnumSet.copyOf(u.getRoles());
           assertEquals(expected, actual);
         };
-    assertEquals(users.size(), 3);
+    assertEquals(users.size(), 4);
     assertEquals(users.get(0).getEmail(), "admin@example.com");
-    roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.USER, OrganizationRole.ADMIN));
-    assertEquals(users.get(1).getEmail(), "bobbity@example.com");
-    roleCheck.accept(users.get(1), EnumSet.of(OrganizationRole.USER));
-    assertEquals(users.get(2).getEmail(), "nobody@example.com");
-    roleCheck.accept(users.get(2), EnumSet.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+    roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.ADMIN));
+    assertEquals(users.get(1).getEmail(), "allfacilities@example.com");
+    roleCheck.accept(
+        users.get(1),
+        EnumSet.of(
+            OrganizationRole.MEMBER, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+    assertEquals(users.get(2).getEmail(), "bobbity@example.com");
+    roleCheck.accept(users.get(2), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+    assertEquals(users.get(3).getEmail(), "nobody@example.com");
+    roleCheck.accept(
+        users.get(3), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.ENTRY_ONLY));
   }
 
   @Test

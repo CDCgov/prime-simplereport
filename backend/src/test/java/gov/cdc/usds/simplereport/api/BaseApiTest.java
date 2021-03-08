@@ -75,6 +75,13 @@ public abstract class BaseApiTest {
     _userName = "nobody@example.com";
   }
 
+  protected void useOrgUserAllFacilityAccess() {
+    _userName = "allfacilities@example.com";
+    LOG.info(
+        "Configuring auth service mock for org user with all-facility access: {}",
+        _users.getByUsername(_userName).getAuthorization().getGrantedPermissions());
+  }
+
   protected void useSuperUser() {
     LOG.info("Configuring supplier mock for super user");
     _userName = TestUserIdentities.SITE_ADMIN_USER;
@@ -90,7 +97,6 @@ public abstract class BaseApiTest {
     _oktaRepo.reset();
     TestUserIdentities.withStandardUser(
         () -> {
-          _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
           _initService.initAll();
         });
     useOrgUser();

@@ -5,7 +5,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;

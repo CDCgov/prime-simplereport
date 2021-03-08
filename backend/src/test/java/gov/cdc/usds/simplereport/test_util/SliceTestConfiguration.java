@@ -109,7 +109,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER"})
+      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:MEMBER"})
   @Inherited
   public @interface WithSimpleReportStandardUser {}
 
@@ -117,7 +117,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:ADMIN"})
+      authorities = {"TEST-TENANT:DIS_ORG:ADMIN", "TEST-TENANT:DIS_ORG:MEMBER"})
   @Inherited
   public @interface WithSimpleReportOrgAdminUser {}
 
@@ -125,7 +125,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:ENTRY_ONLY"})
+      authorities = {"TEST-TENANT:DIS_ORG:ENTRY_ONLY", "TEST-TENANT:DIS_ORG:MEMBER"})
   @Inherited
   public @interface WithSimpleReportEntryOnlyUser {}
 
@@ -133,7 +133,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.SITE_ADMIN_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER"})
+      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:MEMBER"})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
 }

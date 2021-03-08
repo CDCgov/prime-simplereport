@@ -30,10 +30,11 @@ public class UserInfo {
     this.roles =
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    Optional<Set<OrganizationRole>> effectiveRoles =
-        orgwrapper.map(s -> s.getEffectiveRoles());
+    Optional<Set<OrganizationRole>> effectiveRoles = orgwrapper.map(s -> s.getEffectiveRoles());
     this.roleDescription = buildRoleDescription(effectiveRoles, isAdmin);
-    effectiveRoles.map(s -> PermissionHolder.getPermissionsFromRoles(s)).ifPresent(permissions::addAll);
+    effectiveRoles
+        .map(s -> PermissionHolder.getPermissionsFromRoles(s))
+        .ifPresent(permissions::addAll);
     this.facilities =
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
@@ -42,10 +43,12 @@ public class UserInfo {
 
   private String buildRoleDescription(Optional<Set<OrganizationRole>> roles, boolean isAdmin) {
     if (roles.isPresent()) {
-      String desc = String.join(" | ", 
-          roles.get().stream()
-              .map(OrganizationRole::getDescription)
-              .collect(Collectors.toList()));
+      String desc =
+          String.join(
+              " | ",
+              roles.get().stream()
+                  .map(OrganizationRole::getDescription)
+                  .collect(Collectors.toList()));
       return isAdmin ? desc + " (SU)" : desc;
     } else {
       return isAdmin ? "Super Admin" : "Misconfigured user";

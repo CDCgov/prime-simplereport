@@ -21,9 +21,18 @@ mutation updateUser(
       suffix,
       email,
       permissions,
+      roles,
+      facilities {
+        name
+        id
+      }
       organization {
         name
         externalId
+        testingFacility {
+          name
+          id
+        }
       }
     }
 }

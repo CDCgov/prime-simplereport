@@ -13,9 +13,8 @@ public class OrganizationRoles implements PermissionHolder {
   private Set<Facility> _facilities;
   private Set<OrganizationRole> _roles;
 
-  public OrganizationRoles(Organization organization, 
-                           Set<Facility> facilities, 
-                           Set<OrganizationRole> roles) {
+  public OrganizationRoles(
+      Organization organization, Set<Facility> facilities, Set<OrganizationRole> roles) {
     super();
     this._organization = organization;
     this._facilities = facilities;
@@ -29,7 +28,7 @@ public class OrganizationRoles implements PermissionHolder {
   public Set<Facility> getFacilities() {
     return _facilities;
   }
-  
+
   public Set<OrganizationRole> getGrantedRoles() {
     return _roles;
   }

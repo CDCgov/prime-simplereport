@@ -16,11 +16,10 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -72,7 +71,7 @@ public class OrganizationService {
             .findFirst();
     return foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
   }
-  
+
   public Organization getCurrentOrganization() {
     OrganizationRoles orgRole =
         getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);
@@ -84,10 +83,10 @@ public class OrganizationService {
     return getOrganizationRoles(org, roleClaims);
   }
 
-  public OrganizationRoles getOrganizationRoles(Organization org, OrganizationRoleClaims roleClaims) {
-    return new OrganizationRoles(org, 
-                                 getAccessibleFacilities(org, roleClaims), 
-                                 roleClaims.getGrantedRoles());
+  public OrganizationRoles getOrganizationRoles(
+      Organization org, OrganizationRoleClaims roleClaims) {
+    return new OrganizationRoles(
+        org, getAccessibleFacilities(org, roleClaims), roleClaims.getGrantedRoles());
   }
 
   public Organization getOrganization(String externalId) {
@@ -95,7 +94,7 @@ public class OrganizationService {
     return found.orElseThrow(
         () ->
             new IllegalGraphqlArgumentException(
-                "An organization with external_id="+externalId+" does not exist"));
+                "An organization with external_id=" + externalId + " does not exist"));
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
@@ -103,8 +102,10 @@ public class OrganizationService {
     return _repo.findAll();
   }
 
-  public Set<Facility> getAccessibleFacilities(Organization org, OrganizationRoleClaims roleClaims) {
-    // If there are no facility restrictions, get all facilities in org; otherwise, get specified list.
+  public Set<Facility> getAccessibleFacilities(
+      Organization org, OrganizationRoleClaims roleClaims) {
+    // If there are no facility restrictions, get all facilities in org; otherwise, get specified
+    // list.
     return roleClaims.grantsAllFacilityAccess()
         ? _facilityRepo.findAllByOrganization(org)
         : _facilityRepo.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());

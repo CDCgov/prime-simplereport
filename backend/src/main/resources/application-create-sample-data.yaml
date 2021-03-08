@@ -1,13 +1,16 @@
 # configuration for dev and demo server startup on a blank DB
 simple-report-initialization:
-  organization:
-    org-name: Dis Organization
-    external-id: DIS_ORG
+  organizations:
+    - org-name: Dis Organization
+      external-id: DIS_ORG
+    - org-name: Dat Organization
+      external-id: DAT_ORG
   facilities:
     - facility-name: Injection Site
       clia-number: "000111222-3"
       address:
         street-1: 2797 N Cerrada de Beto
+      organization-external-id: DIS_ORG
     - facility-name: Testing Site
       clia-number: "999888777-6"
       address:
@@ -16,6 +19,24 @@ simple-report-initialization:
         state: CA
         postal-code: 90000
       email: testingsite@disorg.com
+      organization-external-id: DIS_ORG
+    - facility-name: Uptown Clinic
+      clia-number: "123456789-0"
+      address:
+        street-1: 1400 Lexington Ave
+        city: New York
+        state: NY
+        postal-code: 10128
+      organization-external-id: DAT_ORG
+    - facility-name: Downtown Clinic
+      clia-number: "987654321-0"
+      address:
+        street-1: 5 Bleecker St
+        city: New York
+        state: NY
+        postal-code: 10010
+      email: downtownclinic@dat.org
+      organization-external-id: DAT_ORG
   provider:
     first-name: Fred
     last-name: Flintstone
@@ -79,7 +100,7 @@ simple-report:
         last-name: Bobberoo
       authorization:
         organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
-        granted-roles: ${SR_DEMO_USER_ROLE:ADMIN}
+        granted-roles: ${SR_DEMO_USER_ROLE:MEMBER, ADMIN}
     alternate-users:
       - identity:
           username: ruby@example.com
@@ -91,7 +112,7 @@ simple-report:
           facilities: 
             - Testing Site
             - Injection Site
-          granted-roles: USER
+          granted-roles: MEMBER, USER
       - identity:
           username: ben@example.com
           first-name: Ben
@@ -110,7 +131,7 @@ simple-report:
           last-name: Jackson
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: ENTRY_ONLY, ALL_FACILITIES
+          granted-roles: MEMBER, ENTRY_ONLY, ALL_FACILITIES
       - identity:
           username: sarah@example.com
           first-name: Sarah
@@ -118,4 +139,4 @@ simple-report:
           last-name: Samuels
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: ADMIN
+          granted-roles: MEMBER, ADMIN

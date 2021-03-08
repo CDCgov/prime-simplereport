@@ -1,19 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
@@ -31,14 +17,28 @@ import com.okta.spring.boot.sdk.config.OktaClientProperties;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by jeremyzitomer-usds on 1/7/21
@@ -57,16 +57,16 @@ public class LiveOktaRepository implements OktaRepository {
   private OrganizationExtractor _extractor;
 
   public LiveOktaRepository(
-    AuthorizationProperties authorizationProperties,
-    OktaClientProperties oktaClientProperties,
-    @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
-    OrganizationExtractor organizationExtractor) {
+      AuthorizationProperties authorizationProperties,
+      OktaClientProperties oktaClientProperties,
+      @Value("${okta.oauth2.client-id}") String oktaOAuth2ClientId,
+      OrganizationExtractor organizationExtractor) {
     _rolePrefix = authorizationProperties.getRolePrefix();
     _client =
         Clients.builder()
-        .setOrgUrl(oktaClientProperties.getOrgUrl())
-        .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
-        .build();
+            .setOrgUrl(oktaClientProperties.getOrgUrl())
+            .setClientCredentials(new TokenClientCredentials(oktaClientProperties.getToken()))
+            .build();
     try {
       _app = _client.getApplication(oktaOAuth2ClientId);
     } catch (ResourceException e) {
@@ -77,7 +77,10 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
+      IdentityAttributes userIdentity,
+      Organization org,
+      Set<Facility> facilities,
+      Set<OrganizationRole> roles) {
     // need to validate fields before adding them because Maps don't like nulls
     Map<String, Object> userProfileMap = new HashMap<String, Object>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -111,32 +114,38 @@ public class LiveOktaRepository implements OktaRepository {
 
     // Add user to new groups
     Set<String> groupNamesToAdd = new HashSet<>();
-    groupNamesToAdd.addAll(rolesToCreate.stream()
-        .map(r -> generateRoleGroupName(organizationExternalId, r))
-        .collect(Collectors.toSet()));
-    groupNamesToAdd.addAll(facilities.stream()
-        // use an empty set of facilities if user can access all facilities anyway
-        .filter(f -> !PermissionHolder.grantsAllFacilityAccess(rolesToCreate))
-        .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
-        .collect(Collectors.toSet()));
+    groupNamesToAdd.addAll(
+        rolesToCreate.stream()
+            .map(r -> generateRoleGroupName(organizationExternalId, r))
+            .collect(Collectors.toSet()));
+    groupNamesToAdd.addAll(
+        facilities.stream()
+            // use an empty set of facilities if user can access all facilities anyway
+            .filter(f -> !PermissionHolder.grantsAllFacilityAccess(rolesToCreate))
+            .map(f -> generateFacilityGroupName(organizationExternalId, f.getInternalId()))
+            .collect(Collectors.toSet()));
 
-    GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null);
+    GroupList orgGroups =
+        _client.listGroups(generateGroupOrgPrefix(organizationExternalId), null, null);
     if (orgGroups.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
-        String.format("Cannot add Okta user to nonexistent organization=%s", organizationExternalId));
+          String.format(
+              "Cannot add Okta user to nonexistent organization=%s", organizationExternalId));
     }
-    Set<String> orgGroupNames = orgGroups.stream()
-        .map(g -> g.getProfile().getName()).collect(Collectors.toSet());
+    Set<String> orgGroupNames =
+        orgGroups.stream().map(g -> g.getProfile().getName()).collect(Collectors.toSet());
     groupNamesToAdd.stream()
         .filter(n -> !orgGroupNames.contains(n))
-        .forEach(n -> {
-          throw new IllegalGraphqlArgumentException(
-              String.format("Cannot add Okta user to nonexistent group=%s", n));
-        });
-    Set<String> groupIdsToAdd = orgGroups.stream()
-        .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
-        .map(g -> g.getId())
-        .collect(Collectors.toSet());
+        .forEach(
+            n -> {
+              throw new IllegalGraphqlArgumentException(
+                  String.format("Cannot add Okta user to nonexistent group=%s", n));
+            });
+    Set<String> groupIdsToAdd =
+        orgGroups.stream()
+            .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
+            .map(g -> g.getId())
+            .collect(Collectors.toSet());
 
     UserBuilder.instance()
         .setProfileProperties(userProfileMap)
@@ -153,31 +162,33 @@ public class LiveOktaRepository implements OktaRepository {
 
   public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org) {
 
-    GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(org.getExternalId()), null, null);
+    GroupList orgGroups =
+        _client.listGroups(generateGroupOrgPrefix(org.getExternalId()), null, null);
     if (orgGroups.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot get Okta users for org="+org.getExternalId()+
-          ": Okta groups are nonexistent");
+          "Cannot get Okta users for org=" + org.getExternalId() + ": Okta groups are nonexistent");
     }
 
     // Create a map from each user to their Okta groups...
     Map<String, Set<String>> usersToGroupNames = new HashMap<>();
-    orgGroups.forEach(g -> {
-      String groupName = g.getProfile().getName();
-      g.listUsers().forEach(u -> {
-        String username = u.getProfile().getEmail();
-        if (!usersToGroupNames.containsKey(username)) {
-          usersToGroupNames.put(username, new HashSet<>());
-        }
-        usersToGroupNames.get(username).add(groupName);
-      });
-    });
+    orgGroups.forEach(
+        g -> {
+          String groupName = g.getProfile().getName();
+          g.listUsers()
+              .forEach(
+                  u -> {
+                    String username = u.getProfile().getEmail();
+                    if (!usersToGroupNames.containsKey(username)) {
+                      usersToGroupNames.put(username, new HashSet<>());
+                    }
+                    usersToGroupNames.get(username).add(groupName);
+                  });
+        });
 
     // ...then convert each user's relevant Okta groups to an OrganizationRoleClaims object
-    return usersToGroupNames.entrySet().stream().collect(Collectors.toMap(
-        e -> e.getKey(), 
-        e -> _extractor.convertClaims(e.getValue()).get(0)
-    ));
+    return usersToGroupNames.entrySet().stream()
+        .collect(
+            Collectors.toMap(e -> e.getKey(), e -> _extractor.convertClaims(e.getValue()).get(0)));
   }
 
   public Optional<OrganizationRoleClaims> updateUser(
@@ -219,7 +230,9 @@ public class LiveOktaRepository implements OktaRepository {
       if (g.getType() == GroupType.OKTA_GROUP
           && g.getProfile().getName().startsWith(generateGroupOrgPrefix(orgId))) {
         // do not remove user from org's default group
-        if (g.getProfile().getName().equals(generateRoleGroupName(orgId, OrganizationRole.getDefault()))) {
+        if (g.getProfile()
+            .getName()
+            .equals(generateRoleGroupName(orgId, OrganizationRole.getDefault()))) {
           userInOrg = true;
         } else {
           g.removeUser(user.getId());
@@ -228,34 +241,37 @@ public class LiveOktaRepository implements OktaRepository {
     }
     if (!userInOrg) {
       throw new IllegalGraphqlArgumentException(
-        "Cannot update privileges of Okta user in organization they do not belong to.");
+          "Cannot update privileges of Okta user in organization they do not belong to.");
     }
 
     // Add user to new groups
     Set<String> groupNamesToAdd = new HashSet<>();
-    groupNamesToAdd.addAll(roles.stream()
-        .filter(r -> r != OrganizationRole.getDefault())
-        .map(r -> generateRoleGroupName(orgId, r))
-        .collect(Collectors.toSet()));
-    groupNamesToAdd.addAll(facilities.stream()
-        // use an empty set of facilities if user can access all facilities anyway
-        .filter(f -> !PermissionHolder.grantsAllFacilityAccess(roles))
-        .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
-        .collect(Collectors.toSet()));
+    groupNamesToAdd.addAll(
+        roles.stream()
+            .filter(r -> r != OrganizationRole.getDefault())
+            .map(r -> generateRoleGroupName(orgId, r))
+            .collect(Collectors.toSet()));
+    groupNamesToAdd.addAll(
+        facilities.stream()
+            // use an empty set of facilities if user can access all facilities anyway
+            .filter(f -> !PermissionHolder.grantsAllFacilityAccess(roles))
+            .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
+            .collect(Collectors.toSet()));
 
     GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgId), null, null);
     if (orgGroups.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
-        String.format("Cannot add Okta user to nonexistent organization=%s", orgId));
+          String.format("Cannot add Okta user to nonexistent organization=%s", orgId));
     }
-    Set<String> orgGroupNames = orgGroups.stream()
-        .map(g -> g.getProfile().getName()).collect(Collectors.toSet());
+    Set<String> orgGroupNames =
+        orgGroups.stream().map(g -> g.getProfile().getName()).collect(Collectors.toSet());
     groupNamesToAdd.stream()
         .filter(n -> !orgGroupNames.contains(n))
-        .forEach(n -> {
-          throw new IllegalGraphqlArgumentException(
-              String.format("Cannot add Okta user to nonexistent group=%s", n));
-        });
+        .forEach(
+            n -> {
+              throw new IllegalGraphqlArgumentException(
+                  String.format("Cannot add Okta user to nonexistent group=%s", n));
+            });
     orgGroups.stream()
         .filter(g -> groupNamesToAdd.contains(g.getProfile().getName()))
         .forEach(g -> user.addToGroup(g.getId()));
@@ -299,9 +315,11 @@ public class LiveOktaRepository implements OktaRepository {
     GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgExternalId), null, null);
     if (orgGroups.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot create Okta group for facility="+facility.getFacilityName()+
-          ": facility's org="+facility.getOrganization().getExternalId()+
-          " has not yet been created in Okta");
+          "Cannot create Okta group for facility="
+              + facility.getFacilityName()
+              + ": facility's org="
+              + facility.getOrganization().getExternalId()
+              + " has not yet been created in Okta");
     }
 
     String orgName = facility.getOrganization().getOrganizationName();
@@ -322,7 +340,7 @@ public class LiveOktaRepository implements OktaRepository {
     for (Group group : groups) {
       group.delete();
     }
-  } 
+  }
 
   public void deleteOrganization(Organization org) {
     String externalId = org.getExternalId();
@@ -348,10 +366,11 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
-    List<String> groupNames = user.listGroups().stream()
-        .filter(g -> g.getType() == GroupType.OKTA_GROUP)
-        .map(g -> g.getProfile().getName())
-        .collect(Collectors.toList());
+    List<String> groupNames =
+        user.listGroups().stream()
+            .filter(g -> g.getType() == GroupType.OKTA_GROUP)
+            .map(g -> g.getProfile().getName())
+            .collect(Collectors.toList());
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNames);
 
     if (claims.size() != 1) {
@@ -370,7 +389,8 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateFacilityGroupName(String orgExternalId, UUID facilityId) {
-    return String.format("%s%s%s", _rolePrefix, orgExternalId, generateFacilitySuffix(facilityId.toString()));
+    return String.format(
+        "%s%s%s", _rolePrefix, orgExternalId, generateFacilitySuffix(facilityId.toString()));
   }
 
   private String generateRoleGroupDescription(String orgName, OrganizationRole role) {

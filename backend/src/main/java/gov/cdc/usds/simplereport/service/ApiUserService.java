@@ -90,13 +90,12 @@ public class ApiUserService {
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users can access all facilities
-    Set<OrganizationRole> roles = 
-        PermissionHolder.getEffectiveRoles(EnumSet.of(role, 
-                                                      OrganizationRole.ALL_FACILITIES, 
-                                                      OrganizationRole.getDefault()));
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
-    Optional<OrganizationRoles> orgRoles =
-        roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    Set<OrganizationRole> roles =
+        PermissionHolder.getEffectiveRoles(
+            EnumSet.of(role, OrganizationRole.ALL_FACILITIES, OrganizationRole.getDefault()));
+    Optional<OrganizationRoleClaims> roleClaims =
+        _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -130,7 +129,7 @@ public class ApiUserService {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(c ->_orgService.getOrganizationRoles(c));
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -143,10 +142,10 @@ public class ApiUserService {
   }
 
   /**
-   * this exists only for backward compatibility -- going forward, we should allow
-   * for a user to be updated with multiple roles at once, as in {@code updateUserPrivileges()}
-   */ 
-  @Deprecated 
+   * this exists only for backward compatibility -- going forward, we should allow for a user to be
+   * updated with multiple roles at once, as in {@code updateUserPrivileges()}
+   */
+  @Deprecated
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
   public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
     ApiUser user = getApiUser(userId);
@@ -157,7 +156,11 @@ public class ApiUserService {
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
     Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
-    _oktaRepo.updateUserPrivileges(username, org, facilities, Set.of(role));
+    // ensure every user altered by this method maintains all-facility access for now
+    Set<OrganizationRole> roles =
+        PermissionHolder.getEffectiveRoles(
+            EnumSet.of(role, OrganizationRole.ALL_FACILITIES, OrganizationRole.getDefault()));
+    _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
 
     LOG.info(
         "User with id={} updated by user with id={}",
@@ -168,7 +171,8 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-  public UserInfo updateUserPrivileges(UUID userId, Set<String> facilities, Set<OrganizationRole> roles) {
+  public UserInfo updateUserPrivileges(
+      UUID userId, Set<String> facilities, Set<OrganizationRole> roles) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -176,11 +180,14 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<UUID> facilityUUIDs = facilities.stream().map(f -> UUID.fromString(f)).collect(Collectors.toSet());
+    Set<UUID> facilityUUIDs =
+        facilities.stream().map(f -> UUID.fromString(f)).collect(Collectors.toSet());
     Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilityUUIDs);
-    Optional<OrganizationRoleClaims> newOrgClaims = 
-        _oktaRepo.updateUserPrivileges(username, org, facilitiesFound, PermissionHolder.getEffectiveRoles(roles));
-    Optional<OrganizationRoles> orgRoles = newOrgClaims.map(c ->_orgService.getOrganizationRoles(org, c));
+    Optional<OrganizationRoleClaims> newOrgClaims =
+        _oktaRepo.updateUserPrivileges(
+            username, org, facilitiesFound, PermissionHolder.getEffectiveRoles(roles));
+    Optional<OrganizationRoles> orgRoles =
+        newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
 
     LOG.info(
@@ -299,22 +306,21 @@ public class ApiUserService {
     // will add facilities to their users in a subsequent PR
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
-    Map<UUID, Facility> facilitiesByUUID = 
+    Map<UUID, Facility> facilitiesByUUID =
         facilities.stream().collect(Collectors.toMap(f -> f.getInternalId(), f -> f));
     return apiUsers.stream()
         .map(
             u -> {
               OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
               boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-              Set<Facility> accessibleFacilities = allFacilityAccess 
-                  ? facilitiesSet
-                  : claims.getFacilities().stream()
-                      .map(uuid -> facilitiesByUUID.get(uuid))
-                      .collect(Collectors.toSet());
-              OrganizationRoles orgRoles = 
-                  new OrganizationRoles(org, 
-                                        accessibleFacilities,
-                                        claims.getGrantedRoles());
+              Set<Facility> accessibleFacilities =
+                  allFacilityAccess
+                      ? facilitiesSet
+                      : claims.getFacilities().stream()
+                          .map(uuid -> facilitiesByUUID.get(uuid))
+                          .collect(Collectors.toSet());
+              OrganizationRoles orgRoles =
+                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
               return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
             })
         .collect(Collectors.toList());
