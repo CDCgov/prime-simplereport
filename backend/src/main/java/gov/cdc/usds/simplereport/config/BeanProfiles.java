@@ -3,8 +3,12 @@ package gov.cdc.usds.simplereport.config;
 /** Constant-holding class to describe the bean profiles available in this application. */
 public final class BeanProfiles {
 
-  /** Profile for testing authentication and authorization */
-  public static final String AUTHORIZATION_DEV = "auth-dev";
+  /**
+   * Profile for testing authentication, authorization, and other server behaviors that need to be
+   * verified rather than trusted during development.
+   */
+  public static final String SERVER_DEBUG = "server-debug";
+
   /** Profile for mocking and bypassing Okta management API (TEST OR DEMO ONLY) */
   public static final String NO_OKTA_MGMT = "no-okta-mgmt";
   /** Profile for mocking and bypassing most security (TEST OR DEMO ONLY) */

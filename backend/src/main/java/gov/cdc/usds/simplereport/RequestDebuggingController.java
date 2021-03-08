@@ -1,17 +1,20 @@
 package gov.cdc.usds.simplereport;
 
+import gov.cdc.usds.simplereport.config.BeanProfiles;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
+import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/echo")
+@Profile(BeanProfiles.SERVER_DEBUG)
 public class RequestDebuggingController {
 
   @GetMapping("/headers")
