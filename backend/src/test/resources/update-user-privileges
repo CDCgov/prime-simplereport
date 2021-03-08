@@ -1,0 +1,33 @@
+mutation updateUserPrivileges(
+    $id: ID!,
+    $roles: [OrganizationRole!]!,
+    $facilities: [String!]!,
+    ){
+  updateUserPrivileges(
+    id: $id
+    roles: $roles
+    facilities: $facilities
+  ) {
+      id,
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      roles,
+      roleDescription,
+      facilities {
+        name
+        id
+      }
+      organization {
+        name
+        externalId
+        testingFacility {
+          name
+          id
+        }
+      }
+    }
+}
