@@ -69,30 +69,28 @@ public class GraphQLLoggingHelpers {
    */
   public static InstrumentationContext<ExecutionResult> createInstrumentationContext(
       long queryStart, TelemetryClient client, RequestTelemetry request) {
-    return new SimpleInstrumentationContext<>() {
-      @Override
-      public void onCompleted(ExecutionResult result, Throwable t) {
-        final long queryEnd = System.currentTimeMillis();
-        final Duration queryDuration = new Duration(queryEnd - queryStart);
-        request.setDuration(queryDuration);
+    return SimpleInstrumentationContext.whenCompleted(
+        (ExecutionResult result, Throwable t) -> {
+          final long queryEnd = System.currentTimeMillis();
+          final Duration queryDuration = new Duration(queryEnd - queryStart);
+          request.setDuration(queryDuration);
 
-        if (t != null) {
-          LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
-          LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
-          request.setSuccess(false);
-          client.trackException((Exception) t);
-        } else if (!result.getErrors().isEmpty()) {
-          result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
-          LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
-          request.setSuccess(false);
-        } else {
-          LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
-          request.setSuccess(true);
-        }
-        // Clear the MDC context
-        MDC.remove(GRAPHQL_QUERY_MDC_KEY);
-        client.trackRequest(request);
-      }
-    };
+          if (t != null) {
+            LOG.error("GraphQL execution failed: {}", t.getMessage(), t);
+            LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+            request.setSuccess(false);
+            client.trackException((Exception) t);
+          } else if (!result.getErrors().isEmpty()) {
+            result.getErrors().forEach(error -> LOG.error("Query failed with error {}", error));
+            LOG.info("GraphQL execution FAILED in {}ms", queryDuration.getMilliseconds());
+            request.setSuccess(false);
+          } else {
+            LOG.info("GraphQL execution COMPLETED in {}ms", queryDuration.getMilliseconds());
+            request.setSuccess(true);
+          }
+          // Clear the MDC context
+          MDC.remove(GRAPHQL_QUERY_MDC_KEY);
+          client.trackRequest(request);
+        });
   }
 }
