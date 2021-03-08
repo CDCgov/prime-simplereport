@@ -9,13 +9,6 @@ import org.springframework.context.annotation.Configuration;
 public class SendGridDisabledConfiguration {
   @ConditionalOnMissingBean
   EmailProvider defaultToBypassSendGrid() {
-    return new DisabledEmailProvider();
-  }
-
-  public static class DisabledEmailProvider implements EmailProvider {
-    @Override
-    public String send(Mail mail) {
-      return null;
-    }
+    return (Mail mail) -> null;
   }
 }

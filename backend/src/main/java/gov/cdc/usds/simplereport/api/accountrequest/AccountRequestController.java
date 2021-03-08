@@ -1,17 +1,18 @@
 package gov.cdc.usds.simplereport.api.accountrequest;
 
 import static gov.cdc.usds.simplereport.api.Translators.sanitize;
+import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
 import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
+import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 /** Note that this controller is unauthorized. */
 @ConditionalOnProperty(name = "simple-report.feature-flags.account-request", havingValue = "true")
 @RestController
-@RequestMapping("/account-request")
-@Validated
+@RequestMapping(ACCOUNT_REQUEST)
 public class AccountRequestController {
   private static final Logger LOG = LoggerFactory.getLogger(AccountRequestController.class);
 
@@ -35,7 +35,7 @@ public class AccountRequestController {
   }
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("/submit")
-  public void submitAccountRequest(@RequestBody AccountRequest body) throws IOException {
+  public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     String newLine = "<br>";
     String name = sanitize(body.getName());

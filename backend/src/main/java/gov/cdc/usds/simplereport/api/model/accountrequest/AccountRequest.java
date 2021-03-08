@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
+import javax.validation.constraints.NotNull;
+
 public class AccountRequest {
-  private String name;
-  private String email;
-  private String phone;
-  private String state;
-  private String organization;
+  @NotNull String name;
+  @NotNull private String email;
+  @NotNull private String phone;
+  @NotNull private String state;
+  @NotNull private String organization;
   private String referral;
 
   public AccountRequest() {}

@@ -58,7 +58,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         .permitAll()
 
         // Account requests are unauthorized
-        .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST)
+        .antMatchers(HttpMethod.POST, WebConfiguration.ACCOUNT_REQUEST + "/**")
         .permitAll()
 
         // Anything else goes through Okta

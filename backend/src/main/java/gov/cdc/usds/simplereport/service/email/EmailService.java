@@ -15,7 +15,7 @@ public class EmailService {
   private static final Logger LOG = LoggerFactory.getLogger(EmailService.class);
 
   @Autowired private EmailProvider emailProvider;
-  @Autowired SendGridProperties sendGridProperties;
+  @Autowired private SendGridProperties sendGridProperties;
 
   public String send(String toEmail, String subject, String message) throws IOException {
     Email from = new Email(sendGridProperties.getFromEmail());
