@@ -25,17 +25,11 @@ import {
 
 import "./ManageUsers.scss";
 
-const RoleDescriptionToOrgRole = {
-  "Admin user": "ADMIN",
-  "Standard user": "USER",
-  "Test-entry user": "ENTRY_ONLY",
-};
-
 interface Props {
   users: SettingsUser[];
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
-  updateUserRole: (variables: any) => Promise<any>;
+  updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<any>;
@@ -57,11 +51,17 @@ const getSettingsUser = (users: SettingsUser[]) =>
     return acc;
   }, {});
 
+export type UpdateUser = <K extends keyof SettingsUser>(
+  userId: string,
+  key: K,
+  value: SettingsUser[K]
+) => void;
+
 const ManageUsers: React.FC<Props> = ({
   users,
   loggedInUser,
   allFacilities,
-  updateUserRole,
+  updateUserPrivileges,
   addUserToOrg,
   deleteUser,
   getUsers,
@@ -94,17 +94,13 @@ const ManageUsers: React.FC<Props> = ({
   const sortedUsers = sortUsers(usersState);
 
   // only updates the local state
-  function updateUser<T>(
-    userId: string,
-    key: string, // the field to update
-    value: T // value of the field to update
-  ) {
+  const updateUser: UpdateUser = (userId, key, value) => {
     updateActiveUser({
       ...usersState[userId],
       [key]: value,
     });
     updateIsUserEdited(true);
-  }
+  };
 
   // confirm with the user if they have unsaved edits and want to change users
   const onChangeActiveUser = (nextActiveUserId: string) => {

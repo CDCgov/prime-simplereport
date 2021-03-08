@@ -2,7 +2,11 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import { UserRole, UserPermission } from "../../permissions";
+import {
+  UserRole,
+  UserPermission,
+  ApiOrganizationRole,
+} from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
@@ -14,8 +18,13 @@ const GET_USERS = gql`
       middleName
       lastName
       roleDescription
+      roles
       permissions
       email
+      facilities {
+        id
+        name
+      }
       organization {
         testingFacility {
           id
@@ -33,20 +42,28 @@ export interface SettingsUser {
   middleName: string;
   lastName: string;
   roleDescription: UserRole;
+  roles: ApiOrganizationRole[];
   permissions: UserPermission[];
   email: string;
   organization: {
     testingFacility: UserFacilitySetting[];
   };
+  facilities: Pick<Facility, "id" | "name">[];
 }
 
 interface UserData {
   users: SettingsUser[];
 }
 
-const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($id: ID!, $role: ApiOrganizationRole!) {
-    updateUserRole(id: $id, role: $role)
+const UPDATE_USER_PRIVILEGES = gql`
+  mutation UpdateUserPrivileges(
+    $id: ID!
+    $roles: [OrganizationRole!]!
+    $facilities: [String!]!
+  ) {
+    updateUserPrivileges(id: $id, roles: $roles, facilities: $facilities) {
+      id
+    }
   }
 `;
 
@@ -107,7 +124,7 @@ export interface NewUserInvite {
 
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
-  const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
+  const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
@@ -148,7 +165,7 @@ const ManageUsersContainer: any = () => {
       users={data.users}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
-      updateUserRole={updateUserRole}
+      updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
       getUsers={getUsers}
