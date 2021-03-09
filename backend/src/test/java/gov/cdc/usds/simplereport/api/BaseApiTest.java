@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -89,8 +90,11 @@ public abstract class BaseApiTest {
           _initService.initAll();
         });
     useOrgUser();
-    LOG.warn("Current configuration default user is {}", _users.getDefaultUser());
-    LOG.warn(
+    assertNull(
+        // Dear future reader: this is not negotiable. If you set a default user, then patients will
+        // show up as being the default user instead of themselves. This would be bad.
+        _users.getDefaultUser(), "default user should never be set in this application context");
+    LOG.trace(
         "Usernames configured: {}",
         _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
   }
@@ -104,7 +108,10 @@ public abstract class BaseApiTest {
 
   /**
    * Run the query in the given resource file, check if the response has errors, and return the
-   * {@code data} section of the response if not.
+   * {@code data} section of the response if not. <b>NOTE</b>: Any headers that have been set on the
+   * {@link GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set
+   * them, modify the {{@link #setQueryUser(String)} method, or add another method that is called
+   * after it!
    *
    * @param queryFileName
    * @return the "data" key from the server response.
@@ -124,6 +131,7 @@ public abstract class BaseApiTest {
     }
   }
 
+  /** CLEAR ALL HEADERS and then set the Authorization header the requested value */
   private void setQueryUser(String username) {
     LOG.info("Setting up graphql template authorization for {}", username);
     _template.clearHeaders();
@@ -143,7 +151,10 @@ public abstract class BaseApiTest {
   /**
    * Run the query in the given resource file, check if the response has the expected error (either
    * none or a single specific error message), and return the {@code data} section of the response
-   * if the error was as expected.
+   * if the error was as expected. <b>NOTE</b>: Any headers that have been set on the {@link
+   * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
+   * modify the {{@link #setQueryUser(String)} method, or add another method that is called after
+   * it!
    */
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
     try {
