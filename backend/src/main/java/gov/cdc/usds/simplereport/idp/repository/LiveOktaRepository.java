@@ -27,7 +27,6 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumSet;
@@ -298,13 +297,15 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
-  public void createOrganization(Organization org, Collection<Facility> facilities, boolean migration) {
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration) {
     String name = org.getOrganizationName();
     String externalId = org.getExternalId();
 
     // After the first migration, the migration code below will amount to a no-op,
     // until we change the next line to new OrganizationRole's
-    Set<OrganizationRole> migrationDestRoles = Set.of(OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES);
+    Set<OrganizationRole> migrationDestRoles =
+        Set.of(OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES);
     List<String> migrationDestGroupIds = new ArrayList<>();
     List<String> migrationDestGroupNames = new ArrayList<>();
     List<String> migrationSourceGroupNames = new ArrayList<>();
@@ -314,16 +315,16 @@ public class LiveOktaRepository implements OktaRepository {
       String roleGroupDescription = generateRoleGroupDescription(name, role);
       try {
         Group g =
-        GroupBuilder.instance()
-            .setName(roleGroupName)
-            .setDescription(roleGroupDescription)
-            .buildAndCreate(_client);
+            GroupBuilder.instance()
+                .setName(roleGroupName)
+                .setDescription(roleGroupDescription)
+                .buildAndCreate(_client);
         _app.createApplicationGroupAssignment(g.getId());
 
         if (migration) {
           LOG.info("Created Okta group={} via migration", roleGroupName);
         }
-        
+
         if (migration && migrationDestRoles.contains(role)) {
           migrationDestGroupIds.add(g.getId());
           migrationDestGroupNames.add(roleGroupName);
@@ -340,7 +341,8 @@ public class LiveOktaRepository implements OktaRepository {
 
     for (Facility facility : facilities) {
       String facilityGroupName = generateFacilityGroupName(externalId, facility.getInternalId());
-      String facilityGroupDescription = generateFacilityGroupDescription(name, facility.getFacilityName());
+      String facilityGroupDescription =
+          generateFacilityGroupDescription(name, facility.getFacilityName());
       try {
         Group g =
             GroupBuilder.instance()
@@ -368,25 +370,28 @@ public class LiveOktaRepository implements OktaRepository {
       String ruleExpression = generateMigrationGroupRuleExpression(migrationSourceGroupNames);
       try {
         // https://developer.okta.com/docs/reference/api/groups/#group-rule-operations
-        GroupRule rule = GroupRuleBuilder.instance()
-            .setType("group_rule")
-            .setName(ruleName)
-            .setGroupRuleExpressionType("urn:okta:expression:1.0")
-            .setGroupRuleExpressionValue(ruleExpression)
-            .setAssignUserToGroups(migrationDestGroupIds)
-            .buildAndCreate(_client);
+        GroupRule rule =
+            GroupRuleBuilder.instance()
+                .setType("group_rule")
+                .setName(ruleName)
+                .setGroupRuleExpressionType("urn:okta:expression:1.0")
+                .setGroupRuleExpressionValue(ruleExpression)
+                .setAssignUserToGroups(migrationDestGroupIds)
+                .buildAndCreate(_client);
         rule.activate();
 
-        LOG.info("Migrated users from Okta source_groups={} to destination_groups={}", 
-                migrationSourceGroupNames,
-                migrationDestGroupNames);
+        LOG.info(
+            "Migrated users from Okta source_groups={} to destination_groups={}",
+            migrationSourceGroupNames,
+            migrationDestGroupNames);
       } catch (ResourceException e) {
-        LOG.error("Error migrating users from Okta source_groups={} to destination_groups={}: " +
-                  "check if conflicting group_rule={} already exists. " +
-                  "Did you delete groups without deleting their relevant group rules?", 
-                  migrationSourceGroupNames,
-                  migrationDestGroupNames,
-                  ruleName);
+        LOG.error(
+            "Error migrating users from Okta source_groups={} to destination_groups={}: "
+                + "check if conflicting group_rule={} already exists. "
+                + "Did you delete groups without deleting their relevant group rules?",
+            migrationSourceGroupNames,
+            migrationDestGroupNames,
+            ruleName);
       }
     }
 
@@ -497,14 +502,16 @@ public class LiveOktaRepository implements OktaRepository {
     return ":FACILITY_ACCESS:" + facilityId;
   }
 
-  private String generateMigrationGroupRuleName(String orgExternalId, Collection<OrganizationRole> roles) {
+  private String generateMigrationGroupRuleName(
+      String orgExternalId, Collection<OrganizationRole> roles) {
     return generateGroupOrgPrefix(orgExternalId) + " " + roles.toString();
   }
 
   private String generateMigrationGroupRuleExpression(Collection<String> groupNames) {
-    return String.join(" OR ",
-                       groupNames.stream()
-                          .map(i -> "isMemberOfGroupName(\""+i+"\")")
-                          .collect(Collectors.toList()));
+    return String.join(
+        " OR ",
+        groupNames.stream()
+            .map(i -> "isMemberOfGroupName(\"" + i + "\")")
+            .collect(Collectors.toList()));
   }
 }

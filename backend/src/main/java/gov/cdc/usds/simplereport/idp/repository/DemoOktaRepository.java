@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -139,7 +138,8 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   // this method dodsn't mean much in a demo env
-  public void createOrganization(Organization org, Collection<Facility> facilities, boolean migration) {
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration) {
     createOrganization(org);
     facilities.forEach(f -> createFacility(f));
   }
