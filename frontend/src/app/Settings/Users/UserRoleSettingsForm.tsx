@@ -27,6 +27,7 @@ const ROLES: RoleButton[] = [
 ];
 
 const organizationRoles = new Set(ROLES.map(({ value }) => value));
+organizationRoles.add("MEMBER");
 
 const getUserOrganizationalRole = (user: SettingsUser) => {
   return user.roles.includes("ADMIN")

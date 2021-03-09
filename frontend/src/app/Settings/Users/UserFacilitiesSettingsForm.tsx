@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
 
+import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button";
 
 import { UpdateUser } from "./ManageUsers";
@@ -58,16 +59,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     };
   });
 
-  const onAddFacility = (
-    activeUser: SettingsUser,
-    selectedFacilityId: string
-  ) => {
-    onUpdateUser(activeUser.id, "facilities", [
-      ...activeUser.facilities,
-      facilityLookup[selectedFacilityId],
-    ]);
-  };
-
   const onRemoveFacility = (
     activeUser: SettingsUser,
     selectedFacilityId: string
@@ -79,12 +70,11 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     );
   };
 
-  const facilityAccessDescription =
-    !activeUser.facilities || activeUser.facilities.length === 0
-      ? "This user currently does not have access to any facilities"
-      : activeUser.roles.includes("ADMIN")
-      ? "Admins have access to all facilities"
-      : null;
+  const isAdmin = activeUser.roles.includes("ADMIN");
+
+  const facilityAccessDescription = isAdmin
+    ? "Admins have access to all facilities"
+    : "All users must have access to at least one facility";
 
   const hasAllFacilityAccess = useMemo(
     () => getHasAllFacilityAccess(activeUser),
@@ -105,6 +95,33 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     <React.Fragment>
       <h3>Facility access</h3>
       <p>{facilityAccessDescription}</p>
+      <Checkboxes
+        boxes={[
+          {
+            value: "ALL_FACILITIES",
+            label: "Access all facilities",
+            disabled: isAdmin,
+          },
+        ]}
+        legend="Access all facilities"
+        legendSrOnly
+        name="all-facilities"
+        checkedValues={{ ALL_FACILITIES: hasAllFacilityAccess }}
+        onChange={(e) => {
+          if (e.target.checked) {
+            onUpdateUser(activeUser.id, "roles", [
+              ...activeUser.roles,
+              "ALL_FACILITIES",
+            ]);
+          } else {
+            onUpdateUser(
+              activeUser.id,
+              "roles",
+              activeUser.roles.filter((role) => role !== "ALL_FACILITIES")
+            );
+          }
+        }}
+      />
       <table
         className="usa-table usa-table--borderless user-facilities"
         style={{ width: "100%" }}
@@ -129,17 +146,15 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
           ))}
         </tbody>
       </table>
-      {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" && (
-        <Button
-          variant="outline"
-          type="button"
-          onClick={() => {
-            setIsComponentVisible(!isComponentVisible);
-          }}
-          label="+ Add Facility Access"
-          disabled={activeUser.facilities.length === allFacilities.length}
-        />
-      )}
+      <Button
+        variant="outline"
+        type="button"
+        onClick={() => {
+          setIsComponentVisible(!isComponentVisible);
+        }}
+        label="+ Add Facility Access"
+        disabled={activeUser.facilities.length === allFacilities.length}
+      />
     </React.Fragment>
   );
 };

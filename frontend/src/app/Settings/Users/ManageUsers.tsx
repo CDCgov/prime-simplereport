@@ -95,8 +95,9 @@ const ManageUsers: React.FC<Props> = ({
 
   // only updates the local state
   const updateUser: UpdateUser = (userId, key, value) => {
+    const user = activeUser || usersState[userId];
     updateActiveUser({
-      ...usersState[userId],
+      ...user,
       [key]: value,
     });
     updateIsUserEdited(true);
