@@ -1,5 +1,5 @@
 spring:
-  profiles.include: okta-dev, auth-dev
+  profiles.include: okta-dev, server-debug
 graphql.servlet.cors:
   allowed-origins:
     - https://simplereportdevapp.z13.web.core.windows.net
@@ -23,6 +23,7 @@ simple-report:
     - josh@skylight.digital
     - qom5@cdc.gov # Heather
     - qpu1@cdc.gov # Katherine
+    - qyl5@cdc.gov # Brett
   data-hub:
     upload-enabled: false
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"

@@ -49,9 +49,14 @@ public class DemoOktaRepository implements OktaRepository {
   private void initDemoUser(DemoUser demoUser) {
     IdentityAttributes user = demoUser.getIdentity();
     String username = user.getUsername();
-    String orgExternalId = demoUser.getAuthorization().getOrganizationExternalId();
+    OrganizationRoleClaims authorization = demoUser.getAuthorization();
+    if (authorization == null) {
+      LOG.warn("User {} has no authorization information configured", username);
+      return;
+    }
+    String orgExternalId = authorization.getOrganizationExternalId();
     Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
-    roles.addAll(demoUser.getAuthorization().getGrantedRoles());
+    roles.addAll(authorization.getGrantedRoles());
     OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(orgExternalId, roles);
 
     usernameOrgRolesMap.put(username, orgRoles);

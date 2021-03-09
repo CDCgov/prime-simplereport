@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -66,7 +67,6 @@ class ApiUserManagementTest extends BaseApiTest {
   @Test
   void whoami_superuser_okResponses() {
     useSuperUser();
-    setRoles(null);
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Super Admin", who.get("roleDescription").asText());
     assertTrue(who.get("isAdmin").asBoolean());
@@ -75,7 +75,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
   @Test
   void whoami_nobody_okResponses() {
-    setRoles(null);
+    useBrokenUser();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Misconfigured user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
@@ -92,14 +92,14 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ADMIN.name());
     ObjectNode resp = runQuery("add-user", variables);
     ObjectNode user = (ObjectNode) resp.get("addUser");
     assertEquals("Rhonda", user.get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
     assertEquals(
-        _initService.getDefaultOrganization().getExternalId(),
+        TestUserIdentities.DEFAULT_ORGANIZATION,
         user.get("organization").get("externalId").asText());
     assertEquals(OrganizationRole.ADMIN.getGrantedPermissions(), extractPermissionsFromUser(user));
   }
@@ -114,7 +114,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
   }
@@ -128,7 +128,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
   }
@@ -143,14 +143,14 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ENTRY_ONLY.name());
     ObjectNode resp = runQuery("add-user-to-current-org", variables);
     ObjectNode user = (ObjectNode) resp.get("addUserToCurrentOrg");
     assertEquals("Rhonda", user.get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
     assertEquals(
-        _initService.getDefaultOrganization().getExternalId(),
+        TestUserIdentities.DEFAULT_ORGANIZATION,
         user.get("organization").get("externalId").asText());
     assertEquals(
         OrganizationRole.ENTRY_ONLY.getGrantedPermissions(), extractPermissionsFromUser(user));
@@ -166,7 +166,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
   }
@@ -180,7 +180,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
   }
@@ -196,7 +196,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
@@ -224,7 +224,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -250,7 +250,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -283,7 +283,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
@@ -310,7 +310,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -338,7 +338,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -367,7 +367,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -396,7 +396,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -414,6 +414,26 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUserRole_orgAdmin_roleUpdated() {
+    useOrgEntryOnly();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Test-entry user", who.get("roleDescription").asText());
+    String id = who.get("id").asText();
+
+    useOrgAdmin();
+    ObjectNode updateRoleVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", id)
+            .put("role", OrganizationRole.ADMIN.name());
+    runQuery("update-user-role", updateRoleVariables);
+
+    useOrgEntryOnly();
+    who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertEquals("Admin user", who.get("roleDescription").asText());
+  }
+
+  @Test
   void setUserIsDeleted_adminUser_success() {
     useOrgAdmin();
 
@@ -424,7 +444,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
@@ -455,7 +475,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -487,7 +507,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -512,7 +532,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -537,7 +557,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "Jones",
             "III",
             USERNAMES.get(0),
-            _initService.getDefaultOrganization().getExternalId(),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
@@ -563,7 +583,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 "Jones",
                 "III",
                 USERNAMES.get(0),
-                _initService.getDefaultOrganization().getExternalId(),
+                TestUserIdentities.DEFAULT_ORGANIZATION,
                 OrganizationRole.ADMIN.name()),
             getAddUserVariables(
                 "Jared",
@@ -571,7 +591,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 "Holler",
                 null,
                 USERNAMES.get(2),
-                _initService.getDefaultOrganization().getExternalId(),
+                TestUserIdentities.DEFAULT_ORGANIZATION,
                 OrganizationRole.ADMIN.name()),
             getAddUserVariables(
                 "Janice",
@@ -579,7 +599,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 "Katz",
                 "Jr",
                 USERNAMES.get(3),
-                _initService.getDefaultOrganization().getExternalId(),
+                TestUserIdentities.DEFAULT_ORGANIZATION,
                 OrganizationRole.ADMIN.name()));
     for (ObjectNode userVariables : usersAdded) {
       runQuery("add-user-to-current-org", userVariables);
