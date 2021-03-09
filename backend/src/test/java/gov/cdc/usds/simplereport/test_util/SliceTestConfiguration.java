@@ -92,9 +92,15 @@ public class SliceTestConfiguration {
 
   private static final String DEFAULT_ROLE_PREFIX =
       TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.DEFAULT_ORGANIZATION + ":";
-  private static final String DEFAULT_ORG_USER = DEFAULT_ROLE_PREFIX + "USER";
-  private static final String DEFAULT_ORG_ADMIN = DEFAULT_ROLE_PREFIX + "ADMIN";
-  private static final String DEFAULT_ORG_ENTRY = DEFAULT_ROLE_PREFIX + "ENTRY_ONLY";
+
+  public static final class Role {
+    public static final String DEFAULT_ORG_USER =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "USER";
+    public static final String DEFAULT_ORG_ADMIN =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ADMIN";
+    public static final String DEFAULT_ORG_ENTRY =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ENTRY_ONLY";
+  }
 
   @Bean
   public IdentitySupplier testIdentityProvider() {
@@ -118,7 +124,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {DEFAULT_ORG_USER})
+      authorities = {Role.DEFAULT_ORG_USER})
   @Inherited
   public @interface WithSimpleReportStandardUser {}
 
@@ -126,7 +132,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {DEFAULT_ORG_USER, DEFAULT_ORG_ADMIN})
+      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ADMIN})
   @Inherited
   public @interface WithSimpleReportOrgAdminUser {}
 
@@ -134,7 +140,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {DEFAULT_ORG_USER, DEFAULT_ORG_ENTRY})
+      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ENTRY})
   @Inherited
   public @interface WithSimpleReportEntryOnlyUser {}
 
@@ -142,7 +148,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.SITE_ADMIN_USER,
-      authorities = {DEFAULT_ORG_USER})
+      authorities = {})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
 }
