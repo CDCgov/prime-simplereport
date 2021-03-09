@@ -62,8 +62,7 @@ public class UserAuthorizationVerifier {
     // 'AbstractAccessDecisionManager.accessDenied' in
     // spring library AffirmativeBased.java and set a breakpoint there.
     if (orgRoles.isEmpty()) {
-      LOG.warn(
-          "Permission request for {} failed. No roles for org defined.", permissions.toString());
+      LOG.warn("Permission request for {} failed. No roles for org defined.", permissions);
       return false;
     }
     // check that all the granted permissions contain this permission.
@@ -74,8 +73,7 @@ public class UserAuthorizationVerifier {
 
     if (!failedChecks.isEmpty()) {
       // if failed checks are empty, then user has permission
-      LOG.warn(
-          "Permissions request for {} failed. Not a granted permission.", permissions.toString());
+      LOG.warn("Permissions request for {} failed. Not a granted permission.", permissions);
       return false;
     }
 

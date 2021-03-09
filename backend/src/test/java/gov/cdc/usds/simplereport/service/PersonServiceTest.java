@@ -36,7 +36,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
       new PersonName("Elizabeth", "Martha", "Merriwether", null);
   private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
 
-  // used for pagination
+  // used for pagination and searching
   private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
   private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
   private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);

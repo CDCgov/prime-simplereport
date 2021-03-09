@@ -263,13 +263,13 @@ public class Person extends OrganizationScopedEternalEntity {
 
   // these field names strings are used by Specification builders
   public static class SpecField {
-    public static String PersonName = "nameInfo";
-    public static String IsDeleted = "isDeleted";
-    public static String Facility = "facility";
-    public static String Organization = "organization";
-    public static String InternalId = "internalId";
-    public static String FirstName = "firstName";
-    public static String MiddleName = "middleName";
-    public static String LastName = "lastName";
+    public static String PERSON_NAME = "nameInfo";
+    public static String IS_DELETED = "isDeleted";
+    public static String FACILITY = "facility";
+    public static String ORGANIZATION = "organization";
+    public static String INTERNAL_ID = "internalId";
+    public static String FIRST_NAME = "firstName";
+    public static String MIDDLE_NAME = "middleName";
+    public static String LAST_NAME = "lastName";
   }
 }

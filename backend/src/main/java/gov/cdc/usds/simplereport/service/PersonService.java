@@ -16,7 +16,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -37,7 +36,7 @@ public class PersonService {
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
-  static final int MINIMUMCHARFORSEARCH = 2;
+  static final int MINIMUM_CHAR_FOR_SEARCH = 2;
 
   private static final Sort NAME_SORT =
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
@@ -63,45 +62,44 @@ public class PersonService {
     person.setFacility(facility);
   }
 
-  // For readablility below. Get the OrgId for the currently logged in user.
-  // don't trust an id provided by the user.
-  private UUID getOrgId() {
-    return _os.getCurrentOrganization().getInternalId();
-  }
-
   // Specifications filters for queries
-  private Specification<Person> inWholeOrganizationFilter() {
+  private Specification<Person> inCurrentOrganizationFilter() {
     return (root, query, cb) ->
-        cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId());
+        cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization());
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.
-  private Specification<Person> inFacilityFilter(@NotNull UUID facilityId) {
+  private Specification<Person> inFacilityFilter(UUID facilityId) {
     return (root, query, cb) ->
         cb.and(
-            cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), getOrgId()),
+            cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization()),
             cb.or(
-                cb.isNull(root.get(SpecField.Facility)), // null check first
-                cb.equal(root.get(SpecField.Facility).get(SpecField.InternalId), facilityId)));
+                cb.isNull(root.get(SpecField.FACILITY)), // null check first
+                cb.equal(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), facilityId)));
   }
 
   private Specification<Person> nameMatchesFilter(
-      @Size(min = MINIMUMCHARFORSEARCH) String namePrefixMatch) {
+      @Size(min = MINIMUM_CHAR_FOR_SEARCH) String namePrefixMatch) {
     String likeString = namePrefixMatch.trim().toLowerCase() + "%";
     return (root, query, cb) ->
         cb.or(
-            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.FirstName)), likeString),
-            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.MiddleName)), likeString),
-            cb.like(cb.lower(root.get(SpecField.PersonName).get(SpecField.LastName)), likeString));
+            cb.like(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.FIRST_NAME)), likeString),
+            cb.like(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.MIDDLE_NAME)), likeString),
+            cb.like(
+                cb.lower(root.get(SpecField.PERSON_NAME).get(SpecField.LAST_NAME)), likeString));
   }
 
   private Specification<Person> isDeletedFilter(boolean isDeleted) {
-    return (root, query, cb) -> cb.equal(root.get(SpecField.IsDeleted), isDeleted);
+    return (root, query, cb) -> cb.equal(root.get(SpecField.IS_DELETED), isDeleted);
   }
 
-  // called by List function and Count function
-  private boolean checkPermissionsForListFunc(
-      UUID facilityId, boolean isArchived, String searchTerm) {
+  // called by List function and Count function.
+  // should be made into @RequireSpecificPatientSearchPermission (or something)
+  // in AuthorizationConfiguration, with an associated function in UserAuthorizationVerifier
+  private boolean requireSpecificPatientSearchPermission(
+      UUID facilityId, boolean isArchived, String namePrefixMatch) {
     if (_auth.userHasSiteAdminRole()) { // site admins skip all other checks
       return true;
     }
@@ -110,16 +108,16 @@ public class PersonService {
 
     if (facilityId == null) {
       // READ_PATIENT_LIST does NOT seem right, probably an admin role to see all patients across
-      // facilities?
+      // facilities? UserPermission.ACCESS_ALL_FACILITIES maybe?
       perms.add(UserPermission.READ_PATIENT_LIST);
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
     }
-    if (searchTerm != null) {
+    if (namePrefixMatch != null) {
       perms.add(UserPermission.SEARCH_PATIENTS);
     } else {
-      // because searchTerm is null, they are reading permissions across all patients
+      // because namePrefixMatch is null, they are reading permissions across all patients
       perms.add(UserPermission.READ_PATIENT_LIST);
     }
 
@@ -128,18 +126,18 @@ public class PersonService {
   }
 
   // called by List function and Count function
-  public Specification<Person> buildFilterForListFunc(
-      UUID facilityId, boolean isArchived, String searchTerm) {
+  protected Specification<Person> buildPersonSearchFilter(
+      UUID facilityId, boolean isArchived, String namePrefixMatch) {
     // build up filter based on params
     Specification<Person> filter = isDeletedFilter(isArchived);
     if (facilityId == null) { // admin call to get all users
-      filter = filter.and(inWholeOrganizationFilter());
+      filter = filter.and(inCurrentOrganizationFilter());
     } else {
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
-    if (searchTerm != null && !searchTerm.isEmpty()) {
-      filter = filter.and(nameMatchesFilter(searchTerm));
+    if (namePrefixMatch != null && !namePrefixMatch.isEmpty()) {
+      filter = filter.and(nameMatchesFilter(namePrefixMatch));
     }
     return filter;
   }
@@ -149,12 +147,12 @@ public class PersonService {
    * @param pageOffset Pagination offset is zero based
    * @param pageSize How many results to return, zero will result in the default page size (large)
    * @param isArchived Default is false. true will ONLY show deleted users
-   * @param searchTerm Null returns all users, any string will filter by first,middle,last names
-   *     that start with these characters. Case insenstive. If fewer than
+   * @param namePrefixMatch Null returns all users, any string will filter by first,middle,last
+   *     names that start with these characters. Case insenstive. If fewer than
    * @return A list of matching patients.
    */
   public List<Person> getPatients(
-      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String searchTerm) {
+      UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String namePrefixMatch) {
     if (pageOffset < 0) {
       pageOffset = DEFAULT_PAGINATION_PAGEOFFSET;
     }
@@ -162,29 +160,29 @@ public class PersonService {
       pageSize = DEFAULT_PAGINATION_PAGESIZE;
     }
 
-    if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
+    if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return List.of(); // empty list
     }
 
     // first check permissions
-    if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
+    if (!requireSpecificPatientSearchPermission(facilityId, isArchived, namePrefixMatch)) {
       throw new AccessDeniedException("Access is denied");
     }
 
     return _repo.findAll(
-        buildFilterForListFunc(facilityId, isArchived, searchTerm),
+        buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
-  public long getPatientsCount(UUID facilityId, boolean isArchived, String searchTerm) {
+  public long getPatientsCount(UUID facilityId, boolean isArchived, String namePrefixMatch) {
     // first check permissions
-    if (!checkPermissionsForListFunc(facilityId, isArchived, searchTerm)) {
+    if (!requireSpecificPatientSearchPermission(facilityId, isArchived, namePrefixMatch)) {
       throw new AccessDeniedException("Access is denied");
     }
-    if (searchTerm != null && searchTerm.trim().length() < MINIMUMCHARFORSEARCH) {
+    if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
-    return _repo.count(buildFilterForListFunc(facilityId, isArchived, searchTerm));
+    return _repo.count(buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch));
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()

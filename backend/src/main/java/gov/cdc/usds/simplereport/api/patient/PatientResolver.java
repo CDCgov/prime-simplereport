@@ -17,13 +17,13 @@ public class PatientResolver implements GraphQLQueryResolver {
 
   // authorization happens in calls to PersonService
   public List<Person> getPatients(
-      UUID facilityId, int pageNumber, int pageSize, boolean showDeleted, String searchTerm) {
-    return ps.getPatients(facilityId, pageNumber, pageSize, showDeleted, searchTerm);
+      UUID facilityId, int pageNumber, int pageSize, boolean showDeleted, String namePrefixMatch) {
+    return ps.getPatients(facilityId, pageNumber, pageSize, showDeleted, namePrefixMatch);
   }
 
   // authorization happens in calls to PersonService
-  public long patientsCount(UUID facilityId, boolean showDeleted, String searchTerm) {
-    return ps.getPatientsCount(facilityId, showDeleted, searchTerm);
+  public long patientsCount(UUID facilityId, boolean showDeleted, String namePrefixMatch) {
+    return ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch);
   }
 
   @AuthorizationConfiguration.RequirePermissionSearchPatients

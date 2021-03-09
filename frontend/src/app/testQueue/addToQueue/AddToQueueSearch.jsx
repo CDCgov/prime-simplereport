@@ -18,13 +18,13 @@ const MIN_SEARCH_CHARACTER_COUNT = 2;
 const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!, $searchTerm: String) {
+  query GetPatientsByFacility($facilityId: String!, $namePrefixMatch: String) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
       pageSize: 20
       showDeleted: false
-      searchTerm: $searchTerm
+      namePrefixMatch: $namePrefixMatch
     ) {
       internalId
       firstName
@@ -104,7 +104,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
 
   const { data, error } = useQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
-    variables: { facilityId, searchTerm: queryString },
+    variables: { facilityId, namePrefixMatch: queryString },
   });
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);

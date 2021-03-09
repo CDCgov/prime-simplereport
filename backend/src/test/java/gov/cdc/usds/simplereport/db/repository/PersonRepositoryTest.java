@@ -22,7 +22,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
 
   private Specification<Person> inWholeOrganizationFilter(Organization org) {
     return (root, query, cb) ->
-        cb.equal(root.get(SpecField.Organization).get(SpecField.InternalId), org.getInternalId());
+        cb.equal(root.get(SpecField.ORGANIZATION).get(SpecField.INTERNAL_ID), org.getInternalId());
   }
 
   @Test
