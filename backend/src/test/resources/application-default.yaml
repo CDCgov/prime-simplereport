@@ -26,6 +26,57 @@ simple-report:
     role-prefix: "SR-UNITTEST-TENANT:"
   feature-flags:
     patient-links: true
+  site-admin-emails:
+    - ruby@example.com
+  demo-users:
+    # These users are mapped to constants in TestUserIdentities. Do not modify casually!
+    alternate-users:
+    - identity: # STANDARD_USER
+        username: bobbity@example.com
+        first-name: Bobbity
+        middle-name: Bob
+        last-name: Bobberoo
+      authorization: # USER_ORG_ROLES
+        organization-external-id: DIS_ORG
+        granted-roles: USER
+    - identity: # org admin
+        username: admin@example.com
+        first-name: Alice
+        last-name: Andrews
+      authorization:
+        organization-external-id: DIS_ORG
+        granted-roles:  USER, ADMIN
+    - identity: # entry-only
+        username: nobody@example.com
+        first-name: Nemo
+        last-name: Nixon
+      authorization:
+        organization-external-id: DIS_ORG
+        granted-roles: USER, ENTRY_ONLY
+    - identity: #SITE_ADMIN_USER
+        username: ruby@example.com
+        first-name: Ruby
+        middle-name: Raven
+        last-name: Reynolds
+    - identity: # OUTSIDE_ORG_USER
+        username: intruder@pirate.com
+        first-name: Bootstrap
+        middle-name: Bill
+        last-name: Turner
+      authorization:
+        organization-external-id: DAT_ORG
+        granted-roles: USER
+    - identity: # OUTSIDE_ORG_ADMIN
+        username: captain@pirate.com
+        first-name: Jack
+        last-name: Sparrow
+      authorization:
+        organization-external-id: DAT_ORG
+        granted-roles: USER, ADMIN
+    - identity: # BROKEN
+        username: castaway@pirate.com
+        first-name: Candida
+        last-name: Cannotlogin
 simple-report-initialization:
   organization:
     org-name: Dis Organization
