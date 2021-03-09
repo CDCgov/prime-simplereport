@@ -216,6 +216,6 @@ public class Translators {
   }
 
   public static String sanitize(String input) {
-    return Jsoup.clean(input, Whitelist.basic());
+    return input == null ? "" : Jsoup.clean(input, Whitelist.basic());
   }
 }

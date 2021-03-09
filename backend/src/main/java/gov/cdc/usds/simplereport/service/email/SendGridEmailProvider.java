@@ -5,13 +5,13 @@ import com.sendgrid.Request;
 import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
+import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.sendgrid.SendGridProperties;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
