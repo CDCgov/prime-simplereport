@@ -4,8 +4,7 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuditingConfig;
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
-import gov.cdc.usds.simplereport.config.authorization.AuthorizationServiceConfig;
-import gov.cdc.usds.simplereport.config.authorization.DemoUserIdentitySupplier;
+import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -14,7 +13,9 @@ import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.LoggedInAuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -75,7 +76,6 @@ import org.springframework.security.test.context.support.WithMockUser;
   TestDataFactory.class,
   AuditingConfig.class,
   DemoOktaRepository.class,
-  AuthorizationServiceConfig.class,
   OrganizationExtractor.class,
   OrganizationService.class,
   ApiUserService.class,
@@ -87,26 +87,44 @@ import org.springframework.security.test.context.support.WithMockUser;
   AuthorizationProperties.class,
   SiteAdminEmailList.class,
   DataHubConfig.class,
-  DemoUserConfiguration.class,
 })
 public class SliceTestConfiguration {
 
+  private static final String DEFAULT_ROLE_PREFIX =
+      TestUserIdentities.TEST_ROLE_PREFIX + TestUserIdentities.DEFAULT_ORGANIZATION + ":";
+
+  public static final class Role {
+    public static final String DEFAULT_ORG_USER =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "USER";
+    public static final String DEFAULT_ORG_ADMIN =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ADMIN";
+    public static final String DEFAULT_ORG_ENTRY =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ENTRY_ONLY";
+  }
+
   @Bean
   public IdentitySupplier testIdentityProvider() {
-    return new DemoUserIdentitySupplier(
+    List<DemoUser> sliceTestUsers =
         List.of(
             // these objects will be used only to resolve the user's identity, not their
             // permissions: leaving the role claims blank to make sure nobody tries to update
             // test user permissions here and wonders why it doesn't work
             new DemoUser(null, TestUserIdentities.STANDARD_USER_ATTRIBUTES),
-            new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES)));
+            new DemoUser(null, TestUserIdentities.SITE_ADMIN_USER_ATTRIBUTES));
+    return DemoAuthenticationConfiguration.getCurrentDemoUserSupplier(
+        new DemoUserConfiguration(sliceTestUsers));
+  }
+
+  @Bean
+  public AuthorizationService realAuthorizationService(OrganizationExtractor extractor) {
+    return new LoggedInAuthorizationService(extractor);
   }
 
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER"})
+      authorities = {Role.DEFAULT_ORG_USER})
   @Inherited
   public @interface WithSimpleReportStandardUser {}
 
@@ -114,7 +132,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:ADMIN"})
+      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ADMIN})
   @Inherited
   public @interface WithSimpleReportOrgAdminUser {}
 
@@ -122,7 +140,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER", "TEST-TENANT:DIS_ORG:ENTRY_ONLY"})
+      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ENTRY})
   @Inherited
   public @interface WithSimpleReportEntryOnlyUser {}
 
@@ -130,7 +148,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.SITE_ADMIN_USER,
-      authorities = {"TEST-TENANT:DIS_ORG:USER"})
+      authorities = {})
   @Inherited
   public @interface WithSimpleReportSiteAdminUser {}
 }

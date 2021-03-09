@@ -15,12 +15,14 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+@WithSimpleReportStandardUser // this is ridiculously sneaky
 class QueueManagementTest extends BaseApiTest {
 
   private static final String QUERY = "queue-dates-query";
@@ -120,10 +122,10 @@ class QueueManagementTest extends BaseApiTest {
   }
 
   private void performEnqueueMutation(ObjectNode variables) throws IOException {
-    assertGraphQLSuccess(_template.perform("add-to-queue", variables));
+    runQuery("add-to-queue", variables);
   }
 
   private void performQueueUpdateMutation(ObjectNode variables) throws IOException {
-    assertGraphQLSuccess(_template.perform("edit-queue-item", variables));
+    runQuery("edit-queue-item", variables);
   }
 }

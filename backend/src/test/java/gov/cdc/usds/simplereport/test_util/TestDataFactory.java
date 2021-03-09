@@ -54,8 +54,12 @@ public class TestDataFactory {
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
 
+  public Organization createValidOrg(String name, String externalId) {
+    return _orgRepo.save(new Organization(name, externalId));
+  }
+
   public Organization createValidOrg() {
-    return _orgRepo.save(new Organization("The Mall", "MALLRAT"));
+    return createValidOrg("The Mall", "MALLRAT");
   }
 
   public Facility createValidFacility(Organization org) {
