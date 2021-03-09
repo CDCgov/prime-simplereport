@@ -38,7 +38,7 @@ public class OrganizationExtractor
    * the format SR-<ENV>-TENANT:<ORG_EXTERNAL_ID>:<ROLE> Facility claims take the format
    * SR-<ENV>-TENANT:<ORG_EXTERNAL_ID>:FACILITY_ACCESS:<FACILITY_UUID>
    */
-  public List<OrganizationRoleClaims> convertClaims(Collection<? extends String> claims) {
+  public List<OrganizationRoleClaims> convertClaims(Collection<String> claims) {
     // Map of orgs to facilities the user can access therein
     Map<String, Set<UUID>> facilitiesFound = new HashMap<>();
     // Map of orgs to roles the user has therein

@@ -75,6 +75,10 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
     return this.grantedPermissions;
   }
 
+  // Allows us to sort OrganizationRole's based on the number of permissions they grant,
+  // from greatest to least; effectively sorting from the most to least permission-granting.
+  // In the event that two roles grant an equal number of permissions, the one listed later
+  // in the OrganizationRole enum will take precedence.
   public static final class EffectiveRoleComparator implements Comparator<OrganizationRole> {
     public int compare(OrganizationRole one, OrganizationRole other) {
       if (other.getGrantedPermissions().size() == one.getGrantedPermissions().size()) {
