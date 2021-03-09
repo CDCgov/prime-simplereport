@@ -5,7 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.sanitize;
 import javax.validation.constraints.NotNull;
 
 public class WaitlistRequest {
-  @NotNull String name;
+  @NotNull private String name;
   @NotNull private String email;
   @NotNull private String phone;
   @NotNull private String state;
@@ -24,27 +24,17 @@ public class WaitlistRequest {
     this.referral = referral;
   }
 
-  public String getSanitizedName() {
-    return sanitize(name);
-  }
-
-  public String getSanitizedEmail() {
-    return sanitize(email);
-  }
-
-  public String getSanitizedPhone() {
-    return sanitize(phone);
-  }
-
-  public String getSanitizedState() {
-    return sanitize(state);
-  }
-
-  public String getSanitizedOrganization() {
-    return sanitize(organization);
-  }
-
-  public String getSanitizedReferral() {
-    return sanitize(referral);
+  public String generateEmailBody() {
+    String newLine = "<br>";
+    return String.join(
+        newLine,
+        "A new SimpleReport waitlist request has been submitted with the following details:",
+        "",
+        "<b>Name: </b>" + sanitize(name),
+        "<b>Email address: </b>" + sanitize(email),
+        "<b>Phone number: </b>" + sanitize(phone),
+        "<b>State: </b>" + sanitize(state),
+        "<b>Organization: </b>" + sanitize(organization),
+        "<b>Referral: </b>" + sanitize(referral));
   }
 }

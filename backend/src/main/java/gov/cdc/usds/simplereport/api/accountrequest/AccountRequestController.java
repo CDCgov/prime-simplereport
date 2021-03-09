@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.accountrequest;
 
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
+import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
 import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.email.EmailService;
@@ -36,19 +37,16 @@ public class AccountRequestController {
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
     String subject = "New waitlist request";
-    String newLine = "<br>";
-    String content =
-        String.join(
-            newLine,
-            "A new SimpleReport waitlist request has been submitted with the following"
-                + " details:",
-            "",
-            "<b>Name: </b>" + body.getSanitizedName(),
-            "<b>Email address: </b>" + body.getSanitizedEmail(),
-            "<b>Phone number: </b>" + body.getSanitizedPhone(),
-            "<b>State: </b>" + body.getSanitizedState(),
-            "<b>Organization: </b>" + body.getSanitizedOrganization(),
-            "<b>Referral: </b>" + body.getSanitizedReferral());
+    String content = body.generateEmailBody();
+
+    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
+  }
+  /** Read the account request and generate an email body, then send with the emailService */
+  @PostMapping("/submit")
+  public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
+    String subject = "New account request";
+    String content = body.generateEmailBody();
+
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
   }
 }
