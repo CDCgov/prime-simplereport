@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
@@ -29,24 +30,20 @@ import org.springframework.security.access.AccessDeniedException;
 @SpringBootTest(
     properties = {
       "spring.main.web-application-type=NONE",
-      "simple-report.authorization.role-prefix=TEST-TENANT:",
+      "simple-report.authorization.role-prefix=" + TestUserIdentities.TEST_ROLE_PREFIX,
     })
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser
 public abstract class BaseServiceTest<T> {
 
-  private static final String SPRING_SECURITY_DENIED = "Access is denied";
-  @Autowired protected TestDataFactory _dataFactory;
-  @Autowired protected T _service;
-  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
   @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired protected TestDataFactory _dataFactory;
+  @Autowired protected T _service;
+  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
 
-  protected static void assertSecurityError(Executable e) {
-    AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
-    assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
-  }
+  private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
   @BeforeEach
   protected void beforeEach() {
@@ -73,6 +70,7 @@ public abstract class BaseServiceTest<T> {
   }
 
   protected void initSampleData() {
+    _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
     _initService.initAll();
   }
 
@@ -82,5 +80,10 @@ public abstract class BaseServiceTest<T> {
 
   protected void reset() {
     _truncator.truncateAll();
+  }
+
+  protected static void assertSecurityError(Executable e) {
+    AccessDeniedException exception = assertThrows(AccessDeniedException.class, e);
+    assertEquals(SPRING_SECURITY_DENIED, exception.getMessage());
   }
 }

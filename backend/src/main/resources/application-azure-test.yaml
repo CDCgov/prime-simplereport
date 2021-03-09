@@ -1,5 +1,5 @@
 spring:
-  profiles.include: okta-test, auth-dev
+  profiles.include: okta-test, server-debug
 graphql.servlet.cors:
   allowed-origins:
     - https://simple-report-api-test.azurewebsites.net
@@ -22,6 +22,7 @@ simple-report:
     - josh@skylight.digital
     - qom5@cdc.gov # Heather
     - qpu1@cdc.gov # Katherine
+    - qyl5@cdc.gov # Brett
   patient-link-url: https://test.simplereport.gov/app/pxp?plid=
   feature-flags:
     patient-links: true

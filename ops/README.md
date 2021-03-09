@@ -7,7 +7,9 @@
       - [Azure](#azure)
       - [Okta](#okta)
       - [Terraform](#terraform)
-  - [Reset a database](#reset-a-database)
+  - [Tasks](#tasks)
+    - [Adding an env var](#adding-an-env-var)
+    - [Reset a database](#reset-a-database)
   - [General steps](#general-steps)
   - [Operations performed once per environment](#operations-performed-once-per-environment)
 
@@ -58,7 +60,17 @@ less common or more advanced commands.
 ...
 ```
 
-## Reset a database
+## Tasks
+
+### Adding an env var
+1. update `${ENVIRONMENT}/api.tf` and `${ENVIRONMENT}/_data_.tf`
+2. cd `${ENVIRONMENT}`
+3. `terraform init`
+4. `terraform plan -var="acr_image_tag=${SHORT_COMMIT}" -out=plan.tfplan` GITHUB_SHA should be the value of the currently deployed commit. This can be accessed /api/actuator/info.
+5. Review the terraform plan. NOTE: If you see a change to the azure container register url then you need to update `acr_image_tag` to the correct value
+6. `terraform apply "plan.tfplan"`
+
+### Reset a database
 
 **DO NOT DO THIS IN THE PRODUCTION ENVIRONMENT!**
 

@@ -4,6 +4,7 @@ import com.okta.sdk.resource.ResourceException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -126,18 +127,26 @@ public class OrganizationInitializingService {
     // users are in the org.
     List<DemoUser> users = _demoUserConfiguration.getAllUsers();
     for (DemoUser user : users) {
-      OrganizationRole role =
-          user.getAuthorization().getEffectiveRole().orElse(OrganizationRole.getDefault());
-      Organization org =
-          _orgRepo
-              .findByExternalId(user.getAuthorization().getOrganizationExternalId())
-              .orElseThrow(MisconfiguredUserException::new);
       IdentityAttributes identity = user.getIdentity();
       Optional<ApiUser> userProbe = _apiUserRepo.findByLoginEmail(identity.getUsername());
       if (!userProbe.isPresent()) {
         _apiUserRepo.save(new ApiUser(identity.getUsername(), identity));
       }
-      initOktaUser(identity, org, role);
+      OrganizationRoleClaims authorization = user.getAuthorization();
+      if (authorization != null) {
+        OrganizationRole role =
+            authorization.getEffectiveRole().orElse(OrganizationRole.getDefault());
+        LOG.info(
+            "User {} will have role {} in organization {}",
+            identity.getUsername(),
+            role,
+            authorization.getOrganizationExternalId());
+        Organization org =
+            _orgRepo
+                .findByExternalId(authorization.getOrganizationExternalId())
+                .orElseThrow(MisconfiguredUserException::new);
+        initOktaUser(identity, org, role);
+      }
     }
   }
 

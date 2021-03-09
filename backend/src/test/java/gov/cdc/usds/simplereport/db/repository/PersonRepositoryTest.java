@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PersonService;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -17,14 +17,13 @@ class PersonRepositoryTest extends BaseRepositoryTest {
 
   @Autowired private PersonRepository _repo;
   @Autowired private OrganizationRepository _orgRepo;
+  @Autowired private TestDataFactory _dataFactory;
 
   @Test
   void doPersonOperations() {
     Organization org = _orgRepo.save(new Organization("Here", "there"));
     Organization other = _orgRepo.save(new Organization("There", "where?"));
 
-    StreetAddress addy =
-        new StreetAddress("123 4th Street", null, "Washington", "DC", "20001", null);
     _repo.save(
         new Person(
             org,
@@ -34,7 +33,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             "Schmoe",
             null,
             LocalDate.now(),
-            addy,
+            _dataFactory.getAddress(),
             "(123) 456-7890",
             PersonRole.VISITOR,
             "",

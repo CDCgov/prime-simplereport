@@ -2,7 +2,6 @@ interface Address {
   street: string;
   streetTwo: string;
   city: string;
-  county: string;
   state: string;
   zipCode: string;
 }
