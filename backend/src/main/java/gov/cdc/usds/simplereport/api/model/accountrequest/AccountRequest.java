@@ -4,6 +4,10 @@ import static gov.cdc.usds.simplereport.api.Translators.sanitize;
 
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
+
+@JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
 public class AccountRequest {
   @NotNull private String firstName;
   @NotNull private String lastName;
