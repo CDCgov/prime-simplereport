@@ -1,8 +1,10 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
+import static gov.cdc.usds.simplereport.api.Translators.sanitize;
+
 import javax.validation.constraints.NotNull;
 
-public class AccountRequest {
+public class WaitlistRequest {
   @NotNull String name;
   @NotNull private String email;
   @NotNull private String phone;
@@ -10,9 +12,9 @@ public class AccountRequest {
   @NotNull private String organization;
   private String referral;
 
-  public AccountRequest() {}
+  public WaitlistRequest() {}
 
-  public AccountRequest(
+  public WaitlistRequest(
       String name, String email, String phone, String state, String organization, String referral) {
     this.name = name;
     this.email = email;
@@ -22,27 +24,27 @@ public class AccountRequest {
     this.referral = referral;
   }
 
-  public String getName() {
-    return name;
+  public String getSanitizedName() {
+    return sanitize(name);
   }
 
-  public String getEmail() {
-    return email;
+  public String getSanitizedEmail() {
+    return sanitize(email);
   }
 
-  public String getPhone() {
-    return phone;
+  public String getSanitizedPhone() {
+    return sanitize(phone);
   }
 
-  public String getState() {
-    return state;
+  public String getSanitizedState() {
+    return sanitize(state);
   }
 
-  public String getOrganization() {
-    return organization;
+  public String getSanitizedOrganization() {
+    return sanitize(organization);
   }
 
-  public String getReferral() {
-    return referral;
+  public String getSanitizedReferral() {
+    return sanitize(referral);
   }
 }

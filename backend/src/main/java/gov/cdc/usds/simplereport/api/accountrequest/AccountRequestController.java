@@ -1,9 +1,8 @@
 package gov.cdc.usds.simplereport.api.accountrequest;
 
-import static gov.cdc.usds.simplereport.api.Translators.sanitize;
 import static gov.cdc.usds.simplereport.config.WebConfiguration.ACCOUNT_REQUEST;
 
-import gov.cdc.usds.simplereport.api.model.accountrequest.AccountRequest;
+import gov.cdc.usds.simplereport.api.model.accountrequest.WaitlistRequest;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.io.IOException;
@@ -33,28 +32,23 @@ public class AccountRequestController {
   private void init() {
     LOG.info("Account request REST endpoint enabled");
   }
-  /** Read the account request and generate an email body, then send with the emailService */
-  @PostMapping("/submit")
-  public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
-    String subject = "New account request";
+  /** Read the waitlist request and generate an email body, then send with the emailService */
+  @PostMapping("/waitlist")
+  public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
+    String subject = "New waitlist request";
     String newLine = "<br>";
-    String name = sanitize(body.getName());
-    String email = sanitize(body.getEmail());
-    String phone = sanitize(body.getPhone());
-    String state = sanitize(body.getState());
-    String organization = sanitize(body.getOrganization());
-    String referral = sanitize(body.getReferral());
     String content =
         String.join(
             newLine,
-            "A new SimpleReport account request has been submitted with the following details:",
+            "A new SimpleReport waitlist request has been submitted with the following"
+                + " details:",
             "",
-            "<b>Name: </b>" + name,
-            "<b>Email address: </b>" + email,
-            "<b>Phone number: </b>" + phone,
-            "<b>State: </b>" + state,
-            "<b>Organization: </b>" + organization,
-            "<b>Referral: </b>" + referral);
+            "<b>Name: </b>" + body.getSanitizedName(),
+            "<b>Email address: </b>" + body.getSanitizedEmail(),
+            "<b>Phone number: </b>" + body.getSanitizedPhone(),
+            "<b>State: </b>" + body.getSanitizedState(),
+            "<b>Organization: </b>" + body.getSanitizedOrganization(),
+            "<b>Referral: </b>" + body.getSanitizedReferral());
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
   }
 }
