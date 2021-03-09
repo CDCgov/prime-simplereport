@@ -74,8 +74,7 @@ public class PersonService {
     return (root, query, cb) ->
         cb.and(
             cb.or(
-                cb.isNull(
-                    root.get(SpecField.FACILITY)),
+                cb.isNull(root.get(SpecField.FACILITY)),
                 cb.equal(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), facilityId)));
   }
 
