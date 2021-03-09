@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ import org.springframework.security.access.AccessDeniedException;
 @SpringBootTest(
     properties = {
       "spring.main.web-application-type=NONE",
-      "simple-report.authorization.role-prefix=TEST-TENANT:",
+      "simple-report.authorization.role-prefix=" + TestUserIdentities.TEST_ROLE_PREFIX,
     })
 @Import(SliceTestConfiguration.class)
 @WithSimpleReportStandardUser

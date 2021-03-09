@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class TestUserIdentities {
 
+  public static final String TEST_ROLE_PREFIX = "TEST-TENANT:";
+
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
 
   public static final String SITE_ADMIN_USER = "ruby@example.com";

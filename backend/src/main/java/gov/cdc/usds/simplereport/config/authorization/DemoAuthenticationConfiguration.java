@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletRequest;
@@ -69,26 +68,29 @@ public class DemoAuthenticationConfiguration {
 
   @Bean
   public AuthorizationService getDemoAuthorizationService(
-      DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
-    return new DemoOktaAuthorizationService(oktaRepo, config);
+      DemoOktaRepository oktaRepo, IdentitySupplier supplier) {
+    return new DemoOktaAuthorizationService(oktaRepo, supplier);
   }
 
   @Bean
   public IdentitySupplier getDemoIdentitySupplier(DemoUserConfiguration config) {
-    return new DemoUserIdentitySupplier(config);
+    return getCurrentDemoUserSupplier(config);
   }
 
   /**
-   * Creates and returns a {@link Supplier} that examines the current security context, finds the
-   * username of the current user, and returns the {@link DemoUser} that matches that username. If a
-   * default user has been configured, that user will be returned in the event that there is no
-   * username.
+   * Creates and returns a {@link IdentitySupplier} that examines the current security context,
+   * finds the username of the current user, and returns the {@link IdentityAttributes} from the
+   * {@link DemoUser} that matches that username. If a default user has been configured, that user
+   * will be returned in the event that there is no username.
+   *
+   * <p>It is like that had we set out to have this originally we would have ended up with a more
+   * conventional UserDetailsService, and we could eventually work our way back there, but
+   * path-dependence produces weird results sometimes.
    *
    * @param config the configured list of DemoUsers, with or without a default user set.
    * @throws BadCredentialsException if a username is supplied but is invalid
    */
-  private static Supplier<Optional<DemoUser>> getCurrentDemoUserSupplier(
-      DemoUserConfiguration config) {
+  public static IdentitySupplier getCurrentDemoUserSupplier(DemoUserConfiguration config) {
     return () -> {
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
       DemoUser found;
@@ -106,7 +108,7 @@ public class DemoAuthenticationConfiguration {
           throw new BadCredentialsException("Invalid username supplied.");
         }
       }
-      return Optional.ofNullable(found);
+      return null != found ? found.getIdentity() : null;
     };
   }
 
@@ -118,46 +120,21 @@ public class DemoAuthenticationConfiguration {
    */
   public static class DemoOktaAuthorizationService implements AuthorizationService {
 
-    private final Supplier<Optional<DemoUser>> _getCurrentUser;
+    private final IdentitySupplier _getCurrentUser;
     private final DemoOktaRepository _oktaRepo;
 
-    public DemoOktaAuthorizationService(DemoOktaRepository oktaRepo, DemoUserConfiguration config) {
+    public DemoOktaAuthorizationService(DemoOktaRepository oktaRepo, IdentitySupplier getCurrent) {
       super();
-      this._getCurrentUser = getCurrentDemoUserSupplier(config);
+      this._getCurrentUser = getCurrent;
       this._oktaRepo = oktaRepo;
     }
 
     @Override
     public List<OrganizationRoleClaims> findAllOrganizationRoles() {
-      String username = _getCurrentUser.get().orElseThrow().getUsername();
+      String username = Optional.ofNullable(_getCurrentUser.get()).orElseThrow().getUsername();
       Optional<OrganizationRoleClaims> claims =
           _oktaRepo.getOrganizationRoleClaimsForUser(username);
       return claims.isEmpty() ? List.of() : List.of(claims.get());
-    }
-  }
-
-  /**
-   * An {@link IdentitySupplier} that looks up the username of the current authenticated (or, more
-   * likely, "authenticated") user in the list of configured demo users, falling back to the default
-   * if one is configured. It is like that had we set out to have this originally we would have
-   * ended up with a more conventional UserDetailsService, and we could eventually work our way back
-   * there, but path-dependence produces weird results sometimes.
-   */
-  public static class DemoUserIdentitySupplier implements IdentitySupplier {
-
-    private final Supplier<Optional<DemoUser>> _getCurrentUser;
-
-    public DemoUserIdentitySupplier(DemoUserConfiguration config) {
-      this._getCurrentUser = getCurrentDemoUserSupplier(config);
-    }
-
-    public DemoUserIdentitySupplier(List<DemoUser> wiredUsers) {
-      this(new DemoUserConfiguration(wiredUsers));
-    }
-
-    @Override
-    public IdentityAttributes get() {
-      return _getCurrentUser.get().map(DemoUser::getIdentity).orElse(null);
     }
   }
 }
