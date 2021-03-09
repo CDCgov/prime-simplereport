@@ -10,6 +10,7 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 
 import FacilityForm from "./FacilityForm";
+import { facilitySchema } from "./facilitySchema";
 
 const GET_FACILITY_QUERY = gql`
   query GetFacilities {
@@ -196,11 +197,20 @@ const FacilityFormContainer: any = (props: Props) => {
     return <p>Error: facility not found</p>;
   }
 
-  const saveFacility = (facility: Facility) => {
+  const saveFacility = async (facility: Facility) => {
+    try {
+      await facilitySchema.validate(facility, { abortEarly: false });
+    } catch (e) {
+      // handle errors
+      console.log(e.errors);
+      console.log(Object.keys(e));
+      return;
+    }
+
     trackSaveSettings(null);
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;
-    saveFacility({
+    await saveFacility({
       variables: {
         facilityId: props.facilityId,
         testingFacilityName: facility.name,
@@ -226,16 +236,15 @@ const FacilityFormContainer: any = (props: Props) => {
         devices: facility.deviceTypes,
         defaultDevice: facility.defaultDevice,
       },
-    }).then(() => {
-      let alert = (
-        <Alert
-          type="success"
-          title="Updated Facility"
-          body="The settings for the facility have been updated"
-        />
-      );
-      showNotification(toast, alert);
     });
+    const alert = (
+      <Alert
+        type="success"
+        title="Updated Facility"
+        body="The settings for the facility have been updated"
+      />
+    );
+    showNotification(toast, alert);
   };
 
   const getFacilityData = (): Facility => {

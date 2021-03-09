@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
+import { facilitySchema, RequiredFacilityFields } from "../facilitySchema";
 
 interface Props {
   facility: Facility;
@@ -16,6 +17,27 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
     updateFacility({ ...facility, [e.target.name]: e.target.value });
   };
 
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof RequiredFacilityFields, string | undefined>>
+  >({});
+
+  const clearError = (field: keyof RequiredFacilityFields) => {
+    if (errors[field]) {
+      setErrors({ ...errors, [field]: undefined });
+    }
+  };
+
+  const validateField = useCallback(
+    async (field: keyof RequiredFacilityFields) => {
+      try {
+        await facilitySchema.validateAt(field, facility);
+      } catch (e) {
+        setErrors((errors) => ({ ...errors, [field]: e.message }));
+      }
+    },
+    [facility]
+  );
+
   return (
     <div>
       <h2 style={{ margin: 0 }}>Facility information</h2>
@@ -25,8 +47,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label="Testing facility name"
             name="name"
             value={facility.name}
-            onChange={onChange}
             required
+            onChange={(e) => {
+              clearError("name");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("name");
+            }}
+            validationStatus={errors.name ? "error" : undefined}
+            errorMessage={errors.name}
           />
         </div>
         <div className="tablet:grid-col">
@@ -34,7 +64,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label="CLIA number"
             name="cliaNumber"
             value={facility.cliaNumber}
-            onChange={onChange}
+            required
+            onChange={(e) => {
+              clearError("cliaNumber");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("cliaNumber");
+            }}
+            validationStatus={errors.cliaNumber ? "error" : undefined}
+            errorMessage={errors.cliaNumber}
           />
         </div>
       </div>
@@ -44,8 +83,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label="Phone number"
             name="phone"
             value={facility.phone}
-            onChange={onChange}
             required
+            onChange={(e) => {
+              clearError("phone");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("phone");
+            }}
+            validationStatus={errors.phone ? "error" : undefined}
+            errorMessage={errors.phone}
           />
         </div>
         <div className="tablet:grid-col">
@@ -63,8 +110,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label="Street address 1"
             name="street"
             value={facility.street}
-            onChange={onChange}
             required
+            onChange={(e) => {
+              clearError("street");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("street");
+            }}
+            validationStatus={errors.street ? "error" : undefined}
+            errorMessage={errors.street}
           />
         </div>
       </div>
@@ -92,8 +147,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             label="Zip code"
             name="zipCode"
             value={facility.zipCode}
-            onChange={onChange}
             required
+            onChange={(e) => {
+              clearError("zipCode");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("zipCode");
+            }}
+            validationStatus={errors.zipCode ? "error" : undefined}
+            errorMessage={errors.zipCode}
           />
         </div>
         <div className="tablet:grid-col">
@@ -104,8 +167,16 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             options={stateCodes.map((c) => ({ label: c, value: c }))}
             defaultSelect
             className="sr-width-sm"
-            onChange={onChange}
             required
+            onChange={(e) => {
+              clearError("state");
+              onChange(e);
+            }}
+            onBlur={() => {
+              validateField("state");
+            }}
+            validationStatus={errors.state ? "error" : undefined}
+            errorMessage={errors.state}
           />
         </div>
       </div>

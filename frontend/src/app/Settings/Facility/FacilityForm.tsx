@@ -54,7 +54,6 @@ const FacilityForm: React.FC<Props> = (props) => {
           <div>
             <FontAwesomeIcon icon={"arrow-left"} color="#888" />
             <LinkWithQuery to={`/settings/facilities`}>
-              {" "}
               All facilities
             </LinkWithQuery>
             <h2>{facility.name}</h2>
