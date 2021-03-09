@@ -42,7 +42,7 @@ public class AccountRequestController {
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
   }
   /** Read the account request and generate an email body, then send with the emailService */
-  @PostMapping("/submit")
+  @PostMapping("/")
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
     String subject = "New account request";
     String content = body.generateEmailBody();
