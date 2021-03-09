@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.StringUtils;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -72,9 +73,9 @@ public class PersonService {
   private Specification<Person> inFacilityFilter(UUID facilityId) {
     return (root, query, cb) ->
         cb.and(
-            cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization()),
             cb.or(
-                cb.isNull(root.get(SpecField.FACILITY)), // null check first
+                cb.isNull(
+                    root.get(SpecField.FACILITY)),
                 cb.equal(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), facilityId)));
   }
 
@@ -129,14 +130,12 @@ public class PersonService {
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
     // build up filter based on params
-    Specification<Person> filter = isDeletedFilter(isArchived);
-    if (facilityId == null) { // admin call to get all users
-      filter = filter.and(inCurrentOrganizationFilter());
-    } else {
+    Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
+    if (facilityId != null) { // admin call to get all users
       filter = filter.and(inFacilityFilter(facilityId));
     }
 
-    if (namePrefixMatch != null && !namePrefixMatch.isEmpty()) {
+    if (StringUtils.isNotBlank(namePrefixMatch)) {
       filter = filter.and(nameMatchesFilter(namePrefixMatch));
     }
     return filter;
