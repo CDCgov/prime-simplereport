@@ -29,6 +29,7 @@ simple-report:
   site-admin-emails:
     - ruby@example.com
   demo-users:
+    # These users are mapped to constants in TestUserIdentities. Do not modify casually!
     alternate-users:
     - identity: # STANDARD_USER
         username: bobbity@example.com

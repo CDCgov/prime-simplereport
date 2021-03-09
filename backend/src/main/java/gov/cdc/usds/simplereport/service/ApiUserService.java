@@ -91,8 +91,7 @@ public class ApiUserService {
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users can access all facilities
     Set<OrganizationRole> roles =
-        PermissionHolder.getEffectiveRoles(
-            EnumSet.of(role, OrganizationRole.ALL_FACILITIES, OrganizationRole.getDefault()));
+        PermissionHolder.getEffectiveRoles(EnumSet.of(role, OrganizationRole.getDefault()));
     Optional<OrganizationRoleClaims> roleClaims =
         _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));

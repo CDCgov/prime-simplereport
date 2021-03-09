@@ -22,6 +22,7 @@ class PermissionHolderTest {
             UserPermission.SEARCH_PATIENTS,
             UserPermission.READ_RESULT_LIST,
             UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST);

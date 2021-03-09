@@ -29,14 +29,13 @@ public interface PermissionHolder {
 
   /**
    * Iterate over all granted roles from most to least permission-granting, until all granted
-   * permissions are covered by the roles added thus far, then stop and return that set of roles.
-   * In the event that two roles grant an equal number of permissions, the one listed later
-   * in the OrganizationRole enum will take precedence when calculating the effective roles
-   * from a set of roles. But all roles a user holds, whose permissions are not collectively 
-   * granted by other roles listed later in the OrganizationRole enum that the user also holds,
-   * will be considered effective.
-   * e.g. [MEMBER, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER]
-   * e.g. [MEMBER, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
+   * permissions are covered by the roles added thus far, then stop and return that set of roles. In
+   * the event that two roles grant an equal number of permissions, the one listed later in the
+   * OrganizationRole enum will take precedence when calculating the effective roles from a set of
+   * roles. But all roles a user holds, whose permissions are not collectively granted by other
+   * roles listed later in the OrganizationRole enum that the user also holds, will be considered
+   * effective. e.g. [MEMBER, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER] e.g.
+   * [MEMBER, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
    */
   public static Set<OrganizationRole> getEffectiveRoles(Collection<OrganizationRole> roles) {
     List<OrganizationRole> grantedRoles = new ArrayList<>(roles);

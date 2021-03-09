@@ -70,17 +70,15 @@ public class TestDataFactory {
     DeviceSpecimenType dev = getGenericDeviceSpecimen();
     List<DeviceSpecimenType> configuredDevices = new ArrayList<>();
     configuredDevices.add(dev);
-    StreetAddress addy =
-        new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     Provider doc =
         _providerRepo.save(
-            new Provider("Doctor", "", "Doom", "", "DOOOOOOM", addy, "800-555-1212"));
+            new Provider("Doctor", "", "Doom", "", "DOOOOOOM", getAddress(), "800-555-1212"));
     Facility facility =
         new Facility(
             org,
             facilityName,
             "123456",
-            addy,
+            getAddress(),
             "555-867-5309",
             "facility@test.com",
             doc,
@@ -129,7 +127,7 @@ public class TestDataFactory {
             "Astaire",
             null,
             LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
-            new StreetAddress("1 Central Park West", null, "New York", "NY", "11000", "New Yawk"),
+            getAddress(),
             telephone,
             PersonRole.RESIDENT,
             null,
@@ -223,5 +221,9 @@ public class TestDataFactory {
 
   public DeviceSpecimenType createDeviceSpecimen(DeviceType device, SpecimenType specimen) {
     return _deviceSpecimenRepo.save(new DeviceSpecimenType(device, specimen));
+  }
+
+  public StreetAddress getAddress() {
+    return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
   }
 }

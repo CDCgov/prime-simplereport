@@ -72,6 +72,16 @@ data "azurerm_key_vault_secret" "twilio_auth_token" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "smarty_auth_id" {
+  name         = "smarty-auth-id"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
+data "azurerm_key_vault_secret" "smarty_auth_token" {
+  name         = "smarty-auth-token"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 # logs
 data "azurerm_log_analytics_workspace" "log_analytics" {
   name                = "simple-report-log-workspace-global"
