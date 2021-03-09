@@ -68,7 +68,7 @@ public class UserAuthorizationVerifier {
     // check that all the granted permissions contain this permission.
     Set<UserPermission> failedChecks =
         permissions.stream()
-            .filter((permission) -> !orgRoles.get().getGrantedPermissions().contains(permission))
+            .filter(permission -> !orgRoles.get().getGrantedPermissions().contains(permission))
             .collect(Collectors.toSet());
 
     if (!failedChecks.isEmpty()) {

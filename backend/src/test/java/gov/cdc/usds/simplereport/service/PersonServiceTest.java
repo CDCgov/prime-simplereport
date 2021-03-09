@@ -68,15 +68,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Fosbury",
         "Sr.",
         LocalDate.of(1865, 12, 25),
-        "123 Main",
-        "Apartment 3",
-        "Hicksville",
-        "NY",
-        "11801",
+        _dataFactory.getAddress(),
         "5555555555",
         PersonRole.STAFF,
         null,
-        "Nassau",
         null,
         null,
         null,
@@ -131,7 +126,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false);
 
     _service.setIsDeleted(p.getInternalId(), true);
-    assertEquals(0, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
+    assertEquals(
+        0, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
   }
 
   @Test
@@ -267,12 +263,15 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void getPatients_search_OrgAdminUser() {
     makedata(true);
 
+    UUID site1Id = _site1.getInternalId();
+    UUID site2Id = _site2.getInternalId();
+
     // delete some data to verify achived works as expepected
     // delete Charles (_site1)
     Person charles = _service.getPatients(null, 0, 5, false, null).get(0);
     _service.setIsDeleted(charles.getInternalId(), true);
     // Delete Frank (_site2)
-    Person frank = _service.getPatients(_site2.getInternalId(), 0, 5, false, null).get(0);
+    Person frank = _service.getPatients(site2Id, 0, 5, false, null).get(0);
     _service.setIsDeleted(frank.getInternalId(), true);
 
     // all facilities, not deleted, "ma"
@@ -280,11 +279,11 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertPatientList(patients, JANNELLE, KACEY, ELIZABETH, HEINRICK, GALE);
 
     // site2, not deleted, "ma"
-    patients = _service.getPatients(_site2.getInternalId(), 0, 100, false, "ma");
+    patients = _service.getPatients(site2Id, 0, 100, false, "ma");
     assertPatientList(patients, JANNELLE, KACEY);
 
     // site1, IS deleted, "ma"
-    patients = _service.getPatients(_site1.getInternalId(), 0, 100, true, "ma");
+    patients = _service.getPatients(site1Id, 0, 100, true, "ma");
     assertPatientList(patients, CHARLES);
 
     // all facilities, not deleted, "mar"
@@ -310,14 +309,17 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void getPatients_counts() {
     makedata(true);
 
+    UUID site1Id = _site1.getInternalId();
+    UUID site2Id = _site2.getInternalId();
+
     List<Person> patients_org_page0 = _service.getPatients(null, 0, 100, false, null);
     assertEquals(patients_org_page0.size(), _service.getPatientsCount(null, false, null));
     assertEquals(12, _service.getPatientsCount(null, false, null));
     // count includes patients for site2 AND facilityId=null
-    assertEquals(7, _service.getPatientsCount(_site2.getInternalId(), false, null));
+    assertEquals(7, _service.getPatientsCount(site2Id, false, null));
 
     // delete a couple, verify counts
-    List<Person> patients_site2 = _service.getPatients(_site2.getInternalId(), 0, 100, false, null);
+    List<Person> patients_site2 = _service.getPatients(site2Id, 0, 100, false, null);
 
     // delete Charles (_site1)
     _service.setIsDeleted(patients_org_page0.get(0).getInternalId(), true);
@@ -325,14 +327,14 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     _service.setIsDeleted(patients_site2.get(0).getInternalId(), true);
 
     assertEquals(10, _service.getPatientsCount(null, false, null));
-    assertEquals(6, _service.getPatientsCount(_site2.getInternalId(), false, null));
+    assertEquals(6, _service.getPatientsCount(site2Id, false, null));
     assertEquals(2, _service.getPatientsCount(null, true, null));
-    assertEquals(1, _service.getPatientsCount(_site2.getInternalId(), true, null));
+    assertEquals(1, _service.getPatientsCount(site2Id, true, null));
 
     // counts for name filtering
     assertEquals(5, _service.getPatientsCount(null, false, "ma"));
-    assertEquals(2, _service.getPatientsCount(_site2.getInternalId(), false, "ma"));
-    assertEquals(1, _service.getPatientsCount(_site1.getInternalId(), true, "ma"));
+    assertEquals(2, _service.getPatientsCount(site2Id, false, "ma"));
+    assertEquals(1, _service.getPatientsCount(site1Id, true, "ma"));
     assertEquals(4, _service.getPatientsCount(null, false, "mar"));
     assertEquals(2, _service.getPatientsCount(null, false, "MARTHA"));
 
@@ -351,29 +353,27 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void getPatients_counts_entryonlyuser() {
     makedata(true);
 
+    UUID site1Id = _site1.getInternalId();
+    UUID site2Id = _site2.getInternalId();
+
     // the list query and the count query use the same filters and security checks, so to
     // simplify tests, we'll just call the count function
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, false, null));
     assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getPatientsCount(_site2.getInternalId(), false, null));
+        AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, false, null));
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, true, null));
-    assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getPatientsCount(_site1.getInternalId(), true, null));
+    assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(site1Id, true, null));
 
     // counts for name filtering
-    assertEquals(3, _service.getPatientsCount(_site2.getInternalId(), false, "ma"));
+    assertEquals(3, _service.getPatientsCount(site2Id, false, "ma"));
     // this fails because of the isArchive is true
-    assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getPatientsCount(_site1.getInternalId(), true, "ma"));
+    assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(site1Id, true, "ma"));
     // this fails because it searches across all facilities
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, false, "ma"));
 
     // what to do when search term is too short? Return all?
-    assertEquals(0, _service.getPatientsCount(_site1.getInternalId(), false, "M"));
-    assertEquals(0, _service.getPatientsCount(_site1.getInternalId(), false, ""));
+    assertEquals(0, _service.getPatientsCount(site1Id, false, "M"));
+    assertEquals(0, _service.getPatientsCount(site1Id, false, ""));
   }
 
   @Test
