@@ -174,6 +174,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
                   className={removeButtonClasses}
                   onClick={() => onRemoveFacility(activeUser, facility.id)}
                   disabled={hasAllFacilityAccess}
+                  aria-label={`Remove facility: ${facility.name}`}
                 >
                   <FontAwesomeIcon
                     icon={faMinusCircle}
@@ -189,23 +190,29 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         <p>No more facilities left to select</p>
       ) : (
         <form className="display-flex flex-align-end">
-          <Dropdown
-            className="width-card-lg"
-            options={[
-              { value: "all", label: "All Facilities" },
-              ...facilitiesToAdd.map(({ name, id }) => ({
-                label: name,
-                value: id,
-              })),
-            ]}
-            onChange={(e) => {
-              setSelectedFacility(e.target.value);
-            }}
-            selectedValue={selectedFacility}
-            defaultValue=""
-            defaultSelect
-            disabled={hasAllFacilityAccess}
-          />
+          <div>
+            <label className="text-bold" htmlFor="select-facility">
+              Add facility
+            </label>
+            <Dropdown
+              id="select-facility"
+              className="width-card-lg"
+              options={[
+                { value: "all", label: "All Facilities" },
+                ...facilitiesToAdd.map(({ name, id }) => ({
+                  label: name,
+                  value: id,
+                })),
+              ]}
+              onChange={(e) => {
+                setSelectedFacility(e.target.value);
+              }}
+              selectedValue={selectedFacility}
+              defaultValue=""
+              defaultSelect
+              disabled={hasAllFacilityAccess}
+            />
+          </div>
           <Button
             className="height-5 margin-left-2"
             variant="outline"
