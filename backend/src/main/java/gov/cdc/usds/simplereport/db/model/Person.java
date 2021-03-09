@@ -272,7 +272,6 @@ public class Person extends OrganizationScopedEternalEntity {
     public static final String MIDDLE_NAME = "middleName";
     public static final String LAST_NAME = "lastName";
 
-    private SpecField() {}
-    ; // sonarcloud codesmell
+    private SpecField() {} // sonarcloud codesmell
   }
 }
