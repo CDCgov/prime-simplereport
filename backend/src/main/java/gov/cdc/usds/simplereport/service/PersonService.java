@@ -216,22 +216,15 @@ public class PersonService {
       String lastName,
       String suffix,
       LocalDate birthDate,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
+      StreetAddress address,
       String telephone,
       PersonRole role,
       String email,
-      String county,
       String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    StreetAddress patientAddress =
-        new StreetAddress(street, streetTwo, city, state, zipCode, county);
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -241,7 +234,7 @@ public class PersonService {
             lastName,
             suffix,
             birthDate,
-            patientAddress,
+            address,
             telephone,
             role,
             email,
@@ -302,22 +295,15 @@ public class PersonService {
       String lastName,
       String suffix,
       LocalDate birthDate,
-      String street,
-      String streetTwo,
-      String city,
-      String state,
-      String zipCode,
+      StreetAddress address,
       String telephone,
       PersonRole role,
       String email,
-      String county,
       String race,
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    StreetAddress patientAddress =
-        new StreetAddress(street, streetTwo, city, state, zipCode, county);
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -326,7 +312,7 @@ public class PersonService {
         lastName,
         suffix,
         birthDate,
-        patientAddress,
+        address,
         telephone,
         role,
         email,

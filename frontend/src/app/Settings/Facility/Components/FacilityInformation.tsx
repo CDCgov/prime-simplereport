@@ -64,6 +64,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="street"
             value={facility.street}
             onChange={onChange}
+            required
           />
         </div>
       </div>
@@ -88,14 +89,6 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
         </div>
         <div className="tablet:grid-col">
           <TextInput
-            label="County"
-            name="county"
-            value={facility.county}
-            onChange={onChange}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
             label="Zip code"
             name="zipCode"
             value={facility.zipCode}
@@ -112,6 +105,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             defaultSelect
             className="sr-width-sm"
             onChange={onChange}
+            required
           />
         </div>
       </div>

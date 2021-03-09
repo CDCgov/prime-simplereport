@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Profile(BeanProfiles.AUTHORIZATION_DEV)
+@Profile(BeanProfiles.SERVER_DEBUG)
 public class AuthTestController {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuthTestController.class);

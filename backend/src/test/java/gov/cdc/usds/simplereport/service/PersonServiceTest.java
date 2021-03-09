@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +46,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
 
   @Autowired private OrganizationService _orgService;
+  @Autowired private TestDataFactory _dataFactory;
 
   private Organization _org;
   private Facility _site1;
@@ -88,15 +90,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         "Barnacle",
         "4th",
         LocalDate.of(1865, 12, 25),
-        "13 Main",
-        null,
-        "Hicksville",
-        "NY",
-        "11801",
+        _dataFactory.getAddress(),
         "5555555555",
         PersonRole.STAFF,
         null,
-        "Nassau",
         null,
         null,
         null,
@@ -123,28 +120,18 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Hicksville",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
             false,
             false);
 
-    assertSecurityError(() -> _service.setIsDeleted(p.getInternalId(), true));
-    assertEquals(
-        "Fred",
-        _service
-            .getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null)
-            .get(0)
-            .getFirstName());
+    _service.setIsDeleted(p.getInternalId(), true);
+    assertEquals(0, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
   }
 
   @Test
@@ -163,15 +150,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Hicksville",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -200,15 +182,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             "Fosbury",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Hicksville",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -412,14 +389,9 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 "Flintstone",
                 "Jr.",
                 LocalDate.of(1950, 1, 1),
-                null,
-                null,
-                "Bedrock",
-                "AZ",
-                "87654",
+                _dataFactory.getAddress(),
                 null,
                 PersonRole.RESIDENT,
-                null,
                 null,
                 null,
                 null,

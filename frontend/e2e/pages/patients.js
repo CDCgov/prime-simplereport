@@ -11,9 +11,9 @@ function addPatient(dobFormat) {
   const dobForInput = dob.format(dobFormat);
   const dobForPatientLink = dob.format('MM/DD/YYYY');
   const phone = faker.phone.phoneNumberFormat(0);
-  const address = faker.address.streetAddress();
-  const state = faker.address.stateAbbr();
-  const zip = faker.address.zipCodeByState(state);
+  const address = "736 Jackson PI NW";
+  const state = "DC";
+  const zip = "20503";
 
   this.expect.section('@navbar').to.be.visible;
   this.section.navbar.expect.element('@patientLink').to.be.visible;

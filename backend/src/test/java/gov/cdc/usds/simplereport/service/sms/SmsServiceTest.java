@@ -14,7 +14,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -55,7 +55,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Captor ArgumentCaptor<String> message;
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportStandardUser
   void sendPatientLinkSms() throws NumberParseException {
     // GIVEN
     _person = _dataFactory.createFullPerson(_org);
@@ -71,7 +71,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
+  @WithSimpleReportStandardUser
   void sendPatientLinkSmsThrowsOnBadNumber() throws NumberParseException {
     // GIVEN
     _person = _dataFactory.createFullPersonWithTelephone(_org, "ABCD THIS ISN'T A PHONE NUMBER");

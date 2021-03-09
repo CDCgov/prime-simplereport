@@ -1,12 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -23,8 +19,6 @@ public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter
 
   private static final Logger LOG = LoggerFactory.getLogger(DevSecurityConfiguration.class);
 
-  @Autowired private DemoUserConfiguration _demoUsers;
-
   @Override
   public void configure(HttpSecurity http) throws Exception {
     LOG.warn("SECURITY DISABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
@@ -35,10 +29,5 @@ public class DevSecurityConfiguration extends WebSecurityConfigurerAdapter
   public void addCorsMappings(CorsRegistry registry) {
     LOG.warn("CORS ENABLED BY {} PROFILE", BeanProfiles.NO_SECURITY);
     registry.addMapping("/**").allowedMethods("*");
-  }
-
-  @Bean
-  public IdentitySupplier getDemoIdentitySupplier() {
-    return () -> _demoUsers.getDefaultUser().getIdentity();
   }
 }

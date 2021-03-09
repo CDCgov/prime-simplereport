@@ -13,7 +13,6 @@ const GET_FACILITIES = gql`
         street
         streetTwo
         city
-        county
         state
         zipCode
         phone
@@ -33,7 +32,6 @@ const GET_FACILITIES = gql`
           street
           streetTwo
           city
-          county
           state
           zipCode
           phone

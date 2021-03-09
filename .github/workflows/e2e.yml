@@ -67,6 +67,8 @@ jobs:
         env:
           OKTA_API_KEY: ${{ secrets.OKTA_API_KEY }}
           OKTA_OAUTH2_CLIENT_ID: ${{ secrets.OKTA_OAUTH2_CLIENT_ID }}
+          SMARTY_AUTH_ID: ${{ secrets.SMARTY_AUTH_ID }}
+          SMARTY_AUTH_TOKEN: ${{ secrets.SMARTY_AUTH_TOKEN }}
         working-directory: ./backend
         run: ./gradlew bootRun --args='--spring.profiles.active=dev' &> ../gradle-log.txt &
       - name: Use Node.js ${{env.NODE_VERSION}}
