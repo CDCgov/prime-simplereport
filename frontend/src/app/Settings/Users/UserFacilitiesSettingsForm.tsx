@@ -1,19 +1,24 @@
-/*
-  TODO: This is a WIP
-*/
-
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faMinusCircle } from "@fortawesome/free-solid-svg-icons";
+import classnames from "classnames";
 
 import Button from "../../commonComponents/Button";
 
+import { UpdateUser } from "./ManageUsers";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+
 import "./ManageUsers.scss";
+
+type FacilityLookup = Record<string, Pick<Facility, "id" | "name">>;
+
+const getHasAllFacilityAccess = (user: SettingsUser) =>
+  user.roles.some((role) => role === "ADMIN" || role === "ALL_FACILITIES");
 
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
   allFacilities: UserFacilitySetting[]; // all facilities for the entire org; the activeUser would have a subset of these
-  onUpdateUser(userId: string, key: string, value: UserFacilitySetting[]): void;
+  onUpdateUser: UpdateUser;
 }
 
 const UserFacilitiesSettingsForm: React.FC<Props> = ({
@@ -21,9 +26,17 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   allFacilities,
   onUpdateUser,
 }) => {
-  const currentFacilities = activeUser.organization.testingFacility;
   const [isComponentVisible, setIsComponentVisible] = useState(false);
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
+
+  const facilityLookup: FacilityLookup = useMemo(
+    () =>
+      allFacilities.reduce((acc, { id, name }) => {
+        acc[id] = { id, name };
+        return acc;
+      }, {} as FacilityLookup),
+    [allFacilities]
+  );
 
   const handleClickOutside = (event: any) => {
     // TODO: figure out this type
@@ -49,107 +62,74 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     activeUser: SettingsUser,
     selectedFacilityId: string
   ) => {
-    const facilityToAdd = allFacilities.filter(
-      (f) => f.id === selectedFacilityId
-    )[0];
-    const updatedFacilityList = currentFacilities
-      ? [...currentFacilities, facilityToAdd]
-      : [facilityToAdd];
-    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
+    onUpdateUser(activeUser.id, "facilities", [
+      ...activeUser.facilities,
+      facilityLookup[selectedFacilityId],
+    ]);
   };
 
   const onRemoveFacility = (
     activeUser: SettingsUser,
     selectedFacilityId: string
   ) => {
-    const updatedFacilityList = currentFacilities
-      ? currentFacilities.filter((f) => f.id !== selectedFacilityId)
-      : [];
-    onUpdateUser(activeUser.id, "facilities", updatedFacilityList);
-  };
-
-  const onAddAllFacilities = () => {
-    setIsComponentVisible(false);
-    onUpdateUser(activeUser.id, "facilities", allFacilities);
+    onUpdateUser(
+      activeUser.id,
+      "facilities",
+      activeUser.facilities.filter((f) => f.id !== selectedFacilityId)
+    );
   };
 
   const facilityAccessDescription =
-    !currentFacilities || currentFacilities.length === 0
+    !activeUser.facilities || activeUser.facilities.length === 0
       ? "This user currently does not have access to any facilities"
-      : activeUser.roleDescription === "admin"
+      : activeUser.roles.includes("ADMIN")
       ? "Admins have access to all facilities"
       : null;
 
-  const userFacilities = currentFacilities
-    ? currentFacilities.map((facility) => (
-        <tr key={facility.id}>
-          <td>{facility.name}</td>
-          <td>
-            {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
-              <div
-                className="remove-tag"
-                onClick={() => onRemoveFacility(activeUser, facility.id)}
-              >
-                <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-              </div>
-            ) : null}
-          </td>
-        </tr>
-      ))
-    : null;
-
-  const addFacilityRows = allFacilities.map((facility) => (
-    <tr key={facility.id}>
-      <td> {facility.name} </td>
-      <td>
-        {!currentFacilities?.map((f) => f.id).includes(facility.id) ? (
-          <Button
-            variant="unstyled"
-            label="Select"
-            onClick={() => onAddFacility(activeUser, facility.id)}
-          />
-        ) : (
-          "Already Assigned"
-        )}
-      </td>
-    </tr>
-  ));
-
-  const allFacilityList = (
-    <div
-      ref={ref}
-      className="usa-card__container shadow-2 display-inline-block margin-0"
-    >
-      <div className="usa-card__body">
-        <table className="usa-table usa-table--borderless facility-list">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">
-                <Button
-                  variant="unstyled"
-                  label="Select All"
-                  onClick={onAddAllFacilities}
-                />
-              </th>
-            </tr>
-          </thead>
-          <tbody>{addFacilityRows}</tbody>
-        </table>
-      </div>
-    </div>
+  const hasAllFacilityAccess = useMemo(
+    () => getHasAllFacilityAccess(activeUser),
+    [activeUser]
   );
+
+  const userFacilities = hasAllFacilityAccess
+    ? allFacilities
+    : activeUser.facilities;
+
+  const removeButtonClasses = classnames(
+    "remove-tag",
+    "usa-button--unstyled",
+    hasAllFacilityAccess && "remove-tag--disabled"
+  );
+
   return (
     <React.Fragment>
       <h3>Facility access</h3>
       <p>{facilityAccessDescription}</p>
       <table
-        className="usa-table usa-table--borderless"
+        className="usa-table usa-table--borderless user-facilities"
         style={{ width: "100%" }}
       >
-        <tbody>{userFacilities}</tbody>
+        <tbody>
+          {userFacilities.map((facility) => (
+            <tr key={facility.id}>
+              <td>{facility.name}</td>
+              <td>
+                <button
+                  className={removeButtonClasses}
+                  onClick={() => onRemoveFacility(activeUser, facility.id)}
+                  disabled={hasAllFacilityAccess}
+                >
+                  <FontAwesomeIcon
+                    icon={faMinusCircle}
+                    className={"prime-red-icon"}
+                  />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
       </table>
-      {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" ? (
+      {process.env.REACT_APP_EDIT_USER_FACILITIES === "true" && (
         <Button
           variant="outline"
           type="button"
@@ -157,15 +137,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             setIsComponentVisible(!isComponentVisible);
           }}
           label="+ Add Facility Access"
-          disabled={
-            currentFacilities &&
-            currentFacilities.length === allFacilities.length
-          }
+          disabled={activeUser.facilities.length === allFacilities.length}
         />
-      ) : null}
-      {isComponentVisible ? (
-        <div className="grid-row">{allFacilityList}</div>
-      ) : null}
+      )}
     </React.Fragment>
   );
 };
