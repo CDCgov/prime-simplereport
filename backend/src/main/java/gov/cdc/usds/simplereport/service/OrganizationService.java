@@ -116,12 +116,7 @@ public class OrganizationService {
       UUID facilityId,
       String testingFacilityName,
       String cliaNumber,
-      String street,
-      String streetTwo,
-      String city,
-      String county,
-      String state,
-      String zipCode,
+      StreetAddress facilityAddress,
       String phone,
       String email,
       String orderingProviderFirstName,
@@ -129,12 +124,7 @@ public class OrganizationService {
       String orderingProviderLastName,
       String orderingProviderSuffix,
       String orderingProviderNPI,
-      String orderingProviderStreet,
-      String orderingProviderStreetTwo,
-      String orderingProviderCity,
-      String orderingProviderCounty,
-      String orderingProviderState,
-      String orderingProviderZipCode,
+      StreetAddress orderingProviderAddress,
       String orderingProviderTelephone,
       DeviceSpecimenTypeHolder deviceSpecimenTypes) {
     Facility facility = this.getFacilityInCurrentOrg(facilityId);
@@ -142,16 +132,7 @@ public class OrganizationService {
     facility.setCliaNumber(cliaNumber);
     facility.setTelephone(phone);
     facility.setEmail(email);
-    StreetAddress af =
-        facility.getAddress() == null
-            ? new StreetAddress(street, streetTwo, city, county, state, zipCode)
-            : facility.getAddress();
-    af.setStreet(street, streetTwo);
-    af.setCity(city);
-    af.setCounty(county);
-    af.setState(state);
-    af.setPostalCode(zipCode);
-    facility.setAddress(af);
+    facility.setAddress(facilityAddress);
 
     Provider p = facility.getOrderingProvider();
     p.getNameInfo().setFirstName(orderingProviderFirstName);
@@ -160,23 +141,7 @@ public class OrganizationService {
     p.getNameInfo().setSuffix(orderingProviderSuffix);
     p.setProviderId(orderingProviderNPI);
     p.setTelephone(orderingProviderTelephone);
-
-    StreetAddress a =
-        p.getAddress() == null
-            ? new StreetAddress(
-                orderingProviderStreet,
-                orderingProviderStreetTwo,
-                orderingProviderCity,
-                orderingProviderState,
-                orderingProviderZipCode,
-                orderingProviderCounty)
-            : p.getAddress();
-    a.setStreet(orderingProviderStreet, orderingProviderStreetTwo);
-    a.setCity(orderingProviderCity);
-    a.setCounty(orderingProviderCounty);
-    a.setState(orderingProviderState);
-    a.setPostalCode(orderingProviderZipCode);
-    p.setAddress(a);
+    p.setAddress(orderingProviderAddress);
 
     for (DeviceSpecimenType ds : deviceSpecimenTypes.getFullList()) {
       facility.addDeviceSpecimenType(ds);

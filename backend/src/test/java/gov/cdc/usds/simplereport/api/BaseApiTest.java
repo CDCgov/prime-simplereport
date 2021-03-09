@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -14,6 +16,7 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -29,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -45,6 +49,7 @@ public abstract class BaseApiTest {
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
+  @MockBean protected AddressValidationService _addressValidation;
 
   private String _userName = null;
 
@@ -84,6 +89,8 @@ public abstract class BaseApiTest {
   public void setup() {
     truncateDb();
     _oktaRepo.reset();
+    when(_addressValidation.getValidatedAddress(any(), any()))
+        .thenReturn(_dataFactory.getAddress());
     TestUserIdentities.withStandardUser(
         () -> {
           _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
