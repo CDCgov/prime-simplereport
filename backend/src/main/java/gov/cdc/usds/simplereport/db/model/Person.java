@@ -262,7 +262,7 @@ public class Person extends OrganizationScopedEternalEntity {
   }
 
   // these field names strings are used by Specification builders
-  public static class SpecField {
+  public static final class SpecField {
     public static String PERSON_NAME = "nameInfo";
     public static String IS_DELETED = "isDeleted";
     public static String FACILITY = "facility";

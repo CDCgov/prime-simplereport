@@ -13,8 +13,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class PersonService {
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
-  // currently loads ALL patients and filters locally.
   private final PersonRepository _repo;
   private final UserAuthorizationVerifier _auth;
 
@@ -104,7 +104,7 @@ public class PersonService {
       return true;
     }
 
-    ArrayList<UserPermission> perms = new ArrayList<UserPermission>();
+    Set<UserPermission> perms = new HashSet<>();
 
     if (facilityId == null) {
       // READ_PATIENT_LIST does NOT seem right, probably an admin role to see all patients across

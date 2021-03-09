@@ -12,8 +12,8 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class UserAuthorizationVerifier {
     return id != null && _admins.contains(id.getUsername());
   }
 
-  public boolean userHasPermissions(List<UserPermission> permissions) {
+  public boolean userHasPermissions(Set<UserPermission> permissions) {
     isValidUser();
     Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
     // more troubleshooting help here.
@@ -66,14 +66,15 @@ public class UserAuthorizationVerifier {
       return false;
     }
     // check that all the granted permissions contain this permission.
-    List<UserPermission> failedChecks =
+    Set<UserPermission> failedChecks =
         permissions.stream()
             .filter((permission) -> !orgRoles.get().getGrantedPermissions().contains(permission))
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     if (!failedChecks.isEmpty()) {
       // if failed checks are empty, then user has permission
-      LOG.warn("Permissions request for {} failed. Not a granted permission.", permissions);
+      LOG.warn(
+          "Permissions request for {} failed. Failed permission: {}", permissions, failedChecks);
       return false;
     }
 
@@ -81,7 +82,7 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userHasPermission(UserPermission permission) {
-    return userHasPermissions(List.of(permission));
+    return userHasPermissions(Set.of(permission));
   }
 
   public boolean userIsInSameOrg(UUID userId) {
