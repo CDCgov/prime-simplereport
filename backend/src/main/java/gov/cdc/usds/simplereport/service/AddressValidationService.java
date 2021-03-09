@@ -16,12 +16,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class AddressValidationService {
   public final String FACILITY_DISPLAY_NAME = "facility";
   public final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
   private Client _client;
+  private static final Logger LOG = LoggerFactory.getLogger(AddressValidationService.class);
 
   public AddressValidationService(Client client) {
     _client = client;
@@ -52,6 +55,7 @@ public class AddressValidationService {
     try {
       _client.send(lookup);
     } catch (SmartyException | IOException ex) {
+      LOG.error("SmartyStreets address lookup failed", ex);
       throw new IllegalGraphqlArgumentException(
           "The server is unable to verify the address you entered. Please try again later");
     }
