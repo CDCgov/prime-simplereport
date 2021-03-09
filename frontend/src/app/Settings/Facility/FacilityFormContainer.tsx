@@ -10,7 +10,6 @@ import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
 
 import FacilityForm from "./FacilityForm";
-import { facilitySchema } from "./facilitySchema";
 
 const GET_FACILITY_QUERY = gql`
   query GetFacilities {
@@ -198,15 +197,6 @@ const FacilityFormContainer: any = (props: Props) => {
   }
 
   const saveFacility = async (facility: Facility) => {
-    try {
-      await facilitySchema.validate(facility, { abortEarly: false });
-    } catch (e) {
-      // handle errors
-      console.log(e.errors);
-      console.log(Object.keys(e));
-      return;
-    }
-
     trackSaveSettings(null);
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;

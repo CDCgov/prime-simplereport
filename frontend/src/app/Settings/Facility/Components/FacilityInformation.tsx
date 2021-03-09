@@ -1,42 +1,29 @@
-import React, { useCallback, useState } from "react";
+import React from "react";
 
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
-import { facilitySchema, RequiredFacilityFields } from "../facilitySchema";
+import { FacilityErrors } from "../facilitySchema";
+import { ValidateField } from "../FacilityForm";
 
 interface Props {
   facility: Facility;
   updateFacility: (facility: Facility) => void;
+  errors: FacilityErrors;
+  validateField: ValidateField;
 }
 
-const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
+const FacilityInformation: React.FC<Props> = ({
+  facility,
+  updateFacility,
+  errors,
+  validateField,
+}) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     updateFacility({ ...facility, [e.target.name]: e.target.value });
   };
-
-  const [errors, setErrors] = useState<
-    Partial<Record<keyof RequiredFacilityFields, string | undefined>>
-  >({});
-
-  const clearError = (field: keyof RequiredFacilityFields) => {
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: undefined });
-    }
-  };
-
-  const validateField = useCallback(
-    async (field: keyof RequiredFacilityFields) => {
-      try {
-        await facilitySchema.validateAt(field, facility);
-      } catch (e) {
-        setErrors((errors) => ({ ...errors, [field]: e.message }));
-      }
-    },
-    [facility]
-  );
 
   return (
     <div>
@@ -48,10 +35,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="name"
             value={facility.name}
             required
-            onChange={(e) => {
-              clearError("name");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("name");
             }}
@@ -65,10 +49,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="cliaNumber"
             value={facility.cliaNumber}
             required
-            onChange={(e) => {
-              clearError("cliaNumber");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("cliaNumber");
             }}
@@ -84,10 +65,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="phone"
             value={facility.phone}
             required
-            onChange={(e) => {
-              clearError("phone");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("phone");
             }}
@@ -111,10 +89,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="street"
             value={facility.street}
             required
-            onChange={(e) => {
-              clearError("street");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("street");
             }}
@@ -148,10 +123,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             name="zipCode"
             value={facility.zipCode}
             required
-            onChange={(e) => {
-              clearError("zipCode");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("zipCode");
             }}
@@ -168,10 +140,7 @@ const FacilityInformation: React.FC<Props> = ({ facility, updateFacility }) => {
             defaultSelect
             className="sr-width-sm"
             required
-            onChange={(e) => {
-              clearError("state");
-              onChange(e);
-            }}
+            onChange={onChange}
             onBlur={() => {
               validateField("state");
             }}

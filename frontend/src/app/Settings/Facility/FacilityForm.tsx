@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import Button from "../../commonComponents/Button";
@@ -8,6 +8,12 @@ import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
+import { FacilityErrors, facilitySchema } from "./facilitySchema";
+import Alert from "../../commonComponents/Alert";
+import { toast } from "react-toastify";
+import { showNotification } from "../../utils";
+
+export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
 interface Props {
   facility: Facility;
@@ -47,6 +53,57 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
 
+  const [errors, setErrors] = useState<FacilityErrors>({});
+
+  const clearError = useCallback(
+    (field: keyof FacilityErrors) => {
+      if (errors[field]) {
+        setErrors({ ...errors, [field]: undefined });
+      }
+    },
+    [errors]
+  );
+
+  const validateField = useCallback(
+    async (field: keyof FacilityErrors) => {
+      try {
+        clearError(field);
+        await facilitySchema.validateAt(field, facility);
+      } catch (e) {
+        setErrors((errors) => ({ ...errors, [field]: e.message }));
+      }
+    },
+    [facility, clearError]
+  );
+
+  const validateAndSaveFacility = async () => {
+    try {
+      await facilitySchema.validate(facility, { abortEarly: false });
+    } catch (e) {
+      const errors = e.inner.reduce(
+        (
+          acc: FacilityErrors,
+          el: { path: keyof FacilityErrors; message: string }
+        ) => {
+          acc[el.path] = el.message;
+          return acc;
+        },
+        {} as FacilityErrors
+      );
+      setErrors(errors);
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Please check the form to make sure you complete all of the required fields."
+        />
+      );
+      showNotification(toast, alert);
+      return;
+    }
+    props.saveFacility(facility);
+  };
+
   return (
     <div className="grid-row">
       <div className="prime-container usa-card__container">
@@ -67,7 +124,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           >
             <Button
               type="button"
-              onClick={() => props.saveFacility(facility)}
+              onClick={validateAndSaveFacility}
               label="Save changes"
               disabled={!formChanged}
             />
@@ -78,12 +135,16 @@ const FacilityForm: React.FC<Props> = (props) => {
           <FacilityInformation
             facility={facility}
             updateFacility={updateFacility}
+            errors={errors}
+            validateField={validateField}
           />
         </div>
       </div>
       <OrderingProviderSettings
         provider={facility.orderingProvider}
         updateProvider={updateProvider}
+        errors={errors}
+        validateField={validateField}
       />
       <ManageDevices
         deviceTypes={facility.deviceTypes}
@@ -91,6 +152,8 @@ const FacilityForm: React.FC<Props> = (props) => {
         updateDeviceTypes={updateDeviceTypes}
         updateDefaultDevice={updateDefaultDevice}
         deviceOptions={props.deviceOptions}
+        errors={errors}
+        validateField={validateField}
       />
     </div>
   );

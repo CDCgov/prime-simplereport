@@ -3,13 +3,22 @@ import React from "react";
 import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
+import { FacilityErrors } from "../facilitySchema";
+import { ValidateField } from "../FacilityForm";
 
 interface Props {
   provider: Provider;
   updateProvider: (provider: Provider) => void;
+  errors: FacilityErrors;
+  validateField: ValidateField;
 }
 
-const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
+const OrderingProvider: React.FC<Props> = ({
+  provider,
+  updateProvider,
+  errors,
+  validateField,
+}) => {
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -28,6 +37,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="firstName"
               value={provider.firstName}
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.firstName");
+              }}
+              validationStatus={
+                errors["orderingProvider.firstName"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.firstName"]}
               required
             />
           </div>
@@ -45,6 +61,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="lastName"
               value={provider.lastName}
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.lastName");
+              }}
+              validationStatus={
+                errors["orderingProvider.lastName"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.lastName"]}
               required
             />
           </div>
@@ -64,6 +87,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="NPI"
               value={provider.NPI}
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.NPI");
+              }}
+              validationStatus={
+                errors["orderingProvider.NPI"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.NPI"]}
               required
             />
           </div>
@@ -83,6 +113,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="street"
               value={provider.street}
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.street");
+              }}
+              validationStatus={
+                errors["orderingProvider.street"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.street"]}
               required
             />
           </div>
@@ -112,6 +149,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="zipCode"
               value={provider.zipCode}
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.zipCode");
+              }}
+              validationStatus={
+                errors["orderingProvider.zipCode"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.zipCode"]}
               required
             />
           </div>
@@ -124,6 +168,13 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               defaultSelect
               className="sr-width-sm"
               onChange={onChange}
+              onBlur={() => {
+                validateField("orderingProvider.state");
+              }}
+              validationStatus={
+                errors["orderingProvider.state"] ? "error" : undefined
+              }
+              errorMessage={errors["orderingProvider.state"]}
               required
             />
           </div>

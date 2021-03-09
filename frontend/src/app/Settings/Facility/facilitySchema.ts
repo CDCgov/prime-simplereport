@@ -36,12 +36,46 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .of(yup.string().required())
     .min(1)
     .required("Facility must have at least one device"),
-  defaultDevice: yup.string().required("Facility must have a default device"),
+  defaultDevice: yup
+    .string()
+    .test("truthy", "Facility must have a default device", (val) => !!val)
+    .required("Facility must have a default device"),
   orderingProvider: providerSchema.required(),
-  phone: yup.string().required("Facility phone number is missing"),
+  phone: yup
+    .string()
+    .required("Facility phone number is missing")
+    .typeError("Facility phone number is missing"),
   state: yup.string().required("Facility state is missing"),
   id: yup.string(),
   email: yup.string(),
   streetTwo: yup.string(),
   city: yup.string(),
 });
+
+type FacilityErrorKeys =
+  | "name"
+  | "cliaNumber"
+  | "street"
+  | "zipCode"
+  | "deviceTypes"
+  | "defaultDevice"
+  | "orderingProvider"
+  | "phone"
+  | "state"
+  | "id"
+  | "email"
+  | "streetTwo"
+  | "city"
+  | "orderingProvider.firstName"
+  | "orderingProvider.middleName"
+  | "orderingProvider.lastName"
+  | "orderingProvider.suffix"
+  | "orderingProvider.NPI"
+  | "orderingProvider.phone"
+  | "orderingProvider.street"
+  | "orderingProvider.streetTwo"
+  | "orderingProvider.city"
+  | "orderingProvider.state"
+  | "orderingProvider.zipCode";
+
+export type FacilityErrors = Partial<Record<FacilityErrorKeys, string>>;
