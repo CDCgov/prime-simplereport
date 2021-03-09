@@ -294,14 +294,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     patients = _service.getPatients(null, 0, 100, false, "MARTHA");
     assertPatientList(patients, JANNELLE, ELIZABETH);
 
-    // what to do when search term is too short? Returning empty data is easier to handle on the
-    // client
     assertEquals(0, _service.getPatientsCount(null, false, "M"));
     assertEquals(0, _service.getPatientsCount(null, false, ""));
-    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
-    // "M"));
-    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
-    // ""));
   }
 
   @Test
@@ -338,14 +332,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertEquals(4, _service.getPatientsCount(null, false, "mar"));
     assertEquals(2, _service.getPatientsCount(null, false, "MARTHA"));
 
-    // what to do when search term is too short? Returning empty data is easier to handle on the
-    // client
     assertEquals(0, _service.getPatientsCount(null, false, "M"));
     assertEquals(0, _service.getPatientsCount(null, false, ""));
-    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
-    // "M"));
-    // assertThrows(IllegalArgumentException.class, () -> _service.getPatientsCount(null, false,
-    // ""));
   }
 
   @Test
