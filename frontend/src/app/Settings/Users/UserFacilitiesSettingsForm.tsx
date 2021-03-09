@@ -4,6 +4,7 @@ import { faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import classnames from "classnames";
 
 import Checkboxes from "../../commonComponents/Checkboxes";
+import Dropdown from "../../commonComponents/Dropdown";
 import Button from "../../commonComponents/Button";
 
 import { UpdateUser } from "./ManageUsers";
@@ -11,10 +12,21 @@ import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
-type FacilityLookup = Record<string, Pick<Facility, "id" | "name">>;
+type MinimalFacilityInfo = Pick<Facility, "id" | "name">;
+type FacilityLookup = Record<string, MinimalFacilityInfo>;
 
 const getHasAllFacilityAccess = (user: SettingsUser) =>
   user.roles.some((role) => role === "ADMIN" || role === "ALL_FACILITIES");
+
+const alphabeticalFacilitySort = (
+  a: MinimalFacilityInfo,
+  b: MinimalFacilityInfo
+) => {
+  if (a.name === b.name) {
+    return 0;
+  }
+  return a.name > b.name ? 1 : -1;
+};
 
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
@@ -28,6 +40,8 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   onUpdateUser,
 }) => {
   const [isComponentVisible, setIsComponentVisible] = useState(false);
+  const [selectedFacility, setSelectedFacility] = useState("");
+
   const ref = useRef() as React.MutableRefObject<HTMLDivElement>;
 
   const facilityLookup: FacilityLookup = useMemo(
@@ -81,9 +95,31 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     [activeUser]
   );
 
+  useEffect(() => {
+    if (
+      hasAllFacilityAccess &&
+      activeUser.facilities.length !== allFacilities.length
+    ) {
+      onUpdateUser(
+        activeUser.id,
+        "facilities",
+        allFacilities.map(({ id, name }) => ({ id, name }))
+      );
+    }
+  }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
+
   const userFacilities = hasAllFacilityAccess
-    ? allFacilities
-    : activeUser.facilities;
+    ? [...allFacilities].sort(alphabeticalFacilitySort)
+    : [...activeUser.facilities].sort(alphabeticalFacilitySort);
+
+  const userFacilityLookup = useMemo(
+    () => new Set(userFacilities.map(({ id }) => id)),
+    [userFacilities]
+  );
+
+  const facilitiesToAdd = allFacilities
+    .filter(({ id }) => !userFacilityLookup.has(id))
+    .sort(alphabeticalFacilitySort);
 
   const removeButtonClasses = classnames(
     "remove-tag",
@@ -127,6 +163,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         style={{ width: "100%" }}
       >
         <tbody>
+          {userFacilities.length === 0 && (
+            <td colSpan={2}>Please add at least one facility</td>
+          )}
           {userFacilities.map((facility) => (
             <tr key={facility.id}>
               <td>{facility.name}</td>
@@ -146,15 +185,42 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
           ))}
         </tbody>
       </table>
-      <Button
-        variant="outline"
-        type="button"
-        onClick={() => {
-          setIsComponentVisible(!isComponentVisible);
-        }}
-        label="+ Add Facility Access"
-        disabled={activeUser.facilities.length === allFacilities.length}
-      />
+      {hasAllFacilityAccess ? null : facilitiesToAdd.length === 0 ? (
+        <p>No more facilities left to select</p>
+      ) : (
+        <form className="display-flex flex-align-end">
+          <Dropdown
+            className="width-card-lg"
+            options={facilitiesToAdd.map(({ name, id }) => ({
+              label: name,
+              value: id,
+            }))}
+            onChange={(e) => {
+              setSelectedFacility(e.target.value);
+            }}
+            selectedValue={selectedFacility}
+            defaultValue=""
+            defaultSelect
+            disabled={hasAllFacilityAccess}
+          />
+          <Button
+            className="height-5 margin-left-2"
+            variant="outline"
+            disabled={hasAllFacilityAccess}
+            onClick={(e) => {
+              e.preventDefault();
+              const facility = facilityLookup[selectedFacility];
+              onUpdateUser(activeUser.id, "facilities", [
+                ...activeUser.facilities,
+                facility,
+              ]);
+              setSelectedFacility("");
+            }}
+          >
+            Add
+          </Button>
+        </form>
+      )}
     </React.Fragment>
   );
 };

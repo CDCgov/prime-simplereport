@@ -319,7 +319,7 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    // enabled only if the user has been edited AND the loggedInUser is an org admin or super admin
+                    activeUser.facilities.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription
