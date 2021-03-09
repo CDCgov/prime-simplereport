@@ -12,6 +12,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -79,15 +80,16 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseString(lastName),
         parseString(suffix),
         birthDate,
-        parseString(street),
-        parseString(street2),
-        parseString(city),
-        parseState(state),
-        parseString(zipCode),
+        new StreetAddress(
+            parseString(street),
+            parseString(street2),
+            parseString(city),
+            parseState(state),
+            parseString(zipCode),
+            parseString(county)),
         parsePhoneNumber(telephone),
         parsePersonRole(role),
         parseEmail(email),
-        parseString(county),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),
@@ -127,15 +129,16 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseString(lastName),
         parseString(suffix),
         birthDate,
-        parseString(street),
-        parseString(street2),
-        parseString(city),
-        parseState(state),
-        parseString(zipCode),
+        new StreetAddress(
+            parseString(street),
+            parseString(street2),
+            parseString(city),
+            parseState(state),
+            parseString(zipCode),
+            parseString(county)),
         parsePhoneNumber(telephone),
         parsePersonRole(role),
         parseEmail(email),
-        parseString(county),
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),

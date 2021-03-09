@@ -2,7 +2,10 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
@@ -13,11 +16,13 @@ import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfigur
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.service.AddressValidationService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -38,11 +44,12 @@ public abstract class BaseApiTest {
       "Current user does not have permission for this action";
 
   @Autowired private DbTruncator _truncator;
-  @Autowired protected OrganizationInitializingService _initService;
+  @Autowired private OrganizationInitializingService _initService;
   @Autowired private TestDataFactory _dataFactory;
-  @Autowired protected DemoOktaRepository _oktaRepo;
-  @Autowired protected GraphQLTestTemplate _template; // screw delegation
+  @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
+  @MockBean protected AddressValidationService _addressValidation;
 
   private String _userName = null;
 
@@ -51,57 +58,53 @@ public abstract class BaseApiTest {
   }
 
   protected void useOrgUser() {
-    LOG.info("Configuring auth service mock for org user");
     _userName = TestUserIdentities.STANDARD_USER;
   }
 
   protected void useOutsideOrgUser() {
-    LOG.info("Configuring auth service mock for outside org user");
-    _userName = "intruder@pirate.com";
+    _userName = TestUserIdentities.OTHER_ORG_USER;
   }
 
   protected void useOrgAdmin() {
-    _userName = "admin@example.com";
-    LOG.info(
-        "Configuring auth service mock for org admin: {}",
-        _users.getByUsername(_userName).getAuthorization().getGrantedPermissions());
+    _userName = TestUserIdentities.ORG_ADMIN_USER;
   }
 
   protected void useOutsideOrgAdmin() {
-    _userName = "captain@pirate.com";
+    _userName = TestUserIdentities.OTHER_ORG_ADMIN;
   }
 
   protected void useOrgEntryOnly() {
-    _userName = "nobody@example.com";
+    _userName = TestUserIdentities.ENTRY_ONLY_USER;
   }
 
   protected void useOrgUserAllFacilityAccess() {
-    _userName = "allfacilities@example.com";
-    LOG.info(
-        "Configuring auth service mock for org user with all-facility access: {}",
-        _users.getByUsername(_userName).getAuthorization().getGrantedPermissions());
+    _userName = TestUserIdentities.ALL_FACILITIES_USER;
   }
 
   protected void useSuperUser() {
-    LOG.info("Configuring supplier mock for super user");
     _userName = TestUserIdentities.SITE_ADMIN_USER;
   }
 
   protected void useBrokenUser() {
-    _userName = "castaway@pirate.com";
+    _userName = TestUserIdentities.BROKEN_USER;
   }
 
   @BeforeEach
   public void setup() {
     truncateDb();
     _oktaRepo.reset();
+    when(_addressValidation.getValidatedAddress(any(), any()))
+        .thenReturn(_dataFactory.getAddress());
     TestUserIdentities.withStandardUser(
         () -> {
           _initService.initAll();
         });
     useOrgUser();
-    LOG.warn("Current configuration default user is {}", _users.getDefaultUser());
-    LOG.warn(
+    assertNull(
+        // Dear future reader: this is not negotiable. If you set a default user, then patients will
+        // show up as being the default user instead of themselves. This would be bad.
+        _users.getDefaultUser(), "default user should never be set in this application context");
+    LOG.trace(
         "Usernames configured: {}",
         _users.getAllUsers().stream().map(DemoUser::getUsername).collect(Collectors.toList()));
   }
@@ -115,7 +118,10 @@ public abstract class BaseApiTest {
 
   /**
    * Run the query in the given resource file, check if the response has errors, and return the
-   * {@code data} section of the response if not.
+   * {@code data} section of the response if not. <b>NOTE</b>: Any headers that have been set on the
+   * {@link GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set
+   * them, modify the {{@link #setQueryUser(String)} method, or add another method that is called
+   * after it!
    *
    * @param queryFileName
    * @return the "data" key from the server response.
@@ -124,7 +130,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName) {
     try {
-      setTemplateAuthorization();
+      setQueryUser(_userName);
       GraphQLResponse response = _template.postForResource(queryFileName);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -135,10 +141,12 @@ public abstract class BaseApiTest {
     }
   }
 
-  private void setTemplateAuthorization() {
+  /** CLEAR ALL HEADERS and then set the Authorization header the requested value */
+  private void setQueryUser(String username) {
+    LOG.info("Setting up graphql template authorization for {}", username);
     _template.clearHeaders();
     _template.addHeader(
-        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName);
+        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + username);
   }
 
   /**
@@ -153,11 +161,14 @@ public abstract class BaseApiTest {
   /**
    * Run the query in the given resource file, check if the response has the expected error (either
    * none or a single specific error message), and return the {@code data} section of the response
-   * if the error was as expected.
+   * if the error was as expected. <b>NOTE</b>: Any headers that have been set on the {@link
+   * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
+   * modify the {{@link #setQueryUser(String)} method, or add another method that is called after
+   * it!
    */
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
     try {
-      setTemplateAuthorization();
+      setQueryUser(_userName);
       GraphQLResponse response = _template.perform(queryFileName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -201,8 +212,13 @@ public abstract class BaseApiTest {
     }
   }
 
-  protected GraphQLResponse executeAddPersonMutation(
-      String firstName, String lastName, String birthDate, String phone, String lookupId)
+  protected ObjectNode executeAddPersonMutation(
+      String firstName,
+      String lastName,
+      String birthDate,
+      String phone,
+      String lookupId,
+      Optional<String> expectedError)
       throws IOException {
     ObjectNode variables =
         JsonNodeFactory.instance
@@ -212,7 +228,6 @@ public abstract class BaseApiTest {
             .put("birthDate", birthDate)
             .put("telephone", phone)
             .put("lookupId", lookupId);
-    setTemplateAuthorization();
-    return _template.perform("add-person", variables);
+    return runQuery("add-person", variables, expectedError.orElse(null));
   }
 }

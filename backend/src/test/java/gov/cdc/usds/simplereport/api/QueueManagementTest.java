@@ -122,10 +122,10 @@ class QueueManagementTest extends BaseApiTest {
   }
 
   private void performEnqueueMutation(ObjectNode variables) throws IOException {
-    assertGraphQLSuccess(_template.perform("add-to-queue", variables));
+    runQuery("add-to-queue", variables);
   }
 
   private void performQueueUpdateMutation(ObjectNode variables) throws IOException {
-    assertGraphQLSuccess(_template.perform("edit-queue-item", variables));
+    runQuery("edit-queue-item", variables);
   }
 }

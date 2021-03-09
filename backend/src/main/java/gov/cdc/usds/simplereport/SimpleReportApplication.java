@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
+import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import org.springframework.boot.CommandLineRunner;
@@ -25,6 +26,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   AuthorizationProperties.class,
   DataHubConfig.class,
   DemoUserConfiguration.class,
+  SmartyStreetsProperties.class,
 })
 @EnableScheduling
 public class SimpleReportApplication {

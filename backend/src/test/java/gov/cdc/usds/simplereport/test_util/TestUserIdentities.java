@@ -9,8 +9,20 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class TestUserIdentities {
 
+  public static final String TEST_ROLE_PREFIX = "TEST-TENANT:";
+
+  public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
+
   public static final String SITE_ADMIN_USER = "ruby@example.com";
   public static final String STANDARD_USER = "bobbity@example.com";
+  public static final String ENTRY_ONLY_USER = "nobody@example.com";
+  public static final String ORG_ADMIN_USER = "admin@example.com";
+  public static final String ALL_FACILITIES_USER = "allfacilities@example.com";
+
+  public static final String OTHER_ORG_USER = "intruder@pirate.com";
+  public static final String OTHER_ORG_ADMIN = "captain@pirate.com";
+
+  public static final String BROKEN_USER = "castaway@pirate.com";
 
   public static final IdentityAttributes STANDARD_USER_ATTRIBUTES =
       new IdentityAttributes(STANDARD_USER, "Bobbity", "Bob", "Bobberoo", null);

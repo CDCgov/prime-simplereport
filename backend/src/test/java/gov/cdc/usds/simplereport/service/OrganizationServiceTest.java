@@ -9,15 +9,17 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
-import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
-import java.util.Collections;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
+
+  @Autowired private TestDataFactory _dataFactory;
 
   @BeforeEach
   void setupData() {
@@ -36,21 +38,18 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
     assertSecurityError(
         () -> {
-          StreetAddress addy =
-              new StreetAddress(
-                  Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
           PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
           _service.createOrganization(
               "Tim's org",
               "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
               "Facility 1",
               "12345",
-              addy,
+              _dataFactory.getAddress(),
               "123-456-7890",
               "test@foo.com",
               holder,
               bill,
-              addy,
+              _dataFactory.getAddress(),
               "123-456-7890",
               "547329472");
         });
@@ -68,8 +67,6 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   @WithSimpleReportSiteAdminUser
   void createOrganization_adminUser_success() {
     DeviceSpecimenTypeHolder holder = getDeviceConfig();
-    StreetAddress addy =
-        new StreetAddress(Collections.singletonList("Moon Base"), "Luna City", "THE MOON", "", "");
     PersonName bill = new PersonName("Bill", "Foo", "Nye", "");
     Organization org =
         _service.createOrganization(
@@ -77,12 +74,12 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
             "d6b3951b-6698-4ee7-9d63-aaadee85bac0",
             "Facility 1",
             "12345",
-            addy,
+            _dataFactory.getAddress(),
             "123-456-7890",
             "test@foo.com",
             holder,
             bill,
-            addy,
+            _dataFactory.getAddress(),
             "123-456-7890",
             "547329472");
 

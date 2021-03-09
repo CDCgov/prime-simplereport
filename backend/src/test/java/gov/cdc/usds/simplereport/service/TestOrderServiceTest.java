@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -31,6 +32,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private HibernateQueryInterceptor hibernateQueryInterceptor;
+  @Autowired private TestDataFactory _dataFactory;
 
   @BeforeEach
   void setupData() {
@@ -50,15 +52,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -95,15 +92,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,
@@ -143,15 +135,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             "",
             "Sr.",
             LocalDate.of(1865, 12, 25),
-            "123 Main",
-            "Apartment 3",
-            "Syracuse",
-            "NY",
-            "11801",
+            _dataFactory.getAddress(),
             "8883334444",
             PersonRole.STAFF,
             null,
-            "Nassau",
             null,
             null,
             null,

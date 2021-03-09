@@ -20,7 +20,7 @@ jobs:
         working-directory: ./backend
     strategy:
       matrix:
-        deploy_env: [prod, training, demo]
+        deploy_env: [prod, training, demo, pentest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up QEMU
@@ -46,7 +46,7 @@ jobs:
         working-directory: ./frontend
     strategy:
       matrix:
-        deploy_env: [prod, training, demo]
+        deploy_env: [prod, training, demo, pentest]
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
@@ -65,6 +65,6 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Deploy frontend app
-        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereportprodapp --destination-path '/app'
+        run: az storage blob upload-batch -s build/ -d '$web' --account-name simplereport${{ matrix.deploy_env }}app --destination-path '/app'
       - name: Purge CDN
         run: az cdn endpoint purge --resource-group prime-simple-report-${{ matrix.deploy_env }} --profile-name simple-report-${{ matrix.deploy_env }} --name simple-report-${{ matrix.deploy_env }} --content-paths "/app/*" --no-wait
