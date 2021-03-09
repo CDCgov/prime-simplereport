@@ -191,10 +191,13 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         <form className="display-flex flex-align-end">
           <Dropdown
             className="width-card-lg"
-            options={facilitiesToAdd.map(({ name, id }) => ({
-              label: name,
-              value: id,
-            }))}
+            options={[
+              { value: "all", label: "All Facilities" },
+              ...facilitiesToAdd.map(({ name, id }) => ({
+                label: name,
+                value: id,
+              })),
+            ]}
             onChange={(e) => {
               setSelectedFacility(e.target.value);
             }}
@@ -209,11 +212,19 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             disabled={hasAllFacilityAccess}
             onClick={(e) => {
               e.preventDefault();
-              const facility = facilityLookup[selectedFacility];
-              onUpdateUser(activeUser.id, "facilities", [
-                ...activeUser.facilities,
-                facility,
-              ]);
+              if (selectedFacility === "all") {
+                onUpdateUser(
+                  activeUser.id,
+                  "facilities",
+                  allFacilities.map(({ id, name }) => ({ id, name }))
+                );
+              } else {
+                const facility = facilityLookup[selectedFacility];
+                onUpdateUser(activeUser.id, "facilities", [
+                  ...activeUser.facilities,
+                  facility,
+                ]);
+              }
               setSelectedFacility("");
             }}
           >
