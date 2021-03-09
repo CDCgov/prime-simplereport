@@ -106,7 +106,7 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo updateUser(
       UUID userId,
       String username,
@@ -145,7 +145,7 @@ public class ApiUserService {
    * updated with multiple roles at once, as in {@code updateUserPrivileges()}
    */
   @Deprecated
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
     ApiUser user = getApiUser(userId);
     String username = user.getLoginEmail();
@@ -169,7 +169,7 @@ public class ApiUserService {
     return role;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo updateUserPrivileges(
       UUID userId, Set<String> facilities, Set<OrganizationRole> roles) {
     ApiUser apiUser = getApiUser(userId);
@@ -197,7 +197,7 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId);
     apiUser.setIsDeleted(deleted);

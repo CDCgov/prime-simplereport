@@ -69,6 +69,12 @@ public class UserAuthorizationVerifier {
     return true;
   }
 
+  public boolean userIsNotSelf(UUID userId) {
+    isValidUser();
+    IdentityAttributes id = _supplier.get();
+    return !getUser(userId).getLoginEmail().equals(id.getUsername());
+  }
+
   public boolean userIsInSameOrg(UUID userId) {
     isValidUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();

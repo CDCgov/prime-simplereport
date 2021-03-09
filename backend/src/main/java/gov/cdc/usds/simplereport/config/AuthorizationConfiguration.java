@@ -42,12 +42,16 @@ public class AuthorizationConfiguration {
   /**
    * Require the current user to to be one of the administrative users ("superusers") or have the
    * {@link UserPermission#MANAGE_USERS} permission for the organization containing user with UUID
-   * {@code userId}. NOTE: any method with this annotation must have a parameter {@code userId}.
+   * {@code userId}; and require the user to not be the user they are operating on. 
+   * NOTE: any method with this annotation must have a parameter {@code userId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
       "( @"
+          + AUTHORIZER_BEAN
+          + ".userIsNotSelf(#userId) && "
+          + "( @"
           + AUTHORIZER_BEAN
           + ".userHasSiteAdminRole() || "
           + "("
@@ -58,8 +62,8 @@ public class AuthorizationConfiguration {
           + "@"
           + AUTHORIZER_BEAN
           + ".userIsInSameOrg(#userId)"
-          + ") )")
-  public @interface RequireGlobalAdminUserOrPermissionManageTargetUser {}
+          + ") ) )")
+  public @interface RequirePermissionManageTargetUser {}
 
   /** Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission. */
   @Retention(RUNTIME)

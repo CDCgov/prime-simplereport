@@ -488,6 +488,20 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUserRole_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updateRoleVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", id)
+            .put("role", OrganizationRole.ENTRY_ONLY.name());
+    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
+  }
+
+  @Test
   void updateUserPrivileges_orgAdmin_success() {
     useOrgAdmin();
 
@@ -692,6 +706,20 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUserPrivileges_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updatePrivilegesVariables =
+        getUpdateUserPrivilegesVariables(
+            id,
+            Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+            Set.of());
+    runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
+  }
+
+  @Test
   void setUserIsDeleted_adminUser_success() {
     useOrgAdmin();
 
@@ -822,6 +850,17 @@ class ApiUserManagementTest extends BaseApiTest {
     String id = addUser.get("id").asText();
 
     useOrgUser();
+
+    ObjectNode deleteVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
+  }
+
+  @Test
+  void setUserIsDeleted_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
