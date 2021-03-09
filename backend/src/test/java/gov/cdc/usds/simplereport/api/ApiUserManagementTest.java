@@ -323,6 +323,25 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUser_self_success() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updateVariables =
+        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+    ObjectNode resp = runQuery("update-user", updateVariables);
+    ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
+    assertEquals("Ronda", updateUser.get("firstName").asText());
+    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
+    assertEquals(
+        Set.of(OrganizationRole.MEMBER, OrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(
+        OrganizationRole.ADMIN.getGrantedPermissions(), extractPermissionsFromUser(updateUser));
+    assertUserCanAccessAllFacilities(updateUser);
+  }
+
+  @Test
   void updateUserRole_adminUser_success() {
     useOrgAdmin();
 
