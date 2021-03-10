@@ -127,14 +127,10 @@ const ManageUsers: React.FC<Props> = ({
       return;
     }
     setIsUpdating(true);
-    const selectedRoleDescription = activeUser.roleDescription as RoleDescription;
-    const selectedApiOrganizationRole = RoleDescriptionToOrgRole[
-      selectedRoleDescription
-    ] as ApiOrganizationRole;
-    updateUserRole({
+    updateUserPrivileges({
       variables: {
         id: activeUser.id,
-        role: selectedApiOrganizationRole,
+        role: activeUser.role,
       },
     })
       .then(() => {

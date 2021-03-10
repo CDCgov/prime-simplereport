@@ -43,6 +43,7 @@ export interface SettingsUser {
   lastName: string;
   roleDescription: UserRole;
   roles: ApiOrganizationRole[];
+  role: ApiOrganizationRole;
   permissions: UserPermission[];
   email: string;
   organization: {
@@ -58,10 +59,16 @@ interface UserData {
 const UPDATE_USER_PRIVILEGES = gql`
   mutation UpdateUserPrivileges(
     $id: ID!
-    $roles: [OrganizationRole!]!
+    $role: ApiOrganizationRole!
+    $accessAllFacilities: Boolean!
     $facilities: [String!]!
   ) {
-    updateUserPrivileges(id: $id, roles: $roles, facilities: $facilities) {
+    updateUserPrivileges(
+      id: $id
+      role: $role
+      accessAllFacilities: $accessAllFacilities
+      facilities: $facilities
+    ) {
       id
     }
   }
