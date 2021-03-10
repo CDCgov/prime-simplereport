@@ -715,8 +715,7 @@ class ApiUserManagementTest extends BaseApiTest {
     String id = who.get("id").asText();
 
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(
-            id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
+        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
 

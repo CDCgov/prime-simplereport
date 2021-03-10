@@ -42,8 +42,9 @@ public class AuthorizationConfiguration {
   /**
    * Require the current user to to be one of the administrative users ("superusers") or have the
    * {@link UserPermission#MANAGE_USERS} permission for the organization containing user with UUID
-   * {@code userId}; and require the user to not be the user they are operating on. 
-   * NOTE: any method with this annotation must have a parameter {@code userId}.
+   * {@code userId}; and require the user to not be the user they are operating on.
+   *
+   * <p>NOTE: any method with this annotation must have a parameter {@code userId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
