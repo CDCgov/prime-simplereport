@@ -166,7 +166,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
       >
         <tbody>
           {userFacilities.length === 0 && (
-            <td colSpan={2}>Please add at least one facility</td>
+            <tr>
+              <td colSpan={2}>Please add at least one facility</td>
+            </tr>
           )}
           {userFacilities.map((facility) => (
             <tr key={facility.id}>
@@ -210,7 +212,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
                 setSelectedFacility(e.target.value);
               }}
               selectedValue={selectedFacility}
-              defaultValue=""
               defaultSelect
               disabled={hasAllFacilityAccess}
             />

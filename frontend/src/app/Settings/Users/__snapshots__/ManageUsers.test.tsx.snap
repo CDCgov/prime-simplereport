@@ -123,14 +123,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_Admin user_0"
-                    name="roleDescription"
+                    id="radio-test-1_ADMIN_0"
+                    name="role"
                     type="radio"
-                    value="Admin user"
+                    value="ADMIN"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_Admin user_0"
+                    for="radio-test-1_ADMIN_0"
                   >
                     Admin (full permissions)
                   </label>
@@ -139,17 +139,18 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                   class="usa-radio"
                 >
                   <input
+                    checked=""
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_Standard user_1"
-                    name="roleDescription"
+                    id="radio-test-1_USER_1"
+                    name="role"
                     type="radio"
-                    value="Standard user"
+                    value="USER"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_Standard user_1"
+                    for="radio-test-1_USER_1"
                   >
                     Standard user (manage results and profiles)
                   </label>
@@ -161,14 +162,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_Test-entry user_2"
-                    name="roleDescription"
+                    id="radio-test-1_ENTRY_ONLY_2"
+                    name="role"
                     type="radio"
-                    value="Test-entry user"
+                    value="ENTRY_ONLY"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_Test-entry user_2"
+                    for="radio-test-1_ENTRY_ONLY_2"
                   >
                     Entry only (conduct tests)
                   </label>
@@ -181,16 +182,102 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
             <p>
               Admins have access to all facilities
             </p>
+            <fieldset
+              class="usa-fieldset prime-checkboxes"
+            >
+              <legend
+                class="usa-legend usa-sr-only"
+              >
+                Access all facilities
+                <span
+                  class="usa-hint"
+                >
+                   (optional)
+                </span>
+              </legend>
+              <div
+                class="usa-form-group"
+              >
+                <div
+                  class="usa-checkbox"
+                >
+                  <input
+                    class="usa-checkbox__input"
+                    disabled=""
+                    id="check-test-1"
+                    name="all-facilities"
+                    type="checkbox"
+                    value="ALL_FACILITIES"
+                  />
+                  <label
+                    class="usa-checkbox__label"
+                    for="check-test-1"
+                  >
+                    Access all facilities
+                  </label>
+                </div>
+              </div>
+            </fieldset>
             <table
-              class="usa-table usa-table--borderless"
+              class="usa-table usa-table--borderless user-facilities"
               style="width: 100%;"
             >
               <tbody>
                 <tr>
                   <td>
+                    Bar Org
+                  </td>
+                  <td>
+                    <button
+                      aria-label="Remove facility: Bar Org"
+                      class="remove-tag usa-button--unstyled remove-tag--disabled"
+                      disabled=""
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-minus-circle fa-w-16 prime-red-icon"
+                        data-icon="minus-circle"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
                     Foo Org
                   </td>
-                  <td />
+                  <td>
+                    <button
+                      aria-label="Remove facility: Foo Org"
+                      class="remove-tag usa-button--unstyled remove-tag--disabled"
+                      disabled=""
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-minus-circle fa-w-16 prime-red-icon"
+                        data-icon="minus-circle"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -221,8 +308,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
               Remove user
             </button>
             <button
-              class="usa-button usa-button-disabled"
-              disabled=""
+              class="usa-button"
               type="button"
             >
               Save changes
@@ -352,14 +438,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   <input
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_Admin user_0"
-                    name="roleDescription"
+                    id="radio-test-1_ADMIN_0"
+                    name="role"
                     type="radio"
-                    value="Admin user"
+                    value="ADMIN"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_Admin user_0"
+                    for="radio-test-1_ADMIN_0"
                   >
                     Admin (full permissions)
                   </label>
@@ -368,16 +454,17 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   class="usa-radio"
                 >
                   <input
+                    checked=""
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_Standard user_1"
-                    name="roleDescription"
+                    id="radio-test-1_USER_1"
+                    name="role"
                     type="radio"
-                    value="Standard user"
+                    value="USER"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_Standard user_1"
+                    for="radio-test-1_USER_1"
                   >
                     Standard user (manage results and profiles)
                   </label>
@@ -388,14 +475,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   <input
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_Test-entry user_2"
-                    name="roleDescription"
+                    id="radio-test-1_ENTRY_ONLY_2"
+                    name="role"
                     type="radio"
-                    value="Test-entry user"
+                    value="ENTRY_ONLY"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_Test-entry user_2"
+                    for="radio-test-1_ENTRY_ONLY_2"
                   >
                     Entry only (conduct tests)
                   </label>
@@ -405,20 +492,104 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
             <h3>
               Facility access
             </h3>
-            <p />
+            <p>
+              All users must have access to at least one facility
+            </p>
+            <fieldset
+              class="usa-fieldset prime-checkboxes"
+            >
+              <legend
+                class="usa-legend usa-sr-only"
+              >
+                Access all facilities
+                <span
+                  class="usa-hint"
+                >
+                   (optional)
+                </span>
+              </legend>
+              <div
+                class="usa-form-group"
+              >
+                <div
+                  class="usa-checkbox"
+                >
+                  <input
+                    class="usa-checkbox__input"
+                    id="check-test-1"
+                    name="all-facilities"
+                    type="checkbox"
+                    value="ALL_FACILITIES"
+                  />
+                  <label
+                    class="usa-checkbox__label"
+                    for="check-test-1"
+                  >
+                    Access all facilities
+                  </label>
+                </div>
+              </div>
+            </fieldset>
             <table
-              class="usa-table usa-table--borderless"
+              class="usa-table usa-table--borderless user-facilities"
               style="width: 100%;"
             >
               <tbody>
                 <tr>
-                  <td>
-                    Foo Org
+                  <td
+                    colspan="2"
+                  >
+                    Please add at least one facility
                   </td>
-                  <td />
                 </tr>
               </tbody>
             </table>
+            <form
+              class="display-flex flex-align-end"
+            >
+              <div>
+                <label
+                  class="text-bold"
+                  for="select-facility"
+                >
+                  Add facility
+                </label>
+                <div
+                  class="usa-form-group prime-dropdown  width-card-lg"
+                >
+                  <select
+                    aria-required="false"
+                    class="usa-select"
+                    id="select-facility"
+                  >
+                    <option>
+                      - Select -
+                    </option>
+                    <option
+                      value="all"
+                    >
+                      All Facilities
+                    </option>
+                    <option
+                      value="a2"
+                    >
+                      Bar Org
+                    </option>
+                    <option
+                      value="a1"
+                    >
+                      Foo Org
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <button
+                class="usa-button usa-button--outline height-5 margin-left-2"
+                type="button"
+              >
+                Add
+              </button>
+            </form>
           </div>
           <div
             class="usa-card__footer display-flex flex-justify margin-top-5 padding-x-0"
