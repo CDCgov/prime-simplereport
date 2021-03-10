@@ -1,8 +1,8 @@
 mutation updateUserPrivileges(
     $id: ID!,
-    $role: ApiOrganizationRole!,
+    $role: Role!,
     $accessAllFacilities: Boolean!,
-    $facilities: [String!]!,
+    $facilities: [String!],
     ){
   updateUserPrivileges(
     id: $id

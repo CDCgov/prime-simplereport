@@ -63,7 +63,7 @@ public interface PermissionHolder {
     return effectiveRoles;
   }
 
-  public static Set<UserPermission> getPermissionsFromRoles(Collection<OrganizationRole> roles) {
+  private static Set<UserPermission> getPermissionsFromRoles(Collection<OrganizationRole> roles) {
     Set<UserPermission> granted =
         roles.stream()
             .map(r -> r.getGrantedPermissions())

@@ -4,7 +4,7 @@ mutation addUserToCurrentOrg(
     $lastName: String!,
     $suffix: String,
     $email: String!,
-    $role: ApiOrganizationRole!,
+    $role: Role!,
     ){
   addUserToCurrentOrg(
     firstName: $firstName

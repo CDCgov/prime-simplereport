@@ -13,7 +13,7 @@ import java.util.Set;
  * <p>Specifically, the {@link EffectiveRoleComparator} can order a list of roles such that the
  * first role in the list is the "effective" role for the applicable user.
  */
-public enum OrganizationRole implements Comparable<OrganizationRole> {
+public enum OrganizationRole {
   /**
    * This is the base role that we expect every user to have. Any other role that has more specific
    * permissions takes precedence over this role. NOTE: this role does not give you any meaningful
