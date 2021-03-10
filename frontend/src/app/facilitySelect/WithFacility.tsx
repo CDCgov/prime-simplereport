@@ -5,6 +5,7 @@ import { useHistory } from "react-router-dom";
 import { updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
 
+import FacilityPopup from "./FacilityPopup";
 import FacilitySelect from "./FacilitySelect";
 
 const Loading: React.FC<{}> = () => <p>Loading facility information...</p>;
@@ -17,11 +18,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   const facilities = useSelector(
     (state) => (state as any).facilities as Facility[]
   );
-  const organization = useSelector(
-    (state) => (state as any).organization as Organization
-  );
-  const user = useSelector((state) => (state as any).user as User);
-
   const facilityInStore = useSelector(
     (state) => (state as any).facility as Facility
   );
@@ -39,11 +35,18 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   };
 
   if (facilities === undefined) {
-    return <>{children}</>;
+    return <Loading />;
   }
 
   if (facilities.length === 0) {
-    return <Loading />;
+    return (
+      <FacilityPopup>
+        <p>You do not have access to any facilities at this time.</p>
+        <p>
+          Ask an administrator to assign you access, then try logging in again.
+        </p>
+      </FacilityPopup>
+    );
   }
 
   if (
@@ -66,8 +69,6 @@ const WithFacility: React.FC<Props> = ({ children }) => {
   return (
     <FacilitySelect
       facilities={facilities}
-      organization={organization}
-      user={user}
       setActiveFacility={setActiveFacility}
     />
   );

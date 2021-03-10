@@ -22,6 +22,31 @@ describe("WithFacility", () => {
     mockHistoryPush.mockClear();
   });
 
+  describe("With zero facilities", () => {
+    beforeEach(() => {
+      store = mockStore({
+        organization: {
+          name: "Organization Name",
+        },
+        user: {
+          firstName: "Kim",
+          lastName: "Mendoza",
+        },
+        facilities: [],
+      });
+      store.dispatch = jest.fn();
+      component = renderer.create(
+        <Provider store={store}>
+          <WithFacility>App</WithFacility>
+        </Provider>
+      );
+    });
+
+    it("should notify user to contact an admin", () => {
+      expect(component.toJSON()).toMatchSnapshot();
+    });
+  });
+
   describe("With one facility", () => {
     beforeEach(() => {
       store = mockStore({

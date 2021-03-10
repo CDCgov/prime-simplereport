@@ -11,7 +11,7 @@ const initialState = {
   organization: {
     name: "",
   },
-  facilities: [],
+  facilities: undefined,
   facility: {
     id: "",
     name: "",
