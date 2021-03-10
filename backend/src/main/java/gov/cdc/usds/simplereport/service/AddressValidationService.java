@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AddressValidationService {
   public final String FACILITY_DISPLAY_NAME = "facility";
-  public final String PROVIDER_DISPLAY_NAME = "Ordering Provider";
   private Client _client;
   private static final Logger LOG = LoggerFactory.getLogger(AddressValidationService.class);
 
