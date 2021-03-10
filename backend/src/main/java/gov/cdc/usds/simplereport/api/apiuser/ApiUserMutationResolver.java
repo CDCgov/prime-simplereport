@@ -58,6 +58,9 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
     return _us.updateUserRole(id, role);
   }
 
+  // Making `facilities` an array instead of a Collection to avoid type erasure
+  // of UUIDs to Strings since GraphQL ~does not actually make UUIDs UUIDs when you
+  // pass them in~, and this would cause issues downstream.
   public User updateUserPrivileges(
       UUID id, boolean accessAllFacilities, UUID[] facilities, Role role) {
     Set<UUID> facilitySet =
