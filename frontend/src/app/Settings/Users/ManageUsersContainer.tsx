@@ -63,7 +63,7 @@ const ADD_USER_TO_ORG = gql`
     $firstName: String
     $lastName: String!
     $email: String!
-    $role: ApiOrganizationRole
+    $role: ApiOrganizationRole!
   ) {
     addUserToCurrentOrg(
       firstName: $firstName
