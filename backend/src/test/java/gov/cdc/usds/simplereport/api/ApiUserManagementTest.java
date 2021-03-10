@@ -360,7 +360,8 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.ARCHIVE_PATIENT,
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST), 
+            UserPermission.SUBMIT_TEST,
+            UserPermission.ACCESS_ALL_FACILITIES), 
         extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
