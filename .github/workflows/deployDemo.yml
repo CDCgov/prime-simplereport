@@ -1,6 +1,7 @@
 name: Deploy Demo
 
 on:
+  workflow_dispatch:
   release:
     types: [released]
 

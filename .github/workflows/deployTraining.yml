@@ -1,6 +1,7 @@
 name: Deploy Training
 
 on:
+  workflow_dispatch:
   release:
     types: [released]
 
