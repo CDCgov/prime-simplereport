@@ -349,8 +349,7 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
     assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
-    assertEquals(
-        Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -361,7 +360,7 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST,
-            UserPermission.ACCESS_ALL_FACILITIES), 
+            UserPermission.ACCESS_ALL_FACILITIES),
         extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
