@@ -38,10 +38,14 @@ https://simplereport.gov/
 
 There are two major pieces:
 
-- Java Spring
-- Postgres
+- a Java Spring Boot application
+- a postgresql database
 
-To run the service, you needs a DB and a connection to Okta for it to work. Locally, you can disable authentication, but you still need the database running locally.
+To run the service, you need a JDK and some way of running postgresql (most
+people choose to use Docker, but you can also just run it as a service on your
+development box.) To test the full authentication/authorization/user-management
+integration, you will also need Okta credentials, but that is not necessary
+most of the time.
 
 ### Backend-Setup
 
@@ -86,8 +90,11 @@ Running spring app locally and db in docker on port 5433
 For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
 
 ```bash
-make start
+make # "make start" if you're nasty
 ```
+
+This will start up both servers in "watch" mode, so that changes to the source
+code result in an immediate rebuild.
 
 ### Updating user role
 

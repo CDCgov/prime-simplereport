@@ -119,6 +119,7 @@ org.slf4j:slf4j-api:1.7.30
 org.springframework.boot:spring-boot-actuator-autoconfigure:2.4.1
 org.springframework.boot:spring-boot-actuator:2.4.1
 org.springframework.boot:spring-boot-autoconfigure:2.4.1
+org.springframework.boot:spring-boot-devtools:2.4.1
 org.springframework.boot:spring-boot-starter-actuator:2.4.1
 org.springframework.boot:spring-boot-starter-aop:2.4.1
 org.springframework.boot:spring-boot-starter-data-jpa:2.4.1
