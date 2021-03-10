@@ -236,7 +236,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getTestEventsResults(facility.getInternalId(), new Date(0));
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
 
-    // Count queries with three order N+1 trest
+    // Count queries with three order N+1 test
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
     _service.getTestEventsResults(facility.getInternalId(), new Date(0));
@@ -283,10 +283,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
 
     // get the first query count
-    _service.getQueue(facility.getInternalId().toString());
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    _service.getQueue(facility.getInternalId().toString());
+    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
-    for (int ii = 0; ii < 6; ii++) {
+    for (int ii = 0; ii < 5; ii++) {
       // add another test to the queue. (which needs another person)
       Person p =
           _personService.addPatient(
@@ -320,9 +321,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
           false);
     }
 
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
     _service.getQueue(facility.getInternalId().toString());
-    long endQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    // assertEquals(endQueryCount, startQueryCount);
+    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    assertEquals(firstRunCount, secondRunCount);
   }
 
   @Test
