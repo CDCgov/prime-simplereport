@@ -286,7 +286,7 @@ Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/com
 Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) pag
 ![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
 
-1. Add a version tag. Example: `v1.0.0`
+1. Add a version tag. If the release was `v1` then this release should be `v2`
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
 4. Click publish release
