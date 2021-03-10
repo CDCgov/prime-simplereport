@@ -32,19 +32,12 @@ public class AuthorizationConfiguration {
           + "T(gov.cdc.usds.simplereport.config.authorization.UserPermission).";
 
   private static final String SPEL_IS_SITE_ADMIN =
-      "@"
-          + AUTHORIZER_BEAN
-          + ".userHasSiteAdminRole()";
+      "@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()";
 
-  private static final String SPEL_IS_NOT_SELF =
-      "@"
-          + AUTHORIZER_BEAN
-          + ".userIsNotSelf(#userId)";
-  
+  private static final String SPEL_IS_NOT_SELF = "@" + AUTHORIZER_BEAN + ".userIsNotSelf(#userId)";
+
   private static final String SPEL_IS_NOT_IN_SAME_ORG =
-      "@"
-          + AUTHORIZER_BEAN
-          + ".userIsInSameOrg(#userId)";
+      "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -78,7 +71,7 @@ public class AuthorizationConfiguration {
   /**
    * Require the current user to to be one of the administrative users ("superusers") or have the
    * {@link UserPermission#MANAGE_USERS} permission for the organization containing user with UUID
-   * {@code userId}; and require the user to not be the user they are operating on. 
+   * {@code userId}; and require the user to not be the user they are operating on.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code userId}.
    */
