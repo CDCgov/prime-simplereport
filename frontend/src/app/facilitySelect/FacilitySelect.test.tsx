@@ -1,9 +1,9 @@
 import React from "react";
 import configureStore from "redux-mock-store";
 import renderer from "react-test-renderer";
+import { Provider } from "react-redux";
 
 import FacilitySelect from "./FacilitySelect";
-import { Provider } from "react-redux";
 
 const mockStore = configureStore([]);
 
