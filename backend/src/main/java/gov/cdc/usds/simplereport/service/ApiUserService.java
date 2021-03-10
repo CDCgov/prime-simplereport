@@ -176,7 +176,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
   public UserInfo updateUserPrivileges(
-      UUID userId, boolean accessAllFacilities, Set<String> facilities, Role role) {
+      UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -184,9 +184,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<UUID> facilityUUIDs =
-        facilities.stream().map(f -> UUID.fromString(f)).collect(Collectors.toSet());
-    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilityUUIDs);
+    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilities);
     Optional<OrganizationRoleClaims> newOrgClaims =
         _oktaRepo.updateUserPrivileges(
             username, org, facilitiesFound, getOrganizationRoles(role, accessAllFacilities));

@@ -2,7 +2,7 @@ mutation updateUserPrivileges(
     $id: ID!,
     $role: Role!,
     $accessAllFacilities: Boolean!,
-    $facilities: [String!],
+    $facilities: [ID!],
     ){
   updateUserPrivileges(
     id: $id

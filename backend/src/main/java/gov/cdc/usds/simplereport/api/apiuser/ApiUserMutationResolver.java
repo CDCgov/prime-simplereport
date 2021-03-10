@@ -58,8 +58,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
   }
 
   public User updateUserPrivileges(
-      UUID id, boolean accessAllFacilities, List<String> facilities, Role role) {
-    Set<String> facilitySet = facilities == null ? Set.of() : new HashSet<>(facilities);
+      UUID id, boolean accessAllFacilities, List<UUID> facilities, Role role) {
+    Set<UUID> facilitySet = facilities == null ? Set.of() : new HashSet<>(facilities);
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
     return new User(user);
   }
