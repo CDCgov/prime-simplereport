@@ -5,6 +5,7 @@ import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -58,8 +59,9 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
   }
 
   public User updateUserPrivileges(
-      UUID id, boolean accessAllFacilities, List<UUID> facilities, Role role) {
-    Set<UUID> facilitySet = facilities == null ? Set.of() : new HashSet<>(facilities);
+      UUID id, boolean accessAllFacilities, UUID[] facilities, Role role) {
+    Set<UUID> facilitySet =
+        facilities == null ? Set.of() : new HashSet<>(Arrays.asList(facilities));
     UserInfo user = _us.updateUserPrivileges(id, accessAllFacilities, facilitySet, role);
     return new User(user);
   }
