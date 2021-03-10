@@ -94,3 +94,13 @@ jobs:
       - name: Run e2e tests
         working-directory: ./frontend
         run: yarn e2e
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: gradle logs
+          path: gradle-log.txt
+      - uses: actions/upload-artifact@v2
+        if: failure()
+        with:
+          name: yarn logs
+          path: yarn-log.txt
