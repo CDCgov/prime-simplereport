@@ -1,7 +1,8 @@
 name: Deploy Training
 
 on:
-  workflow_dispatch:
+  release:
+    types: [published]
 
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
