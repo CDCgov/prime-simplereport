@@ -101,7 +101,7 @@ simple-report:
         last-name: Bobberoo
       authorization:
         organization-external-id: ${SR_DEMO_USER_ORG:DIS_ORG}
-        granted-roles: ${SR_DEMO_USER_ROLE:MEMBER, ADMIN}
+        granted-roles: ${SR_DEMO_USER_ROLE:NO_ACCESS, ADMIN}
     alternate-users:
       - identity:
           username: ruby@example.com
@@ -114,7 +114,7 @@ simple-report:
             - Testing Site
             # TODO: uncomment once e2e tests can accommodate 2+ facilities
             # - Injection Site
-          granted-roles: MEMBER, USER
+          granted-roles: NO_ACCESS, USER
       - identity:
           username: ben@example.com
           first-name: Ben
@@ -125,7 +125,7 @@ simple-report:
           organization-external-id: DIS_ORG
           facilities: 
             - Testing Site
-          granted-roles: MEMBER
+          granted-roles: NO_ACCESS
       - identity:
           username: jamar@example.com
           first-name: Jamar
@@ -133,7 +133,7 @@ simple-report:
           last-name: Jackson
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: MEMBER, ENTRY_ONLY, ALL_FACILITIES
+          granted-roles: NO_ACCESS, ENTRY_ONLY, ALL_FACILITIES
       - identity:
           username: sarah@example.com
           first-name: Sarah
@@ -141,4 +141,4 @@ simple-report:
           last-name: Samuels
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: MEMBER, ADMIN
+          granted-roles: NO_ACCESS, ADMIN

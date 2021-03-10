@@ -27,16 +27,7 @@ enum UserPermission {
   ACCESS_ALL_FACILITIES
 }
 
-# In the event that two roles grant an equal number of permissions, the one listed later
-# in the OrganizationRole enum will take precedence when calculating the effective roles
-# from a set of roles. But all roles a user holds, whose permissions are not collectively 
-# granted by other roles listed later in the OrganizationRole enum that the user also holds,
-# will be considered effective.
-# e.g. [MEMBER, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER]
-# e.g. [MEMBER, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
-enum OrganizationRole {
-  MEMBER
-  ALL_FACILITIES
+enum ApiOrganizationRole {
   ENTRY_ONLY
   USER
   ADMIN
@@ -184,7 +175,7 @@ type User {
   roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization
-  roles: [OrganizationRole!]
+  roles: [ApiOrganizationRole!]
   facilities: [Facility!]
 }
 
@@ -299,7 +290,7 @@ type Mutation {
     suffix: String
     email: String!
     organizationExternalId: String!
-    role: OrganizationRole
+    role: ApiOrganizationRole!
   ): User
   addUserToCurrentOrg(
     firstName: String
@@ -307,7 +298,7 @@ type Mutation {
     lastName: String!
     suffix: String
     email: String!
-    role: OrganizationRole
+    role: ApiOrganizationRole!
   ): User
   updateUser(
     id: ID!
@@ -319,12 +310,13 @@ type Mutation {
   ): User
   updateUserRole(
     id: ID!
-    role: OrganizationRole!
-  ): OrganizationRole
+    role: ApiOrganizationRole!
+  ): ApiOrganizationRole
   updateUserPrivileges(
     id: ID!
+    accessAllFacilities: Boolean!
     facilities: [String!]!
-    roles: [OrganizationRole!]!
+    role: ApiOrganizationRole!
   ): User
   setUserIsDeleted(
     id: ID!

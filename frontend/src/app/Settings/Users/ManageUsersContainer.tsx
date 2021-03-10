@@ -45,7 +45,7 @@ interface UserData {
 }
 
 const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($id: ID!, $role: OrganizationRole!) {
+  mutation UpdateUserRole($id: ID!, $role: ApiOrganizationRole!) {
     updateUserRole(id: $id, role: $role)
   }
 `;
@@ -63,7 +63,7 @@ const ADD_USER_TO_ORG = gql`
     $firstName: String
     $lastName: String!
     $email: String!
-    $role: OrganizationRole
+    $role: ApiOrganizationRole!
   ) {
     addUserToCurrentOrg(
       firstName: $firstName

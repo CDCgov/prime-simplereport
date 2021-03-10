@@ -84,9 +84,9 @@ class PermissionHolderTest {
   }
 
   @Test
-  void getEffectiveRoles_onlyMember_member() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.MEMBER);
-    assertEquals(Set.of(OrganizationRole.MEMBER), makeHolder(roles).getEffectiveRoles());
+  void getEffectiveRoles_onlyNoAccess_noAccess() {
+    Set<OrganizationRole> roles = Set.of(OrganizationRole.NO_ACCESS);
+    assertEquals(Set.of(OrganizationRole.NO_ACCESS), makeHolder(roles).getEffectiveRoles());
   }
 
   @Test
@@ -96,8 +96,8 @@ class PermissionHolderTest {
   }
 
   @Test
-  void getEffectiveRoles_memberAndEntry_entry() {
-    Set<OrganizationRole> roles = Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.MEMBER);
+  void getEffectiveRoles_noAccessAndEntry_entry() {
+    Set<OrganizationRole> roles = Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.NO_ACCESS);
     assertEquals(Set.of(OrganizationRole.ENTRY_ONLY), makeHolder(roles).getEffectiveRoles());
   }
 

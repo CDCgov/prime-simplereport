@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import gov.cdc.usds.simplereport.api.model.ApiOrganizationRole;
 import gov.cdc.usds.simplereport.api.model.User;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -27,11 +27,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
       String suffix,
       String email,
       String organizationExternalID,
-      OrganizationRole role) {
-    // For backward compatibility
-    if (role == null) {
-      role = OrganizationRole.getDefault();
-    }
+      ApiOrganizationRole role) {
     UserInfo user =
         _us.createUser(
             email, firstName, middleName, lastName, suffix, organizationExternalID, role);
@@ -44,10 +40,7 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
       String lastName,
       String suffix,
       String email,
-      OrganizationRole role) {
-    if (role == null) {
-      role = OrganizationRole.getDefault();
-    }
+      ApiOrganizationRole role) {
     UserInfo user =
         _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix, role);
     return new User(user);
@@ -59,12 +52,14 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
     return new User(user);
   }
 
-  public OrganizationRole updateUserRole(UUID id, OrganizationRole role) {
+  public ApiOrganizationRole updateUserRole(UUID id, ApiOrganizationRole role) {
     return _us.updateUserRole(id, role);
   }
 
-  public User updateUserPrivileges(UUID id, List<String> facilities, List<OrganizationRole> role) {
-    UserInfo user = _us.updateUserPrivileges(id, new HashSet<>(facilities), new HashSet<>(role));
+  public User updateUserPrivileges(
+      UUID id, boolean accessAllFacilities, List<String> facilities, ApiOrganizationRole role) {
+    UserInfo user =
+        _us.updateUserPrivileges(id, accessAllFacilities, new HashSet<>(facilities), role);
     return new User(user);
   }
 
