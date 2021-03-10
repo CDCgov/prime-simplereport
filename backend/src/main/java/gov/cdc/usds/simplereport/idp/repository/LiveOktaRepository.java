@@ -305,7 +305,7 @@ public class LiveOktaRepository implements OktaRepository {
     // After the first migration, the migration code below will amount to a no-op,
     // until we change the next line to new OrganizationRole's
     Set<OrganizationRole> migrationDestRoles =
-        Set.of(OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES);
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES);
     List<String> migrationDestGroupIds = new ArrayList<>();
     List<String> migrationDestGroupNames = new ArrayList<>();
     List<String> migrationSourceGroupNames = new ArrayList<>();
