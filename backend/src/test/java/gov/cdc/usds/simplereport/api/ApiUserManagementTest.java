@@ -510,7 +510,7 @@ class ApiUserManagementTest extends BaseApiTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("id", id)
-            .put("role", OrganizationRole.ENTRY_ONLY.name());
+            .put("role", ApiOrganizationRole.ENTRY_ONLY.name());
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
 
@@ -716,9 +716,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
     ObjectNode updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(
-            id,
-            Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
-            Set.of());
+            id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
 
