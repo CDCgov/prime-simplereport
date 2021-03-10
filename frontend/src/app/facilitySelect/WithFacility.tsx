@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector, connect } from "react-redux";
 import { useHistory } from "react-router-dom";
 
-import { updateFacility } from "../store";
+import { RootState, updateFacility } from "../store";
 import { getFacilityIdFromUrl } from "../utils/url";
 
 import FacilityPopup from "./FacilityPopup";
@@ -15,13 +15,16 @@ interface Props {}
 const WithFacility: React.FC<Props> = ({ children }) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
+  const dataLoaded = useSelector<RootState, boolean>(
+    (state) => state.dataLoaded
   );
-  const facilityInStore = useSelector(
-    (state) => (state as any).facility as Facility
+  const facilities = useSelector<RootState, Facility[]>(
+    (state) => state.facilities
   );
-  const facilityFromUrl = facilities?.find(
+  const facilityInStore = useSelector<RootState, Pick<Facility, "id" | "name">>(
+    (state) => state.facility
+  );
+  const facilityFromUrl = facilities.find(
     (f) => f.id === getFacilityIdFromUrl()
   );
 
@@ -34,7 +37,7 @@ const WithFacility: React.FC<Props> = ({ children }) => {
     setFacilityProp(facility.id);
   };
 
-  if (facilities === undefined) {
+  if (!dataLoaded) {
     return <Loading />;
   }
 

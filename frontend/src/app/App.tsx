@@ -61,6 +61,7 @@ const App = () => {
 
     dispatch(
       setInitialState({
+        dataLoaded: true,
         organization: {
           name: data.whoami.organization?.name,
         },

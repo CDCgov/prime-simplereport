@@ -25,6 +25,7 @@ describe("WithFacility", () => {
   describe("With zero facilities", () => {
     beforeEach(() => {
       store = mockStore({
+        dataLoaded: true,
         organization: {
           name: "Organization Name",
         },
@@ -50,6 +51,7 @@ describe("WithFacility", () => {
   describe("With one facility", () => {
     beforeEach(() => {
       store = mockStore({
+        dataLoaded: true,
         organization: {
           name: "Organization Name",
         },
@@ -89,6 +91,7 @@ describe("WithFacility", () => {
   describe("With two facilities", () => {
     beforeEach(() => {
       store = mockStore({
+        dataLoaded: true,
         organization: {
           name: "Organization Name",
         },
