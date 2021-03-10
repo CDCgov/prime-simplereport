@@ -18,7 +18,7 @@ const GET_USERS = gql`
       middleName
       lastName
       roleDescription
-      roles
+      role
       permissions
       email
       facilities {
@@ -42,7 +42,6 @@ export interface SettingsUser {
   middleName: string;
   lastName: string;
   roleDescription: UserRole;
-  roles: ApiOrganizationRole[];
   role: ApiOrganizationRole;
   permissions: UserPermission[];
   email: string;

@@ -16,7 +16,7 @@ type MinimalFacilityInfo = Pick<Facility, "id" | "name">;
 type FacilityLookup = Record<string, MinimalFacilityInfo>;
 
 const getHasAllFacilityAccess = (user: SettingsUser) =>
-  user.roles.some((role) => role === "ADMIN" || role === "ALL_FACILITIES");
+  user.role === "ADMIN" || user.permissions.includes("ACCESS_ALL_FACILITIES");
 
 const alphabeticalFacilitySort = (
   a: MinimalFacilityInfo,
@@ -84,7 +84,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     );
   };
 
-  const isAdmin = activeUser.roles.includes("ADMIN");
+  const isAdmin = activeUser.role === "ADMIN";
 
   const facilityAccessDescription = isAdmin
     ? "Admins have access to all facilities"
@@ -145,15 +145,17 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         checkedValues={{ ALL_FACILITIES: hasAllFacilityAccess }}
         onChange={(e) => {
           if (e.target.checked) {
-            onUpdateUser(activeUser.id, "roles", [
-              ...activeUser.roles,
-              "ALL_FACILITIES",
+            onUpdateUser(activeUser.id, "permissions", [
+              ...activeUser.permissions,
+              "ACCESS_ALL_FACILITIES",
             ]);
           } else {
             onUpdateUser(
               activeUser.id,
-              "roles",
-              activeUser.roles.filter((role) => role !== "ALL_FACILITIES")
+              "permissions",
+              activeUser.permissions.filter(
+                (permission) => permission !== "ACCESS_ALL_FACILITIES"
+              )
             );
           }
         }}

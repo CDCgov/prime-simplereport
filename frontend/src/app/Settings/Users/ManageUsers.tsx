@@ -9,7 +9,6 @@ import {
   displayFullNameInOrder,
   displayFullName,
 } from "../../utils";
-import { ApiOrganizationRole, RoleDescription } from "../../permissions";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -131,6 +130,10 @@ const ManageUsers: React.FC<Props> = ({
       variables: {
         id: activeUser.id,
         role: activeUser.role,
+        facilities: activeUser.facilities.map(({ id }) => id),
+        accessAllFacilities: activeUser.permissions.includes(
+          "ACCESS_ALL_FACILITIES"
+        ),
       },
     })
       .then(() => {

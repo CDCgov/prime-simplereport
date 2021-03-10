@@ -8,7 +8,8 @@ export type UserPermission =
   | "START_TEST"
   | "UPDATE_TEST"
   | "SUBMIT_TEST"
-  | "SEARCH_PATIENTS";
+  | "SEARCH_PATIENTS"
+  | "ACCESS_ALL_FACILITIES";
 
 export type UserRole = "admin" | "user" | "entry-only";
 

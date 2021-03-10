@@ -1,13 +1,13 @@
 import React from "react";
 
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { OrganizationRole } from "../../permissions";
+import { ApiOrganizationRole } from "../../permissions";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser } from "./ManageUsersContainer";
 
 interface RoleButton {
-  value: OrganizationRole;
+  value: ApiOrganizationRole;
   label: string;
 }
 
@@ -26,17 +26,6 @@ const ROLES: RoleButton[] = [
   },
 ];
 
-const organizationRoles = new Set(ROLES.map(({ value }) => value));
-organizationRoles.add("MEMBER");
-
-const getUserOrganizationalRole = (user: SettingsUser) => {
-  return user.roles.includes("ADMIN")
-    ? "ADMIN"
-    : user.roles.includes("ENTRY_ONLY")
-    ? "ENTRY_ONLY"
-    : "USER";
-};
-
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
   loggedInUser: User; // the user doing the editing
@@ -51,13 +40,8 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   const updateRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const role = e.target.value as OrganizationRole;
-    // Don't want to lose facility-related roles
-    const updatedRoles = activeUser.roles.filter(
-      (role) => !organizationRoles.has(role)
-    );
-    updatedRoles.push(role);
-    onUpdateUser(activeUser.id, "roles", updatedRoles);
+    const role = e.target.value as ApiOrganizationRole;
+    onUpdateUser(activeUser.id, "role", role);
   };
 
   return (
@@ -68,7 +52,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
         legendSrOnly
         name="role"
         buttons={ROLES}
-        selectedRadio={getUserOrganizationalRole(activeUser)}
+        selectedRadio={activeUser.role}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRole(e)}
         disabled={
           activeUser.id === loggedInUser.id ||
