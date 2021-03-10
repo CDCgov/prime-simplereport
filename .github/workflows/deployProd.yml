@@ -2,7 +2,7 @@ name: Deploy Prod
 
 on:
   release:
-    types: [published]
+    types: [released]
 
 env:
   ARM_CLIENT_ID: ${{ secrets.TERRAFORM_ARM_CLIENT_ID }}
