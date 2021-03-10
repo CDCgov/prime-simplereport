@@ -267,7 +267,6 @@ There are a few ways to manage this:
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
 ## Deploy
-See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md
 
 ### Cloud Environments
 
