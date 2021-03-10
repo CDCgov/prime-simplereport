@@ -21,6 +21,7 @@ mutation updateUser(
       suffix,
       email,
       permissions,
+      role,
       roles,
       facilities {
         name

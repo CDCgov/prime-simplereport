@@ -6,6 +6,7 @@
     lastName
     suffix
     email
+    role
     roles
     permissions
     roleDescription

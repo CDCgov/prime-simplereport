@@ -175,7 +175,9 @@ type User {
   roleDescription: String!
   permissions: [UserPermission!]!
   organization: Organization
-  roles: [ApiOrganizationRole!]
+  # for backward compatibility, currently maintaining both `role` and `roles`
+  role: ApiOrganizationRole
+  roles: [ApiOrganizationRole!]!
   facilities: [Facility!]
 }
 

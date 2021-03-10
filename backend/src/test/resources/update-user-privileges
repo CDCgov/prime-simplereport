@@ -17,6 +17,7 @@ mutation updateUserPrivileges(
       suffix,
       email,
       permissions,
+      role,
       roles,
       roleDescription,
       facilities {

@@ -73,13 +73,11 @@ public class User {
     return result.isEmpty() ? List.of() : List.of(result.get());
   }
 
-  private Optional<ApiOrganizationRole> getRole() {
+  public Optional<ApiOrganizationRole> getRole() {
     return ApiOrganizationRole.fromOrganizationRoles(wrapped.getRoles());
   }
 
   public List<ApiFacility> getFacilities() {
-    return wrapped.getFacilities().stream()
-        .map(f -> new ApiFacility(f))
-        .collect(Collectors.toList());
+    return wrapped.getFacilities().stream().map(ApiFacility::new).collect(Collectors.toList());
   }
 }

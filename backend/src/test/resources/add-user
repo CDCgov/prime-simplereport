@@ -23,6 +23,7 @@ mutation addUser(
       suffix,
       email,
       permissions,
+      role,
       roles,
       facilities {
         name
