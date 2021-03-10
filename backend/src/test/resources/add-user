@@ -5,7 +5,7 @@ mutation addUser(
     $suffix: String,
     $email: String!,
     $organizationExternalId: String!,
-    $role: OrganizationRole,
+    $role: ApiOrganizationRole!,
     ){
   addUser(
     firstName: $firstName

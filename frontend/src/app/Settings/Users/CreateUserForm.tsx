@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
-import { OrganizationRole } from "../../permissions";
+import { ApiOrganizationRole } from "../../permissions";
 
 import { NewUserInvite } from "./ManageUsersContainer";
 
@@ -24,7 +24,7 @@ const initialFormState: NewUserInvite = {
 };
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
-const ROLE_OPTIONS: { value: OrganizationRole; label: string }[] = [
+const ROLE_OPTIONS: { value: ApiOrganizationRole; label: string }[] = [
   {
     value: "ENTRY_ONLY",
     label: "Entry only (conduct tests)",

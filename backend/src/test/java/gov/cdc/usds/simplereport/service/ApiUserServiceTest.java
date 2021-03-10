@@ -31,17 +31,17 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
         };
     assertEquals(users.size(), 4);
     assertEquals(users.get(0).getEmail(), "admin@example.com");
-    roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.ADMIN));
+    roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN));
     assertEquals(users.get(1).getEmail(), "allfacilities@example.com");
     roleCheck.accept(
         users.get(1),
         EnumSet.of(
-            OrganizationRole.MEMBER, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+            OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
     assertEquals(users.get(2).getEmail(), "bobbity@example.com");
-    roleCheck.accept(users.get(2), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+    roleCheck.accept(users.get(2), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
     assertEquals(users.get(3).getEmail(), "nobody@example.com");
     roleCheck.accept(
-        users.get(3), EnumSet.of(OrganizationRole.MEMBER, OrganizationRole.ENTRY_ONLY));
+        users.get(3), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY));
   }
 
   @Test

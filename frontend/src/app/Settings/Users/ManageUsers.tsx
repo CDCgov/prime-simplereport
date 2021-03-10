@@ -9,7 +9,7 @@ import {
   displayFullNameInOrder,
   displayFullName,
 } from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
+import { ApiOrganizationRole, RoleDescription } from "../../permissions";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -131,13 +131,13 @@ const ManageUsers: React.FC<Props> = ({
     }
     setIsUpdating(true);
     const selectedRoleDescription = activeUser.roleDescription as RoleDescription;
-    const selectedOrganizationRole = RoleDescriptionToOrgRole[
+    const selectedApiOrganizationRole = RoleDescriptionToOrgRole[
       selectedRoleDescription
-    ] as OrganizationRole;
+    ] as ApiOrganizationRole;
     updateUserRole({
       variables: {
         id: activeUser.id,
-        role: selectedOrganizationRole,
+        role: selectedApiOrganizationRole,
       },
     })
       .then(() => {
