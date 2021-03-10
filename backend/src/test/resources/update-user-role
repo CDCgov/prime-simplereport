@@ -1,6 +1,6 @@
 mutation updateUserRole(
     $id: ID!,
-    $role: OrganizationRole!,
+    $role: ApiOrganizationRole!,
     ){
   updateUserRole(
     id: $id
