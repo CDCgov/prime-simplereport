@@ -350,9 +350,18 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals("Ronda", updateUser.get("firstName").asText());
     assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
     assertEquals(
-        Set.of(OrganizationRole.MEMBER, OrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+        Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(
-        OrganizationRole.ADMIN.getGrantedPermissions(), extractPermissionsFromUser(updateUser));
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST), 
+        extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
 
