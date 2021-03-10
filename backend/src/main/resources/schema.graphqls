@@ -27,7 +27,7 @@ enum UserPermission {
   ACCESS_ALL_FACILITIES
 }
 
-enum ApiOrganizationRole {
+enum Role {
   ENTRY_ONLY
   USER
   ADMIN
@@ -176,8 +176,8 @@ type User {
   permissions: [UserPermission!]!
   organization: Organization
   # for backward compatibility, currently maintaining both `role` and `roles`
-  role: ApiOrganizationRole
-  roles: [ApiOrganizationRole!]!
+  role: Role
+  roles: [Role!]!
   facilities: [Facility!]
 }
 
@@ -292,7 +292,7 @@ type Mutation {
     suffix: String
     email: String!
     organizationExternalId: String!
-    role: ApiOrganizationRole!
+    role: Role!
   ): User
   addUserToCurrentOrg(
     firstName: String
@@ -300,7 +300,7 @@ type Mutation {
     lastName: String!
     suffix: String
     email: String!
-    role: ApiOrganizationRole!
+    role: Role!
   ): User
   updateUser(
     id: ID!
@@ -312,13 +312,13 @@ type Mutation {
   ): User
   updateUserRole(
     id: ID!
-    role: ApiOrganizationRole!
-  ): ApiOrganizationRole
+    role: Role!
+  ): Role
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
-    facilities: [String!]!
-    role: ApiOrganizationRole!
+    facilities: [ID!]
+    role: Role!
   ): User
   setUserIsDeleted(
     id: ID!

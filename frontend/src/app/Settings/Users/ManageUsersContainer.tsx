@@ -2,11 +2,7 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import {
-  UserRole,
-  UserPermission,
-  ApiOrganizationRole,
-} from "../../permissions";
+import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
@@ -42,7 +38,7 @@ export interface SettingsUser {
   middleName: string;
   lastName: string;
   roleDescription: UserRole;
-  role: ApiOrganizationRole;
+  role: Role;
   permissions: UserPermission[];
   email: string;
   organization: {

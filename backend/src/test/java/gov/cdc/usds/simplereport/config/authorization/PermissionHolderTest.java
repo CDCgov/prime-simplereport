@@ -15,7 +15,7 @@ class PermissionHolderTest {
   @Test
   void getGrantedPermissions_userRole_userPermissions() {
     Set<UserPermission> permissions =
-        PermissionHolder.getPermissionsFromRoles(EnumSet.of(OrganizationRole.USER));
+        makeHolder(EnumSet.of(OrganizationRole.USER)).getGrantedPermissions();
     Set<UserPermission> expected =
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -32,21 +32,21 @@ class PermissionHolderTest {
   @Test
   void getGrantedPermissions_allRoles_allPermissions() {
     Set<UserPermission> permissions =
-        PermissionHolder.getPermissionsFromRoles(EnumSet.allOf(OrganizationRole.class));
+        makeHolder(EnumSet.allOf(OrganizationRole.class)).getGrantedPermissions();
     assertEquals(UserPermission.values().length, permissions.size());
   }
 
   @Test
   void getGrantedPermissions_noRoles_noPermissions() {
     Set<UserPermission> permissions =
-        PermissionHolder.getPermissionsFromRoles(EnumSet.noneOf(OrganizationRole.class));
+        makeHolder(EnumSet.noneOf(OrganizationRole.class)).getGrantedPermissions();
     assertEquals(EnumSet.noneOf(UserPermission.class), permissions);
   }
 
   @Test
   void getGrantedPermissions_restrictedUser_restrictedPermissions() {
     Set<UserPermission> permissions =
-        PermissionHolder.getPermissionsFromRoles(EnumSet.of(OrganizationRole.ENTRY_ONLY));
+        makeHolder(EnumSet.of(OrganizationRole.ENTRY_ONLY)).getGrantedPermissions();
     Set<UserPermission> expected =
         EnumSet.of(
             UserPermission.START_TEST,
@@ -59,8 +59,8 @@ class PermissionHolderTest {
   @Test
   void getGrantedPermissions_restrictedUserAllFacilities_restrictedPermissionsAllFacilities() {
     Set<UserPermission> permissions =
-        PermissionHolder.getPermissionsFromRoles(
-            EnumSet.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+        makeHolder(EnumSet.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES))
+            .getGrantedPermissions();
     Set<UserPermission> expected =
         EnumSet.of(
             UserPermission.START_TEST,

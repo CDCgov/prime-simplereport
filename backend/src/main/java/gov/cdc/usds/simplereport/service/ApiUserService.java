@@ -1,6 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationRole;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -62,7 +62,7 @@ public class ApiUserService {
       String lastName,
       String suffix,
       String organizationExternalId,
-      ApiOrganizationRole role) {
+      Role role) {
     Organization org = _orgService.getOrganization(organizationExternalId);
     return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
@@ -74,7 +74,7 @@ public class ApiUserService {
       String middleName,
       String lastName,
       String suffix,
-      ApiOrganizationRole role) {
+      Role role) {
     Organization org = _orgService.getCurrentOrganization();
     return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
@@ -86,7 +86,7 @@ public class ApiUserService {
       String lastName,
       String suffix,
       Organization org,
-      ApiOrganizationRole role) {
+      Role role) {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
@@ -148,7 +148,7 @@ public class ApiUserService {
    */
   @Deprecated
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-  public ApiOrganizationRole updateUserRole(UUID userId, ApiOrganizationRole role) {
+  public Role updateUserRole(UUID userId, Role role) {
     ApiUser user = getApiUser(userId);
     String username = user.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -176,7 +176,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
   public UserInfo updateUserPrivileges(
-      UUID userId, boolean accessAllFacilities, Set<String> facilities, ApiOrganizationRole role) {
+      UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -184,9 +184,7 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<UUID> facilityUUIDs =
-        facilities.stream().map(f -> UUID.fromString(f)).collect(Collectors.toSet());
-    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilityUUIDs);
+    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilities);
     Optional<OrganizationRoleClaims> newOrgClaims =
         _oktaRepo.updateUserPrivileges(
             username, org, facilitiesFound, getOrganizationRoles(role, accessAllFacilities));
@@ -220,8 +218,7 @@ public class ApiUserService {
     return user;
   }
 
-  private Set<OrganizationRole> getOrganizationRoles(
-      ApiOrganizationRole role, boolean accessAllFacilities) {
+  private Set<OrganizationRole> getOrganizationRoles(Role role, boolean accessAllFacilities) {
     Set<OrganizationRole> result = EnumSet.of(role.toOrganizationRole());
     if (accessAllFacilities) {
       result.add(OrganizationRole.ALL_FACILITIES);

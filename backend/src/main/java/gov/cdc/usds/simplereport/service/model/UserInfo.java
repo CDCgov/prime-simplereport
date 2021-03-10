@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service.model;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -29,10 +28,7 @@ public class UserInfo {
     this.roles =
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    Optional<Set<OrganizationRole>> effectiveRoles = orgwrapper.map(s -> s.getEffectiveRoles());
-    effectiveRoles
-        .map(s -> PermissionHolder.getPermissionsFromRoles(s))
-        .ifPresent(permissions::addAll);
+    orgwrapper.map(OrganizationRoles::getGrantedPermissions).ifPresent(permissions::addAll);
     this.facilities =
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
