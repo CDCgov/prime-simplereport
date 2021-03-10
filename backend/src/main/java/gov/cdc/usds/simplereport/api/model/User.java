@@ -66,16 +66,13 @@ public class User {
     }
   }
 
-  // there's no good reason that this variable is a list at this point, but changing 
+  // there's no good reason that this variable is a list at this point, but changing
   // it to a plain variable is too much change for the time being.
   public List<ApiOrganizationRole> getRoles() {
     Optional<ApiOrganizationRole> result = getRole();
-    return result.isEmpty()
-      ? List.of()
-      : List.of(result.get());
+    return result.isEmpty() ? List.of() : List.of(result.get());
   }
 
-  
   private Optional<ApiOrganizationRole> getRole() {
     return ApiOrganizationRole.fromOrganizationRoles(wrapped.getRoles());
   }

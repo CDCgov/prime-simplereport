@@ -21,7 +21,6 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
-
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
@@ -65,13 +64,7 @@ public class ApiUserService {
       String organizationExternalId,
       ApiOrganizationRole role) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, 
-                            firstName, 
-                            middleName, 
-                            lastName, 
-                            suffix, 
-                            org, 
-                            role);
+    return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
@@ -83,13 +76,7 @@ public class ApiUserService {
       String suffix,
       ApiOrganizationRole role) {
     Organization org = _orgService.getCurrentOrganization();
-    return createUserHelper(username, 
-                            firstName, 
-                            middleName, 
-                            lastName, 
-                            suffix, 
-                            org, 
-                            role);
+    return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
 
   private UserInfo createUserHelper(
@@ -105,8 +92,8 @@ public class ApiUserService {
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users can access all facilities
     Set<OrganizationRole> roles =
-        PermissionHolder.getEffectiveRoles(EnumSet.of(role.toOrganizationRole(), 
-                                                      OrganizationRole.getDefault()));
+        PermissionHolder.getEffectiveRoles(
+            EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault()));
     Optional<OrganizationRoleClaims> roleClaims =
         _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
@@ -173,9 +160,10 @@ public class ApiUserService {
     // ensure every user altered by this method maintains all-facility access for now
     Set<OrganizationRole> roles =
         PermissionHolder.getEffectiveRoles(
-            EnumSet.of(role.toOrganizationRole(), 
-                       OrganizationRole.ALL_FACILITIES, 
-                       OrganizationRole.getDefault()));
+            EnumSet.of(
+                role.toOrganizationRole(),
+                OrganizationRole.ALL_FACILITIES,
+                OrganizationRole.getDefault()));
     _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
 
     LOG.info(
@@ -188,10 +176,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
   public UserInfo updateUserPrivileges(
-      UUID userId, 
-      boolean accessAllFacilities,
-      Set<String> facilities, 
-      ApiOrganizationRole role) {
+      UUID userId, boolean accessAllFacilities, Set<String> facilities, ApiOrganizationRole role) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -235,8 +220,8 @@ public class ApiUserService {
     return user;
   }
 
-  private Set<OrganizationRole> getOrganizationRoles(ApiOrganizationRole role,
-                                                     boolean accessAllFacilities) {
+  private Set<OrganizationRole> getOrganizationRoles(
+      ApiOrganizationRole role, boolean accessAllFacilities) {
     Set<OrganizationRole> result = EnumSet.of(role.toOrganizationRole());
     if (accessAllFacilities) {
       result.add(OrganizationRole.ALL_FACILITIES);

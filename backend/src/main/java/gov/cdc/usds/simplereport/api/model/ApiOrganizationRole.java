@@ -1,14 +1,14 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import java.util.Collection;
 import java.util.Optional;
-
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 
 /**
  * The roles that can be granted to a user, that the front-end understands. The back-end knows of
  * other roles (detailed in {@code OrganizationRole}) that include and go beyond this list.
- * NOTE: the list of these values determines their precedence in resolving a user's roles to one
+ *
+ * <p>NOTE: the list of these values determines their precedence in resolving a user's roles to one
  * single role -- later roles have higher precedence. Do not edit this order casually!
  */
 public enum ApiOrganizationRole {
@@ -48,7 +48,7 @@ public enum ApiOrganizationRole {
         return Optional.of(apiRole);
       }
     }
-    
+
     return Optional.empty();
   }
 
