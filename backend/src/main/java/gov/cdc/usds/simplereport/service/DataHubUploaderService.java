@@ -193,15 +193,13 @@ public class DataHubUploaderService {
     _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
   }
 
-  @AuthorizationConfiguration.RequirePermissionExportTestEvent
-  public String createTestCSVForDataHub(String lastEndCreateOn) {
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public String createTestCSVForDataHub(String lastEndCreateOn) throws IOException {
     try {
       this.createTestEventCSV(lastEndCreateOn);
       return this._fileContents;
-    } catch (IOException err) {
-      return err.toString();
     } catch (NoResultException err) {
-      return "No matching results for the given time range";
+      return "";
     }
   }
 
