@@ -60,26 +60,26 @@ class DemoOktaRepositoryTest {
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId()),
-            Set.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
     OrganizationRoleClaims brad_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(),
             Set.of(
-                OrganizationRole.MEMBER,
+                OrganizationRole.NO_ACCESS,
                 OrganizationRole.ENTRY_ONLY,
                 OrganizationRole.ALL_FACILITIES));
     OrganizationRoleClaims charles_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
-            Set.of(OrganizationRole.MEMBER));
+            Set.of(OrganizationRole.NO_ACCESS));
     OrganizationRoleClaims diane_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(),
             Set.of(
-                OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+                OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
 
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)
@@ -107,7 +107,7 @@ class DemoOktaRepositoryTest {
                         ABC,
                         Set.of(ABC_1, ABC_2),
                         Set.of(
-                            OrganizationRole.MEMBER,
+                            OrganizationRole.NO_ACCESS,
                             OrganizationRole.ALL_FACILITIES,
                             OrganizationRole.ADMIN))
                     .get()));
@@ -133,7 +133,7 @@ class DemoOktaRepositoryTest {
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId()),
-            Set.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
 
     assertTrue(
@@ -153,15 +153,15 @@ class DemoOktaRepositoryTest {
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
-            Set.of(OrganizationRole.MEMBER, OrganizationRole.ENTRY_ONLY));
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY));
     OrganizationRoleClaims expected_2 =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(),
             Set.of(
-                OrganizationRole.MEMBER, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
+                OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
     OrganizationRoleClaims expected_3 =
-        new OrganizationRoleClaims(ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.MEMBER));
+        new OrganizationRoleClaims(ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.NO_ACCESS));
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
 
     assertTrue(
@@ -222,7 +222,7 @@ class DemoOktaRepositoryTest {
                 ABC.getExternalId(),
                 Set.of(),
                 Set.of(
-                    OrganizationRole.MEMBER,
+                    OrganizationRole.NO_ACCESS,
                     OrganizationRole.ALL_FACILITIES,
                     OrganizationRole.ADMIN)));
     Optional<OrganizationRoleClaims> brad_expected =
@@ -230,7 +230,7 @@ class DemoOktaRepositoryTest {
             new OrganizationRoleClaims(
                 ABC.getExternalId(),
                 Set.of(ABC_1.getInternalId()),
-                Set.of(OrganizationRole.MEMBER, OrganizationRole.ENTRY_ONLY)));
+                Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY)));
 
     assertTrue(amos_actual.isPresent());
     assertTrue(new OrganizationRoleClaimsMatcher(amos_expected.get()).matches(amos_actual.get()));
@@ -244,26 +244,26 @@ class DemoOktaRepositoryTest {
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId()),
-            Set.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
     OrganizationRoleClaims brad_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(),
             Set.of(
-                OrganizationRole.MEMBER,
+                OrganizationRole.NO_ACCESS,
                 OrganizationRole.ENTRY_ONLY,
                 OrganizationRole.ALL_FACILITIES));
     OrganizationRoleClaims charles_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
-            Set.of(OrganizationRole.MEMBER));
+            Set.of(OrganizationRole.NO_ACCESS));
     OrganizationRoleClaims diane_expected =
         new OrganizationRoleClaims(
             ABC.getExternalId(),
             Set.of(),
             Set.of(
-                OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+                OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
 
     _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
     _repo.createUser(
@@ -276,7 +276,7 @@ class DemoOktaRepositoryTest {
         DIANE,
         ABC,
         Set.of(ABC_1, ABC_2),
-        Set.of(OrganizationRole.MEMBER, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
 
     Map<String, OrganizationRoleClaims> all_users_actual = _repo.getAllUsersForOrganization(ABC);
     assertTrue(
@@ -320,7 +320,7 @@ class DemoOktaRepositoryTest {
 
     OrganizationRoleClaims amos_expected =
         new OrganizationRoleClaims(
-            ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.MEMBER, OrganizationRole.USER));
+            ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
 
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)

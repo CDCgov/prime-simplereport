@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
@@ -55,11 +54,30 @@ public class User {
   }
 
   public String getRoleDescription() {
-    return wrapped.getRoleDescription();
+    return buildRoleDescription(getRole(), getIsAdmin());
   }
 
-  public List<OrganizationRole> getRoles() {
-    return wrapped.getRoles();
+  private String buildRoleDescription(Optional<ApiOrganizationRole> role, boolean isAdmin) {
+    if (role.isPresent()) {
+      String desc = role.get().getDescription();
+      return isAdmin ? desc + " (SU)" : desc;
+    } else {
+      return isAdmin ? "Super Admin" : "Misconfigured user";
+    }
+  }
+
+  // there's no good reason that this variable is a list at this point, but changing 
+  // it to a plain variable is too much change for the time being.
+  public List<ApiOrganizationRole> getRoles() {
+    Optional<ApiOrganizationRole> result = getRole();
+    return result.isEmpty()
+      ? List.of()
+      : List.of(result.get());
+  }
+
+  
+  private Optional<ApiOrganizationRole> getRole() {
+    return ApiOrganizationRole.fromOrganizationRoles(wrapped.getRoles());
   }
 
   public List<ApiFacility> getFacilities() {

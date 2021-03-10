@@ -18,7 +18,6 @@ public class UserInfo {
   private ApiUser wrapped;
   private Optional<Organization> org;
   private boolean isAdmin;
-  private String roleDescription;
   private List<UserPermission> permissions;
   private List<OrganizationRole> roles;
   private List<Facility> facilities;
@@ -31,7 +30,6 @@ public class UserInfo {
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
     Optional<Set<OrganizationRole>> effectiveRoles = orgwrapper.map(s -> s.getEffectiveRoles());
-    this.roleDescription = buildRoleDescription(effectiveRoles, isAdmin);
     effectiveRoles
         .map(s -> PermissionHolder.getPermissionsFromRoles(s))
         .ifPresent(permissions::addAll);
@@ -39,20 +37,6 @@ public class UserInfo {
         orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
             .collect(Collectors.toList());
     this.isAdmin = isAdmin;
-  }
-
-  private String buildRoleDescription(Optional<Set<OrganizationRole>> roles, boolean isAdmin) {
-    if (roles.isPresent()) {
-      String desc =
-          String.join(
-              " | ",
-              roles.get().stream()
-                  .map(OrganizationRole::getDescription)
-                  .collect(Collectors.toList()));
-      return isAdmin ? desc + " (SU)" : desc;
-    } else {
-      return isAdmin ? "Super Admin" : "Misconfigured user";
-    }
   }
 
   public UUID getId() {
@@ -90,10 +74,6 @@ public class UserInfo {
 
   public List<UserPermission> getPermissions() {
     return permissions;
-  }
-
-  public String getRoleDescription() {
-    return roleDescription;
   }
 
   public List<OrganizationRole> getRoles() {

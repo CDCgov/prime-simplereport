@@ -34,8 +34,8 @@ public interface PermissionHolder {
    * OrganizationRole enum will take precedence when calculating the effective roles from a set of
    * roles. But all roles a user holds, whose permissions are not collectively granted by other
    * roles listed later in the OrganizationRole enum that the user also holds, will be considered
-   * effective. e.g. [MEMBER, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER] e.g.
-   * [MEMBER, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
+   * effective. e.g. [NO_ACCESS, ALL_FACILITIES, ENTRY_ONLY, USER] => [ALL_FACILITIES, USER] e.g.
+   * [NO_ACCESS, ENTRY_ONLY, USER, ADMIN] => [ADMIN]
    */
   public static Set<OrganizationRole> getEffectiveRoles(Collection<OrganizationRole> roles) {
     List<OrganizationRole> grantedRoles = new ArrayList<>(roles);

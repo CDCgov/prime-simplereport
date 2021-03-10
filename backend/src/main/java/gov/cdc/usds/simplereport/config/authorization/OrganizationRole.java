@@ -19,7 +19,7 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
    * permissions takes precedence over this role. NOTE: this role does not give you any meaningful
    * permissions, and thus must be accompanied by other roles for a user to be able to use the app.
    */
-  MEMBER("Member", EnumSet.noneOf(UserPermission.class)),
+  NO_ACCESS("No-access member", EnumSet.noneOf(UserPermission.class)),
   /**
    * This is the role that gives you access to all facilities in your organization; admins also have
    * all-facility access by default. NOTE: this role does not give you any meaningful permissions
@@ -91,6 +91,6 @@ public enum OrganizationRole implements Comparable<OrganizationRole> {
   }
 
   public static final OrganizationRole getDefault() {
-    return MEMBER;
+    return NO_ACCESS;
   }
 }
