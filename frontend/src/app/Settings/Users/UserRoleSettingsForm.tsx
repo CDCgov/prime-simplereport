@@ -1,13 +1,13 @@
 import React from "react";
 
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { ApiOrganizationRole } from "../../permissions";
+import { Role } from "../../permissions";
 
 import { UpdateUser } from "./ManageUsers";
 import { SettingsUser } from "./ManageUsersContainer";
 
 interface RoleButton {
-  value: ApiOrganizationRole;
+  value: Role;
   label: string;
 }
 
@@ -40,7 +40,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   const updateRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const role = e.target.value as ApiOrganizationRole;
+    const role = e.target.value as Role;
     onUpdateUser(activeUser.id, "role", role);
   };
 
