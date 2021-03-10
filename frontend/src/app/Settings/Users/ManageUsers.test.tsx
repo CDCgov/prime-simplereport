@@ -1,4 +1,4 @@
-import { render, fireEvent, waitFor } from "@testing-library/react";
+import { render, fireEvent, waitFor, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 
 import { displayFullName } from "../../utils";
@@ -260,5 +260,127 @@ describe("ManageUsers", () => {
     fireEvent.click(getByText("Send invite", { exact: false }));
     await waitFor(() => expect(addUserToOrg).toBeCalled());
     expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+  });
+  it("adds adds a facility for a user", async () => {
+    render(
+      <MemoryRouter>
+        <ManageUsers
+          users={users}
+          loggedInUser={loggedInUser}
+          allFacilities={allFacilities}
+          updateUserPrivileges={updateUserPrivileges}
+          addUserToOrg={addUserToOrg}
+          deleteUser={deleteUser}
+          getUsers={getUsers}
+        />
+      </MemoryRouter>
+    );
+    const facilitySelect = await screen.findByLabelText("Add facility");
+    waitFor(() =>
+      fireEvent.change(facilitySelect, { target: { value: "a1" } })
+    );
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Save changes"));
+    expect(updateUserPrivileges).toBeCalledWith({
+      variables: {
+        accessAllFacilities: false,
+        facilities: ["a1"],
+        id: "a123",
+        role: "USER",
+      },
+    });
+  });
+  it("adds all facilities for a user", async () => {
+    render(
+      <MemoryRouter>
+        <ManageUsers
+          users={users}
+          loggedInUser={loggedInUser}
+          allFacilities={allFacilities}
+          updateUserPrivileges={updateUserPrivileges}
+          addUserToOrg={addUserToOrg}
+          deleteUser={deleteUser}
+          getUsers={getUsers}
+        />
+      </MemoryRouter>
+    );
+    const facilitySelect = await screen.findByLabelText("Add facility");
+    waitFor(() =>
+      fireEvent.change(facilitySelect, { target: { value: "all" } })
+    );
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(screen.getByText("Save changes"));
+    expect(updateUserPrivileges).toBeCalledWith({
+      variables: {
+        accessAllFacilities: false,
+        facilities: ["a1", "a2"],
+        id: "a123",
+        role: "USER",
+      },
+    });
+  });
+  it("gives user access to all facilities", async () => {
+    render(
+      <MemoryRouter>
+        <ManageUsers
+          users={users}
+          loggedInUser={loggedInUser}
+          allFacilities={allFacilities}
+          updateUserPrivileges={updateUserPrivileges}
+          addUserToOrg={addUserToOrg}
+          deleteUser={deleteUser}
+          getUsers={getUsers}
+        />
+      </MemoryRouter>
+    );
+    const allFacilitiesBox = await screen.findByLabelText(
+      "Access all facilities"
+    );
+    const saveButton = screen.getByText("Save changes");
+    await waitFor(() => {
+      fireEvent.click(allFacilitiesBox);
+      expect(saveButton).not.toBeDisabled();
+    });
+
+    fireEvent.click(saveButton);
+    expect(updateUserPrivileges).toBeCalledWith({
+      variables: {
+        accessAllFacilities: true,
+        facilities: ["a1", "a2"],
+        id: "a123",
+        role: "USER",
+      },
+    });
+  });
+  it("removes a facility", async () => {
+    render(
+      <MemoryRouter>
+        <ManageUsers
+          users={users}
+          loggedInUser={loggedInUser}
+          allFacilities={allFacilities}
+          updateUserPrivileges={updateUserPrivileges}
+          addUserToOrg={addUserToOrg}
+          deleteUser={deleteUser}
+          getUsers={getUsers}
+        />
+      </MemoryRouter>
+    );
+    const facilitySelect = await screen.findByLabelText("Add facility");
+
+    fireEvent.change(facilitySelect, { target: { value: "all" } });
+    fireEvent.click(screen.getByText("Add"));
+    fireEvent.click(
+      (await screen.findAllByLabelText("Remove facility", { exact: false }))[0]
+    );
+    fireEvent.click(screen.getByText("Save changes"));
+    expect(updateUserPrivileges).toBeCalledWith({
+      variables: {
+        accessAllFacilities: false,
+        facilities: ["a1"],
+        id: "a123",
+        role: "USER",
+      },
+    });
   });
 });
