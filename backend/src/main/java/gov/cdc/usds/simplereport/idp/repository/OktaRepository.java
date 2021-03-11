@@ -35,7 +35,7 @@ public interface OktaRepository {
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration);
 
-  default public void createOrganization(Organization org) {
+  public default void createOrganization(Organization org) {
     createOrganization(org, Set.of(), false);
   }
 

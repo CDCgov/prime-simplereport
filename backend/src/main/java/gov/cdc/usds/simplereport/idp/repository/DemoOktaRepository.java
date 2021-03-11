@@ -126,7 +126,7 @@ public class DemoOktaRepository implements OktaRepository {
         .collect(Collectors.toMap(u -> u, u -> usernameOrgRolesMap.get(u)));
   }
 
-  // this method dodsn't mean much in a demo env
+  // this method doesn't mean much in a demo env
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration) {
     String externalId = org.getExternalId();
