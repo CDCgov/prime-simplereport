@@ -8,13 +8,13 @@
     role
     roles
     permissions
-    facilities {
-      name
-      id
-    }
     organization {
       name
       externalId
+      testingFacility {
+        name
+        id
+      }
     }
   }
 }

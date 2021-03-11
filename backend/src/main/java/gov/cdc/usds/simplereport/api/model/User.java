@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.api.model;
 
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class User {
 
@@ -20,8 +18,8 @@ public class User {
     return wrapped.getId();
   }
 
-  public Optional<Organization> getOrganization() {
-    return wrapped.getOrganization();
+  public Optional<ApiOrganization> getOrganization() {
+    return wrapped.getOrganization().map(o -> new ApiOrganization(o, wrapped.getFacilities()));
   }
 
   public String getFirstName() {
@@ -75,9 +73,5 @@ public class User {
 
   public Optional<Role> getRole() {
     return Role.fromOrganizationRoles(wrapped.getRoles());
-  }
-
-  public List<ApiFacility> getFacilities() {
-    return wrapped.getFacilities().stream().map(ApiFacility::new).collect(Collectors.toList());
   }
 }

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.organization;
 
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.api.model.ApiOrganization;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -148,7 +149,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
     return new ApiFacility(facility);
   }
 
-  public Organization createOrganization(
+  public ApiOrganization createOrganization(
       String name,
       String externalId,
       String testingFacilityName,
@@ -194,19 +195,22 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             orderingProviderMiddleName,
             orderingProviderLastName,
             orderingProviderSuffix);
-    return _os.createOrganization(
-        name,
-        externalId,
-        testingFacilityName,
-        cliaNumber,
-        facilityAddress,
-        Translators.parsePhoneNumber(phone),
-        Translators.parseEmail(email),
-        deviceSpecimenTypes,
-        providerName,
-        providerAddress,
-        Translators.parsePhoneNumber(orderingProviderTelephone),
-        orderingProviderNPI);
+    Organization org =
+        _os.createOrganization(
+            name,
+            externalId,
+            testingFacilityName,
+            cliaNumber,
+            facilityAddress,
+            Translators.parsePhoneNumber(phone),
+            Translators.parseEmail(email),
+            deviceSpecimenTypes,
+            providerName,
+            providerAddress,
+            Translators.parsePhoneNumber(orderingProviderTelephone),
+            orderingProviderNPI);
+    List<Facility> facilities = _os.getFacilities(org);
+    return new ApiOrganization(org, facilities);
   }
 
   public void updateOrganization(String name) {
