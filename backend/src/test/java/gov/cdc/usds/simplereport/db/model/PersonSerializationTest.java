@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;

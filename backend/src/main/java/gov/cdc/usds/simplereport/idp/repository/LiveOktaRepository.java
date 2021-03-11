@@ -55,6 +55,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
 
+  private static Set<OrganizationRole> MIGRATION_DEST_ROLES =
+      Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES);
+
   private String _rolePrefix;
   private Client _client;
   private Application _app;
@@ -293,15 +296,21 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
+  /**
+   * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this organization
+   * where they do not already exist. For those OrganizationRole's that are in MIGRATION_DEST_ROLES
+   * and whose Okta groups are newly created, migrate all users from this org to those new Okta groups,
+   * where the migrated users are sourced from all pre-existing Okta groups for this organization.
+   * Separately, iterates over all facilities in this org, creating new corresponding Okta groups where
+   * they do not already exist. Does not perform any migration to these facility groups.
+   */
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration) {
     String name = org.getOrganizationName();
     String externalId = org.getExternalId();
 
     // After the first migration, the migration code below will amount to a no-op,
-    // until we change the next line to new OrganizationRole's
-    Set<OrganizationRole> migrationDestRoles =
-        Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES);
+    // until we change MIGRATION_DEST_ROLES to new OrganizationRole's
     List<String> migrationDestGroupIds = new ArrayList<>();
     List<String> migrationDestGroupNames = new ArrayList<>();
     List<String> migrationSourceGroupNames = new ArrayList<>();
@@ -317,11 +326,9 @@ public class LiveOktaRepository implements OktaRepository {
                 .buildAndCreate(_client);
         _app.createApplicationGroupAssignment(g.getId());
 
-        if (migration) {
-          LOG.info("Created Okta group={} via migration", roleGroupName);
-        }
+        LOG.info("Created Okta group={}", roleGroupName);
 
-        if (migration && migrationDestRoles.contains(role)) {
+        if (migration && MIGRATION_DEST_ROLES.contains(role)) {
           migrationDestGroupIds.add(g.getId());
           migrationDestGroupNames.add(roleGroupName);
         }
@@ -347,9 +354,7 @@ public class LiveOktaRepository implements OktaRepository {
                 .buildAndCreate(_client);
         _app.createApplicationGroupAssignment(g.getId());
 
-        if (migration) {
-          LOG.info("Created Okta group={} via migration", facilityGroupName);
-        }
+        LOG.info("Created Okta group={}", facilityGroupName);
 
       } catch (ResourceException e) {
         if (migration) {
@@ -362,7 +367,7 @@ public class LiveOktaRepository implements OktaRepository {
     }
 
     if (migration && !migrationSourceGroupNames.isEmpty() && !migrationDestGroupIds.isEmpty()) {
-      String ruleName = generateMigrationGroupRuleName(externalId, migrationDestRoles);
+      String ruleName = generateMigrationGroupRuleName(externalId, MIGRATION_DEST_ROLES);
       String ruleExpression = generateMigrationGroupRuleExpression(migrationSourceGroupNames);
       try {
         // https://developer.okta.com/docs/reference/api/groups/#group-rule-operations
