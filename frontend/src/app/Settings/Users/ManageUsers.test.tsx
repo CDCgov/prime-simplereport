@@ -1,5 +1,4 @@
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
-import { debug } from "console";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import configureStore from "redux-mock-store";
@@ -65,7 +64,7 @@ describe("ManageUsers", () => {
     deleteUser = jest.fn((obj) =>
       Promise.resolve({ data: { setUserIsDeleted: { id: obj.variables.id } } })
     );
-    getUsers = jest.fn(() => Promise.resolve());
+    getUsers = jest.fn(() => Promise.resolve({ data: users }));
   });
   it("displays the list of users and defaults to the first user", () => {
     const { container } = render(
@@ -145,10 +144,10 @@ describe("ManageUsers", () => {
     fireEvent.change(first, inputValue(newUser.firstName));
     fireEvent.change(last, inputValue(newUser.lastName));
     fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.change(select, inputValue("USER"));
+    fireEvent.change(select, inputValue(newUser.role));
     const sendButton = getByText("Send invite");
-    fireEvent.click(screen.getByLabelText("Access all facilities"));
     await waitFor(() => {
+      fireEvent.click(screen.getAllByRole("checkbox")[1]);
       expect(sendButton).not.toBeDisabled();
     });
     fireEvent.click(sendButton);
@@ -204,9 +203,14 @@ describe("ManageUsers", () => {
     fireEvent.change(first, inputValue(newUser.firstName));
     fireEvent.change(last, inputValue(newUser.lastName));
     fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.click(getByText("Send invite", { exact: false }));
+    fireEvent.click(screen.getAllByRole("checkbox")[1]);
+    const sendButton = getByText("Send invite");
+    await waitFor(() => expect(sendButton).not.toBeDisabled());
+    fireEvent.click(sendButton);
     await waitFor(() => expect(addUserToOrg).toBeCalled());
-    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+    expect(addUserToOrg).toBeCalledWith({
+      variables: { ...newUser, role: "USER" },
+    });
   });
   it("deletes a user", async () => {
     const { findByText } = render(
@@ -286,10 +290,7 @@ describe("ManageUsers", () => {
         firstName: "Kim",
         lastName: "Mendoza",
       },
-      facilities: [
-        { id: "1", name: "Facility 1" },
-        { id: "2", name: "Facility 2" },
-      ],
+      facilities: allFacilities,
     });
     const { getByText, findAllByRole } = render(
       <Provider store={store}>
@@ -318,9 +319,16 @@ describe("ManageUsers", () => {
     fireEvent.change(first, inputValue(newUser.firstName));
     fireEvent.change(last, inputValue(newUser.lastName));
     fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.click(getByText("Send invite", { exact: false }));
-    await waitFor(() => expect(addUserToOrg).toBeCalled());
-    expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+    fireEvent.click(screen.getByRole("checkbox"));
+    const sendButton = getByText("Send invite");
+    await waitFor(() => expect(sendButton).not.toBeDisabled());
+    await waitFor(() => {
+      fireEvent.click(sendButton);
+      expect(addUserToOrg).toBeCalled();
+    });
+    expect(addUserToOrg).toBeCalledWith({
+      variables: { ...newUser, role: "USER" },
+    });
   });
   it("adds adds a facility for a user", async () => {
     render(
@@ -337,11 +345,18 @@ describe("ManageUsers", () => {
       </MemoryRouter>
     );
     const facilitySelect = await screen.findByLabelText("Add facility");
-    waitFor(() =>
-      fireEvent.change(facilitySelect, { target: { value: "a1" } })
-    );
-    fireEvent.click(screen.getByText("Add"));
-    fireEvent.click(screen.getByText("Save changes"));
+    const addButton = screen.getByText("Add");
+    await waitFor(() => {
+      fireEvent.change(facilitySelect, { target: { value: "a1" } });
+      expect(addButton).not.toBeDisabled();
+    });
+    fireEvent.click(addButton);
+    const saveButton = screen.getByText("Save changes");
+    await waitFor(() => expect(saveButton).not.toBeDisabled());
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+      expect(updateUserPrivileges).toBeCalled();
+    });
     expect(updateUserPrivileges).toBeCalledWith({
       variables: {
         accessAllFacilities: false,
