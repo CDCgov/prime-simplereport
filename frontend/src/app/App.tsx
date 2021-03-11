@@ -35,10 +35,6 @@ const WHOAMI_QUERY = gql`
       isAdmin
       permissions
       roleDescription
-      facilities {
-        id
-        name
-      }
       organization {
         name
         testingFacility {
@@ -65,7 +61,7 @@ const App = () => {
         organization: {
           name: data.whoami.organization?.name,
         },
-        facilities: data.whoami.facilities,
+        facilities: data.whoami.organization.testingFacility,
         facility: null,
         user: {
           id: data.whoami.id,

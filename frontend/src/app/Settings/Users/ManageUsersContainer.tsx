@@ -17,10 +17,6 @@ const GET_USERS = gql`
       role
       permissions
       email
-      facilities {
-        id
-        name
-      }
       organization {
         testingFacility {
           id
@@ -44,7 +40,6 @@ export interface SettingsUser {
   organization: {
     testingFacility: UserFacilitySetting[];
   };
-  facilities: Pick<Facility, "id" | "name">[];
 }
 
 interface UserData {
@@ -54,9 +49,9 @@ interface UserData {
 const UPDATE_USER_PRIVILEGES = gql`
   mutation UpdateUserPrivileges(
     $id: ID!
-    $role: ApiOrganizationRole!
+    $role: Role!
     $accessAllFacilities: Boolean!
-    $facilities: [String!]!
+    $facilities: [ID!]!
   ) {
     updateUserPrivileges(
       id: $id
@@ -82,7 +77,7 @@ const ADD_USER_TO_ORG = gql`
     $firstName: String
     $lastName: String!
     $email: String!
-    $role: ApiOrganizationRole!
+    $role: Role!
   ) {
     addUserToCurrentOrg(
       firstName: $firstName

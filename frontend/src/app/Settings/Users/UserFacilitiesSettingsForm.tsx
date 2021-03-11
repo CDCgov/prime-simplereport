@@ -77,11 +77,11 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
     activeUser: SettingsUser,
     selectedFacilityId: string
   ) => {
-    onUpdateUser(
-      activeUser.id,
-      "facilities",
-      activeUser.facilities.filter((f) => f.id !== selectedFacilityId)
-    );
+    onUpdateUser(activeUser.id, "organization", {
+      testingFacility: activeUser.organization.testingFacility.filter(
+        (f) => f.id !== selectedFacilityId
+      ),
+    });
   };
 
   const isAdmin = activeUser.role === "ADMIN";
@@ -98,19 +98,19 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   useEffect(() => {
     if (
       hasAllFacilityAccess &&
-      activeUser.facilities.length !== allFacilities.length
+      activeUser.organization.testingFacility.length !== allFacilities.length
     ) {
-      onUpdateUser(
-        activeUser.id,
-        "facilities",
-        allFacilities.map(({ id, name }) => ({ id, name }))
-      );
+      onUpdateUser(activeUser.id, "organization", {
+        testingFacility: allFacilities.map(({ id, name }) => ({ id, name })),
+      });
     }
   }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
 
   const userFacilities = hasAllFacilityAccess
     ? [...allFacilities].sort(alphabeticalFacilitySort)
-    : [...activeUser.facilities].sort(alphabeticalFacilitySort);
+    : [...activeUser.organization.testingFacility].sort(
+        alphabeticalFacilitySort
+      );
 
   const userFacilityLookup = useMemo(
     () => new Set(userFacilities.map(({ id }) => id)),
@@ -223,17 +223,20 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             onClick={(e) => {
               e.preventDefault();
               if (selectedFacility === "all") {
-                onUpdateUser(
-                  activeUser.id,
-                  "facilities",
-                  allFacilities.map(({ id, name }) => ({ id, name }))
-                );
+                onUpdateUser(activeUser.id, "organization", {
+                  testingFacility: allFacilities.map(({ id, name }) => ({
+                    id,
+                    name,
+                  })),
+                });
               } else {
                 const facility = facilityLookup[selectedFacility];
-                onUpdateUser(activeUser.id, "facilities", [
-                  ...activeUser.facilities,
-                  facility,
-                ]);
+                onUpdateUser(activeUser.id, "organization", {
+                  testingFacility: [
+                    ...activeUser.organization.testingFacility,
+                    facility,
+                  ],
+                });
               }
               setSelectedFacility("");
             }}

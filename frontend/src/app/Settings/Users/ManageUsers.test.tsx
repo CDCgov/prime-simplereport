@@ -28,11 +28,10 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     lastName: "Arthur",
     id: "a123",
     email: "john@arthur.org",
-    organization,
+    organization: { testingFacility: [] },
     permissions: ["READ_PATIENT_LIST"],
     roleDescription: "user",
     role: "USER",
-    facilities: [],
   },
   {
     ...loggedInUser,
@@ -40,7 +39,6 @@ const users: SettingsUsers[keyof SettingsUsers][] = [
     organization,
     roleDescription: "admin",
     role: "ADMIN",
-    facilities: [],
   },
 ];
 

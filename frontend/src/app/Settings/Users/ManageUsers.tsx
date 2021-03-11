@@ -130,7 +130,7 @@ const ManageUsers: React.FC<Props> = ({
       variables: {
         id: activeUser.id,
         role: activeUser.role,
-        facilities: activeUser.facilities.map(({ id }) => id),
+        facilities: activeUser.organization.testingFacility.map(({ id }) => id),
         accessAllFacilities: activeUser.permissions.includes(
           "ACCESS_ALL_FACILITIES"
         ),
@@ -318,7 +318,7 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    activeUser.facilities.length === 0 ||
+                    activeUser.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription
