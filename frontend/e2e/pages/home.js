@@ -5,7 +5,7 @@ function conductTest(patientName) {
   this.section.navbar.expect.element("@conductTestLink").to.be.visible;
   this.section.navbar.click("@conductTestLink");
   this.section.app.expect.element("@searchBar").to.be.visible;
-  this.section.app.setValue("@searchBar", patientName);
+  this.section.app.setValue("@searchBar", patientName.split(",")[0]);
   this.expect.section("@searchResults").to.be.visible;
   this.section.searchResults.expect.element("@beginTest").to.be.visible;
   this.section.searchResults.expect
@@ -56,7 +56,7 @@ function getPatientLink(patientName) {
   this.section.navbar.expect.element("@conductTestLink").to.be.visible;
   this.section.navbar.click("@conductTestLink");
   this.section.app.expect.element("@searchBar").to.be.visible;
-  this.section.app.setValue("@searchBar", patientName);
+  this.section.app.setValue("@searchBar", patientName.split(",")[0]);
   this.expect.section("@searchResults").to.be.visible;
   this.section.searchResults.expect.element("@beginTest").to.be.visible;
   this.section.searchResults.expect

@@ -25,7 +25,8 @@ https://simplereport.gov/
   - [Linters](#linters)
   - [Deploy](#deploy)
     - [Cloud Environments](#cloud-environments)
-    - [Manually-trigger-deploy](#manually-trigger-deploy)
+    - [Deploy With Release](#deploy-with-release)
+    - [Deploy With Action](#deploy-with-action)
 
 ## Setup
 
@@ -37,10 +38,14 @@ https://simplereport.gov/
 
 There are two major pieces:
 
-- Java Spring
-- Postgres
+- a Java Spring Boot application
+- a postgresql database
 
-To run the service, you needs a DB and a connection to Okta for it to work. Locally, you can disable authentication, but you still need the database running locally.
+To run the service, you need a JDK and some way of running postgresql (most
+people choose to use Docker, but you can also just run it as a service on your
+development box.) To test the full authentication/authorization/user-management
+integration, you will also need Okta credentials, but that is not necessary
+most of the time.
 
 ### Backend-Setup
 
@@ -85,8 +90,11 @@ Running spring app locally and db in docker on port 5433
 For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
 
 ```bash
-make start
+make # "make start" if you're nasty
 ```
+
+This will start up both servers in "watch" mode, so that changes to the source
+code result in an immediate rebuild.
 
 ### Updating user role
 
@@ -261,22 +269,32 @@ There are a few ways to manage this:
 1. Add extensions to your code editor that runs the linters for you on save, e.g. [prettier-vscode](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode), [vscode-eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [vscode-google-java-format](https://marketplace.visualstudio.com/items?itemName=ilkka.google-java-format)
 
 ## Deploy
-See https://github.com/usds/prime-simplereport-docs/blob/main/azure/manual-app-deploy.md
 
 ### Cloud Environments
 
-**Type**|**Frontend**|**API**|**Deployment**|**How to trigger**
-:-----:|:-----:|:-----:|:-----:|:-----:
-Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
-Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|Automed on deploy to prod|[Github Actions](#manually-trigger-deploy)
-Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|Manual & Daily cron|[Github Actions](#manually-trigger-deploy)
-Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Automed on merge to `main`|[Github Actions](#manually-trigger-deploy)
-Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
-Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|Manual|[Github Actions](#manually-trigger-deploy)
+**Type**|**Frontend**|**API**|**Deployment**
+:-----:|:-----:|:-----:|:-----:
+Prod|[/app/static/commit.txt](https://simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://simplereport.gov/api/actuator/info)|[Release](#deploy-with-release)
+Demo|[/app/static/commit.txt](https://demo.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://demo.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
+Training|[/app/static/commit.txt](https://training.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://training.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
+Staging|[/app/static/commit.txt](https://stg.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://stg.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action) & Daily cron
+Dev|[/app/static/commit.txt](https://dev.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://dev.simplereport.gov/api/actuator/info)|Push to `main`
+Test|[/app/static/commit.txt](https://test.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://test.simplereport.gov/api/actuator/info)|[Action](#deploy-with-action)
+Pentest|[/app/static/commit.txt](https://pentest.simplereport.gov/app/static/commit.txt)|[/api/actuator/info](https://pentest.simplereport.gov/api/actuator/info)|[Release](#deploy-with-release) & [Action](#deploy-with-action)
 
-### Manually-trigger-deploy
+### Deploy With Release
+
+Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/releases/new) pag
+![release form](https://user-images.githubusercontent.com/80347105/110684538-43187880-81ab-11eb-9793-7cc923956a8b.png)
+
+1. Add a version tag. If the release was `v1` then this release should be `v2`
+2. Add a release title summarizing the changes
+3. If applicable describe some of the changes in detail in the description
+4. Click publish release
+5. Post a link to the release in [#shared-cdc-prime-simplereport-engineering](https://usds.slack.com/archives/C01LTSNKEPP). Example: `Deploying prod https://github.com/CDCgov/prime-simplereport/releases/tag/0.test`
+6. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+
+### Deploy With Action
 
 Navigate to the [Github Actions Tab](https://github.com/CDCgov/prime-simplereport/actions)
 ![Screen Shot 2021-02-24 at 11 07 13 AM](https://user-images.githubusercontent.com/53869143/109029807-36673100-7691-11eb-81d1-a474517c1eb6.png)
