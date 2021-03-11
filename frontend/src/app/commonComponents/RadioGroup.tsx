@@ -5,20 +5,18 @@ import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
 import Optional from "./Optional";
 
-type OptionsKeys = { [label: string]: string };
-type OptionsArray = {
+type Options<T> = {
   label: React.ReactNode;
-  value: string;
+  value: T;
   disabled?: boolean;
 }[];
-type Options = OptionsKeys | OptionsArray;
 
-interface Props {
+interface Props<T> {
   id?: string;
   name: string;
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
-  buttons: Options;
+  buttons: Options<T>;
   className?: string;
   required?: boolean;
   selectedRadio?: string | null;
@@ -27,12 +25,12 @@ interface Props {
   variant?: "default" | "tile" | "horizontal";
   hintText?: string;
   hideOptional?: boolean;
-  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  onChangeHandler: (value: T) => void;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
 
-const RadioGroup = ({
+const RadioGroup = <T extends string>({
   id,
   name,
   legend,
@@ -46,9 +44,9 @@ const RadioGroup = ({
   variant,
   hintText,
   hideOptional,
-  onChange,
+  onChangeHandler,
   ...inputProps
-}: Props & InputProps): React.ReactElement => {
+}: Props<T> & InputProps): React.ReactElement => {
   const [autoId] = useUniqueId("radio", 1);
   const widgetId = id || autoId;
   const inputClass = classnames(
@@ -59,13 +57,6 @@ const RadioGroup = ({
     "usa-radio",
     variant === "horizontal" && "prime-radio--horizontal__container"
   );
-  const choices: OptionsArray = Array.isArray(buttons)
-    ? buttons
-    : Object.keys(buttons).map((k) => ({
-        label: k,
-        value: buttons[k],
-        disabled: false,
-      }));
 
   return (
     <fieldset className={classnames("usa-fieldset prime-radios", className)}>
@@ -97,7 +88,7 @@ const RadioGroup = ({
           validationStatus === "error" && "usa-form-group--error"
         )}
       >
-        {choices.map((c, i) => {
+        {buttons.map((c, i) => {
           const labelClasses = classnames(
             "usa-radio__label",
             (c.disabled || inputProps.disabled) && "text-base"
@@ -113,7 +104,7 @@ const RadioGroup = ({
                 disabled={c.disabled || false}
                 className={inputClass}
                 checked={c.value === selectedRadio}
-                onChange={onChange}
+                onChange={() => onChangeHandler(c.value)}
                 {...inputProps}
               />
               <label
