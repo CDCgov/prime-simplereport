@@ -7,26 +7,23 @@ type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export type RequiredFacilityFields = PartialBy<
   Facility,
-  "id" | "email" | "streetTwo" | "city"
+  "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
-type RequiredProviderFields = PartialBy<
-  Provider,
-  "middleName" | "suffix" | "phone" | "streetTwo" | "city"
->;
+type RequiredProviderFields = Partial<Provider>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string().required("Ordering provider first name is missing"),
+  firstName: yup.string(),
   middleName: yup.string(),
-  lastName: yup.string().required("Ordering provider last name is missing"),
+  lastName: yup.string(),
   suffix: yup.string(),
-  NPI: yup.string().required("Ordering provider NPI is missing"),
+  NPI: yup.string(),
   phone: yup.string(),
-  street: yup.string().required("Ordering provider street is missing"),
+  street: yup.string(),
   streetTwo: yup.string(),
   city: yup.string(),
-  state: yup.string().required("Ordering provider state is missing"),
-  zipCode: yup.string().required("Ordering provider zip code is missing"),
+  state: yup.string(),
+  zipCode: yup.string(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({

@@ -130,8 +130,6 @@ const OrganizationForm: React.FC<Props> = (props) => {
           <OrderingProviderSettings
             provider={facility.orderingProvider}
             updateProvider={updateProvider}
-            errors={errors}
-            validateField={validateField}
           />
           <ManageDevices
             deviceTypes={facility.deviceTypes}
