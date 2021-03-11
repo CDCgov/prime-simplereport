@@ -20,10 +20,6 @@ mutation updateUserPrivileges(
       role,
       roles,
       roleDescription,
-      facilities {
-        name
-        id
-      }
       organization {
         name
         externalId

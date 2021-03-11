@@ -23,10 +23,6 @@ mutation updateUser(
       permissions,
       role,
       roles,
-      facilities {
-        name
-        id
-      }
       organization {
         name
         externalId

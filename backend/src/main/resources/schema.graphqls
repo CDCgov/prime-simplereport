@@ -178,7 +178,6 @@ type User {
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
   roles: [Role!]!
-  facilities: [Facility!]
 }
 
 type PatientLink {
