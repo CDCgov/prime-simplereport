@@ -254,8 +254,7 @@ const AoEForm: React.FC<Props> = ({
             <RadioGroup
               legend="Currently pregnant?"
               name="pregnancy"
-              type="radio"
-              onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+              onChange={setPregnancyResponse}
               buttons={pregnancyResponses}
               selectedRadio={pregnancyResponse}
             />

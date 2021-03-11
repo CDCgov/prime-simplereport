@@ -41,15 +41,15 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_yes_0"
+          id="radio-test-1_YES_0"
           name="prior_test_flag"
           onChange={[Function]}
           type="radio"
-          value="yes"
+          value="YES"
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_yes_0"
+          htmlFor="radio-test-1_YES_0"
         >
           Yes
         </label>
@@ -62,15 +62,15 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_no_1"
+          id="radio-test-1_NO_1"
           name="prior_test_flag"
           onChange={[Function]}
           type="radio"
-          value="no"
+          value="NO"
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_no_1"
+          htmlFor="radio-test-1_NO_1"
         >
           No
         </label>
