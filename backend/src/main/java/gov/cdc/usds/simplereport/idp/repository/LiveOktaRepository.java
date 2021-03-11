@@ -250,12 +250,12 @@ public class LiveOktaRepository implements OktaRepository {
             .filter(r -> r != OrganizationRole.getDefault())
             .map(r -> generateRoleGroupName(orgId, r))
             .collect(Collectors.toSet()));
-    groupNamesToAdd.addAll(
-        facilities.stream()
-            // use an empty set of facilities if user can access all facilities anyway
-            .filter(f -> !PermissionHolder.grantsAllFacilityAccess(roles))
-            .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
-            .collect(Collectors.toSet()));
+    if (!PermissionHolder.grantsAllFacilityAccess(roles)) {
+      groupNamesToAdd.addAll(
+          facilities.stream()
+              .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
+              .collect(Collectors.toSet()));
+    }
 
     GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgId), null, null);
     if (orgGroups.stream().count() == 0) {
@@ -495,7 +495,7 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   private String generateFacilitySuffix(String facilityId) {
-    return ":FACILITY_ACCESS:" + facilityId;
+    return ":" + _extractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
   }
 
   private String generateMigrationGroupRuleName(
