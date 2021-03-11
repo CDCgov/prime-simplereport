@@ -87,7 +87,6 @@ const UPDATE_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -100,7 +99,6 @@ const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
@@ -141,7 +139,6 @@ const ADD_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -154,7 +151,6 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
