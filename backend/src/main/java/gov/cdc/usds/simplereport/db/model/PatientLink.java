@@ -4,14 +4,13 @@ import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
 
-  @OneToOne(optional = false, fetch = FetchType.LAZY)
+  @OneToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
 

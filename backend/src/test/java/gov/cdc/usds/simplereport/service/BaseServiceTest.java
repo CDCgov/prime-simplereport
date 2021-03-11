@@ -56,9 +56,8 @@ public abstract class BaseServiceTest<T> {
   @AfterEach
   protected void afterEach() {
     // see output saved to backend/build/test-results/test
-    long sqlQueryCountAfter = _hibernateQueryInterceptor.getQueryCount();
     LoggerFactory.getLogger(BaseServiceTest.class)
-        .info("Hibernate Total queries: {}", sqlQueryCountAfter);
+        .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
   }
 
   public void clearDb() {
