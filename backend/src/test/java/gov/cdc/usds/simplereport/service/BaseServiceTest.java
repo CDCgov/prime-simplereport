@@ -48,9 +48,9 @@ public abstract class BaseServiceTest<T> {
   @BeforeEach
   protected void beforeEach() {
     clearDb();
-    _hibernateQueryInterceptor.startQueryCount(); // also resets count
     resetOkta();
     initCurrentUser();
+    _hibernateQueryInterceptor.startQueryCount(); // also resets count
   }
 
   @AfterEach
