@@ -39,6 +39,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_IS_IN_SAME_ORG =
       "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)";
 
+  private static final String SPEL_CAN_MANAGE_USER = 
+      "(" + SPEL_HAS_PERMISSION + "MANAGE_USERS" +") && " + SPEL_IS_IN_SAME_ORG + ")";
+
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
    * ("superusers").
@@ -56,16 +59,9 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      "( "
-          + SPEL_IS_SITE_ADMIN
+      SPEL_IS_SITE_ADMIN
           + " || "
-          + "("
-          + SPEL_HAS_PERMISSION
-          + "MANAGE_USERS"
-          + ")"
-          + " && "
-          + SPEL_IS_IN_SAME_ORG
-          + ") )")
+          + SPEL_CAN_MANAGE_USER)
   public @interface RequirePermissionManageTargetUser {}
 
   /**
@@ -78,19 +74,13 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      "( "
-          + SPEL_IS_NOT_SELF
+      SPEL_IS_NOT_SELF
           + " && "
           + "("
           + SPEL_IS_SITE_ADMIN
           + " || "
-          + "("
-          + SPEL_HAS_PERMISSION
-          + "MANAGE_USERS"
-          + ")"
-          + " && "
-          + SPEL_IS_IN_SAME_ORG
-          + ") ) )")
+          + SPEL_CAN_MANAGE_USER
+          + ")")
   public @interface RequirePermissionManageTargetUserNotSelf {}
 
   /** Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission. */

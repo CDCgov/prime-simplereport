@@ -130,7 +130,7 @@ public class DemoOktaRepository implements OktaRepository {
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration) {
     createOrganization(org);
-    facilities.forEach(f -> createFacility(f));
+    facilities.forEach(this::createFacility);
   }
 
   public void createOrganization(Organization org) {

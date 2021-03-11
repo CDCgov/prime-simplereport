@@ -17,7 +17,7 @@ import org.hibernate.annotations.NaturalId;
 public class ApiUser extends EternalSystemManagedEntity {
 
   @Column(nullable = false, updatable = false, unique = true)
-  @NaturalId(mutable = false)
+  @NaturalId
   private String loginEmail;
 
   @Embedded private PersonName nameInfo;
