@@ -212,7 +212,6 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
               id="select-facility"
               className="width-card-lg"
               options={[
-                { value: "all", label: "All Facilities" },
                 ...facilitiesToAdd.map(({ name, id }) => ({
                   label: name,
                   value: id,
@@ -232,22 +231,13 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             disabled={hasAllFacilityAccess}
             onClick={(e) => {
               e.preventDefault();
-              if (selectedFacility === "all") {
-                onUpdateUser("organization", {
-                  testingFacility: allFacilities.map(({ id, name }) => ({
-                    id,
-                    name,
-                  })),
-                });
-              } else {
-                const facility = facilityLookup[selectedFacility];
-                onUpdateUser("organization", {
-                  testingFacility: [
-                    ...(activeUser.organization?.testingFacility || []),
-                    facility,
-                  ],
-                });
-              }
+              const facility = facilityLookup[selectedFacility];
+              onUpdateUser("organization", {
+                testingFacility: [
+                  ...(activeUser.organization?.testingFacility || []),
+                  facility,
+                ],
+              });
               setSelectedFacility("");
             }}
           >

@@ -68,8 +68,8 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           onChange={onChange}
         />
         <p>
-          If no role is selected, the user will be assigned the "Standard user
-          (manage results and profiles)" role by default.
+          If no role is selected, the user will default to a Standard user role,
+          which allows them to manage results and profiles.
         </p>
       </>
     ) : (

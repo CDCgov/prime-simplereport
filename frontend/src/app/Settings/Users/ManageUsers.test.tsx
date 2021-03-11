@@ -366,35 +366,6 @@ describe("ManageUsers", () => {
       },
     });
   });
-  it("adds all facilities for a user", async () => {
-    render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
-    );
-    const facilitySelect = await screen.findByLabelText("Add facility");
-    waitFor(() =>
-      fireEvent.change(facilitySelect, { target: { value: "all" } })
-    );
-    fireEvent.click(screen.getByText("Add"));
-    fireEvent.click(screen.getByText("Save changes"));
-    expect(updateUserPrivileges).toBeCalledWith({
-      variables: {
-        accessAllFacilities: false,
-        facilities: ["a1", "a2"],
-        id: "a123",
-        role: "USER",
-      },
-    });
-  });
   it("gives user access to all facilities", async () => {
     render(
       <MemoryRouter>
@@ -417,8 +388,11 @@ describe("ManageUsers", () => {
       fireEvent.click(allFacilitiesBox);
       expect(saveButton).not.toBeDisabled();
     });
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+      expect(updateUserPrivileges).toBeCalled();
+    });
 
-    fireEvent.click(saveButton);
     expect(updateUserPrivileges).toBeCalledWith({
       variables: {
         accessAllFacilities: true,
@@ -432,7 +406,15 @@ describe("ManageUsers", () => {
     render(
       <MemoryRouter>
         <ManageUsers
-          users={users}
+          users={users.map((user) => ({
+            ...user,
+            organization: {
+              testingFacility: [
+                { id: "a1", name: "Foo Facility" },
+                { id: "a2", name: "Bar Facility" },
+              ],
+            },
+          }))}
           loggedInUser={loggedInUser}
           allFacilities={allFacilities}
           updateUserPrivileges={updateUserPrivileges}
@@ -442,14 +424,20 @@ describe("ManageUsers", () => {
         />
       </MemoryRouter>
     );
-    const facilitySelect = await screen.findByLabelText("Add facility");
 
-    fireEvent.change(facilitySelect, { target: { value: "all" } });
-    fireEvent.click(screen.getByText("Add"));
-    fireEvent.click(
-      (await screen.findAllByLabelText("Remove facility", { exact: false }))[0]
-    );
-    fireEvent.click(screen.getByText("Save changes"));
+    const removeButton = (
+      await screen.findAllByLabelText("Remove facility", {
+        exact: false,
+      })
+    )[0];
+    const saveButton = await screen.findByText("Save changes");
+    await waitFor(() => {
+      fireEvent.click(removeButton);
+      expect(saveButton).not.toBeDisabled();
+    });
+    await waitFor(() => {
+      fireEvent.click(saveButton);
+    });
     expect(updateUserPrivileges).toBeCalledWith({
       variables: {
         accessAllFacilities: false,

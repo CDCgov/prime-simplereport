@@ -576,11 +576,6 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                       - Select -
                     </option>
                     <option
-                      value="all"
-                    >
-                      All Facilities
-                    </option>
-                    <option
                       value="a2"
                     >
                       Bar Org
