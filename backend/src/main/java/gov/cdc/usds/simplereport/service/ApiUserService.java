@@ -90,7 +90,7 @@ public class ApiUserService {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
-    // for now, all new users can access all facilities
+    // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
         PermissionHolder.getEffectiveRoles(
             EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault()));
