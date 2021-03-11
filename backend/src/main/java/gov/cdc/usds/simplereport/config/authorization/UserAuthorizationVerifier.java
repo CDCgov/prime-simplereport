@@ -81,6 +81,12 @@ public class UserAuthorizationVerifier {
     return true;
   }
 
+  public boolean userIsNotSelf(UUID userId) {
+    isValidUser();
+    IdentityAttributes id = _supplier.get();
+    return !getUser(userId).getLoginEmail().equals(id.getUsername());
+  }
+
   public boolean userHasPermission(UserPermission permission) {
     return userHasPermissions(Set.of(permission));
   }

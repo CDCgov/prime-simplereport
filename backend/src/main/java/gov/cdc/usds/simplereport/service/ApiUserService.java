@@ -107,18 +107,12 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo updateUser(
-      UUID userId,
-      String username,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix) {
+      UUID userId, String firstName, String middleName, String lastName, String suffix) {
     ApiUser apiUser = getApiUser(userId);
-    String oldUsername = apiUser.getLoginEmail();
+    String username = apiUser.getLoginEmail();
 
-    apiUser.setLoginEmail(username);
     PersonName nameInfo = apiUser.getNameInfo();
     nameInfo.setFirstName(firstName);
     nameInfo.setMiddleName(middleName);
@@ -128,7 +122,7 @@ public class ApiUserService {
 
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
+    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
@@ -146,7 +140,7 @@ public class ApiUserService {
    * updated with multiple roles at once, as in {@code updateUserPrivileges()}
    */
   @Deprecated
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public Role updateUserRole(UUID userId, Role role) {
     ApiUser user = getApiUser(userId);
     String username = user.getLoginEmail();
@@ -172,7 +166,7 @@ public class ApiUserService {
     return role;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo updateUserPrivileges(
       UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
     ApiUser apiUser = getApiUser(userId);
@@ -198,7 +192,7 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId);
     apiUser.setIsDeleted(deleted);

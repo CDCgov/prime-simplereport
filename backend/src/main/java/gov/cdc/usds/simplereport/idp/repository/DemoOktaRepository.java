@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,19 +76,9 @@ public class DemoOktaRepository implements OktaRepository {
     return Optional.of(orgRoles);
   }
 
-  public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity) {
-    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.remove(oldUsername);
-    usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
-    orgUsernamesMap
-        .values()
-        .forEach(
-            usernames -> {
-              if (usernames.remove(oldUsername)) {
-                usernames.add(userIdentity.getUsername());
-              }
-            });
-
+  // this method doesn't do much in a demo envt since a user's username doesn't change
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
+    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
     return Optional.of(orgRoles);
   }
 
@@ -133,6 +124,13 @@ public class DemoOktaRepository implements OktaRepository {
     return orgUsernamesMap.get(org.getExternalId()).stream()
         .filter(u -> !inactiveUsernames.contains(u))
         .collect(Collectors.toMap(u -> u, u -> usernameOrgRolesMap.get(u)));
+  }
+
+  // this method dodsn't mean much in a demo env
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration) {
+    createOrganization(org);
+    facilities.forEach(f -> createFacility(f));
   }
 
   public void createOrganization(Organization org) {
