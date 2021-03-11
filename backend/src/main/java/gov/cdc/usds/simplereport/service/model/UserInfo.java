@@ -87,4 +87,8 @@ public class UserInfo {
   public List<OrganizationRole> getRoles() {
     return roles;
   }
+
+  public ApiUser getWrappedUser() {
+    return wrapped;
+  }
 }
