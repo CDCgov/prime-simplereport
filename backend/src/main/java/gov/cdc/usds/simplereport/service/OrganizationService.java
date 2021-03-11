@@ -50,8 +50,6 @@ public class OrganizationService {
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
-
-    migrateOktaGroups();
   }
 
   public void migrateOktaGroups() {
