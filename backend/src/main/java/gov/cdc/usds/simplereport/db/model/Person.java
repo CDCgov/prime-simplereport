@@ -260,4 +260,18 @@ public class Person extends OrganizationScopedEternalEntity {
   public PersonRole getRole() {
     return role;
   }
+
+  // these field names strings are used by Specification builders
+  public static final class SpecField {
+    public static final String PERSON_NAME = "nameInfo";
+    public static final String IS_DELETED = "isDeleted";
+    public static final String FACILITY = "facility";
+    public static final String ORGANIZATION = "organization";
+    public static final String INTERNAL_ID = "internalId";
+    public static final String FIRST_NAME = "firstName";
+    public static final String MIDDLE_NAME = "middleName";
+    public static final String LAST_NAME = "lastName";
+
+    private SpecField() {} // sonarcloud codesmell
+  }
 }

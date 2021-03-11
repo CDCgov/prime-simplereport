@@ -54,7 +54,6 @@
     "prebuild": "yarn compile-scss",
     "build": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
-    "precommit": "lint-staged",
     "lint": "npm-run-all -p lint:eslint lint:prettier",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
@@ -105,12 +104,6 @@
       "import/no-commonjs": 0
     }
   },
-  "lint-staged": {
-    "*.{js,ts,jsx,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -142,7 +135,6 @@
     "eslint-plugin-import": "^2.22.1",
     "faker": "^5.4.0",
     "geckodriver": "^1.22.1",
-    "lint-staged": "^10.5.4",
     "mockdate": "^3.0.2",
     "nightwatch": "^1.5.1",
     "node-sass": "^4.14.1",
