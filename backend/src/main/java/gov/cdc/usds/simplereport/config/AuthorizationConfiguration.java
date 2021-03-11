@@ -36,7 +36,7 @@ public class AuthorizationConfiguration {
 
   private static final String SPEL_IS_NOT_SELF = "@" + AUTHORIZER_BEAN + ".userIsNotSelf(#userId)";
 
-  private static final String SPEL_IS_NOT_IN_SAME_ORG =
+  private static final String SPEL_IS_IN_SAME_ORG =
       "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)";
 
   /**
@@ -64,7 +64,7 @@ public class AuthorizationConfiguration {
           + "MANAGE_USERS"
           + ")"
           + " && "
-          + SPEL_IS_NOT_IN_SAME_ORG
+          + SPEL_IS_IN_SAME_ORG
           + ") )")
   public @interface RequirePermissionManageTargetUser {}
 
@@ -89,7 +89,7 @@ public class AuthorizationConfiguration {
           + "MANAGE_USERS"
           + ")"
           + " && "
-          + SPEL_IS_NOT_IN_SAME_ORG
+          + SPEL_IS_IN_SAME_ORG
           + ") ) )")
   public @interface RequirePermissionManageTargetUserNotSelf {}
 

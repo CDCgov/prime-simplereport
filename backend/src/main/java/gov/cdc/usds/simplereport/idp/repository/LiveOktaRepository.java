@@ -327,9 +327,9 @@ public class LiveOktaRepository implements OktaRepository {
         }
       } catch (ResourceException e) {
         if (migration) {
+          // ignore attempts to create groups that already exist if this is in migration mode
           migrationSourceGroupNames.add(roleGroupName);
         } else {
-          // ignore attempts to create groups that already exist if this is in migration mode
           throw e;
         }
       }
@@ -353,9 +353,9 @@ public class LiveOktaRepository implements OktaRepository {
 
       } catch (ResourceException e) {
         if (migration) {
+          // ignore attempts to create groups that already exist if this is in migration mode
           migrationSourceGroupNames.add(facilityGroupName);
         } else {
-          // ignore attempts to create groups that already exist if this is in migration mode
           throw e;
         }
       }
