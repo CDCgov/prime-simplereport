@@ -297,12 +297,13 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   /**
-   * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this organization
-   * where they do not already exist. For those OrganizationRole's that are in MIGRATION_DEST_ROLES
-   * and whose Okta groups are newly created, migrate all users from this org to those new Okta groups,
-   * where the migrated users are sourced from all pre-existing Okta groups for this organization.
-   * Separately, iterates over all facilities in this org, creating new corresponding Okta groups where
-   * they do not already exist. Does not perform any migration to these facility groups.
+   * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this
+   * organization where they do not already exist. For those OrganizationRole's that are in
+   * MIGRATION_DEST_ROLES and whose Okta groups are newly created, migrate all users from this org
+   * to those new Okta groups, where the migrated users are sourced from all pre-existing Okta
+   * groups for this organization. Separately, iterates over all facilities in this org, creating
+   * new corresponding Okta groups where they do not already exist. Does not perform any migration
+   * to these facility groups.
    */
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration) {
