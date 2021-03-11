@@ -37,18 +37,21 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   deviceTypes: yup
     .array()
     .of(yup.string().required())
-    .min(1)
+    .min(1, "Facility must have at least one device")
     .required("Facility must have at least one device"),
   defaultDevice: yup.string().required("Facility must have a default device"),
   orderingProvider: providerSchema.required(),
   phone: yup
     .string()
-    .test((input) => {
-      if (!input) {
-        return false;
-      }
-      const number = phoneUtil.parseAndKeepRawInput(input, "US");
-      return phoneUtil.isValidNumber(number);
+    .test({
+      test: function (input) {
+        const message = "Invalid phone number";
+        if (!input) {
+          return this.createError({ message });
+        }
+        const number = phoneUtil.parseAndKeepRawInput(input, "US");
+        return phoneUtil.isValidNumber(number) || this.createError({ message });
+      },
     })
     .required("Facility phone number is missing"),
   state: yup.string().required("Facility state is missing"),
