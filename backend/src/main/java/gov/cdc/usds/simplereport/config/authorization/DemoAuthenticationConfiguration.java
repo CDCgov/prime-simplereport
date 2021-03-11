@@ -131,6 +131,7 @@ public class DemoAuthenticationConfiguration {
     @Override
     public List<OrganizationRoleClaims> findAllOrganizationRoles() {
       String username = Optional.ofNullable(_getCurrentUser.get()).orElseThrow().getUsername();
+      System.out.println("\n\n\n\nDEMO_USERNAME="+username);
       Optional<OrganizationRoleClaims> claims =
           _oktaRepo.getOrganizationRoleClaimsForUser(username);
       return claims.isEmpty() ? List.of() : List.of(claims.get());

@@ -4,7 +4,7 @@ mutation addUserToCurrentOrg(
     $lastName: String!,
     $suffix: String,
     $email: String!,
-    $role: ApiOrganizationRole!,
+    $role: Role!,
     ){
   addUserToCurrentOrg(
     firstName: $firstName
@@ -21,11 +21,8 @@ mutation addUserToCurrentOrg(
       suffix,
       email,
       permissions,
+      role,
       roles,
-      facilities {
-        name
-        id
-      }
       organization {
         name
         externalId

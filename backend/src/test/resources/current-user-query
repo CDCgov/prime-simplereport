@@ -6,14 +6,10 @@
     lastName
     suffix
     email
+    role
     roles
     permissions
     roleDescription
-    facilities {
-      name
-      id
-      __typename
-    }
     isAdmin
     organization {
       testingFacility {

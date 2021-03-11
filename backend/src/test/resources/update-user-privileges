@@ -1,8 +1,8 @@
 mutation updateUserPrivileges(
     $id: ID!,
-    $role: ApiOrganizationRole!,
+    $role: Role!,
     $accessAllFacilities: Boolean!,
-    $facilities: [String!]!,
+    $facilities: [ID!],
     ){
   updateUserPrivileges(
     id: $id
@@ -17,12 +17,9 @@ mutation updateUserPrivileges(
       suffix,
       email,
       permissions,
+      role,
       roles,
       roleDescription,
-      facilities {
-        name
-        id
-      }
       organization {
         name
         externalId

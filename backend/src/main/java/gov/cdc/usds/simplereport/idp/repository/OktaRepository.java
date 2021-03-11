@@ -24,7 +24,7 @@ public interface OktaRepository {
       Set<OrganizationRole> roles);
 
   public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity);
+      IdentityAttributes userIdentity);
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);

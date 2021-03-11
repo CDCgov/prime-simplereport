@@ -196,9 +196,9 @@ public class LiveOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity) {
+      IdentityAttributes userIdentity) {
 
-    UserList users = _client.listUsers(oldUsername, null, null, null, null);
+    UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
     if (users.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user with unrecognized username");
@@ -210,9 +210,6 @@ public class LiveOktaRepository implements OktaRepository {
     // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they
     // don't have regular suffix? You decide.
     user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
-    // We assume login == email
-    user.getProfile().setEmail(userIdentity.getUsername());
-    user.getProfile().setLogin(userIdentity.getUsername());
     user.update();
 
     return getOrganizationRoleClaimsForUser(user);

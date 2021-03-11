@@ -16,7 +16,7 @@ import org.hibernate.annotations.NaturalId;
 @DynamicUpdate
 public class ApiUser extends EternalSystemManagedEntity {
 
-  @Column(nullable = false, updatable = true, unique = true)
+  @Column(nullable = false, updatable = false, unique = true)
   @NaturalId(mutable = true)
   private String loginEmail;
 

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import gov.cdc.usds.simplereport.api.model.ApiOrganizationRole;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.ArrayList;
@@ -39,7 +39,8 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals("Bobbity", who.get("firstName").asText());
     assertEquals("Standard user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
-    assertEquals(Set.of(ApiOrganizationRole.USER), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(who));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -60,7 +61,8 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Test-entry user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
-    assertEquals(Set.of(ApiOrganizationRole.ENTRY_ONLY), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.ENTRY_ONLY.name());
+    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(who));
     assertEquals(
         EnumSet.of(
             UserPermission.START_TEST,
@@ -77,7 +79,8 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Admin user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.ADMIN.name());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(who));
     assertUserCanAccessAllFacilities(who);
   }
@@ -88,7 +91,8 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Standard user", who.get("roleDescription").asText());
     assertFalse(who.get("isAdmin").asBoolean());
-    assertEquals(Set.of(ApiOrganizationRole.USER), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(who));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -112,7 +116,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertTrue(who.get("isAdmin").asBoolean());
     assertEquals(Set.of(), extractRolesFromUser(who));
     assertEquals(Collections.emptySet(), extractPermissionsFromUser(who));
-    assertUserCanAccessExactFacilities(who, Set.of());
+    assertUserHasNoOrg(who);
   }
 
   @Test
@@ -123,7 +127,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertFalse(who.get("isAdmin").asBoolean());
     assertEquals(Set.of(), extractRolesFromUser(who));
     assertEquals(Collections.emptySet(), extractPermissionsFromUser(who));
-    assertUserCanAccessExactFacilities(who, Set.of());
+    assertUserHasNoOrg(who);
   }
 
   @Test
@@ -137,7 +141,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode resp = runQuery("add-user", variables);
     ObjectNode user = (ObjectNode) resp.get("addUser");
     assertEquals("Rhonda", user.get("firstName").asText());
@@ -145,8 +149,11 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(
         TestUserIdentities.DEFAULT_ORGANIZATION,
         user.get("organization").get("externalId").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(user));
+    assertEquals(user.get("role").asText(), Role.ADMIN.name());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(user));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(user));
+
+    useOrgAdmin();
     assertUserCanAccessAllFacilities(user);
   }
 
@@ -161,7 +168,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
   }
 
@@ -175,7 +182,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
   }
 
@@ -190,7 +197,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode resp = runQuery("add-user-to-current-org", variables);
     ObjectNode user = (ObjectNode) resp.get("addUserToCurrentOrg");
     assertEquals("Rhonda", user.get("firstName").asText());
@@ -198,7 +205,8 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(
         TestUserIdentities.DEFAULT_ORGANIZATION,
         user.get("organization").get("externalId").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ENTRY_ONLY), extractRolesFromUser(user));
+    assertEquals(user.get("role").asText(), Role.ENTRY_ONLY.name());
+    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(user));
     assertEquals(
         EnumSet.of(
             UserPermission.START_TEST,
@@ -220,7 +228,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
   }
 
@@ -234,7 +242,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
   }
 
@@ -250,18 +258,19 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
 
     ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode updateResp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
-    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
-    assertEquals(Set.of(ApiOrganizationRole.USER), extractRolesFromUser(updateUser));
+    assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
+    assertEquals(updateUser.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -288,19 +297,22 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
 
     ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
-    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
+    assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+
+    useOrgAdmin();
     assertUserCanAccessAllFacilities(updateUser);
   }
 
@@ -316,7 +328,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -324,7 +336,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgUser();
 
     ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     runQuery("update-user", updateVariables, ACCESS_ERROR);
   }
 
@@ -333,7 +345,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useSuperUser();
     ObjectNode updateVariables =
         getUpdateUserVariables(
-            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", "Ronda", "J", "Jones", "III");
     runQuery("update-user", updateVariables, NO_USER_ERROR);
   }
 
@@ -344,12 +356,12 @@ class ApiUserManagementTest extends BaseApiTest {
     String id = who.get("id").asText();
 
     ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
-    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(TestUserIdentities.ORG_ADMIN_USER, updateUser.get("email").asText());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
   }
@@ -366,19 +378,16 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
     ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
-    assertEquals(ApiOrganizationRole.ADMIN.name(), resp.get("updateUserRole").asText());
+    assertEquals(Role.ADMIN.name(), resp.get("updateUserRole").asText());
   }
 
   @Test
@@ -393,19 +402,16 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
     ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
-    assertEquals(ApiOrganizationRole.ADMIN.name(), resp.get("updateUserRole").asText());
+    assertEquals(Role.ADMIN.name(), resp.get("updateUserRole").asText());
   }
 
   @Test
@@ -421,7 +427,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -429,10 +435,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOutsideOrgAdmin();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
@@ -450,7 +453,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -458,10 +461,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOutsideOrgUser();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
@@ -479,7 +479,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -487,10 +487,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgUser();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
@@ -499,21 +496,20 @@ class ApiUserManagementTest extends BaseApiTest {
   void updateUserRole_orgAdmin_roleUpdated() {
     useOrgEntryOnly();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    assertEquals(Set.of(ApiOrganizationRole.ENTRY_ONLY), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.ENTRY_ONLY.name());
+    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(who));
     String id = who.get("id").asText();
     assertUserCanAccessExactFacilities(who, Set.of("Testing Site"));
 
     useOrgAdmin();
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
     runQuery("update-user-role", updateRoleVariables);
 
     useOrgEntryOnly();
     who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(who));
+    assertEquals(who.get("role").asText(), Role.ADMIN.name());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
     assertUserCanAccessAllFacilities(who);
   }
 
@@ -527,7 +523,7 @@ class ApiUserManagementTest extends BaseApiTest {
         JsonNodeFactory.instance
             .objectNode()
             .put("id", id)
-            .put("role", ApiOrganizationRole.ENTRY_ONLY.name());
+            .put("role", Role.ENTRY_ONLY.name());
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
 
@@ -543,20 +539,21 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
 
     // Update 1: ENTRY_ONLY, All facilities
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
 
     ObjectNode updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
     assertEquals("Test-entry user", updateUser.get("roleDescription").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ENTRY_ONLY), extractRolesFromUser(updateUser));
+    assertEquals(updateUser.get("role").asText(), Role.ENTRY_ONLY.name());
+    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.START_TEST,
@@ -568,14 +565,14 @@ class ApiUserManagementTest extends BaseApiTest {
     assertUserCanAccessAllFacilities(updateUser);
 
     // Update 2: ADMIN, All facilities
-    updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ADMIN, true, Set.of());
+    updatePrivilegesVariables = getUpdateUserPrivilegesVariables(id, Role.ADMIN, true, Set.of());
 
     updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
     assertEquals("Admin user", updateUser.get("roleDescription").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
     assertUserCanAccessAllFacilities(updateUser);
 
@@ -583,15 +580,16 @@ class ApiUserManagementTest extends BaseApiTest {
     updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(
             id,
-            ApiOrganizationRole.USER,
+            Role.USER,
             false,
-            extractFacilityUuidsFromUser(addUser, Set.of("Testing Site", "Injection Site")));
+            extractFacilityUuidsFromUser(updateUser, Set.of("Testing Site", "Injection Site")));
 
     updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
     assertEquals("Standard user", updateUser.get("roleDescription").asText());
-    assertEquals(Set.of(ApiOrganizationRole.USER), extractRolesFromUser(updateUser));
+    assertEquals(updateUser.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -609,13 +607,14 @@ class ApiUserManagementTest extends BaseApiTest {
     // Update 4: USER, access to no facilities
     updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(
-            id, ApiOrganizationRole.USER, false, extractFacilityUuidsFromUser(addUser, Set.of()));
+            id, Role.USER, false, extractFacilityUuidsFromUser(updateUser, Set.of()));
 
     updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
     assertEquals("Standard user", updateUser.get("roleDescription").asText());
-    assertEquals(Set.of(ApiOrganizationRole.USER), extractRolesFromUser(updateUser));
+    assertEquals(updateUser.get("role").asText(), Role.USER.name());
+    assertEquals(Set.of(Role.USER), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
@@ -642,19 +641,20 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
 
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
 
     ObjectNode updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
 
     assertEquals("Test-entry user", updateUser.get("roleDescription").asText());
-    assertEquals(Set.of(ApiOrganizationRole.ENTRY_ONLY), extractRolesFromUser(updateUser));
+    assertEquals(updateUser.get("role").asText(), Role.ENTRY_ONLY.name());
+    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(updateUser));
     assertEquals(
         EnumSet.of(
             UserPermission.START_TEST,
@@ -663,6 +663,8 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.SEARCH_PATIENTS,
             UserPermission.ACCESS_ALL_FACILITIES),
         extractPermissionsFromUser(updateUser));
+
+    useOrgAdmin();
     assertUserCanAccessAllFacilities(updateUser);
   }
 
@@ -678,7 +680,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -686,7 +688,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOutsideOrgAdmin();
 
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, false, Set.of());
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
@@ -703,7 +705,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -711,7 +713,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgUser();
 
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, false, Set.of());
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
@@ -721,7 +723,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useSuperUser();
     ObjectNode updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(
-            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
+            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", Role.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, NO_USER_ERROR);
   }
 
@@ -732,7 +734,7 @@ class ApiUserManagementTest extends BaseApiTest {
     String id = who.get("id").asText();
 
     ObjectNode updatePrivilegesVariables =
-        getUpdateUserPrivilegesVariables(id, ApiOrganizationRole.ENTRY_ONLY, true, Set.of());
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
   }
 
@@ -748,7 +750,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ENTRY_ONLY.name());
+            Role.ENTRY_ONLY.name());
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
@@ -760,10 +762,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
     runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
   }
 
@@ -779,7 +778,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -791,10 +790,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", ApiOrganizationRole.ADMIN.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
     runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
   }
 
@@ -811,7 +807,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -836,7 +832,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.USER.name());
+            Role.USER.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -861,7 +857,7 @@ class ApiUserManagementTest extends BaseApiTest {
             "III",
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
-            ApiOrganizationRole.ADMIN.name());
+            Role.ADMIN.name());
     ObjectNode addResp = runQuery("add-user", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
@@ -898,7 +894,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 "III",
                 USERNAMES.get(0),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
-                ApiOrganizationRole.ADMIN.name()),
+                Role.ADMIN.name()),
             getAddUserVariables(
                 "Jared",
                 "K",
@@ -906,7 +902,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 null,
                 USERNAMES.get(2),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
-                ApiOrganizationRole.ADMIN.name()),
+                Role.ADMIN.name()),
             getAddUserVariables(
                 "Janice",
                 null,
@@ -914,7 +910,7 @@ class ApiUserManagementTest extends BaseApiTest {
                 "Jr",
                 USERNAMES.get(3),
                 TestUserIdentities.DEFAULT_ORGANIZATION,
-                ApiOrganizationRole.ADMIN.name()));
+                Role.ADMIN.name()));
     for (ObjectNode userVariables : usersAdded) {
       runQuery("add-user-to-current-org", userVariables);
     }
@@ -981,8 +977,7 @@ class ApiUserManagementTest extends BaseApiTest {
       String firstName,
       String middleName,
       String lastName,
-      String suffix,
-      String email) {
+      String suffix) {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
@@ -990,13 +985,12 @@ class ApiUserManagementTest extends BaseApiTest {
             .put("firstName", firstName)
             .put("middleName", middleName)
             .put("lastName", lastName)
-            .put("suffix", suffix)
-            .put("email", email);
+            .put("suffix", suffix);
     return variables;
   }
 
   private ObjectNode getUpdateUserPrivilegesVariables(
-      String id, ApiOrganizationRole role, boolean accessAllFacilities, Set<UUID> facilities) {
+      String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
@@ -1012,11 +1006,11 @@ class ApiUserManagementTest extends BaseApiTest {
     return variables;
   }
 
-  private Set<ApiOrganizationRole> extractRolesFromUser(ObjectNode user) {
+  private Set<Role> extractRolesFromUser(ObjectNode user) {
     Iterator<JsonNode> rolesIter = user.get("roles").elements();
-    Set<ApiOrganizationRole> roles = new HashSet<>();
+    Set<Role> roles = new HashSet<>();
     while (rolesIter.hasNext()) {
-      roles.add(ApiOrganizationRole.valueOf(rolesIter.next().asText()));
+      roles.add(Role.valueOf(rolesIter.next().asText()));
     }
     return roles;
   }
@@ -1030,9 +1024,12 @@ class ApiUserManagementTest extends BaseApiTest {
     return permissions;
   }
 
-  // map from each facility's name to its UUID; includes all facilities user can access
-  private Map<String, UUID> extractAccessibleFacilitiesFromUser(ObjectNode user) {
-    Iterator<JsonNode> facilitiesIter = user.get("facilities").elements();
+  // map from each facility's name to its UUID; includes all facilities in organization
+  // NOTE: this cannot be called by a user who is not associated with an org (e.g. super user)
+  private Map<String, UUID> extractAllFacilitiesInOrg() {
+    System.out.println("\n\n\n\nEXTRACT_FACS="+runQuery("org-settings-query").toPrettyString());
+    Iterator<JsonNode> facilitiesIter =
+        runQuery("org-settings-query").get("organization").get("testingFacility").elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
       JsonNode facility = facilitiesIter.next();
@@ -1041,8 +1038,8 @@ class ApiUserManagementTest extends BaseApiTest {
     return facilities;
   }
 
-  // map from each facility's name to its UUID; includes all facilities in user's org
-  private Map<String, UUID> extractAllOrgFacilitiesFromUser(ObjectNode user) {
+  // map from each facility's name to its UUID; includes all facilities user can access
+  private Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
     Iterator<JsonNode> facilitiesIter = user.get("organization").get("testingFacility").elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
@@ -1053,15 +1050,20 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   private Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
-    Map<String, UUID> facilities = extractAllOrgFacilitiesFromUser(user);
+    Map<String, UUID> facilities = extractFacilitiesFromUser(user);
     return facilityNames.stream().map(n -> facilities.get(n)).collect(Collectors.toSet());
   }
 
   private void assertUserCanAccessAllFacilities(ObjectNode user) {
-    assertEquals(extractAccessibleFacilitiesFromUser(user), extractAllOrgFacilitiesFromUser(user));
+
+    assertEquals(extractAllFacilitiesInOrg(), extractFacilitiesFromUser(user));
   }
 
   private void assertUserCanAccessExactFacilities(ObjectNode user, Set<String> facilityNames) {
-    assertEquals(extractAccessibleFacilitiesFromUser(user).keySet(), facilityNames);
+    assertEquals(extractFacilitiesFromUser(user).keySet(), facilityNames);
+  }
+
+  private void assertUserHasNoOrg(ObjectNode user) {
+    assertTrue(user.get("organization").isNull());
   }
 }
