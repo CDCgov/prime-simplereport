@@ -23,6 +23,7 @@ public interface PermissionHolder {
     return getGrantedPermissions().contains(UserPermission.ACCESS_ALL_FACILITIES);
   }
 
+  // this is not used for now, but leaving it in in the event it becomes useful in the future
   default Set<OrganizationRole> getEffectiveRoles() {
     return getEffectiveRoles(getGrantedRoles());
   }

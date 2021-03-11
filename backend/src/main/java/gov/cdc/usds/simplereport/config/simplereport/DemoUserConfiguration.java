@@ -77,38 +77,38 @@ public class DemoUserConfiguration {
     public String getUsername() {
       return identity.getUsername();
     }
+  }
 
-    @ConstructorBinding
-    public static class DemoAuthorization implements PermissionHolder {
-      private String organizationExternalId;
-      private Set<String> facilities;
-      private Set<OrganizationRole> grantedRoles;
+  @ConstructorBinding
+  public static class DemoAuthorization implements PermissionHolder {
+    private String organizationExternalId;
+    private Set<String> facilities;
+    private Set<OrganizationRole> grantedRoles;
 
-      public DemoAuthorization(
-          String organizationExternalId,
-          Set<String> facilities,
-          Set<OrganizationRole> grantedRoles) {
-        super();
-        this.organizationExternalId = organizationExternalId;
-        this.grantedRoles = grantedRoles;
-        if (grantedRoles.contains(OrganizationRole.ALL_FACILITIES)) {
-          this.facilities = Set.of();
-        } else {
-          this.facilities = (facilities == null) ? Set.of() : facilities;
-        }
+    public DemoAuthorization(
+        String organizationExternalId,
+        Set<String> facilities,
+        Set<OrganizationRole> grantedRoles) {
+      super();
+      this.organizationExternalId = organizationExternalId;
+      this.grantedRoles = grantedRoles;
+      if (grantedRoles.contains(OrganizationRole.ALL_FACILITIES)) {
+        this.facilities = Set.of();
+      } else {
+        this.facilities = (facilities == null) ? Set.of() : facilities;
       }
+    }
 
-      public String getOrganizationExternalId() {
-        return organizationExternalId;
-      }
+    public String getOrganizationExternalId() {
+      return organizationExternalId;
+    }
 
-      public Set<String> getFacilities() {
-        return Collections.unmodifiableSet(facilities);
-      }
+    public Set<String> getFacilities() {
+      return Collections.unmodifiableSet(facilities);
+    }
 
-      public Set<OrganizationRole> getGrantedRoles() {
-        return Collections.unmodifiableSet(grantedRoles);
-      }
+    public Set<OrganizationRole> getGrantedRoles() {
+      return Collections.unmodifiableSet(grantedRoles);
     }
   }
 }
