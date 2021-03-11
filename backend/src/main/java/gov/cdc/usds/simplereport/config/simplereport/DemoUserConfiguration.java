@@ -86,9 +86,7 @@ public class DemoUserConfiguration {
     private Set<OrganizationRole> grantedRoles;
 
     public DemoAuthorization(
-        String organizationExternalId,
-        Set<String> facilities,
-        Set<OrganizationRole> grantedRoles) {
+        String organizationExternalId, Set<String> facilities, Set<OrganizationRole> grantedRoles) {
       super();
       this.organizationExternalId = organizationExternalId;
       this.grantedRoles = grantedRoles;

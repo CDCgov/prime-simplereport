@@ -252,9 +252,10 @@ public class LiveOktaRepository implements OktaRepository {
             .map(r -> generateRoleGroupName(orgId, r))
             .collect(Collectors.toSet()));
     if (!PermissionHolder.grantsAllFacilityAccess(roles)) {
-      groupNamesToAdd.addAll(facilities.stream()
-          .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
-          .collect(Collectors.toSet()));
+      groupNamesToAdd.addAll(
+          facilities.stream()
+              .map(f -> generateFacilityGroupName(orgId, f.getInternalId()))
+              .collect(Collectors.toSet()));
     }
 
     GroupList orgGroups = _client.listGroups(generateGroupOrgPrefix(orgId), null, null);

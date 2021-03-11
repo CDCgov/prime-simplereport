@@ -129,10 +129,10 @@ class OrganizationExtractorTest {
     assertEquals(
         Set.of(OrganizationRole.USER, OrganizationRole.ADMIN), converted.get(0).getGrantedRoles());
     assertEquals(
-      Set.of(
-          UUID.fromString("80d0c820-1dc5-418e-a61e-dc6dad8c5e49"),
-          UUID.fromString("f49e8e27-dd41-4a9e-a29f-15ac74422923")), 
-      converted.get(0).getFacilities());
+        Set.of(
+            UUID.fromString("80d0c820-1dc5-418e-a61e-dc6dad8c5e49"),
+            UUID.fromString("f49e8e27-dd41-4a9e-a29f-15ac74422923")),
+        converted.get(0).getFacilities());
   }
 
   @Test
