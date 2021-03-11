@@ -1,17 +1,17 @@
 import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { toast } from "react-toastify";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
+import Alert from "../../commonComponents/Alert";
+import { showNotification } from "../../utils";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
 import { FacilityErrors, facilitySchema } from "./facilitySchema";
-import Alert from "../../commonComponents/Alert";
-import { toast } from "react-toastify";
-import { showNotification } from "../../utils";
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
