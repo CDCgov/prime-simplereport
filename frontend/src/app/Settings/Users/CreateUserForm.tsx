@@ -19,7 +19,9 @@ interface Props {
   isUpdating: boolean;
 }
 
-const initialFormState: Partial<SettingsUser> = {};
+const initialFormState: Partial<SettingsUser> = {
+  role: "USER",
+};
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
@@ -54,31 +56,6 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
       [key]: value,
     });
   };
-
-  const setUserRole =
-    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === "true" ? (
-      <>
-        <Dropdown
-          options={ROLE_OPTIONS}
-          label="Access Level"
-          name="role"
-          selectedValue={newUser.role as string}
-          defaultSelect
-          className="grid-col"
-          onChange={onChange}
-        />
-        <p>
-          If no role is selected, the user will default to a Standard user role,
-          which allows them to manage results and profiles.
-        </p>
-      </>
-    ) : (
-      <p>
-        New users will be assigned as Standard Users, which allows them to
-        conduct tests and manage results and profiles. You will be able to edit
-        their access levels after you send them an invite.
-      </p>
-    );
 
   const disableSubmit =
     isUpdating ||
@@ -134,7 +111,18 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           disabled={isUpdating}
         />
       </div>
-      <div className="grid-row">{setUserRole}</div>
+      <div className="grid-row">
+        <Dropdown
+          options={ROLE_OPTIONS}
+          label="Access Level"
+          name="role"
+          selectedValue={newUser.role as string}
+          defaultSelect
+          className="grid-col"
+          onChange={onChange}
+          required
+        />
+      </div>
       <UserFacilitiesSettingsForm
         activeUser={newUser}
         onUpdateUser={updateUser}
