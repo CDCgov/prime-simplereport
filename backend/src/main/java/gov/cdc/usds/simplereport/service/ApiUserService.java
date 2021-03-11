@@ -110,11 +110,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo updateUser(
-      UUID userId,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix) {
+      UUID userId, String firstName, String middleName, String lastName, String suffix) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
 

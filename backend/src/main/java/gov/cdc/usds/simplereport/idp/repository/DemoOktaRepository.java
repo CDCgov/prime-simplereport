@@ -78,8 +78,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   // this method doesn't do much in a demo envt since a user's username doesn't change
-  public Optional<OrganizationRoleClaims> updateUser(
-      IdentityAttributes userIdentity) {
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
     OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
     return Optional.of(orgRoles);
   }

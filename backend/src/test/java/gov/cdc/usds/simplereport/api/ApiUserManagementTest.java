@@ -263,8 +263,7 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode updateResp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
@@ -302,8 +301,7 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
@@ -335,8 +333,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
     useOrgUser();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     runQuery("update-user", updateVariables, ACCESS_ERROR);
   }
 
@@ -355,8 +352,7 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
@@ -520,10 +516,7 @@ class ApiUserManagementTest extends BaseApiTest {
     String id = who.get("id").asText();
 
     ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", Role.ENTRY_ONLY.name());
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ENTRY_ONLY.name());
     runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
 
@@ -973,11 +966,7 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   private ObjectNode getUpdateUserVariables(
-      String id,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix) {
+      String id, String firstName, String middleName, String lastName, String suffix) {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()

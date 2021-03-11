@@ -23,8 +23,7 @@ public interface OktaRepository {
       Set<Facility> facilities,
       Set<OrganizationRole> roles);
 
-  public Optional<OrganizationRoleClaims> updateUser(
-      IdentityAttributes userIdentity);
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
   public Optional<OrganizationRoleClaims> updateUserPrivileges(
       String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);

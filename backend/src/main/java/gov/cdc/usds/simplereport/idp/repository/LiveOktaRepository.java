@@ -195,8 +195,7 @@ public class LiveOktaRepository implements OktaRepository {
             Collectors.toMap(e -> e.getKey(), e -> _extractor.convertClaims(e.getValue()).get(0)));
   }
 
-  public Optional<OrganizationRoleClaims> updateUser(
-      IdentityAttributes userIdentity) {
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
 
     UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
     if (users.stream().count() == 0) {
