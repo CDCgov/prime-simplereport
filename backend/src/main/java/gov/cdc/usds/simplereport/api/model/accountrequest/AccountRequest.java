@@ -43,8 +43,6 @@ public class AccountRequest {
   private String opZip;
   private String opCounty;
 
-  public AccountRequest() {}
-
   public String generateEmailBody() {
     String newLine = "<br>";
     return String.join(

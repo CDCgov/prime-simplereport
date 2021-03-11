@@ -15,8 +15,6 @@ public class WaitlistRequest {
   @NotNull private String organization;
   private String referral;
 
-  public WaitlistRequest() {}
-
   public String generateEmailBody() {
     String newLine = "<br>";
     return String.join(
