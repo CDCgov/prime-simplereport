@@ -10,7 +10,8 @@ import static org.mockito.Mockito.when;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.Role;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +22,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 
+@WithMockUser(username = TestUserIdentities.SITE_ADMIN_USER, authorities = Role.DEFAULT_ORG_ADMIN)
 class UploadServiceTest extends BaseServiceTest<UploadService> {
   public static final int PATIENT_PAGEOFFSET = 0;
   public static final int PATIENT_PAGESIZE = 1000;
@@ -58,7 +61,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testInsert() throws IOException {
     // Read the test CSV file
     try (InputStream inputStream =
@@ -66,7 +68,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
       this._service.processPersonCSV(inputStream);
     }
 
-    final List<Person> patients = this._ps.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
+    final List<Person> patients =
+        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertAll(
         () -> assertEquals(1, patients.size()),
         () -> assertEquals("Best", patients.get(0).getLastName()),
@@ -75,7 +78,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testInsertOneBadRow() throws IOException {
     // Read the test CSV file
     try (InputStream inputStream =
@@ -88,13 +90,13 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
               () -> this._service.processPersonCSV(inputStream),
               "Should fail to parse. Missing facilityId");
 
-      final List<Person> patients = this._ps.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
+      final List<Person> patients =
+          this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
       assertEquals(0, patients.size());
     }
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testNotCSV() throws IOException {
     try (ByteArrayInputStream bis =
         new ByteArrayInputStream("this is not a CSV".getBytes(StandardCharsets.UTF_8))) {
@@ -108,13 +110,12 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
           "Should have correct error message");
       assertEquals(
           0,
-          this._ps.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE).size(),
+          this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size(),
           "Should not have any patients");
     }
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testMalformedCSV() throws IOException {
     try (ByteArrayInputStream bis =
         new ByteArrayInputStream("patientID\n'123445'\n".getBytes(StandardCharsets.UTF_8))) {
@@ -130,7 +131,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testInvalidPhoneNumber() throws Exception {
     try (InputStream inputStream =
         UploadServiceTest.class
@@ -142,7 +142,6 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void testNoHeader() throws Exception {
     try (InputStream inputStream =
         UploadServiceTest.class
@@ -150,7 +149,8 @@ class UploadServiceTest extends BaseServiceTest<UploadService> {
             .getResourceAsStream("test-upload-valid-no-header.csv")) {
       this._service.processPersonCSV(inputStream);
     }
-    List<Person> patients = this._ps.getAllPatients(PATIENT_PAGEOFFSET, PATIENT_PAGESIZE);
+    List<Person> patients =
+        this._ps.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertEquals(1, patients.size(), "Should have 1 patient");
   }
 }

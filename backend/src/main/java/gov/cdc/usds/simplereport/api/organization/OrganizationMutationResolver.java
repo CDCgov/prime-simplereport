@@ -62,13 +62,13 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        _avs.getValidatedAddress(
-            orderingProviderStreet,
-            orderingProviderStreetTwo,
-            orderingProviderCity,
-            orderingProviderState,
-            orderingProviderZipCode,
-            _avs.PROVIDER_DISPLAY_NAME);
+        new StreetAddress(
+            Translators.parseString(orderingProviderStreet),
+            Translators.parseString(orderingProviderStreetTwo),
+            Translators.parseString(orderingProviderCity),
+            Translators.parseState(orderingProviderState),
+            Translators.parseString(orderingProviderZipCode),
+            Translators.parseString(orderingProviderCounty));
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,
@@ -122,13 +122,13 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        _avs.getValidatedAddress(
-            orderingProviderStreet,
-            orderingProviderStreetTwo,
-            orderingProviderCity,
-            orderingProviderState,
-            orderingProviderZipCode,
-            _avs.PROVIDER_DISPLAY_NAME);
+        new StreetAddress(
+            Translators.parseString(orderingProviderStreet),
+            Translators.parseString(orderingProviderStreetTwo),
+            Translators.parseString(orderingProviderCity),
+            Translators.parseState(orderingProviderState),
+            Translators.parseString(orderingProviderZipCode),
+            Translators.parseString(orderingProviderCounty));
     Facility facility =
         _os.updateFacility(
             facilityId,
@@ -181,13 +181,13 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
         _avs.getValidatedAddress(
             street, streetTwo, city, state, zipCode, _avs.FACILITY_DISPLAY_NAME);
     StreetAddress providerAddress =
-        _avs.getValidatedAddress(
-            orderingProviderStreet,
-            orderingProviderStreetTwo,
-            orderingProviderCity,
-            orderingProviderState,
-            orderingProviderZipCode,
-            _avs.PROVIDER_DISPLAY_NAME);
+        new StreetAddress(
+            Translators.parseString(orderingProviderStreet),
+            Translators.parseString(orderingProviderStreetTwo),
+            Translators.parseString(orderingProviderCity),
+            Translators.parseState(orderingProviderState),
+            Translators.parseString(orderingProviderZipCode),
+            Translators.parseString(orderingProviderCounty));
     PersonName providerName =
         new PersonName(
             orderingProviderFirstName,

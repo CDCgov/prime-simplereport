@@ -1,16 +1,17 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.graphql.spring.boot.test.GraphQLResponse;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.Optional;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,14 +23,19 @@ class PatientManagementTest extends BaseApiTest {
 
   @Test
   void queryPatientWithFacility() throws Exception {
-    Organization org = _orgService.getCurrentOrganization();
-    Facility place = _orgService.getFacilities(org).get(0);
-    _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
-    _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
+    final MutableObject<String> facilityId = new MutableObject<>(); // LOL
+    TestUserIdentities.withStandardUser(
+        () -> {
+          Organization org = _orgService.getCurrentOrganization();
+          Facility place = _orgService.getFacilities(org).get(0);
+          _dataFactory.createMinimalPerson(org, place, "Cassandra", null, "Thom", null);
+          _dataFactory.createMinimalPerson(org, null, " Miriana", "Linas", "Luisito", null);
+          facilityId.setValue(place.getInternalId().toString());
+        });
+    useOrgUser();
     JsonNode patients = fetchPatientsWithFacility();
     assertEquals(true, patients.get(0).get("facility").isNull());
-    assertEquals(
-        place.getInternalId().toString(), patients.get(1).get("facility").get("id").asText());
+    assertEquals(facilityId.getValue(), patients.get(1).get("facility").get("id").asText());
   }
 
   @Test
@@ -55,27 +61,20 @@ class PatientManagementTest extends BaseApiTest {
   void createPatient_entryUser_fail() throws Exception {
     useOrgEntryOnly();
     String firstName = "Sansa";
-    GraphQLResponse mutandem =
-        executeAddPersonMutation(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
-    assertGraphQLOutcome(mutandem.readTree(), ACCESS_ERROR);
+    executeAddPersonMutation(
+        firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.of(ACCESS_ERROR));
   }
 
   @Test
   void failsOnInvalidPhoneNumber() throws Exception {
-    GraphQLResponse resp = executeAddPersonMutation("a", "b", "2020-12-29", "d", "e");
-    JsonNode errors = resp.readTree().get("errors");
-    assertNotNull(errors);
-    assertTrue(errors.isArray());
-    assertEquals(1, errors.size());
-    assertTrue(errors.get(0).toString().contains("[d] is not a valid phone number"));
+    executeAddPersonMutation(
+        "a", "b", "2020-12-29", "d", "e", Optional.of("[d] is not a valid phone number"));
   }
 
   private JsonNode doCreateAndFetch(
       String firstName, String lastName, String birthDate, String phone, String lookupId)
       throws IOException {
-    GraphQLResponse resp =
-        executeAddPersonMutation(firstName, lastName, birthDate, phone, lookupId);
-    assertGraphQLSuccess(resp);
+    executeAddPersonMutation(firstName, lastName, birthDate, phone, lookupId, Optional.empty());
     JsonNode patients = fetchPatients();
     return patients;
   }
