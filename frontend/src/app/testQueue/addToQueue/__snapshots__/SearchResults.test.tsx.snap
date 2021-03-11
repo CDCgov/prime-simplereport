@@ -1,9 +1,17 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`SearchResults should say 'No Results' for no matches 1`] = `
-<h3>
-  No results
-</h3>
+<div
+  className="usa-card__container shadow-3 results-dropdown"
+>
+  <div
+    className="usa-card__body"
+  >
+    <p>
+      No results
+    </p>
+  </div>
+</div>
 `;
 
 exports[`SearchResults should show matching results 1`] = `

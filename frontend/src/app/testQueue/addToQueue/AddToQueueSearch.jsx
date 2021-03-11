@@ -8,16 +8,24 @@ import {
 
 import Alert from "../../commonComponents/Alert";
 import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
-import { showNotification, displayFullName } from "../../utils";
+import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
+import { useDebounce } from "./useDebounce";
 
-const MIN_SEARCH_CHARACTER_COUNT = 3;
+const MIN_SEARCH_CHARACTER_COUNT = 2;
+const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!) {
-    patients(facilityId: $facilityId) {
+  query GetPatientsByFacility($facilityId: String!, $namePrefixMatch: String) {
+    patients(
+      facilityId: $facilityId
+      pageNumber: 0
+      pageSize: 20
+      showDeleted: false
+      namePrefixMatch: $namePrefixMatch
+    ) {
       internalId
       firstName
       lastName
@@ -89,21 +97,21 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     appInsights,
     "Add Patient to Queue"
   );
-
-  const { data, loading, error } = useQuery(QUERY_PATIENT, {
-    fetchPolicy: "no-cache",
-    variables: { facilityId },
+  const [queryString, debounced, setDebounced] = useDebounce("", {
+    debounceTime: SEARCH_DEBOUNCE_TIME,
+    runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
+  const { data, error } = useQuery(QUERY_PATIENT, {
+    fetchPolicy: "no-cache",
+    variables: { facilityId, namePrefixMatch: queryString },
+  });
   const [mutationError, updateMutationError] = useState(null);
   const [addPatientToQueue] = useMutation(ADD_PATIENT_TO_QUEUE);
   const [updateAoe] = useMutation(UPDATE_AOE);
-  const [queryString, setQueryString] = useState("");
-  const [suggestions, updateSuggestions] = useState([]);
 
-  if (loading) {
-    return <p> Loading patient data... </p>;
-  }
+  const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
   if (error) {
     throw error;
   }
@@ -111,38 +119,12 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     throw mutationError;
   }
 
-  let shouldShowSuggestions = queryString.length >= MIN_SEARCH_CHARACTER_COUNT;
-
-  const getSuggestionsFromQueryString = (queryString) => {
-    if (data && data.patients) {
-      let formattedQueryString = queryString.toLowerCase();
-      let searchResults = data.patients.filter((patient) => {
-        return (
-          displayFullName(
-            patient.firstName,
-            patient.middleName,
-            patient.lastName
-          )
-            .toLowerCase()
-            .indexOf(formattedQueryString) > -1
-        );
-      });
-      return searchResults;
-    }
-    return [];
-  };
-
   const onInputChange = (event) => {
-    let newValue = event.target.value;
-    setQueryString(newValue);
-    if (newValue.length > 2) {
-      updateSuggestions(getSuggestionsFromQueryString(newValue));
-    }
+    setDebounced(event.target.value);
   };
 
   const onSearchClick = (event) => {
     event.preventDefault();
-    updateSuggestions(getSuggestionsFromQueryString(queryString));
   };
 
   const onAddToQueue = (
@@ -159,8 +141,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     },
     createOrUpdate = "create"
   ) => {
-    updateSuggestions([]);
-    setQueryString("");
+    setDebounced("");
     trackAddPatientToQueue();
     let callback;
     const variables = {
@@ -191,8 +172,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
         showNotification(toast, alert);
         refetchQueue();
         if (createOrUpdate === "create") {
-          const patientLinkId = res.data.addPatientToQueue;
-          return patientLinkId;
+          return res.data.addPatientToQueue;
         }
       })
       .catch((error) => {
@@ -205,15 +185,16 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       <SearchInput
         onSearchClick={onSearchClick}
         onInputChange={onInputChange}
-        queryString={queryString}
-        disabled={!shouldShowSuggestions}
+        queryString={debounced}
+        disabled={!allowQuery}
       />
       <SearchResults
-        patients={suggestions}
+        patients={data?.patients || []}
         onAddToQueue={onAddToQueue}
         facilityId={facilityId}
         patientsInQueue={patientsInQueue}
-        shouldShowSuggestions={shouldShowSuggestions}
+        shouldShowSuggestions={allowQuery}
+        loading={debounced !== queryString}
       />
     </React.Fragment>
   );
