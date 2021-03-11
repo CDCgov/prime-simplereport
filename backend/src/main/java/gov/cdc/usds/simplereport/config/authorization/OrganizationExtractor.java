@@ -23,8 +23,8 @@ import org.springframework.stereotype.Component;
 public class OrganizationExtractor
     implements Converter<Collection<? extends GrantedAuthority>, List<OrganizationRoleClaims>> {
 
+  public static final String FACILITY_ACCESS_MARKER = "FACILITY_ACCESS";
   private static final String CLAIM_SEPARATOR = ":";
-  private static final String FACILITY_ACCESS_MARKER = "FACILITY_ACCESS";
   private static final Logger LOG = LoggerFactory.getLogger(OrganizationExtractor.class);
 
   private AuthorizationProperties properties;
@@ -64,7 +64,7 @@ public class OrganizationExtractor
               existingFacilities.add(claimedFacilityValidated);
             }
           } catch (IllegalArgumentException e) {
-            LOG.warn("Unexpected facility_id={} for organization={}", claimedFacility, claimedOrg);
+            LOG.warn("Invalid facility_id={} for organization={}", claimedFacility, claimedOrg);
           }
         } else {
           int roleOffset = claimed.lastIndexOf(CLAIM_SEPARATOR);
@@ -104,10 +104,7 @@ public class OrganizationExtractor
             o ->
                 new OrganizationRoleClaims(
                     o,
-                    rolesFound.containsKey(o)
-                            && PermissionHolder.grantsAllFacilityAccess(rolesFound.get(o))
-                        ? Set.of()
-                        : facilitiesFound.getOrDefault(o, Set.of()),
+                    facilitiesFound.getOrDefault(o, Set.of()),
                     rolesFound.getOrDefault(o, EnumSet.noneOf(OrganizationRole.class))))
         .collect(Collectors.toList());
   }

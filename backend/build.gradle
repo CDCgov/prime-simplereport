@@ -61,6 +61,9 @@ dependencies {
     testImplementation "com.graphql-java-kickstart:graphql-spring-boot-starter-test:${kickstartVersion}"
     testImplementation 'org.springframework.security:spring-security-test'
     testImplementation 'com.yannbriancon:spring-hibernate-query-utils:1.0.3'
+
+    // dev tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 }
 
 springBoot {

@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -28,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +92,7 @@ public class ApiUserService {
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
-        PermissionHolder.getEffectiveRoles(
-            EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault()));
+        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
     Optional<OrganizationRoleClaims> roleClaims =
         _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
@@ -130,7 +129,7 @@ public class ApiUserService {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
-    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -159,11 +158,10 @@ public class ApiUserService {
     Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
     // ensure every user altered by this method maintains all-facility access for now
     Set<OrganizationRole> roles =
-        PermissionHolder.getEffectiveRoles(
-            EnumSet.of(
-                role.toOrganizationRole(),
-                OrganizationRole.ALL_FACILITIES,
-                OrganizationRole.getDefault()));
+        EnumSet.of(
+            role.toOrganizationRole(),
+            OrganizationRole.ALL_FACILITIES,
+            OrganizationRole.getDefault());
     _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
 
     LOG.info(
@@ -195,7 +193,7 @@ public class ApiUserService {
     LOG.info(
         "User with id={} updated by user with id={}",
         apiUser.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
+        getCurrentApiUser().getInternalId());
 
     return user;
   }
@@ -318,7 +316,7 @@ public class ApiUserService {
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
     Map<UUID, Facility> facilitiesByUUID =
-        facilities.stream().collect(Collectors.toMap(f -> f.getInternalId(), f -> f));
+        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
     return apiUsers.stream()
         .map(
             u -> {
@@ -328,7 +326,7 @@ public class ApiUserService {
                   allFacilityAccess
                       ? facilitiesSet
                       : claims.getFacilities().stream()
-                          .map(uuid -> facilitiesByUUID.get(uuid))
+                          .map(facilitiesByUUID::get)
                           .collect(Collectors.toSet());
               OrganizationRoles orgRoles =
                   new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());

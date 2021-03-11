@@ -41,6 +41,8 @@ public class DataHubUploadController {
   public ResponseEntity<?> exportTestEventCSV(
       HttpServletResponse response, @RequestParam(defaultValue = "") String startupdateby)
       throws IOException {
+    var csvContent = _hubuploadservice.createTestCSVForDataHub(startupdateby);
+
     response.setContentType("text/csv");
     DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
     String currentDateTime = dateFormatter.format(new Date());
@@ -48,7 +50,7 @@ public class DataHubUploadController {
     String headerKey = "Content-Disposition";
     String headerValue = "attachment; filename=testEvents_" + currentDateTime + ".csv";
     response.setHeader(headerKey, headerValue);
-    response.getWriter().print(_hubuploadservice.createTestCSVForDataHub(startupdateby));
+    response.getWriter().print(csvContent);
     return ResponseEntity.accepted().build();
   }
 }

@@ -6,8 +6,8 @@ import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
+import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoAuthorization;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser.DemoAuthorization;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -120,12 +121,12 @@ public class OrganizationInitializingService {
                     return _orgRepo.save(o);
                   }
                 })
-            .collect(Collectors.toMap(o -> o.getExternalId(), o -> o));
-    orgsByExternalId.values().forEach(o -> initOktaOrg(o));
+            .collect(Collectors.toMap(Organization::getExternalId, Function.identity()));
+    orgsByExternalId.values().forEach(this::initOktaOrg);
 
     Map<String, Facility> facilitiesByName =
         _facilityRepo.findAll().stream()
-            .collect(Collectors.toMap(f -> f.getFacilityName(), f -> f));
+            .collect(Collectors.toMap(Facility::getFacilityName, Function.identity()));
     List<Facility> facilities =
         _props.getFacilities().stream()
             .map(
@@ -161,7 +162,7 @@ public class OrganizationInitializingService {
       }
       DemoAuthorization authorization = user.getAuthorization();
       if (authorization != null) {
-        Set<OrganizationRole> roles = authorization.getEffectiveRoles();
+        Set<OrganizationRole> roles = authorization.getGrantedRoles();
         Organization org =
             _orgRepo
                 .findByExternalId(authorization.getOrganizationExternalId())
@@ -238,10 +239,5 @@ public class OrganizationInitializingService {
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }
-  }
-
-  // arbitrary decision to make the first organization the default
-  public Organization getDefaultOrganization() {
-    return _props.getOrganizations().get(0);
   }
 }

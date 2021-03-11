@@ -51,11 +51,10 @@ public class DemoOktaRepository implements OktaRepository {
     Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
     rolesToCreate.addAll(roles);
     Set<UUID> facilityUUIDs =
-        facilities.stream()
+        PermissionHolder.grantsAllFacilityAccess(rolesToCreate)
             // create an empty set of facilities if user can access all facilities anyway
-            .filter(f -> !PermissionHolder.grantsAllFacilityAccess(rolesToCreate))
-            .map(f -> f.getInternalId())
-            .collect(Collectors.toSet());
+            ? Set.of()
+            : facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
     if (!orgFacilitiesMap.containsKey(organizationExternalId)) {
       throw new IllegalGraphqlArgumentException(
           "Cannot add Okta user to nonexistent organization=" + organizationExternalId);
@@ -69,7 +68,7 @@ public class DemoOktaRepository implements OktaRepository {
 
     OrganizationRoleClaims orgRoles =
         new OrganizationRoleClaims(organizationExternalId, facilityUUIDs, rolesToCreate);
-    usernameOrgRolesMap.putIfAbsent(userIdentity.getUsername(), orgRoles);
+    usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
 
     orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
 
