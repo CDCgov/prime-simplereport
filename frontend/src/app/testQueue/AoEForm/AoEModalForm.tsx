@@ -29,7 +29,7 @@ interface LastTestData {
 
 export const LAST_TEST_QUERY = gql`
   query GetPatientsLastResult($patientId: String!) {
-    patient(id: $patientId) {
+    patient(patientId: $patientId) {
       lastTest {
         dateTested
         result

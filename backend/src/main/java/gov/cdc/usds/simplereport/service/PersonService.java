@@ -95,36 +95,6 @@ public class PersonService {
     return (root, query, cb) -> cb.equal(root.get(SpecField.IS_DELETED), isDeleted);
   }
 
-  // called by List function and Count function.
-  // should be made into @RequireSpecificPatientSearchPermission (or something)
-  // in AuthorizationConfiguration, with an associated function in UserAuthorizationVerifier
-  private boolean requireSpecificPatientSearchPermission(
-      UUID facilityId, boolean isArchived, String namePrefixMatch) {
-    if (_auth.userHasSiteAdminRole()) { // site admins skip all other checks
-      return true;
-    }
-
-    Set<UserPermission> perms = new HashSet<>();
-
-    if (facilityId == null) {
-      // READ_PATIENT_LIST does NOT seem right, probably an admin role to see all patients across
-      // facilities? UserPermission.ACCESS_ALL_FACILITIES maybe?
-      perms.add(UserPermission.READ_PATIENT_LIST);
-    }
-    if (isArchived) {
-      perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
-    }
-    if (namePrefixMatch != null) {
-      perms.add(UserPermission.SEARCH_PATIENTS);
-    } else {
-      // because namePrefixMatch is null, they are reading permissions across all patients
-      perms.add(UserPermission.READ_PATIENT_LIST);
-    }
-
-    // check all the permissions in one call.
-    return _auth.userHasPermissions(perms);
-  }
-
   // called by List function and Count function
   protected Specification<Person> buildPersonSearchFilter(
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
@@ -149,6 +119,7 @@ public class PersonService {
    *     names that start with these characters. Case insenstive. If fewer than
    * @return A list of matching patients.
    */
+  @AuthorizationConfiguration.RequireSpecificReadPatientListPermission
   public List<Person> getPatients(
       UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String namePrefixMatch) {
     if (pageOffset < 0) {
@@ -162,21 +133,13 @@ public class PersonService {
       return List.of(); // empty list
     }
 
-    // first check permissions
-    if (!requireSpecificPatientSearchPermission(facilityId, isArchived, namePrefixMatch)) {
-      throw new AccessDeniedException("Access is denied");
-    }
-
     return _repo.findAll(
         buildPersonSearchFilter(facilityId, isArchived, namePrefixMatch),
         PageRequest.of(pageOffset, pageSize, NAME_SORT));
   }
 
+  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public long getPatientsCount(UUID facilityId, boolean isArchived, String namePrefixMatch) {
-    // first check permissions
-    if (!requireSpecificPatientSearchPermission(facilityId, isArchived, namePrefixMatch)) {
-      throw new AccessDeniedException("Access is denied");
-    }
     if (namePrefixMatch != null && namePrefixMatch.trim().length() < MINIMUM_CHAR_FOR_SEARCH) {
       return 0;
     }
@@ -184,20 +147,19 @@ public class PersonService {
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!) getPatient()
-  public Person getPatientNoPermissionsCheck(String id) {
+  public Person getPatientNoPermissionsCheck(UUID id) {
     return getPatientNoPermissionsCheck(id, _os.getCurrentOrganization());
   }
 
   // NO PERMISSION CHECK (make sure the caller has one!)
-  public Person getPatientNoPermissionsCheck(String id, Organization org) {
-    UUID actualId = UUID.fromString(id);
+  public Person getPatientNoPermissionsCheck(UUID id, Organization org) {
     return _repo
-        .findByIdAndOrganization(actualId, org, false)
+        .findByIdAndOrganization(id, org, false)
         .orElseThrow(
             () -> new IllegalGraphqlArgumentException("No patient with that ID was found"));
   }
 
-  @AuthorizationConfiguration.RequirePermissionArchivePatient
+  @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
   public Person getArchivedPatient(UUID patientId) {
     return _repo
         .findByIdAndOrganization(patientId, _os.getCurrentOrganization(), true)
@@ -205,7 +167,7 @@ public class PersonService {
             () -> new IllegalGraphqlArgumentException("No patient with that ID was found"));
   }
 
-  @AuthorizationConfiguration.RequirePermissionEditPatient
+  @AuthorizationConfiguration.RequirePermissionCreatePatientAtFacility
   public Person addPatient(
       UUID facilityId,
       String lookupId,
@@ -283,10 +245,10 @@ public class PersonService {
     return _repo.save(toUpdate);
   }
 
-  @AuthorizationConfiguration.RequirePermissionEditPatient
+  @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
   public Person updatePatient(
       UUID facilityId,
-      String patientId,
+      UUID patientId,
       String lookupId,
       String firstName,
       String middleName,
@@ -324,9 +286,9 @@ public class PersonService {
     return _repo.save(patientToUpdate);
   }
 
-  @AuthorizationConfiguration.RequirePermissionArchivePatient
-  public Person setIsDeleted(UUID id, boolean deleted) {
-    Person person = this.getPatientNoPermissionsCheck(id.toString());
+  @AuthorizationConfiguration.RequirePermissionArchiveTargetPatient
+  public Person setIsDeleted(UUID patientId, boolean deleted) {
+    Person person = this.getPatientNoPermissionsCheck(patientId);
     person.setIsDeleted(deleted);
     return _repo.save(person);
   }

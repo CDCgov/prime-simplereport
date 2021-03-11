@@ -5,7 +5,7 @@ import PatientForm from "./PatientForm";
 
 const GET_PATIENT = gql`
   query GetPatientDetails($id: String!) {
-    patient(id: $id) {
+    patient(patientId: $id) {
       firstName
       middleName
       lastName

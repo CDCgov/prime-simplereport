@@ -1,4 +1,4 @@
-mutation addTestResult($deviceId: String!, $result: String!, $patientId: String!, $dateTested: DateTime) {
+mutation addTestResult($deviceId: String!, $result: String!, $patientId: ID!, $dateTested: DateTime) {
     addTestResult(
       patientId: $patientId,
       deviceId: $deviceId,

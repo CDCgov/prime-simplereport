@@ -18,6 +18,8 @@ import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,14 +68,14 @@ class QueueManagementTest extends BaseApiTest {
   void updateItemInQueue() throws Exception {
     Person p = _dataFactory.createFullPerson(_org);
     TestOrder o = _dataFactory.createTestOrder(p, _site);
-    String orderId = o.getInternalId().toString();
+    UUID orderId = o.getInternalId();
     DeviceType d = _dataFactory.getGenericDevice();
     String deviceId = d.getInternalId().toString();
     String dateTested = "2020-12-31T14:30:30Z";
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
-            .put("id", orderId)
+            .put("id", orderId.toString())
             .put("deviceId", deviceId)
             .put("result", TestResult.POSITIVE.toString())
             .put("dateTested", dateTested);

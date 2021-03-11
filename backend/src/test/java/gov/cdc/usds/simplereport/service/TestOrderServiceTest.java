@@ -74,7 +74,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         false);
 
-    List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
   }
 
@@ -115,9 +115,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceType devA = _dataFactory.getGenericDevice();
 
     _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId().toString(), null);
+        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
-    List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
   }
 
@@ -160,12 +160,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertNotEquals(o.getDeviceType().getName(), devA.getName());
 
     _service.editQueueItem(
-        o.getInternalId().toString(),
+        o.getInternalId(),
         devA.getInternalId().toString(),
         TestResult.POSITIVE.toString(),
         null);
 
-    List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
     assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
     assertEquals(devA.getInternalId(), queue.get(0).getDeviceType().getInternalId());
@@ -192,12 +192,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceType devA = _dataFactory.getGenericDevice();
 
     _service.editQueueItem(
-        o.getInternalId().toString(),
+        o.getInternalId(),
         devA.getInternalId().toString(),
         TestResult.POSITIVE.toString(),
         null);
 
-    List<TestOrder> queue = _service.getQueue(facility.getInternalId().toString());
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
     assertEquals(TestResult.POSITIVE, queue.get(0).getTestResult());
     assertEquals(devA.getInternalId(), queue.get(0).getDeviceType().getInternalId());

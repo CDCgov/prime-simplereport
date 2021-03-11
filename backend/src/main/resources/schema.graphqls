@@ -191,7 +191,7 @@ type Query {
   deviceType: [DeviceType]
   patients(facilityId: String, pageNumber: Int, pageSize: Int, showDeleted: Boolean, namePrefixMatch: String): [Patient]
   patientsCount(facilityId: String, showDeleted: Boolean, namePrefixMatch: String): Int
-  patient(id: String!): Patient
+  patient(patientId: ID!): Patient
   organization: Organization
   organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
@@ -373,19 +373,19 @@ type Mutation {
   addTestResult(
     deviceId: String!
     result: String!
-    patientId: String!
+    patientId: ID!
     dateTested: DateTime
   ): String
   editQueueItem(
-    id: String!
+    id: ID!
     deviceId: String
     result: String
     dateTested: DateTime
   ): TestOrder
   correctTestMarkAsError(id: String!, reason: String): TestResult
   addPatientToQueue(
-    facilityId: String!
-    patientId: String!
+    facilityId: ID!
+    patientId: ID!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
@@ -395,7 +395,7 @@ type Mutation {
     symptomOnset: LocalDate
     noSymptoms: Boolean
   ): String
-  removePatientFromQueue(patientId: String!): String
+  removePatientFromQueue(patientId: ID!): String
   clearQueue: Int
   updateTimeOfTestQuestions(
     patientId: String!

@@ -1,4 +1,4 @@
-mutation enqueueById($id: String!, $facilityId: String!, $previousTestDate: LocalDate, $symptomOnsetDate: LocalDate) {
+mutation enqueueById($id: ID!, $facilityId: ID!, $previousTestDate: LocalDate, $symptomOnsetDate: LocalDate) {
     addPatientToQueue(
       patientId: $id,
       facilityId: $facilityId,

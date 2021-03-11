@@ -99,7 +99,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
 
   public void updatePatient(
       UUID facilityId,
-      String patientId,
+      UUID patientId,
       String lookupId,
       String firstName,
       String middleName,

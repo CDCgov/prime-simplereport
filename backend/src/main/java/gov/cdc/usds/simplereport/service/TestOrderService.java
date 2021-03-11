@@ -17,11 +17,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,14 +64,14 @@ public class TestOrderService {
     _pls = pls;
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
-  public List<TestOrder> getQueue(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
+  public List<TestOrder> getQueue(UUID facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
     return _terepo.getTestEventResults(
@@ -76,30 +79,35 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
-  public TestEvent getTestResult(UUID id) {
+  @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
+  public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
-    return _terepo.findByOrganizationAndInternalId(org, id);
+    return _terepo.findByOrganizationAndInternalId(org, testEventId);
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
+  @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
-    return _terepo.findAllByPatient(patient);
+    Optional<OrganizationRoles> roles = _os.getCurrentOrganizationRoles();
+    Set<Facility> facilities =
+        roles.isPresent()
+            ? roles.get().getFacilities()
+            : Set.of();
+    return _terepo.findAllByPatientAndFacilities(patient, facilities);
   }
 
   @Transactional(readOnly = true)
-  public TestOrder getTestOrder(String id) {
+  public TestOrder getTestOrder(UUID id) {
     Organization org = _os.getCurrentOrganization();
     return _repo
-        .fetchQueueItemById(org, UUID.fromString(id))
+        .fetchQueueItemById(org, id)
         .orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
-    TestOrder order = this.getTestOrder(id);
+  public TestOrder editQueueItem(UUID testOrderId, String deviceId, String result, Date dateTested) {
+    TestOrder order = this.getTestOrder(testOrderId);
 
     if (deviceId != null) {
       order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
@@ -112,9 +120,9 @@ public class TestOrderService {
     return _repo.save(order);
   }
 
-  @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
+  public void addTestResult(String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
@@ -132,7 +140,7 @@ public class TestOrderService {
     _repo.save(order);
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public TestOrder addPatientToQueue(
       UUID facilityId,
       Person patient,
@@ -177,9 +185,9 @@ public class TestOrderService {
     return savedOrder;
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
   public void updateTimeOfTestQuestions(
-      String patientId,
+      UUID patientId,
       String pregnancy,
       Map<String, Boolean> symptoms,
       Boolean firstTest,
@@ -226,14 +234,14 @@ public class TestOrderService {
     _parepo.save(answers);
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
-  public void removePatientFromQueue(String patientId) {
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
+  public void removePatientFromQueue(UUID patientId) {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _repo.save(order);
   }
 
-  private TestOrder retrieveTestOrder(String patientId) {
+  private TestOrder retrieveTestOrder(UUID patientId) {
     Organization org = _os.getCurrentOrganization();
     Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
@@ -245,7 +253,7 @@ public class TestOrderService {
   }
 
   @Transactional
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
     Organization org = _os.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.

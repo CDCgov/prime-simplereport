@@ -26,8 +26,8 @@ public class PatientResolver implements GraphQLQueryResolver {
     return ps.getPatientsCount(facilityId, showDeleted, namePrefixMatch);
   }
 
-  @AuthorizationConfiguration.RequirePermissionSearchPatients
-  public Person getPatient(String id) {
-    return ps.getPatientNoPermissionsCheck(id);
+  @AuthorizationConfiguration.RequirePermissionSearchTargetPatient
+  public Person getPatient(UUID patientId) {
+    return ps.getPatientNoPermissionsCheck(patientId);
   }
 }
