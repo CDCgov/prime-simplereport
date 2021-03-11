@@ -1,9 +1,8 @@
 package gov.cdc.usds.simplereport.config;
 
-import java.io.IOException;
-
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.service.email.EmailProvider;
+import java.io.IOException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
