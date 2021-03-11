@@ -72,6 +72,11 @@ data "azurerm_key_vault_secret" "twilio_auth_token" {
   key_vault_id = data.azurerm_key_vault.global.id
 }
 
+data "azurerm_key_vault_secret" "simple_report_sendgrid_api_key" {
+  name         = "simple-report-sendgrid-api-key"
+  key_vault_id = data.azurerm_key_vault.global.id
+}
+
 data "azurerm_key_vault_secret" "smarty_auth_id" {
   name         = "smarty-auth-id"
   key_vault_id = data.azurerm_key_vault.global.id
