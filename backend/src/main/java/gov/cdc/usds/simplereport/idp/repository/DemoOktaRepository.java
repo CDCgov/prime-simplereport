@@ -129,14 +129,10 @@ public class DemoOktaRepository implements OktaRepository {
   // this method dodsn't mean much in a demo env
   public void createOrganization(
       Organization org, Collection<Facility> facilities, boolean migration) {
-    createOrganization(org);
-    facilities.forEach(this::createFacility);
-  }
-
-  public void createOrganization(Organization org) {
     String externalId = org.getExternalId();
     orgUsernamesMap.putIfAbsent(externalId, new HashSet<>());
     orgFacilitiesMap.putIfAbsent(externalId, new HashSet<>());
+    facilities.forEach(this::createFacility);
   }
 
   public void createFacility(Facility facility) {

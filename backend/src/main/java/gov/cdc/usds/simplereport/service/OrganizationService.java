@@ -51,6 +51,10 @@ public class OrganizationService {
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
 
+    migrateOktaGroups();
+  }
+
+  public void migrateOktaGroups() {
     // migrate existing orgs/facilities to Okta groups on startup
     for (Organization org : _repo.findAll()) {
       _oktaRepo.createOrganization(org, getFacilities(org), true);
