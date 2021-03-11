@@ -287,8 +287,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.getQueue(facility.getInternalId().toString());
     long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
 
-    for (int ii = 0; ii < 5; ii++) {
-      // add another test to the queue. (which needs another person)
+    for (int ii = 0; ii < 2; ii++) {
+      // add more tests to the queue. (which needs more patients)
       Person p =
           _personService.addPatient(
               facilityId,
