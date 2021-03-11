@@ -1027,7 +1027,6 @@ class ApiUserManagementTest extends BaseApiTest {
   // map from each facility's name to its UUID; includes all facilities in organization
   // NOTE: this cannot be called by a user who is not associated with an org (e.g. super user)
   private Map<String, UUID> extractAllFacilitiesInOrg() {
-    System.out.println("\n\n\n\nEXTRACT_FACS="+runQuery("org-settings-query").toPrettyString());
     Iterator<JsonNode> facilitiesIter =
         runQuery("org-settings-query").get("organization").get("testingFacility").elements();
     Map<String, UUID> facilities = new HashMap<>();

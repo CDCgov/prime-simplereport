@@ -63,7 +63,6 @@ public class OrganizationService {
         orgRoles.stream()
             .map(OrganizationRoleClaims::getOrganizationExternalId)
             .collect(Collectors.toList());
-    System.out.println("\n\n\nCAND_IDS="+candidateExternalIds);
     List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
     if (validOrgs == null || validOrgs.size() != 1) {
       int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
