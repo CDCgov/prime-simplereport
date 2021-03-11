@@ -17,16 +17,6 @@ public class WaitlistRequest {
 
   public WaitlistRequest() {}
 
-  public WaitlistRequest(
-      String name, String email, String phone, String state, String organization, String referral) {
-    this.name = name;
-    this.email = email;
-    this.phone = phone;
-    this.state = state;
-    this.organization = organization;
-    this.referral = referral;
-  }
-
   public String generateEmailBody() {
     String newLine = "<br>";
     return String.join(
