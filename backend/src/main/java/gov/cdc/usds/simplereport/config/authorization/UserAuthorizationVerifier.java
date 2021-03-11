@@ -86,7 +86,7 @@ public class UserAuthorizationVerifier {
     IdentityAttributes id = _supplier.get();
     return !getUser(userId).getLoginEmail().equals(id.getUsername());
   }
-  
+
   public boolean userHasPermission(UserPermission permission) {
     return userHasPermissions(Set.of(permission));
   }
