@@ -16,11 +16,7 @@ import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UsersSideNav from "./UsersSideNav";
-import {
-  SettingsUser,
-  UserFacilitySetting,
-  NewUserInvite,
-} from "./ManageUsersContainer";
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
@@ -51,7 +47,6 @@ const getSettingsUser = (users: SettingsUser[]) =>
   }, {});
 
 export type UpdateUser = <K extends keyof SettingsUser>(
-  userId: string,
   key: K,
   value: SettingsUser[K]
 ) => void;
@@ -93,13 +88,14 @@ const ManageUsers: React.FC<Props> = ({
   const sortedUsers = sortUsers(usersState);
 
   // only updates the local state
-  const updateUser: UpdateUser = (userId, key, value) => {
-    const user = activeUser || usersState[userId];
-    updateActiveUser({
-      ...user,
-      [key]: value,
-    });
-    updateIsUserEdited(true);
+  const updateUser: UpdateUser = (key, value) => {
+    if (activeUser) {
+      updateActiveUser({
+        ...activeUser,
+        [key]: value,
+      });
+      updateIsUserEdited(true);
+    }
   };
 
   // confirm with the user if they have unsaved edits and want to change users
@@ -159,14 +155,35 @@ const ManageUsers: React.FC<Props> = ({
       .catch(setError);
   };
 
-  const handleAddUserToOrg = async (newUserInvite: NewUserInvite) => {
+  const handleAddUserToOrg = async (newUserInvite: Partial<SettingsUser>) => {
     // TODO: validate form
     try {
       setIsUpdating(true);
-      const { firstName, lastName, email, role } = { ...newUserInvite };
+      const {
+        firstName,
+        lastName,
+        email,
+        role = "USER",
+        organization,
+        permissions,
+      } = newUserInvite;
       const { data } = await addUserToOrg({
-        variables: { firstName, lastName, email, role: role || undefined },
+        variables: { firstName, lastName, email, role: role },
       });
+      const addedUser = data?.addUserToCurrentOrg?.id;
+      if (!addedUser) {
+        throw new Error("Error adding user");
+      }
+      await updateUserPrivileges({
+        variables: {
+          id: addedUser,
+          role: role,
+          facilities: organization?.testingFacility.map(({ id }) => id) || [],
+          accessAllFacilities:
+            permissions?.includes("ACCESS_ALL_FACILITIES") || false,
+        },
+      });
+
       await getUsers();
       const fullName = displayFullNameInOrder(firstName, "", lastName);
       showNotification(
@@ -178,7 +195,7 @@ const ManageUsers: React.FC<Props> = ({
         />
       );
       updateShowAddUserModal(false);
-      setAddedUserId(data?.addUserToCurrentOrg?.id);
+      setAddedUserId(addedUser);
       setIsUpdating(false);
     } catch (e) {
       setError(e);

@@ -12,15 +12,14 @@ import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
-type MinimalFacilityInfo = Pick<Facility, "id" | "name">;
-type FacilityLookup = Record<string, MinimalFacilityInfo>;
+type FacilityLookup = Record<string, UserFacilitySetting>;
 
-const getHasAllFacilityAccess = (user: SettingsUser) =>
-  user.role === "ADMIN" || user.permissions.includes("ACCESS_ALL_FACILITIES");
+const getHasAllFacilityAccess = (user: Partial<SettingsUser>) =>
+  user.role === "ADMIN" || user.permissions?.includes("ACCESS_ALL_FACILITIES");
 
 const alphabeticalFacilitySort = (
-  a: MinimalFacilityInfo,
-  b: MinimalFacilityInfo
+  a: UserFacilitySetting,
+  b: UserFacilitySetting
 ) => {
   if (a.name === b.name) {
     return 0;
@@ -29,15 +28,17 @@ const alphabeticalFacilitySort = (
 };
 
 interface Props {
-  activeUser: SettingsUser; // the user you are currently attempting to edit
+  activeUser: Partial<SettingsUser>; // the user you are currently attempting to edit
   allFacilities: UserFacilitySetting[]; // all facilities for the entire org; the activeUser would have a subset of these
   onUpdateUser: UpdateUser;
+  showRequired?: boolean;
 }
 
 const UserFacilitiesSettingsForm: React.FC<Props> = ({
   activeUser,
   allFacilities,
   onUpdateUser,
+  showRequired,
 }) => {
   const [isComponentVisible, setIsComponentVisible] = useState(false);
   const [selectedFacility, setSelectedFacility] = useState("");
@@ -74,13 +75,14 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   });
 
   const onRemoveFacility = (
-    activeUser: SettingsUser,
+    activeUser: Partial<SettingsUser>,
     selectedFacilityId: string
   ) => {
-    onUpdateUser(activeUser.id, "organization", {
-      testingFacility: activeUser.organization.testingFacility.filter(
-        (f) => f.id !== selectedFacilityId
-      ),
+    onUpdateUser("organization", {
+      testingFacility:
+        activeUser.organization?.testingFacility.filter(
+          (f) => f.id !== selectedFacilityId
+        ) || [],
     });
   };
 
@@ -98,19 +100,25 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
   useEffect(() => {
     if (
       hasAllFacilityAccess &&
-      activeUser.organization.testingFacility.length !== allFacilities.length
+      activeUser.organization?.testingFacility.length !== allFacilities.length
     ) {
-      onUpdateUser(activeUser.id, "organization", {
+      onUpdateUser("organization", {
         testingFacility: allFacilities.map(({ id, name }) => ({ id, name })),
       });
     }
   }, [hasAllFacilityAccess, activeUser, onUpdateUser, allFacilities]);
 
-  const userFacilities = hasAllFacilityAccess
-    ? [...allFacilities].sort(alphabeticalFacilitySort)
-    : [...activeUser.organization.testingFacility].sort(
-        alphabeticalFacilitySort
-      );
+  const userFacilities = useMemo(
+    () =>
+      hasAllFacilityAccess
+        ? [...allFacilities]
+        : activeUser.organization
+        ? [...activeUser.organization.testingFacility]
+        : [],
+    [activeUser, allFacilities, hasAllFacilityAccess]
+  );
+
+  userFacilities.sort(alphabeticalFacilitySort);
 
   const userFacilityLookup = useMemo(
     () => new Set(userFacilities.map(({ id }) => id)),
@@ -129,8 +137,11 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
 
   return (
     <React.Fragment>
-      <h3>Facility access</h3>
-      <p>{facilityAccessDescription}</p>
+      <h3 className="margin-bottom-0">
+        Facility access{" "}
+        {showRequired && <span className="text-secondary-vivid">*</span>}
+      </h3>
+      <p className="text-base">{facilityAccessDescription}</p>
       <Checkboxes
         boxes={[
           {
@@ -145,17 +156,16 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
         checkedValues={{ ALL_FACILITIES: hasAllFacilityAccess }}
         onChange={(e) => {
           if (e.target.checked) {
-            onUpdateUser(activeUser.id, "permissions", [
-              ...activeUser.permissions,
+            onUpdateUser("permissions", [
+              ...(activeUser.permissions || []),
               "ACCESS_ALL_FACILITIES",
             ]);
           } else {
             onUpdateUser(
-              activeUser.id,
               "permissions",
-              activeUser.permissions.filter(
+              activeUser.permissions?.filter(
                 (permission) => permission !== "ACCESS_ALL_FACILITIES"
-              )
+              ) || []
             );
           }
         }}
@@ -223,7 +233,7 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
             onClick={(e) => {
               e.preventDefault();
               if (selectedFacility === "all") {
-                onUpdateUser(activeUser.id, "organization", {
+                onUpdateUser("organization", {
                   testingFacility: allFacilities.map(({ id, name }) => ({
                     id,
                     name,
@@ -231,9 +241,9 @@ const UserFacilitiesSettingsForm: React.FC<Props> = ({
                 });
               } else {
                 const facility = facilityLookup[selectedFacility];
-                onUpdateUser(activeUser.id, "organization", {
+                onUpdateUser("organization", {
                   testingFacility: [
-                    ...activeUser.organization.testingFacility,
+                    ...(activeUser.organization?.testingFacility || []),
                     facility,
                   ],
                 });

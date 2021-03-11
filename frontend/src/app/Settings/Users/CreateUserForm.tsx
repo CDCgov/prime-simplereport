@@ -1,27 +1,25 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
 import { Role } from "../../permissions";
+import { RootState } from "../../store";
 
-import { NewUserInvite } from "./ManageUsersContainer";
-
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
+import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
+import { UpdateUser } from "./ManageUsers";
 
 interface Props {
   onClose: () => void;
-  onSubmit: (newUserInvite: NewUserInvite) => void;
+  onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
   isUpdating: boolean;
 }
 
-const initialFormState: NewUserInvite = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  role: "",
-};
+const initialFormState: Partial<SettingsUser> = {};
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
@@ -40,11 +38,21 @@ const ROLE_OPTIONS: { value: Role; label: string }[] = [
 ];
 
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
+  const facilities = useSelector<RootState, UserFacilitySetting[]>(
+    (state) => state.facilities
+  );
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     updateNewUser({ ...newUser, [e.target.name]: e.target.value });
+  };
+
+  const updateUser: UpdateUser = (key, value) => {
+    updateNewUser({
+      ...newUser,
+      [key]: value,
+    });
   };
 
   const setUserRole =
@@ -71,6 +79,14 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
         their access levels after you send them an invite.
       </p>
     );
+
+  const disableSubmit =
+    isUpdating ||
+    !newUser.firstName ||
+    !newUser.lastName ||
+    !newUser.email ||
+    !newUser.organization?.testingFacility ||
+    newUser.organization.testingFacility.length === 0;
 
   return (
     <div className="border-0 usa-card__container">
@@ -119,6 +135,12 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
         />
       </div>
       <div className="grid-row">{setUserRole}</div>
+      <UserFacilitiesSettingsForm
+        activeUser={newUser}
+        onUpdateUser={updateUser}
+        allFacilities={facilities}
+        showRequired
+      />
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
         <div className="display-flex flex-justify-end">
           <Button
@@ -131,7 +153,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
             className="margin-right-205"
             onClick={() => onSubmit(newUser)}
             label={isUpdating ? "Sending" : "Send invite"}
-            disabled={isUpdating}
+            disabled={disableSubmit}
           />
         </div>
       </div>

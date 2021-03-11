@@ -2,13 +2,13 @@ import React from "react";
 import Modal from "react-modal";
 
 import CreateUserForm from "./CreateUserForm";
-import { NewUserInvite } from "./ManageUsersContainer";
+import { SettingsUser } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
 interface Props {
   onClose: () => void;
-  onSubmit: (newUserInvite: NewUserInvite) => void;
+  onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
   isUpdating: boolean;
 }
 

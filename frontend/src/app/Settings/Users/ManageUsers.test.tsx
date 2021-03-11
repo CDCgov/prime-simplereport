@@ -1,5 +1,8 @@
 import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+import { debug } from "console";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import configureStore from "redux-mock-store";
 
 import { displayFullName } from "../../utils";
 
@@ -20,6 +23,8 @@ const loggedInUser = {
   suffix: "",
   roleDescription: "Admin user",
 };
+
+const mockStore = configureStore([]);
 
 const users: SettingsUsers[keyof SettingsUsers][] = [
   {
@@ -54,7 +59,7 @@ describe("ManageUsers", () => {
     updateUserPrivileges = jest.fn(() => Promise.resolve());
     addUserToOrg = jest.fn(() =>
       Promise.resolve({
-        data: { data: { addUserToCurrentOrg: { id: "added-user-id" } } },
+        data: { addUserToCurrentOrg: { id: "added-user-id" } },
       })
     );
     deleteUser = jest.fn((obj) =>
@@ -98,25 +103,40 @@ describe("ManageUsers", () => {
     expect(container).toMatchSnapshot();
   });
   it("passes user details to the addUserToOrg function", async () => {
+    const store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+    });
     const { getByText, findAllByRole, getByLabelText } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <ManageUsers
+            users={users}
+            loggedInUser={loggedInUser}
+            allFacilities={allFacilities}
+            updateUserPrivileges={updateUserPrivileges}
+            addUserToOrg={addUserToOrg}
+            deleteUser={deleteUser}
+            getUsers={getUsers}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
     const newUser = {
       firstName: "Jane",
       lastName: "Smith",
       email: "jane@smith.co",
-      role: "ADMIN",
+      role: "USER",
     };
 
     fireEvent.click(getByText("New User", { exact: false }));
@@ -125,24 +145,52 @@ describe("ManageUsers", () => {
     fireEvent.change(first, inputValue(newUser.firstName));
     fireEvent.change(last, inputValue(newUser.lastName));
     fireEvent.change(email, inputValue(newUser.email));
-    fireEvent.change(select, inputValue("ADMIN"));
-    fireEvent.click(getByText("Send invite", { exact: false }));
+    fireEvent.change(select, inputValue("USER"));
+    const sendButton = getByText("Send invite");
+    fireEvent.click(screen.getByLabelText("Access all facilities"));
+    await waitFor(() => {
+      expect(sendButton).not.toBeDisabled();
+    });
+    fireEvent.click(sendButton);
     await waitFor(() => expect(addUserToOrg).toBeCalled());
     expect(addUserToOrg).toBeCalledWith({ variables: newUser });
+    expect(updateUserPrivileges).toBeCalledWith({
+      variables: {
+        accessAllFacilities: true,
+        facilities: ["1", "2"],
+        id: "added-user-id",
+        role: "USER",
+      },
+    });
   });
   it("passes user details to the addUserToOrg function without a role", async () => {
+    const store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+    });
     const { getByText, findAllByRole } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={users}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <ManageUsers
+            users={users}
+            loggedInUser={loggedInUser}
+            allFacilities={allFacilities}
+            updateUserPrivileges={updateUserPrivileges}
+            addUserToOrg={addUserToOrg}
+            deleteUser={deleteUser}
+            getUsers={getUsers}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
     const newUser = {
@@ -230,18 +278,33 @@ describe("ManageUsers", () => {
     expect(noUsers).toBeInTheDocument();
   });
   it("adds a user when zero users exist", async () => {
+    const store = mockStore({
+      organization: {
+        name: "Organization Name",
+      },
+      user: {
+        firstName: "Kim",
+        lastName: "Mendoza",
+      },
+      facilities: [
+        { id: "1", name: "Facility 1" },
+        { id: "2", name: "Facility 2" },
+      ],
+    });
     const { getByText, findAllByRole } = render(
-      <MemoryRouter>
-        <ManageUsers
-          users={[]}
-          loggedInUser={loggedInUser}
-          allFacilities={allFacilities}
-          updateUserPrivileges={updateUserPrivileges}
-          addUserToOrg={addUserToOrg}
-          deleteUser={deleteUser}
-          getUsers={getUsers}
-        />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <ManageUsers
+            users={[]}
+            loggedInUser={loggedInUser}
+            allFacilities={allFacilities}
+            updateUserPrivileges={updateUserPrivileges}
+            addUserToOrg={addUserToOrg}
+            deleteUser={deleteUser}
+            getUsers={getUsers}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
     const newUser = {

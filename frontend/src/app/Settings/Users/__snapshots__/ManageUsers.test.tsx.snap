@@ -176,10 +176,15 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 </div>
               </div>
             </fieldset>
-            <h3>
+            <h3
+              class="margin-bottom-0"
+            >
               Facility access
+               
             </h3>
-            <p>
+            <p
+              class="text-base"
+            >
               Admins have access to all facilities
             </p>
             <fieldset
@@ -489,10 +494,15 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 </div>
               </div>
             </fieldset>
-            <h3>
+            <h3
+              class="margin-bottom-0"
+            >
               Facility access
+               
             </h3>
-            <p>
+            <p
+              class="text-base"
+            >
               All users must have access to at least one facility
             </p>
             <fieldset
