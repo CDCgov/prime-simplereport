@@ -40,6 +40,7 @@ class PatientManagementTest extends BaseApiTest {
 
   @Test
   void createAndFetchOnePatientIsoDate() throws Exception {
+    useOrgAdmin();
     String firstName = "Sansa";
     JsonNode patients =
         doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");

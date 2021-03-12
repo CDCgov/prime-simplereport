@@ -136,6 +136,16 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
+      authorities = {Role.DEFAULT_ORG_NO_ACCESS, 
+                     Role.DEFAULT_ORG_USER, 
+                     Role.DEFAULT_ORG_ALL_FACILITIES})
+  @Inherited
+  public @interface WithSimpleReportStandardAllFacilitiesUser {}
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.METHOD, ElementType.TYPE})
+  @WithMockUser(
+      username = TestUserIdentities.STANDARD_USER,
       authorities = {Role.DEFAULT_ORG_NO_ACCESS, Role.DEFAULT_ORG_ADMIN})
   @Inherited
   public @interface WithSimpleReportOrgAdminUser {}
@@ -147,6 +157,16 @@ public class SliceTestConfiguration {
       authorities = {Role.DEFAULT_ORG_NO_ACCESS, Role.DEFAULT_ORG_ENTRY})
   @Inherited
   public @interface WithSimpleReportEntryOnlyUser {}
+
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target({ElementType.METHOD, ElementType.TYPE})
+  @WithMockUser(
+      username = TestUserIdentities.STANDARD_USER,
+      authorities = {Role.DEFAULT_ORG_NO_ACCESS, 
+                     Role.DEFAULT_ORG_ENTRY, 
+                     Role.DEFAULT_ORG_ALL_FACILITIES})
+  @Inherited
+  public @interface WithSimpleReportEntryOnlyAllFacilitiesUser {}
 
   @Retention(RetentionPolicy.RUNTIME)
   @Target({ElementType.METHOD, ElementType.TYPE})

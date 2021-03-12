@@ -31,6 +31,48 @@ public class AuthorizationConfiguration {
           + ".userHasPermission("
           + "T(gov.cdc.usds.simplereport.config.authorization.UserPermission).";
 
+  private static final String SPEL_HAS_PERMISSION_READ_PATIENT_LIST =
+      SPEL_HAS_PERMISSION + "READ_PATIENT_LIST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_READ_ARCHIVED_PATIENT_LIST =
+      SPEL_HAS_PERMISSION + "READ_ARCHIVED_PATIENT_LIST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_SEARCH_PATIENTS =
+      SPEL_HAS_PERMISSION + "SEARCH_PATIENTS" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_READ_RESULT_LIST =
+      SPEL_HAS_PERMISSION + "READ_RESULT_LIST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_EDIT_PATIENT =
+      SPEL_HAS_PERMISSION + "EDIT_PATIENT" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_ARCHIVE_PATIENT =
+      SPEL_HAS_PERMISSION + "ARCHIVE_PATIENT" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_EDIT_FACILITY =
+      SPEL_HAS_PERMISSION + "EDIT_FACILITY" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_EDIT_ORGANIZATION =
+      SPEL_HAS_PERMISSION + "EDIT_ORGANIZATION" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_MANAGE_USERS =
+      SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_START_TEST =
+      SPEL_HAS_PERMISSION + "START_TEST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_UPDATE_TEST =
+      SPEL_HAS_PERMISSION + "UPDATE_TEST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_SUBMIT_TEST =
+      SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT =
+      SPEL_HAS_PERMISSION + "EXPORT_TEST_EVENT" + ")";
+
+  private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
+      SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
+
   private static final String SPEL_IS_SITE_ADMIN =
       "@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()";
 
@@ -40,7 +82,7 @@ public class AuthorizationConfiguration {
       "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)";
 
   private static final String SPEL_CAN_MANAGE_USER =
-      "(" + SPEL_HAS_PERMISSION + "MANAGE_USERS" + ") && " + SPEL_IS_IN_SAME_ORG + ")";
+      "(" + SPEL_HAS_PERMISSION_MANAGE_USERS + " && " + SPEL_IS_IN_SAME_ORG + ")";
 
   private static final String SPEL_CAN_ACCESS_FACILITY =
       "@" + AUTHORIZER_BEAN + ".userCanAccessFacility(#facilityId)";
@@ -48,11 +90,14 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_VIEW_PATIENT =
       "@" + AUTHORIZER_BEAN + ".userCanAccessFacilityOfPatient(#patient)";
 
+  private static final String SPEL_CAN_VIEW_PATIENT_BY_ID =
+      "@" + AUTHORIZER_BEAN + ".userCanAccessFacilityOfPatient(#patientId)";
+
   private static final String SPEL_CAN_VIEW_TEST_EVENT =
       "@" + AUTHORIZER_BEAN + ".userCanViewTestEvent(#testEventId)";
 
   private static final String SPEL_CAN_VIEW_TEST_ORDER =
-      "@" + AUTHORIZER_BEAN + ".userCanViewTestEvent(#testOrderId)";
+      "@" + AUTHORIZER_BEAN + ".userCanViewTestOrder(#testOrderId)";
 
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@" + AUTHORIZER_BEAN + 
@@ -91,8 +136,7 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionManageTargetUserNotSelf {}
 
   /**
-   * Require the current user to to be one of the administrative users ("superusers") or have the
-   * {@link UserPermission#READ_PATIENT_LIST} permission for
+   * Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission for
    * <p>- the facility with UUID {@code facilityId};
    * <p>- patients whose archived status is {@code isArchived}; AND
    * <p>- patients whose name elements begin with {@code namePrefixMatch}.
@@ -104,15 +148,10 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(
       "( "
-          + SPEL_IS_SITE_ADMIN
-          + " || "
-          + "("
-          + SPEL_HAS_PERMISSION
-          + "READ_PATIENT_LIST"
-          + ")"
+          + SPEL_HAS_PERMISSION_READ_PATIENT_LIST
           + " && "
           + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH
-          + ") )")
+          + ")")
   public @interface RequireSpecificReadPatientListPermission {}
 
   /**
@@ -121,7 +160,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "READ_ARCHIVED_PATIENT_LIST" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_READ_ARCHIVED_PATIENT_LIST)
   public @interface RequirePermissionReadArchivedPatientList {}
 
   /** 
@@ -132,7 +171,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "READ_RESULT_LIST" + ")" + " && " + SPEL_CAN_VIEW_TEST_EVENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionReadResultListForTestEvent {}
 
   /** 
@@ -143,7 +182,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "READ_RESULT_LIST" + ")" + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionReadResultListAtFacility {}
 
   /** 
@@ -154,7 +193,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "READ_RESULT_LIST" + ")" + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_PATIENT)
   public @interface RequirePermissionReadResultListForPatient {}
 
   /** 
@@ -165,7 +204,7 @@ public class AuthorizationConfiguration {
    */  
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "EDIT_PATIENT" + ")" + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_PATIENT + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionCreatePatientAtFacility {}
 
   /** 
@@ -178,9 +217,9 @@ public class AuthorizationConfiguration {
    */  
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "EDIT_PATIENT" + ")" 
+  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_PATIENT
       + " && " + SPEL_CAN_ACCESS_FACILITY
-      + " && " + SPEL_CAN_VIEW_PATIENT)
+      + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionEditPatientAtFacility {}
 
   /** 
@@ -191,25 +230,25 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "ARCHIVE_PATIENT" + ")" + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_ARCHIVE_PATIENT + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionArchiveTargetPatient {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_FACILITY} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "EDIT_FACILITY" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_FACILITY)
   public @interface RequirePermissionEditFacility {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_ORGANIZATION} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "EDIT_ORGANIZATION" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_ORGANIZATION)
   public @interface RequirePermissionEditOrganization {}
 
   /** Require the current user to have the {@link UserPermission#MANAGE_USERS} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "MANAGE_USERS" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_MANAGE_USERS)
   public @interface RequirePermissionManageUsers {}
 
   /** 
@@ -220,12 +259,11 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "SEARCH_PATIENTS" + ")" + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionSearchTargetPatient {}
 
   /**
-   * Require the current user to to be one of the administrative users ("superusers") or have the
-   * {@link UserPermission#SEARCH_PATIENTS} permission for
+   * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for
    * <p>- the facility with UUID {@code facilityId};
    * <p>- patients whose archived status is {@code isArchived}; AND
    * <p>- patients whose name elements begin with {@code namePrefixMatch}.
@@ -237,21 +275,16 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(
       "( "
-          + SPEL_IS_SITE_ADMIN
-          + " || "
-          + "("
-          + SPEL_HAS_PERMISSION
-          + "SEARCH_PATIENTS"
-          + ")"
+          + SPEL_HAS_PERMISSION_SEARCH_PATIENTS
           + " && "
           + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH
-          + ") )")
+          + ")")
   public @interface RequireSpecificPatientSearchPermission {}
 
   /** Require the current user to have the {@link UserPermission#START_TEST} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "START_TEST" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST)
   public @interface RequirePermissionStartTest {}
 
   /** 
@@ -262,7 +295,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "START_TEST" + ")" + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionStartTestAtFacility {}
 
   /** 
@@ -273,7 +306,7 @@ public class AuthorizationConfiguration {
    */  
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "UPDATE_TEST" + ")" + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionUpdateTestForPatient {}
 
   /** 
@@ -284,7 +317,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "UPDATE_TEST" + ")" + " && " + SPEL_CAN_VIEW_TEST_EVENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionUpdateTestForTestEvent {}
 
   /** 
@@ -295,7 +328,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "UPDATE_TEST" + ")" + " && " + SPEL_CAN_VIEW_TEST_ORDER)
+  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER)
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
   /** 
@@ -306,12 +339,12 @@ public class AuthorizationConfiguration {
    */    
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")" + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionSubmitTestForPatient {}
 
   /** Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION + "EXPORT_TEST_EVENT" + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT)
   public @interface RequirePermissionExportTestEvent {}
 }

@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -14,17 +15,25 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
@@ -40,7 +49,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
-  void addPatientToQueue() {
+  @WithSimpleReportOrgAdminUser
+  void addPatientToQueue_orgAdmin_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -74,6 +84,107 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         LocalDate.of(1865, 12, 25),
         false);
 
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    assertEquals(1, queue.size());
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void addPatientToQueue_standardUserAllFacilities_ok() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p =
+        _personService.addPatient(
+            null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
+
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    assertEquals(1, queue.size());
+  }
+
+  @Test
+  void addPatientToQueue_standardUser_successDependsOnFacilityAccess() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+
+    Person p =
+        _personService.addPatient(
+            null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
+
+    assertThrows(
+        AccessDeniedException.class, () -> 
+            _service.addPatientToQueue(
+                facility.getInternalId(),
+                p,
+                "",
+                Collections.<String, Boolean>emptyMap(),
+                false,
+                LocalDate.of(1865, 12, 25),
+                "",
+                TestResult.POSITIVE,
+                LocalDate.of(1865, 12, 25),
+                false));
+
+    TestUserIdentities.addFacilityAuthorities(Set.of(facility));
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+
+    TestUserIdentities.removeFacilityAuthorities(Set.of(facility));
+    assertThrows(
+        AccessDeniedException.class, () -> 
+            _service.getQueue(facility.getInternalId()));
+
+    TestUserIdentities.addFacilityAuthorities(Set.of(facility));
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
   }
@@ -173,7 +284,64 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportEntryOnlyUser
-  void editTestResult_entryOnlyUser_ok() {
+  void editTestResult_entryOnlyUser_successDependsOnFacilityAccess() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+    
+    assertThrows(
+        AccessDeniedException.class, () -> 
+           _service.addPatientToQueue(
+                facility.getInternalId(),
+                p,
+                "",
+                Collections.<String, Boolean>emptyMap(),
+                false,
+                LocalDate.of(1865, 12, 25),
+                "",
+                TestResult.POSITIVE,
+                LocalDate.of(1865, 12, 25),
+                false));
+
+    TestUserIdentities.addFacilityAuthorities(Set.of(facility));
+
+    TestOrder o =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            p,
+            "",
+            Collections.<String, Boolean>emptyMap(),
+            false,
+            LocalDate.of(1865, 12, 25),
+            "",
+            TestResult.POSITIVE,
+            LocalDate.of(1865, 12, 25),
+            false);
+
+    TestUserIdentities.removeFacilityAuthorities(Set.of(facility));
+
+    DeviceType devA = _dataFactory.getGenericDevice();
+
+    assertThrows(
+        AccessDeniedException.class, () -> 
+            _service.editQueueItem(
+                o.getInternalId(),
+                devA.getInternalId().toString(),
+                TestResult.POSITIVE.toString(),
+                null));
+
+    TestUserIdentities.addFacilityAuthorities(Set.of(facility));
+
+    _service.editQueueItem(
+        o.getInternalId(),
+        devA.getInternalId().toString(),
+        TestResult.POSITIVE.toString(),
+        null);
+  }
+
+  @Test
+  @WithSimpleReportEntryOnlyAllFacilitiesUser
+  void editTestResult_entryOnlyAllFacilitiesUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);

@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.UserAuthorizationVerifier;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -18,6 +17,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -33,7 +34,6 @@ public class PersonService {
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
-  private final UserAuthorizationVerifier _auth;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -45,12 +45,10 @@ public class PersonService {
   public PersonService(
       OrganizationService os,
       PersonRepository repo,
-      CurrentPatientContextHolder patientContext,
-      UserAuthorizationVerifier auth) {
+      CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
-    _auth = auth;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -67,6 +65,19 @@ public class PersonService {
   private Specification<Person> inCurrentOrganizationFilter() {
     return (root, query, cb) ->
         cb.equal(root.get(SpecField.ORGANIZATION), _os.getCurrentOrganization());
+  }
+
+  private Specification<Person> inAccessibleFacilitiesFilter() {
+    Set<Facility> facilities = _os.getAccessibleFacilities();
+    return (root, query, cb) -> {
+      Predicate filter = cb.isNull(root.get(SpecField.FACILITY));
+      for (Facility f : facilities) {
+        filter = cb.or(
+            filter,
+            cb.equal(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), f.getInternalId()));
+      }
+      return cb.and(filter);
+    };
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.
@@ -100,9 +111,11 @@ public class PersonService {
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
     // build up filter based on params
     Specification<Person> filter = inCurrentOrganizationFilter().and(isDeletedFilter(isArchived));
-    if (facilityId != null) { // admin call to get all users
+    if (facilityId == null) {
+      filter = filter.and(inAccessibleFacilitiesFilter());
+    } else {
       filter = filter.and(inFacilityFilter(facilityId));
-    }
+    } 
 
     if (StringUtils.isNotBlank(namePrefixMatch)) {
       filter = filter.and(nameMatchesFilter(namePrefixMatch));

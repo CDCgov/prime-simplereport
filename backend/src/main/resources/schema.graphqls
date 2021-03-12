@@ -323,7 +323,7 @@ type Mutation {
     deleted: Boolean!
   ): User
   addPatient(
-    facilityId: String
+    facilityId: ID
     lookupId: String
     firstName: String!
     middleName: String

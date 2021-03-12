@@ -1,9 +1,19 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -52,5 +62,52 @@ public class TestUserIdentities {
    */
   public static void withStandardUser(Runnable nested) {
     withUser(STANDARD_USER, nested);
+  }
+
+  /**
+   * Adds a collection of facility authorities to the user's existing security context
+   * 
+   * @param facilities list of facilities for which the user will be given an authority
+   */
+  public static void addFacilityAuthorities(Collection<Facility> facilities) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Object principal = auth.getPrincipal();
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    authorities.addAll((Collection<GrantedAuthority>) auth.getAuthorities());
+    for (Facility f : facilities) {
+      authorities.add(new SimpleGrantedAuthority(
+          convertFacilityToAuthority(f)));
+    }
+    SecurityContextHolder.getContext().setAuthentication(
+        new TestingAuthenticationToken(principal, null, authorities));
+  }
+
+  /**
+   * Removes a collection of facility authorities from the user's existing security context,
+   * if applicable.
+   * 
+   * @param facilities list of facilities for which the user will have an authority removed,
+   *    if applicable
+   */
+  public static void removeFacilityAuthorities(Collection<Facility> facilities) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Object principal = auth.getPrincipal();
+    Set<String> toRemove = facilities.stream()
+        .map(TestUserIdentities::convertFacilityToAuthority)
+        .collect(Collectors.toSet());
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    authorities.addAll((Collection<GrantedAuthority>) auth.getAuthorities());
+    authorities.removeIf(a -> toRemove.contains(a.getAuthority()));
+    SecurityContextHolder.getContext().setAuthentication(
+        new TestingAuthenticationToken(principal, null, authorities));
+  }
+
+  private static String convertFacilityToAuthority(Facility f) {
+    return TEST_ROLE_PREFIX 
+        + f.getOrganization().getExternalId() 
+        + ":" 
+        + OrganizationExtractor.FACILITY_ACCESS_MARKER 
+        + ":" + 
+        f.getInternalId();
   }
 }

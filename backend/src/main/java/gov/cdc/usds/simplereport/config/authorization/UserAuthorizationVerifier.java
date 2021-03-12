@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
@@ -39,6 +40,7 @@ public class UserAuthorizationVerifier {
   private IdentitySupplier _supplier;
   private OrganizationService _orgService;
   private ApiUserRepository _userRepo;
+  private PersonRepository _personRepo;
   private TestEventRepository _testEventRepo;
   private TestOrderRepository _testOrderRepo;
   private OktaRepository _oktaRepo;
@@ -48,6 +50,7 @@ public class UserAuthorizationVerifier {
       IdentitySupplier supplier,
       OrganizationService orgService,
       ApiUserRepository userRepo,
+      PersonRepository personRepo,
       TestEventRepository testEventRepo,
       OktaRepository oktaRepo) {
     super();
@@ -55,11 +58,13 @@ public class UserAuthorizationVerifier {
     this._supplier = supplier;
     this._orgService = orgService;
     this._userRepo = userRepo;
+    this._personRepo = personRepo;
     this._testEventRepo = testEventRepo;
     this._oktaRepo = oktaRepo;
   }
 
   public boolean userHasSiteAdminRole() {
+    System.out.println("SITE ADMIN\n\n\n\n\n");
     isValidUser();
     IdentityAttributes id = _supplier.get();
     return id != null && _admins.contains(id.getUsername());
@@ -161,6 +166,9 @@ public class UserAuthorizationVerifier {
       return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isPresent()) {
+      System.out.println("\n\n\n\n\nFACILITIES_ACCESS="+currentOrgRoles.get().getFacilities().toString());
+    }
     return currentOrgRoles.isPresent()
         && (currentOrgRoles.get().grantsAllFacilityAccess() ||
             currentOrgRoles.get().getFacilities().stream()
@@ -178,17 +186,23 @@ public class UserAuthorizationVerifier {
                         patient.getFacility().getInternalId()))));
   }
 
-  private boolean userHasSpecificPatientSearchPermission(
-      UUID facilityId, boolean isArchived, String namePrefixMatch) {
+  public boolean userCanAccessFacilityOfPatient(UUID patientId) {
+    Optional<Person> patient = _personRepo.findById(patientId);
+    return patient.isPresent() && userCanAccessFacilityOfPatient(patient.get());
+  }
 
+  public boolean userHasSpecificPatientSearchPermission(
+      UUID facilityId, boolean isArchived, String namePrefixMatch) {
+    if (facilityId == null) {
+      System.out.println("SEARCH PERM1facilityId == null");
+    } else {
+      System.out.println("SEARCH PERM1facilityId == "+facilityId.toString());
+    }
+    System.out.println("SEARCH PERM2\n\n\n\n\n" + String.valueOf(isArchived) + namePrefixMatch);
     Set<UserPermission> perms = new HashSet<>();
 
-    if (facilityId == null) {
-      perms.add(UserPermission.ACCESS_ALL_FACILITIES);
-    } else {
-      if (!userCanAccessFacility(facilityId)) {
+    if (facilityId != null && !userCanAccessFacility(facilityId)) {
         return false;
-      }
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);

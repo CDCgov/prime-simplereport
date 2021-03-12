@@ -1,5 +1,5 @@
 mutation createPersonEntry(
-    $facilityId: String = null,
+    $facilityId: ID = null,
     $lookupId: String,
     $firstName: String!, # this is technically optional on the back end...
     $lastName: String!,
