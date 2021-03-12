@@ -24,7 +24,7 @@ import "./ManagePatients.scss";
 
 const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
-    $facilityId: String!
+    $facilityId: ID!
     $showDeleted: Boolean!
   ) {
     patientsCount(facilityId: $facilityId, showDeleted: $showDeleted)
@@ -33,7 +33,7 @@ const patientsCountQuery = gql`
 
 const patientQuery = gql`
   query GetPatientsByFacility(
-    $facilityId: String!
+    $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
     $showDeleted: Boolean

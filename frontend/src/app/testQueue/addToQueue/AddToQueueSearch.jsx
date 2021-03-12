@@ -18,7 +18,7 @@ const MIN_SEARCH_CHARACTER_COUNT = 2;
 const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!, $namePrefixMatch: String) {
+  query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
@@ -39,8 +39,8 @@ export const QUERY_PATIENT = gql`
 
 const ADD_PATIENT_TO_QUEUE = gql`
   mutation AddPatientToQueue(
-    $facilityId: String!
-    $patientId: String!
+    $facilityId: ID!
+    $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
@@ -67,7 +67,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
 
 const UPDATE_AOE = gql`
   mutation UpdateAOE(
-    $patientId: String!
+    $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
