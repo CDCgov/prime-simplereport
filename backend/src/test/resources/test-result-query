@@ -1,4 +1,4 @@
-query GetFacilityResults($facilityId: String!, $nameType: String = "long") {
+query GetFacilityResults($facilityId: ID!, $nameType: String = "long") {
   testResults(facilityId: $facilityId) {
     internalId
     dateTested
