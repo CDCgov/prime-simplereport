@@ -11,8 +11,8 @@ simple-report:
     patient-links: true
     account-request: true
   sendgrid:
-    enabled: false
-    from-email: noreply@simplereport.gov
-    account-request-recipient: usds@cdc.gov
+    enabled: true
+    from-email: nclyde@skylight.digital
+    account-request-recipient: adam@skylight.digital
 twilio:
   enabled: false
