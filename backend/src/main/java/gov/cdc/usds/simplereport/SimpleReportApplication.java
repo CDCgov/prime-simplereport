@@ -45,7 +45,7 @@ public class SimpleReportApplication {
   }
 
   @Bean
-  @ConditionalOnBean(value = LiveOktaRepository.class)
+  @ConditionalOnBean(LiveOktaRepository.class)
   public CommandLineRunner migrateOktaGroups(OrganizationService orgService) {
     return args -> orgService.migrateOktaGroups();
   }

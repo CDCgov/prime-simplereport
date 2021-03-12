@@ -400,10 +400,6 @@ public class LiveOktaRepository implements OktaRepository {
     _app.update();
   }
 
-  public void createOrganization(Organization org) {
-    createOrganization(org, Set.of(), false);
-  }
-
   public void createFacility(Facility facility) {
     // Only create the facility group if the facility's organization has already been created
     String orgExternalId = facility.getOrganization().getExternalId();
