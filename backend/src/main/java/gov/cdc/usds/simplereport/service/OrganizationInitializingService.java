@@ -73,19 +73,15 @@ public class OrganizationInitializingService {
       if (null == specimenType) {
         LOG.info("Creating specimen type {}", s.getName());
         specimenType = _specimenTypeRepo.save(s);
-      } else {
-        LOG.info("DEVICETYPESBYNAME={},SPECIMENTYPESBYCODE={}",deviceTypesByName,specimenTypesByCode);
-      }
-      specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
+        specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
+      } 
     }
-
-    LOG.info("FINAL_DEVICETYPESBYNAME={},SPECIMENTYPESBYCODE={}",deviceTypesByName,specimenTypesByCode);
 
     Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
     for (DeviceType d : _props.getDeviceTypes()) {
       DeviceType deviceType = deviceTypesByName.get(d.getName());
       if (null == deviceType) {
-        LOG.info("Creating device {}", d.getName());
+        LOG.info("Creating device type {}", d.getName());
         deviceType = _deviceTypeRepo.save(d);
         deviceTypesByName.put(deviceType.getName(), deviceType);
       }
