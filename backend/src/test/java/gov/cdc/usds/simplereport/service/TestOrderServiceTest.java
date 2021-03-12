@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -29,7 +28,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +39,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
-  @Autowired private HibernateQueryInterceptor hibernateQueryInterceptor;
   @Autowired private TestDataFactory _dataFactory;
 
   @BeforeEach
@@ -378,19 +376,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
     _dataFactory.createTestEvent(p, facility);
-
-    // Count queries with one order
-    hibernateQueryInterceptor.startQueryCount();
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
-    long startQueryCount = hibernateQueryInterceptor.getQueryCount();
-
-    // Count queries with three order
-    _dataFactory.createTestEvent(p, facility);
-    _dataFactory.createTestEvent(p, facility);
-    hibernateQueryInterceptor.startQueryCount();
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
-    long endQueryCount = hibernateQueryInterceptor.getQueryCount();
-    assertEquals(endQueryCount, startQueryCount);
   }
 
   @Test
@@ -405,6 +390,108 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // assertSecurityError(() ->
     // _service.getTestResults(facility.getInternalId()));
     assertSecurityError(() -> _service.getTestResults(p));
+  }
+
+  // watch for N+1 queries
+  @WithSimpleReportStandardUser
+  void fetchTestEventsResults_getTestEventsResults_NPlusOne() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    Person p = _dataFactory.createFullPerson(org);
+
+    // Count queries with one order
+    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+
+    // Count queries with three order N+1 test
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
+    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    long endQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    assertEquals(endQueryCount, startQueryCount);
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void editTestResult_getQueue_NPlusOne() {
+    Organization org = _organizationService.getCurrentOrganization();
+    Facility facility = _organizationService.getFacilities(org).get(0);
+    UUID facilityId = facility.getInternalId();
+
+    Person p1 =
+        _personService.addPatient(
+            facilityId,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
+
+    _service.addPatientToQueue(
+        facilityId,
+        p1,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
+
+    // get the first query count
+    long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    _service.getQueue(facility.getInternalId());
+    long firstRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+
+    for (int ii = 0; ii < 2; ii++) {
+      // add more tests to the queue. (which needs more patients)
+      Person p =
+          _personService.addPatient(
+              facilityId,
+              "FOO",
+              "Fred",
+              null,
+              "",
+              "Sr.",
+              LocalDate.of(1865, 12, 25),
+              _dataFactory.getAddress(),
+              "8883334444",
+              PersonRole.STAFF,
+              null,
+              null,
+              null,
+              null,
+              false,
+              false);
+
+      _service.addPatientToQueue(
+          facilityId,
+          p,
+          "",
+          Collections.<String, Boolean>emptyMap(),
+          false,
+          LocalDate.of(1865, 12, 25),
+          "",
+          TestResult.POSITIVE,
+          LocalDate.of(1865, 12, 25),
+          false);
+    }
+
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    _service.getQueue(facility.getInternalId());
+    long secondRunCount = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    assertEquals(firstRunCount, secondRunCount);
   }
 
   @Test

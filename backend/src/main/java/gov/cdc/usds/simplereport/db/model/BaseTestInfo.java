@@ -19,11 +19,11 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "patient_id", updatable = false)
   private Person patient;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "organization_id", updatable = false)
   private Organization organization;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "facility_id", updatable = false)
   private Facility facility;
 
@@ -31,7 +31,7 @@ public abstract class BaseTestInfo extends AuditedEntity implements Organization
   @JoinColumn(name = "device_specimen_type_id")
   private DeviceSpecimenType deviceSpecimen;
 
-  @ManyToOne(optional = false)
+  @ManyToOne(optional = false, fetch = FetchType.LAZY)
   @JoinColumn(name = "device_type_id")
   private DeviceType deviceType;
 
