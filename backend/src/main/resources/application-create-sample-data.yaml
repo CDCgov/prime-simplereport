@@ -8,10 +8,10 @@ simple-report-initialization:
   facilities:
     # TODO: uncomment once e2e tests can accommodate 2+ facilities
     # - facility-name: Injection Site
-    #  clia-number: "000111222-3"
-    #  address:
-    #    street-1: 2797 N Cerrada de Beto
-    #  organization-external-id: DIS_ORG
+    #   clia-number: "000111222-3"
+    #   address:
+    #     street-1: 2797 N Cerrada de Beto
+    #   organization-external-id: DIS_ORG
     - facility-name: Testing Site
       clia-number: "999888777-6"
       address:
