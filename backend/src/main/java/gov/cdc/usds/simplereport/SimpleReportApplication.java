@@ -45,7 +45,7 @@ public class SimpleReportApplication {
   }
 
   @Bean
-  @Profile("!"+BeanProfiles.NO_OKTA_MGMT)
+  @ConditionalOnBean(LiveOktaRepository.class)
   public CommandLineRunner migrateOktaGroups(OrganizationService orgService) {
     return args -> orgService.migrateOktaGroups();
   }
