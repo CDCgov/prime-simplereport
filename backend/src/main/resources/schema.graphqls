@@ -190,7 +190,7 @@ type PatientLink {
 type Query {
   deviceType: [DeviceType]
   patients(facilityId: String, pageNumber: Int, pageSize: Int, showDeleted: Boolean, namePrefixMatch: String): [Patient]
-  patientsCount(facilityId: String, showDeleted: Boolean, namePrefixMatch: String): Int
+  patientsCount(facilityId: ID, showDeleted: Boolean, namePrefixMatch: String): Int
   patient(patientId: ID!): Patient
   organization: Organization
   organizations: [Organization]
