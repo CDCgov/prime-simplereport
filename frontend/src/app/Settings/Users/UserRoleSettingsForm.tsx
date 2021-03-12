@@ -1,26 +1,27 @@
 import React from "react";
 
 import RadioGroup from "../../commonComponents/RadioGroup";
-import { RoleDescription } from "../../permissions";
+import { Role } from "../../permissions";
 
+import { UpdateUser } from "./ManageUsers";
 import { SettingsUser } from "./ManageUsersContainer";
 
 interface RoleButton {
-  value: RoleDescription;
+  value: Role;
   label: string;
 }
 
 const ROLES: RoleButton[] = [
   {
-    value: "Admin user",
+    value: "ADMIN",
     label: "Admin (full permissions)",
   },
   {
-    value: "Standard user",
+    value: "USER",
     label: "Standard user (manage results and profiles)",
   },
   {
-    value: "Test-entry user",
+    value: "ENTRY_ONLY",
     label: "Entry only (conduct tests)",
   },
 ];
@@ -28,11 +29,7 @@ const ROLES: RoleButton[] = [
 interface Props {
   activeUser: SettingsUser; // the user you are currently attempting to edit
   loggedInUser: User; // the user doing the editing
-  onUpdateUser<RoleDescription>(
-    userId: string,
-    key: string,
-    value: RoleDescription
-  ): void;
+  onUpdateUser: UpdateUser;
 }
 
 const UserRoleSettingsForm: React.FC<Props> = ({
@@ -43,8 +40,8 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   const updateRole = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const role = e.target.value as RoleDescription;
-    onUpdateUser(activeUser.id, e.target.name, role);
+    const role = e.target.value as Role;
+    onUpdateUser("role", role);
   };
 
   return (
@@ -53,9 +50,9 @@ const UserRoleSettingsForm: React.FC<Props> = ({
         className="margin-top-neg-1 margin-bottom-4"
         legend="Roles"
         legendSrOnly
-        name="roleDescription"
+        name="role"
         buttons={ROLES}
-        selectedRadio={activeUser.roleDescription}
+        selectedRadio={activeUser.role}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRole(e)}
         disabled={
           activeUser.id === loggedInUser.id ||

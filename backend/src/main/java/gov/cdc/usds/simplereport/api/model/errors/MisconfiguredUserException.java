@@ -16,7 +16,8 @@ public class MisconfiguredUserException extends RuntimeException implements Grap
   private static final long serialVersionUID = 1L;
 
   public MisconfiguredUserException() {
-    super("User is not configured correctly: user should be a member of exactly one organization.");
+    super(
+        "User is not configured correctly: user should be a member of exactly one valid organization.");
   }
 
   @Override // should-be-defaulted unused interface method

@@ -9,7 +9,6 @@ import {
   displayFullNameInOrder,
   displayFullName,
 } from "../../utils";
-import { OrganizationRole, RoleDescription } from "../../permissions";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -17,25 +16,15 @@ import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UsersSideNav from "./UsersSideNav";
-import {
-  SettingsUser,
-  UserFacilitySetting,
-  NewUserInvite,
-} from "./ManageUsersContainer";
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
-
-const RoleDescriptionToOrgRole = {
-  "Admin user": "ADMIN",
-  "Standard user": "USER",
-  "Test-entry user": "ENTRY_ONLY",
-};
 
 interface Props {
   users: SettingsUser[];
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
-  updateUserRole: (variables: any) => Promise<any>;
+  updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<any>;
@@ -57,11 +46,16 @@ const getSettingsUser = (users: SettingsUser[]) =>
     return acc;
   }, {});
 
+export type UpdateUser = <K extends keyof SettingsUser>(
+  key: K,
+  value: SettingsUser[K]
+) => void;
+
 const ManageUsers: React.FC<Props> = ({
   users,
   loggedInUser,
   allFacilities,
-  updateUserRole,
+  updateUserPrivileges,
   addUserToOrg,
   deleteUser,
   getUsers,
@@ -94,17 +88,15 @@ const ManageUsers: React.FC<Props> = ({
   const sortedUsers = sortUsers(usersState);
 
   // only updates the local state
-  function updateUser<T>(
-    userId: string,
-    key: string, // the field to update
-    value: T // value of the field to update
-  ) {
-    updateActiveUser({
-      ...usersState[userId],
-      [key]: value,
-    });
-    updateIsUserEdited(true);
-  }
+  const updateUser: UpdateUser = (key, value) => {
+    if (activeUser) {
+      updateActiveUser({
+        ...activeUser,
+        [key]: value,
+      });
+      updateIsUserEdited(true);
+    }
+  };
 
   // confirm with the user if they have unsaved edits and want to change users
   const onChangeActiveUser = (nextActiveUserId: string) => {
@@ -130,14 +122,14 @@ const ManageUsers: React.FC<Props> = ({
       return;
     }
     setIsUpdating(true);
-    const selectedRoleDescription = activeUser.roleDescription as RoleDescription;
-    const selectedOrganizationRole = RoleDescriptionToOrgRole[
-      selectedRoleDescription
-    ] as OrganizationRole;
-    updateUserRole({
+    updateUserPrivileges({
       variables: {
         id: activeUser.id,
-        role: selectedOrganizationRole,
+        role: activeUser.role,
+        facilities: activeUser.organization.testingFacility.map(({ id }) => id),
+        accessAllFacilities: activeUser.permissions.includes(
+          "ACCESS_ALL_FACILITIES"
+        ),
       },
     })
       .then(() => {
@@ -163,14 +155,35 @@ const ManageUsers: React.FC<Props> = ({
       .catch(setError);
   };
 
-  const handleAddUserToOrg = async (newUserInvite: NewUserInvite) => {
+  const handleAddUserToOrg = async (newUserInvite: Partial<SettingsUser>) => {
     // TODO: validate form
     try {
       setIsUpdating(true);
-      const { firstName, lastName, email, role } = { ...newUserInvite };
+      const {
+        firstName,
+        lastName,
+        email,
+        role = "USER",
+        organization,
+        permissions,
+      } = newUserInvite;
       const { data } = await addUserToOrg({
-        variables: { firstName, lastName, email, role: role || undefined },
+        variables: { firstName, lastName, email, role: role },
       });
+      const addedUser = data?.addUserToCurrentOrg?.id;
+      if (!addedUser) {
+        throw new Error("Error adding user");
+      }
+      await updateUserPrivileges({
+        variables: {
+          id: addedUser,
+          role: role,
+          facilities: organization?.testingFacility.map(({ id }) => id) || [],
+          accessAllFacilities:
+            permissions?.includes("ACCESS_ALL_FACILITIES") || false,
+        },
+      });
+
       await getUsers();
       const fullName = displayFullNameInOrder(firstName, "", lastName);
       showNotification(
@@ -182,7 +195,7 @@ const ManageUsers: React.FC<Props> = ({
         />
       );
       updateShowAddUserModal(false);
-      setAddedUserId(data?.addUserToCurrentOrg?.id);
+      setAddedUserId(addedUser);
       setIsUpdating(false);
     } catch (e) {
       setError(e);
@@ -322,7 +335,7 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    // enabled only if the user has been edited AND the loggedInUser is an org admin or super admin
+                    activeUser.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription

@@ -1,30 +1,30 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useSelector } from "react-redux";
 
 import Button from "../../commonComponents/Button";
 import TextInput from "../../commonComponents/TextInput";
 import Dropdown from "../../commonComponents/Dropdown";
-import { OrganizationRole } from "../../permissions";
+import { Role } from "../../permissions";
+import { RootState } from "../../store";
 
-import { NewUserInvite } from "./ManageUsersContainer";
-
+import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 import "./ManageUsers.scss";
+import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
+import { UpdateUser } from "./ManageUsers";
 
 interface Props {
   onClose: () => void;
-  onSubmit: (newUserInvite: NewUserInvite) => void;
+  onSubmit: (newUserInvite: Partial<SettingsUser>) => void;
   isUpdating: boolean;
 }
 
-const initialFormState: NewUserInvite = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  role: "",
+const initialFormState: Partial<SettingsUser> = {
+  role: "USER",
 };
 
 // TODO: right now, all newly invited users are of role USER. This is a future feature
-const ROLE_OPTIONS: { value: OrganizationRole; label: string }[] = [
+const ROLE_OPTIONS: { value: Role; label: string }[] = [
   {
     value: "ENTRY_ONLY",
     label: "Entry only (conduct tests)",
@@ -40,6 +40,9 @@ const ROLE_OPTIONS: { value: OrganizationRole; label: string }[] = [
 ];
 
 const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
+  const facilities = useSelector<RootState, UserFacilitySetting[]>(
+    (state) => state.facilities
+  );
   const [newUser, updateNewUser] = useState(initialFormState);
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -47,30 +50,20 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     updateNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
-  const setUserRole =
-    process.env.REACT_APP_ADD_NEW_USER_SET_CUSTOM_ROLE_ENABLED === "true" ? (
-      <>
-        <Dropdown
-          options={ROLE_OPTIONS}
-          label="Access Level"
-          name="role"
-          selectedValue={newUser.role as string}
-          defaultSelect
-          className="grid-col"
-          onChange={onChange}
-        />
-        <p>
-          If no role is selected, the user will be assigned the "Standard user
-          (manage results and profiles)" role by default.
-        </p>
-      </>
-    ) : (
-      <p>
-        New users will be assigned as Standard Users, which allows them to
-        conduct tests and manage results and profiles. You will be able to edit
-        their access levels after you send them an invite.
-      </p>
-    );
+  const updateUser: UpdateUser = (key, value) => {
+    updateNewUser({
+      ...newUser,
+      [key]: value,
+    });
+  };
+
+  const disableSubmit =
+    isUpdating ||
+    !newUser.firstName ||
+    !newUser.lastName ||
+    !newUser.email ||
+    !newUser.organization?.testingFacility ||
+    newUser.organization.testingFacility.length === 0;
 
   return (
     <div className="border-0 usa-card__container">
@@ -118,7 +111,24 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
           disabled={isUpdating}
         />
       </div>
-      <div className="grid-row">{setUserRole}</div>
+      <div className="grid-row">
+        <Dropdown
+          options={ROLE_OPTIONS}
+          label="Access Level"
+          name="role"
+          selectedValue={newUser.role as string}
+          defaultSelect
+          className="grid-col"
+          onChange={onChange}
+          required
+        />
+      </div>
+      <UserFacilitiesSettingsForm
+        activeUser={newUser}
+        onUpdateUser={updateUser}
+        allFacilities={facilities}
+        showRequired
+      />
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-5 padding-top-205 text-right">
         <div className="display-flex flex-justify-end">
           <Button
@@ -131,7 +141,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
             className="margin-right-205"
             onClick={() => onSubmit(newUser)}
             label={isUpdating ? "Sending" : "Send invite"}
-            disabled={isUpdating}
+            disabled={disableSubmit}
           />
         </div>
       </div>

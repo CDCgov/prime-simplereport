@@ -4,6 +4,7 @@
     name
     externalId
     testingFacility {
+      id
       cliaNumber
       name
       street

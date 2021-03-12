@@ -6,13 +6,16 @@ import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
+import gov.cdc.usds.simplereport.idp.repository.LiveOktaRepository;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.ScheduledTasksService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +44,12 @@ public class SimpleReportApplication {
   @Profile(BeanProfiles.CREATE_SAMPLE_DATA)
   public CommandLineRunner initDataOnStartup(OrganizationInitializingService initService) {
     return args -> initService.initAll();
+  }
+
+  @Bean
+  @ConditionalOnBean(LiveOktaRepository.class)
+  public CommandLineRunner migrateOktaGroups(OrganizationService orgService) {
+    return args -> orgService.migrateOktaGroups();
   }
 
   @Bean

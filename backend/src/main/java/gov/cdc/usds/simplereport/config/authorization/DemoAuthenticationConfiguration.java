@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.config.authorization;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
+import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -68,8 +68,8 @@ public class DemoAuthenticationConfiguration {
 
   @Bean
   public AuthorizationService getDemoAuthorizationService(
-      DemoOktaRepository oktaRepo, IdentitySupplier supplier) {
-    return new DemoOktaAuthorizationService(oktaRepo, supplier);
+      OktaRepository oktaRepo, IdentitySupplier supplier) {
+    return new DemoAuthorizationService(oktaRepo, supplier);
   }
 
   @Bean
@@ -115,15 +115,14 @@ public class DemoAuthenticationConfiguration {
   /**
    * An {@link AuthorizationService} that looks up the username of the current authenticated user in
    * the list of configured demo users, falling back to the default if one is configured, then looks
-   * up that user in {@link DemoOktaRepository} (explicitly the Demo version, not Live) to find
-   * their authorization information.
+   * up that user in {@link OktaRepository} to find their authorization information.
    */
-  public static class DemoOktaAuthorizationService implements AuthorizationService {
+  public static class DemoAuthorizationService implements AuthorizationService {
 
     private final IdentitySupplier _getCurrentUser;
-    private final DemoOktaRepository _oktaRepo;
+    private final OktaRepository _oktaRepo;
 
-    public DemoOktaAuthorizationService(DemoOktaRepository oktaRepo, IdentitySupplier getCurrent) {
+    public DemoAuthorizationService(OktaRepository oktaRepo, IdentitySupplier getCurrent) {
       super();
       this._getCurrentUser = getCurrent;
       this._oktaRepo = oktaRepo;
