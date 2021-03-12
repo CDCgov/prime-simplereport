@@ -6,12 +6,11 @@ simple-report-initialization:
     - org-name: Dat Organization
       external-id: DAT_ORG
   facilities:
-    # TODO: uncomment once e2e tests can accommodate 2+ facilities
-    # - facility-name: Injection Site
-    #  clia-number: "000111222-3"
-    #  address:
-    #    street-1: 2797 N Cerrada de Beto
-    #  organization-external-id: DIS_ORG
+    - facility-name: Injection Site
+     clia-number: "000111222-3"
+     address:
+       street-1: 2797 N Cerrada de Beto
+     organization-external-id: DIS_ORG
     - facility-name: Testing Site
       clia-number: "999888777-6"
       address:
@@ -112,8 +111,7 @@ simple-report:
           organization-external-id: DIS_ORG
           facilities: 
             - Testing Site
-            # TODO: uncomment once e2e tests can accommodate 2+ facilities
-            # - Injection Site
+            - Injection Site
           granted-roles: USER
       - identity:
           username: ben@example.com
