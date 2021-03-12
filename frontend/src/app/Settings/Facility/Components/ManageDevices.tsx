@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../../../commonComponents/Button";
 import Dropdown from "../../../commonComponents/Dropdown";
 import Checkboxes from "../../../commonComponents/Checkboxes";
+import { FacilityErrors } from "../facilitySchema";
+import { ValidateField } from "../FacilityForm";
 
 interface Props {
   deviceTypes: string[];
@@ -11,6 +13,8 @@ interface Props {
   updateDeviceTypes: (deviceTypes: string[]) => void;
   updateDefaultDevice: (defaultDevice: string) => void;
   deviceOptions: DeviceType[];
+  errors: FacilityErrors;
+  validateField: ValidateField;
 }
 
 const ManageDevices: React.FC<Props> = ({
@@ -19,7 +23,17 @@ const ManageDevices: React.FC<Props> = ({
   updateDeviceTypes,
   updateDefaultDevice,
   deviceOptions,
+  errors,
+  validateField,
 }) => {
+  const deviceErrors = [];
+  if (errors.deviceTypes) {
+    deviceErrors.push(errors.deviceTypes);
+  }
+  if (errors.defaultDevice) {
+    deviceErrors.push(errors.defaultDevice);
+  }
+
   const onDeviceChange = (oldDeviceId: string, newDeviceId: string) => {
     const newDeviceTypes = Array.from(deviceTypes);
     newDeviceTypes[newDeviceTypes.indexOf(oldDeviceId)] = newDeviceId;
@@ -79,9 +93,12 @@ const ManageDevices: React.FC<Props> = ({
             />
           </td>
           <td>
-            <div onClick={() => onDeviceRemove(deviceId)}>
+            <button
+              className="usa-button--unstyled"
+              onClick={() => onDeviceRemove(deviceId)}
+            >
               <FontAwesomeIcon icon={"trash"} className={"prime-red-icon"} />
-            </div>
+            </button>
           </td>
         </tr>
       );
@@ -114,6 +131,13 @@ const ManageDevices: React.FC<Props> = ({
       <div className="usa-card__header">
         <h3>Manage devices</h3>
       </div>
+      {deviceErrors.length > 0 && (
+        <ul className="text-bold text-secondary-vivid">
+          {deviceErrors.map((err) => (
+            <li key={err}>{err}</li>
+          ))}
+        </ul>
+      )}
       <div className="usa-card__body">{renderDevicesTable()}</div>
       <div className="usa-card__footer">
         <Button
