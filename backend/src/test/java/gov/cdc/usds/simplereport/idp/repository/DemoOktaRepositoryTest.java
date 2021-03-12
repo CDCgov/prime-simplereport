@@ -129,26 +129,6 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void updateUser() {
-
-    OrganizationRoleClaims expected =
-        new OrganizationRoleClaims(
-            ABC.getExternalId(),
-            Set.of(ABC_1.getInternalId()),
-            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
-
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(expected)
-            .matches(_repo.updateUser(AMOS.getUsername(), BRAD).get()));
-
-    assertFalse(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
-    assertTrue(
-        new OrganizationRoleClaimsMatcher(expected)
-            .matches(_repo.getAllUsersForOrganization(ABC).get(BRAD.getUsername())));
-  }
-
-  @Test
   void updateUserPrivileges() {
 
     OrganizationRoleClaims expected_1 =

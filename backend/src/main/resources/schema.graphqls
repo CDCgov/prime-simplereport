@@ -307,7 +307,6 @@ type Mutation {
     middleName: String
     lastName: String!
     suffix: String
-    email: String!
   ): User
   updateUserRole(
     id: ID!

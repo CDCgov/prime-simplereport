@@ -9,6 +9,8 @@ import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.group.GroupBuilder;
 import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.group.GroupType;
+import com.okta.sdk.resource.group.rule.GroupRule;
+import com.okta.sdk.resource.group.rule.GroupRuleBuilder;
 import com.okta.sdk.resource.user.User;
 import com.okta.sdk.resource.user.UserBuilder;
 import com.okta.sdk.resource.user.UserList;
@@ -25,6 +27,8 @@ import gov.cdc.usds.simplereport.config.exceptions.MisconfiguredApplicationExcep
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -50,6 +54,9 @@ import org.springframework.stereotype.Service;
 public class LiveOktaRepository implements OktaRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
+
+  private static Set<OrganizationRole> MIGRATION_DEST_ROLES =
+      Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES);
 
   private String _rolePrefix;
   private Client _client;
@@ -191,10 +198,9 @@ public class LiveOktaRepository implements OktaRepository {
             Collectors.toMap(e -> e.getKey(), e -> _extractor.convertClaims(e.getValue()).get(0)));
   }
 
-  public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity) {
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
 
-    UserList users = _client.listUsers(oldUsername, null, null, null, null);
+    UserList users = _client.listUsers(userIdentity.getUsername(), null, null, null, null);
     if (users.stream().count() == 0) {
       throw new IllegalGraphqlArgumentException(
           "Cannot update Okta user with unrecognized username");
@@ -206,9 +212,6 @@ public class LiveOktaRepository implements OktaRepository {
     // Is it our fault we don't accommodate honorific suffix? Or Okta's fault they
     // don't have regular suffix? You decide.
     user.getProfile().setHonorificSuffix(userIdentity.getSuffix());
-    // We assume login == email
-    user.getProfile().setEmail(userIdentity.getUsername());
-    user.getProfile().setLogin(userIdentity.getUsername());
     user.update();
 
     return getOrganizationRoleClaimsForUser(user);
@@ -229,12 +232,11 @@ public class LiveOktaRepository implements OktaRepository {
     for (Group g : user.listGroups()) {
       if (g.getType() == GroupType.OKTA_GROUP
           && g.getProfile().getName().startsWith(generateGroupOrgPrefix(orgId))) {
+        userInOrg = true;
         // do not remove user from org's default group
-        if (g.getProfile()
+        if (!g.getProfile()
             .getName()
             .equals(generateRoleGroupName(orgId, OrganizationRole.getDefault()))) {
-          userInOrg = true;
-        } else {
           g.removeUser(user.getId());
         }
       }
@@ -294,16 +296,105 @@ public class LiveOktaRepository implements OktaRepository {
     }
   }
 
-  public void createOrganization(Organization org) {
+  /**
+   * Iterates over all OrganizationRole's, creating new corresponding Okta groups for this
+   * organization where they do not already exist. For those OrganizationRole's that are in
+   * MIGRATION_DEST_ROLES and whose Okta groups are newly created, migrate all users from this org
+   * to those new Okta groups, where the migrated users are sourced from all pre-existing Okta
+   * groups for this organization. Separately, iterates over all facilities in this org, creating
+   * new corresponding Okta groups where they do not already exist. Does not perform any migration
+   * to these facility groups.
+   */
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration) {
     String name = org.getOrganizationName();
     String externalId = org.getExternalId();
+
+    // After the first migration, the migration code below will amount to a no-op,
+    // until we change MIGRATION_DEST_ROLES to new OrganizationRole's
+    List<String> migrationDestGroupIds = new ArrayList<>();
+    List<String> migrationDestGroupNames = new ArrayList<>();
+    List<String> migrationSourceGroupNames = new ArrayList<>();
+
     for (OrganizationRole role : OrganizationRole.values()) {
-      Group g =
-          GroupBuilder.instance()
-              .setName(generateRoleGroupName(externalId, role))
-              .setDescription(generateRoleGroupDescription(name, role))
-              .buildAndCreate(_client);
-      _app.createApplicationGroupAssignment(g.getId());
+      String roleGroupName = generateRoleGroupName(externalId, role);
+      String roleGroupDescription = generateRoleGroupDescription(name, role);
+      try {
+        Group g =
+            GroupBuilder.instance()
+                .setName(roleGroupName)
+                .setDescription(roleGroupDescription)
+                .buildAndCreate(_client);
+        _app.createApplicationGroupAssignment(g.getId());
+
+        LOG.info("Created Okta group={}", roleGroupName);
+
+        if (migration && MIGRATION_DEST_ROLES.contains(role)) {
+          migrationDestGroupIds.add(g.getId());
+          migrationDestGroupNames.add(roleGroupName);
+        }
+      } catch (ResourceException e) {
+        if (migration) {
+          // ignore attempts to create groups that already exist if this is in migration mode
+          migrationSourceGroupNames.add(roleGroupName);
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    for (Facility facility : facilities) {
+      String facilityGroupName = generateFacilityGroupName(externalId, facility.getInternalId());
+      String facilityGroupDescription =
+          generateFacilityGroupDescription(name, facility.getFacilityName());
+      try {
+        Group g =
+            GroupBuilder.instance()
+                .setName(facilityGroupName)
+                .setDescription(facilityGroupDescription)
+                .buildAndCreate(_client);
+        _app.createApplicationGroupAssignment(g.getId());
+
+        LOG.info("Created Okta group={}", facilityGroupName);
+
+      } catch (ResourceException e) {
+        if (migration) {
+          // ignore attempts to create groups that already exist if this is in migration mode
+          migrationSourceGroupNames.add(facilityGroupName);
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    if (migration && !migrationSourceGroupNames.isEmpty() && !migrationDestGroupIds.isEmpty()) {
+      String ruleName = generateMigrationGroupRuleName(externalId, MIGRATION_DEST_ROLES);
+      String ruleExpression = generateMigrationGroupRuleExpression(migrationSourceGroupNames);
+      try {
+        // https://developer.okta.com/docs/reference/api/groups/#group-rule-operations
+        GroupRule rule =
+            GroupRuleBuilder.instance()
+                .setType("group_rule")
+                .setName(ruleName)
+                .setGroupRuleExpressionType("urn:okta:expression:1.0")
+                .setGroupRuleExpressionValue(ruleExpression)
+                .setAssignUserToGroups(migrationDestGroupIds)
+                .buildAndCreate(_client);
+        rule.activate();
+
+        LOG.info(
+            "Migrated users from Okta source_groups={} to destination_groups={}",
+            migrationSourceGroupNames,
+            migrationDestGroupNames);
+      } catch (ResourceException e) {
+        LOG.error(
+            "Error migrating users from Okta source_groups={} to destination_groups={}: "
+                + "check if conflicting group_rule={} already exists. "
+                + "Did you delete groups without deleting their relevant group rules?",
+            migrationSourceGroupNames,
+            migrationDestGroupNames,
+            ruleName);
+      }
     }
 
     _app.update();
@@ -407,5 +498,18 @@ public class LiveOktaRepository implements OktaRepository {
 
   private String generateFacilitySuffix(String facilityId) {
     return ":" + _extractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
+  }
+
+  private String generateMigrationGroupRuleName(
+      String orgExternalId, Collection<OrganizationRole> roles) {
+    return generateGroupOrgPrefix(orgExternalId) + " " + roles.toString();
+  }
+
+  private String generateMigrationGroupRuleExpression(Collection<String> groupNames) {
+    return String.join(
+        " OR ",
+        groupNames.stream()
+            .map(i -> "isMemberOfGroupName(\"" + i + "\")")
+            .collect(Collectors.toList()));
   }
 }

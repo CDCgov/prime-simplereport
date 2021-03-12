@@ -263,12 +263,11 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode updateResp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) updateResp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
-    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
+    assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
     assertEquals(updateUser.get("role").asText(), Role.USER.name());
     assertEquals(Set.of(Role.USER), extractRolesFromUser(updateUser));
     assertEquals(
@@ -302,12 +301,11 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode addUser = (ObjectNode) addResp.get("addUser");
     String id = addUser.get("id").asText();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     ObjectNode resp = runQuery("update-user", updateVariables);
     ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
     assertEquals("Ronda", updateUser.get("firstName").asText());
-    assertEquals(USERNAMES.get(1), updateUser.get("email").asText());
+    assertEquals(USERNAMES.get(0), updateUser.get("email").asText());
     assertEquals(updateUser.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
     assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
@@ -335,8 +333,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
     useOrgUser();
 
-    ObjectNode updateVariables =
-        getUpdateUserVariables(id, "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
     runQuery("update-user", updateVariables, ACCESS_ERROR);
   }
 
@@ -345,8 +342,24 @@ class ApiUserManagementTest extends BaseApiTest {
     useSuperUser();
     ObjectNode updateVariables =
         getUpdateUserVariables(
-            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", "Ronda", "J", "Jones", "III", USERNAMES.get(1));
+            "fa2efa2e-fa2e-fa2e-fa2e-fa2efa2efa2e", "Ronda", "J", "Jones", "III");
     runQuery("update-user", updateVariables, NO_USER_ERROR);
+  }
+
+  @Test
+  void updateUser_self_success() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
+    ObjectNode resp = runQuery("update-user", updateVariables);
+    ObjectNode updateUser = (ObjectNode) resp.get("updateUser");
+    assertEquals("Ronda", updateUser.get("firstName").asText());
+    assertEquals(TestUserIdentities.ORG_ADMIN_USER, updateUser.get("email").asText());
+    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(updateUser));
+    assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(updateUser));
+    assertUserCanAccessAllFacilities(updateUser);
   }
 
   @Test
@@ -494,6 +507,17 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(who.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
     assertUserCanAccessAllFacilities(who);
+  }
+
+  @Test
+  void updateUserRole_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updateRoleVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ENTRY_ONLY.name());
+    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
   }
 
   @Test
@@ -697,6 +721,17 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   @Test
+  void updateUserPrivileges_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode updatePrivilegesVariables =
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, true, Set.of());
+    runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
+  }
+
+  @Test
   void setUserIsDeleted_adminUser_success() {
     useOrgAdmin();
 
@@ -827,6 +862,17 @@ class ApiUserManagementTest extends BaseApiTest {
     runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
   }
 
+  @Test
+  void setUserIsDeleted_self_failure() {
+    useOrgAdmin();
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    ObjectNode deleteVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
+    runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
+  }
+
   // The next retrieval test also expects demo users as defined in the no-okta-mgmt profile
   @Test
   void getUsers_adminUser_success() {
@@ -920,12 +966,7 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   private ObjectNode getUpdateUserVariables(
-      String id,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      String email) {
+      String id, String firstName, String middleName, String lastName, String suffix) {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()
@@ -933,8 +974,7 @@ class ApiUserManagementTest extends BaseApiTest {
             .put("firstName", firstName)
             .put("middleName", middleName)
             .put("lastName", lastName)
-            .put("suffix", suffix)
-            .put("email", email);
+            .put("suffix", suffix);
     return variables;
   }
 

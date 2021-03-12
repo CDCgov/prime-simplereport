@@ -41,6 +41,10 @@
   }
 }
 
+.user-facilities td:nth-child(2) {
+  text-align: right;
+}
+
 .remove-tag {
   cursor: pointer;
 }
@@ -54,4 +58,10 @@
 
 .modal-bottom-border {
   border-bottom: 1px solid #f4f4f4;
+}
+
+.remove-tag--disabled {
+  cursor: not-allowed;
+  filter: grayscale(1);
+  opacity: 0.5;
 }

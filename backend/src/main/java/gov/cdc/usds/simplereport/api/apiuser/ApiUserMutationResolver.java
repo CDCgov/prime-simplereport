@@ -48,8 +48,8 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
   }
 
   public User updateUser(
-      UUID id, String firstName, String middleName, String lastName, String suffix, String email) {
-    UserInfo user = _us.updateUser(id, email, firstName, middleName, lastName, suffix);
+      UUID id, String firstName, String middleName, String lastName, String suffix) {
+    UserInfo user = _us.updateUser(id, firstName, middleName, lastName, suffix);
     return new User(user);
   }
 

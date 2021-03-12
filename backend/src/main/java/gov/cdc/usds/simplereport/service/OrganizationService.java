@@ -52,6 +52,13 @@ public class OrganizationService {
     _oktaRepo = oktaRepo;
   }
 
+  public void migrateOktaGroups() {
+    // migrate existing orgs/facilities to Okta groups on startup
+    for (Organization org : _repo.findAll()) {
+      _oktaRepo.createOrganization(org, getFacilities(org), true);
+    }
+  }
+
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
