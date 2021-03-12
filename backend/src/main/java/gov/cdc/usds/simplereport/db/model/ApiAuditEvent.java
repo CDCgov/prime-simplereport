@@ -4,14 +4,12 @@ import com.vladmihalcea.hibernate.type.array.ListArrayType;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -94,8 +92,7 @@ public class ApiAuditEvent {
   @Type(
       type = "list-array",
       parameters = {@Parameter(name = ListArrayType.SQL_ARRAY_TYPE, value = "text")})
-  @Enumerated(EnumType.STRING)
-  private List<UserPermission> userPermissions;
+  private List<String> userPermissions;
 
   @Column private boolean isAdminUser; // don't love this but it is actually pretty specific
 
@@ -124,9 +121,9 @@ public class ApiAuditEvent {
     this.user = apiUser;
     this.organization = org;
     this.isAdminUser = isAdmin;
-    ArrayList<UserPermission> permissionCopy = new ArrayList<>(permissions);
-    permissionCopy.sort(null);
-    this.userPermissions = permissionCopy;
+    this.userPermissions =
+        permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
+    ;
   }
 
   public UUID getId() {
@@ -153,7 +150,23 @@ public class ApiAuditEvent {
     return graphqlErrorPaths;
   }
 
-  public List<UserPermission> getUserPermissions() {
+  public List<String> getUserPermissions() {
     return userPermissions;
+  }
+
+  public ApiUser getUser() {
+    return user;
+  }
+
+  public Organization getOrganization() {
+    return organization;
+  }
+
+  public boolean isAdminUser() {
+    return isAdminUser;
+  }
+
+  public PatientLink getPatientLink() {
+    return patientLink;
   }
 }
