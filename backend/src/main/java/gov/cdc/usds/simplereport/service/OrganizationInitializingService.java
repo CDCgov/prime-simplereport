@@ -66,23 +66,23 @@ public class OrganizationInitializingService {
 
     Map<String, DeviceType> deviceTypesByName =
         _deviceTypeRepo.findAll().stream().collect(Collectors.toMap(d -> d.getName(), d -> d));
-    Map<String, SpecimenType> specimenTypesByName =
-        _specimenTypeRepo.findAll().stream().collect(Collectors.toMap(s -> s.getName(), s -> s));
-    Map<String, SpecimenType> specimenTypesByCode = new HashMap<>();
+    Map<String, SpecimenType> specimenTypesByCode =
+        _specimenTypeRepo.findAll().stream()
+            .collect(Collectors.toMap(SpecimenType::getTypeCode, s -> s));
     for (SpecimenType s : _props.getSpecimenTypes()) {
-      SpecimenType specimenType = specimenTypesByName.get(s.getName());
+      SpecimenType specimenType = specimenTypesByCode.get(s.getTypeCode());
       if (null == specimenType) {
-        LOG.info("Creating device {}", s.getName());
+        LOG.info("Creating specimen type {}", s.getName());
         specimenType = _specimenTypeRepo.save(s);
+        specimenTypesByCode.put(specimenType.getTypeCode(), _specimenTypeRepo.save(s));
       }
-      specimenTypesByCode.put(specimenType.getTypeCode(), specimenType);
     }
 
     Map<String, DeviceSpecimenType> dsByDeviceName = new HashMap<>();
     for (DeviceType d : _props.getDeviceTypes()) {
       DeviceType deviceType = deviceTypesByName.get(d.getName());
       if (null == deviceType) {
-        LOG.info("Creating device {}", d.getName());
+        LOG.info("Creating device type {}", d.getName());
         deviceType = _deviceTypeRepo.save(d);
         deviceTypesByName.put(deviceType.getName(), deviceType);
       }
