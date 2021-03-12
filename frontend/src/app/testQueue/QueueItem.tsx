@@ -39,7 +39,7 @@ export const REMOVE_PATIENT_FROM_QUEUE = gql`
 
 const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
-    $id: String!
+    $id: ID!
     $deviceId: String
     $result: String
     $dateTested: DateTime
