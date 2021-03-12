@@ -19,7 +19,7 @@ public class HttpRequestDetails {
   private static final class Headers {
     private static final String FORWARDED_PROTOCOL = "x-forwarded-proto";
     private static final String FORWARDED_CLIENT = "x-forwarded-for";
-    private static final String FORWARDED_HOST = "x-original-host";
+    private static final String FORWARDED_HOST = "x-original-host"; // screw you, Azure
   }
 
   // all fields should be set in the constructor, so all fields are final.
@@ -32,7 +32,7 @@ public class HttpRequestDetails {
 
   public HttpRequestDetails(HttpServletRequest request) {
     serverName = request.getServerName(); // mostly irrelevant
-    originalHostName = request.getHeader(Headers.FORWARDED_HOST); // screw you, Azure
+    originalHostName = request.getHeader(Headers.FORWARDED_HOST);
     remoteAddress = request.getRemoteAddr();
     ArrayList<String> headerNames = new ArrayList<>();
     request.getHeaderNames().asIterator().forEachRemaining(headerNames::add);
@@ -51,7 +51,6 @@ public class HttpRequestDetails {
       @JsonProperty("forwardedProtocol") String forwardedProtocol,
       @JsonProperty("originalHostName") String originalHostName,
       @JsonProperty("requestUri") String requestUri) {
-    super();
     this.serverName = serverName;
     this.remoteAddress = remoteAddress;
     this.forwardedAddresses = forwardedAddresses;

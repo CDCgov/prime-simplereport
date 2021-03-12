@@ -30,21 +30,31 @@ import org.hibernate.annotations.Type;
  *
  * We will capture in our database, for each API request by an authenticated user, the following
  * data:
- * <li>the rest endpoint or graphql query, with parameters (partial—not clear what we need for REST)
- * <li>the identity of the user making the request
- * <li>the permissions applicable to that user when they made the request
- * <li>the identity of the tenant organization whose data was being queried or altered
- * <li>whether the action was permitted or was denied
- * <li>the origin of the HTTP request
- * <li>the date and time of the request
+ *
+ * <ol>
+ *   <li>the rest endpoint or graphql query, with parameters
+ *   <li>the identity of the user making the request
+ *   <li>the permissions applicable to that user when they made the request
+ *   <li>the identity of the tenant organization whose data was being queried or altered
+ *   <li>whether the action was permitted or was denied
+ *   <li>the origin of the HTTP request
+ *   <li>the date and time of the request
+ * </ol>
+ *
+ * This class exists outside of the normal entity structure of the application, so it does not
+ * extend any base classes, but it does still use Hibernate interceptors to set the primary key ID
+ * and the creation timestamp, so that we don't have <i>three</i> ways of doing that in one package.
  */
 @Entity
 @Immutable
 public class ApiAuditEvent {
 
+  // NOTE: you may wonder why fields are not marked "final" on an immutable object. This is because
+  // of the way Hibernate fills in objects when they are loaded from the database: we need a no-arg
+  // default constructor, and hence cannot have final fields.
   /** The primary key for the log entry, which can certainly be a random UUID */
   @Id
-  @Column // generate locally or on the server? on the server doesn't batch well, but... so?
+  @Column
   @GeneratedValue(generator = "UUID4")
   private UUID id;
 
@@ -92,6 +102,10 @@ public class ApiAuditEvent {
   @ManyToOne(optional = true)
   @JoinColumn(name = "patient_link_id")
   private PatientLink patientLink;
+
+  protected ApiAuditEvent() {
+    // hibernate
+  }
 
   public ApiAuditEvent(
       String requestId,

@@ -1532,7 +1532,7 @@ databaseChangeLog:
                   type: *idtype
                   remarks: The user who performed this action.
                   constraints:
-                    nullable: false # TODO: decide if patient users should be autocreated for this
+                    nullable: false
                     foreignKeyName: fk__api_audit_event__api_user
                     references: api_user
               - column:
@@ -1556,7 +1556,7 @@ databaseChangeLog:
               - column:
                   name: patient_link_id
                   type: *idtype
-                  remarks: The "magic" patient link that the patient used to perform this action.
+                  remarks: The "magic" patient link that the patient used to perform this action (if applicable).
                   constraints:
                     nullable: true
                     foreignKeyName: fk__api_audit_event__patient_link
