@@ -87,7 +87,6 @@ const UPDATE_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -100,7 +99,6 @@ const UPDATE_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
@@ -141,7 +139,6 @@ const ADD_FACILITY_MUTATION = gql`
       street: $street
       streetTwo: $streetTwo
       city: $city
-      county: ""
       state: $state
       zipCode: $zipCode
       phone: $phone
@@ -154,7 +151,6 @@ const ADD_FACILITY_MUTATION = gql`
       orderingProviderStreet: $orderingProviderStreet
       orderingProviderStreetTwo: $orderingProviderStreetTwo
       orderingProviderCity: $orderingProviderCity
-      orderingProviderCounty: ""
       orderingProviderState: $orderingProviderState
       orderingProviderZipCode: $orderingProviderZipCode
       orderingProviderPhone: $orderingProviderPhone
@@ -196,11 +192,11 @@ const FacilityFormContainer: any = (props: Props) => {
     return <p>Error: facility not found</p>;
   }
 
-  const saveFacility = (facility: Facility) => {
+  const saveFacility = async (facility: Facility) => {
     trackSaveSettings(null);
     const provider = facility.orderingProvider;
     const saveFacility = props.facilityId ? updateFacility : addFacility;
-    saveFacility({
+    await saveFacility({
       variables: {
         facilityId: props.facilityId,
         testingFacilityName: facility.name,
@@ -226,16 +222,15 @@ const FacilityFormContainer: any = (props: Props) => {
         devices: facility.deviceTypes,
         defaultDevice: facility.defaultDevice,
       },
-    }).then(() => {
-      let alert = (
-        <Alert
-          type="success"
-          title="Updated Facility"
-          body="The settings for the facility have been updated"
-        />
-      );
-      showNotification(toast, alert);
     });
+    const alert = (
+      <Alert
+        type="success"
+        title="Updated Facility"
+        body="The settings for the facility have been updated"
+      />
+    );
+    showNotification(toast, alert);
   };
 
   const getFacilityData = (): Facility => {
