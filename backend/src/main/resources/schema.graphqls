@@ -1,3 +1,6 @@
+# this not not used, but provided so schema validates and for clarity
+directive @length(min: Int = 0, max: Int = 256) on ARGUMENT_DEFINITION
+
 # java.util.Date implementation
 scalar DateTime
 # java.time.LocalDate
@@ -357,8 +360,8 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    state: String!
-    zipCode: String!
+    state: String! @length(min: 2, max: 2)
+    zipCode: String! @length(min: 5, max: 10)
     telephone: String!
     role: String
     email: String
