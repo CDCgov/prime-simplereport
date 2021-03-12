@@ -28,7 +28,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="firstName"
               value={provider.firstName}
               onChange={onChange}
-              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -45,7 +44,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="lastName"
               value={provider.lastName}
               onChange={onChange}
-              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -64,7 +62,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="NPI"
               value={provider.NPI}
               onChange={onChange}
-              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -73,7 +70,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="phone"
               value={provider.phone}
               onChange={onChange}
-              required
             />
           </div>
         </div>
@@ -84,7 +80,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="street"
               value={provider.street}
               onChange={onChange}
-              required
             />
           </div>
         </div>
@@ -113,7 +108,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               name="zipCode"
               value={provider.zipCode}
               onChange={onChange}
-              required
             />
           </div>
           <div className="tablet:grid-col">
@@ -125,7 +119,6 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
               defaultSelect
               className="sr-width-sm"
               onChange={onChange}
-              required
             />
           </div>
         </div>

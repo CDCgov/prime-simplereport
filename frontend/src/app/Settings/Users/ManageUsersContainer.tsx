@@ -2,7 +2,7 @@ import React from "react";
 import { gql, useQuery, useMutation } from "@apollo/client";
 import { useSelector } from "react-redux";
 
-import { UserRole, UserPermission } from "../../permissions";
+import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
@@ -14,6 +14,7 @@ const GET_USERS = gql`
       middleName
       lastName
       roleDescription
+      role
       permissions
       email
       organization {
@@ -33,6 +34,7 @@ export interface SettingsUser {
   middleName: string;
   lastName: string;
   roleDescription: UserRole;
+  role: Role;
   permissions: UserPermission[];
   email: string;
   organization: {
@@ -44,9 +46,21 @@ interface UserData {
   users: SettingsUser[];
 }
 
-const UPDATE_USER_ROLE = gql`
-  mutation UpdateUserRole($id: ID!, $role: Role!) {
-    updateUserRole(id: $id, role: $role)
+const UPDATE_USER_PRIVILEGES = gql`
+  mutation UpdateUserPrivileges(
+    $id: ID!
+    $role: Role!
+    $accessAllFacilities: Boolean!
+    $facilities: [ID!]!
+  ) {
+    updateUserPrivileges(
+      id: $id
+      role: $role
+      accessAllFacilities: $accessAllFacilities
+      facilities: $facilities
+    ) {
+      id
+    }
   }
 `;
 
@@ -107,7 +121,7 @@ export interface NewUserInvite {
 
 const ManageUsersContainer: any = () => {
   const loggedInUser = useSelector((state) => (state as any).user as User);
-  const [updateUserRole] = useMutation(UPDATE_USER_ROLE);
+  const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
@@ -148,7 +162,7 @@ const ManageUsersContainer: any = () => {
       users={data.users}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
-      updateUserRole={updateUserRole}
+      updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
       getUsers={getUsers}
