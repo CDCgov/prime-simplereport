@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.repository.Repository;
 
@@ -12,4 +13,8 @@ import org.springframework.data.repository.Repository;
 public interface AuditEventRepository extends Repository<ApiAuditEvent, UUID> {
 
   ApiAuditEvent save(ApiAuditEvent apiAuditEvent);
+
+  Optional<ApiAuditEvent> findFirstByOrderByEventTimestampDesc();
+
+  long count();
 }

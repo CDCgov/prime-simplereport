@@ -5,14 +5,15 @@ import gov.cdc.usds.simplereport.db.repository.AuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
-import javax.transaction.Transactional;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /** Service for recording API access events that must be made available for audits. */
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class AuditService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuditService.class);
@@ -25,10 +26,19 @@ public class AuditService {
     this._userService = userService;
   }
 
-  public ApiAuditEvent logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
+  public Optional<ApiAuditEvent> getLastEvent() {
+    return _repo.findFirstByOrderByEventTimestampDesc();
+  }
+
+  public long countAuditEvents() {
+    return _repo.count();
+  }
+
+  @Transactional(readOnly = false)
+  public void logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
     LOG.trace("Saving audit event for {}", state.getRequestId());
     UserInfo userInfo = _userService.getCurrentUserInfo();
-    return _repo.save(
+    _repo.save(
         new ApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
