@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service.model;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,9 @@ public class UserInfo {
   private ApiUser wrapped;
   private Optional<Organization> org;
   private boolean isAdmin;
-  private String roleDescription;
   private List<UserPermission> permissions;
   private List<OrganizationRole> roles;
+  private List<Facility> facilities;
 
   public UserInfo(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin) {
     this.wrapped = user;
@@ -27,20 +28,11 @@ public class UserInfo {
     this.roles =
         orgwrapper.map(OrganizationRoles::getGrantedRoles).orElse(Set.of()).stream()
             .collect(Collectors.toList());
-    Optional<OrganizationRole> effectiveRole =
-        orgwrapper.flatMap(OrganizationRoles::getEffectiveRole);
-    this.roleDescription = buildRoleDescription(effectiveRole, isAdmin);
-    effectiveRole.map(OrganizationRole::getGrantedPermissions).ifPresent(permissions::addAll);
+    orgwrapper.map(OrganizationRoles::getGrantedPermissions).ifPresent(permissions::addAll);
+    this.facilities =
+        orgwrapper.map(OrganizationRoles::getFacilities).orElse(Set.of()).stream()
+            .collect(Collectors.toList());
     this.isAdmin = isAdmin;
-  }
-
-  private String buildRoleDescription(Optional<OrganizationRole> role, boolean isAdmin) {
-    if (role.isPresent()) {
-      String desc = role.get().getDescription();
-      return isAdmin ? desc + " (SU)" : desc;
-    } else {
-      return isAdmin ? "Super Admin" : "Misconfigured user";
-    }
   }
 
   public UUID getId() {
@@ -80,11 +72,11 @@ public class UserInfo {
     return permissions;
   }
 
-  public String getRoleDescription() {
-    return roleDescription;
-  }
-
   public List<OrganizationRole> getRoles() {
     return roles;
+  }
+
+  public List<Facility> getFacilities() {
+    return facilities;
   }
 }

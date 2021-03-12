@@ -5,7 +5,7 @@ mutation addUser(
     $suffix: String,
     $email: String!,
     $organizationExternalId: String!,
-    $role: OrganizationRole,
+    $role: Role!,
     ){
   addUser(
     firstName: $firstName
@@ -23,10 +23,15 @@ mutation addUser(
       suffix,
       email,
       permissions,
+      role,
       roles,
       organization {
         name
         externalId
+        testingFacility {
+          name
+          id
+        }
       }
     }
 }

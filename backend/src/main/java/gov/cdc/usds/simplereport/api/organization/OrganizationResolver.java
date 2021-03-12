@@ -1,11 +1,14 @@
 package gov.cdc.usds.simplereport.api.organization;
 
+import gov.cdc.usds.simplereport.api.model.ApiOrganization;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/17/20 */
@@ -18,12 +21,22 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     _organizationService = os;
   }
 
-  public Optional<Organization> getOrganization() {
+  public Optional<ApiOrganization> getOrganization() {
     Optional<OrganizationRoles> roles = _organizationService.getCurrentOrganizationRoles();
-    return roles.map(OrganizationRoles::getOrganization);
+    return roles.map(
+        r -> {
+          Organization o = r.getOrganization();
+          List<Facility> fs = _organizationService.getFacilities(o);
+          return new ApiOrganization(o, fs);
+        });
   }
 
-  public List<Organization> getOrganizations() {
-    return _organizationService.getOrganizations();
+  public List<ApiOrganization> getOrganizations() {
+    // this is N+1-ey right now, but it's no better than it was before through
+    // OrganizationDataResolver and this gets called _extremely_ rarely.
+    // Something to clean up in a future PR.
+    return _organizationService.getOrganizations().stream()
+        .map(o -> new ApiOrganization(o, _organizationService.getFacilities(o)))
+        .collect(Collectors.toList());
   }
 }

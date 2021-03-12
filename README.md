@@ -119,11 +119,13 @@ simple-report:
         granted-roles: ADMIN
 ```
 
-current role types are `ADMIN`, `USER`, and `ENTRY_ONLY`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
+current role types are `ADMIN`, `USER`, `ENTRY_ONLY`, `ALL_FACILITIES`, and `NO_ACCESS`. You can check `backend/src/main/java/gov/cdc/usds/simplereport/config/authorization/OrganizationRole.java` for a list of available roles
 
 `ADMIN` - an organization admin with full access to their organization
 `USER` - a site user the has access to everything in their organization but the gear icon
 `ENTRY_ONLY` - a site user that only has access to the Conduct Test tab
+`ALL_FACILITIES` - a site user that can access all facilities in their organization
+`NO_ACCESS` - a member of an organization who has no permissions without possessing other roles
 
 #### Site roles
 
@@ -132,7 +134,7 @@ You can make the default user a site admin by adding the following to `applicati
 ```
 simple-report:
   site-admin-emails:
-    - bob@sample.com
+    - bob@example.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -196,7 +198,7 @@ Useful local settings
 ```
 simple-report:
   site-admin-emails:
-    - bob@sample.com
+    - bob@example.com
 ```
 
 - make SQL pretty

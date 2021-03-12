@@ -77,6 +77,10 @@ public abstract class BaseApiTest {
     _userName = TestUserIdentities.ENTRY_ONLY_USER;
   }
 
+  protected void useOrgUserAllFacilityAccess() {
+    _userName = TestUserIdentities.ALL_FACILITIES_USER;
+  }
+
   protected void useSuperUser() {
     _userName = TestUserIdentities.SITE_ADMIN_USER;
   }
@@ -93,7 +97,6 @@ public abstract class BaseApiTest {
         .thenReturn(_dataFactory.getAddress());
     TestUserIdentities.withStandardUser(
         () -> {
-          _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
           _initService.initAll();
         });
     useOrgUser();

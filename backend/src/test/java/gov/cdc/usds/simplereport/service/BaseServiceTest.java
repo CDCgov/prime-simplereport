@@ -57,7 +57,6 @@ public abstract class BaseServiceTest<T> {
   }
 
   protected void initSampleData() {
-    _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
     _initService.initAll();
   }
 

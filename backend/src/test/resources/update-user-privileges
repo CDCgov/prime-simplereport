@@ -1,18 +1,16 @@
-mutation updateUser(
+mutation updateUserPrivileges(
     $id: ID!,
-    $firstName: String,
-    $middleName: String,
-    $lastName: String!,
-    $suffix: String,
+    $role: Role!,
+    $accessAllFacilities: Boolean!,
+    $facilities: [ID!],
     ){
-  updateUser(
-    id: $id,
-    firstName: $firstName
-    middleName: $middleName
-    lastName: $lastName
-    suffix: $suffix
+  updateUserPrivileges(
+    id: $id
+    role: $role
+    accessAllFacilities: $accessAllFacilities
+    facilities: $facilities
   ) {
-      id
+      id,
       firstName,
       middleName,
       lastName,
@@ -21,6 +19,7 @@ mutation updateUser(
       permissions,
       role,
       roles,
+      roleDescription,
       organization {
         name
         externalId

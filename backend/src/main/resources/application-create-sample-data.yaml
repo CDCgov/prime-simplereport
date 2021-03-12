@@ -1,13 +1,43 @@
 # configuration for dev and demo server startup on a blank DB
 simple-report-initialization:
-  organization:
-    org-name: Dis Organization
-    external-id: DIS_ORG
-  facility:
-    facility-name: Injection Site
-    clia-number: "000111222-3"
-    address:
-      street-1: 2797 N Cerrada de Beto
+  organizations:
+    - org-name: Dis Organization
+      external-id: DIS_ORG
+    - org-name: Dat Organization
+      external-id: DAT_ORG
+  facilities:
+    # TODO: uncomment once e2e tests can accommodate 2+ facilities
+    # - facility-name: Injection Site
+    #   clia-number: "000111222-3"
+    #   address:
+    #     street-1: 2797 N Cerrada de Beto
+    #   organization-external-id: DIS_ORG
+    - facility-name: Testing Site
+      clia-number: "999888777-6"
+      address:
+        street-1: 1001 Rodeo Dr
+        city: Los Angeles
+        state: CA
+        postal-code: 90000
+      email: testingsite@disorg.com
+      organization-external-id: DIS_ORG
+    - facility-name: Uptown Clinic
+      clia-number: "123456789-0"
+      address:
+        street-1: 1400 Lexington Ave
+        city: New York
+        state: NY
+        postal-code: 10128
+      organization-external-id: DAT_ORG
+    - facility-name: Downtown Clinic
+      clia-number: "987654321-0"
+      address:
+        street-1: 5 Bleecker St
+        city: New York
+        state: NY
+        postal-code: 10010
+      email: downtownclinic@dat.org
+      organization-external-id: DAT_ORG
   provider:
     first-name: Fred
     last-name: Flintstone
@@ -66,7 +96,7 @@ simple-report:
   demo-users:
     default-user:
       identity:
-        username: bob@sample.com
+        username: bob@example.com
         first-name: Bob
         last-name: Bobberoo
       authorization:
@@ -78,28 +108,37 @@ simple-report:
           first-name: Ruby
           middle-name: Raven
           last-name: Reynolds
+        authorization:
+          organization-external-id: DIS_ORG
+          facilities: 
+            - Testing Site
+            # TODO: uncomment once e2e tests can accommodate 2+ facilities
+            # - Injection Site
+          granted-roles: USER
       - identity:
-          username: ben@sample.com
+          username: ben@example.com
           first-name: Ben
           middle-name: Billy
           last-name: Barnes
           suffix: III
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER
+          facilities: 
+            - Testing Site
+          granted-roles: []
       - identity:
-          username: jamar@sample.com
+          username: jamar@example.com
           first-name: Jamar
           middle-name: Donald
           last-name: Jackson
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER, ENTRY_ONLY
+          granted-roles: ENTRY_ONLY, ALL_FACILITIES
       - identity:
-          username: sarah@sample.com
+          username: sarah@example.com
           first-name: Sarah
           middle-name: Sally
           last-name: Samuels
         authorization:
           organization-external-id: DIS_ORG
-          granted-roles: USER, ADMIN
+          granted-roles: ADMIN

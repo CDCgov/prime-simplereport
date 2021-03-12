@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
@@ -9,6 +10,7 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
@@ -21,9 +23,11 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,7 +62,7 @@ public class ApiUserService {
       String lastName,
       String suffix,
       String organizationExternalId,
-      OrganizationRole role) {
+      Role role) {
     Organization org = _orgService.getOrganization(organizationExternalId);
     return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
@@ -70,7 +74,7 @@ public class ApiUserService {
       String middleName,
       String lastName,
       String suffix,
-      OrganizationRole role) {
+      Role role) {
     Organization org = _orgService.getCurrentOrganization();
     return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
   }
@@ -82,13 +86,16 @@ public class ApiUserService {
       String lastName,
       String suffix,
       Organization org,
-      OrganizationRole role) {
+      Role role) {
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.createUser(userIdentity, org, role);
-    Optional<OrganizationRoles> orgRoles =
-        roleClaims.map(c -> new OrganizationRoles(org, c.getGrantedRoles()));
+    // for now, all new users have no access to any facilities by default unless they are admins
+    Set<OrganizationRole> roles =
+        EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
+    Optional<OrganizationRoleClaims> roleClaims =
+        _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -100,18 +107,12 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo updateUser(
-      UUID userId,
-      String username,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix) {
+      UUID userId, String firstName, String middleName, String lastName, String suffix) {
     ApiUser apiUser = getApiUser(userId);
-    String oldUsername = apiUser.getLoginEmail();
+    String username = apiUser.getLoginEmail();
 
-    apiUser.setLoginEmail(username);
     PersonName nameInfo = apiUser.getNameInfo();
     nameInfo.setFirstName(firstName);
     nameInfo.setMiddleName(middleName);
@@ -121,13 +122,8 @@ public class ApiUserService {
 
     IdentityAttributes userIdentity =
         new IdentityAttributes(username, firstName, middleName, lastName, suffix);
-    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(oldUsername, userIdentity);
-    Optional<OrganizationRoles> orgRoles =
-        roleClaims.map(
-            c ->
-                new OrganizationRoles(
-                    _orgService.getOrganization(c.getOrganizationExternalId()),
-                    c.getGrantedRoles()));
+    Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
+    Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);
 
@@ -139,8 +135,13 @@ public class ApiUserService {
     return user;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
-  public OrganizationRole updateUserRole(UUID userId, OrganizationRole role) {
+  /**
+   * this exists only for backward compatibility -- going forward, we should allow for a user to be
+   * updated with multiple roles at once, as in {@code updateUserPrivileges()}
+   */
+  @Deprecated
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
+  public Role updateUserRole(UUID userId, Role role) {
     ApiUser user = getApiUser(userId);
     String username = user.getLoginEmail();
     OrganizationRoleClaims orgClaims =
@@ -148,13 +149,50 @@ public class ApiUserService {
             .getOrganizationRoleClaimsForUser(username)
             .orElseThrow(MisconfiguredUserException::new);
     Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Optional<OrganizationRoleClaims> newOrgClaims = _oktaRepo.updateUserRole(username, org, role);
-    Optional<OrganizationRole> newRole =
-        newOrgClaims.map(c -> c.getEffectiveRole().orElseThrow(MisconfiguredUserException::new));
-    return newRole.orElseThrow(MisconfiguredUserException::new);
+    Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
+    // ensure every user altered by this method maintains all-facility access for now
+    Set<OrganizationRole> roles =
+        EnumSet.of(
+            role.toOrganizationRole(),
+            OrganizationRole.ALL_FACILITIES,
+            OrganizationRole.getDefault());
+    _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
+
+    LOG.info(
+        "User with id={} updated by user with id={}",
+        user.getInternalId(),
+        getCurrentApiUser().getInternalId().toString());
+
+    return role;
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUserOrPermissionManageTargetUser
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
+  public UserInfo updateUserPrivileges(
+      UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
+    ApiUser apiUser = getApiUser(userId);
+    String username = apiUser.getLoginEmail();
+    OrganizationRoleClaims orgClaims =
+        _oktaRepo
+            .getOrganizationRoleClaimsForUser(username)
+            .orElseThrow(MisconfiguredUserException::new);
+    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
+    Set<Facility> facilitiesFound = _orgService.getFacilities(org, facilities);
+    Optional<OrganizationRoleClaims> newOrgClaims =
+        _oktaRepo.updateUserPrivileges(
+            username, org, facilitiesFound, getOrganizationRoles(role, accessAllFacilities));
+    Optional<OrganizationRoles> orgRoles =
+        newOrgClaims.map(c -> _orgService.getOrganizationRoles(org, c));
+    UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin(apiUser));
+
+    LOG.info(
+        "User with id={} updated by user with id={}",
+        apiUser.getInternalId(),
+        getCurrentApiUser().getInternalId());
+
+    return user;
+  }
+
+  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
     ApiUser apiUser = getApiUser(userId);
     apiUser.setIsDeleted(deleted);
@@ -172,14 +210,13 @@ public class ApiUserService {
     return user;
   }
 
-  private Set<ApiUser> getApiUsersInCurrentOrg(OrganizationRole role) {
-    Set<String> usernames =
-        _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
-    return _apiUserRepo.findAllByLoginEmailIn(usernames);
-  }
+  private Set<OrganizationRole> getOrganizationRoles(Role role, boolean accessAllFacilities) {
+    Set<OrganizationRole> result = EnumSet.of(role.toOrganizationRole());
+    if (accessAllFacilities) {
+      result.add(OrganizationRole.ALL_FACILITIES);
+    }
 
-  private Set<String> getUsernamesInCurrentOrg(OrganizationRole role) {
-    return _oktaRepo.getAllUsernamesForOrganization(_orgService.getCurrentOrganization(), role);
+    return result;
   }
 
   public boolean isAdmin(ApiUser user) {
@@ -267,21 +304,26 @@ public class ApiUserService {
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<UserInfo> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    Set<ApiUser> apiUsers = getApiUsersInCurrentOrg(OrganizationRole.getDefault());
-    Set<String> admins = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ADMIN));
-    Set<String> entryOnly = new HashSet<>(getUsernamesInCurrentOrg(OrganizationRole.ENTRY_ONLY));
+    Map<String, OrganizationRoleClaims> userClaims = _oktaRepo.getAllUsersForOrganization(org);
+    Set<ApiUser> apiUsers = _apiUserRepo.findAllByLoginEmailIn(userClaims.keySet());
+    // will add facilities to their users in a subsequent PR
+    List<Facility> facilities = _orgService.getFacilities(org);
+    Set<Facility> facilitiesSet = new HashSet<>(facilities);
+    Map<UUID, Facility> facilitiesByUUID =
+        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
     return apiUsers.stream()
         .map(
             u -> {
-              Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
-              String email = u.getLoginEmail();
-              if (admins.contains(email)) {
-                roles.add(OrganizationRole.ADMIN);
-              }
-              if (entryOnly.contains(email)) {
-                roles.add(OrganizationRole.ENTRY_ONLY);
-              }
-              OrganizationRoles orgRoles = new OrganizationRoles(org, roles);
+              OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
+              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+              Set<Facility> accessibleFacilities =
+                  allFacilityAccess
+                      ? facilitiesSet
+                      : claims.getFacilities().stream()
+                          .map(facilitiesByUUID::get)
+                          .collect(Collectors.toSet());
+              OrganizationRoles orgRoles =
+                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
               return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
             })
         .collect(Collectors.toList());
