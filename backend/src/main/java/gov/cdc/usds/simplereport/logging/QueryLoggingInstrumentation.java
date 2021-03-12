@@ -67,6 +67,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     } else {
       requestTelemetry.setName(name);
     }
+    LOG.trace("Done initializing graphql query logging.");
     return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
   }
 }

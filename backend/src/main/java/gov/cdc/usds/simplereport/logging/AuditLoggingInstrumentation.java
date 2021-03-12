@@ -31,7 +31,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   @Override
   public InstrumentationState createState() {
     GraphqlQueryState state = new GraphqlQueryState();
-    LOG.debug("Creating state={} for audit", state);
+    LOG.trace("Creating state={} for audit", state);
     return state;
   }
 
@@ -39,15 +39,21 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   public InstrumentationContext<ExecutionResult> beginExecution(
       InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
-    LOG.debug("Instrumenting query executionId={} for audit", executionId);
-    GraphQLServletContext context = parameters.getContext();
-    GraphqlQueryState state = parameters.getInstrumentationState();
-    state.setRequestId(executionId);
-    state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
-    state.setGraphqlDetails(
-        new GraphQlInputs(
-            parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-    return new ExecutionResultContext(state);
+    LOG.trace("Instrumenting query executionId={} for audit", executionId);
+    try {
+      GraphQLServletContext context = parameters.getContext();
+      GraphqlQueryState state = parameters.getInstrumentationState();
+      state.setRequestId(executionId);
+      state.setHttpDetails(new HttpRequestDetails(context.getHttpServletRequest()));
+      state.setGraphqlDetails(
+          new GraphQlInputs(
+              parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
+      return new ExecutionResultContext(state);
+    } catch (Exception e) {
+      // we don't 100% trust this error not to get swallowed by graphql-java
+      LOG.error("Extremely unexpected error creating instrumentation state for audit", e);
+      throw e;
+    }
   }
 
   private class /* not static! */ ExecutionResultContext
@@ -68,7 +74,13 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
               .flatMap(List::stream)
               .map(Object::toString)
               .collect(Collectors.toList());
-      _auditService.logGraphQlEvent(state, errorPaths);
+      try {
+        _auditService.logGraphQlEvent(state, errorPaths);
+      } catch (Exception e) {
+        // we don't 100% trust this error not to get swallowed by graphql-java
+        LOG.error("Unexpected error saving audit event", e);
+        throw e;
+      }
     }
   }
 }
