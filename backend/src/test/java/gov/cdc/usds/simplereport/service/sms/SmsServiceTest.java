@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Set;
-
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.twilio.type.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -17,10 +15,10 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -81,14 +79,16 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
 
   @Test
   @WithSimpleReportStandardUser
-  void sendPatientLinkSms_standardUser_successDependsOnFacilityAccess() throws NumberParseException {
+  void sendPatientLinkSms_standardUser_successDependsOnFacilityAccess()
+      throws NumberParseException {
     // GIVEN
     _person = _dataFactory.createFullPerson(_org);
     createTestOrderAndPatientLink(_person);
 
     // WHEN + THEN
-    assertThrows(AccessDeniedException.class, () -> 
-        _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"));
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"));
 
     // GIVEN
     TestUserIdentities.addFacilityAuthorities(_site);

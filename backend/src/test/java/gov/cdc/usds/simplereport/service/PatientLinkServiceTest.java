@@ -9,11 +9,9 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +22,6 @@ import org.springframework.security.access.AccessDeniedException;
 @SuppressWarnings("checkstyle:MagicNumber")
 class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   @Autowired private OrganizationService _organizationService;
-  @Autowired private PersonService _personService;
   @Autowired private TestOrderService _testOrderService;
   @Autowired private TestDataFactory _dataFactory;
 
@@ -39,19 +36,6 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
 
-    assertThrows(AccessDeniedException.class, () -> 
-        _testOrderService.addPatientToQueue(
-            facility.getInternalId(),
-            p,
-            "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
-            LocalDate.of(1865, 12, 25),
-            false));
-
     TestUserIdentities.addFacilityAuthorities(facility);
     TestOrder to =
         _testOrderService.addPatientToQueue(
@@ -65,7 +49,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    TestUserIdentities.removeFacilityAuthorities(facility);      
+    TestUserIdentities.removeFacilityAuthorities(facility);
 
     Organization organization =
         _service.getPatientLinkCurrent(to.getPatientLink().getInternalId().toString());
@@ -77,19 +61,6 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
-
-    assertThrows(AccessDeniedException.class, () -> 
-        _testOrderService.addPatientToQueue(
-            facility.getInternalId(),
-            p,
-            "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
-            LocalDate.of(1865, 12, 25),
-            false));
 
     TestUserIdentities.addFacilityAuthorities(facility);
     TestOrder to =
@@ -116,19 +87,6 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
 
-    assertThrows(AccessDeniedException.class, () -> 
-        _testOrderService.addPatientToQueue(
-            facility.getInternalId(),
-            p,
-            "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
-            LocalDate.of(1865, 12, 25),
-            false));
-
     TestUserIdentities.addFacilityAuthorities(facility);
     TestOrder to =
         _testOrderService.addPatientToQueue(
@@ -147,7 +105,8 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     assertNotNull(pl.getRefreshedAt());
 
     TestUserIdentities.removeFacilityAuthorities(facility);
-    assertThrows(AccessDeniedException.class, () -> 
-        _service.refreshPatientLink(to.getPatientLink().getInternalId().toString()));
+    assertThrows(
+        AccessDeniedException.class,
+        () -> _service.refreshPatientLink(to.getPatientLink().getInternalId().toString()));
   }
 }

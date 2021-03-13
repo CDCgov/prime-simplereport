@@ -18,7 +18,6 @@ import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -89,24 +88,20 @@ public class TestOrderService {
   @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
     Optional<OrganizationRoles> roles = _os.getCurrentOrganizationRoles();
-    Set<Facility> facilities =
-        roles.isPresent()
-            ? roles.get().getFacilities()
-            : Set.of();
+    Set<Facility> facilities = roles.isPresent() ? roles.get().getFacilities() : Set.of();
     return _terepo.findAllByPatientAndFacilities(patient, facilities);
   }
 
   @Transactional(readOnly = true)
   public TestOrder getTestOrder(UUID id) {
     Organization org = _os.getCurrentOrganization();
-    return _repo
-        .fetchQueueItemById(org, id)
-        .orElseThrow(TestOrderService::noSuchOrderFound);
+    return _repo.fetchQueueItemById(org, id).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(UUID testOrderId, String deviceId, String result, Date dateTested) {
+  public TestOrder editQueueItem(
+      UUID testOrderId, String deviceId, String result, Date dateTested) {
     TestOrder order = this.getTestOrder(testOrderId);
 
     if (deviceId != null) {

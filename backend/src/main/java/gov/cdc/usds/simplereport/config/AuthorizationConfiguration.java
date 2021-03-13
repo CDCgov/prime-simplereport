@@ -103,8 +103,9 @@ public class AuthorizationConfiguration {
       "@" + AUTHORIZER_BEAN + ".userCanAccessPatientLink(#patientLinkId)";
 
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
-      "@" + AUTHORIZER_BEAN + 
-      ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch)";
+      "@"
+          + AUTHORIZER_BEAN
+          + ".userHasSpecificPatientSearchPermission(#facilityId, #isArchived, #namePrefixMatch)";
 
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
@@ -140,12 +141,15 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission for
+   *
    * <p>- the facility with UUID {@code facilityId};
+   *
    * <p>- patients whose archived status is {@code isArchived}; AND
+   *
    * <p>- patients whose name elements begin with {@code namePrefixMatch}.
    *
-   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId},
-   * {@code isArchived} and {@code namePrefixMatch}.
+   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
+   * isArchived} and {@code namePrefixMatch}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
@@ -166,9 +170,9 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_READ_ARCHIVED_PATIENT_LIST)
   public @interface RequirePermissionReadArchivedPatientList {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission for
-   * the test event with UUID {@code testEventId}.
+  /**
+   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission for the
+   * test event with UUID {@code testEventId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code testEventId}.
    */
@@ -177,9 +181,9 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionReadResultListForTestEvent {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission at
-   * the facility with UUID {@code facilityId}.
+  /**
+   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission at the
+   * facility with UUID {@code facilityId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code facilityId}.
    */
@@ -188,9 +192,9 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionReadResultListAtFacility {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission for
-   * the patient {@code patient}.
+  /**
+   * Require the current user to have the {@link UserPermission#READ_RESULT_LIST} permission for the
+   * patient {@code patient}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patient}.
    */
@@ -199,35 +203,40 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_PATIENT)
   public @interface RequirePermissionReadResultListForPatient {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#EDIT_PATIENT} permission at
-   * the facility with UUID {@code facilityId}.
+  /**
+   * Require the current user to have the {@link UserPermission#EDIT_PATIENT} permission at the
+   * facility with UUID {@code facilityId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code facilityId}.
-   */  
+   */
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_PATIENT + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionCreatePatientAtFacility {}
 
-  /** 
+  /**
    * Require the current user to have the {@link UserPermission#EDIT_PATIENT} permission for
+   *
    * <p>- the facility with UUID {@code facilityId}; AND
+   *
    * <p>- the patient with UUID {@code patientId}.
    *
-   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}
-   * and {@code patientId}.
-   */  
+   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId} and {@code
+   * patientId}.
+   */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_PATIENT
-      + " && " + SPEL_CAN_ACCESS_FACILITY
-      + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  @PreAuthorize(
+      SPEL_HAS_PERMISSION_EDIT_PATIENT
+          + " && "
+          + SPEL_CAN_ACCESS_FACILITY
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionEditPatientAtFacility {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#ARCHIVE_PATIENT} permission for
-   * the patient with UUID {@code patientId}.
+  /**
+   * Require the current user to have the {@link UserPermission#ARCHIVE_PATIENT} permission for the
+   * patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -254,9 +263,9 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_MANAGE_USERS)
   public @interface RequirePermissionManageUsers {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for
-   * the patient with UUID {@code patientId}.
+  /**
+   * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for the
+   * patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -267,12 +276,15 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for
+   *
    * <p>- the facility with UUID {@code facilityId};
+   *
    * <p>- patients whose archived status is {@code isArchived}; AND
+   *
    * <p>- patients whose name elements begin with {@code namePrefixMatch}.
    *
-   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId},
-   * {@code isArchived} and {@code namePrefixMatch}.
+   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
+   * isArchived} and {@code namePrefixMatch}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
@@ -284,9 +296,9 @@ public class AuthorizationConfiguration {
           + ")")
   public @interface RequireSpecificPatientSearchPermission {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#START_TEST} permission at
-   * the facility with UUID {@code facilityId}.
+  /**
+   * Require the current user to have the {@link UserPermission#START_TEST} permission at the
+   * facility with UUID {@code facilityId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code facilityId}.
    */
@@ -295,9 +307,10 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionStartTestAtFacility {}
 
-  /** Require the current user to have the {@link UserPermission#START_TEST} permission with
-   * access to the patient link with String ID {@code patientLinkId}. 
-   * 
+  /**
+   * Require the current user to have the {@link UserPermission#START_TEST} permission with access
+   * to the patient link with String ID {@code patientLinkId}.
+   *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientLinkId}.
    */
   @Retention(RUNTIME)
@@ -305,20 +318,20 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_PATIENT_LINK)
   public @interface RequirePermissionStartTestWithPatientLink {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for
-   * the patient with UUID {@code patientId}.
+  /**
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
+   * patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
-   */  
+   */
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionUpdateTestForPatient {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for
-   * the test event with UUID {@code testEventId}.
+  /**
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the test
+   * event with UUID {@code testEventId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code testEventId}.
    */
@@ -327,9 +340,9 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionUpdateTestForTestEvent {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for
-   * the test order with UUID {@code testOrderId}.
+  /**
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the test
+   * order with UUID {@code testOrderId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code testOrderId}.
    */
@@ -338,12 +351,12 @@ public class AuthorizationConfiguration {
   @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER)
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
-  /** 
-   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for
-   * the patient with UUID {@code patientId}.
+  /**
+   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the
+   * patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
-   */    
+   */
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)

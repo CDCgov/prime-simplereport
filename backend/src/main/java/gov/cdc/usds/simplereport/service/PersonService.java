@@ -4,7 +4,6 @@ import com.microsoft.applicationinsights.core.dependencies.apachecommons.lang3.S
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -13,17 +12,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
 import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,9 +39,7 @@ public class PersonService {
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
 
   public PersonService(
-      OrganizationService os,
-      PersonRepository repo,
-      CurrentPatientContextHolder patientContext) {
+      OrganizationService os, PersonRepository repo, CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
@@ -72,9 +66,11 @@ public class PersonService {
     return (root, query, cb) -> {
       Predicate filter = cb.isNull(root.get(SpecField.FACILITY));
       for (Facility f : facilities) {
-        filter = cb.or(
-            filter,
-            cb.equal(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), f.getInternalId()));
+        filter =
+            cb.or(
+                filter,
+                cb.equal(
+                    root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), f.getInternalId()));
       }
       return cb.and(filter);
     };
@@ -115,7 +111,7 @@ public class PersonService {
       filter = filter.and(inAccessibleFacilitiesFilter());
     } else {
       filter = filter.and(inFacilityFilter(facilityId));
-    } 
+    }
 
     if (StringUtils.isNotBlank(namePrefixMatch)) {
       filter = filter.and(nameMatchesFilter(namePrefixMatch));

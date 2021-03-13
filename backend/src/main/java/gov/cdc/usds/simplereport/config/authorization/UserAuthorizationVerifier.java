@@ -22,7 +22,6 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
-
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -148,8 +147,11 @@ public class UserAuthorizationVerifier {
       Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
       if (testEvent.isEmpty()) {
         return false;
-      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
-          testEvent.get().getOrganization().getInternalId())) {
+      } else if (!currentOrgRoles
+          .get()
+          .getOrganization()
+          .getInternalId()
+          .equals(testEvent.get().getOrganization().getInternalId())) {
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
         return true;
@@ -172,8 +174,11 @@ public class UserAuthorizationVerifier {
       Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
       if (testOrder.isEmpty()) {
         return false;
-      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
-          testOrder.get().getOrganization().getInternalId())) {
+      } else if (!currentOrgRoles
+          .get()
+          .getOrganization()
+          .getInternalId()
+          .equals(testOrder.get().getOrganization().getInternalId())) {
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
         return true;
@@ -196,8 +201,11 @@ public class UserAuthorizationVerifier {
       Optional<Facility> facility = _facilityRepo.findById(facilityId);
       if (facility.isEmpty()) {
         return false;
-      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
-          facility.get().getOrganization().getInternalId())) {
+      } else if (!currentOrgRoles
+          .get()
+          .getOrganization()
+          .getInternalId()
+          .equals(facility.get().getOrganization().getInternalId())) {
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
         return true;
@@ -216,8 +224,11 @@ public class UserAuthorizationVerifier {
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
       return false;
-    } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
-        patient.getOrganization().getInternalId())) {
+    } else if (!currentOrgRoles
+        .get()
+        .getOrganization()
+        .getInternalId()
+        .equals(patient.getOrganization().getInternalId())) {
       return false;
     } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
       return true;
@@ -239,7 +250,7 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanAccessPatientLink(String patientLinkId) {
-    System.out.println("\n\n\nPATIENT_LINK_ID="+patientLinkId);
+    System.out.println("\n\n\nPATIENT_LINK_ID=" + patientLinkId);
     isValidUser();
     if (patientLinkId == null) {
       System.out.println("\n\n\nPLID NULL");
@@ -255,22 +266,34 @@ public class UserAuthorizationVerifier {
       if (patientLink.isEmpty()) {
         System.out.println("\n\n\nPL NOT FOUND");
         return false;
-      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
-          patientLink.get().getTestOrder().getOrganization().getInternalId())) {
-        System.out.println("\n\n\nCURR ORG ID="+currentOrgRoles.get().getOrganization().getInternalId().toString()
-          +"BUT PL_TO ID="+patientLink.get().getTestOrder().getOrganization().getInternalId().toString());
+      } else if (!currentOrgRoles
+          .get()
+          .getOrganization()
+          .getInternalId()
+          .equals(patientLink.get().getTestOrder().getOrganization().getInternalId())) {
+        System.out.println(
+            "\n\n\nCURR ORG ID="
+                + currentOrgRoles.get().getOrganization().getInternalId().toString()
+                + "BUT PL_TO ID="
+                + patientLink.get().getTestOrder().getOrganization().getInternalId().toString());
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
         System.out.println("\n\n\nALL FAC ACCESS");
         return true;
       } else {
-        System.out.println("\n\n\nPL_TO_FAC ID="+patientLink.get().getTestOrder().getFacility().getInternalId().toString());
-        currentOrgRoles.get().getFacilities().stream().forEach(f -> {
-          System.out.println("\n\n\nCURR_ORG_FAC ID="+f.getInternalId().toString());
-        });
+        System.out.println(
+            "\n\n\nPL_TO_FAC ID="
+                + patientLink.get().getTestOrder().getFacility().getInternalId().toString());
+        currentOrgRoles.get().getFacilities().stream()
+            .forEach(
+                f -> {
+                  System.out.println("\n\n\nCURR_ORG_FAC ID=" + f.getInternalId().toString());
+                });
         return currentOrgRoles.get().getFacilities().stream()
-            .anyMatch(f -> f.getInternalId().equals(
-                patientLink.get().getTestOrder().getFacility().getInternalId()));
+            .anyMatch(
+                f ->
+                    f.getInternalId()
+                        .equals(patientLink.get().getTestOrder().getFacility().getInternalId()));
       }
     }
   }
@@ -280,13 +303,13 @@ public class UserAuthorizationVerifier {
     if (facilityId == null) {
       System.out.println("SEARCH PERM1facilityId == null");
     } else {
-      System.out.println("SEARCH PERM1facilityId == "+facilityId.toString());
+      System.out.println("SEARCH PERM1facilityId == " + facilityId.toString());
     }
     System.out.println("SEARCH PERM2\n\n\n\n\n" + String.valueOf(isArchived) + namePrefixMatch);
     Set<UserPermission> perms = new HashSet<>();
 
     if (facilityId != null && !userCanAccessFacility(facilityId)) {
-        return false;
+      return false;
     }
     if (isArchived) {
       perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);

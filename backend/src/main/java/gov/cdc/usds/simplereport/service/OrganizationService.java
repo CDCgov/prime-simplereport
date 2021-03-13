@@ -81,9 +81,7 @@ public class OrganizationService {
 
   public Set<Facility> getAccessibleFacilities() {
     Optional<OrganizationRoles> roles = getCurrentOrganizationRoles();
-    return roles.isPresent()
-        ? roles.get().getFacilities()
-        : Set.of();
+    return roles.isPresent() ? roles.get().getFacilities() : Set.of();
   }
 
   public Organization getCurrentOrganization() {

@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;

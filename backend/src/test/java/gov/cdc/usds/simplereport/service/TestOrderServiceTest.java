@@ -21,13 +21,11 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,9 +46,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addPatientToQueue_orgAdmin_ok() {
-    Organization org = _organizationService.getCurrentOrganization();
-    Facility facility = _organizationService.getFacilities(org).get(0);
+  void roundTrip() {
+    Facility facility =
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
     Person p =
         _personService.addPatient(
             null,
@@ -84,6 +82,26 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
+
+    DeviceType devA = _dataFactory.getGenericDevice();
+    _service.addTestResult(
+        devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    queue = _service.getQueue(facility.getInternalId());
+    assertEquals(0, queue.size());
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getQueue_standardUser_successDependsOnFacilityAccess() {
+    Facility facility =
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
+
+    assertThrows(AccessDeniedException.class, () -> _service.getQueue(facility.getInternalId()));
+
+    TestUserIdentities.addFacilityAuthorities(facility);
+    List<TestOrder> queue = _service.getQueue(facility.getInternalId());
+    assertEquals(0, queue.size());
   }
 
   @Test
@@ -129,8 +147,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   void addPatientToQueue_standardUser_successDependsOnFacilityAccess() {
     Facility facility =
-        _dataFactory.createValidFacility(
-            _organizationService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
 
     Person p =
         _personService.addPatient(
@@ -152,7 +169,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             false);
 
     assertThrows(
-        AccessDeniedException.class, () -> 
+        AccessDeniedException.class,
+        () ->
             _service.addPatientToQueue(
                 facility.getInternalId(),
                 p,
@@ -177,11 +195,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         TestResult.POSITIVE,
         LocalDate.of(1865, 12, 25),
         false);
-
     TestUserIdentities.removeFacilityAuthorities(facility);
-    assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.getQueue(facility.getInternalId()));
+
+    assertThrows(AccessDeniedException.class, () -> _service.getQueue(facility.getInternalId()));
 
     TestUserIdentities.addFacilityAuthorities(facility);
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
@@ -278,8 +294,9 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportStandardUser
   void addTestResult_standardUser_successDependsOnFacilityAccess() {
     Facility facility =
-        _dataFactory.createValidFacility(
-            _organizationService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
+    TestUserIdentities.addFacilityAuthorities(facility);
+
     Person p1 =
         _personService.addPatient(
             null,
@@ -298,60 +315,25 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false);
-
-    assertThrows(AccessDeniedException.class, () -> 
+    Person p2 =
         _personService.addPatient(
             facility.getInternalId(),
-            "FOO",
-            "Fred",
+            "BAR",
+            "Baz",
             null,
             "",
-            "Sr.",
-            LocalDate.of(1865, 12, 25),
+            "Jr.",
+            LocalDate.of(1900, 1, 25),
             _dataFactory.getAddress(),
-            "8883334444",
-            PersonRole.STAFF,
+            "2229993333",
+            PersonRole.STUDENT,
             null,
             null,
             null,
             null,
             false,
-            false));
+            false);
 
-    TestUserIdentities.addFacilityAuthorities(facility);
-    Person p2 = _personService.addPatient(
-        facility.getInternalId(),
-        "BAR",
-        "Baz",
-        null,
-        "",
-        "Jr.",
-        LocalDate.of(1900, 1, 25),
-        _dataFactory.getAddress(),
-        "2229993333",
-        PersonRole.STUDENT,
-        null,
-        null,
-        null,
-        null,
-        false,
-        false);
-
-    TestUserIdentities.removeFacilityAuthorities(facility);
-    assertThrows(AccessDeniedException.class, () -> 
-        _service.addPatientToQueue(
-            facility.getInternalId(),
-            p1,
-            "",
-            Collections.<String, Boolean>emptyMap(),
-            false,
-            LocalDate.of(1865, 12, 25),
-            "",
-            TestResult.POSITIVE,
-            LocalDate.of(1865, 12, 25),
-            false));
-
-    TestUserIdentities.addFacilityAuthorities(facility);
     _service.addPatientToQueue(
         facility.getInternalId(),
         p1,
@@ -376,17 +358,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         false);
 
     TestUserIdentities.removeFacilityAuthorities(facility);
-    
+
     DeviceType devA = _dataFactory.getGenericDevice();
-    _service.addTestResult(
-        devA.getInternalId().toString(), TestResult.POSITIVE, p1.getInternalId(), null);
-    assertThrows(AccessDeniedException.class, () -> 
-        _service.addTestResult(
-            devA.getInternalId().toString(), TestResult.POSITIVE, p2.getInternalId(), null));
-    assertThrows(AccessDeniedException.class, () ->
-        _service.getQueue(facility.getInternalId()));
+    assertThrows(
+        AccessDeniedException.class,
+        () ->
+            _service.addTestResult(
+                devA.getInternalId().toString(), TestResult.POSITIVE, p2.getInternalId(), null));
 
     TestUserIdentities.addFacilityAuthorities(facility);
+    _service.addTestResult(
+        devA.getInternalId().toString(), TestResult.POSITIVE, p1.getInternalId(), null);
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
 
@@ -436,10 +418,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertNotEquals(o.getDeviceType().getName(), devA.getName());
 
     _service.editQueueItem(
-        o.getInternalId(),
-        devA.getInternalId().toString(),
-        TestResult.POSITIVE.toString(),
-        null);
+        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -451,26 +430,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportEntryOnlyUser
   void editTestResult_entryOnlyUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
-    Facility facility =
-        _dataFactory.createValidFacility(org);
+    Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
-    
-    assertThrows(
-        AccessDeniedException.class, () -> 
-           _service.addPatientToQueue(
-                facility.getInternalId(),
-                p,
-                "",
-                Collections.<String, Boolean>emptyMap(),
-                false,
-                LocalDate.of(1865, 12, 25),
-                "",
-                TestResult.POSITIVE,
-                LocalDate.of(1865, 12, 25),
-                false));
 
     TestUserIdentities.addFacilityAuthorities(facility);
-
     TestOrder o =
         _service.addPatientToQueue(
             facility.getInternalId(),
@@ -483,13 +446,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-
     TestUserIdentities.removeFacilityAuthorities(facility);
 
     DeviceType devA = _dataFactory.getGenericDevice();
 
     assertThrows(
-        AccessDeniedException.class, () -> 
+        AccessDeniedException.class,
+        () ->
             _service.editQueueItem(
                 o.getInternalId(),
                 devA.getInternalId().toString(),
@@ -497,12 +460,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
                 null));
 
     TestUserIdentities.addFacilityAuthorities(facility);
-
     _service.editQueueItem(
-        o.getInternalId(),
-        devA.getInternalId().toString(),
-        TestResult.POSITIVE.toString(),
-        null);
+        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
   }
 
   @Test
@@ -526,10 +485,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     DeviceType devA = _dataFactory.getGenericDevice();
 
     _service.editQueueItem(
-        o.getInternalId(),
-        devA.getInternalId().toString(),
-        TestResult.POSITIVE.toString(),
-        null);
+        o.getInternalId(), devA.getInternalId().toString(), TestResult.POSITIVE.toString(), null);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -541,14 +497,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportStandardUser
   void fetchTestEventsResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
-    Facility facility =
-        _dataFactory.createValidFacility(org);
+    Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
     assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
+        AccessDeniedException.class,
+        () -> _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
 
     TestUserIdentities.addFacilityAuthorities(facility);
     _service.getTestEventsResults(facility.getInternalId(), new Date(0));
@@ -558,14 +513,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportStandardUser
   void fetchTestResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
-    Facility facility =
-        _dataFactory.createValidFacility(org);
+    Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
-    
-    assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.getTestResults(p));
+
+    assertThrows(AccessDeniedException.class, () -> _service.getTestResults(p));
 
     TestUserIdentities.addFacilityAuthorities(facility);
     _service.getTestResults(p);
@@ -729,22 +681,21 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   void correctionsTest_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
-    Facility facility =
-        _dataFactory.createValidFacility(org);
+    Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
     TestEvent _e = _dataFactory.createTestEvent(p, facility);
 
     String reasonMsg = "Testing correction marking as error " + LocalDateTime.now().toString();
     assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
+        AccessDeniedException.class,
+        () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
     assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
+        AccessDeniedException.class,
+        () -> _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
     assertThrows(
-        AccessDeniedException.class, () -> 
-            _service.getTestResult(_e.getInternalId()).getTestOrder());
-    
+        AccessDeniedException.class,
+        () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
+
     TestUserIdentities.addFacilityAuthorities(facility);
     _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
     _service.getTestEventsResults(facility.getInternalId(), new Date(0));

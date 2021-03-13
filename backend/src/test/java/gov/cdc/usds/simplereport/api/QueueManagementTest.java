@@ -19,7 +19,6 @@ import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleRepo
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
 import java.util.UUID;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
