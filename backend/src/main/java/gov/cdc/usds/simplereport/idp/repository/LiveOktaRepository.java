@@ -394,6 +394,7 @@ public class LiveOktaRepository implements OktaRepository {
             migrationSourceGroupNames,
             migrationDestGroupNames,
             ruleName);
+        LOG.error("Exception triggered while migrating users to new Okta groups", e);
       }
     }
 
