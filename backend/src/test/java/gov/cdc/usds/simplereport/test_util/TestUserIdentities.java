@@ -6,6 +6,7 @@ import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.annotation.Transactional;
 
 public class TestUserIdentities {
 
@@ -69,7 +71,7 @@ public class TestUserIdentities {
    * 
    * @param facilities list of facilities for which the user will be given an authority
    */
-  public static void addFacilityAuthorities(Collection<Facility> facilities) {
+  public static void addFacilityAuthorities(Facility... facilities) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     Object principal = auth.getPrincipal();
     List<GrantedAuthority> authorities = new ArrayList<>();
@@ -89,12 +91,13 @@ public class TestUserIdentities {
    * @param facilities list of facilities for which the user will have an authority removed,
    *    if applicable
    */
-  public static void removeFacilityAuthorities(Collection<Facility> facilities) {
+  public static void removeFacilityAuthorities(Facility... facilities) {
     Authentication auth = SecurityContextHolder.getContext().getAuthentication();
     Object principal = auth.getPrincipal();
-    Set<String> toRemove = facilities.stream()
-        .map(TestUserIdentities::convertFacilityToAuthority)
-        .collect(Collectors.toSet());
+    Set<String> toRemove = new HashSet<>();
+    for (Facility f : facilities) {
+      toRemove.add(convertFacilityToAuthority(f));
+    }
     List<GrantedAuthority> authorities = new ArrayList<>();
     authorities.addAll((Collection<GrantedAuthority>) auth.getAuthorities());
     authorities.removeIf(a -> toRemove.contains(a.getAuthority()));

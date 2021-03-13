@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
@@ -138,7 +139,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             false,
             false));
 
-    TestUserIdentities.addFacilityAuthorities(Set.of(fac));
+    TestUserIdentities.addFacilityAuthorities(fac);
 
     Person p = _service.addPatient(
         facilityId,
@@ -158,12 +159,12 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         false,
         false);
 
-    TestUserIdentities.removeFacilityAuthorities(Set.of(fac));
+    TestUserIdentities.removeFacilityAuthorities(fac);
 
     assertThrows(AccessDeniedException.class, () -> 
         _service.setIsDeleted(p.getInternalId(), true));
 
-    TestUserIdentities.addFacilityAuthorities(Set.of(fac));
+    TestUserIdentities.addFacilityAuthorities(fac);
 
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
@@ -206,25 +207,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     Facility fac =
         _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
     UUID facilityId = fac.getInternalId();
-    TestUserIdentities.addFacilityAuthorities(Set.of(fac));
-    Person p =
-        _service.addPatient(
-            facilityId,
-            "FOO",
-            "Fred",
-            null,
-            "Fosbury",
-            "Sr.",
-            LocalDate.of(1865, 12, 25),
-            _dataFactory.getAddress(),
-            "5555555555",
-            PersonRole.STAFF,
-            null,
-            null,
-            null,
-            null,
-            false,
-            false);
+    TestUserIdentities.addFacilityAuthorities(fac);
 
     assertSecurityError(
         () -> _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
@@ -414,8 +397,6 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     UUID site1Id = _site1.getInternalId();
     UUID site2Id = _site2.getInternalId();
 
-    // the list query and the count query use the same filters and security checks, so to
-    // simplify tests, we'll just call the count function
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(null, false, null));
     assertThrows(
         AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, false, null));
@@ -426,7 +407,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
       AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, false, "ma"));
 
-    TestUserIdentities.addFacilityAuthorities(Set.of(_site2));
+    TestUserIdentities.addFacilityAuthorities(_site2);
 
     // counts for name filtering
     assertEquals(3, _service.getPatientsCount(site2Id, false, "ma"));
@@ -434,17 +415,123 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     // this fails because of the isArchive is true
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, true, "ma"));
     
-    // this will only return the number of corresponding patients in site2, since the caller isn't
-    // yet authorized to access site1
+    // this will only return the number of corresponding patients in with facility==site2 or 
+    // facility==null, since the caller isn't yet authorized to access site1
     assertEquals(3, _service.getPatientsCount(null, false, "ma"));
 
-    TestUserIdentities.addFacilityAuthorities(Set.of(_site1));
+    TestUserIdentities.addFacilityAuthorities(_site1);
 
     assertEquals(7, _service.getPatientsCount(null, false, "ma"));
 
     // what to do when search term is too short? Return all?
     assertEquals(0, _service.getPatientsCount(site1Id, false, "M"));
     assertEquals(0, _service.getPatientsCount(site1Id, false, ""));
+  }
+
+  @Test
+  @WithSimpleReportEntryOnlyAllFacilitiesUser
+  void getPatients_entryOnly_failure() {
+    makedata(true);
+
+    UUID site1Id = _site1.getInternalId();
+
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma"));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma"));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, "ma"));
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void getPatients_standardUser_successDependsOnFacilityAccess() {
+    makedata(true);
+
+    UUID site1Id = _site1.getInternalId();
+
+    _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null));
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
+    
+    TestUserIdentities.addFacilityAuthorities(_site1);
+    _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
+    // standard users still can't access archived patients
+    assertThrows(AccessDeniedException.class, () -> 
+        _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
+  }
+
+  @Test
+  @WithSimpleReportStandardUser
+  void addPatient_standardUser_successDependsOnFacilityAccess() {
+    Organization org = _orgService.getCurrentOrganization();
+    Facility fac = _dataFactory.createValidFacility(org, "First One");
+    UUID facilityId = fac.getInternalId();
+
+    _service.addPatient(
+        null,
+        null,
+        "Pebbles",
+        null,
+        "Flintstone",
+        "Sr.",
+        LocalDate.of(1990, 1, 1),
+        _dataFactory.getAddress(),
+        null,
+        PersonRole.RESIDENT,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false);
+    
+    assertThrows(
+        AccessDeniedException.class, () ->
+            _service.addPatient(
+                facilityId,
+                null,
+                "Fred",
+                null,
+                "Flintstone",
+                "Jr.",
+                LocalDate.of(1950, 1, 1),
+                _dataFactory.getAddress(),
+                null,
+                PersonRole.RESIDENT,
+                null,
+                null,
+                null,
+                null,
+                false,
+                false));
+
+    TestUserIdentities.addFacilityAuthorities(fac);
+    _service.addPatient(
+        facilityId,
+        null,
+        "Fred",
+        null,
+        "Flintstone",
+        "Jr.",
+        LocalDate.of(1950, 1, 1),
+        _dataFactory.getAddress(),
+        null,
+        PersonRole.RESIDENT,
+        null,
+        null,
+        null,
+        null,
+        false,
+        false);
   }
 
   @Test

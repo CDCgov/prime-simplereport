@@ -92,6 +92,10 @@ public class TestDataFactory {
     return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
   }
 
+  public Person createMinimalPerson(Organization org, Facility fac) {
+    return createMinimalPerson(org, fac, "Rebecca", "Grey", "Green", "III");
+  }
+
   public Person createMinimalPerson(
       Organization org,
       Facility fac,

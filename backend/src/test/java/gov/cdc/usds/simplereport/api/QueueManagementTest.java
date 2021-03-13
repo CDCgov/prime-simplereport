@@ -88,7 +88,7 @@ class QueueManagementTest extends BaseApiTest {
     assertNull(updatedTestOrder.getTestEventId());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
-    assertEquals(orderId, singleQueueEntry.get("internalId").asText());
+    assertEquals(orderId.toString(), singleQueueEntry.get("internalId").asText());
     assertEquals(
         p.getInternalId().toString(), singleQueueEntry.path("patient").path("internalId").asText());
     assertEquals(dateTested, singleQueueEntry.path("dateTested").asText());

@@ -88,16 +88,19 @@ public class AuthorizationConfiguration {
       "@" + AUTHORIZER_BEAN + ".userCanAccessFacility(#facilityId)";
 
   private static final String SPEL_CAN_VIEW_PATIENT =
-      "@" + AUTHORIZER_BEAN + ".userCanAccessFacilityOfPatient(#patient)";
+      "@" + AUTHORIZER_BEAN + ".userCanViewPatient(#patient)";
 
   private static final String SPEL_CAN_VIEW_PATIENT_BY_ID =
-      "@" + AUTHORIZER_BEAN + ".userCanAccessFacilityOfPatient(#patientId)";
+      "@" + AUTHORIZER_BEAN + ".userCanViewPatient(#patientId)";
 
   private static final String SPEL_CAN_VIEW_TEST_EVENT =
       "@" + AUTHORIZER_BEAN + ".userCanViewTestEvent(#testEventId)";
 
   private static final String SPEL_CAN_VIEW_TEST_ORDER =
       "@" + AUTHORIZER_BEAN + ".userCanViewTestOrder(#testOrderId)";
+
+  private static final String SPEL_CAN_ACCESS_PATIENT_LINK =
+      "@" + AUTHORIZER_BEAN + ".userCanAccessPatientLink(#patientLinkId)";
 
   private static final String SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH =
       "@" + AUTHORIZER_BEAN + 
@@ -281,12 +284,6 @@ public class AuthorizationConfiguration {
           + ")")
   public @interface RequireSpecificPatientSearchPermission {}
 
-  /** Require the current user to have the {@link UserPermission#START_TEST} permission. */
-  @Retention(RUNTIME)
-  @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST)
-  public @interface RequirePermissionStartTest {}
-
   /** 
    * Require the current user to have the {@link UserPermission#START_TEST} permission at
    * the facility with UUID {@code facilityId}.
@@ -297,6 +294,16 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionStartTestAtFacility {}
+
+  /** Require the current user to have the {@link UserPermission#START_TEST} permission with
+   * access to the patient link with String ID {@code patientLinkId}. 
+   * 
+   * <p>NOTE: any method with this annotation must have a parameter {@code patientLinkId}.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_PATIENT_LINK)
+  public @interface RequirePermissionStartTestWithPatientLink {}
 
   /** 
    * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for

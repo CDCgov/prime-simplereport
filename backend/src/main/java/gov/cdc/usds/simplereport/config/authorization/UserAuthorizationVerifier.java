@@ -5,11 +5,15 @@ import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -41,8 +45,10 @@ public class UserAuthorizationVerifier {
   private OrganizationService _orgService;
   private ApiUserRepository _userRepo;
   private PersonRepository _personRepo;
+  private FacilityRepository _facilityRepo;
   private TestEventRepository _testEventRepo;
   private TestOrderRepository _testOrderRepo;
+  private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
 
   public UserAuthorizationVerifier(
@@ -51,7 +57,10 @@ public class UserAuthorizationVerifier {
       OrganizationService orgService,
       ApiUserRepository userRepo,
       PersonRepository personRepo,
+      FacilityRepository facilityRepo,
       TestEventRepository testEventRepo,
+      TestOrderRepository testOrderRepo,
+      PatientLinkRepository patientLinkRepo,
       OktaRepository oktaRepo) {
     super();
     this._admins = admins;
@@ -59,7 +68,10 @@ public class UserAuthorizationVerifier {
     this._orgService = orgService;
     this._userRepo = userRepo;
     this._personRepo = personRepo;
+    this._facilityRepo = facilityRepo;
     this._testEventRepo = testEventRepo;
+    this._testOrderRepo = testOrderRepo;
+    this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
   }
 
@@ -126,15 +138,21 @@ public class UserAuthorizationVerifier {
 
   public boolean userCanViewTestEvent(UUID testEventId) {
     isValidUser();
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isPresent()) {
+    if (testEventId == null) {
       return false;
-    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
     } else {
       Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
       if (testEvent.isEmpty()) {
         return false;
+      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
+          testEvent.get().getOrganization().getInternalId())) {
+        return false;
+      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        return true;
       } else {
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(f -> f.getInternalId().equals(testEvent.get().getFacility().getInternalId()));
@@ -144,15 +162,21 @@ public class UserAuthorizationVerifier {
 
   public boolean userCanViewTestOrder(UUID testOrderId) {
     isValidUser();
-    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isPresent()) {
+    if (testOrderId == null) {
       return false;
-    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
     } else {
       Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
       if (testOrder.isEmpty()) {
         return false;
+      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
+          testOrder.get().getOrganization().getInternalId())) {
+        return false;
+      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        return true;
       } else {
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(f -> f.getInternalId().equals(testOrder.get().getFacility().getInternalId()));
@@ -166,29 +190,78 @@ public class UserAuthorizationVerifier {
       return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isPresent()) {
-      System.out.println("\n\n\n\n\nFACILITIES_ACCESS="+currentOrgRoles.get().getFacilities().toString());
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else {
+      Optional<Facility> facility = _facilityRepo.findById(facilityId);
+      if (facility.isEmpty()) {
+        return false;
+      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
+          facility.get().getOrganization().getInternalId())) {
+        return false;
+      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        return true;
+      } else {
+        return currentOrgRoles.get().getFacilities().stream()
+            .anyMatch(f -> f.getInternalId().equals(facility.get().getInternalId()));
+      }
     }
-    return currentOrgRoles.isPresent()
-        && (currentOrgRoles.get().grantsAllFacilityAccess() ||
-            currentOrgRoles.get().getFacilities().stream()
-                .anyMatch(f -> f.getInternalId().equals(facilityId)));
   }
 
-  public boolean userCanAccessFacilityOfPatient(Person patient) {
+  public boolean userCanViewPatient(Person patient) {
     isValidUser();
+    if (patient == null) {
+      return false;
+    }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    return patient.getFacility() == null
-        || (currentOrgRoles.isPresent()
-            && (currentOrgRoles.get().grantsAllFacilityAccess() ||
-                currentOrgRoles.get().getFacilities().stream()
-                    .anyMatch(f -> f.getInternalId().equals(
-                        patient.getFacility().getInternalId()))));
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
+        patient.getOrganization().getInternalId())) {
+      return false;
+    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+      return true;
+    } else if (patient.getFacility() == null) {
+      return true;
+    } else {
+      return currentOrgRoles.get().getFacilities().stream()
+          .anyMatch(f -> f.getInternalId().equals(patient.getFacility().getInternalId()));
+    }
   }
 
-  public boolean userCanAccessFacilityOfPatient(UUID patientId) {
+  public boolean userCanViewPatient(UUID patientId) {
+    isValidUser();
+    if (patientId == null) {
+      return false;
+    }
     Optional<Person> patient = _personRepo.findById(patientId);
-    return patient.isPresent() && userCanAccessFacilityOfPatient(patient.get());
+    return patient.isPresent() && userCanViewPatient(patient.get());
+  }
+
+  public boolean userCanAccessPatientLink(String patientLinkId) {
+    isValidUser();
+    if (patientLinkId == null) {
+      return false;
+    }
+    UUID patientLinkUuid = UUID.fromString(patientLinkId);
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else {
+      Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
+      if (patientLink.isEmpty()) {
+        return false;
+      } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
+          patientLink.get().getTestOrder().getOrganization().getInternalId())) {
+        return false;
+      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        return true;
+      } else {
+        return currentOrgRoles.get().getFacilities().stream()
+            .anyMatch(f -> f.getInternalId().equals(
+                patientLink.get().getTestOrder().getFacility().getInternalId()));
+      }
+    }
   }
 
   public boolean userHasSpecificPatientSearchPermission(

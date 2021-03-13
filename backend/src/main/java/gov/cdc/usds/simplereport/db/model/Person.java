@@ -114,6 +114,14 @@ public class Person extends OrganizationScopedEternalEntity {
     this.role = PersonRole.STAFF;
   }
 
+  public Person(PersonName names, Organization org, Facility fac, String telephone) {
+    super(org);
+    this.facility = fac;
+    this.nameInfo = names;
+    this.telephone = telephone;
+    this.role = PersonRole.STAFF;
+  }
+
   public void updatePatient(
       String lookupId,
       String firstName,

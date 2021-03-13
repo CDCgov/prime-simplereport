@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Base class for service-level integration. Avoids setting up servlet and web security, but sets up
