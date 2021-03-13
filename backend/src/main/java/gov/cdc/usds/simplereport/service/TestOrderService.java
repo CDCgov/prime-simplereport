@@ -87,9 +87,7 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
-    Optional<OrganizationRoles> roles = _os.getCurrentOrganizationRoles();
-    Set<Facility> facilities = roles.isPresent() ? roles.get().getFacilities() : Set.of();
-    return _terepo.findAllByPatientAndFacilities(patient, facilities);
+    return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
   }
 
   @Transactional(readOnly = true)
