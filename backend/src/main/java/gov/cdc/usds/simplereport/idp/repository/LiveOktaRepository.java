@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -385,9 +386,11 @@ public class LiveOktaRepository implements OktaRepository {
         rule.activate();
 
         LOG.info(
-            "Migrated users from Okta source_groups={} to destination_groups={}",
+            "Migrated users from Okta source_groups={} to destination_groups={} "
+                + "via group_rule={}",
             migrationSourceGroupNames,
-            migrationDestGroupNames);
+            migrationDestGroupNames,
+            ruleName);
       } catch (ResourceException e) {
         LOG.error(
             "Error migrating users from Okta source_groups={} to destination_groups={}: "
@@ -396,6 +399,7 @@ public class LiveOktaRepository implements OktaRepository {
             migrationSourceGroupNames,
             migrationDestGroupNames,
             ruleName);
+        LOG.error("Exception triggered while migrating users to new Okta groups", e);
       }
     }
 
@@ -502,9 +506,14 @@ public class LiveOktaRepository implements OktaRepository {
     return ":" + _extractor.FACILITY_ACCESS_MARKER + ":" + facilityId;
   }
 
+  // Hashes the role env prefix, org external ID, and the roles to migrate to.
+  // NOTE: The Okta UI will still display the source and destination groups for
+  // this rule. This hash approach is in place because Okta secretly limits group
+  // rule names to 50 chars, which is frequently less than the combined length of
+  // the representation of the role env prefix, org external ID, and the roles.
   private String generateMigrationGroupRuleName(
       String orgExternalId, Collection<OrganizationRole> roles) {
-    return generateGroupOrgPrefix(orgExternalId) + " " + roles.toString();
+    return DigestUtils.sha1Hex(generateGroupOrgPrefix(orgExternalId) + roles.toString());
   }
 
   private String generateMigrationGroupRuleExpression(Collection<String> groupNames) {
