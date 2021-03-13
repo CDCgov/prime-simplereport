@@ -63,7 +63,7 @@ public class TestDataFactory {
   }
 
   public Facility createValidFacility(Organization org) {
-    return createValidFacility(org, "Injection Site");
+    return createValidFacility(org, "Imaginary Site");
   }
 
   public Facility createValidFacility(Organization org, String facilityName) {

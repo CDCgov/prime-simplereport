@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Set;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -16,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
+import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
@@ -27,6 +27,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.access.AccessDeniedException;
 
 class SmsServiceTest extends BaseServiceTest<SmsService> {
   @MockBean SmsProviderWrapper mockTwilio;
@@ -34,6 +35,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Autowired DbTruncator _truncator;
 
   @Autowired SmsService _smsService;
+
+  @Autowired OrganizationService _organizationService;
 
   Organization _org;
   Facility _site;
@@ -44,7 +47,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @BeforeEach
   void setupData() {
     initSampleData();
-    _org = _dataFactory.createValidOrg();
+    _org = _organizationService.getCurrentOrganization();
     _site = _dataFactory.createValidFacility(_org);
   }
 

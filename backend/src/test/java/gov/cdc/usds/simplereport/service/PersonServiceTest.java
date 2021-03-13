@@ -117,7 +117,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardUser
   void deletePatient_standardUser_successDependsOnFacilityAccess() {
     Facility fac =
-        _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
 
     assertThrows(AccessDeniedException.class, () -> 
@@ -175,7 +175,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardAllFacilitiesUser
   void deletePatient_standardAllFacilitiesUser_success() {
     Facility fac =
-        _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
 
     Person p = _service.addPatient(
@@ -205,7 +205,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardUser
   void accessArchivedPatient_standardUser_error() {
     Facility fac =
-        _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
     TestUserIdentities.addFacilityAuthorities(fac);
 
@@ -219,7 +219,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportOrgAdminUser
   void deletePatient_adminUser_success() {
     Facility fac =
-        _dataFactory.createValidFacility(_orgService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
 
     Person p =
@@ -473,7 +473,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   @WithSimpleReportStandardUser
   void addPatient_standardUser_successDependsOnFacilityAccess() {
     Organization org = _orgService.getCurrentOrganization();
-    Facility fac = _dataFactory.createValidFacility(org, "First One");
+    Facility fac = _dataFactory.createValidFacility(org);
     UUID facilityId = fac.getInternalId();
 
     _service.addPatient(

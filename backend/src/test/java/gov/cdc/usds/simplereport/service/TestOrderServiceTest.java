@@ -452,7 +452,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editTestResult_entryOnlyUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility =
-        _dataFactory.createValidFacility(org, "First One");
+        _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
     
     assertThrows(
@@ -542,7 +542,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestEventsResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility =
-        _dataFactory.createValidFacility(org, "First One");
+        _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
 
@@ -559,7 +559,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void fetchTestResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility =
-        _dataFactory.createValidFacility(org, "First One");
+        _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createMinimalPerson(org, facility);
     _dataFactory.createTestEvent(p, facility);
     
@@ -730,7 +730,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void correctionsTest_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility =
-        _dataFactory.createValidFacility(org, "First One");
+        _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
     TestEvent _e = _dataFactory.createTestEvent(p, facility);
 

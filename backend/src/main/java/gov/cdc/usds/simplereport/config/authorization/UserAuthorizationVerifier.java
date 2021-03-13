@@ -239,24 +239,35 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanAccessPatientLink(String patientLinkId) {
+    System.out.println("\n\n\nPATIENT_LINK_ID="+patientLinkId);
     isValidUser();
     if (patientLinkId == null) {
+      System.out.println("\n\n\nPLID NULL");
       return false;
     }
     UUID patientLinkUuid = UUID.fromString(patientLinkId);
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
+      System.out.println("\n\n\nORG ROLES EMPTY");
       return false;
     } else {
       Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
       if (patientLink.isEmpty()) {
+        System.out.println("\n\n\nPL NOT FOUND");
         return false;
       } else if (!currentOrgRoles.get().getOrganization().getInternalId().equals(
           patientLink.get().getTestOrder().getOrganization().getInternalId())) {
+        System.out.println("\n\n\nCURR ORG ID="+currentOrgRoles.get().getOrganization().getInternalId().toString()
+          +"BUT PL_TO ID="+patientLink.get().getTestOrder().getOrganization().getInternalId().toString());
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        System.out.println("\n\n\nALL FAC ACCESS");
         return true;
       } else {
+        System.out.println("\n\n\nPL_TO_FAC ID="+patientLink.get().getTestOrder().getFacility().getInternalId().toString());
+        currentOrgRoles.get().getFacilities().stream().forEach(f -> {
+          System.out.println("\n\n\nCURR_ORG_FAC ID="+f.getInternalId().toString());
+        });
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(f -> f.getInternalId().equals(
                 patientLink.get().getTestOrder().getFacility().getInternalId()));
