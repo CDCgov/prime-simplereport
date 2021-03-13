@@ -184,11 +184,13 @@ public class LiveOktaRepository implements OktaRepository {
           g.listUsers()
               .forEach(
                   u -> {
-                    String username = u.getProfile().getEmail();
-                    if (!usersToGroupNames.containsKey(username)) {
-                      usersToGroupNames.put(username, new HashSet<>());
+                    if (u.getStatus() != UserStatus.SUSPENDED) {
+                      String username = u.getProfile().getEmail();
+                      if (!usersToGroupNames.containsKey(username)) {
+                        usersToGroupNames.put(username, new HashSet<>());
+                      }
+                      usersToGroupNames.get(username).add(groupName);
                     }
-                    usersToGroupNames.get(username).add(groupName);
                   });
         });
 
