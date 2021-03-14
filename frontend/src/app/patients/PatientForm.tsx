@@ -73,7 +73,9 @@ const ADD_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
-    ) {}
+    ) {
+      internalId
+    }
   }
 `;
 
@@ -121,7 +123,9 @@ const UPDATE_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
-    ) {}
+    ) {
+      internalId
+    }
   }
 `;
 
