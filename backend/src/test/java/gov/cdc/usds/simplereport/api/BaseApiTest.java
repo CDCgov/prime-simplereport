@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
-
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -242,11 +241,9 @@ public abstract class BaseApiTest {
   }
 
   protected void updateSelfPrivileges(
-      Role role,
-      boolean accessAllFacilities,
-      Set<UUID> facilities) {
+      Role role, boolean accessAllFacilities, Set<UUID> facilities) {
     String originalUsername = _userName;
-    
+
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     String id = who.get("id").asText();
 
@@ -265,7 +262,7 @@ public abstract class BaseApiTest {
   }
 
   protected ObjectNode getUpdateUserPrivilegesVariables(
-    String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
+      String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
     ObjectNode variables =
         JsonNodeFactory.instance
             .objectNode()

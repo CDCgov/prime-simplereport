@@ -294,9 +294,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportStandardUser
   void addTestResult_standardUser_successDependsOnFacilityAccess() {
     Facility facility1 =
-        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization(), "First One");
+        _dataFactory.createValidFacility(
+            _organizationService.getCurrentOrganization(), "First One");
     Facility facility2 =
-        _dataFactory.createValidFacility(_organizationService.getCurrentOrganization(), "Second One");
+        _dataFactory.createValidFacility(
+            _organizationService.getCurrentOrganization(), "Second One");
 
     TestUserIdentities.addFacilityAuthorities(facility1);
 
@@ -368,7 +370,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () ->
             _service.addTestResult(
                 devA.getInternalId().toString(), TestResult.POSITIVE, p2.getInternalId(), null));
-    
+
     // caller has access to the patient (whose facility is null)
     // but cannot modify the test order which was created at a non-accessible facility
     assertThrows(

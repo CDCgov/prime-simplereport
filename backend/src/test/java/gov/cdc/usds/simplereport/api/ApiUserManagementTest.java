@@ -575,7 +575,9 @@ class ApiUserManagementTest extends BaseApiTest {
             id,
             Role.USER,
             false,
-            extractFacilityUuidsFromUser(updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2)));
+            extractFacilityUuidsFromUser(
+                updateUser,
+                Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2)));
 
     updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
@@ -594,7 +596,8 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
         extractPermissionsFromUser(updateUser));
-    assertUserCanAccessExactFacilities(updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2));
+    assertUserCanAccessExactFacilities(
+        updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2));
     assertUserCanAccessAllFacilities(updateUser);
 
     // Update 4: USER, access to no facilities

@@ -3,14 +3,9 @@ package gov.cdc.usds.simplereport.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -20,6 +15,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,7 +90,7 @@ class TestResultTest extends BaseApiTest {
     _dataFactory.createTestOrder(p2, _site);
     String dateTested = "2020-12-31T14:30:30.001Z";
 
-    // The test default standard user is configured to access _site by default, 
+    // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
     updateSelfPrivileges(Role.USER, false, Set.of());
     ObjectNode submitP1Variables =
@@ -145,14 +143,8 @@ class TestResultTest extends BaseApiTest {
     correctTest(correctT2Variables, Optional.empty());
 
     updateSelfPrivileges(Role.USER, false, Set.of());
-    ObjectNode fetchT1Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", t1Id.toString());
-    ObjectNode fetchT2Variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", t2Id.toString());
+    ObjectNode fetchT1Variables = JsonNodeFactory.instance.objectNode().put("id", t1Id.toString());
+    ObjectNode fetchT2Variables = JsonNodeFactory.instance.objectNode().put("id", t2Id.toString());
     fetchTestResult(fetchT1Variables, Optional.of(ACCESS_ERROR));
     fetchTestResult(fetchT2Variables, Optional.of(ACCESS_ERROR));
 
@@ -166,7 +158,7 @@ class TestResultTest extends BaseApiTest {
         .objectNode()
         .put("facilityId", _site.getInternalId().toString());
   }
-  
+
   private ObjectNode submitTestResult(ObjectNode variables, Optional<String> expectedError) {
     return runQuery("add-test-result-mutation", variables, expectedError.orElse(null));
   }

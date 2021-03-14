@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.api.queue;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
-import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PersonService;
@@ -28,8 +27,10 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _ps = ps;
   }
 
-  public ApiTestOrder addTestResult(String deviceID, String result, UUID patientID, Date dateTested) {
-    return new ApiTestOrder(_tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested));
+  public ApiTestOrder addTestResult(
+      String deviceID, String result, UUID patientID, Date dateTested) {
+    return new ApiTestOrder(
+        _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested));
   }
 
   public ApiTestOrder editQueueItem(UUID id, String deviceId, String result, Date dateTested) {

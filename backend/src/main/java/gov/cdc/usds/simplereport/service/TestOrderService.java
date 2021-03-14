@@ -115,7 +115,8 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public TestOrder addTestResult(String deviceID, TestResult result, UUID patientId, Date dateTested) {
+  public TestOrder addTestResult(
+      String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
@@ -157,13 +158,15 @@ public class TestOrderService {
           "Cannot create multiple queue entries for the same patient");
     }
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
-    if (!patient.getOrganization().getInternalId().equals(
-        testFacility.getOrganization().getInternalId()) || 
-        (patient.getFacility() != null &&
-            !patient.getFacility().getInternalId().equals(facilityId))) {
+    if (!patient
+            .getOrganization()
+            .getInternalId()
+            .equals(testFacility.getOrganization().getInternalId())
+        || (patient.getFacility() != null
+            && !patient.getFacility().getInternalId().equals(facilityId))) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot add patient to this queue: patient's facility and/or organization " +
-          "are incompatible with facility of queue");
+          "Cannot add patient to this queue: patient's facility and/or organization "
+              + "are incompatible with facility of queue");
     }
     TestOrder newOrder = new TestOrder(patient, testFacility);
 

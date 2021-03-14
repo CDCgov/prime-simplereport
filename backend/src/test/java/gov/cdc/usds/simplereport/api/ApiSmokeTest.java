@@ -14,7 +14,8 @@ class ApiSmokeTest extends BaseApiTest {
   void smoketestPatientList() throws IOException {
     JsonNode jsonResponse = runQuery("person-query");
     assertTrue(jsonResponse.get("patients").isEmpty());
-    executeAddPersonMutation("Baz", "Jesek", "2403-12-03", null, "BAZ", Optional.empty(), Optional.empty());
+    executeAddPersonMutation(
+        "Baz", "Jesek", "2403-12-03", null, "BAZ", Optional.empty(), Optional.empty());
     jsonResponse = runQuery("person-query");
     assertTrue(jsonResponse.get("patients").has(0));
     assertEquals("Baz", jsonResponse.get("patients").get(0).get("firstName").asText());

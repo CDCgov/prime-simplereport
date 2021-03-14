@@ -291,7 +291,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
+  @PreAuthorize(
+      SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificPatientSearchPermission {}
 
   /**
@@ -317,8 +318,8 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionStartTestWithPatientLink {}
 
   /**
-   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
-   * test order of patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the test
+   * order of patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
@@ -350,15 +351,14 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
   /**
-   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the
-   * test order of patient with UUID {@code patientId}.
+   * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the test
+   * order of patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(
-      SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
+  @PreAuthorize(SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
 
   /** Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT} permission. */
