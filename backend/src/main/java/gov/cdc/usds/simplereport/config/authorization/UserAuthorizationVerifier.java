@@ -75,7 +75,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userHasSiteAdminRole() {
-    System.out.println("SITE ADMIN\n\n\n\n\n");
     isValidUser();
     IdentityAttributes id = _supplier.get();
     return id != null && _admins.contains(id.getUsername());
@@ -212,40 +211,24 @@ public class UserAuthorizationVerifier {
   public boolean userCanAccessFacility(UUID facilityId) {
     isValidUser();
     if (facilityId == null) {
-      System.out.println("\n\n\nFAC=null");
       return true;
     }
-    System.out.println("\n\n\nFAC_ID=" + facilityId.toString());
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
-      System.out.println("\n\n\nORG ROLES EMPTY");
       return false;
     } else {
       Optional<Facility> facility = _facilityRepo.findById(facilityId);
       if (facility.isEmpty()) {
-        System.out.println("\n\n\nFAC EMPTY");
         return false;
       } else if (!currentOrgRoles
           .get()
           .getOrganization()
           .getInternalId()
           .equals(facility.get().getOrganization().getInternalId())) {
-        System.out.println(
-            "\n\n\nCURR_ORG="
-                + currentOrgRoles.get().getOrganization().getInternalId()
-                + "BUT FAC_ORG="
-                + facility.get().getOrganization().getInternalId());
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        System.out.println("\n\n\nALL FAC ACCESS");
         return true;
       } else {
-        System.out.println("\n\n\nFAC ID=" + facilityId.toString());
-        currentOrgRoles.get().getFacilities().stream()
-            .forEach(
-                f -> {
-                  System.out.println("\n\n\nCURR_ORG_FAC ID=" + f.getInternalId().toString());
-                });
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(f -> f.getInternalId().equals(facility.get().getInternalId()));
       }
@@ -286,45 +269,27 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanAccessPatientLink(String patientLinkId) {
-    System.out.println("\n\n\nPATIENT_LINK_ID=" + patientLinkId);
     isValidUser();
     if (patientLinkId == null) {
-      System.out.println("\n\n\nPLID NULL");
       return false;
     }
     UUID patientLinkUuid = UUID.fromString(patientLinkId);
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
-      System.out.println("\n\n\nORG ROLES EMPTY");
       return false;
     } else {
       Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
       if (patientLink.isEmpty()) {
-        System.out.println("\n\n\nPL NOT FOUND");
         return false;
       } else if (!currentOrgRoles
           .get()
           .getOrganization()
           .getInternalId()
           .equals(patientLink.get().getTestOrder().getOrganization().getInternalId())) {
-        System.out.println(
-            "\n\n\nCURR ORG ID="
-                + currentOrgRoles.get().getOrganization().getInternalId().toString()
-                + "BUT PL_TO ID="
-                + patientLink.get().getTestOrder().getOrganization().getInternalId().toString());
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        System.out.println("\n\n\nALL FAC ACCESS");
         return true;
       } else {
-        System.out.println(
-            "\n\n\nPL_TO_FAC ID="
-                + patientLink.get().getTestOrder().getFacility().getInternalId().toString());
-        currentOrgRoles.get().getFacilities().stream()
-            .forEach(
-                f -> {
-                  System.out.println("\n\n\nCURR_ORG_FAC ID=" + f.getInternalId().toString());
-                });
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(
                 f ->
@@ -336,12 +301,6 @@ public class UserAuthorizationVerifier {
 
   public boolean userHasSpecificPatientSearchPermission(
       UUID facilityId, boolean isArchived, String namePrefixMatch) {
-    if (facilityId == null) {
-      System.out.println("SEARCH PERM1facilityId == null");
-    } else {
-      System.out.println("SEARCH PERM1facilityId == " + facilityId.toString());
-    }
-    System.out.println("SEARCH PERM2\n\n\n\n\n" + String.valueOf(isArchived) + namePrefixMatch);
     Set<UserPermission> perms = new HashSet<>();
 
     if (facilityId != null && !userCanAccessFacility(facilityId)) {

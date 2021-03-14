@@ -123,11 +123,6 @@ class QueueManagementTest extends BaseApiTest {
     UUID deviceId = d.getInternalId();
     String dateTested = "2020-12-31T14:30:30Z";
 
-    _orgService.getCurrentOrganizationRoles().get().getFacilities().stream()
-        .forEach(
-            f -> {
-              System.out.println("\n\n\nIN_TEST_CURR_ORG_FAC ID=" + f.getInternalId().toString());
-            });
     // The test default standard user is configured to access _site by default,
     // so we need to remove access to establish a baseline in this test
     updateSelfPrivileges(Role.USER, false, Set.of());

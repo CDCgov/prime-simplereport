@@ -208,7 +208,6 @@ public abstract class BaseApiTest {
    * @param expectedError if null, expect success; if not null, expect this error message
    */
   protected static void assertGraphQLOutcome(JsonNode responseBody, String expectedError) {
-    System.out.println("\n\n\n\n\n\nRESPONSE=" + responseBody.toPrettyString());
     JsonNode errorNode = responseBody.path("errors");
     if (null == expectedError) {
       if (!errorNode.isMissingNode()) {
