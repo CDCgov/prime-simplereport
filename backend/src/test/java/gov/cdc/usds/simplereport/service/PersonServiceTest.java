@@ -484,7 +484,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
         AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, false, "ma"));
 
-    // this will only return the number of corresponding patients with facility==null, 
+    // this will only return the number of corresponding patients with facility==null,
     // since the caller isn't yet authorized to access site1 or site2
     assertEquals(0, _service.getPatientsCount(null, false, "ma"));
 
