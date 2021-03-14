@@ -86,7 +86,7 @@ const SUBMIT_TEST_RESULT = gql`
       deviceId: $deviceId
       result: $result
       dateTested: $dateTested
-    )
+    ) {}
   }
 `;
 
