@@ -14,7 +14,7 @@ const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");
 
 export const testQuery = gql`
-  query getTestResultForPrint($id: String!) {
+  query getTestResultForPrint($id: ID!) {
     testResult(id: $id) {
       dateTested
       result

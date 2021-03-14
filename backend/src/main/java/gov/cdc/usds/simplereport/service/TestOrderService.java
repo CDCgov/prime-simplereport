@@ -85,6 +85,8 @@ public class TestOrderService {
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
+    // NOTE: this may change. do we really want to limit visible test results to only
+    // tests performed at accessible facilities?
     return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
   }
 
@@ -113,7 +115,7 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public void addTestResult(String deviceID, TestResult result, UUID patientId, Date dateTested) {
+  public TestOrder addTestResult(String deviceID, TestResult result, UUID patientId, Date dateTested) {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
@@ -128,7 +130,7 @@ public class TestOrderService {
     _terepo.save(testEvent);
 
     order.setTestEventRef(testEvent);
-    _repo.save(order);
+    return _repo.save(order);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -155,6 +157,14 @@ public class TestOrderService {
           "Cannot create multiple queue entries for the same patient");
     }
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
+    if (!patient.getOrganization().getInternalId().equals(
+        testFacility.getOrganization().getInternalId()) || 
+        (patient.getFacility() != null &&
+            !patient.getFacility().getInternalId().equals(facilityId))) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot add patient to this queue: patient's facility and/or organization " +
+          "are incompatible with facility of queue");
+    }
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =

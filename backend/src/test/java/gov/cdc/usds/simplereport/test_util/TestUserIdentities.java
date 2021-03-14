@@ -21,6 +21,9 @@ public class TestUserIdentities {
 
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
 
+  public static final String TEST_FACILITY_1 = "Testing Site";
+  public static final String TEST_FACILITY_2 = "Injection Site";
+
   public static final String SITE_ADMIN_USER = "ruby@example.com";
   public static final String STANDARD_USER = "bobbity@example.com";
   public static final String ENTRY_ONLY_USER = "nobody@example.com";

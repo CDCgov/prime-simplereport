@@ -19,6 +19,7 @@ import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
@@ -167,49 +168,87 @@ public class UserAuthorizationVerifier {
     if (testOrderId == null) {
       return false;
     }
+    Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
+    return testOrder.isPresent() && userCanViewTestOrder(testOrder.get());
+  }
+
+  public boolean userCanViewTestOrder(TestOrder testOrder) {
+    isValidUser();
+    if (testOrder == null) {
+      return false;
+    }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
       return false;
+    } else if (!currentOrgRoles
+        .get()
+        .getOrganization()
+        .getInternalId()
+        .equals(testOrder.getOrganization().getInternalId())) {
+      return false;
+    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+      return true;
     } else {
-      Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
-      if (testOrder.isEmpty()) {
-        return false;
-      } else if (!currentOrgRoles
-          .get()
-          .getOrganization()
-          .getInternalId()
-          .equals(testOrder.get().getOrganization().getInternalId())) {
-        return false;
-      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        return true;
-      } else {
-        return currentOrgRoles.get().getFacilities().stream()
-            .anyMatch(f -> f.getInternalId().equals(testOrder.get().getFacility().getInternalId()));
-      }
+      return currentOrgRoles.get().getFacilities().stream()
+          .anyMatch(f -> f.getInternalId().equals(testOrder.getFacility().getInternalId()));
     }
+  }
+
+  public boolean userCanViewTestOrderOfPatient(UUID patientId) {
+    isValidUser();
+    if (patientId == null) {
+      return false;
+    } else if (!userCanViewPatient(patientId)) {
+      return false;
+    }
+    Optional<Person> patient = _personRepo.findById(patientId);
+    if (patient.isEmpty()) {
+      return false;
+    }
+    Organization org = patient.get().getOrganization();
+    Optional<TestOrder> order =
+        _testOrderRepo.fetchQueueItem(org, patient.get());
+    return (order.isPresent() && userCanViewTestOrder(order.get()));
   }
 
   public boolean userCanAccessFacility(UUID facilityId) {
     isValidUser();
     if (facilityId == null) {
+      System.out.println("\n\n\nFAC=null");
       return true;
     }
+    System.out.println("\n\n\nFAC_ID=" + facilityId.toString());
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
+      System.out.println("\n\n\nORG ROLES EMPTY");
       return false;
     } else {
       Optional<Facility> facility = _facilityRepo.findById(facilityId);
       if (facility.isEmpty()) {
+        System.out.println("\n\n\nFAC EMPTY");
         return false;
       } else if (!currentOrgRoles
           .get()
           .getOrganization()
           .getInternalId()
           .equals(facility.get().getOrganization().getInternalId())) {
+        System.out.println("\n\n\nCURR_ORG="+currentOrgRoles
+        .get()
+        .getOrganization()
+        .getInternalId()+"BUT FAC_ORG="+facility.get().getOrganization().getInternalId());
         return false;
       } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
+        System.out.println("\n\n\nALL FAC ACCESS");
         return true;
       } else {
+        System.out.println(
+          "\n\n\nFAC ID="
+              + facilityId.toString());
+        currentOrgRoles.get().getFacilities().stream()
+            .forEach(
+                f -> {
+                  System.out.println("\n\n\nCURR_ORG_FAC ID=" + f.getInternalId().toString());
+                });
         return currentOrgRoles.get().getFacilities().stream()
             .anyMatch(f -> f.getInternalId().equals(facility.get().getInternalId()));
       }

@@ -99,6 +99,9 @@ public class AuthorizationConfiguration {
   private static final String SPEL_CAN_VIEW_TEST_ORDER =
       "@" + AUTHORIZER_BEAN + ".userCanViewTestOrder(#testOrderId)";
 
+  private static final String SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT =
+      "@" + AUTHORIZER_BEAN + ".userCanViewTestOrderOfPatient(#patientId)";
+
   private static final String SPEL_CAN_ACCESS_PATIENT_LINK =
       "@" + AUTHORIZER_BEAN + ".userCanAccessPatientLink(#patientLinkId)";
 
@@ -288,12 +291,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(
-      "( "
-          + SPEL_HAS_PERMISSION_SEARCH_PATIENTS
-          + " && "
-          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH
-          + ")")
+  @PreAuthorize(SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificPatientSearchPermission {}
 
   /**
@@ -320,13 +318,13 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#UPDATE_TEST} permission for the
-   * patient with UUID {@code patientId}.
+   * test order of patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionUpdateTestForPatient {}
 
   /**
@@ -353,13 +351,14 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#SUBMIT_TEST} permission for the
-   * patient with UUID {@code patientId}.
+   * test order of patient with UUID {@code patientId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientId}.
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  @PreAuthorize(
+      SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
 
   /** Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT} permission. */

@@ -52,7 +52,7 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
         extractPermissionsFromUser(who));
-    assertUserCanAccessExactFacilities(who, Set.of("Injection Site"));
+    assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_2));
   }
 
   @Test
@@ -70,7 +70,7 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SEARCH_PATIENTS),
         extractPermissionsFromUser(who));
-    assertUserCanAccessExactFacilities(who, Set.of("Testing Site"));
+    assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_1));
   }
 
   @Test
@@ -495,7 +495,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertEquals(who.get("role").asText(), Role.ENTRY_ONLY.name());
     assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(who));
     String id = who.get("id").asText();
-    assertUserCanAccessExactFacilities(who, Set.of("Testing Site"));
+    assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_1));
 
     useOrgAdmin();
     ObjectNode updateRoleVariables =
@@ -575,7 +575,7 @@ class ApiUserManagementTest extends BaseApiTest {
             id,
             Role.USER,
             false,
-            extractFacilityUuidsFromUser(updateUser, Set.of("Testing Site", "Injection Site")));
+            extractFacilityUuidsFromUser(updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2)));
 
     updateResp = runQuery("update-user-privileges", updatePrivilegesVariables);
     updateUser = (ObjectNode) updateResp.get("updateUserPrivileges");
@@ -594,7 +594,7 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
         extractPermissionsFromUser(updateUser));
-    assertUserCanAccessExactFacilities(updateUser, Set.of("Testing Site", "Injection Site"));
+    assertUserCanAccessExactFacilities(updateUser, Set.of(TestUserIdentities.TEST_FACILITY_1, TestUserIdentities.TEST_FACILITY_2));
     assertUserCanAccessAllFacilities(updateUser);
 
     // Update 4: USER, access to no facilities
@@ -978,23 +978,6 @@ class ApiUserManagementTest extends BaseApiTest {
     return variables;
   }
 
-  private ObjectNode getUpdateUserPrivilegesVariables(
-      String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
-    ObjectNode variables =
-        JsonNodeFactory.instance
-            .objectNode()
-            .put("id", id)
-            .put("role", role.name())
-            .put("accessAllFacilities", accessAllFacilities);
-    variables
-        .putArray("facilities")
-        .addAll(
-            facilities.stream()
-                .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
-                .collect(Collectors.toSet()));
-    return variables;
-  }
-
   private Set<Role> extractRolesFromUser(ObjectNode user) {
     Iterator<JsonNode> rolesIter = user.get("roles").elements();
     Set<Role> roles = new HashSet<>();
@@ -1013,21 +996,8 @@ class ApiUserManagementTest extends BaseApiTest {
     return permissions;
   }
 
-  // map from each facility's name to its UUID; includes all facilities in organization
-  // NOTE: this cannot be called by a user who is not associated with an org (e.g. super user)
-  private Map<String, UUID> extractAllFacilitiesInOrg() {
-    Iterator<JsonNode> facilitiesIter =
-        runQuery("org-settings-query").get("organization").get("testingFacility").elements();
-    Map<String, UUID> facilities = new HashMap<>();
-    while (facilitiesIter.hasNext()) {
-      JsonNode facility = facilitiesIter.next();
-      facilities.put(facility.get("name").asText(), UUID.fromString(facility.get("id").asText()));
-    }
-    return facilities;
-  }
-
   // map from each facility's name to its UUID; includes all facilities user can access
-  private Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
+  protected Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
     Iterator<JsonNode> facilitiesIter = user.get("organization").get("testingFacility").elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
@@ -1037,13 +1007,12 @@ class ApiUserManagementTest extends BaseApiTest {
     return facilities;
   }
 
-  private Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
+  protected Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
     Map<String, UUID> facilities = extractFacilitiesFromUser(user);
     return facilityNames.stream().map(n -> facilities.get(n)).collect(Collectors.toSet());
   }
 
   private void assertUserCanAccessAllFacilities(ObjectNode user) {
-
     assertEquals(extractAllFacilitiesInOrg(), extractFacilitiesFromUser(user));
   }
 

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -17,7 +19,11 @@ import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+
 import java.io.IOException;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,7 +56,7 @@ class QueueManagementTest extends BaseApiTest {
             .put("id", personId)
             .put("previousTestDate", "2020-05-15")
             .put("symptomOnsetDate", "2020-11-30");
-    performEnqueueMutation(variables);
+    performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
@@ -79,7 +85,7 @@ class QueueManagementTest extends BaseApiTest {
             .put("result", TestResult.POSITIVE.toString())
             .put("dateTested", dateTested);
 
-    performQueueUpdateMutation(variables);
+    performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
     assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
@@ -102,7 +108,7 @@ class QueueManagementTest extends BaseApiTest {
             .put("id", personId)
             .put("previousTestDate", "2020-05-15")
             .put("symptomOnsetDate", "2020-11-30");
-    performEnqueueMutation(variables);
+    performEnqueueMutation(variables, Optional.empty());
     ArrayNode queueData = fetchQueue();
     assertEquals(1, queueData.size());
     JsonNode queueEntry = queueData.get(0);
@@ -110,6 +116,67 @@ class QueueManagementTest extends BaseApiTest {
     String priorTest = queueEntry.get("priorTestDate").asText();
     assertEquals("2020-11-30", symptomOnset);
     assertEquals("2020-05-15", priorTest);
+  }
+
+  @Test
+  void queueOperations_standardUser_successDependsOnFacilityAccess() throws Exception {
+    Person p = _dataFactory.createMinimalPerson(_org, _site);
+    UUID personId = p.getInternalId();
+    DeviceType d = _dataFactory.getGenericDevice();
+    UUID deviceId = d.getInternalId();
+    String dateTested = "2020-12-31T14:30:30Z";
+
+    _orgService.getCurrentOrganizationRoles().get().getFacilities().stream()
+            .forEach(
+                f -> {
+                  System.out.println("\n\n\nIN_TEST_CURR_ORG_FAC ID=" + f.getInternalId().toString());
+                });
+    // The test default standard user is configured to access _site by default, 
+    // so we need to remove access to establish a baseline in this test
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    ObjectNode enqueueVariables =
+        getFacilityScopedArguments()
+            .put("id", personId.toString())
+            .put("previousTestDate", "2020-05-15")
+            .put("symptomOnsetDate", "2020-11-30");
+    performEnqueueMutation(enqueueVariables, Optional.of(ACCESS_ERROR));
+    updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
+    performEnqueueMutation(enqueueVariables, Optional.empty());
+
+    ArrayNode queueData = fetchQueue();
+    assertEquals(1, queueData.size());
+    JsonNode queueEntry = queueData.get(0);
+    UUID orderId = UUID.fromString(queueEntry.get("internalId").asText());
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    ObjectNode updateVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", orderId.toString())
+            .put("deviceId", deviceId.toString())
+            .put("result", TestResult.POSITIVE.toString())
+            .put("dateTested", dateTested);
+    performQueueUpdateMutation(updateVariables, Optional.of(ACCESS_ERROR));
+    updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
+    performQueueUpdateMutation(updateVariables, Optional.empty());
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    performQueueUpdateMutation(updateVariables, Optional.empty());
+    
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    //updateTimeOfTestQuestions uses the exact same security restrictions
+    ObjectNode removeVariables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("patientId", personId.toString());
+    performRemoveFromQueueMutation(removeVariables, Optional.of(ACCESS_ERROR));
+    updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
+    performRemoveFromQueueMutation(removeVariables, Optional.empty());
+
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    fetchQueueWithError(ACCESS_ERROR);
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    fetchQueue();
+    updateSelfPrivileges(Role.USER, false, Set.of(_site.getInternalId()));
+    fetchQueue();
   }
 
   private ObjectNode getFacilityScopedArguments() {
@@ -122,11 +189,22 @@ class QueueManagementTest extends BaseApiTest {
     return (ArrayNode) runQuery(QUERY, getFacilityScopedArguments()).get("queue");
   }
 
-  private void performEnqueueMutation(ObjectNode variables) throws IOException {
-    runQuery("add-to-queue", variables);
+  private void fetchQueueWithError(String expectedError) {
+    runQuery(QUERY, getFacilityScopedArguments(), expectedError);
   }
 
-  private void performQueueUpdateMutation(ObjectNode variables) throws IOException {
-    runQuery("edit-queue-item", variables);
+  private void performEnqueueMutation(
+      ObjectNode variables, Optional<String> expectedError) throws IOException {
+    runQuery("add-to-queue", variables, expectedError.orElse(null));
+  }
+
+  private void performRemoveFromQueueMutation(
+    ObjectNode variables, Optional<String> expectedError) throws IOException {
+  runQuery("remove-from-queue", variables, expectedError.orElse(null));
+}
+
+  private void performQueueUpdateMutation(
+      ObjectNode variables, Optional<String> expectedError) throws IOException {
+    runQuery("edit-queue-item", variables, expectedError.orElse(null));
   }
 }
