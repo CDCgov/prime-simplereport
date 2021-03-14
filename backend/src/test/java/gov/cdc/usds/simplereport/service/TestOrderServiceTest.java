@@ -526,14 +526,27 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @WithSimpleReportStandardUser
   void fetchTestResults_standardUser_successDependsOnFacilityAccess() {
     Organization org = _organizationService.getCurrentOrganization();
-    Facility facility = _dataFactory.createValidFacility(org);
-    Person p = _dataFactory.createMinimalPerson(org, facility);
-    _dataFactory.createTestEvent(p, facility);
+    Facility f1 = _dataFactory.createValidFacility(org, "First One");
+    Facility f2 = _dataFactory.createValidFacility(org, "Second One");
+    Person p1 = _dataFactory.createMinimalPerson(org, f1);
+    Person p2 = _dataFactory.createMinimalPerson(org);
+    _dataFactory.createTestEvent(p1, f1);
+    _dataFactory.createTestEvent(p2, f1);
+    _dataFactory.createTestEvent(p2, f2);
 
-    assertThrows(AccessDeniedException.class, () -> _service.getTestResults(p));
+    assertThrows(AccessDeniedException.class, () -> _service.getTestResults(p1));
+    // filters out all test results from inaccessible facilities, but we can still
+    // request test results for a patient whose own facility is null
+    assertEquals(0, _service.getTestResults(p2).size());
 
-    TestUserIdentities.addFacilityAuthorities(facility);
-    _service.getTestResults(p);
+    TestUserIdentities.addFacilityAuthorities(f1);
+    assertEquals(1, _service.getTestResults(p1).size());
+    // filters out all test results from inaccessible facilities
+    assertEquals(1, _service.getTestResults(p2).size());
+
+    TestUserIdentities.addFacilityAuthorities(f2);
+    assertEquals(1, _service.getTestResults(p1).size());
+    assertEquals(2, _service.getTestResults(p2).size());
   }
 
   @Test

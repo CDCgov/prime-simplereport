@@ -278,7 +278,6 @@ public abstract class BaseApiTest {
   }
 
   // map from each facility's name to its UUID; includes all facilities in organization
-  // NOTE: this cannot be called by a user who is not associated with an org (e.g. super user)
   protected Map<String, UUID> extractAllFacilitiesInOrg() {
     String originalUsername = _userName;
     useOrgAdmin();

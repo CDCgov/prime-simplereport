@@ -439,7 +439,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     List<Person> patients_org_page0 = _service.getPatients(null, 0, 100, false, null);
     assertEquals(patients_org_page0.size(), _service.getPatientsCount(null, false, null));
     assertEquals(12, _service.getPatientsCount(null, false, null));
-    // count includes patients for site2 AND facilityId=null
+    // count includes patients for site2 AND facility=null
     assertEquals(7, _service.getPatientsCount(site2Id, false, null));
 
     // delete a couple, verify counts
@@ -468,7 +468,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
 
   @Test
   @WithSimpleReportEntryOnlyUser
-  void getPatients_counts_entryonlyuser() {
+  void getPatients_counts_entryonlyuser_successDependsOnFacilityAccess() {
     makedata(true);
 
     UUID site1Id = _site1.getInternalId();
@@ -484,6 +484,10 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
         AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, false, "ma"));
 
+    // this will only return the number of corresponding patients with facility==null, 
+    // since the caller isn't yet authorized to access site1 or site2
+    assertEquals(0, _service.getPatientsCount(null, false, "ma"));
+
     TestUserIdentities.addFacilityAuthorities(_site2);
 
     // counts for name filtering
@@ -492,7 +496,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     // this fails because of the isArchive is true
     assertThrows(AccessDeniedException.class, () -> _service.getPatientsCount(site2Id, true, "ma"));
 
-    // this will only return the number of corresponding patients in with facility==site2 or
+    // this will only return the number of corresponding patients with facility==site2 or
     // facility==null, since the caller isn't yet authorized to access site1
     assertEquals(3, _service.getPatientsCount(null, false, "ma"));
 
