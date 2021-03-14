@@ -1012,7 +1012,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
   protected Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
     Map<String, UUID> facilities = extractFacilitiesFromUser(user);
-    return facilityNames.stream().map(n -> facilities.get(n)).collect(Collectors.toSet());
+    return facilityNames.stream().map(facilities::get).collect(Collectors.toSet());
   }
 
   private void assertUserCanAccessAllFacilities(ObjectNode user) {
