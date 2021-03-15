@@ -62,15 +62,13 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
                     return acc;
                   },
                   new RequiredPermissions());
-          var allOf = requiredPermissions.getAllOf();
-          var anyOfClauses = requiredPermissions.getAnyOfClauses();
 
-          if (!permissionChecker.userHasPermissions(allOf)) {
+          if (!permissionChecker.userHasPermissions(requiredPermissions.getAllOf())) {
             throw new AbortExecutionException(
                 "Current user does not have permission for this action");
           }
 
-          if (anyOfClauses.stream()
+          if (requiredPermissions.getAnyOfClauses().stream()
               .anyMatch(
                   clause -> clause.stream().noneMatch(permissionChecker::userHasPermission))) {
             throw new AbortExecutionException(
