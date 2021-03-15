@@ -1,6 +1,6 @@
 /* eslint no-unused-expressions: 0 */
-const faker = require('faker');
-const dayjs = require('dayjs');
+const faker = require("faker");
+const dayjs = require("dayjs");
 
 function addPatient(dobFormat) {
   // Generate a random patient
@@ -9,43 +9,43 @@ function addPatient(dobFormat) {
   const fullName = `${lastName}, ${firstName}`;
   const dob = dayjs(faker.date.past(100));
   const dobForInput = dob.format(dobFormat);
-  const dobForPatientLink = dob.format('MM/DD/YYYY');
+  const dobForPatientLink = dob.format("MM/DD/YYYY");
   const phone = faker.phone.phoneNumberFormat(0);
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
 
-  this.expect.section('@navbar').to.be.visible;
-  this.section.navbar.expect.element('@patientLink').to.be.visible;
-  this.section.navbar.click('@patientLink');
-  this.expect.section('@patientList').to.be.visible;
-  this.section.patientList.expect.element('@addPatient').to.be.visible;
-  this.section.patientList.click('@addPatient');
-  this.expect.section('@editPatient').to.be.visible;
-  this.expect.section('@editPatient').to.contain.text('Add New Person');
-  this.section.editPatient.setValue('@firstName', firstName);
-  this.section.editPatient.click('@saveButton');
-  this.expect.section('@editPatient').to.contain.text('Last name is required');
-  this.expect.section('@editPatient').to.contain.text('Facility is required');
-  this.section.editPatient.setValue('@lastName', lastName);
-  this.section.editPatient.setValue('@facility', 'All facilities');
-  this.section.editPatient.setValue('@dob', dobForInput);
-  this.section.editPatient.setValue('@phone', phone);
-  this.section.editPatient.setValue('@address', address);
-  this.section.editPatient.setValue('@state', state);
-  this.section.editPatient.setValue('@zip', zip);
-  this.section.editPatient.click('@resident');
-  this.section.editPatient.click('@healthcareWorker');
-  this.section.editPatient.click('@saveButton');
-  this.expect.section('@patientList').to.be.visible;
-  this.expect.section('@patientList').to.contain.text(fullName);
+  this.expect.section("@navbar").to.be.visible;
+  this.section.navbar.expect.element("@patientLink").to.be.visible;
+  this.section.navbar.click("@patientLink");
+  this.expect.section("@patientList").to.be.visible;
+  this.section.patientList.expect.element("@addPatient").to.be.visible;
+  this.section.patientList.click("@addPatient");
+  this.expect.section("@editPatient").to.be.visible;
+  this.expect.section("@editPatient").to.contain.text("Add New Person");
+  this.section.editPatient.setValue("@firstName", firstName);
+  this.section.editPatient.click("@saveButton");
+  this.expect.section("@editPatient").to.contain.text("Last name is required");
+  this.expect.section("@editPatient").to.contain.text("Facility is required");
+  this.section.editPatient.setValue("@lastName", lastName);
+  this.section.editPatient.setValue("@facility", "All facilities");
+  this.section.editPatient.setValue("@dob", dobForInput);
+  this.section.editPatient.setValue("@phone", phone);
+  this.section.editPatient.setValue("@address", address);
+  this.section.editPatient.setValue("@state", state);
+  this.section.editPatient.setValue("@zip", zip);
+  this.section.editPatient.click("@resident");
+  this.section.editPatient.click("@healthcareWorker");
+  this.section.editPatient.click("@saveButton");
+  this.expect.section("@patientList").to.be.visible;
+  this.expect.section("@patientList").to.contain.text(fullName);
 
   return { patientName: fullName, birthDate: dobForPatientLink };
 }
 
 module.exports = {
   url: function () {
-    return this.api.launchUrl + '/';
+    return this.api.launchUrl + "/";
   },
   commands: [
     {
@@ -54,24 +54,24 @@ module.exports = {
   ],
   sections: {
     app: {
-      selector: '.App',
+      selector: ".App",
     },
     navbar: {
-      selector: '.usa-nav-container',
+      selector: ".usa-nav-container",
       elements: {
         patientLink: {
-          selector: '#patient-nav-link',
+          selector: "#patient-nav-link",
         },
       },
     },
     patientList: {
-      selector: '.prime-container',
+      selector: ".prime-container",
       elements: {
-        addPatient: '#add-patient-button',
+        addPatient: "#add-patient-button",
       },
     },
     editPatient: {
-      selector: '.prime-edit-patient',
+      selector: ".prime-edit-patient",
       elements: {
         firstName: 'input[name="firstName"]',
         lastName: 'input[name="lastName"]',
@@ -83,7 +83,7 @@ module.exports = {
         zip: 'input[name="zipCode"]',
         resident: 'input[name="residentCongregateSetting"]+label',
         healthcareWorker: 'input[name="employedInHealthcare"]+label',
-        saveButton: '.prime-save-patient-changes',
+        saveButton: ".prime-save-patient-changes",
       },
     },
   },
