@@ -73,3 +73,33 @@ type FacilityErrorKeys =
   | "orderingProvider.zipCode";
 
 export type FacilityErrors = Partial<Record<FacilityErrorKeys, string>>;
+
+const orderingProviderFormatError = (field: string) =>
+  `"Ordering provider ${field} is incorrectly formatted"`;
+
+export const allFacilityErrors: Required<FacilityErrors> = {
+  id: "ID is missing",
+  email: "Email is missing or incorrectly formatted",
+  city: "City is incorrectly formatted",
+  cliaNumber: "CLIA number is missing",
+  defaultDevice: "A default device must be selected",
+  deviceTypes: "There must be at least one device",
+  name: "Facility name is missing",
+  phone: "Facility phone number is missing or incorrectly formatted",
+  street: "Facility street is missing",
+  streetTwo: "Facility street is incorrectly formatted",
+  zipCode: "Facility zip code is missing",
+  state: "Facility state is missing",
+  orderingProvider: "Ordering provider is incorrectly formatted",
+  "orderingProvider.NPI": orderingProviderFormatError("NPI"),
+  "orderingProvider.city": orderingProviderFormatError("city"),
+  "orderingProvider.firstName": orderingProviderFormatError("first name"),
+  "orderingProvider.lastName": orderingProviderFormatError("last name"),
+  "orderingProvider.middleName": orderingProviderFormatError("middle name"),
+  "orderingProvider.phone": orderingProviderFormatError("phone"),
+  "orderingProvider.state": orderingProviderFormatError("state"),
+  "orderingProvider.street": orderingProviderFormatError("street"),
+  "orderingProvider.streetTwo": orderingProviderFormatError("street"),
+  "orderingProvider.suffix": orderingProviderFormatError("suffix"),
+  "orderingProvider.zipCode": orderingProviderFormatError("zip code"),
+};

@@ -6,6 +6,7 @@ import ManageDevices from "../../Settings/Facility/Components/ManageDevices";
 import OrderingProviderSettings from "../../Settings/Facility/Components/OrderingProvider";
 import FacilityInformation from "../../Settings/Facility/Components/FacilityInformation";
 import {
+  allFacilityErrors,
   FacilityErrors,
   facilitySchema,
 } from "../../Settings/Facility/facilitySchema";
@@ -81,7 +82,10 @@ const OrganizationForm: React.FC<Props> = (props) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
-        setErrors((errors) => ({ ...errors, [field]: e.message }));
+        setErrors((errors) => ({
+          ...errors,
+          [field]: allFacilityErrors[field],
+        }));
       }
     },
     [facility, clearError]
