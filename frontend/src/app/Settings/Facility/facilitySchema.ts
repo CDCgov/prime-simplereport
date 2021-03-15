@@ -27,31 +27,24 @@ const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
-  name: yup.string().required("Facility name is missing"),
-  cliaNumber: yup.string().required("Facility CLIA number is missing"),
-  street: yup.string().required("Facility street is missing"),
-  zipCode: yup.string().required("Facility zip code is missing"),
-  deviceTypes: yup
-    .array()
-    .of(yup.string().required())
-    .min(1, "Facility must have at least one device")
-    .required("Facility must have at least one device"),
-  defaultDevice: yup.string().required("Facility must have a default device"),
+  name: yup.string().required(),
+  cliaNumber: yup.string().required(),
+  street: yup.string().required(),
+  zipCode: yup.string().required(),
+  deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
+  defaultDevice: yup.string().required(),
   orderingProvider: providerSchema.required(),
   phone: yup
     .string()
-    .test({
-      test: function (input) {
-        const message = "Invalid phone number";
-        if (!input) {
-          return this.createError({ message });
-        }
-        const number = phoneUtil.parseAndKeepRawInput(input, "US");
-        return phoneUtil.isValidNumber(number) || this.createError({ message });
-      },
+    .test(function (input) {
+      if (!input) {
+        return false;
+      }
+      const number = phoneUtil.parseAndKeepRawInput(input, "US");
+      return phoneUtil.isValidNumber(number);
     })
-    .required("Facility phone number is missing"),
-  state: yup.string().required("Facility state is missing"),
+    .required(),
+  state: yup.string().required(),
   id: yup.string(),
   email: yup.string().email(),
   streetTwo: yup.string(),
@@ -85,7 +78,7 @@ export const allFacilityErrors: Required<FacilityErrors> = {
   defaultDevice: "A default device must be selected",
   deviceTypes: "There must be at least one device",
   name: "Facility name is missing",
-  phone: "Facility phone number is missing or incorrectly formatted",
+  phone: "Facility phone number is missing or invalid",
   street: "Facility street is missing",
   streetTwo: "Facility street is incorrectly formatted",
   zipCode: "Facility zip code is missing",
