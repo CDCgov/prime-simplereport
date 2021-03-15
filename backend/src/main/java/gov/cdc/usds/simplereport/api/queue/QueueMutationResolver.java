@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.queue;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -27,7 +28,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _ps = ps;
   }
 
-  public void addTestResult(String deviceID, String result, String patientID, Date dateTested) {
+  public void addTestResult(String deviceID, String result, String patientID, Date dateTested)
+      throws NumberParseException {
     _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested);
   }
 

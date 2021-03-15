@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -17,12 +18,14 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +43,11 @@ public class TestOrderService {
   private PatientAnswersRepository _parepo;
   private TestEventRepository _terepo;
   private PatientLinkService _pls;
+  private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
+
+  @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
+  private String patientLinkUrl;
 
   public TestOrderService(
       OrganizationService os,
@@ -50,6 +57,7 @@ public class TestOrderService {
       TestEventRepository terepo,
       PersonService ps,
       PatientLinkService pls,
+      SmsService smss,
       CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
@@ -59,6 +67,7 @@ public class TestOrderService {
     _parepo = parepo;
     _terepo = terepo;
     _pls = pls;
+    _smss = smss;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTest
@@ -114,7 +123,8 @@ public class TestOrderService {
 
   @AuthorizationConfiguration.RequirePermissionSubmitTest
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested) {
+  public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested)
+      throws NumberParseException {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
@@ -129,7 +139,13 @@ public class TestOrderService {
     _terepo.save(testEvent);
 
     order.setTestEventRef(testEvent);
-    _repo.save(order);
+    TestOrder savedOrder = _repo.save(order);
+
+    // After adding test result, create a new patient link and text it to the patient
+    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+    String internalId = patientLink.getInternalId().toString();
+    _smss.sendToPatientLink(
+        internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTest

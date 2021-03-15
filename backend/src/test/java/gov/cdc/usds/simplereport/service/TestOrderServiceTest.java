@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -13,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -25,6 +27,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
@@ -32,6 +35,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestDataFactory _dataFactory;
+  @MockBean private SmsService _smsService;
 
   @BeforeEach
   void setupData() {
@@ -79,7 +83,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportStandardUser
-  void addTestResult() {
+  void addTestResult() throws NumberParseException {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
