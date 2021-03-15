@@ -8,7 +8,8 @@ export type UserPermission =
   | "START_TEST"
   | "UPDATE_TEST"
   | "SUBMIT_TEST"
-  | "SEARCH_PATIENTS";
+  | "SEARCH_PATIENTS"
+  | "ACCESS_ALL_FACILITIES";
 
 export type UserRole = "admin" | "user" | "entry-only";
 
@@ -19,7 +20,7 @@ export type RoleDescription =
   | "Test-entry user";
 
 // when changing a user's role, the server expects one of these values as the roleDescription. It's annoying how its not consistent with RoleDescription
-export type OrganizationRole = "ADMIN" | "USER" | "ENTRY_ONLY";
+export type Role = "ADMIN" | "USER" | "ENTRY_ONLY";
 
 /* 
     TODO: this is a quick v0

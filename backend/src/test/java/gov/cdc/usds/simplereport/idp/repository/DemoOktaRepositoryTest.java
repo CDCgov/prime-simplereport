@@ -1,17 +1,24 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -26,16 +33,19 @@ class DemoOktaRepositoryTest {
       new IdentityAttributes("bzj@msn.com", "Bradley", "Z.", "Jones", "Jr.");
   private static final IdentityAttributes CHARLES =
       new IdentityAttributes("charles@gmail.com", "Charles", null, "Albemarle", "Sr.");
+  private static final IdentityAttributes DIANE =
+      new IdentityAttributes("dianek@gmail.com", "Diane", "M", "Kohl", null);
 
-  private static final Organization ABC = new Organization("ABC Network", "ABC");
-  private static final Organization DEF = new Organization("DEF Alliance", "DEF");
-  private static final Organization GHI = new Organization("GHI National", "GHI");
+  private static final Organization ABC = new Organization("ABC General", "ABC");
+  private static final Facility ABC_1 = getFacility(UUID.randomUUID(), ABC);
+  private static final Facility ABC_2 = getFacility(UUID.randomUUID(), ABC);
 
   @Autowired private DemoOktaRepository _repo;
 
   @BeforeEach
   public void setup() {
     _repo.reset();
+    createOrgAndFacilities();
   }
 
   @AfterEach
@@ -44,157 +54,302 @@ class DemoOktaRepositoryTest {
   }
 
   @Test
-  void createOrganizationAndUser() {
+  void createOrganizationFacilitiesAndUsers() {
 
-    _repo.createOrganization(ABC.getOrganizationName(), ABC.getExternalId());
-    _repo.createUser(AMOS, ABC, OrganizationRole.USER);
-    _repo.createUser(BRAD, ABC, OrganizationRole.ENTRY_ONLY);
+    OrganizationRoleClaims amos_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(ABC_1.getInternalId()),
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
+    OrganizationRoleClaims brad_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.ENTRY_ONLY,
+                OrganizationRole.ALL_FACILITIES));
+    OrganizationRoleClaims charles_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
+            Set.of(OrganizationRole.NO_ACCESS));
+    OrganizationRoleClaims diane_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.ALL_FACILITIES,
+                OrganizationRole.ADMIN));
+
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(ABC, OrganizationRole.getDefault())
-            .contains(AMOS.getUsername()));
+        new OrganizationRoleClaimsMatcher(amos_expected)
+            .matches(
+                _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER)).get()));
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(ABC, OrganizationRole.getDefault())
-            .contains(BRAD.getUsername()));
-    assertFalse(
-        _repo
-            .getAllUsernamesForOrganization(ABC, OrganizationRole.ENTRY_ONLY)
-            .contains(AMOS.getUsername()));
+        new OrganizationRoleClaimsMatcher(brad_expected)
+            .matches(
+                _repo
+                    .createUser(
+                        BRAD,
+                        ABC,
+                        Set.of(ABC_2),
+                        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES))
+                    .get()));
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(ABC, OrganizationRole.ENTRY_ONLY)
-            .contains(BRAD.getUsername()));
+        new OrganizationRoleClaimsMatcher(charles_expected)
+            .matches(_repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of()).get()));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(diane_expected)
+            .matches(
+                _repo
+                    .createUser(
+                        DIANE,
+                        ABC,
+                        Set.of(ABC_1, ABC_2),
+                        Set.of(
+                            OrganizationRole.NO_ACCESS,
+                            OrganizationRole.ALL_FACILITIES,
+                            OrganizationRole.ADMIN))
+                    .get()));
+
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(brad_expected)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(BRAD.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(charles_expected)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(CHARLES.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(diane_expected)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(DIANE.getUsername())));
   }
 
   @Test
-  void updateUser() {
+  void updateUserPrivileges() {
 
-    _repo.createOrganization(DEF.getOrganizationName(), DEF.getExternalId());
-    _repo.createUser(AMOS, DEF, OrganizationRole.USER);
-    _repo.updateUser(AMOS.getUsername(), BRAD);
-    assertFalse(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault())
-            .contains(AMOS.getUsername()));
-    assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault())
-            .contains(BRAD.getUsername()));
-  }
+    OrganizationRoleClaims expected_1 =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY));
+    OrganizationRoleClaims expected_2 =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.USER,
+                OrganizationRole.ALL_FACILITIES));
+    OrganizationRoleClaims expected_3 =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.NO_ACCESS));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
 
-  @Test
-  void updateUserRole() {
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(expected_1)
+            .matches(
+                _repo
+                    .updateUserPrivileges(
+                        AMOS.getUsername(),
+                        ABC,
+                        Set.of(ABC_1, ABC_2),
+                        Set.of(OrganizationRole.ENTRY_ONLY))
+                    .get()));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(expected_1)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
 
-    _repo.createOrganization(DEF.getOrganizationName(), DEF.getExternalId());
-    _repo.createUser(AMOS, DEF, OrganizationRole.USER);
-    _repo.createUser(BRAD, DEF, OrganizationRole.ENTRY_ONLY);
-    assertEquals(
-        _repo
-            .updateUserRole(AMOS.getUsername(), DEF, OrganizationRole.ENTRY_ONLY)
-            .get()
-            .getGrantedRoles(),
-        Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
-    assertEquals(
-        _repo
-            .updateUserRole(BRAD.getUsername(), DEF, OrganizationRole.ADMIN)
-            .get()
-            .getGrantedRoles(),
-        Set.of(OrganizationRole.USER, OrganizationRole.ADMIN));
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault())
-            .contains(AMOS.getUsername()));
+        new OrganizationRoleClaimsMatcher(expected_2)
+            .matches(
+                _repo
+                    .updateUserPrivileges(
+                        AMOS.getUsername(),
+                        ABC,
+                        Set.of(ABC_2),
+                        Set.of(OrganizationRole.USER, OrganizationRole.ALL_FACILITIES))
+                    .get()));
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.getDefault())
-            .contains(BRAD.getUsername()));
+        new OrganizationRoleClaimsMatcher(expected_2)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
+
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.ENTRY_ONLY)
-            .contains(AMOS.getUsername()));
-    assertFalse(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.ENTRY_ONLY)
-            .contains(BRAD.getUsername()));
-    assertFalse(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.ADMIN)
-            .contains(AMOS.getUsername()));
+        new OrganizationRoleClaimsMatcher(expected_3)
+            .matches(
+                _repo.updateUserPrivileges(AMOS.getUsername(), ABC, Set.of(), Set.of()).get()));
     assertTrue(
-        _repo
-            .getAllUsernamesForOrganization(DEF, OrganizationRole.ADMIN)
-            .contains(BRAD.getUsername()));
-    assertEquals(
-        _repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get().getGrantedRoles(),
-        Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
-    assertEquals(
-        _repo.getOrganizationRoleClaimsForUser(BRAD.getUsername()).get().getGrantedRoles(),
-        Set.of(OrganizationRole.USER, OrganizationRole.ADMIN));
+        new OrganizationRoleClaimsMatcher(expected_3)
+            .matches(_repo.getAllUsersForOrganization(ABC).get(AMOS.getUsername())));
   }
 
   @Test
   void getOrganizationRoleClaimsForUser() {
-    _repo.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
-    _repo.createUser(CHARLES, GHI, OrganizationRole.USER);
+    createOrgAndFacilities();
+    _repo.createUser(
+        AMOS,
+        ABC,
+        Set.of(ABC_1, ABC_2),
+        Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+    _repo.createUser(BRAD, ABC, Set.of(ABC_1), Set.of(OrganizationRole.ENTRY_ONLY));
 
-    Optional<OrganizationRoleClaims> actual =
-        _repo.getOrganizationRoleClaimsForUser(CHARLES.getUsername());
-    Optional<OrganizationRoleClaims> expected =
-        Optional.of(
-            new OrganizationRoleClaims(GHI.getExternalId(), Set.of(OrganizationRole.getDefault())));
-    assertTrue(actual.isPresent());
-    assertEquals(
-        actual.get().getOrganizationExternalId(), expected.get().getOrganizationExternalId());
-    assertEquals(actual.get().getGrantedRoles(), expected.get().getGrantedRoles());
+    Optional<OrganizationRoleClaims> amos_actual =
+        _repo.getOrganizationRoleClaimsForUser(AMOS.getUsername());
+    Optional<OrganizationRoleClaims> brad_actual =
+        _repo.getOrganizationRoleClaimsForUser(BRAD.getUsername());
 
-    _repo.createUser(BRAD, GHI, OrganizationRole.ADMIN);
-
-    actual = _repo.getOrganizationRoleClaimsForUser(BRAD.getUsername());
-    expected =
+    Optional<OrganizationRoleClaims> amos_expected =
         Optional.of(
             new OrganizationRoleClaims(
-                GHI.getExternalId(), Set.of(OrganizationRole.USER, OrganizationRole.ADMIN)));
-    assertTrue(actual.isPresent());
-    assertEquals(
-        actual.get().getOrganizationExternalId(), expected.get().getOrganizationExternalId());
-    assertEquals(actual.get().getGrantedRoles(), expected.get().getGrantedRoles());
+                ABC.getExternalId(),
+                Set.of(),
+                Set.of(
+                    OrganizationRole.NO_ACCESS,
+                    OrganizationRole.ALL_FACILITIES,
+                    OrganizationRole.ADMIN)));
+    Optional<OrganizationRoleClaims> brad_expected =
+        Optional.of(
+            new OrganizationRoleClaims(
+                ABC.getExternalId(),
+                Set.of(ABC_1.getInternalId()),
+                Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY)));
+
+    assertTrue(amos_actual.isPresent());
+    assertTrue(new OrganizationRoleClaimsMatcher(amos_expected.get()).matches(amos_actual.get()));
+    assertTrue(brad_actual.isPresent());
+    assertTrue(new OrganizationRoleClaimsMatcher(brad_expected.get()).matches(brad_actual.get()));
   }
 
   @Test
-  void getAllUsernamesForOrganization() {
-    _repo.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
-    _repo.createUser(BRAD, GHI, OrganizationRole.USER);
-    _repo.createUser(CHARLES, GHI, OrganizationRole.ADMIN);
-    assertEquals(
-        _repo
-            .updateUserRole(CHARLES.getUsername(), GHI, OrganizationRole.ENTRY_ONLY)
-            .get()
-            .getGrantedRoles(),
-        Set.of(OrganizationRole.USER, OrganizationRole.ENTRY_ONLY));
+  void getAllUsersForOrganization() {
+    OrganizationRoleClaims amos_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(ABC_1.getInternalId()),
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
+    OrganizationRoleClaims brad_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.ENTRY_ONLY,
+                OrganizationRole.ALL_FACILITIES));
+    OrganizationRoleClaims charles_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(ABC_1.getInternalId(), ABC_2.getInternalId()),
+            Set.of(OrganizationRole.NO_ACCESS));
+    OrganizationRoleClaims diane_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(
+                OrganizationRole.NO_ACCESS,
+                OrganizationRole.ALL_FACILITIES,
+                OrganizationRole.ADMIN));
 
-    Set<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
-    assertTrue(userUsernames.contains(BRAD.getUsername()));
-    assertTrue(userUsernames.contains(CHARLES.getUsername()));
-    Set<String> entryUsernames =
-        _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ENTRY_ONLY);
-    assertFalse(entryUsernames.contains(BRAD.getUsername()));
-    assertTrue(entryUsernames.contains(CHARLES.getUsername()));
-    Set<String> adminUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.ADMIN);
-    assertFalse(adminUsernames.contains(BRAD.getUsername()));
-    assertFalse(adminUsernames.contains(CHARLES.getUsername()));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(
+        BRAD,
+        ABC,
+        Set.of(ABC_2),
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+    _repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of());
+    _repo.createUser(
+        DIANE,
+        ABC,
+        Set.of(ABC_1, ABC_2),
+        Set.of(
+            OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+
+    Map<String, OrganizationRoleClaims> all_users_actual = _repo.getAllUsersForOrganization(ABC);
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected)
+            .matches(all_users_actual.get(AMOS.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(brad_expected)
+            .matches(all_users_actual.get(BRAD.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(charles_expected)
+            .matches(all_users_actual.get(CHARLES.getUsername())));
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(diane_expected)
+            .matches(all_users_actual.get(DIANE.getUsername())));
   }
 
   @Test
   void deactivateUser() {
-    _repo.createOrganization(GHI.getOrganizationName(), GHI.getExternalId());
-    _repo.createUser(BRAD, GHI, OrganizationRole.ENTRY_ONLY);
-    _repo.createUser(CHARLES, GHI, OrganizationRole.ADMIN);
-    _repo.setUserIsActive(CHARLES.getUsername(), false);
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(
+        BRAD,
+        ABC,
+        Set.of(ABC_2),
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+    _repo.setUserIsActive(AMOS.getUsername(), false);
 
-    assertEquals(_repo.getOrganizationRoleClaimsForUser(CHARLES.getUsername()), Optional.empty());
-    Set<String> userUsernames = _repo.getAllUsernamesForOrganization(GHI, OrganizationRole.USER);
-    assertTrue(userUsernames.contains(BRAD.getUsername()));
-    assertFalse(userUsernames.contains(CHARLES.getUsername()));
+    assertEquals(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()), Optional.empty());
+    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
+    assertFalse(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
+  }
+
+  @Test
+  void deleteOrgAndFacilities() {
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(
+        BRAD,
+        ABC,
+        Set.of(ABC_2),
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+    _repo.deleteFacility(ABC_1);
+
+    OrganizationRoleClaims amos_expected =
+        new OrganizationRoleClaims(
+            ABC.getExternalId(),
+            Set.of(),
+            Set.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
+
+    assertTrue(
+        new OrganizationRoleClaimsMatcher(amos_expected)
+            .matches(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()).get()));
+    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
+    assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
+
+    _repo.deleteOrganization(ABC);
+
+    assertThrows(
+        IllegalGraphqlArgumentException.class, () -> _repo.getAllUsersForOrganization(ABC));
+  }
+
+  private static Facility getFacility(UUID uuid, Organization org) {
+    Facility facility = mock(Facility.class);
+    when(facility.getInternalId()).thenReturn(uuid);
+    when(facility.getOrganization()).thenReturn(org);
+    return facility;
+  }
+
+  private void createOrgAndFacilities() {
+    _repo.createOrganization(ABC);
+    _repo.createFacility(ABC_1);
+    _repo.createFacility(ABC_2);
+  }
+
+  public class OrganizationRoleClaimsMatcher implements ArgumentMatcher<OrganizationRoleClaims> {
+
+    private OrganizationRoleClaims left;
+
+    public OrganizationRoleClaimsMatcher(OrganizationRoleClaims left) {
+      this.left = left;
+    }
+
+    @Override
+    public boolean matches(OrganizationRoleClaims right) {
+      return left.getOrganizationExternalId().equals(right.getOrganizationExternalId())
+          && left.getFacilities().equals(right.getFacilities())
+          && right.getGrantedRoles().equals(right.getGrantedRoles());
+    }
   }
 }

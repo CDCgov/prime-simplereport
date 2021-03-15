@@ -68,3 +68,53 @@ exports[`WithFacility With two facilities should render with a value 1`] = `
   </div>
 </main>
 `;
+
+exports[`WithFacility With zero facilities should notify user to contact an admin 1`] = `
+<main
+  className="prime-home"
+  id="facility-select"
+>
+  <div
+    className="grid-container"
+  >
+    <div
+      className="grid-row position-relative"
+    >
+      <div
+        className="prime-container usa-card__container"
+      >
+        <div
+          className="usa-card__header"
+        >
+          <div>
+            <h2>
+              SimpleReport
+            </h2>
+            <div
+              className="organization-name"
+            >
+              Organization Name
+            </div>
+          </div>
+        </div>
+        <div
+          className="usa-card__body"
+        >
+          <p
+            className="welcome"
+          >
+            Welcome, 
+            Kim Mendoza
+          </p>
+          <p>
+            You do not have access to any facilities at this time.
+          </p>
+          <p>
+            Ask an administrator to assign you access, then try logging in again.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+`;

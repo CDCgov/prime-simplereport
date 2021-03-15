@@ -17,38 +17,40 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 public class InitialSetupProperties {
 
-  private Organization organization;
+  private List<Organization> organizations;
   private Provider provider;
   private List<SpecimenType> specimenTypes;
   private List<? extends DeviceType> deviceTypes;
   private List<String> configuredDeviceTypes;
-  private ConfigFacility facility;
+  private List<ConfigFacility> facilities;
 
   public InitialSetupProperties(
-      Organization organization,
-      ConfigFacility facility,
+      List<Organization> organizations,
+      List<ConfigFacility> facilities,
       Provider provider,
       List<SpecimenType> specimenTypes,
       List<DeviceType> deviceTypes,
       List<String> configuredDeviceTypes) {
-    this.organization = organization;
+    this.organizations = organizations;
     this.provider = provider;
     this.specimenTypes = specimenTypes;
     this.deviceTypes = deviceTypes;
     this.configuredDeviceTypes = configuredDeviceTypes;
-    this.facility = facility;
+    this.facilities = facilities;
   }
 
-  public ConfigFacility getFacility() {
-    return facility;
+  public List<ConfigFacility> getFacilities() {
+    return facilities;
   }
 
   public List<String> getConfiguredDeviceTypeNames() {
     return configuredDeviceTypes;
   }
 
-  public Organization getOrganization() {
-    return new Organization(organization.getOrganizationName(), organization.getExternalId());
+  public List<Organization> getOrganizations() {
+    return organizations.stream()
+        .map(o -> new Organization(o.getOrganizationName(), o.getExternalId()))
+        .collect(Collectors.toList());
   }
 
   public Provider getProvider() {
@@ -94,19 +96,22 @@ public class InitialSetupProperties {
     private StreetAddress address;
     private String telephone;
     private String email;
+    private String organizationExternalId;
 
     public ConfigFacility(
         String facilityName,
         String cliaNumber,
         StreetAddress address,
         String telephone,
-        String email) {
+        String email,
+        String organizationExternalId) {
       super();
       this.name = facilityName;
       this.cliaNumber = cliaNumber;
       this.address = address;
       this.telephone = telephone;
       this.email = email;
+      this.organizationExternalId = organizationExternalId;
     }
 
     public Facility makeRealFacility(
@@ -136,6 +141,10 @@ public class InitialSetupProperties {
 
     public String getEmail() {
       return email;
+    }
+
+    public String getOrganizationExternalId() {
+      return organizationExternalId;
     }
   }
 }

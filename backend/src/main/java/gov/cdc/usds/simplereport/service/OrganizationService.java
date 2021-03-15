@@ -16,8 +16,10 @@ import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -50,6 +52,13 @@ public class OrganizationService {
     _oktaRepo = oktaRepo;
   }
 
+  public void migrateOktaGroups() {
+    // migrate existing orgs/facilities to Okta groups on startup
+    for (Organization org : _repo.findAll()) {
+      _oktaRepo.createOrganization(org, getFacilities(org), true);
+    }
+  }
+
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
@@ -67,7 +76,7 @@ public class OrganizationService {
         orgRoles.stream()
             .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
             .findFirst();
-    return foundRoles.map(r -> new OrganizationRoles(foundOrg, r.getGrantedRoles()));
+    return foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
   }
 
   public Organization getCurrentOrganization() {
@@ -76,17 +85,52 @@ public class OrganizationService {
     return orgRole.getOrganization();
   }
 
+  public OrganizationRoles getOrganizationRoles(OrganizationRoleClaims roleClaims) {
+    Organization org = getOrganization(roleClaims.getOrganizationExternalId());
+    return getOrganizationRoles(org, roleClaims);
+  }
+
+  public OrganizationRoles getOrganizationRoles(
+      Organization org, OrganizationRoleClaims roleClaims) {
+    return new OrganizationRoles(
+        org, getAccessibleFacilities(org, roleClaims), roleClaims.getGrantedRoles());
+  }
+
   public Organization getOrganization(String externalId) {
     Optional<Organization> found = _repo.findByExternalId(externalId);
     return found.orElseThrow(
         () ->
             new IllegalGraphqlArgumentException(
-                "An organization with that external ID does not exist"));
+                "An organization with external_id=" + externalId + " does not exist"));
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public List<Organization> getOrganizations() {
     return _repo.findAll();
+  }
+
+  public Set<Facility> getAccessibleFacilities(
+      Organization org, OrganizationRoleClaims roleClaims) {
+    // If there are no facility restrictions, get all facilities in org; otherwise, get specified
+    // list.
+    return roleClaims.grantsAllFacilityAccess()
+        ? _facilityRepo.findAllByOrganization(org)
+        : _facilityRepo.findAllByOrganizationAndInternalId(org, roleClaims.getFacilities());
+  }
+
+  public List<Facility> getFacilities(Organization org) {
+    return _facilityRepo.findByOrganizationOrderByFacilityName(org);
+  }
+
+  public Set<Facility> getFacilities(Organization org, Collection<UUID> facilityIds) {
+    return _facilityRepo.findAllByOrganizationAndInternalId(org, facilityIds);
+  }
+
+  public Facility getFacilityInCurrentOrg(UUID facilityId) {
+    Organization org = getCurrentOrganization();
+    return _facilityRepo
+        .findByOrganizationAndInternalId(org, facilityId)
+        .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
   public void assertFacilityNameAvailable(String testingFacilityName) {
@@ -97,17 +141,6 @@ public class OrganizationService {
             f -> {
               throw new IllegalGraphqlArgumentException("A facility with that name already exists");
             });
-  }
-
-  public List<Facility> getFacilities(Organization org) {
-    return _facilityRepo.findByOrganizationOrderByFacilityName(org);
-  }
-
-  public Facility getFacilityInCurrentOrg(UUID facilityId) {
-    Organization org = getCurrentOrganization();
-    return _facilityRepo
-        .findByOrganizationAndInternalId(org, facilityId)
-        .orElseThrow(() -> new IllegalGraphqlArgumentException("facility could not be found"));
   }
 
   @Transactional(readOnly = false)
@@ -187,7 +220,8 @@ public class OrganizationService {
             deviceSpecimenTypes.getDefault(),
             deviceSpecimenTypes.getFullList());
     _facilityRepo.save(facility);
-    _oktaRepo.createOrganization(name, externalId);
+    _oktaRepo.createOrganization(org);
+    _oktaRepo.createFacility(facility);
     return org;
   }
 
@@ -227,6 +261,8 @@ public class OrganizationService {
             orderingProvider,
             deviceSpecimenTypes.getDefault(),
             deviceSpecimenTypes.getFullList());
-    return _facilityRepo.save(facility);
+    facility = _facilityRepo.save(facility);
+    _oktaRepo.createFacility(facility);
+    return facility;
   }
 }

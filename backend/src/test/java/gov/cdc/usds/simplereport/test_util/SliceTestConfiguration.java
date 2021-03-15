@@ -100,6 +100,10 @@ public class SliceTestConfiguration {
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ADMIN";
     public static final String DEFAULT_ORG_ENTRY =
         SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ENTRY_ONLY";
+    public static final String DEFAULT_ORG_NO_ACCESS =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "NO_ACCESS";
+    public static final String DEFAULT_ORG_ALL_FACILITIES =
+        SliceTestConfiguration.DEFAULT_ROLE_PREFIX + "ALL_FACILITIES";
   }
 
   @Bean
@@ -124,7 +128,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {Role.DEFAULT_ORG_USER})
+      authorities = {Role.DEFAULT_ORG_NO_ACCESS, Role.DEFAULT_ORG_USER})
   @Inherited
   public @interface WithSimpleReportStandardUser {}
 
@@ -132,7 +136,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ADMIN})
+      authorities = {Role.DEFAULT_ORG_NO_ACCESS, Role.DEFAULT_ORG_ADMIN})
   @Inherited
   public @interface WithSimpleReportOrgAdminUser {}
 
@@ -140,7 +144,7 @@ public class SliceTestConfiguration {
   @Target({ElementType.METHOD, ElementType.TYPE})
   @WithMockUser(
       username = TestUserIdentities.STANDARD_USER,
-      authorities = {Role.DEFAULT_ORG_USER, Role.DEFAULT_ORG_ENTRY})
+      authorities = {Role.DEFAULT_ORG_NO_ACCESS, Role.DEFAULT_ORG_ENTRY})
   @Inherited
   public @interface WithSimpleReportEntryOnlyUser {}
 

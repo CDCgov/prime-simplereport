@@ -3,14 +3,17 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.yannbriancon.interceptor.HibernateQueryInterceptor;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.function.Executable;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -38,14 +41,23 @@ public abstract class BaseServiceTest<T> {
   @Autowired private DemoOktaRepository _oktaRepo;
   @Autowired protected TestDataFactory _dataFactory;
   @Autowired protected T _service;
+  @Autowired protected HibernateQueryInterceptor _hibernateQueryInterceptor;
 
   private static final String SPRING_SECURITY_DENIED = "Access is denied";
 
   @BeforeEach
-  protected void before() {
+  protected void beforeEach() {
     clearDb();
     resetOkta();
     initCurrentUser();
+    _hibernateQueryInterceptor.startQueryCount(); // also resets count
+  }
+
+  @AfterEach
+  protected void afterEach() {
+    // see output saved to backend/build/test-results/test
+    LoggerFactory.getLogger(BaseServiceTest.class)
+        .info("Hibernate Total queries: {}", _hibernateQueryInterceptor.getQueryCount());
   }
 
   public void clearDb() {
@@ -57,7 +69,6 @@ public abstract class BaseServiceTest<T> {
   }
 
   protected void initSampleData() {
-    _dataFactory.createValidOrg("DataLorg", "DAT_ORG");
     _initService.initAll();
   }
 

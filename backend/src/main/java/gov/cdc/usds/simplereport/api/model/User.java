@@ -1,8 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +18,8 @@ public class User {
     return wrapped.getId();
   }
 
-  public Optional<Organization> getOrganization() {
-    return wrapped.getOrganization();
+  public Optional<ApiOrganization> getOrganization() {
+    return wrapped.getOrganization().map(o -> new ApiOrganization(o, wrapped.getFacilities()));
   }
 
   public String getFirstName() {
@@ -54,10 +52,26 @@ public class User {
   }
 
   public String getRoleDescription() {
-    return wrapped.getRoleDescription();
+    return buildRoleDescription(getRole(), getIsAdmin());
   }
 
-  public List<OrganizationRole> getRoles() {
-    return wrapped.getRoles();
+  private String buildRoleDescription(Optional<Role> role, boolean isAdmin) {
+    if (role.isPresent()) {
+      String desc = role.get().getDescription();
+      return isAdmin ? desc + " (SU)" : desc;
+    } else {
+      return isAdmin ? "Super Admin" : "Misconfigured user";
+    }
+  }
+
+  // there's no good reason that this variable is a list at this point, but changing
+  // it to a plain variable is too much change for the time being.
+  public List<Role> getRoles() {
+    Optional<Role> result = getRole();
+    return result.isEmpty() ? List.of() : List.of(result.get());
+  }
+
+  public Optional<Role> getRole() {
+    return Role.fromOrganizationRoles(wrapped.getRoles());
   }
 }
