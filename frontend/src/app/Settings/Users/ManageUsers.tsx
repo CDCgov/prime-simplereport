@@ -9,6 +9,7 @@ import {
   displayFullNameInOrder,
   displayFullName,
 } from "../../utils";
+import { Role } from "../../permissions";
 
 import CreateUserModal from "./CreateUserModal";
 import DeleteUserModal from "./DeleteUserModal";
@@ -19,7 +20,6 @@ import UsersSideNav from "./UsersSideNav";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
-import { Role } from "../../permissions";
 
 interface Props {
   users: SettingsUser[];
