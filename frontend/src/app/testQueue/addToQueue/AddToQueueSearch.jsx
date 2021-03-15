@@ -18,7 +18,10 @@ const MIN_SEARCH_CHARACTER_COUNT = 2;
 const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!, $namePrefixMatch: String) {
+  query SearchPatientsByFacility(
+    $facilityId: String!
+    $namePrefixMatch: String
+  ) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
