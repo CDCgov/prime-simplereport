@@ -1,3 +1,8 @@
+directive @requiredPermissions(
+  anyOf: [String!],
+  allOf: [String!]
+) on FIELD_DEFINITION | ARGUMENT_DEFINITION
+
 # java.util.Date implementation
 scalar DateTime
 # java.time.LocalDate
@@ -52,6 +57,7 @@ type DeviceType {
   loincCode: String
   swabType: String
 }
+
 type Patient {
   internalId: ID
   facility: Facility
@@ -60,25 +66,26 @@ type Patient {
   middleName: String
   lastName: String
   suffix: String
-  race: String
+  race: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   birthDate: LocalDate
-  gender: String
-  ethnicity: String
-  street: String
-  streetTwo: String
-  city: String
-  county: String
-  state: String
-  zipCode: String
+  gender: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  ethnicity: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  street: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  streetTwo: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  city: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  county: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  state: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  zipCode: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
   email: String
-  role: String
-  isDeleted: Boolean
-  residentCongregateSetting: Boolean
-  employedInHealthcare: Boolean
+  role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  isDeleted: Boolean  @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+  residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
-  testResults: [TestResult!]!
+  testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
 }
+
 type Facility {
   id: ID
   name: String
@@ -188,31 +195,39 @@ type PatientLink {
 }
 
 type Query {
-  deviceType: [DeviceType]
+  deviceType: [DeviceType] # TODO what permission is required here?
   patients(
     facilityId: ID
     pageNumber: Int
     pageSize: Int
-    showDeleted: Boolean
+    showDeleted: Boolean @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): [Patient]
   patientsCount(
     facilityId: ID
-    showDeleted: Boolean
+    showDeleted: Boolean @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
-  ): Int
+  ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patient(id: ID!): Patient
   organization: Organization
   organizations: [Organization]
-  queue(facilityId: ID!): [TestOrder]
-  testResults(facilityId: ID!, pageNumber: Int, pageSize: Int): [TestResult]
-  testResultsCount(facilityId: ID!): Int
-  testResult(id: ID!): TestResult
-  users: [User]
+  queue(
+    facilityId: ID!
+  ): [TestOrder] @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+  testResults(
+    facilityId: ID!
+    pageNumber: Int
+    pageSize: Int
+  ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCount(facilityId: ID!): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResult(id: ID!): TestResult @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
 type Mutation {
-  uploadPatients(patientList: Upload!): String
+  uploadPatients(
+    patientList: Upload!
+  ): String @requiredPermissions(allOf: ["EDIT_PATIENT"]) # TODO is this right?
   updateFacility(
     facilityId: ID!
     testingFacilityName: String!
@@ -241,7 +256,7 @@ type Mutation {
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
-  ): String
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
@@ -269,8 +284,10 @@ type Mutation {
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
-  ): String
-  updateOrganization(name: String!): String
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateOrganization(
+    name: String!
+  ): String @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   createOrganization(
     name: String!
     externalId: String!
@@ -300,7 +317,7 @@ type Mutation {
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
-  ): Organization
+  ): Organization @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   addUser(
     firstName: String
     middleName: String
@@ -309,7 +326,7 @@ type Mutation {
     email: String!
     organizationExternalId: String!
     role: Role!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   addUserToCurrentOrg(
     firstName: String
     middleName: String
@@ -317,22 +334,28 @@ type Mutation {
     suffix: String
     email: String!
     role: Role!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
-  ): User
-  updateUserRole(id: ID!, role: Role!): Role
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  updateUserRole(
+    id: ID!
+    role: Role!
+  ): Role @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
     facilities: [ID!]
     role: Role!
-  ): User
-  setUserIsDeleted(id: ID!, deleted: Boolean!): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  setUserIsDeleted(
+    id: ID!
+    deleted: Boolean!
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   addPatient(
     facilityId: ID
     lookupId: String
@@ -355,7 +378,7 @@ type Mutation {
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
-  ): Patient
+  ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID
     patientId: ID!
@@ -379,21 +402,27 @@ type Mutation {
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
-  ): Patient
-  setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
+  ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
+  setPatientIsDeleted(
+    id: ID!
+    deleted: Boolean!
+  ): Patient @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResult(
     deviceId: String!
     result: String!
     patientId: ID!
     dateTested: DateTime
-  ): TestOrder
+  ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
     id: ID!
     deviceId: String
     result: String
     dateTested: DateTime
-  ): TestOrder
-  correctTestMarkAsError(id: ID!, reason: String): TestResult
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  correctTestMarkAsError(
+    id: ID!,
+    reason: String
+  ): TestResult @requiredPermissions(allOf: ["UPDATE_TEST"])
   addPatientToQueue(
     facilityId: ID!
     patientId: ID!
@@ -405,9 +434,11 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
-  ): String
-  removePatientFromQueue(patientId: ID!): String
-  clearQueue: Int
+  ): String @requiredPermissions(allOf: ["START_TEST"])
+  removePatientFromQueue(
+    patientId: ID!
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"]) # TODO is this right?
+  clearQueue: Int @requiredPermissions(allOf: ["UPDATE_TEST"]) # TODO is this right?
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
@@ -418,7 +449,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
-  ): String
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   createDeviceType(
     name: String!
     manufacturer: String!
