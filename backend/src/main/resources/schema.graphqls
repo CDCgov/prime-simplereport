@@ -82,7 +82,7 @@ type Patient {
   isDeleted: Boolean  @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
   residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  lastTest: TestResult
+  lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
 }
 
