@@ -32,7 +32,7 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
       InstrumentationValidationParameters parameters) {
     return SimpleInstrumentationContext.whenCompleted(
         (validationErrors, throwable) -> {
-          if ((validationErrors != null && validationErrors.size() > 0) || throwable != null) {
+          if ((validationErrors != null && !validationErrors.isEmpty()) || throwable != null) {
             return;
           }
 
