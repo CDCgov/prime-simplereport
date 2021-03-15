@@ -73,10 +73,6 @@ public class PatientExperienceController {
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
       throws InvalidPatientLinkException, ExpiredPatientLinkException {
     PatientLink pl = pls.getPatientLinkCurrent(body.getPatientLinkId());
-    if (pl.isExpired()) {
-      throw new ExpiredPatientLinkException();
-    }
-
     Person p = pls.getPatientFromLink(body.getPatientLinkId());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);
@@ -120,5 +116,6 @@ public class PatientExperienceController {
         data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
         data.getSymptomOnset(),
         data.getNoSymptoms());
+    pls.expireMyPatientLink();
   }
 }

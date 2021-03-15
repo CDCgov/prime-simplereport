@@ -41,12 +41,16 @@ public class PatientLinkService {
     return pl;
   }
 
-  public boolean verifyPatientLink(String internalId, LocalDate birthDate) {
+  public boolean verifyPatientLink(String internalId, LocalDate birthDate)
+      throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
       TestOrder testOrder = patientLink.getTestOrder();
       Person patient = testOrder.getPatient();
       if (testOrder.getPatient().getBirthDate().equals(birthDate)) {
+        if (patientLink.isExpired()) {
+          throw new ExpiredPatientLinkException();
+        }
         contextHolder.setContext(patientLink, testOrder, patient);
         return true;
       }
@@ -74,6 +78,12 @@ public class PatientLinkService {
   public PatientLink refreshPatientLink(String internalId) {
     PatientLink pl = getPatientLink(internalId);
     pl.refresh();
+    return plrepo.save(pl);
+  }
+
+  public PatientLink expireMyPatientLink() {
+    PatientLink pl = contextHolder.getPatientLink();
+    pl.expire();
     return plrepo.save(pl);
   }
 }
