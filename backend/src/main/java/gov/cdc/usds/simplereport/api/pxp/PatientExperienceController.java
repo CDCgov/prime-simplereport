@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
+import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
@@ -70,8 +71,12 @@ public class PatientExperienceController {
    */
   @PutMapping("/link/verify")
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
-      throws InvalidPatientLinkException {
-    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
+      throws InvalidPatientLinkException, ExpiredPatientLinkException {
+    PatientLink pl = pls.getPatientLinkCurrent(body.getPatientLinkId());
+    if (pl.isExpired()) {
+      throw new ExpiredPatientLinkException();
+    }
+
     Person p = pls.getPatientFromLink(body.getPatientLinkId());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);

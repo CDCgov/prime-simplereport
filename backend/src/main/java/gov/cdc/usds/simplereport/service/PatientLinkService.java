@@ -1,18 +1,14 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,15 +33,12 @@ public class PatientLinkService {
             () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
   }
 
-  public Organization getPatientLinkCurrent(String internalId) {
+  public PatientLink getPatientLinkCurrent(String internalId) {
     PatientLink pl = getPatientLink(internalId);
-
-    if (pl.getRefreshedAt().after(Date.from(Instant.now().minus(oneDay, ChronoUnit.HOURS)))) {
-      return pl.getTestOrder().getOrganization();
-    } else {
-      throw new InvalidPatientLinkException(
-          "Patient Link is expired; please contact your provider");
+    if (pl.isExpired()) {
+      throw new ExpiredPatientLinkException();
     }
+    return pl;
   }
 
   public boolean verifyPatientLink(String internalId, LocalDate birthDate) {

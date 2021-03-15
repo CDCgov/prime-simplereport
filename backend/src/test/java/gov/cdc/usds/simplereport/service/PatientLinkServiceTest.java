@@ -65,9 +65,9 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    Organization organization =
+    PatientLink result =
         _service.getPatientLinkCurrent(to.getPatientLink().getInternalId().toString());
-    assertEquals(organization.getInternalId(), org.getInternalId());
+    assertEquals(result.getInternalId(), to.getPatientLink().getInternalId());
   }
 
   @Test

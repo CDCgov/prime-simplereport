@@ -139,9 +139,9 @@ class PatientExperienceControllerTest {
   }
 
   @Test
-  void verifyLinkReturns403forExpiredLinks() throws Exception {
+  void verifyLinkReturns410forExpiredLinks() throws Exception {
     // GIVEN
-    // TODO: I need a slightly different test setup here, and idk how to do this 
+    // TODO: I need a slightly different test setup here, and idk how to do this
     // with the way that the @BeforeEach is being transactionalized
     _truncator.truncateAll();
     TestUserIdentities.withStandardUser(
@@ -170,9 +170,7 @@ class PatientExperienceControllerTest {
             .content(requestBody);
 
     // THEN
-    _mockMvc
-        .perform(builder)
-        .andExpect(status().isForbidden());
+    _mockMvc.perform(builder).andExpect(status().is(410));
   }
 
   @Test
