@@ -19,6 +19,7 @@ import UsersSideNav from "./UsersSideNav";
 import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
+import { Role } from "../../permissions";
 
 interface Props {
   users: SettingsUser[];
@@ -50,6 +51,8 @@ export type UpdateUser = <K extends keyof SettingsUser>(
   key: K,
   value: SettingsUser[K]
 ) => void;
+
+const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const ManageUsers: React.FC<Props> = ({
   users,
@@ -335,6 +338,7 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
+                    !roles.includes(activeUser.role) ||
                     activeUser.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
