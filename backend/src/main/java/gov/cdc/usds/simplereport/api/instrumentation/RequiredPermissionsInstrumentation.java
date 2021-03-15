@@ -36,6 +36,11 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
             return;
           }
 
+          // If the user is a site admin, skip walking the tree and checking individual permissions
+          if (userAuthorizationVerifier.userHasSiteAdminRole()) {
+            return;
+          }
+
           QueryTraverser queryTraverser = newQueryTraverser(parameters);
           var permissionChecker = new PermissionChecker(userAuthorizationVerifier);
           var requiredPermissions =
