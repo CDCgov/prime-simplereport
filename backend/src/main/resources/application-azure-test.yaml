@@ -28,7 +28,7 @@ simple-report:
     patient-links: true
     account-request: true
   sendgrid:
-    enabled: true
+    enabled: false
     from-email: support@simplereport.gov
     account-request-recipient: support@simplereport.gov
 twilio:
