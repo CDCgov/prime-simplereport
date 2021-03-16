@@ -30,6 +30,6 @@ simple-report:
   sendgrid:
     enabled: true
     from-email: support@simplereport.gov
-    account-request-recipient: support@simplereport.gov
+    account-request-recipient: adam@skylight.digital
 twilio:
   enabled: true
