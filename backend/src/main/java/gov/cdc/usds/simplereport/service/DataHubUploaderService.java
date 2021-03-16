@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.api.model.TestEventExport;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
@@ -49,6 +50,7 @@ public class DataHubUploaderService {
   private final DataHubUploadRespository _dataHubUploadRepo;
   private final UploadTrackingService _trackingService;
   private final SlackMessageService _slack;
+  private final OrganizationService _organizationService;
 
   private String _fileContents;
   private Date _nextTimestamp;
@@ -61,12 +63,14 @@ public class DataHubUploaderService {
       TestEventRepository testReportEventsRepo,
       DataHubUploadRespository dataHubUploadRepo,
       UploadTrackingService trackingService,
-      SlackMessageService slack) {
+      SlackMessageService slack,
+      OrganizationService organizationService) {
     _config = config;
     _testReportEventsRepo = testReportEventsRepo;
     _trackingService = trackingService;
     _dataHubUploadRepo = dataHubUploadRepo;
     _slack = slack;
+    _organizationService = organizationService;
 
     LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
 
@@ -154,9 +158,12 @@ public class DataHubUploaderService {
     // timestamp of last matched entry, used for the next query.
     this._nextTimestamp = events.get(_rowCount - 1).getCreatedAt();
 
+    this.setFileContents(events);
+  }
+
+  private void setFileContents(List<TestEvent> events) throws IOException {
     List<TestEventExport> eventsToExport = new ArrayList<>();
     events.forEach(e -> eventsToExport.add(new TestEventExport(e)));
-
     CsvMapper mapper = new CsvMapper();
     mapper
         .enable(CsvGenerator.Feature.STRICT_CHECK_FOR_QUOTING)
@@ -194,13 +201,12 @@ public class DataHubUploaderService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String createTestCSVForDataHub(String lastEndCreateOn) throws IOException {
-    try {
-      this.createTestEventCSV(lastEndCreateOn);
-      return this._fileContents;
-    } catch (NoResultException err) {
-      return "";
-    }
+  public String createTestCSVForDataHub(String organizationExternalId) throws IOException {
+    Organization organization = _organizationService.getOrganization(organizationExternalId);
+    List<TestEvent> events =
+        _testReportEventsRepo.findAllByOrganizationOrderByCreatedAtDesc(organization);
+    this.setFileContents(events);
+    return this._fileContents;
   }
 
   // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
