@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atMostOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -19,12 +20,15 @@ import graphql.schema.GraphQLSchema;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.idl.SchemaGenerator;
 import graphql.schema.idl.SchemaParser;
+import graphql.validation.ValidationError;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.ArgumentCaptor;
 
 class RequiredPermissionsInstrumentationTest {
   private static final String SCHEMA =
@@ -50,21 +54,7 @@ class RequiredPermissionsInstrumentationTest {
   @MethodSource("permissionScenarios")
   void requires_permissions_indicated_by_query_tree(
       String query, Set<UserPermission> userPermissions, boolean authorized) {
-    var authzVerifier = mock(UserAuthorizationVerifier.class);
-    when(authzVerifier.userHasPermissions(any()))
-        .thenAnswer(
-            invocation -> {
-              Set<UserPermission> requestedPermissions = invocation.getArgument(0);
-              return userPermissions.containsAll(requestedPermissions);
-            });
-    when(authzVerifier.userHasPermission(any()))
-        .thenAnswer(
-            invocation -> {
-              UserPermission requestedPermission = invocation.getArgument(0);
-              return userPermissions.contains(requestedPermission);
-            });
-
-    var sut = new RequiredPermissionsInstrumentation(authzVerifier);
+    var sut = new RequiredPermissionsInstrumentation(setUpAuthzVerifierMock(userPermissions));
     var context = sut.beginValidation(fromSchemaAndQuery(SCHEMA, query));
 
     if (authorized) {
@@ -72,9 +62,52 @@ class RequiredPermissionsInstrumentationTest {
     } else {
       assertThrows(AbortExecutionException.class, () -> context.onCompleted(null, null));
     }
+  }
 
+  @ParameterizedTest
+  @MethodSource("permissionScenarios")
+  void avoids_unnecessary_calls_to_authz_verifier(
+      String query, Set<UserPermission> userPermissions, boolean authorized) {
+    var authzVerifier = setUpAuthzVerifierMock(userPermissions);
+
+    var sut = new RequiredPermissionsInstrumentation(authzVerifier);
+    var context = sut.beginValidation(fromSchemaAndQuery(SCHEMA, query));
+
+    try {
+      context.onCompleted(null, null);
+    } catch (AbortExecutionException e) {
+      // pass
+    }
+
+    // Make sure we're not generating any more calls to the verifier than necessary
+
+    // When permissions are checked in bulk, those permissions should not be checked individually
+    ArgumentCaptor<Set<UserPermission>> permissionsCheckedInBulk =
+        ArgumentCaptor.forClass(Set.class);
+    verify(authzVerifier, atMostOnce()).userHasPermissions(permissionsCheckedInBulk.capture());
+    permissionsCheckedInBulk.getAllValues().stream()
+        .flatMap(Set::stream)
+        .forEach(p -> verify(authzVerifier, never()).userHasPermission(p));
+
+    // No permission should be checked more than once, no matter how many times it appears in the
+    // schema
     Arrays.stream(UserPermission.values())
         .forEach(p -> verify(authzVerifier, atMostOnce()).userHasPermission(p));
+  }
+
+  @ParameterizedTest
+  @MethodSource("permissionScenarios")
+  void is_no_op_if_previous_validation_failed(
+      String query, Set<UserPermission> userPermissions, boolean authorized) {
+    var authzVerifier = setUpAuthzVerifierMock(userPermissions);
+    var sut = new RequiredPermissionsInstrumentation(authzVerifier);
+    var context = sut.beginValidation(fromSchemaAndQuery(SCHEMA, query));
+
+    context.onCompleted(List.of(mock(ValidationError.class)), null);
+    context.onCompleted(null, new RuntimeException("PANIC"));
+
+    verify(authzVerifier, never()).userHasPermissions(any());
+    verify(authzVerifier, never()).userHasPermission(any());
   }
 
   private static Stream<Arguments> permissionScenarios() {
@@ -110,6 +143,25 @@ class RequiredPermissionsInstrumentationTest {
             "{ sodas { buzz, pop } }",
             Set.of(UserPermission.SEARCH_PATIENTS, UserPermission.ARCHIVE_PATIENT),
             true));
+  }
+
+  private static UserAuthorizationVerifier setUpAuthzVerifierMock(
+      Set<UserPermission> userPermissions) {
+    var authzVerifier = mock(UserAuthorizationVerifier.class);
+    when(authzVerifier.userHasPermissions(any()))
+        .thenAnswer(
+            invocation -> {
+              Set<UserPermission> requestedPermissions = invocation.getArgument(0);
+              return userPermissions.containsAll(requestedPermissions);
+            });
+    when(authzVerifier.userHasPermission(any()))
+        .thenAnswer(
+            invocation -> {
+              UserPermission requestedPermission = invocation.getArgument(0);
+              return userPermissions.contains(requestedPermission);
+            });
+
+    return authzVerifier;
   }
 
   private static InstrumentationValidationParameters fromSchemaAndQuery(
