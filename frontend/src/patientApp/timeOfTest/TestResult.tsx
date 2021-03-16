@@ -6,7 +6,6 @@ const TestResult = () => {
   const patient = useSelector((state) => (state as any).patient as any);
   const fullName = formatFullName(patient);
   const testIsPositive = patient.lastTest.result === "POSITIVE";
-  const testResultColor = testIsPositive ? "text-secondary" : "text-green";
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
   const deviceType = patient.lastTest.deviceType;
 
@@ -20,7 +19,7 @@ const TestResult = () => {
           <div className="grid-row">
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
-              <p className={"margin-top-05 text-bold " + testResultColor}>
+              <p className="margin-top-05">
                 {patient.lastTest.result}
               </p>
             </div>
