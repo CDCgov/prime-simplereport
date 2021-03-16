@@ -76,8 +76,8 @@ type Patient {
   county: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   state: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  telephone: String
-  email: String
+  telephone: String @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
+  email: String @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   isDeleted: Boolean  @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
   residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -123,7 +123,7 @@ type Organization {
   testingFacility: [Facility]
 }
 # When starting from the patient, take a more limited view
-type PatientTestResult {
+type PatientTestResult { # TODO this isn't used anywhere; should it be deleted?
   internalId: ID
   id: ID
   dateTested: DateTime
@@ -456,7 +456,7 @@ type Mutation {
     model: String!
     loincCode: String!
     swabType: String!
-  ): DeviceType
+  ): DeviceType @requiredPermissions(allOf: ["EDIT_FACILITY"]) # TODO is this right?
   updateDeviceType(
     id: String!
     name: String
@@ -464,6 +464,8 @@ type Mutation {
     model: String
     loincCode: String
     swabType: String
-  ): DeviceType
-  sendPatientLinkSms(internalId: String!): String
+  ): DeviceType @requiredPermissions(allOf: ["EDIT_FACILITY"]) # TODO is this right?
+  sendPatientLinkSms(
+    internalId: String!
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
 }
