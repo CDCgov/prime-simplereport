@@ -30,7 +30,7 @@ simple-report:
   sendgrid:
     enabled: true
     from-email: support@simplereport.gov
-    account-request-recipient: nick@clyde.tech
+    account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true
 
