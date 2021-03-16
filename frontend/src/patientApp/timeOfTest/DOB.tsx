@@ -54,9 +54,15 @@ const DOB = () => {
         })
       );
     } catch (error) {
-      setBirthDateError(
-        "No patient link with the supplied ID was found, or the birth date provided was incorrect."
-      );
+      if (error?.status === 410) {
+        setBirthDateError(
+          "This link has expired. Please contact your provider."
+        );
+      } else {
+        setBirthDateError(
+          "No patient link with the supplied ID was found, or the birth date provided was incorrect."
+        );
+      }
     } finally {
       setLoading(false);
     }
