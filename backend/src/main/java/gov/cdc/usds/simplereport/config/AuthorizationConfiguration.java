@@ -307,6 +307,17 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionStartTestAtFacility {}
 
   /**
+   * Require the current user to have the {@link UserPermission#START_TEST} permission for the
+   * patient {@code patient}.
+   *
+   * <p>NOTE: any method with this annotation must have a parameter {@code patient}.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
+  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_VIEW_PATIENT)
+  public @interface RequirePermissionStartTestForPatient {}
+
+  /**
    * Require the current user to have the {@link UserPermission#START_TEST} permission with access
    * to the patient link with String ID {@code patientLinkId}.
    *
