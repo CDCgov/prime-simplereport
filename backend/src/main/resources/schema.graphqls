@@ -1,7 +1,7 @@
 directive @requiredPermissions(
   anyOf: [String!],
   allOf: [String!]
-) on FIELD_DEFINITION | ARGUMENT_DEFINITION
+) on FIELD_DEFINITION
 
 # java.util.Date implementation
 scalar DateTime
