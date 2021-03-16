@@ -33,15 +33,3 @@ simple-report:
     account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true
-
-logging.level:
-  root: WARN
-  "gov.cdc":
-    usds: WARN
-    usds.simplereport:
-      SimpleReportApplication: INFO
-      api: INFO
-      service: TRACE
-#     logging:
-#       QueryLoggingInstrumentation: OFF
-#       GraphQLLoggingHelpers: OFF
