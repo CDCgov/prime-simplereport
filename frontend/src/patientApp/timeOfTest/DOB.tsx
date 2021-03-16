@@ -16,6 +16,7 @@ const DOB = () => {
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
   const [loading, setLoading] = useState(false);
+  const [orderStatus, setOrderStatus] = useState("");
 
   useEffect(() => {
     dobRef?.current?.focus();
@@ -53,6 +54,7 @@ const DOB = () => {
           employedInHealthcare,
         })
       );
+      setOrderStatus(response.orderStatus);
     } catch (error) {
       setBirthDateError(
         "No patient link with the supplied ID was found, or the birth date provided was incorrect."
@@ -71,8 +73,17 @@ const DOB = () => {
       </main>
     );
   }
-
-  if (patient) {
+  if (orderStatus === "COMPLETED") {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/test-result",
+          search: `?plid=${plid}`,
+        }}
+      />
+    );
+  } else if (patient) {
     return (
       <Redirect
         push

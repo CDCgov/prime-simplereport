@@ -1,10 +1,13 @@
 import { connect, useSelector } from "react-redux";
 
-// import { formatFullName } from "../../app/utils/user";
+import { formatFullName } from "../../app/utils/user";
 
 const TestResult = () => {
-  // const patient = useSelector((state) => (state as any).patient as any);
-  // const fullName = formatFullName(patient);
+  const patient = useSelector((state) => (state as any).patient as any);
+  const fullName = formatFullName(patient);
+  const testResult: string = patient.lastTest.result;
+  const testResultColor: string =
+    testResult === "POSITIVE" ? "text-secondary" : "text-green";
 
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
@@ -12,15 +15,17 @@ const TestResult = () => {
         <div className="card usa-prose">
           <h1 className="font-heading-lg">SARS-COV-2 result</h1>
           <h2 className="font-heading-sm">Patient</h2>
-          <p className="margin-top-05">Sam Williams{/* {fullName} */}</p>
+          <p className="margin-top-05">{fullName}</p>
           <div className="grid-row">
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
-              <p className="margin-top-05">Positive</p>
+              <p className={"margin-top-05 text-bold " + testResultColor}>
+                {patient.lastTest.result}
+              </p>
             </div>
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test date</h2>
-              <p className="margin-top-05">12/21/2020</p>
+              <p className="margin-top-05">{patient.lastTest.dateTested}</p>
             </div>
           </div>
           <h2 className="font-heading-sm">Test device</h2>

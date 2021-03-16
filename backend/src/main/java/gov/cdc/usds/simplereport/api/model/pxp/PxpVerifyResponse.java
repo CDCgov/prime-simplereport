@@ -115,6 +115,10 @@ public class PxpVerifyResponse {
     }
     return p.getOrganization().getOrganizationName();
   }
+
+  public OrderStatus getOrderStatus() {
+    return os;
+  }
 }
 
 class PxpTestEventWrapper {
