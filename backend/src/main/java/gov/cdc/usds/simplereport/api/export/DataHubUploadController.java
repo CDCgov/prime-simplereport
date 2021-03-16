@@ -39,9 +39,9 @@ public class DataHubUploadController {
       value = "/testEvent",
       produces = {"text/csv"})
   public ResponseEntity<?> exportTestEventCSV(
-      HttpServletResponse response, @RequestParam(defaultValue = "") String startupdateby)
+      HttpServletResponse response, @RequestParam(defaultValue = "") String organizationExternalId)
       throws IOException {
-    var csvContent = _hubuploadservice.createTestCSVForDataHub(startupdateby);
+    var csvContent = _hubuploadservice.createTestCSVForDataHub(organizationExternalId);
 
     response.setContentType("text/csv");
     DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
