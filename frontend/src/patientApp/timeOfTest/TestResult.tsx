@@ -9,7 +9,7 @@ const TestResult = () => {
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
-        <div className="prime-formgroup usa-prose">
+        <div className="card usa-prose">
           <h1 className="font-heading-lg">SARS-COV-2 result</h1>
           <h2 className="font-heading-sm">Patient</h2>
           <p className="margin-top-05">Sam Williams{/* {fullName} */}</p>
