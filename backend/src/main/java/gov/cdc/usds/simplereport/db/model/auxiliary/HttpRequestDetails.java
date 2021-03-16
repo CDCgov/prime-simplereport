@@ -2,7 +2,6 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -34,8 +33,6 @@ public class HttpRequestDetails {
     serverName = request.getServerName(); // mostly irrelevant
     originalHostName = request.getHeader(Headers.FORWARDED_HOST);
     remoteAddress = request.getRemoteAddr();
-    ArrayList<String> headerNames = new ArrayList<>();
-    request.getHeaderNames().asIterator().forEachRemaining(headerNames::add);
     String forwardedFor = request.getHeader(Headers.FORWARDED_CLIENT);
     forwardedAddresses =
         forwardedFor == null ? List.of() : Arrays.asList(forwardedFor.split(",\\s*"));
