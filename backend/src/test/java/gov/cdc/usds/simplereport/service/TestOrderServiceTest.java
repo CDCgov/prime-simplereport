@@ -233,13 +233,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createFullPerson(org);
 
     // Count queries with one order
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
 
     // Count queries with three order N+1 test
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     long endQueryCount = _hibernateQueryInterceptor.getQueryCount();
     assertEquals(endQueryCount, startQueryCount);
   }
@@ -345,7 +345,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
     List<TestEvent> events_before =
-        _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+        _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
@@ -358,7 +358,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
     List<TestEvent> events_after =
-        _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+        _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     assertEquals(1, events_after.size());
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),

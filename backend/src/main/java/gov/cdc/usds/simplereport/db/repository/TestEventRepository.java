@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
@@ -39,13 +40,13 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
               + " ORDER BY test_order_id, te.created_at desc"
               + ") "
               + " SELECT * FROM FILTEREDEVENTS "
-              + " WHERE created_at > :newerThanDate "
               + // moving this filter into the CTE makes this query significantly
               // more efficient (like 75% faster in one case), but then when we
               // make it more complicated somebody will probably break it
               " ORDER BY created_at DESC ",
+      countQuery = "SELECT count(*) FROM FILTEREDEVENTS",
       nativeQuery = true)
-  public List<TestEvent> getTestEventResults(UUID facilityId, Date newerThanDate);
+  public List<TestEvent> getTestEventResults(UUID facilityId, Pageable pageable);
 
   //	@Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt > :newerThanDate
   // ORDER BY q.createdAt DESC")

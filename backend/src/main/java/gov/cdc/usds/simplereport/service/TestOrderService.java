@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +43,9 @@ public class TestOrderService {
   private TestEventRepository _terepo;
   private PatientLinkService _pls;
   private final CurrentPatientContextHolder _patientContext;
+
+  public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
+  public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
   public TestOrderService(
       OrganizationService os,
@@ -69,10 +74,11 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultList
-  public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
+  public List<TestEvent> getTestEventsResults(UUID facilityId, int pageOffset, int pageSize) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
     return _terepo.getTestEventResults(
-        fac.getInternalId(), (newerThanDate != null) ? newerThanDate : new Date(0));
+        fac.getInternalId(), 
+        PageRequest.of(pageOffset, pageSize));
   }
 
   @Transactional(readOnly = true)

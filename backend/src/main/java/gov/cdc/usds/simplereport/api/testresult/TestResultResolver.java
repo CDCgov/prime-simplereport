@@ -15,8 +15,15 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
 
   @Autowired private TestOrderService tos;
 
-  public List<TestEvent> getTestResults(UUID facilityId, Date newerThanDate) {
-    return tos.getTestEventsResults(facilityId, newerThanDate);
+  public List<TestEvent> getTestResults(UUID facilityId, int pageNumber, int pageSize) {
+    if (pageNumber < 0) {
+      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
+    }
+    if (pageSize < 1) {
+      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
+    }
+
+    return tos.getTestEventsResults(facilityId, pageNumber, pageSize);
   }
 
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
