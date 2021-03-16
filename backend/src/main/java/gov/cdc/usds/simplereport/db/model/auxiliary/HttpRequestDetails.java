@@ -40,6 +40,9 @@ public class HttpRequestDetails {
     requestUri = request.getRequestURI();
   }
 
+  // Are all these annotations necessary? Strictly speaking: no. Jackson will introspect the crap
+  // out of this thing and probably get the right answer if we leave them off. Let's not rely on
+  // that, shall we?
   @JsonCreator
   public HttpRequestDetails(
       @JsonProperty("serverName") String serverName,
