@@ -30,7 +30,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   }
 
   @Test
-  void getPatientLinkCurrent() throws Exception {
+  void getPatientLink() throws Exception {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -65,8 +65,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    PatientLink result =
-        _service.getPatientLinkCurrent(to.getPatientLink().getInternalId().toString());
+    PatientLink result = _service.getPatientLink(to.getPatientLink().getInternalId().toString());
     assertEquals(result.getInternalId(), to.getPatientLink().getInternalId());
   }
 

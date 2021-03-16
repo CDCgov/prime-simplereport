@@ -72,7 +72,7 @@ public class PatientExperienceController {
   @PutMapping("/link/verify")
   public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
       throws InvalidPatientLinkException, ExpiredPatientLinkException {
-    PatientLink pl = pls.getPatientLinkCurrent(body.getPatientLinkId());
+    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
     Person p = pls.getPatientFromLink(body.getPatientLinkId());
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);

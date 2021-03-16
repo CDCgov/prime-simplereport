@@ -33,14 +33,6 @@ public class PatientLinkService {
             () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
   }
 
-  public PatientLink getPatientLinkCurrent(String internalId) {
-    PatientLink pl = getPatientLink(internalId);
-    if (pl.isExpired()) {
-      throw new ExpiredPatientLinkException();
-    }
-    return pl;
-  }
-
   public boolean verifyPatientLink(String internalId, LocalDate birthDate)
       throws ExpiredPatientLinkException {
     try {
