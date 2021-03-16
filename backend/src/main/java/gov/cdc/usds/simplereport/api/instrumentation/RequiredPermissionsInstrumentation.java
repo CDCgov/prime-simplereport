@@ -51,10 +51,12 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
                         .ifPresent(
                             d -> {
                               Optional.ofNullable(d.getArgument("allOf"))
+                                  .filter(argument -> argument.getValue() != null)
                                   .map(RequiredPermissionsInstrumentation::fromStringListArgument)
                                   .ifPresent(acc::withAllOf);
 
                               Optional.ofNullable(d.getArgument("anyOf"))
+                                  .filter(argument -> argument.getValue() != null)
                                   .map(RequiredPermissionsInstrumentation::fromStringListArgument)
                                   .ifPresent(acc::withAnyOf);
                             });
