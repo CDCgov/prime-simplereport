@@ -29,8 +29,8 @@ simple-report:
     account-request: true
   sendgrid:
     enabled: false
-    from-email: noreply@simplereport.gov
-    account-request-recipient: usds@cdc.gov
+    from-email: support@simplereport.gov
+    account-request-recipient: support@simplereport.gov
   site-admin-emails:
     - ruby@example.com
   demo-users:
