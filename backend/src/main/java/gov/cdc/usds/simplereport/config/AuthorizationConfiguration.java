@@ -25,6 +25,8 @@ public class AuthorizationConfiguration {
    */
   public static final String AUTHORIZER_BEAN = "simpleReportAuthVerifier";
 
+  private static final String SPEL_IS_VALID = "@" + AUTHORIZER_BEAN + ".userIsValid()";
+
   private static final String SPEL_HAS_PERMISSION =
       "@"
           + AUTHORIZER_BEAN
@@ -116,7 +118,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_IS_SITE_ADMIN)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_IS_SITE_ADMIN)
   public @interface RequireGlobalAdminUser {}
 
   /**
@@ -126,7 +128,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_IS_SITE_ADMIN + " || " + SPEL_CAN_MANAGE_USER)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + "(" + SPEL_IS_SITE_ADMIN + " || " + SPEL_CAN_MANAGE_USER + ")")
   public @interface RequirePermissionManageTargetUser {}
 
   /**
@@ -139,7 +142,15 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_IS_NOT_SELF + " && " + "(" + SPEL_IS_SITE_ADMIN + " || " + SPEL_CAN_MANAGE_USER + ")")
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_IS_NOT_SELF
+          + " && "
+          + "("
+          + SPEL_IS_SITE_ADMIN
+          + " || "
+          + SPEL_CAN_MANAGE_USER
+          + ")")
   public @interface RequirePermissionManageTargetUserNotSelf {}
 
   /**
@@ -157,11 +168,11 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      "( "
+      SPEL_IS_VALID
+          + " && "
           + SPEL_HAS_PERMISSION_READ_PATIENT_LIST
           + " && "
-          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH
-          + ")")
+          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificReadPatientListPermission {}
 
   /**
@@ -170,7 +181,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_READ_ARCHIVED_PATIENT_LIST)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_READ_ARCHIVED_PATIENT_LIST)
   public @interface RequirePermissionReadArchivedPatientList {}
 
   /**
@@ -181,7 +192,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_READ_RESULT_LIST
+          + " && "
+          + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionReadResultListForTestEvent {}
 
   /**
@@ -192,7 +208,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_READ_RESULT_LIST
+          + " && "
+          + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionReadResultListAtFacility {}
 
   /**
@@ -203,7 +224,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_READ_RESULT_LIST + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_READ_RESULT_LIST
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT)
   public @interface RequirePermissionReadResultListForPatient {}
 
   /**
@@ -214,7 +240,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_PATIENT + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EDIT_PATIENT + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionCreatePatientAtFacility {}
 
   /**
@@ -230,7 +257,9 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_HAS_PERMISSION_EDIT_PATIENT
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_EDIT_PATIENT
           + " && "
           + SPEL_CAN_ACCESS_FACILITY
           + " && "
@@ -245,25 +274,30 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_ARCHIVE_PATIENT + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_ARCHIVE_PATIENT
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionArchiveTargetPatient {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_FACILITY} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_FACILITY)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EDIT_FACILITY)
   public @interface RequirePermissionEditFacility {}
 
   /** Require the current user to have the {@link UserPermission#EDIT_ORGANIZATION} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_EDIT_ORGANIZATION)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EDIT_ORGANIZATION)
   public @interface RequirePermissionEditOrganization {}
 
   /** Require the current user to have the {@link UserPermission#MANAGE_USERS} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_MANAGE_USERS)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_MANAGE_USERS)
   public @interface RequirePermissionManageUsers {}
 
   /**
@@ -274,7 +308,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_VIEW_PATIENT_BY_ID)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_SEARCH_PATIENTS
+          + " && "
+          + SPEL_CAN_VIEW_PATIENT_BY_ID)
   public @interface RequirePermissionSearchTargetPatient {}
 
   /**
@@ -292,7 +331,11 @@ public class AuthorizationConfiguration {
   @Retention(RUNTIME)
   @Target(METHOD)
   @PreAuthorize(
-      SPEL_HAS_PERMISSION_SEARCH_PATIENTS + " && " + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_SEARCH_PATIENTS
+          + " && "
+          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificPatientSearchPermission {}
 
   /**
@@ -303,7 +346,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_FACILITY)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_FACILITY)
   public @interface RequirePermissionStartTestAtFacility {}
 
   /**
@@ -314,7 +358,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_VIEW_PATIENT)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_VIEW_PATIENT)
   public @interface RequirePermissionStartTestForPatient {}
 
   /**
@@ -325,7 +370,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_START_TEST + " && " + SPEL_CAN_ACCESS_PATIENT_LINK)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_START_TEST
+          + " && "
+          + SPEL_CAN_ACCESS_PATIENT_LINK)
   public @interface RequirePermissionStartTestWithPatientLink {}
 
   /**
@@ -336,7 +386,12 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_UPDATE_TEST
+          + " && "
+          + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionUpdateTestForPatient {}
 
   /**
@@ -347,7 +402,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_EVENT)
   public @interface RequirePermissionUpdateTestForTestEvent {}
 
   /**
@@ -358,7 +414,8 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER)
+  @PreAuthorize(
+      SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_UPDATE_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER)
   public @interface RequirePermissionUpdateTestForTestOrder {}
 
   /**
@@ -369,12 +426,17 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_SUBMIT_TEST + " && " + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
+  @PreAuthorize(
+      SPEL_IS_VALID
+          + " && "
+          + SPEL_HAS_PERMISSION_SUBMIT_TEST
+          + " && "
+          + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
 
   /** Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT} permission. */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT)
   public @interface RequirePermissionExportTestEvent {}
 }

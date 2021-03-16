@@ -75,13 +75,11 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userHasSiteAdminRole() {
-    isValidUser();
     IdentityAttributes id = _supplier.get();
     return id != null && _admins.contains(id.getUsername());
   }
 
   public boolean userHasPermissions(Set<UserPermission> permissions) {
-    isValidUser();
     Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
     // more troubleshooting help here.
     // Note: if your not reaching this code, then grep for
@@ -108,7 +106,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userIsNotSelf(UUID userId) {
-    isValidUser();
     IdentityAttributes id = _supplier.get();
     return !getUser(userId).getLoginEmail().equals(id.getUsername());
   }
@@ -118,7 +115,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userIsInSameOrg(UUID userId) {
-    isValidUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     String otherUserEmail = getUser(userId).getLoginEmail();
     Optional<Organization> otherOrg =
@@ -135,7 +131,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewTestEvent(UUID testEventId) {
-    isValidUser();
     if (testEventId == null) {
       return false;
     }
@@ -162,7 +157,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewTestOrder(UUID testOrderId) {
-    isValidUser();
     if (testOrderId == null) {
       return false;
     }
@@ -171,7 +165,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewTestOrder(TestOrder testOrder) {
-    isValidUser();
     if (testOrder == null) {
       return false;
     }
@@ -193,7 +186,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewTestOrderOfPatient(UUID patientId) {
-    isValidUser();
     if (patientId == null) {
       return false;
     } else if (!userCanViewPatient(patientId)) {
@@ -209,7 +201,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanAccessFacility(UUID facilityId) {
-    isValidUser();
     if (facilityId == null) {
       return true;
     }
@@ -236,7 +227,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewPatient(Person patient) {
-    isValidUser();
     if (patient == null) {
       return false;
     }
@@ -260,7 +250,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanViewPatient(UUID patientId) {
-    isValidUser();
     if (patientId == null) {
       return false;
     }
@@ -269,7 +258,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userCanAccessPatientLink(String patientLinkId) {
-    isValidUser();
     if (patientLinkId == null) {
       return false;
     }
@@ -320,7 +308,7 @@ public class UserAuthorizationVerifier {
     return userHasPermissions(perms);
   }
 
-  private void isValidUser() {
+  public boolean userIsValid() {
     IdentityAttributes id = _supplier.get();
     if (id == null) {
       throw new UnidentifiedUserException();
@@ -329,6 +317,8 @@ public class UserAuthorizationVerifier {
     if (!found.isPresent()) {
       throw new NonexistentUserException();
     }
+
+    return true;
   }
 
   // This replicates getUser() in ApiUserService.java, but we cannot call that logic directly or
