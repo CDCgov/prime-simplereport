@@ -195,7 +195,7 @@ type Query {
   organization: Organization
   organizations: [Organization]
   queue(facilityId: String!): [TestOrder]
-  testResults(facilityId: String!, pageNumber: Int, pageSize: int): [TestResult]
+  testResults(facilityId: String!, pageNumber: Int, pageSize: Int): [TestResult]
   testResult(id: String!): TestResult
   users: [User]
   whoami: User!

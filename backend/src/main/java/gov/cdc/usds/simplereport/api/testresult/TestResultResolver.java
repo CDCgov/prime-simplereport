@@ -4,7 +4,6 @@ import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
 import graphql.kickstart.tools.GraphQLQueryResolver;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
