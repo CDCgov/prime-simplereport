@@ -177,9 +177,7 @@ public class TestDataFactory {
   }
 
   @Transactional
-  public PatientLink createExpiredPatientLink(TestOrder order) {
-    TestOrder to = _testOrderRepo.findById(order.getInternalId()).orElseThrow();
-    PatientLink pl = new PatientLink(to);
+  public PatientLink expirePatientLink(PatientLink pl) {
     pl.expire();
     return _patientLinkRepository.save(pl);
   }

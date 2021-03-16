@@ -141,18 +141,8 @@ class PatientExperienceControllerTest {
   @Test
   void verifyLinkReturns410forExpiredLinks() throws Exception {
     // GIVEN
-    // TODO: I need a slightly different test setup here, and idk how to do this
-    // with the way that the @BeforeEach is being transactionalized
-    _truncator.truncateAll();
     TestUserIdentities.withStandardUser(
-        () -> {
-          _org = _dataFactory.createValidOrg();
-          _site = _dataFactory.createValidFacility(_org);
-          _person = _dataFactory.createFullPerson(_org);
-          _testOrder = _dataFactory.createTestOrder(_person, _site);
-          _patientLink = _dataFactory.createExpiredPatientLink(_testOrder);
-        });
-
+        () -> _patientLink = _dataFactory.expirePatientLink(_patientLink));
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     String requestBody =
         "{\"patientLinkId\":\""
