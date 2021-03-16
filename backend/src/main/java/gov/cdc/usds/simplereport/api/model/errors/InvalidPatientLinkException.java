@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(
-    code = HttpStatus.UNAUTHORIZED,
+    code = HttpStatus.FORBIDDEN,
     reason =
         "No patient link with the supplied ID was found, or the birth date provided was incorrect.")
 public class InvalidPatientLinkException extends RuntimeException {
