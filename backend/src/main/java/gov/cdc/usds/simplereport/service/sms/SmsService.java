@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class SmsService {
 
   @AuthorizationConfiguration.RequirePermissionStartTest
   @Transactional
-  public String sendToPatientLink(String plid, String text) throws NumberParseException {
+  public String sendToPatientLink(UUID plid, String text) throws NumberParseException {
     PatientLink pl = pls.getPatientLink(plid);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
   }

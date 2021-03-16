@@ -23,17 +23,14 @@ public class PatientLinkService {
 
   @Autowired private CurrentPatientContextHolder contextHolder;
 
-  public static final long oneDay = 24L;
-
-  public PatientLink getPatientLink(String internalId) {
-    UUID actualId = UUID.fromString(internalId);
+  public PatientLink getPatientLink(UUID internalId) {
     return plrepo
-        .findById(actualId)
+        .findById(internalId)
         .orElseThrow(
             () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
   }
 
-  public boolean verifyPatientLink(String internalId, LocalDate birthDate)
+  public boolean verifyPatientLink(UUID internalId, LocalDate birthDate)
       throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
@@ -52,7 +49,7 @@ public class PatientLinkService {
     }
   }
 
-  public Person getPatientFromLink(String internalId) {
+  public Person getPatientFromLink(UUID internalId) {
     PatientLink pl = getPatientLink(internalId);
     return pl.getTestOrder().getPatient();
   }
@@ -67,7 +64,7 @@ public class PatientLinkService {
     return plrepo.save(pl);
   }
 
-  public PatientLink refreshPatientLink(String internalId) {
+  public PatientLink refreshPatientLink(UUID internalId) {
     PatientLink pl = getPatientLink(internalId);
     pl.refresh();
     return plrepo.save(pl);

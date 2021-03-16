@@ -9,8 +9,6 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
-import gov.cdc.usds.simplereport.api.model.errors.ExpiredPatientLinkException;
-import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -24,6 +22,7 @@ import gov.cdc.usds.simplereport.service.TestEventService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import java.util.Map;
+import java.util.UUID;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +69,10 @@ public class PatientExperienceController {
    * returns the full patient object if so, otherwise it throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body)
-      throws InvalidPatientLinkException, ExpiredPatientLinkException {
-    PatientLink pl = pls.getPatientLink(body.getPatientLinkId());
-    Person p = pls.getPatientFromLink(body.getPatientLinkId());
+  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) {
+    UUID plid = UUID.fromString(body.getPatientLinkId());
+    PatientLink pl = pls.getPatientLink(plid);
+    Person p = pls.getPatientFromLink(plid);
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);
 
@@ -81,8 +80,7 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/patient")
-  public Person updatePatient(@RequestBody PxpApiWrapper<Person> body)
-      throws InvalidPatientLinkException {
+  public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) {
     Person person = body.getData();
     return ps.updateMe(
         parseString(person.getFirstName()),
@@ -102,8 +100,7 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/questions")
-  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body)
-      throws InvalidPatientLinkException {
+  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
