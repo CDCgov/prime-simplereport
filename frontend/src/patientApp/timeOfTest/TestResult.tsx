@@ -5,9 +5,8 @@ import { formatFullName } from "../../app/utils/user";
 const TestResult = () => {
   const patient = useSelector((state) => (state as any).patient as any);
   const fullName = formatFullName(patient);
-  const testResult: string = patient.lastTest.result;
-  const testResultColor: string =
-    testResult === "POSITIVE" ? "text-secondary" : "text-green";
+  const testIsPositive = patient.lastTest.result === "POSITIVE";
+  const testResultColor = testIsPositive ? "text-secondary" : "text-green";
 
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
@@ -31,39 +30,75 @@ const TestResult = () => {
           <h2 className="font-heading-sm">Test device</h2>
           <p className="margin-top-05">Sofia 2 SARS Antigen FIA</p>
           <h2 className="font-heading-sm">Notes</h2>
-          <p>Please self-isolate at home. You can be around others after:</p>
-          <ul>
-            <li>
-              10 days since symptoms first appeared <b>and</b>
-            </li>
-            <li>
-              24 hours with no fever without the use of fever-reducing
-              medications <b>and</b>
-            </li>
-            <li>Other symptoms of COVID-19 are improving*</li>
-          </ul>
-          <p>
-            *Loss of taste and smell may persist for weeks or months after
-            recovery and need not delay the end of isolation​
-          </p>
-          <p>
-            Most people do not require testing to decide when they can be around
-            others; however, if your healthcare provider recommends testing,
-            they will let you know when you can resume being around others based
-            on your test results.
-          </p>
-          <p>
-            Note that these recommendations <b>do not</b> apply to persons with
-            severe COVID-19 or with severely weakened immune systems
-            (immunocompromised).
-          </p>
-          <p>
-            For further guidance, please consult the{" "}
-            <a href="https://www.cdc.gov/">
-              Centers for Disease Control and Prevention (CDC)
-            </a>{" "}
-            website or contact your local health department.
-          </p>
+          {testIsPositive ? (
+            <>
+              <p>
+                Please self-isolate at home. You can be around others after:
+              </p>
+              <ul>
+                <li>
+                  10 days since symptoms first appeared <b>and</b>
+                </li>
+                <li>
+                  24 hours with no fever without the use of fever-reducing
+                  medications <b>and</b>
+                </li>
+                <li>Other symptoms of COVID-19 are improving*</li>
+              </ul>
+              <p>
+                *Loss of taste and smell may persist for weeks or months after
+                recovery and need not delay the end of isolation​
+              </p>
+              <p>
+                Most people do not require testing to decide when they can be
+                around others; however, if your healthcare provider recommends
+                testing, they will let you know when you can resume being around
+                others based on your test results.
+              </p>
+              <p>
+                Note that these recommendations <b>do not</b> apply to persons
+                with severe COVID-19 or with severely weakened immune systems
+                (immunocompromised).
+              </p>
+              <p>
+                For further guidance, please consult the{" "}
+                <a href="https://www.cdc.gov/">
+                  Centers for Disease Control and Prevention (CDC)
+                </a>{" "}
+                website or contact your local health department.
+              </p>
+            </>
+          ) : (
+            <>
+              <p>
+                Antigen tests can return inaccurate or false results and follow
+                up testing may be needed. Continue social distancing and wearing
+                a mask. Contact your healthcare provider to determine if
+                additional testing is needed especially if you experience any of
+                these COVID-19 symptoms:
+              </p>
+              <ul>
+                <li>Fever or chills</li>
+                <li>Cough</li>
+                <li>Shortness of breath or difficulty breathing</li>
+                <li>Fatigue</li>
+                <li>Muscle or body aches</li>
+                <li>Headache</li>
+                <li>New loss of taste or smell</li>
+                <li>Sore throat</li>
+                <li>Congestion or runny nose</li>
+                <li>Nausea or vomiting</li>
+                <li>Diarrhea</li>
+              </ul>
+              <p>
+                For further guidance, please consult the{" "}
+                <a href="https://www.cdc.gov/">
+                  Centers for Disease Control and Prevention (CDC)
+                </a>{" "}
+                website or contact your local health department
+              </p>
+            </>
+          )}
         </div>
       </div>
     </main>
