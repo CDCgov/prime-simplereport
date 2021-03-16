@@ -28,14 +28,37 @@ const TestResult = () => {
           <h2 className="font-heading-sm">Notes</h2>
           <p>Please self-isolate at home. You can be around others after:</p>
           <ul>
-            <li>10 days since symptoms first appeared <b>and</b></li>
-            <li>24 hours with no fever without the use of fever-reducing medications <b>and</b></li>
+            <li>
+              10 days since symptoms first appeared <b>and</b>
+            </li>
+            <li>
+              24 hours with no fever without the use of fever-reducing
+              medications <b>and</b>
+            </li>
             <li>Other symptoms of COVID-19 are improving*</li>
           </ul>
-          <p>*Loss of taste and smell may persist for weeks or months after recovery and need not delay the end of isolation​</p>
-          <p>Most people do not require testing to decide when they can be around others; however, if your healthcare provider recommends testing, they will let you know when you can resume being around others based on your test results.</p>
-          <p>Note that these recommendations <b>do not</b> apply to persons with severe COVID-19 or with severely weakened immune systems (immunocompromised).</p>
-          <p>For further guidance, please consult the <a href="https://www.cdc.gov/">Centers for Disease Control and Prevention (CDC)</a> website or contact your local health department.</p>
+          <p>
+            *Loss of taste and smell may persist for weeks or months after
+            recovery and need not delay the end of isolation​
+          </p>
+          <p>
+            Most people do not require testing to decide when they can be around
+            others; however, if your healthcare provider recommends testing,
+            they will let you know when you can resume being around others based
+            on your test results.
+          </p>
+          <p>
+            Note that these recommendations <b>do not</b> apply to persons with
+            severe COVID-19 or with severely weakened immune systems
+            (immunocompromised).
+          </p>
+          <p>
+            For further guidance, please consult the{" "}
+            <a href="https://www.cdc.gov/">
+              Centers for Disease Control and Prevention (CDC)
+            </a>{" "}
+            website or contact your local health department.
+          </p>
         </div>
       </div>
     </main>
