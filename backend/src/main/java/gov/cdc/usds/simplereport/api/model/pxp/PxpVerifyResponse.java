@@ -135,4 +135,8 @@ class PxpTestEventWrapper {
   public TestResult getResult() {
     return te.getResult();
   }
+
+  public String getDeviceType() {
+    return te.getTestOrder().getDeviceSpecimen().getDeviceType().getModel();
+  }
 }

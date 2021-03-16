@@ -8,6 +8,8 @@ const TestResult = () => {
   const testResult: string = patient.lastTest.result;
   const testResultColor: string =
     testResult === "POSITIVE" ? "text-secondary" : "text-green";
+  const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
+  const deviceType = patient.lastTest.deviceType;
 
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
@@ -20,16 +22,16 @@ const TestResult = () => {
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
               <p className={"margin-top-05 text-bold " + testResultColor}>
-                {patient.lastTest.result}
+                {testResult}
               </p>
             </div>
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test date</h2>
-              <p className="margin-top-05">{patient.lastTest.dateTested}</p>
+              <p className="margin-top-05">{dateTested}</p>
             </div>
           </div>
           <h2 className="font-heading-sm">Test device</h2>
-          <p className="margin-top-05">Sofia 2 SARS Antigen FIA</p>
+          <p className="margin-top-05">{deviceType}</p>
           <h2 className="font-heading-sm">Notes</h2>
           <p>Please self-isolate at home. You can be around others after:</p>
           <ul>
