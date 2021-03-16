@@ -8,6 +8,7 @@ const SET_PATIENT = "SET_PATIENT";
 // this should be the default value for a brand new org
 // TODO: get the fields from a schema or something; hard-coded fields are hard to maintain
 const initialState = {
+  dataLoaded: false,
   organization: {
     name: "",
   },
@@ -102,3 +103,5 @@ const configureStore = () => {
 };
 
 export const store = configureStore();
+
+export type RootState = ReturnType<typeof store.getState>;

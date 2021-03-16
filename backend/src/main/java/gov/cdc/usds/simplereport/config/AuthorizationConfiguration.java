@@ -30,13 +30,25 @@ public class AuthorizationConfiguration {
           + AUTHORIZER_BEAN
           + ".userHasPermission("
           + "T(gov.cdc.usds.simplereport.config.authorization.UserPermission).";
+
+  private static final String SPEL_IS_SITE_ADMIN =
+      "@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()";
+
+  private static final String SPEL_IS_NOT_SELF = "@" + AUTHORIZER_BEAN + ".userIsNotSelf(#userId)";
+
+  private static final String SPEL_IS_IN_SAME_ORG =
+      "@" + AUTHORIZER_BEAN + ".userIsInSameOrg(#userId)";
+
+  private static final String SPEL_CAN_MANAGE_USER =
+      "(" + SPEL_HAS_PERMISSION + "MANAGE_USERS" + ") && " + SPEL_IS_IN_SAME_ORG + ")";
+
   /**
    * Apply this annotation if the method should only be called by site-wide administrative users
    * ("superusers").
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize("@" + AUTHORIZER_BEAN + ".userHasSiteAdminRole()")
+  @PreAuthorize(SPEL_IS_SITE_ADMIN)
   public @interface RequireGlobalAdminUser {}
 
   /**
@@ -46,20 +58,21 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
+  @PreAuthorize(SPEL_IS_SITE_ADMIN + " || " + SPEL_CAN_MANAGE_USER)
+  public @interface RequirePermissionManageTargetUser {}
+
+  /**
+   * Require the current user to to be one of the administrative users ("superusers") or have the
+   * {@link UserPermission#MANAGE_USERS} permission for the organization containing user with UUID
+   * {@code userId}; and require the user to not be the user they are operating on.
+   *
+   * <p>NOTE: any method with this annotation must have a parameter {@code userId}.
+   */
+  @Retention(RUNTIME)
+  @Target(METHOD)
   @PreAuthorize(
-      "( @"
-          + AUTHORIZER_BEAN
-          + ".userHasSiteAdminRole() || "
-          + "("
-          + SPEL_HAS_PERMISSION
-          + "MANAGE_USERS"
-          + ")"
-          + " && "
-          + "@"
-          + AUTHORIZER_BEAN
-          + ".userIsInSameOrg(#userId)"
-          + ") )")
-  public @interface RequireGlobalAdminUserOrPermissionManageTargetUser {}
+      SPEL_IS_NOT_SELF + " && " + "(" + SPEL_IS_SITE_ADMIN + " || " + SPEL_CAN_MANAGE_USER + ")")
+  public @interface RequirePermissionManageTargetUserNotSelf {}
 
   /** Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission. */
   @Retention(RUNTIME)

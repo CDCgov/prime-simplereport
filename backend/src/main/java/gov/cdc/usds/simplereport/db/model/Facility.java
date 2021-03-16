@@ -35,7 +35,7 @@ public class Facility extends OrganizationScopedEternalEntity {
   @JoinColumn(name = "ordering_provider_id", nullable = false)
   private Provider orderingProvider;
 
-  @ManyToOne(optional = true)
+  @ManyToOne(optional = true, fetch = FetchType.LAZY)
   @JoinColumn(name = "default_device_specimen_type_id")
   private DeviceSpecimenType defaultDeviceSpecimen;
 

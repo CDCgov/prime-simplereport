@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import ManageDevices from "../../Settings/Facility/Components/ManageDevices";
 import OrderingProviderSettings from "../../Settings/Facility/Components/OrderingProvider";
 import FacilityInformation from "../../Settings/Facility/Components/FacilityInformation";
+import {
+  allFacilityErrors,
+  FacilityErrors,
+  facilitySchema,
+} from "../../Settings/Facility/facilitySchema";
 
 import OrganizationInformation from "./OrganizationInformation";
 
@@ -60,6 +65,32 @@ const OrganizationForm: React.FC<Props> = (props) => {
     });
   };
 
+  const [errors, setErrors] = useState<FacilityErrors>({});
+
+  const clearError = useCallback(
+    (field: keyof FacilityErrors) => {
+      if (errors[field]) {
+        setErrors({ ...errors, [field]: undefined });
+      }
+    },
+    [errors]
+  );
+
+  const validateField = useCallback(
+    async (field: keyof FacilityErrors) => {
+      try {
+        clearError(field);
+        await facilitySchema.validateAt(field, facility);
+      } catch (e) {
+        setErrors((errors) => ({
+          ...errors,
+          [field]: allFacilityErrors[field],
+        }));
+      }
+    },
+    [facility, clearError]
+  );
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -95,6 +126,8 @@ const OrganizationForm: React.FC<Props> = (props) => {
               <FacilityInformation
                 facility={facility}
                 updateFacility={updateFacility}
+                errors={errors}
+                validateField={validateField}
               />
             </div>
           </div>
@@ -108,6 +141,8 @@ const OrganizationForm: React.FC<Props> = (props) => {
             updateDeviceTypes={updateDeviceTypes}
             updateDefaultDevice={updateDefaultDevice}
             deviceOptions={props.deviceOptions}
+            errors={errors}
+            validateField={validateField}
           />
         </div>
       </div>

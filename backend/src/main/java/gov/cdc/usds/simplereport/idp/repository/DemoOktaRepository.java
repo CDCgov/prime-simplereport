@@ -4,19 +4,18 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,111 +29,81 @@ public class DemoOktaRepository implements OktaRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(DemoOktaRepository.class);
 
-  DemoUserConfiguration demoUsers;
   Map<String, OrganizationRoleClaims> usernameOrgRolesMap;
-  Map<String, Map<OrganizationRole, List<String>>> orgRoleUsernamesMap;
+  Map<String, Set<String>> orgUsernamesMap;
+  Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
 
-  public DemoOktaRepository(DemoUserConfiguration demoUsers) {
-    this.demoUsers = demoUsers;
+  public DemoOktaRepository() {
     this.usernameOrgRolesMap = new HashMap<>();
-    this.orgRoleUsernamesMap = new HashMap<>();
+    this.orgUsernamesMap = new HashMap<>();
+    this.orgFacilitiesMap = new HashMap<>();
     this.inactiveUsernames = new HashSet<>();
 
-    reset();
-
-    LOG.info("Done initializing Demo Okta service.");
+    LOG.info("Done initializing Demo Okta repository.");
   }
 
-  private void initDemoUser(DemoUser demoUser) {
-    IdentityAttributes user = demoUser.getIdentity();
-    String username = user.getUsername();
-    OrganizationRoleClaims authorization = demoUser.getAuthorization();
-    if (authorization == null) {
-      LOG.warn("User {} has no authorization information configured", username);
-      return;
-    }
-    String orgExternalId = authorization.getOrganizationExternalId();
-    Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault());
-    roles.addAll(authorization.getGrantedRoles());
-    OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(orgExternalId, roles);
-
-    usernameOrgRolesMap.put(username, orgRoles);
-
-    Map<OrganizationRole, List<String>> roleUsernamesMap =
-        orgRoleUsernamesMap.getOrDefault(orgExternalId, new HashMap<>());
-    for (OrganizationRole role : roles) {
-      List<String> usernames = roleUsernamesMap.getOrDefault(role, new ArrayList<>());
-      usernames.add(username);
-      roleUsernamesMap.put(role, usernames);
-    }
-
-    orgRoleUsernamesMap.put(orgExternalId, roleUsernamesMap);
-  }
-
-  // Does not overwrite demo users who were created on initialization
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, OrganizationRole role) {
+      IdentityAttributes userIdentity,
+      Organization org,
+      Set<Facility> facilities,
+      Set<OrganizationRole> roles) {
     String organizationExternalId = org.getExternalId();
-    Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
-    OrganizationRoleClaims orgRoles = new OrganizationRoleClaims(organizationExternalId, roles);
-    usernameOrgRolesMap.putIfAbsent(userIdentity.getUsername(), orgRoles);
-    Map<OrganizationRole, List<String>> roleUsernamesMap =
-        orgRoleUsernamesMap.get(organizationExternalId);
-    for (OrganizationRole r : roles) {
-      List<String> usernames = roleUsernamesMap.get(r);
-      if (!usernames.contains(userIdentity.getUsername())) {
-        usernames.add(userIdentity.getUsername());
-      }
-    }
-
-    return Optional.of(orgRoles);
-  }
-
-  public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity) {
-    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(oldUsername);
-    usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
-    if (!oldUsername.equals(userIdentity.getUsername())) {
-      usernameOrgRolesMap.remove(oldUsername);
-    }
-
-    for (String org : orgRoleUsernamesMap.keySet()) {
-      Map<OrganizationRole, List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(org);
-      for (OrganizationRole role : roleUsernamesMap.keySet()) {
-        List<String> usernames = roleUsernamesMap.get(role);
-        if (usernames.remove(oldUsername)) {
-          usernames.add(userIdentity.getUsername());
-        }
-      }
-    }
-
-    return Optional.of(orgRoles);
-  }
-
-  public Optional<OrganizationRoleClaims> updateUserRole(
-      String username, Organization org, OrganizationRole role) {
-    OrganizationRoleClaims oldRoleClaims = usernameOrgRolesMap.get(username);
-    String orgId = org.getExternalId();
-    if (!oldRoleClaims.getOrganizationExternalId().equals(orgId)) {
+    Set<OrganizationRole> rolesToCreate = EnumSet.of(OrganizationRole.getDefault());
+    rolesToCreate.addAll(roles);
+    Set<UUID> facilityUUIDs =
+        PermissionHolder.grantsAllFacilityAccess(rolesToCreate)
+            // create an empty set of facilities if user can access all facilities anyway
+            ? Set.of()
+            : facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
+    if (!orgFacilitiesMap.containsKey(organizationExternalId)) {
       throw new IllegalGraphqlArgumentException(
-          "Cannot update user role for organization they are not in.");
+          "Cannot add Okta user to nonexistent organization=" + organizationExternalId);
+    } else if (!orgFacilitiesMap.get(organizationExternalId).containsAll(facilityUUIDs)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot add Okta user to one or more nonexistent facilities in facilities_set="
+              + facilities.stream().map(f -> f.getFacilityName()).collect(Collectors.toSet())
+              + " in organization="
+              + organizationExternalId);
     }
-    Set<OrganizationRole> roles = EnumSet.of(OrganizationRole.getDefault(), role);
-    OrganizationRoleClaims newRoleClaims = new OrganizationRoleClaims(orgId, roles);
-    usernameOrgRolesMap.put(username, newRoleClaims);
 
-    Map<OrganizationRole, List<String>> roleUsernamesMap = orgRoleUsernamesMap.get(orgId);
-    for (OrganizationRole r : roleUsernamesMap.keySet()) {
-      List<String> usernames = roleUsernamesMap.get(r);
-      if (r == role) {
-        if (!usernames.contains(username)) {
-          usernames.add(username);
-        }
-      } else if (r != OrganizationRole.getDefault()) {
-        usernames.remove(username);
-      }
+    OrganizationRoleClaims orgRoles =
+        new OrganizationRoleClaims(organizationExternalId, facilityUUIDs, rolesToCreate);
+    usernameOrgRolesMap.put(userIdentity.getUsername(), orgRoles);
+
+    orgUsernamesMap.get(organizationExternalId).add(userIdentity.getUsername());
+
+    return Optional.of(orgRoles);
+  }
+
+  // this method doesn't do much in a demo envt since a user's username doesn't change
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {
+    OrganizationRoleClaims orgRoles = usernameOrgRolesMap.get(userIdentity.getUsername());
+    return Optional.of(orgRoles);
+  }
+
+  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+      String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles) {
+    String orgId = org.getExternalId();
+    if (!orgUsernamesMap.containsKey(orgId)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot update Okta user privileges for nonexistent organization.");
     }
+    if (!orgUsernamesMap.get(orgId).contains(username)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot update Okta user privileges for organization they are not in.");
+    }
+    Set<OrganizationRole> newRoles = EnumSet.of(OrganizationRole.getDefault());
+    newRoles.addAll(roles);
+    Set<UUID> facilityUUIDs =
+        facilities.stream()
+            // create an empty set of facilities if user can access all facilities anyway
+            .filter(f -> !PermissionHolder.grantsAllFacilityAccess(newRoles))
+            .map(f -> f.getInternalId())
+            .collect(Collectors.toSet());
+    OrganizationRoleClaims newRoleClaims =
+        new OrganizationRoleClaims(orgId, facilityUUIDs, newRoles);
+    usernameOrgRolesMap.put(username, newRoleClaims);
 
     return Optional.of(newRoleClaims);
   }
@@ -147,29 +116,67 @@ public class DemoOktaRepository implements OktaRepository {
     }
   }
 
-  public Set<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role) {
-    return orgRoleUsernamesMap
-        .getOrDefault(org.getExternalId(), new HashMap<>())
-        .getOrDefault(role, List.of())
-        .stream()
+  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org) {
+    if (!orgUsernamesMap.containsKey(org.getExternalId())) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot get Okta users from nonexistent organization.");
+    }
+    return orgUsernamesMap.get(org.getExternalId()).stream()
         .filter(u -> !inactiveUsernames.contains(u))
-        .collect(Collectors.toSet());
+        .collect(Collectors.toMap(u -> u, u -> usernameOrgRolesMap.get(u)));
   }
 
-  public void createOrganization(String name, String externalId) {
-    Map<OrganizationRole, List<String>> roleUsernamesMap =
-        Arrays.asList(OrganizationRole.values()).stream()
-            .collect(Collectors.toMap(r -> r, r -> new ArrayList<>()));
-    orgRoleUsernamesMap.putIfAbsent(externalId, roleUsernamesMap);
+  // this method doesn't mean much in a demo env
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration) {
+    String externalId = org.getExternalId();
+    orgUsernamesMap.putIfAbsent(externalId, new HashSet<>());
+    orgFacilitiesMap.putIfAbsent(externalId, new HashSet<>());
+    facilities.forEach(this::createFacility);
   }
 
-  public void deleteOrganization(String externalId) {
-    orgRoleUsernamesMap.remove(externalId);
+  public void createFacility(Facility facility) {
+    String orgExternalId = facility.getOrganization().getExternalId();
+    if (!orgFacilitiesMap.containsKey(orgExternalId)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot create Okta facility in nonexistent organization.");
+    }
+    orgFacilitiesMap.get(orgExternalId).add(facility.getInternalId());
+  }
+
+  public void deleteOrganization(Organization org) {
+    String externalId = org.getExternalId();
+    orgUsernamesMap.remove(externalId);
+    orgFacilitiesMap.remove(externalId);
     // remove all users from this map whose org roles are in the deleted org
     usernameOrgRolesMap =
         usernameOrgRolesMap.entrySet().stream()
             .filter(e -> !(e.getValue().getOrganizationExternalId().equals(externalId)))
             .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+  }
+
+  public void deleteFacility(Facility facility) {
+    String orgExternalId = facility.getOrganization().getExternalId();
+    if (!orgFacilitiesMap.containsKey(orgExternalId)) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot delete Okta facility from nonexistent organization.");
+    }
+    orgFacilitiesMap.get(orgExternalId).remove(facility.getInternalId());
+    // remove this facility from every user's OrganizationRoleClaims, as necessary
+    usernameOrgRolesMap =
+        usernameOrgRolesMap.entrySet().stream()
+            .collect(
+                Collectors.toMap(
+                    e -> e.getKey(),
+                    e -> {
+                      OrganizationRoleClaims oldRoleClaims = e.getValue();
+                      Set<UUID> newFacilities =
+                          oldRoleClaims.getFacilities().stream()
+                              .filter(f -> !f.equals(facility.getInternalId()))
+                              .collect(Collectors.toSet());
+                      return new OrganizationRoleClaims(
+                          orgExternalId, newFacilities, oldRoleClaims.getGrantedRoles());
+                    }));
   }
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
@@ -182,11 +189,8 @@ public class DemoOktaRepository implements OktaRepository {
 
   public void reset() {
     usernameOrgRolesMap.clear();
-    orgRoleUsernamesMap.clear();
+    orgUsernamesMap.clear();
+    orgFacilitiesMap.clear();
     inactiveUsernames.clear();
-
-    for (DemoUser altUser : demoUsers.getAllUsers()) {
-      initDemoUser(altUser);
-    }
   }
 }

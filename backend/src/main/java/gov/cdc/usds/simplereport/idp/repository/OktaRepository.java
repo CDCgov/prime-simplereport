@@ -2,8 +2,11 @@ package gov.cdc.usds.simplereport.idp.repository;
 
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,21 +18,32 @@ import java.util.Set;
 public interface OktaRepository {
 
   public Optional<OrganizationRoleClaims> createUser(
-      IdentityAttributes userIdentity, Organization org, OrganizationRole role);
+      IdentityAttributes userIdentity,
+      Organization org,
+      Set<Facility> facilities,
+      Set<OrganizationRole> roles);
 
-  public Optional<OrganizationRoleClaims> updateUser(
-      String oldUsername, IdentityAttributes userIdentity);
+  public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity);
 
-  public Optional<OrganizationRoleClaims> updateUserRole(
-      String username, Organization org, OrganizationRole role);
+  public Optional<OrganizationRoleClaims> updateUserPrivileges(
+      String username, Organization org, Set<Facility> facilities, Set<OrganizationRole> roles);
 
   public void setUserIsActive(String username, Boolean active);
 
-  public Set<String> getAllUsernamesForOrganization(Organization org, OrganizationRole role);
+  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org);
 
-  public void createOrganization(String name, String externalId);
+  public void createOrganization(
+      Organization org, Collection<Facility> facilities, boolean migration);
 
-  public void deleteOrganization(String externalId);
+  public default void createOrganization(Organization org) {
+    createOrganization(org, Set.of(), false);
+  }
+
+  public void createFacility(Facility facility);
+
+  public void deleteOrganization(Organization org);
+
+  public void deleteFacility(Facility facility);
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
 }

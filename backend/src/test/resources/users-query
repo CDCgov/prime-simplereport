@@ -5,10 +5,16 @@
     lastName
     suffix
     email
+    role
+    roles
     permissions
     organization {
       name
       externalId
+      testingFacility {
+        name
+        id
+      }
     }
   }
 }
