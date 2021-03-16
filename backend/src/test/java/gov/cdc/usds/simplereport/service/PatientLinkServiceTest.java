@@ -65,7 +65,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    PatientLink result = _service.getPatientLink(to.getPatientLink().getInternalId().toString());
+    PatientLink result = _service.getPatientLink(to.getPatientLink().getInternalId());
     assertEquals(result.getInternalId(), to.getPatientLink().getInternalId());
   }
 
@@ -105,7 +105,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    Person patient = _service.getPatientFromLink(to.getPatientLink().getInternalId().toString());
+    Person patient = _service.getPatientFromLink(to.getPatientLink().getInternalId());
     assertEquals(patient.getInternalId(), p.getInternalId());
   }
 
@@ -145,7 +145,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId().toString());
+    PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId());
     assertNotNull(pl.getRefreshedAt());
   }
 }
