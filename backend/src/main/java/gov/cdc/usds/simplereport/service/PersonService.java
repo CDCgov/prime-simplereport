@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -69,8 +67,8 @@ public class PersonService {
         facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
     return (root, query, cb) ->
         cb.or(
-          cb.isNull(root.get(SpecField.FACILITY)),
-          cb.isTrue(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID).in(facilityUUIDs)));
+            cb.isNull(root.get(SpecField.FACILITY)),
+            cb.isTrue(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID).in(facilityUUIDs)));
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.

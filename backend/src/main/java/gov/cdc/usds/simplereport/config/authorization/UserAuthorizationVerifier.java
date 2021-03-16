@@ -141,8 +141,8 @@ public class UserAuthorizationVerifier {
       return false;
     } else {
       Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
-      return testEvent.isPresent() &&
-          currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
+      return testEvent.isPresent()
+          && currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
     }
   }
 
@@ -159,8 +159,8 @@ public class UserAuthorizationVerifier {
       return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    return currentOrgRoles.isPresent() &&
-        currentOrgRoles.get().containsFacility(testOrder.getFacility());
+    return currentOrgRoles.isPresent()
+        && currentOrgRoles.get().containsFacility(testOrder.getFacility());
   }
 
   public boolean userCanViewTestOrderOfPatient(UUID patientId) {
@@ -187,8 +187,7 @@ public class UserAuthorizationVerifier {
       return false;
     } else {
       Optional<Facility> facility = _facilityRepo.findById(facilityId);
-      return facility.isPresent() &&
-          currentOrgRoles.get().containsFacility(facility.get());
+      return facility.isPresent() && currentOrgRoles.get().containsFacility(facility.get());
     }
   }
 
@@ -208,8 +207,8 @@ public class UserAuthorizationVerifier {
     } else if (patient.getFacility() == null) {
       return true;
     } else {
-      return currentOrgRoles.isPresent() &&
-          currentOrgRoles.get().containsFacility(patient.getFacility());
+      return currentOrgRoles.isPresent()
+          && currentOrgRoles.get().containsFacility(patient.getFacility());
     }
   }
 
@@ -231,8 +230,8 @@ public class UserAuthorizationVerifier {
       return false;
     } else {
       Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
-      return patientLink.isPresent() &&
-          currentOrgRoles.get().containsFacility(patientLink.get().getTestOrder().getFacility());
+      return patientLink.isPresent()
+          && currentOrgRoles.get().containsFacility(patientLink.get().getTestOrder().getFacility());
     }
   }
 

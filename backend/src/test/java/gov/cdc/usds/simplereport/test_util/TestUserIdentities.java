@@ -5,9 +5,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -66,8 +64,8 @@ public class TestUserIdentities {
   }
 
   /**
-   * Sets the desired collection of facility authorities in the user's security context,
-   * overwriting any previously set individual facility authorities
+   * Sets the desired collection of facility authorities in the user's security context, overwriting
+   * any previously set individual facility authorities
    *
    * @param facilities list of facilities for which the user will be given an authority
    */
@@ -77,7 +75,8 @@ public class TestUserIdentities {
     List<GrantedAuthority> authorities = new ArrayList<>();
     authorities.addAll((Collection<GrantedAuthority>) auth.getAuthorities());
     // remove all individual facility authorities then add the desired ones
-    authorities.removeIf(a -> a.getAuthority().contains(OrganizationExtractor.FACILITY_ACCESS_MARKER));
+    authorities.removeIf(
+        a -> a.getAuthority().contains(OrganizationExtractor.FACILITY_ACCESS_MARKER));
     for (Facility f : facilities) {
       authorities.add(new SimpleGrantedAuthority(convertFacilityToAuthority(f)));
     }
@@ -86,7 +85,8 @@ public class TestUserIdentities {
   }
 
   private static String convertFacilityToAuthority(Facility f) {
-    return String.format("%s%s:%s:%s", 
+    return String.format(
+        "%s%s:%s:%s",
         TEST_ROLE_PREFIX,
         f.getOrganization().getExternalId(),
         OrganizationExtractor.FACILITY_ACCESS_MARKER,
