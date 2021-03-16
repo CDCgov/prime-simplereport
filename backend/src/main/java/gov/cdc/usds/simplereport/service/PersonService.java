@@ -15,6 +15,8 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import javax.persistence.criteria.Predicate;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
@@ -63,17 +65,12 @@ public class PersonService {
 
   private Specification<Person> inAccessibleFacilitiesFilter() {
     Set<Facility> facilities = _os.getAccessibleFacilities();
-    return (root, query, cb) -> {
-      Predicate filter = cb.isNull(root.get(SpecField.FACILITY));
-      for (Facility f : facilities) {
-        filter =
-            cb.or(
-                filter,
-                cb.equal(
-                    root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID), f.getInternalId()));
-      }
-      return cb.and(filter);
-    };
+    Set<UUID> facilityUUIDs =
+        facilities.stream().map(Facility::getInternalId).collect(Collectors.toSet());
+    return (root, query, cb) ->
+        cb.or(
+          cb.isNull(root.get(SpecField.FACILITY)),
+          cb.isTrue(root.get(SpecField.FACILITY).get(SpecField.INTERNAL_ID).in(facilityUUIDs)));
   }
 
   // Note: Patients with NULL facilityIds appear in ALL facilities.

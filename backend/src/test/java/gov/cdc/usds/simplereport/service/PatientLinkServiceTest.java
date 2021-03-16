@@ -36,7 +36,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
 
-    TestUserIdentities.addFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities(facility);
     TestOrder to =
         _testOrderService.addPatientToQueue(
             facility.getInternalId(),
@@ -49,7 +49,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    TestUserIdentities.removeFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities();
 
     Organization organization =
         _service.getPatientLinkCurrent(to.getPatientLink().getInternalId().toString());
@@ -62,7 +62,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
 
-    TestUserIdentities.addFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities(facility);
     TestOrder to =
         _testOrderService.addPatientToQueue(
             facility.getInternalId(),
@@ -75,7 +75,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             TestResult.POSITIVE,
             LocalDate.of(1865, 12, 25),
             false);
-    TestUserIdentities.removeFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities();
 
     Person patient = _service.getPatientFromLink(to.getPatientLink().getInternalId().toString());
     assertEquals(patient.getInternalId(), p.getInternalId());
@@ -87,7 +87,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
 
-    TestUserIdentities.addFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities(facility);
     TestOrder to =
         _testOrderService.addPatientToQueue(
             facility.getInternalId(),
@@ -104,7 +104,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
     PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId().toString());
     assertNotNull(pl.getRefreshedAt());
 
-    TestUserIdentities.removeFacilityAuthorities(facility);
+    TestUserIdentities.setFacilityAuthorities();
     assertThrows(
         AccessDeniedException.class,
         () -> _service.refreshPatientLink(to.getPatientLink().getInternalId().toString()));

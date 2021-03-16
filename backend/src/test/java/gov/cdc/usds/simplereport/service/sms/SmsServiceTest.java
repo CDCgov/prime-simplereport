@@ -91,7 +91,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
         () -> _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"));
 
     // GIVEN
-    TestUserIdentities.addFacilityAuthorities(_site);
+    TestUserIdentities.setFacilityAuthorities(_site);
 
     // WHEN + THEN (confirm there is no exception thrown)
     _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");

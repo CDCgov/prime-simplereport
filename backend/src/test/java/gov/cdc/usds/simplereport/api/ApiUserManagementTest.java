@@ -1000,7 +1000,7 @@ class ApiUserManagementTest extends BaseApiTest {
   }
 
   // map from each facility's name to its UUID; includes all facilities user can access
-  protected Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
+  private Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
     Iterator<JsonNode> facilitiesIter = user.get("organization").get("testingFacility").elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
@@ -1010,7 +1010,7 @@ class ApiUserManagementTest extends BaseApiTest {
     return facilities;
   }
 
-  protected Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
+  private Set<UUID> extractFacilityUuidsFromUser(ObjectNode user, Set<String> facilityNames) {
     Map<String, UUID> facilities = extractFacilitiesFromUser(user);
     return facilityNames.stream().map(facilities::get).collect(Collectors.toSet());
   }

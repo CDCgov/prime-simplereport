@@ -30,11 +30,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Authorization translation bean: looks at the current user and tells you what things they can do.
  */
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
+@Transactional(readOnly = true)
 public class UserAuthorizationVerifier {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserAuthorizationVerifier.class);
@@ -132,33 +134,21 @@ public class UserAuthorizationVerifier {
 
   public boolean userCanViewTestEvent(UUID testEventId) {
     if (testEventId == null) {
-      return false;
+      return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
       return false;
     } else {
       Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
-      if (testEvent.isEmpty()) {
-        return false;
-      } else if (!currentOrgRoles
-          .get()
-          .getOrganization()
-          .getInternalId()
-          .equals(testEvent.get().getOrganization().getInternalId())) {
-        return false;
-      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        return true;
-      } else {
-        return currentOrgRoles.get().getFacilities().stream()
-            .anyMatch(f -> f.getInternalId().equals(testEvent.get().getFacility().getInternalId()));
-      }
+      return testEvent.isPresent() &&
+          currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
     }
   }
 
   public boolean userCanViewTestOrder(UUID testOrderId) {
     if (testOrderId == null) {
-      return false;
+      return true;
     }
     Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
     return testOrder.isPresent() && userCanViewTestOrder(testOrder.get());
@@ -166,28 +156,16 @@ public class UserAuthorizationVerifier {
 
   public boolean userCanViewTestOrder(TestOrder testOrder) {
     if (testOrder == null) {
-      return false;
+      return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    if (currentOrgRoles.isEmpty()) {
-      return false;
-    } else if (!currentOrgRoles
-        .get()
-        .getOrganization()
-        .getInternalId()
-        .equals(testOrder.getOrganization().getInternalId())) {
-      return false;
-    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-      return true;
-    } else {
-      return currentOrgRoles.get().getFacilities().stream()
-          .anyMatch(f -> f.getInternalId().equals(testOrder.getFacility().getInternalId()));
-    }
+    return currentOrgRoles.isPresent() &&
+        currentOrgRoles.get().containsFacility(testOrder.getFacility());
   }
 
   public boolean userCanViewTestOrderOfPatient(UUID patientId) {
     if (patientId == null) {
-      return false;
+      return true;
     } else if (!userCanViewPatient(patientId)) {
       return false;
     }
@@ -209,26 +187,14 @@ public class UserAuthorizationVerifier {
       return false;
     } else {
       Optional<Facility> facility = _facilityRepo.findById(facilityId);
-      if (facility.isEmpty()) {
-        return false;
-      } else if (!currentOrgRoles
-          .get()
-          .getOrganization()
-          .getInternalId()
-          .equals(facility.get().getOrganization().getInternalId())) {
-        return false;
-      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        return true;
-      } else {
-        return currentOrgRoles.get().getFacilities().stream()
-            .anyMatch(f -> f.getInternalId().equals(facility.get().getInternalId()));
-      }
+      return facility.isPresent() &&
+          currentOrgRoles.get().containsFacility(facility.get());
     }
   }
 
   public boolean userCanViewPatient(Person patient) {
     if (patient == null) {
-      return false;
+      return true;
     }
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
@@ -239,19 +205,17 @@ public class UserAuthorizationVerifier {
         .getInternalId()
         .equals(patient.getOrganization().getInternalId())) {
       return false;
-    } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-      return true;
     } else if (patient.getFacility() == null) {
       return true;
     } else {
-      return currentOrgRoles.get().getFacilities().stream()
-          .anyMatch(f -> f.getInternalId().equals(patient.getFacility().getInternalId()));
+      return currentOrgRoles.isPresent() &&
+          currentOrgRoles.get().containsFacility(patient.getFacility());
     }
   }
 
   public boolean userCanViewPatient(UUID patientId) {
     if (patientId == null) {
-      return false;
+      return true;
     }
     Optional<Person> patient = _personRepo.findById(patientId);
     return patient.isPresent() && userCanViewPatient(patient.get());
@@ -259,7 +223,7 @@ public class UserAuthorizationVerifier {
 
   public boolean userCanAccessPatientLink(String patientLinkId) {
     if (patientLinkId == null) {
-      return false;
+      return true;
     }
     UUID patientLinkUuid = UUID.fromString(patientLinkId);
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
@@ -267,23 +231,8 @@ public class UserAuthorizationVerifier {
       return false;
     } else {
       Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
-      if (patientLink.isEmpty()) {
-        return false;
-      } else if (!currentOrgRoles
-          .get()
-          .getOrganization()
-          .getInternalId()
-          .equals(patientLink.get().getTestOrder().getOrganization().getInternalId())) {
-        return false;
-      } else if (currentOrgRoles.get().grantsAllFacilityAccess()) {
-        return true;
-      } else {
-        return currentOrgRoles.get().getFacilities().stream()
-            .anyMatch(
-                f ->
-                    f.getInternalId()
-                        .equals(patientLink.get().getTestOrder().getFacility().getInternalId()));
-      }
+      return patientLink.isPresent() &&
+          currentOrgRoles.get().containsFacility(patientLink.get().getTestOrder().getFacility());
     }
   }
 

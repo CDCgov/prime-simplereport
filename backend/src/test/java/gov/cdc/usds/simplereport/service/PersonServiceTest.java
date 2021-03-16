@@ -171,7 +171,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 false,
                 false));
 
-    TestUserIdentities.addFacilityAuthorities(fac);
+    TestUserIdentities.setFacilityAuthorities(fac);
     _service.addPatient(
         facilityId,
         null,
@@ -221,7 +221,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
 
-    TestUserIdentities.addFacilityAuthorities(fac);
+    TestUserIdentities.setFacilityAuthorities(fac);
     Person p =
         _service.addPatient(
             facilityId,
@@ -240,11 +240,11 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             false,
             false);
-    TestUserIdentities.removeFacilityAuthorities(fac);
+    TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
 
-    TestUserIdentities.addFacilityAuthorities(fac);
+    TestUserIdentities.setFacilityAuthorities(fac);
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
         0, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());
@@ -285,7 +285,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
   void accessArchivedPatient_standardUser_error() {
     Facility fac = _dataFactory.createValidFacility(_orgService.getCurrentOrganization());
     UUID facilityId = fac.getInternalId();
-    TestUserIdentities.addFacilityAuthorities(fac);
+    TestUserIdentities.setFacilityAuthorities(fac);
 
     assertSecurityError(
         () -> _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
@@ -488,7 +488,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     // since the caller isn't yet authorized to access site1 or site2
     assertEquals(0, _service.getPatientsCount(null, false, "ma"));
 
-    TestUserIdentities.addFacilityAuthorities(_site2);
+    TestUserIdentities.setFacilityAuthorities(_site2);
 
     // counts for name filtering
     assertEquals(3, _service.getPatientsCount(site2Id, false, "ma"));
@@ -500,7 +500,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     // facility==null, since the caller isn't yet authorized to access site1
     assertEquals(3, _service.getPatientsCount(null, false, "ma"));
 
-    TestUserIdentities.addFacilityAuthorities(_site1);
+    TestUserIdentities.setFacilityAuthorities(_site1, _site2);
 
     assertEquals(7, _service.getPatientsCount(null, false, "ma"));
 
@@ -551,7 +551,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         AccessDeniedException.class,
         () -> _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
 
-    TestUserIdentities.addFacilityAuthorities(_site1);
+    TestUserIdentities.setFacilityAuthorities(_site1);
     _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     // standard users still can't access archived patients
     assertThrows(
