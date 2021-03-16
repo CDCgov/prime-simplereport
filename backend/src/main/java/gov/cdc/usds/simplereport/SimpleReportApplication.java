@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.idp.repository.LiveOktaRepository;
+import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import gov.cdc.usds.simplereport.properties.SmartyStreetsProperties;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
@@ -30,6 +31,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   DataHubConfig.class,
   DemoUserConfiguration.class,
   SmartyStreetsProperties.class,
+  SendGridProperties.class
 })
 @EnableScheduling
 public class SimpleReportApplication {

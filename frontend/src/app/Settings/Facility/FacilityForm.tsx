@@ -11,7 +11,11 @@ import { showNotification } from "../../utils";
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
 import FacilityInformation from "./Components/FacilityInformation";
-import { FacilityErrors, facilitySchema } from "./facilitySchema";
+import {
+  allFacilityErrors,
+  FacilityErrors,
+  facilitySchema,
+} from "./facilitySchema";
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
@@ -70,7 +74,10 @@ const FacilityForm: React.FC<Props> = (props) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
-        setErrors((errors) => ({ ...errors, [field]: e.message }));
+        setErrors((errors) => ({
+          ...errors,
+          [field]: allFacilityErrors[field],
+        }));
       }
     },
     [facility, clearError]
@@ -85,7 +92,7 @@ const FacilityForm: React.FC<Props> = (props) => {
           acc: FacilityErrors,
           el: { path: keyof FacilityErrors; message: string }
         ) => {
-          acc[el.path] = el.message;
+          acc[el.path] = allFacilityErrors[el.path];
           return acc;
         },
         {} as FacilityErrors
