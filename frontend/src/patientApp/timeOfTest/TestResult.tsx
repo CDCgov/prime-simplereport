@@ -13,7 +13,7 @@ const TestResult = () => {
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <div className="card usa-prose">
-          <h1 className="font-heading-lg">SARS-COV-2 result</h1>
+          <h1 className="font-heading-lg">SARS-CoV-2 result</h1>
           <h2 className="font-heading-sm">Patient</h2>
           <p className="margin-top-05">{fullName}</p>
           <div className="grid-row">
