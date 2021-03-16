@@ -13,16 +13,21 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
+import gov.cdc.usds.simplereport.service.AuditService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,9 +52,10 @@ public abstract class BaseApiTest {
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private AuditService _auditService;
   @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
-  @MockBean protected AddressValidationService _addressValidation;
+  @MockBean private AddressValidationService _addressValidation;
 
   private String _userName = null;
 
@@ -207,6 +213,27 @@ public abstract class BaseApiTest {
     } else {
       assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
     }
+  }
+
+  protected void assertLastAuditEntry(
+      String username,
+      String operationName,
+      Set<UserPermission> permissions,
+      List<String> errorPaths) {
+    ApiAuditEvent event = _auditService.getLastEvent().orElseThrow();
+    assertEquals(username, event.getUser().getLoginEmail());
+    // fix to come in v11.0.0 of the graphql-kickstart starter
+    // assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
+    if (permissions != null) {
+      assertEquals(
+          permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
+          Set.copyOf(event.getUserPermissions()),
+          "Recorded user permissions");
+    }
+    if (errorPaths == null) {
+      errorPaths = List.of();
+    }
+    assertEquals(errorPaths, event.getGraphqlErrorPaths(), "Query paths with errors");
   }
 
   protected ObjectNode executeAddPersonMutation(

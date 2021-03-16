@@ -37,6 +37,11 @@ class ApiUserManagementTest extends BaseApiTest {
     assertFalse(who.get("isAdmin").asBoolean());
     assertEquals(
         OrganizationRole.getDefault().getGrantedPermissions(), extractPermissionsFromUser(who));
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "current-user-query-operation",
+        OrganizationRole.getDefault().getGrantedPermissions(),
+        null);
   }
 
   @Test
@@ -131,6 +136,19 @@ class ApiUserManagementTest extends BaseApiTest {
             TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "add-user-operation",
+        Set.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("addUser"));
   }
 
   @Test
@@ -154,6 +172,11 @@ class ApiUserManagementTest extends BaseApiTest {
         user.get("organization").get("externalId").asText());
     assertEquals(
         OrganizationRole.ENTRY_ONLY.getGrantedPermissions(), extractPermissionsFromUser(user));
+    assertLastAuditEntry(
+        TestUserIdentities.ORG_ADMIN_USER,
+        "add-user-operation",
+        EnumSet.allOf(UserPermission.class),
+        List.of());
   }
 
   @Test
@@ -169,6 +192,11 @@ class ApiUserManagementTest extends BaseApiTest {
             TestUserIdentities.DEFAULT_ORGANIZATION,
             OrganizationRole.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.SITE_ADMIN_USER,
+        "add-user-to-current-org-operation",
+        Set.of(),
+        List.of("addUserToCurrentOrg"));
   }
 
   @Test
@@ -418,6 +446,15 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgEntryOnly();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Test-entry user", who.get("roleDescription").asText());
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "current-user-query",
+        Set.of(
+            UserPermission.START_TEST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPDATE_TEST),
+        null);
     String id = who.get("id").asText();
 
     useOrgAdmin();
@@ -431,6 +468,11 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgEntryOnly();
     who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertEquals("Admin user", who.get("roleDescription").asText());
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "current-user-query",
+        EnumSet.allOf(UserPermission.class),
+        null);
   }
 
   @Test
