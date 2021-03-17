@@ -54,6 +54,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
   private Facility _site;
+  private Facility _otherSite;
 
   @BeforeEach
   void setupData() {
@@ -252,19 +253,30 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertTestResultsList(results_page0, testEvents.subList(0, 5));
     assertTestResultsList(results_page1, testEvents.subList(5, 10));
-    assertTestResultsList(results_page2, testEvents.subList(10, 12));
+    assertTestResultsList(results_page2, testEvents.subList(10, 11));
     assertEquals(0, results_page3.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestResultsCount() {
+    makedata();
+    int size = _service.getTestResultsCount(_site.getInternalId());
+    assertEquals(11, size);
   }
 
   private List<TestEvent> makedata() {
     Organization org = _organizationService.getCurrentOrganization();
     _site = _dataFactory.createValidFacility(org, "The Facility");
-    List<PersonName> patients = Arrays.asList(AMOS, BRAD, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN,
-        JANNELLE, KACEY, LEELOO);
+    List<PersonName> patients = Arrays.asList(AMOS, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN, JANNELLE,
+        KACEY, LEELOO);
     List<TestEvent> testEvents = patients.stream().map((PersonName p) -> {
       Person person = _dataFactory.createMinimalPerson(org, _site, p);
       return _dataFactory.createTestEvent(person, _site);
     }).collect(Collectors.toList());
+    // Make one result in another facility
+    _otherSite = _dataFactory.createValidFacility(org, "The Other Facility");
+    _dataFactory.createTestEvent(_dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite);
     return testEvents;
   }
 

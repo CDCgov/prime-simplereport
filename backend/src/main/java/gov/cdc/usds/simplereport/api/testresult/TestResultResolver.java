@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
 
-  @Autowired private TestOrderService tos;
+  @Autowired
+  private TestOrderService tos;
 
   public List<TestEvent> getTestResults(UUID facilityId, int pageNumber, int pageSize) {
     if (pageNumber < 0) {
@@ -23,6 +24,10 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     }
 
     return tos.getTestEventsResults(facilityId, pageNumber, pageSize);
+  }
+
+  public int testResultsCount(UUID facilityId) {
+    return tos.getTestResultsCount(facilityId);
   }
 
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
