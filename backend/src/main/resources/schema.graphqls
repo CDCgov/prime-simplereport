@@ -189,8 +189,18 @@ type PatientLink {
 
 type Query {
   deviceType: [DeviceType]
-  patients(facilityId: ID, pageNumber: Int, pageSize: Int, showDeleted: Boolean, namePrefixMatch: String): [Patient]
-  patientsCount(facilityId: ID, showDeleted: Boolean, namePrefixMatch: String): Int
+  patients(
+    facilityId: ID
+    pageNumber: Int
+    pageSize: Int
+    showDeleted: Boolean
+    namePrefixMatch: String
+  ): [Patient]
+  patientsCount(
+    facilityId: ID
+    showDeleted: Boolean
+    namePrefixMatch: String
+  ): Int
   patient(id: ID!): Patient
   organization: Organization
   organizations: [Organization]
@@ -209,22 +219,24 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
@@ -235,22 +247,24 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
@@ -264,22 +278,24 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
@@ -308,20 +324,14 @@ type Mutation {
     lastName: String!
     suffix: String
   ): User
-  updateUserRole(
-    id: ID!
-    role: Role!
-  ): Role
+  updateUserRole(id: ID!, role: Role!): Role
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
     facilities: [ID!]
     role: Role!
   ): User
-  setUserIsDeleted(
-    id: ID!
-    deleted: Boolean!
-  ): User
+  setUserIsDeleted(id: ID!, deleted: Boolean!): User
   addPatient(
     facilityId: ID
     lookupId: String
