@@ -54,7 +54,7 @@ interface Props {
   data: any;
   trackAction: () => void;
   refetch: () => void;
-  page?: number;
+  page: number;
   entriesPerPage: number;
   totalEntries: number;
 }
@@ -62,7 +62,7 @@ interface Props {
 export const DetachedTestResultsList: any = ({
   data,
   refetch,
-  page = 1,
+  page,
   entriesPerPage,
   totalEntries,
 }: Props) => {
@@ -216,7 +216,7 @@ const TestResultsList = (
     throw error;
   }
 
-  const totalEntries = totalResults.patientsCount;
+  const totalEntries = totalResults.testResultsCount;
   const entriesPerPage = 20;
   const pageNumber = props.page || 1;
 
@@ -234,7 +234,7 @@ const TestResultsList = (
       Component={DetachedTestResultsList}
       componentProps={{
         ...props,
-        page: props.page,
+        page: pageNumber,
         totalEntries,
         entriesPerPage,
       }}
