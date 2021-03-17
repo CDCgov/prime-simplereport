@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 
-public class HttpRequestDetailsTest {
+class HttpRequestDetailsTest {
 
   @Test
   void constructFromRequest_minimalRequest_validObject() {

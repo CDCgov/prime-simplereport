@@ -15,7 +15,7 @@ import java.util.Set;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class AuditLoggingTest extends BaseApiTest {
+class AuditLoggingTest extends BaseApiTest {
 
   private static final Set<UserPermission> STANDARD_PERMS_TODAY =
       Set.of(

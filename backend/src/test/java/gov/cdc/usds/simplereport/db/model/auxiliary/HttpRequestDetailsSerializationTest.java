@@ -15,7 +15,7 @@ import org.springframework.boot.test.json.JsonContent;
 import org.springframework.boot.test.json.ObjectContent;
 
 @JsonTest
-public class HttpRequestDetailsSerializationTest {
+class HttpRequestDetailsSerializationTest {
 
   @Autowired private JacksonTester<HttpRequestDetails> _tester;
 

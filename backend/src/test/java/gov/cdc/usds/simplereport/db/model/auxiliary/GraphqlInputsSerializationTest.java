@@ -13,12 +13,12 @@ import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
 
 @JsonTest
-public class GraphqlInputsSerializationTest {
+class GraphqlInputsSerializationTest {
 
   @Autowired private JacksonTester<GraphQlInputs> _tester;
 
   @Test
-  public void serialize_validObject_fieldsFound() throws IOException {
+  void serialize_validObject_fieldsFound() throws IOException {
     JsonContent<GraphQlInputs> written =
         _tester.write(
             new GraphQlInputs(
@@ -34,7 +34,7 @@ public class GraphqlInputsSerializationTest {
 
   @Test
   // IF THIS TEST BREAKS YOU HAVE BROKEN THE DATABASE AUDIT LOG. FIX THE MODEL, NOT THE TEST.
-  public void deserialize_fullObject_allFieldsSet() throws IOException {
+  void deserialize_fullObject_allFieldsSet() throws IOException {
     GraphQlInputs object = _tester.read("/deserialization/graphql-inputs/full.json").getObject();
     assertNotNull(object);
     assertEquals("thoracotomy", object.getOperationName());
