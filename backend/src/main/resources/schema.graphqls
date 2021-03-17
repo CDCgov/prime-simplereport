@@ -79,7 +79,7 @@ type Patient {
   telephone: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  isDeleted: Boolean  @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+  isDeleted: Boolean  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
