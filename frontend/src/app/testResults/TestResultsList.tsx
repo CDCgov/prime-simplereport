@@ -17,7 +17,7 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import "./TestResultsList.scss";
 
 const testResultQuery = gql`
-  query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
+  query GetFacilityResults($facilityId: ID!, $newerThanDate: DateTime) {
     testResults(facilityId: $facilityId, newerThanDate: $newerThanDate) {
       internalId
       dateTested

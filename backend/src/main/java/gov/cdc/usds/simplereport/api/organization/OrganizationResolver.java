@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     return roles.map(
         r -> {
           Organization o = r.getOrganization();
-          List<Facility> fs = _organizationService.getFacilities(o);
+          Set<Facility> fs = r.getFacilities();
           return new ApiOrganization(o, fs);
         });
   }

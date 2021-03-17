@@ -1,9 +1,15 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -12,6 +18,9 @@ public class TestUserIdentities {
   public static final String TEST_ROLE_PREFIX = "TEST-TENANT:";
 
   public static final String DEFAULT_ORGANIZATION = "DIS_ORG";
+
+  public static final String TEST_FACILITY_1 = "Testing Site";
+  public static final String TEST_FACILITY_2 = "Injection Site";
 
   public static final String SITE_ADMIN_USER = "ruby@example.com";
   public static final String STANDARD_USER = "bobbity@example.com";
@@ -52,5 +61,35 @@ public class TestUserIdentities {
    */
   public static void withStandardUser(Runnable nested) {
     withUser(STANDARD_USER, nested);
+  }
+
+  /**
+   * Sets the desired collection of facility authorities in the user's security context, overwriting
+   * any previously set individual facility authorities
+   *
+   * @param facilities list of facilities for which the user will be given an authority
+   */
+  public static void setFacilityAuthorities(Facility... facilities) {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    Object principal = auth.getPrincipal();
+    List<GrantedAuthority> authorities = new ArrayList<>();
+    authorities.addAll((Collection<GrantedAuthority>) auth.getAuthorities());
+    // remove all individual facility authorities then add the desired ones
+    authorities.removeIf(
+        a -> a.getAuthority().contains(OrganizationExtractor.FACILITY_ACCESS_MARKER));
+    for (Facility f : facilities) {
+      authorities.add(new SimpleGrantedAuthority(convertFacilityToAuthority(f)));
+    }
+    SecurityContextHolder.getContext()
+        .setAuthentication(new TestingAuthenticationToken(principal, null, authorities));
+  }
+
+  private static String convertFacilityToAuthority(Facility f) {
+    return String.format(
+        "%s%s:%s:%s",
+        TEST_ROLE_PREFIX,
+        f.getOrganization().getExternalId(),
+        OrganizationExtractor.FACILITY_ACCESS_MARKER,
+        f.getInternalId());
   }
 }
