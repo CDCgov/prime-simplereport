@@ -14,10 +14,13 @@ import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
+import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
+import gov.cdc.usds.simplereport.service.AuditService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
@@ -25,6 +28,7 @@ import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -39,7 +43,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public abstract class BaseApiTest {
@@ -53,11 +60,13 @@ public abstract class BaseApiTest {
   @Autowired private OrganizationInitializingService _initService;
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private DemoOktaRepository _oktaRepo;
+  @Autowired private AuditService _auditService;
   @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
-  @MockBean protected AddressValidationService _addressValidation;
+  @MockBean private AddressValidationService _addressValidation;
 
   private String _userName = null;
+  private MultiValueMap<String, String> _customHeaders;
 
   protected void truncateDb() {
     _truncator.truncateAll();
@@ -95,6 +104,17 @@ public abstract class BaseApiTest {
     _userName = TestUserIdentities.BROKEN_USER;
   }
 
+  /**
+   * Add a custom header to a <b>single request</b> to be performed using {@link #runQuery}.
+   *
+   * @param name the HTTP header name (potentially subject to weird transformations--check your
+   *     work!)
+   * @param value the header value to be sent.
+   */
+  protected void addHeader(String name, String value) {
+    _customHeaders.add(name, value);
+  }
+
   @BeforeEach
   public void setup() {
     truncateDb();
@@ -106,6 +126,7 @@ public abstract class BaseApiTest {
           _initService.initAll();
         });
     useOrgUser();
+    _customHeaders = new LinkedMultiValueMap<String, String>();
     assertNull(
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
@@ -126,7 +147,7 @@ public abstract class BaseApiTest {
    * Run the query in the given resource file, check if the response has errors, and return the
    * {@code data} section of the response if not. <b>NOTE</b>: Any headers that have been set on the
    * {@link GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set
-   * them, modify the {{@link #setQueryUser(String)} method, or add another method that is called
+   * them, modify the {{@link #setQueryHeaders(String)} method, or add another method that is called
    * after it!
    *
    * @param queryFileName
@@ -136,7 +157,7 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(String queryFileName) {
     try {
-      setQueryUser(_userName);
+      setQueryHeaders();
       GraphQLResponse response = _template.postForResource(queryFileName);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -147,12 +168,19 @@ public abstract class BaseApiTest {
     }
   }
 
-  /** CLEAR ALL HEADERS and then set the Authorization header the requested value */
-  private void setQueryUser(String username) {
-    LOG.info("Setting up graphql template authorization for {}", username);
-    _template.clearHeaders();
-    _template.addHeader(
-        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + username);
+  /**
+   * CLEAR ALL HEADERS and then set the Authorization header the requested value, as well as any
+   * other custom headers supplied for this request.
+   */
+  private void setQueryHeaders() {
+    LOG.info("Setting up graphql template authorization for {}", _userName);
+    LOG.info("Setting custom headers: {}", _customHeaders.keySet());
+    HttpHeaders headers = new HttpHeaders();
+    headers.addAll(_customHeaders);
+    headers.add(
+        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName);
+    _template.setHeaders(headers);
+    _customHeaders.clear();
   }
 
   /**
@@ -169,12 +197,12 @@ public abstract class BaseApiTest {
    * none or a single specific error message), and return the {@code data} section of the response
    * if the error was as expected. <b>NOTE</b>: Any headers that have been set on the {@link
    * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
-   * modify the {{@link #setQueryUser(String)} method, or add another method that is called after
+   * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
    * it!
    */
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
     try {
-      setQueryUser(_userName);
+      setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
@@ -216,6 +244,28 @@ public abstract class BaseApiTest {
     } else {
       assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
     }
+  }
+
+  protected ApiAuditEvent assertLastAuditEntry(
+      String username,
+      String operationName,
+      Set<UserPermission> permissions,
+      List<String> errorPaths) {
+    ApiAuditEvent event = _auditService.getLastEvents(1).get(0);
+    assertEquals(username, event.getUser().getLoginEmail());
+    // fix to come in v11.0.0 of the graphql-kickstart starter
+    // assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
+    if (permissions != null) {
+      assertEquals(
+          permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
+          Set.copyOf(event.getUserPermissions()),
+          "Recorded user permissions");
+    }
+    if (errorPaths == null) {
+      errorPaths = List.of();
+    }
+    assertEquals(errorPaths, event.getGraphqlErrorPaths(), "Query paths with errors");
+    return event;
   }
 
   protected ObjectNode executeAddPersonMutation(
