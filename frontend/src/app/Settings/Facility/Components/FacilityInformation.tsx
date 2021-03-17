@@ -77,7 +77,7 @@ const FacilityInformation: React.FC<Props> = ({
           <TextInput
             label="Email"
             name="email"
-            value={facility.email}
+            value={facility.email || ""}
             onChange={onChange}
           />
         </div>
@@ -103,7 +103,7 @@ const FacilityInformation: React.FC<Props> = ({
           <TextInput
             label="Street address 2"
             name="streetTwo"
-            value={facility.streetTwo}
+            value={facility.streetTwo || ""}
             onChange={onChange}
           />
         </div>
@@ -113,7 +113,7 @@ const FacilityInformation: React.FC<Props> = ({
           <TextInput
             label="City"
             name="city"
-            value={facility.city}
+            value={facility.city || ""}
             onChange={onChange}
           />
         </div>

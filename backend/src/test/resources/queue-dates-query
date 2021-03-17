@@ -1,4 +1,4 @@
- query fetchFacilityQueue($facilityId: String!) {
+ query fetchFacilityQueue($facilityId: ID!) {
     queue(facilityId: $facilityId) {
       internalId
       patient {

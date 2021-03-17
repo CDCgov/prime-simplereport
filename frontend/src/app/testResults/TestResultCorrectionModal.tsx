@@ -13,7 +13,7 @@ import {
 import Alert from "../commonComponents/Alert";
 
 export const testQuery = gql`
-  query getTestResultForCorrection($id: String!) {
+  query getTestResultForCorrection($id: ID!) {
     testResult(id: $id) {
       dateTested
       result
@@ -32,7 +32,7 @@ export const testQuery = gql`
 `;
 
 const MARK_TEST_AS_ERROR = gql`
-  mutation MarkTestAsError($id: String!, $reason: String!) {
+  mutation MarkTestAsError($id: ID!, $reason: String!) {
     correctTestMarkAsError(id: $id, reason: $reason) {
       internalId
     }

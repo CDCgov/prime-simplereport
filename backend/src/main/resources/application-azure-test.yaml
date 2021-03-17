@@ -28,8 +28,8 @@ simple-report:
     patient-links: true
     account-request: true
   sendgrid:
-    enabled: true
-    from-email: nclyde@skylight.digital
-    account-request-recipient: adam@skylight.digital
+    enabled: false
+    from-email: support@simplereport.gov
+    account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true

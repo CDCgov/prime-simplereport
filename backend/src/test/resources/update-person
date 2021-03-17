@@ -1,0 +1,45 @@
+mutation updatePatient(
+    $patientId: ID!,
+    $facilityId: ID = null,
+    $lookupId: String,
+    $firstName: String!, # this is technically optional on the back end...
+    $lastName: String!,
+    $birthDate: LocalDate!,
+    $street: String = "Top Floor",
+    $streetTwo: String,
+    $city: String = "Winterfell",
+    $state: String = "NY",
+    $zipCode: String = "00000",
+    $telephone: String = "(900)-GOT-STUBBLE",
+    $role: String = "staff",
+    $flagCongregate: Boolean = true,
+    $flagHealthcare: Boolean = false,
+    ){
+  updatePatient(
+    patientId: $patientId
+    facilityId: $facilityId
+    lookupId: $lookupId
+    firstName: $firstName
+    lastName: $lastName
+    birthDate: $birthDate
+    street: $street
+    streetTwo: $streetTwo
+    city: $city
+    state: $state
+    zipCode: $zipCode
+    telephone: $telephone
+    role: $role
+    residentCongregateSetting: $flagCongregate
+    employedInHealthcare: $flagHealthcare
+  ) {
+    internalId
+    lookupId
+    firstName
+    middleName
+    lastName
+    suffix
+    facility {
+      id
+    }
+  }
+}

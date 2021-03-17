@@ -11,7 +11,7 @@ import Alert from "../commonComponents/Alert";
 import { Patient } from "./ManagePatients";
 
 const ARCHIVE_PERSON_RECORD = gql`
-  mutation ArchivePerson($id: String!, $deleted: Boolean!) {
+  mutation ArchivePerson($id: ID!, $deleted: Boolean!) {
     setPatientIsDeleted(id: $id, deleted: $deleted) {
       internalId
     }

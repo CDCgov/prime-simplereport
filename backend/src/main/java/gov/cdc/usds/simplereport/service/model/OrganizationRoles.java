@@ -32,4 +32,9 @@ public class OrganizationRoles implements PermissionHolder {
   public Set<OrganizationRole> getGrantedRoles() {
     return _roles;
   }
+
+  public boolean containsFacility(Facility facility) {
+    return getFacilities().stream()
+        .anyMatch(f -> f.getInternalId().equals(facility.getInternalId()));
+  }
 }
