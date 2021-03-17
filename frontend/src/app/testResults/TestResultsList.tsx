@@ -19,11 +19,7 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import "./TestResultsList.scss";
 
 const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: String!
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
+  query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
     testResults(
       facilityId: $facilityId
       pageNumber: $pageNumber
@@ -186,7 +182,7 @@ export const DetachedTestResultsList: any = ({
 };
 
 const resultsCountQuery = gql`
-  query GetResultsCountByFacility($facilityId: String!) {
+  query GetResultsCountByFacility($facilityId: ID!) {
     testResultsCount(facilityId: $facilityId)
   }
 `;
