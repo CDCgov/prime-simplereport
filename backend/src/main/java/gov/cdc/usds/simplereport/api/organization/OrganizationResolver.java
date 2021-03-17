@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
