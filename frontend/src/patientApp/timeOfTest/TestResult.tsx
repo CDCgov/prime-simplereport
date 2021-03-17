@@ -1,6 +1,7 @@
 import { connect, useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
+import { capitalizeText } from "../../app/utils/text";
 
 const TestResult = () => {
   const patient = useSelector((state) => (state as any).patient as any);
@@ -19,7 +20,7 @@ const TestResult = () => {
           <div className="grid-row">
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
-              <p className="margin-top-05">{patient.lastTest.result}</p>
+              <p className="margin-top-05">{capitalizeText(patient.lastTest.result)}</p>
             </div>
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test date</h2>
