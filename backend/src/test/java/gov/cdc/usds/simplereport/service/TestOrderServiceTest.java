@@ -25,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -241,40 +242,44 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Test
   @WithSimpleReportOrgAdminUser
   void getTestEventsResults_pagination() {
-    makedata();
+    List<TestEvent> testEvents = makedata();
     List<TestEvent> results_page0 = _service.getTestEventsResults(_site.getInternalId(), 0, 5);
     List<TestEvent> results_page1 = _service.getTestEventsResults(_site.getInternalId(), 1, 5);
     List<TestEvent> results_page2 = _service.getTestEventsResults(_site.getInternalId(), 2, 5);
     List<TestEvent> results_page3 = _service.getTestEventsResults(_site.getInternalId(), 3, 5);
-    List<TestEvent> results_page4 = _service.getTestEventsResults(_site.getInternalId(), 4, 5);
 
-    assertTestResultsList(results_page0, LEELOO, KACEY, JANNELLE, IAN, HEINRICK);
+    Collections.reverse(testEvents);
+
+    assertTestResultsList(results_page0, testEvents.subList(0, 5));
     // assertTestResultsList(results_page1, FRANK, JANNELLE, BRAD, DEXTER, KACEY);
     // assertTestResultsList(results_page2, ELIZABETH, LEELOO, AMOS, IAN, HEINRICK);
     // assertTestResultsList(results_page3, GALE);
-    assertEquals(0, results_page4.size());
+    assertEquals(5, results_page0.size());
+    assertEquals(5, results_page1.size());
+    assertEquals(2, results_page2.size());
+    assertEquals(0, results_page3.size());
   }
 
-  private void makedata() {
+  private List<TestEvent> makedata() {
     Organization org = _organizationService.getCurrentOrganization();
     _site = _dataFactory.createValidFacility(org, "The Facility");
-    List<PersonName> people = Arrays.asList(AMOS, BRAD, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN,
+    List<PersonName> patients = Arrays.asList(AMOS, BRAD, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN,
         JANNELLE, KACEY, LEELOO);
-    for (PersonName person : people) {
-      Person p = _dataFactory.createMinimalPerson(org, _site, person);
-      _dataFactory.createTestEvent(p, _site);
-    }
+    List<TestEvent> testEvents = patients.stream().map((PersonName p) -> {
+      Person person = _dataFactory.createMinimalPerson(org, _site, p);
+      return _dataFactory.createTestEvent(person, _site);
+    }).collect(Collectors.toList());
+    return testEvents;
   }
 
-  private static void assertTestResultsList(List<TestEvent> found, PersonName... expected) {
+  private static void assertTestResultsList(List<TestEvent> found, List<TestEvent> expected) {
     // check common elements first
-    for (int i = 0; i < expected.length && i < found.size(); i++) {
-      Person patient = found.get(i).getPatient();
-      assertEquals(expected[i], patient);
+    for (int i = 0; i < expected.size() && i < found.size(); i++) {
+      assertEquals(expected.get(i), found.get(i));
     }
     // *then* check if there are extras
-    if (expected.length != found.size()) {
-      fail("Expected" + expected.length + " items but found " + found.size());
+    if (expected.size() != found.size()) {
+      fail("Expected" + expected.size() + " items but found " + found.size());
     }
   }
 }
