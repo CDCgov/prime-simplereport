@@ -337,7 +337,7 @@ public class AuthorizationConfiguration {
 
   /**
    * Require the current user to have the {@link UserPermission#START_TEST} permission with access
-   * to the patient link with String ID {@code patientLinkId}.
+   * to the patient link with UUID {@code patientLinkId}.
    *
    * <p>NOTE: any method with this annotation must have a parameter {@code patientLinkId}.
    */
