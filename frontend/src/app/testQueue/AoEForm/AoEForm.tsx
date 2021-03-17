@@ -198,9 +198,9 @@ const AoEForm: React.FC<Props> = ({
   const buttonGroup = (
     <div
       className={classnames(
-        isModal
-          ? "aoe-modal__footer sr-time-of-test-buttons sr-time-of-test-buttons-footer"
-          : "sr-time-of-test-buttons sr-time-of-test-buttons-footer"
+        "sr-time-of-test-buttons",
+        "sr-time-of-test-buttons-footer",
+        { "aoe-modal__footer": isModal }
       )}
     >
       <Button
