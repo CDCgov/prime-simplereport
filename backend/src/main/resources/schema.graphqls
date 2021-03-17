@@ -206,7 +206,7 @@ type Query {
   organizations: [Organization]
   queue(facilityId: ID!): [TestOrder]
   testResults(facilityId: ID!, pageNumber: Int, pageSize: Int): [TestResult]
-  testResultsCount(facilityId: String!): Int
+  testResultsCount(facilityId: ID!): Int
   testResult(id: ID!): TestResult
   users: [User]
   whoami: User!
