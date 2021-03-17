@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
+import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,6 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
   private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
   private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
-  private Organization _org;
   private Facility _site;
 
   @BeforeEach
@@ -238,6 +239,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   @Test
+  @WithSimpleReportOrgAdminUser
   void getTestEventsResults_pagination() {
     makedata();
     List<TestEvent> results_page0 = _service.getTestEventsResults(_site.getInternalId(), 0, 5);
@@ -246,8 +248,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     List<TestEvent> results_page3 = _service.getTestEventsResults(_site.getInternalId(), 3, 5);
     List<TestEvent> results_page4 = _service.getTestEventsResults(_site.getInternalId(), 4, 5);
 
-    // assertTestResultsList(results_page0, LEELOO, KACEY, JANNELLE, IAN, HEINRICK);
-    assertEquals(5, results_page0.size());
+    assertTestResultsList(results_page0, LEELOO, KACEY, JANNELLE, IAN, HEINRICK);
     // assertTestResultsList(results_page1, FRANK, JANNELLE, BRAD, DEXTER, KACEY);
     // assertTestResultsList(results_page2, ELIZABETH, LEELOO, AMOS, IAN, HEINRICK);
     // assertTestResultsList(results_page3, GALE);
@@ -255,12 +256,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   private void makedata() {
-    _org = _organizationService.getCurrentOrganization();
-    _site = _dataFactory.createValidFacility(_org, "The Facility");
+    Organization org = _organizationService.getCurrentOrganization();
+    _site = _dataFactory.createValidFacility(org, "The Facility");
     List<PersonName> people = Arrays.asList(AMOS, BRAD, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN,
         JANNELLE, KACEY, LEELOO);
     for (PersonName person : people) {
-      Person p = _dataFactory.createMinimalPerson(_org, _site, person);
+      Person p = _dataFactory.createMinimalPerson(org, _site, person);
       _dataFactory.createTestEvent(p, _site);
     }
   }
@@ -268,7 +269,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static void assertTestResultsList(List<TestEvent> found, PersonName... expected) {
     // check common elements first
     for (int i = 0; i < expected.length && i < found.size(); i++) {
-      assertEquals(expected[i], found.get(i).getPatient().getNameInfo());
+      Person patient = found.get(i).getPatient();
+      assertEquals(expected[i], patient);
     }
     // *then* check if there are extras
     if (expected.length != found.size()) {
