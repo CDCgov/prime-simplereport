@@ -53,6 +53,19 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.SUBMIT_TEST),
         extractPermissionsFromUser(who));
     assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_2));
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "current-user-query-operation",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        null);
   }
 
   @Test
@@ -184,6 +197,19 @@ class ApiUserManagementTest extends BaseApiTest {
             TestUserIdentities.DEFAULT_ORGANIZATION,
             Role.USER.name());
     runQuery("add-user", variables, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "add-user-operation",
+        Set.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("addUser"));
   }
 
   @Test
@@ -214,6 +240,11 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SEARCH_PATIENTS),
         extractPermissionsFromUser(user));
+    assertLastAuditEntry(
+        TestUserIdentities.ORG_ADMIN_USER,
+        "add-user-operation",
+        EnumSet.allOf(UserPermission.class),
+        List.of());
     assertUserCanAccessExactFacilities(user, Set.of());
   }
 
@@ -230,6 +261,11 @@ class ApiUserManagementTest extends BaseApiTest {
             TestUserIdentities.DEFAULT_ORGANIZATION,
             Role.USER.name());
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.SITE_ADMIN_USER,
+        "add-user-to-current-org-operation",
+        Set.of(),
+        List.of("addUserToCurrentOrg"));
   }
 
   @Test
@@ -492,6 +528,15 @@ class ApiUserManagementTest extends BaseApiTest {
   void updateUserRole_orgAdmin_roleUpdated() {
     useOrgEntryOnly();
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "current-user-query",
+        Set.of(
+            UserPermission.START_TEST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPDATE_TEST),
+        null);
     assertEquals(who.get("role").asText(), Role.ENTRY_ONLY.name());
     assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(who));
     String id = who.get("id").asText();
@@ -504,6 +549,11 @@ class ApiUserManagementTest extends BaseApiTest {
 
     useOrgEntryOnly();
     who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "current-user-query",
+        EnumSet.allOf(UserPermission.class),
+        null);
     assertEquals(who.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
     assertUserCanAccessAllFacilities(who);

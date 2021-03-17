@@ -40,7 +40,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   Facility _site;
   Person _person;
   PatientLink _patientLink;
-  String _patientLinkId;
 
   @BeforeEach
   void setupData() {
@@ -52,7 +51,6 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   void createTestOrderAndPatientLink(Person person) {
     TestOrder to = _dataFactory.createTestOrder(person, _site);
     _patientLink = _dataFactory.createPatientLink(to);
-    _patientLinkId = _patientLink.getInternalId().toString();
   }
 
   @Captor ArgumentCaptor<PhoneNumber> fromNumber;
@@ -69,7 +67,7 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     createTestOrderAndPatientLink(_person);
 
     // WHEN
-    _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");
+    _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
 
     // THEN
     verify(mockTwilio, times(1)).send(toNumber.capture(), fromNumber.capture(), message.capture());
@@ -88,13 +86,15 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     // WHEN + THEN
     assertThrows(
         AccessDeniedException.class,
-        () -> _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff"));
+        () ->
+            _smsService.sendToPatientLink(
+                _patientLink.getInternalId(), "yup here we are, testing stuff"));
 
     // GIVEN
     TestUserIdentities.setFacilityAuthorities(_site);
 
     // WHEN + THEN (confirm there is no exception thrown)
-    _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");
+    _smsService.sendToPatientLink(_patientLink.getInternalId(), "yup here we are, testing stuff");
   }
 
   @Test
@@ -108,7 +108,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
     assertThrows(
         NumberParseException.class,
         () -> {
-          _smsService.sendToPatientLink(_patientLinkId, "yup here we are, testing stuff");
+          _smsService.sendToPatientLink(
+              _patientLink.getInternalId(), "yup here we are, testing stuff");
         });
   }
 }

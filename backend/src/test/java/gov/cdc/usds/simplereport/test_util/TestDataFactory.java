@@ -181,6 +181,12 @@ public class TestDataFactory {
   }
 
   @Transactional
+  public PatientLink expirePatientLink(PatientLink pl) {
+    pl.expire();
+    return _patientLinkRepository.save(pl);
+  }
+
+  @Transactional
   public AskOnEntrySurvey getAoESurveyForTestOrder(UUID id) {
     return _testOrderRepo.findById(id).orElseThrow().getAskOnEntrySurvey().getSurvey();
   }

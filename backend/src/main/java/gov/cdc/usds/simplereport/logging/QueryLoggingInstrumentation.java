@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.logging;
 import com.microsoft.applicationinsights.TelemetryClient;
 import com.microsoft.applicationinsights.telemetry.RequestTelemetry;
 import graphql.ExecutionResult;
-import graphql.execution.ExecutionId;
 import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
@@ -17,8 +16,10 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 
 /** Created by nickrobison on 11/27/20 */
+@Component
 public class QueryLoggingInstrumentation extends SimpleInstrumentation {
 
   private static final Logger LOG = LoggerFactory.getLogger(QueryLoggingInstrumentation.class);
@@ -43,7 +44,6 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
             .filter(selection -> selection instanceof Field)
             .flatMap(selection -> GraphQLLoggingHelpers.walkFields("", selection))
             .collect(Collectors.toSet());
-    //
     LOG.info("Selecting fields: {}", fieldSet);
     return super.beginValidation(parameters);
   }
@@ -52,13 +52,13 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
   public InstrumentationContext<ExecutionResult> beginExecution(
       InstrumentationExecutionParameters parameters) {
     final long queryStart = System.currentTimeMillis();
-    final ExecutionId executionId = parameters.getExecutionInput().getExecutionId();
+    final String executionId = parameters.getExecutionInput().getExecutionId().toString();
     // Add the execution ID to the sfl4j MDC
-    MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId.toString());
+    MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId);
 
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
-    requestTelemetry.setId(executionId.toString());
+    requestTelemetry.setId(executionId);
 
     // Try to get the operation name, if one exists
     final String name = parameters.getExecutionInput().getOperationName();
@@ -67,7 +67,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     } else {
       requestTelemetry.setName(name);
     }
-
+    LOG.trace("Done initializing graphql query logging.");
     return GraphQLLoggingHelpers.createInstrumentationContext(queryStart, client, requestTelemetry);
   }
 }
