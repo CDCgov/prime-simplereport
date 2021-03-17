@@ -68,8 +68,8 @@ public class PatientLinkService {
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
-  public PatientLink refreshPatientLink(UUID internalId) {
-    PatientLink pl = getPatientLink(internalId);
+  public PatientLink refreshPatientLink(UUID patientLinkId) {
+    PatientLink pl = getPatientLink(patientLinkId);
     pl.refresh();
     return plrepo.save(pl);
   }
