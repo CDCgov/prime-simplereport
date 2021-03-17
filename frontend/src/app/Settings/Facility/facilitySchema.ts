@@ -10,20 +10,20 @@ export type RequiredFacilityFields = PartialBy<
   "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
-type RequiredProviderFields = Partial<Provider>;
+type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string(),
-  middleName: yup.string(),
-  lastName: yup.string(),
-  suffix: yup.string(),
-  NPI: yup.string(),
-  phone: yup.string(),
-  street: yup.string(),
-  streetTwo: yup.string(),
-  city: yup.string(),
-  state: yup.string(),
-  zipCode: yup.string(),
+  firstName: yup.string().nullable(),
+  middleName: yup.string().nullable(),
+  lastName: yup.string().nullable(),
+  suffix: yup.string().nullable(),
+  NPI: yup.string().nullable(),
+  phone: yup.string().nullable(),
+  street: yup.string().nullable(),
+  streetTwo: yup.string().nullable(),
+  city: yup.string().nullable(),
+  state: yup.string().nullable(),
+  zipCode: yup.string().nullable(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
@@ -33,7 +33,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
   zipCode: yup.string().required(),
   deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
   defaultDevice: yup.string().required(),
-  orderingProvider: providerSchema.required(),
+  orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()
     .test(function (input) {
@@ -46,9 +46,9 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
     .required(),
   state: yup.string().required(),
   id: yup.string(),
-  email: yup.string().email(),
-  streetTwo: yup.string(),
-  city: yup.string(),
+  email: yup.string().email().nullable(),
+  streetTwo: yup.string().nullable(),
+  city: yup.string().nullable(),
 });
 
 type FacilityErrorKeys =
