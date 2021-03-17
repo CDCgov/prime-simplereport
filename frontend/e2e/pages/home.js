@@ -80,6 +80,27 @@ function getPatientLink(patientName) {
   });
 }
 
+function getResultPatientLink(patientName) {
+  this.expect.section("@navbar").to.be.visible;
+  this.section.navbar.expect.element("@resultsLink").to.be.visible;
+  this.section.navbar.click("@resultsLink");
+  this.section.app.expect.element("@resultsTable").to.be.visible;
+  this.section.app.expect.element("@testResultRow").to.be.visible;
+  this.section.app.expect
+    .element("@testResultRow")
+    .to.contain.text(patientName);
+
+  return new Promise((resolve) => {
+    this.getAttribute(
+      "tr.sr-test-result-row:first-of-type",
+      "data-patient-link",
+      ({ value: patientLink }) => {
+        resolve(patientLink);
+      }
+    );
+  });
+}
+
 function verifyQuestionnaireCompleted(patientName) {
   this.expect.section("@queueCard").to.be.visible;
   this.expect.section("@queueCard").to.contain.text(patientName);
@@ -110,6 +131,7 @@ module.exports = {
     {
       conductTest,
       getPatientLink,
+      getResultPatientLink,
       verifyQuestionnaireCompleted,
     },
   ],
@@ -119,6 +141,7 @@ module.exports = {
       elements: {
         searchBar: "#search-field-small",
         resultsTable: ".usa-table",
+        testResultRow: "tr.sr-test-result-row:first-of-type",
       },
     },
     navbar: {
