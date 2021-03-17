@@ -154,28 +154,6 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionManageTargetUserNotSelf {}
 
   /**
-   * Require the current user to have the {@link UserPermission#READ_PATIENT_LIST} permission for
-   *
-   * <p>- the facility with UUID {@code facilityId};
-   *
-   * <p>- patients whose archived status is {@code isArchived}; AND
-   *
-   * <p>- patients whose name elements begin with {@code namePrefixMatch}.
-   *
-   * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
-   * isArchived} and {@code namePrefixMatch}.
-   */
-  @Retention(RUNTIME)
-  @Target(METHOD)
-  @PreAuthorize(
-      SPEL_IS_VALID
-          + " && "
-          + SPEL_HAS_PERMISSION_READ_PATIENT_LIST
-          + " && "
-          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
-  public @interface RequireSpecificReadPatientListPermission {}
-
-  /**
    * Require the current user to have the {@link UserPermission#READ_ARCHIVED_PATIENT_LIST}
    * permission.
    */
@@ -317,13 +295,13 @@ public class AuthorizationConfiguration {
   public @interface RequirePermissionSearchTargetPatient {}
 
   /**
-   * Require the current user to have the {@link UserPermission#SEARCH_PATIENTS} permission for
+   * Require the current user to have the permission to search for patients:
    *
-   * <p>- the facility with UUID {@code facilityId};
+   * <p>- in the facility with UUID {@code facilityId};
    *
-   * <p>- patients whose archived status is {@code isArchived}; AND
+   * <p>- whose archived status is {@code isArchived}; AND
    *
-   * <p>- patients whose name elements begin with {@code namePrefixMatch}.
+   * <p>- whose name elements begin with {@code namePrefixMatch}.
    *
    * <p>NOTE: any method with this annotation must have the parameters {@code facilityId}, {@code
    * isArchived} and {@code namePrefixMatch}.
@@ -332,8 +310,6 @@ public class AuthorizationConfiguration {
   @Target(METHOD)
   @PreAuthorize(
       SPEL_IS_VALID
-          + " && "
-          + SPEL_HAS_PERMISSION_SEARCH_PATIENTS
           + " && "
           + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificPatientSearchPermission {}

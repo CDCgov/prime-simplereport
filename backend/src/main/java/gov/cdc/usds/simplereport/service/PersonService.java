@@ -123,7 +123,7 @@ public class PersonService {
    *     names that start with these characters. Case insenstive. If fewer than
    * @return A list of matching patients.
    */
-  @AuthorizationConfiguration.RequireSpecificReadPatientListPermission
+  @AuthorizationConfiguration.RequireSpecificPatientSearchPermission
   public List<Person> getPatients(
       UUID facilityId, int pageOffset, int pageSize, boolean isArchived, String namePrefixMatch) {
     if (pageOffset < 0) {
