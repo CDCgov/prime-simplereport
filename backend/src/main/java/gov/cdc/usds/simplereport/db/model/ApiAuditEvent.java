@@ -123,7 +123,6 @@ public class ApiAuditEvent {
     this.isAdminUser = isAdmin;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
-    ;
   }
 
   public UUID getId() {

@@ -36,6 +36,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
   }
 
   @Override
+  @SuppressWarnings("checkstyle:IllegalCatch")
   public InstrumentationContext<ExecutionResult> beginExecution(
       InstrumentationExecutionParameters parameters) {
     String executionId = parameters.getExecutionInput().getExecutionId().toString();
@@ -66,6 +67,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
     }
 
     @Override
+    @SuppressWarnings("checkstyle:IllegalCatch")
     public void onCompleted(ExecutionResult result, Throwable t) {
       LOG.trace("End of execution, audit entry being saved.");
       List<String> errorPaths =

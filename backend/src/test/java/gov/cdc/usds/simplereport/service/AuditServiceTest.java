@@ -39,8 +39,8 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
         List.of(
             UserPermission.SEARCH_PATIENTS,
             UserPermission.START_TEST,
-            UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
+            UserPermission.SUBMIT_TEST,
+            UserPermission.UPDATE_TEST),
         saved.getUserPermissions());
   }
 }
