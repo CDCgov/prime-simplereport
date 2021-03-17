@@ -26,7 +26,7 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     return roles.map(
         r -> {
           Organization o = r.getOrganization();
-          List<Facility> fs = _organizationService.getFacilities(o);
+          Set<Facility> fs = r.getFacilities();
           return new ApiOrganization(o, fs);
         });
   }
