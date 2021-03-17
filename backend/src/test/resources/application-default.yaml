@@ -26,6 +26,11 @@ simple-report:
     role-prefix: "SR-UNITTEST-TENANT:"
   feature-flags:
     patient-links: true
+    account-request: true
+  sendgrid:
+    enabled: false
+    from-email: support@simplereport.gov
+    account-request-recipient: support@simplereport.gov
   site-admin-emails:
     - ruby@example.com
   demo-users:

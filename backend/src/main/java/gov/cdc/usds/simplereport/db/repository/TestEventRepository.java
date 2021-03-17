@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface TestEventRepository extends AuditedEntityRepository<TestEvent> {
 
-    public List<TestEvent> findAllByPatient(Person p);
+    @Query("FROM #{#entityName} e WHERE e.patient = :p and e.facility in :facilities")
+    public List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
 
     public List<TestEvent> findAllByOrganizationOrderByCreatedAtDesc(Organization o);
 
@@ -43,6 +45,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
             + " FROM {h-schema}test_event te " + " WHERE te.facility_id = :facilityId) "
             + " SELECT count(*) FROM FILTEREDEVENTS ", nativeQuery = true)
     public int getTestResultsCount(UUID facilityId);
+
     // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
     // :newerThanDate
     // ORDER BY q.createdAt DESC")

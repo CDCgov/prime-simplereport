@@ -27,17 +27,19 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _ps = ps;
   }
 
-  public void addTestResult(String deviceID, String result, String patientID, Date dateTested) {
-    _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested);
+  public ApiTestOrder addTestResult(
+      String deviceID, String result, UUID patientID, Date dateTested) {
+    return new ApiTestOrder(
+        _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested));
   }
 
-  public ApiTestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
+  public ApiTestOrder editQueueItem(UUID id, String deviceId, String result, Date dateTested) {
     return new ApiTestOrder(_tos.editQueueItem(id, deviceId, result, dateTested));
   }
 
   public String addPatientToQueue(
-      String facilityID,
-      String patientID,
+      UUID facilityID,
+      UUID patientID,
       String pregnancy,
       String symptoms,
       boolean firstTest,
@@ -52,7 +54,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
 
     TestOrder to =
         _tos.addPatientToQueue(
-            UUID.fromString(facilityID),
+            facilityID,
             _ps.getPatientNoPermissionsCheck(patientID),
             pregnancy,
             symptomsMap,
@@ -66,7 +68,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     return to.getPatientLink().getInternalId().toString();
   }
 
-  public void removePatientFromQueue(String patientID) {
+  public void removePatientFromQueue(UUID patientID) {
     _tos.removePatientFromQueue(patientID);
   }
 
@@ -75,7 +77,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
   }
 
   public void updateTimeOfTestQuestions(
-      String patientID,
+      UUID patientID,
       String pregnancy,
       String symptoms,
       boolean firstTest,

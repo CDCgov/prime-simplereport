@@ -30,8 +30,8 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     return tos.getTestResultsCount(facilityId);
   }
 
-  public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
-    return tos.correctTestMarkAsError(testEventId, reasonForCorrection);
+  public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
+    return tos.correctTestMarkAsError(id, reasonForCorrection);
   }
 
   public TestEvent getTestResult(UUID id) {

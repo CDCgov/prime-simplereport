@@ -28,6 +28,7 @@ module "simple_report_api" {
     ORG_CLIA_NUMBER                                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.org_clia_number.id})"
     TWILIO_ACCOUNT_SID                             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_account_sid.id})"
     TWILIO_AUTH_TOKEN                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.twilio_auth_token.id})"
+    SIMPLE_REPORT_SENDGRID_API_KEY                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sendgrid_api_key.id})"
     SMARTY_AUTH_ID                                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_id.id})"
     SMARTY_AUTH_TOKEN                              = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_token.id})"
   }

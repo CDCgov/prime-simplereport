@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import PatientForm from "./PatientForm";
 
 const GET_PATIENT = gql`
-  query GetPatientDetails($id: String!) {
+  query GetPatientDetails($id: ID!) {
     patient(id: $id) {
       firstName
       middleName

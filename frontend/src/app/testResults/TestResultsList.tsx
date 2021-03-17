@@ -19,11 +19,7 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import "./TestResultsList.scss";
 
 const testResultQuery = gql`
-  query GetFacilityResults(
-    $facilityId: String!
-    $pageNumber: Int
-    $pageSize: Int
-  ) {
+  query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
     testResults(
       facilityId: $facilityId
       pageNumber: $pageNumber
