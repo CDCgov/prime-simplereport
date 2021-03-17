@@ -50,7 +50,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
     }
   }
 
-  public void addPatient(
+  public Person addPatient(
       UUID facilityId,
       String lookupId,
       String firstName,
@@ -72,7 +72,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    _ps.addPatient(
+    return _ps.addPatient(
         facilityId,
         parseString(lookupId),
         parseString(firstName),
@@ -97,9 +97,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         employedInHealthcare);
   }
 
-  public void updatePatient(
+  public Person updatePatient(
       UUID facilityId,
-      String patientId,
+      UUID patientId,
       String lookupId,
       String firstName,
       String middleName,
@@ -120,7 +120,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
-    _ps.updatePatient(
+    return _ps.updatePatient(
         facilityId,
         patientId,
         parseString(lookupId),

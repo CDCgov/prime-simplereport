@@ -23,17 +23,14 @@ import ArchivePersonModal from "./ArchivePersonModal";
 import "./ManagePatients.scss";
 
 const patientsCountQuery = gql`
-  query GetPatientsCountByFacility(
-    $facilityId: String!
-    $showDeleted: Boolean!
-  ) {
+  query GetPatientsCountByFacility($facilityId: ID!, $showDeleted: Boolean!) {
     patientsCount(facilityId: $facilityId, showDeleted: $showDeleted)
   }
 `;
 
 const patientQuery = gql`
   query GetPatientsByFacility(
-    $facilityId: String!
+    $facilityId: ID!
     $pageNumber: Int!
     $pageSize: Int!
     $showDeleted: Boolean

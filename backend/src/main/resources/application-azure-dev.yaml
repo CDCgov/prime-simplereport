@@ -32,5 +32,10 @@ simple-report:
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   feature-flags:
     patient-links: true
+    account-request: true
+  sendgrid:
+    enabled: false
+    from-email: support@simplereport.gov
+    account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true

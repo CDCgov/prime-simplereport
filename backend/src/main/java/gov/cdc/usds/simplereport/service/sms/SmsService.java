@@ -38,7 +38,7 @@ public class SmsService {
     LOG.debug("SmsService will send from {}", rawFromNumber);
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional
   public String sendToPatientLink(UUID plid, String text) throws NumberParseException {
     PatientLink pl = pls.getPatientLink(plid);
