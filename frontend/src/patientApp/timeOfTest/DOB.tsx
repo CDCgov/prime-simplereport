@@ -7,11 +7,13 @@ import Button from "../../app/commonComponents/Button";
 import TextInput from "../../app/commonComponents/TextInput";
 import { setPatient, updateOrganization } from "../../app/store";
 import { PxpApi } from "../PxpApiService";
+import Alert from "../../app/commonComponents/Alert";
 
 const DOB = () => {
   const dispatch = useDispatch();
   const [birthDate, setBirthDate] = useState("");
   const [birthDateError, setBirthDateError] = useState("");
+  const [linkExpiredError, setLinkExpiredError] = useState(false);
   const dobRef = useRef<HTMLInputElement>(null);
   const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state: any) => state.patient);
@@ -54,9 +56,13 @@ const DOB = () => {
         })
       );
     } catch (error) {
-      setBirthDateError(
-        "No patient link with the supplied ID was found, or the birth date provided was incorrect."
-      );
+      if (error?.status === 410) {
+        setLinkExpiredError(true);
+      } else {
+        setBirthDateError(
+          "No patient link with the supplied ID was found, or the birth date provided was incorrect."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -96,29 +102,46 @@ const DOB = () => {
     <>
       <main>
         <div className="grid-container maxw-tablet">
-          <p className="margin-top-3">
-            Enter your date of birth to access your COVID-19 Testing Portal.
-          </p>
-          <form className="usa-form" onSubmit={confirmBirthDate}>
-            <TextInput
-              label={"Date of birth"}
-              name={"birthDate"}
-              type={"bday"}
-              autoComplete={"bday"}
-              value={birthDate}
-              size={8}
-              pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
-              inputMode={"numeric"}
-              ariaDescribedBy={"bdayFormat"}
-              hintText={"MM/DD/YYYY or MMDDYYYY"}
-              errorMessage={birthDateError}
-              hideOptional={true}
-              validationStatus={birthDateError ? "error" : undefined}
-              onChange={(evt) => setBirthDate(evt.currentTarget.value)}
-              inputRef={dobRef}
-            />
-            <Button id="dob-submit-button" label={"Continue"} type={"submit"} />
-          </form>
+          {!linkExpiredError ? (
+            <>
+              <p className="margin-top-3">
+                Enter your date of birth to access your COVID-19 Testing Portal.
+              </p>
+              <form className="usa-form" onSubmit={confirmBirthDate}>
+                <TextInput
+                  label={"Date of birth"}
+                  name={"birthDate"}
+                  type={"bday"}
+                  autoComplete={"bday"}
+                  value={birthDate}
+                  size={8}
+                  pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
+                  inputMode={"numeric"}
+                  ariaDescribedBy={"bdayFormat"}
+                  hintText={"MM/DD/YYYY or MMDDYYYY"}
+                  errorMessage={birthDateError}
+                  hideOptional={true}
+                  validationStatus={birthDateError ? "error" : undefined}
+                  onChange={(evt) => setBirthDate(evt.currentTarget.value)}
+                  inputRef={dobRef}
+                />
+                <Button
+                  id="dob-submit-button"
+                  label={"Continue"}
+                  type={"submit"}
+                />
+              </form>
+            </>
+          ) : (
+            <>
+              <p></p>
+              <Alert
+                type="error"
+                title="Link expired"
+                body="This link has expired. Please contact your provider."
+              />
+            </>
+          )}
         </div>
       </main>
     </>

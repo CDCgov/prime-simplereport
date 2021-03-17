@@ -145,7 +145,7 @@ public class TestOrderService {
 
     // After adding test result, create a new patient link and text it to the patient
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    String internalId = patientLink.getInternalId().toString();
+    UUID internalId = patientLink.getInternalId();
     _smss.sendToPatientLink(
         internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
     savedOrder.setPatientLink(patientLink);
