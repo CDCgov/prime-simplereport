@@ -26,7 +26,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="First name"
               name="firstName"
-              value={provider.firstName}
+              value={provider.firstName || ""}
               onChange={onChange}
             />
           </div>
@@ -34,7 +34,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Middle name"
               name="middleName"
-              value={provider.middleName}
+              value={provider.middleName || ""}
               onChange={onChange}
             />
           </div>
@@ -42,7 +42,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Last name"
               name="lastName"
-              value={provider.lastName}
+              value={provider.lastName || ""}
               onChange={onChange}
             />
           </div>
@@ -50,7 +50,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Suffix"
               name="suffix"
-              value={provider.suffix}
+              value={provider.suffix || ""}
               onChange={onChange}
             />
           </div>
@@ -60,7 +60,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="NPI"
               name="NPI"
-              value={provider.NPI}
+              value={provider.NPI || ""}
               onChange={onChange}
             />
           </div>
@@ -68,7 +68,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Phone number"
               name="phone"
-              value={provider.phone}
+              value={provider.phone || ""}
               onChange={onChange}
             />
           </div>
@@ -78,7 +78,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Street address 1"
               name="street"
-              value={provider.street}
+              value={provider.street || ""}
               onChange={onChange}
             />
           </div>
@@ -88,7 +88,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Street address 2"
               name="streetTwo"
-              value={provider.streetTwo}
+              value={provider.streetTwo || ""}
               onChange={onChange}
             />
           </div>
@@ -98,7 +98,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="City"
               name="city"
-              value={provider.city}
+              value={provider.city || ""}
               onChange={onChange}
             />
           </div>
@@ -106,7 +106,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <TextInput
               label="Zip code"
               name="zipCode"
-              value={provider.zipCode}
+              value={provider.zipCode || ""}
               onChange={onChange}
             />
           </div>
@@ -114,7 +114,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
             <Dropdown
               label="State"
               name="state"
-              selectedValue={provider.state}
+              selectedValue={provider.state || ""}
               options={stateCodes.map((c) => ({ label: c, value: c }))}
               defaultSelect
               className="sr-width-sm"

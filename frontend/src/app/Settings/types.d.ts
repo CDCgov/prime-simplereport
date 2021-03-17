@@ -1,7 +1,9 @@
+type Nullable<T> = { [P in keyof T]: T[P] | null };
+
 interface Address {
   street: string;
-  streetTwo: string;
-  city: string;
+  streetTwo: string | null;
+  city: string | null;
   state: string;
   zipCode: string;
 }
@@ -11,19 +13,19 @@ interface Facility extends Address {
   cliaNumber: string;
   name: string;
   phone: string;
-  email: string;
+  email: string | null;
   deviceTypes: string[];
   defaultDevice: string;
   orderingProvider: Provider;
 }
 
-interface Provider extends Address {
-  firstName: string;
-  middleName: string;
-  lastName: string;
-  suffix: string;
-  NPI: string;
-  phone: string;
+interface Provider extends Nullable<Address> {
+  firstName: string | null;
+  middleName: string | null;
+  lastName: string | null;
+  suffix: string | null;
+  NPI: string | null;
+  phone: string | null;
 }
 
 interface Organization {
