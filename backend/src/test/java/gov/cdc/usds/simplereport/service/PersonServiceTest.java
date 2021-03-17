@@ -525,12 +525,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, null));
-    assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma"));
-    assertThrows(
-        AccessDeniedException.class,
-        () -> _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma"));
+    _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma");
+    _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, "ma");
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getPatients(site1Id, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, true, "ma"));
