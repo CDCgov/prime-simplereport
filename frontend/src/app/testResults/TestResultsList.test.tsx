@@ -1,4 +1,5 @@
 import { render } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 
 import { DetachedTestResultsList } from "./TestResultsList";
 
@@ -45,7 +46,14 @@ const testResults = [
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
-      <DetachedTestResultsList data={{ testResults }} />
+      <MemoryRouter>
+        <DetachedTestResultsList
+          data={{ testResults }}
+          page={1}
+          entriesPerPage={20}
+          totalEntries={testResults.length}
+        />
+      </MemoryRouter>
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
     expect(getByText("Whizzz, Cheez")).toBeInTheDocument();
