@@ -92,8 +92,8 @@ public class AuditLoggingTest extends BaseApiTest {
             null);
     assertTimestampSanity(event);
     assertEquals(
-        "DAT_ORG",
-        event.getOrganization().getExternalId()); // this should be a constant on merge up
+        "DAT_ORG", // this should be a constant
+        event.getOrganization().getExternalId());
   }
 
   private void assertTimestampSanity(ApiAuditEvent event) {
