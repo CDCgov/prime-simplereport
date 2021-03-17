@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
@@ -105,7 +105,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const { data, error } = useQuery(QUERY_PATIENT, {
+  const [queryPatients, { data, error }] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: { facilityId, namePrefixMatch: queryString },
   });
@@ -114,6 +114,12 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
+  useEffect(() => {
+    if (queryString.trim() !== "") {
+      queryPatients();
+    }
+  }, [queryString, queryPatients]);
 
   if (error) {
     throw error;
