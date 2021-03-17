@@ -71,6 +71,7 @@ public class GraphQLLoggingHelpers {
       long queryStart, TelemetryClient client, RequestTelemetry request) {
     return SimpleInstrumentationContext.whenCompleted(
         (ExecutionResult result, Throwable t) -> {
+          LOG.trace("Entered logging instrumentation callback.");
           final long queryEnd = System.currentTimeMillis();
           final Duration queryDuration = new Duration(queryEnd - queryStart);
           request.setDuration(queryDuration);

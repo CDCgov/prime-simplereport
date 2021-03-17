@@ -1487,3 +1487,77 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__patient_link__time_of_consent
                     references: patient_link
+  - changeSet:
+      id: add-audit-event-table
+      author: bwarfield@cdc.gov
+      comment: Add table for API request auditing.
+      changes:
+        - createTable:
+            tableName: api_audit_event
+            remarks: An API access event that we record for HIPAA auditing.
+            columns:
+              - column:
+                  name: id
+                  type: *idtype
+                  remarks: The internal database identifier for this audit event.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_timestamp
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_id
+                  remarks: The correlation ID from the application logs.
+                  type: *string
+              - column:
+                  name: http_request_details
+                  remarks: Key details of the HTTP request.
+                  type: jsonb
+                  constraints:
+                    nullable: false
+              - column:
+                  name: graphql_query_details
+                  remarks: Lightly structured information about the graphql request.
+                  type: jsonb
+              - column:
+                  name: graphql_error_paths
+                  remarks: The list of paths in the graphql response that had errors (usually empty).
+                  type: "text[]"
+              - column:
+                  name: api_user_id
+                  type: *idtype
+                  remarks: The user who performed this action.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_audit_event__api_user
+                    references: api_user
+              - column:
+                  name: is_admin_user
+                  type: boolean
+                  remarks: Was the user a site administrator at the time the request was made.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_permissions
+                  remarks: The permissions attached to the user when the request was made.
+                  type: "text[]"
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  remarks: The organization within which this request was performed (if applicable).
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__api_audit_event__organization
+                    references: organization
+              - column:
+                  name: patient_link_id
+                  type: *idtype
+                  remarks: The "magic" patient link that the patient used to perform this action (if applicable).
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__api_audit_event__patient_link
+                    references: patient_link

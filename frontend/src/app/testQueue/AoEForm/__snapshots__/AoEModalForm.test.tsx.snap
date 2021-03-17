@@ -301,7 +301,7 @@ Array [
         className="usa-radio"
       >
         <input
-          checked={false}
+          checked={true}
           className="usa-radio__input"
           data-required="false"
           disabled={false}

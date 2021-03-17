@@ -1,0 +1,9 @@
+{
+"operationName" : "thoracotomy",
+"query": "what is this thing called love?",
+"variables": {
+  "eenie": 1,
+  "meeney": 3,
+  "miney": "Moe"
+  }
+}
