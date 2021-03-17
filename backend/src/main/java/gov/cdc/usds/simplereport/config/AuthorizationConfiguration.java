@@ -308,10 +308,7 @@ public class AuthorizationConfiguration {
    */
   @Retention(RUNTIME)
   @Target(METHOD)
-  @PreAuthorize(
-      SPEL_IS_VALID
-          + " && "
-          + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
+  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_CAN_EXECUTE_SPECIFIC_PATIENT_SEARCH)
   public @interface RequireSpecificPatientSearchPermission {}
 
   /**
