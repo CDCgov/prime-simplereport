@@ -251,12 +251,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Collections.reverse(testEvents);
 
     assertTestResultsList(results_page0, testEvents.subList(0, 5));
-    // assertTestResultsList(results_page1, FRANK, JANNELLE, BRAD, DEXTER, KACEY);
-    // assertTestResultsList(results_page2, ELIZABETH, LEELOO, AMOS, IAN, HEINRICK);
-    // assertTestResultsList(results_page3, GALE);
-    assertEquals(5, results_page0.size());
-    assertEquals(5, results_page1.size());
-    assertEquals(2, results_page2.size());
+    assertTestResultsList(results_page1, testEvents.subList(5, 10));
+    assertTestResultsList(results_page2, testEvents.subList(10, 12));
     assertEquals(0, results_page3.size());
   }
 
@@ -275,7 +271,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private static void assertTestResultsList(List<TestEvent> found, List<TestEvent> expected) {
     // check common elements first
     for (int i = 0; i < expected.size() && i < found.size(); i++) {
-      assertEquals(expected.get(i), found.get(i));
+      assertEquals(expected.get(i).getInternalId(), found.get(i).getInternalId());
     }
     // *then* check if there are extras
     if (expected.size() != found.size()) {
