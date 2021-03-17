@@ -66,16 +66,16 @@ const UPDATE_FACILITY_MUTATION = gql`
     $zipCode: String!
     $phone: String
     $email: String
-    $orderingProviderFirstName: String!
+    $orderingProviderFirstName: String
     $orderingProviderMiddleName: String
-    $orderingProviderLastName: String!
+    $orderingProviderLastName: String
     $orderingProviderSuffix: String
-    $orderingProviderNPI: String!
-    $orderingProviderStreet: String!
+    $orderingProviderNPI: String
+    $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String!
-    $orderingProviderZipCode: String!
+    $orderingProviderState: String
+    $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
     $defaultDevice: String!
@@ -119,16 +119,16 @@ const ADD_FACILITY_MUTATION = gql`
     $zipCode: String!
     $phone: String
     $email: String
-    $orderingProviderFirstName: String!
+    $orderingProviderFirstName: String
     $orderingProviderMiddleName: String
-    $orderingProviderLastName: String!
+    $orderingProviderLastName: String
     $orderingProviderSuffix: String
-    $orderingProviderNPI: String!
-    $orderingProviderStreet: String!
+    $orderingProviderNPI: String
+    $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String!
-    $orderingProviderZipCode: String!
+    $orderingProviderState: String
+    $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $devices: [String]!
     $defaultDevice: String!
@@ -218,7 +218,7 @@ const FacilityFormContainer: any = (props: Props) => {
         orderingProviderCity: provider.city,
         orderingProviderState: provider.state,
         orderingProviderZipCode: provider.zipCode,
-        orderingProviderPhone: provider.phone,
+        orderingProviderPhone: provider.phone || null,
         devices: facility.deviceTypes,
         defaultDevice: facility.defaultDevice,
       },
