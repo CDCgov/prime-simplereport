@@ -148,6 +148,7 @@ public class TestOrderService {
     String internalId = patientLink.getInternalId().toString();
     _smss.sendToPatientLink(
         internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+    savedOrder.setPatientLink(patientLink);
     return savedOrder;
   }
 

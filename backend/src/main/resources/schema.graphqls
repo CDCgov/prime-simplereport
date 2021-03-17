@@ -161,6 +161,7 @@ type TestResult {
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
+  patientLink: PatientLink
 }
 
 # Note: we assume a user's email and login username are the same thing.
