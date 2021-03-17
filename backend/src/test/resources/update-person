@@ -1,4 +1,5 @@
-mutation createPersonEntry(
+mutation updatePatient(
+    $patientId: ID!,
     $facilityId: ID = null,
     $lookupId: String,
     $firstName: String!, # this is technically optional on the back end...
@@ -14,7 +15,8 @@ mutation createPersonEntry(
     $flagCongregate: Boolean = true,
     $flagHealthcare: Boolean = false,
     ){
-  addPatient(
+  updatePatient(
+    patientId: $patientId
     facilityId: $facilityId
     lookupId: $lookupId
     firstName: $firstName

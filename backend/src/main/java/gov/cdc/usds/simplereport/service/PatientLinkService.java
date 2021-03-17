@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.InvalidPatientLinkException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+// NOTE: as of today, only those methods exposed to graphql endpoints have method-level security.
+// We will likely want to want security for the others in the near future.
 @Service("patientLinkService")
 @Transactional(readOnly = false)
 public class PatientLinkService {
@@ -78,8 +81,9 @@ public class PatientLinkService {
     return plrepo.save(pl);
   }
 
-  public PatientLink refreshPatientLink(String internalId) {
-    PatientLink pl = getPatientLink(internalId);
+  @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
+  public PatientLink refreshPatientLink(String patientLinkId) {
+    PatientLink pl = getPatientLink(patientLinkId);
     pl.refresh();
     return plrepo.save(pl);
   }

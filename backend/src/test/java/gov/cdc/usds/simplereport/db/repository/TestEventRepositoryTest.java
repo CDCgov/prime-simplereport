@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         new TestEvent(
             TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order));
     flush();
-    List<TestEvent> found = _repo.findAllByPatient(patient);
+    List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
   }
 
