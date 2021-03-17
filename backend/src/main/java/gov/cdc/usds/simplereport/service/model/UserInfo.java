@@ -79,4 +79,8 @@ public class UserInfo {
   public List<Facility> getFacilities() {
     return facilities;
   }
+
+  public ApiUser getWrappedUser() {
+    return wrapped;
+  }
 }
