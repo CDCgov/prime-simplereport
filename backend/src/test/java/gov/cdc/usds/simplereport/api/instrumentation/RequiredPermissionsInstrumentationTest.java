@@ -36,17 +36,21 @@ class RequiredPermissionsInstrumentationTest {
           + "directive @requiredPermissions(\n"
           + "  anyOf: [String!],\n"
           + "  allOf: [String!]\n"
-          + ") on FIELD_DEFINITION\n"
-          + "type Snap {\n"
-          + "  crackle: String @requiredPermissions(allOf: [\"READ_PATIENT_LIST\", \"SEARCH_PATIENTS\"])\n"
-          + "  pop: String @requiredPermissions(allOf: [\"READ_PATIENT_LIST\", \"ARCHIVE_PATIENT\"])\n"
+          + ") on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION\n"
+          + "type ObjectLevel @requiredPermissions(allOf: [\"START_TEST\"]) {\n"
+          + "  morePermissions: String @requiredPermissions(allOf: [\"SEARCH_PATIENTS\"])\n"
+          + "  noFurtherPermissions: String\n"
           + "}\n"
           + "type Fizz {\n"
           + "  buzz: String @requiredPermissions(anyOf: [\"READ_PATIENT_LIST\", \"SEARCH_PATIENTS\"])\n"
           + "  pop: String @requiredPermissions(anyOf: [\"READ_PATIENT_LIST\", \"ARCHIVE_PATIENT\"])\n"
           + "}\n"
           + "type Query {\n"
-          + "  cereals: [Snap] @requiredPermissions(allOf: [\"START_TEST\", \"UPDATE_TEST\"])\n"
+          + "  objectLevel: [ObjectLevel] @requiredPermissions(allOf: [\"UPDATE_TEST\"])\n"
+          + "  withArgs(\n"
+          + "    sensitiveArg: String @requiredPermissions(allOf: [\"READ_RESULT_LIST\"])\n"
+          + "    benignArg: String\n"
+          + "  ): [ObjectLevel] @requiredPermissions(allOf: [\"ARCHIVE_PATIENT\"])\n"
           + "  sodas: [Fizz] @requiredPermissions(anyOf: [\"START_TEST\", \"SEARCH_PATIENTS\"])\n"
           + "}\n";
 
@@ -113,29 +117,56 @@ class RequiredPermissionsInstrumentationTest {
   private static Stream<Arguments> permissionScenarios() {
     return Stream.of(
         Arguments.of(
-            "{ cereals { crackle, pop } }",
+            "{ objectLevel { morePermissions, noFurtherPermissions } }",
             Set.of(
-                UserPermission.READ_PATIENT_LIST,
                 UserPermission.SEARCH_PATIENTS,
-                UserPermission.ARCHIVE_PATIENT,
                 UserPermission.START_TEST,
                 UserPermission.UPDATE_TEST),
             true),
         Arguments.of(
-            "{ cereals { crackle, pop } }",
+            "{ objectLevel { morePermissions, noFurtherPermissions } }",
+            Set.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST),
+            false),
+        Arguments.of(
+            "{ objectLevel { morePermissions, noFurtherPermissions } }",
+            Set.of(UserPermission.SEARCH_PATIENTS, UserPermission.UPDATE_TEST),
+            false),
+        Arguments.of(
+            "{ objectLevel { morePermissions, noFurtherPermissions } }",
+            Set.of(UserPermission.SEARCH_PATIENTS, UserPermission.START_TEST),
+            false),
+        Arguments.of(
+            "{ objectLevel { noFurtherPermissions } }",
+            Set.of(UserPermission.START_TEST, UserPermission.UPDATE_TEST),
+            true),
+        Arguments.of(
+            "{ withArgs(sensitiveArg: \"foo\", benignArg: \"bar\") { morePermissions, noFurtherPermissions } }",
             Set.of(
-                UserPermission.READ_PATIENT_LIST,
+                UserPermission.ARCHIVE_PATIENT,
+                UserPermission.READ_RESULT_LIST,
+                UserPermission.SEARCH_PATIENTS,
+                UserPermission.START_TEST,
+                UserPermission.UPDATE_TEST),
+            true),
+        Arguments.of(
+            "{ withArgs(sensitiveArg: \"foo\", benignArg: \"bar\") { morePermissions, noFurtherPermissions } }",
+            Set.of(
+                UserPermission.ARCHIVE_PATIENT,
                 UserPermission.SEARCH_PATIENTS,
                 UserPermission.START_TEST,
                 UserPermission.UPDATE_TEST),
             false),
         Arguments.of(
-            "{ cereals { crackle } }",
+            "{ withArgs(sensitiveArg: \"foo\", benignArg: \"bar\") { morePermissions, noFurtherPermissions } }",
             Set.of(
-                UserPermission.READ_PATIENT_LIST,
+                UserPermission.READ_RESULT_LIST,
                 UserPermission.SEARCH_PATIENTS,
                 UserPermission.START_TEST,
                 UserPermission.UPDATE_TEST),
+            false),
+        Arguments.of(
+            "{ withArgs(benignArg: \"bar\") { noFurtherPermissions } }",
+            Set.of(UserPermission.ARCHIVE_PATIENT, UserPermission.START_TEST),
             true),
         Arguments.of("{ sodas { buzz } }", Set.of(UserPermission.SEARCH_PATIENTS), true),
         Arguments.of("{ sodas { buzz, pop } }", Set.of(UserPermission.SEARCH_PATIENTS), false),

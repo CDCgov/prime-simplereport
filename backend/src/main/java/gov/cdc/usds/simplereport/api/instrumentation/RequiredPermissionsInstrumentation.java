@@ -9,6 +9,10 @@ import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentationContext;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
 import graphql.schema.GraphQLArgument;
+import graphql.schema.GraphQLDirectiveContainer;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLModifiedType;
+import graphql.schema.GraphQLType;
 import graphql.validation.ValidationError;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,20 +51,15 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
           var requiredPermissions =
               queryTraverser.reducePreOrder(
                   (env, acc) -> {
-                    Optional.ofNullable(
-                            env.getFieldDefinition().getDirective("requiredPermissions"))
-                        .ifPresent(
-                            d -> {
-                              Optional.ofNullable(d.getArgument("allOf"))
-                                  .filter(argument -> argument.getValue() != null)
-                                  .map(RequiredPermissionsInstrumentation::fromStringListArgument)
-                                  .ifPresent(acc::withAllOf);
-
-                              Optional.ofNullable(d.getArgument("anyOf"))
-                                  .filter(argument -> argument.getValue() != null)
-                                  .map(RequiredPermissionsInstrumentation::fromStringListArgument)
-                                  .ifPresent(acc::withAnyOf);
-                            });
+                    GraphQLFieldDefinition fieldDefinition = env.getFieldDefinition();
+                    gatherRequiredPermissions(acc, fieldDefinition);
+                    gatherRequiredPermissionsFromType(acc, fieldDefinition.getType());
+                    var arguments = env.getArguments();
+                    if (!arguments.isEmpty()) {
+                      fieldDefinition.getArguments().stream()
+                          .filter(argument -> arguments.containsKey(argument.getName()))
+                          .forEach(argument -> gatherRequiredPermissions(acc, argument));
+                    }
 
                     return acc;
                   },
@@ -80,13 +79,42 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
         });
   }
 
-  private QueryTraverser newQueryTraverser(InstrumentationValidationParameters parameters) {
+  private static QueryTraverser newQueryTraverser(InstrumentationValidationParameters parameters) {
     return QueryTraverser.newQueryTraverser()
         .schema(parameters.getSchema())
         .document(parameters.getDocument())
         .operationName(parameters.getOperation())
         .variables(parameters.getVariables())
         .build();
+  }
+
+  private static void gatherRequiredPermissionsFromType(
+      RequiredPermissions permissionsAccumulator, GraphQLType type) {
+    if (type instanceof GraphQLDirectiveContainer) {
+      gatherRequiredPermissions(permissionsAccumulator, (GraphQLDirectiveContainer) type);
+    }
+
+    if (type instanceof GraphQLModifiedType) {
+      gatherRequiredPermissionsFromType(
+          permissionsAccumulator, ((GraphQLModifiedType) type).getWrappedType());
+    }
+  }
+
+  private static void gatherRequiredPermissions(
+      RequiredPermissions permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
+    Optional.ofNullable(queryElement.getDirective("requiredPermissions"))
+        .ifPresent(
+            d -> {
+              Optional.ofNullable(d.getArgument("allOf"))
+                  .filter(argument -> argument.getValue() != null)
+                  .map(RequiredPermissionsInstrumentation::fromStringListArgument)
+                  .ifPresent(permissionsAccumulator::withAllOf);
+
+              Optional.ofNullable(d.getArgument("anyOf"))
+                  .filter(argument -> argument.getValue() != null)
+                  .map(RequiredPermissionsInstrumentation::fromStringListArgument)
+                  .ifPresent(permissionsAccumulator::withAnyOf);
+            });
   }
 
   @SuppressWarnings("unchecked")
