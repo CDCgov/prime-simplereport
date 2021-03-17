@@ -1,7 +1,7 @@
 package gov.cdc.usds.simplereport.db.repository;
 
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
-import java.util.Optional;
+import java.util.List;
 import java.util.UUID;
 import org.springframework.data.repository.Repository;
 
@@ -10,11 +10,11 @@ import org.springframework.data.repository.Repository;
  * method-generating super-interface: all desired methods must be explicitly declared (and there
  * should be very few).
  */
-public interface AuditEventRepository extends Repository<ApiAuditEvent, UUID> {
+public interface ApiAuditEventRepository extends Repository<ApiAuditEvent, UUID> {
 
   ApiAuditEvent save(ApiAuditEvent apiAuditEvent);
 
-  Optional<ApiAuditEvent> findFirstByOrderByEventTimestampDesc();
+  List<ApiAuditEvent> findFirst10ByOrderByEventTimestampDesc();
 
   long count();
 }

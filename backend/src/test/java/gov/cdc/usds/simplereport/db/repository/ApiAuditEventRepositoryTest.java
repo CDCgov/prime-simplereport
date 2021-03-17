@@ -13,9 +13,9 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class AuditEventRepositoryTest extends BaseRepositoryTest {
+class ApiAuditEventRepositoryTest extends BaseRepositoryTest {
 
-  @Autowired private AuditEventRepository _repo;
+  @Autowired private ApiAuditEventRepository _repo;
   @Autowired private OrganizationRepository _orgRepo;
   @Autowired private ApiUserRepository _userRepo;
 
@@ -39,7 +39,7 @@ class AuditEventRepositoryTest extends BaseRepositoryTest {
     pause();
     _repo.save(new ApiAuditEvent("BBBB", REQUEST, API_REQ, List.of(), user, List.of(), false, org));
     flush();
-    ApiAuditEvent latest = _repo.findFirstByOrderByEventTimestampDesc().orElseThrow();
+    ApiAuditEvent latest = _repo.findFirst10ByOrderByEventTimestampDesc().get(0);
     assertEquals("BBBB", latest.getRequestId());
   }
 }

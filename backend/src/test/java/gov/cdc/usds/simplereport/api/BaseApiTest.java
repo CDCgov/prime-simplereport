@@ -251,7 +251,7 @@ public abstract class BaseApiTest {
       String operationName,
       Set<UserPermission> permissions,
       List<String> errorPaths) {
-    ApiAuditEvent event = _auditService.getLastEvent().orElseThrow();
+    ApiAuditEvent event = _auditService.getLastEvents(1).get(0);
     assertEquals(username, event.getUser().getLoginEmail());
     // fix to come in v11.0.0 of the graphql-kickstart starter
     // assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());

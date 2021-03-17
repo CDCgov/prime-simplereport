@@ -32,7 +32,7 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
             "/fuzz"));
     _service.logGraphQlEvent(state, List.of());
     assertEquals(1L, _service.countAuditEvents());
-    ApiAuditEvent saved = _service.getLastEvent().orElseThrow();
+    ApiAuditEvent saved = _service.getLastEvents(1).get(0);
     assertEquals("ABCDE", saved.getRequestId());
     assertEquals("ftp", saved.getHttpRequestDetails().getForwardedProtocol());
     assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
