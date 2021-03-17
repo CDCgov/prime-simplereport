@@ -32,14 +32,14 @@ export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
 export const REMOVE_PATIENT_FROM_QUEUE = gql`
-  mutation RemovePatientFromQueue($patientId: String!) {
+  mutation RemovePatientFromQueue($patientId: ID!) {
     removePatientFromQueue(patientId: $patientId)
   }
 `;
 
 const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
-    $id: String!
+    $id: ID!
     $deviceId: String
     $result: String
     $dateTested: DateTime
@@ -76,7 +76,7 @@ interface EditQueueItemResponse {
 
 const SUBMIT_TEST_RESULT = gql`
   mutation SubmitTestResult(
-    $patientId: String!
+    $patientId: ID!
     $deviceId: String!
     $result: String!
     $dateTested: DateTime
@@ -86,13 +86,15 @@ const SUBMIT_TEST_RESULT = gql`
       deviceId: $deviceId
       result: $result
       dateTested: $dateTested
-    )
+    ) {
+      internalId
+    }
   }
 `;
 
 const UPDATE_AOE = gql`
   mutation UpdateAOE(
-    $patientId: String!
+    $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String

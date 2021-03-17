@@ -56,7 +56,7 @@ const GET_FACILITY_QUERY = gql`
 
 const UPDATE_FACILITY_MUTATION = gql`
   mutation UpdateFacility(
-    $facilityId: String!
+    $facilityId: ID!
     $testingFacilityName: String!
     $cliaNumber: String
     $street: String!

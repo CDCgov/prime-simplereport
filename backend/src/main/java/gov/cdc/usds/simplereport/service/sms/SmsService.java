@@ -37,10 +37,10 @@ public class SmsService {
     LOG.debug("SmsService will send from {}", rawFromNumber);
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional
-  public String sendToPatientLink(String plid, String text) throws NumberParseException {
-    PatientLink pl = pls.getPatientLink(plid);
+  public String sendToPatientLink(String patientLinkId, String text) throws NumberParseException {
+    PatientLink pl = pls.getPatientLink(patientLinkId);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
   }
 

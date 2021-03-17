@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
@@ -22,7 +23,12 @@ import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -218,6 +224,7 @@ public abstract class BaseApiTest {
       String birthDate,
       String phone,
       String lookupId,
+      Optional<UUID> facilityId,
       Optional<String> expectedError)
       throws IOException {
     ObjectNode variables =
@@ -227,7 +234,61 @@ public abstract class BaseApiTest {
             .put("lastName", lastName)
             .put("birthDate", birthDate)
             .put("telephone", phone)
-            .put("lookupId", lookupId);
+            .put("lookupId", lookupId)
+            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
     return runQuery("add-person", variables, expectedError.orElse(null));
+  }
+
+  protected void updateSelfPrivileges(
+      Role role, boolean accessAllFacilities, Set<UUID> facilities) {
+    String originalUsername = _userName;
+
+    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
+    String id = who.get("id").asText();
+
+    // cannot update own privileges, so need to switch to another profile
+    if (originalUsername.equals(TestUserIdentities.ORG_ADMIN_USER)) {
+      useSuperUser();
+    } else {
+      useOrgAdmin();
+    }
+
+    ObjectNode updatePrivilegesVariables =
+        getUpdateUserPrivilegesVariables(id, role, accessAllFacilities, facilities);
+    runQuery("update-user-privileges", updatePrivilegesVariables);
+
+    _userName = originalUsername;
+  }
+
+  protected ObjectNode getUpdateUserPrivilegesVariables(
+      String id, Role role, boolean accessAllFacilities, Set<UUID> facilities) {
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("id", id)
+            .put("role", role.name())
+            .put("accessAllFacilities", accessAllFacilities);
+    variables
+        .putArray("facilities")
+        .addAll(
+            facilities.stream()
+                .map(f -> JsonNodeFactory.instance.textNode(f.toString()))
+                .collect(Collectors.toSet()));
+    return variables;
+  }
+
+  // map from each facility's name to its UUID; includes all facilities in organization
+  protected Map<String, UUID> extractAllFacilitiesInOrg() {
+    String originalUsername = _userName;
+    useOrgAdmin();
+    Iterator<JsonNode> facilitiesIter =
+        runQuery("org-settings-query").get("organization").get("testingFacility").elements();
+    Map<String, UUID> facilities = new HashMap<>();
+    while (facilitiesIter.hasNext()) {
+      JsonNode facility = facilitiesIter.next();
+      facilities.put(facility.get("name").asText(), UUID.fromString(facility.get("id").asText()));
+    }
+    _userName = originalUsername;
+    return facilities;
   }
 }
