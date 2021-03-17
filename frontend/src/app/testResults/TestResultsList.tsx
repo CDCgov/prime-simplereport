@@ -148,7 +148,13 @@ export const DetachedTestResultsList: any = ({
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>Test Results</h2>
+              <h2>
+                Test Results
+                <span className="sr-showing-results-on-page">
+                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                  {totalEntries}
+                </span>
+              </h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
