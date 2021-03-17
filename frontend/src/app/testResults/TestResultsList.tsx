@@ -18,7 +18,7 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
 
-const testResultQuery = gql`
+export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
     testResults(
       facilityId: $facilityId
@@ -85,7 +85,7 @@ export const DetachedTestResultsList: any = ({
     );
   }
 
-  const testResults = data.testResults;
+  const testResults = data?.testResults || [];
 
   const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
@@ -96,7 +96,11 @@ export const DetachedTestResultsList: any = ({
     };
 
     if (testResults.length === 0) {
-      return <tr>"No results"</tr>;
+      return (
+        <tr>
+          <td>No results</td>
+        </tr>
+      );
     }
 
     // `sort` mutates the array, so make a copy
@@ -181,7 +185,7 @@ export const DetachedTestResultsList: any = ({
   );
 };
 
-const resultsCountQuery = gql`
+export const resultsCountQuery = gql`
   query GetResultsCountByFacility($facilityId: ID!) {
     testResultsCount(facilityId: $facilityId)
   }

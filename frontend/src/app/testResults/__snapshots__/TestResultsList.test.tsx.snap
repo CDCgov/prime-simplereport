@@ -74,16 +74,16 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Melvin, Davis
+                    Cragell, Barb Whitaker
                   </th>
                   <td>
-                    Jan 12, 2021 5:56 PM
+                    Mar 17, 2021 7:27 PM
                   </td>
                   <td>
                     NEGATIVE
                   </td>
                   <td>
-                    LumiraDX
+                    Abbott IDNow
                   </td>
                   <td>
                     <button
@@ -125,16 +125,16 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Whizzz, Cheez
+                    Colleer, Barde X
                   </th>
                   <td>
-                    Jan 4, 2021 12:00 AM
+                    Mar 17, 2021 7:27 PM
                   </td>
                   <td>
-                    UNDETERMINED
+                    NEGATIVE
                   </td>
                   <td>
-                    LumiraDX
+                    Abbott IDNow
                   </td>
                   <td>
                     <button
