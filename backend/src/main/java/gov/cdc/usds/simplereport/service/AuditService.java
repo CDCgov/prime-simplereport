@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 public class AuditService {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuditService.class);
+  public static final int MAX_EVENT_FETCH = 10;
 
   private final ApiAuditEventRepository _repo;
   private final ApiUserService _userService;
@@ -28,7 +29,7 @@ public class AuditService {
     this._userService = userService;
   }
 
-  public List<ApiAuditEvent> getLastEvents(@Range(min = 1, max = 10) int count) {
+  public List<ApiAuditEvent> getLastEvents(@Range(min = 1, max = MAX_EVENT_FETCH) int count) {
     return _repo.findFirst10ByOrderByEventTimestampDesc().subList(0, count);
   }
 

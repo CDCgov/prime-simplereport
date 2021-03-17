@@ -22,7 +22,8 @@ public class AuditDebuggingEndpoint {
   @Autowired private AuditService _service;
 
   @ReadOperation(produces = "application/json")
-  public List<ApiAuditEvent> getLatest(@Nullable @Range(min = 1, max = 10) Integer count) {
+  public List<ApiAuditEvent> getLatest(
+      @Nullable @Range(min = 1, max = AuditService.MAX_EVENT_FETCH) Integer count) {
     if (count == null) {
       count = 1;
     }
