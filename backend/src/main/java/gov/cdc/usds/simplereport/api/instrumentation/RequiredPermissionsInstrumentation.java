@@ -12,6 +12,7 @@ import graphql.schema.GraphQLArgument;
 import graphql.validation.ValidationError;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +112,22 @@ public class RequiredPermissionsInstrumentation extends SimpleInstrumentation {
     }
 
     Set<Set<UserPermission>> getAnyOfClauses() {
-      return Collections.unmodifiableSet(anyOfClauses);
+      // Reduce the anyOf clauses such that if the set contains {[A, B], [A, B, C]}, the resultant
+      // clause set will be {[A, B]}, as (anyOf [A, B, C]) must be true if (anyOf [A, B]) is true
+      // This reduction will iterate over the clauses in ascending order by length, then only add
+      // clauses to the reduced set if they are not fully covered by clauses already present in the
+      // reduced set.
+      var clauses = new HashSet<Set<UserPermission>>();
+      anyOfClauses.stream()
+          .sorted(Comparator.comparingInt(Set::size))
+          .forEach(
+              s -> {
+                if (clauses.stream().noneMatch(s::containsAll)) {
+                  clauses.add(s);
+                }
+              });
+
+      return Collections.unmodifiableSet(clauses);
     }
   }
 
