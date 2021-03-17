@@ -92,7 +92,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     TestOrder bradleyOrder = _dataFactory.createTestOrder(brad, facility);
 
-    List<TestEvent> results = _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
+    List<TestEvent> results =
+        _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
     assertEquals(0, results.size());
 
     _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);

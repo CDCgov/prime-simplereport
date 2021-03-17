@@ -23,14 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for fetching the device-type reference list (<i>not</i> the device
- * types available for a specific facility or organization).
+ * Service for fetching the device-type reference list (<i>not</i> the device types available for a
+ * specific facility or organization).
  */
 @Service
 @Transactional(readOnly = false)
@@ -47,8 +46,14 @@ public class TestOrderService {
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
-  public TestOrderService(OrganizationService os, DeviceTypeService dts, TestOrderRepository repo,
-      PatientAnswersRepository parepo, TestEventRepository terepo, PersonService ps, PatientLinkService pls,
+  public TestOrderService(
+      OrganizationService os,
+      DeviceTypeService dts,
+      TestOrderRepository repo,
+      PatientAnswersRepository parepo,
+      TestEventRepository terepo,
+      PersonService ps,
+      PatientLinkService pls,
       CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
@@ -123,7 +128,8 @@ public class TestOrderService {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
     Person person = _ps.getPatientNoPermissionsCheck(patientId, org);
-    TestOrder order = _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
+    TestOrder order =
+        _repo.fetchQueueItem(org, person).orElseThrow(TestOrderService::noSuchOrderFound);
     order.setDeviceSpecimen(deviceSpecimen);
     order.setResult(result);
     order.setDateTestedBackdate(dateTested);
@@ -156,7 +162,8 @@ public class TestOrderService {
     // an exception either way)
     Optional<TestOrder> existingOrder = _repo.fetchQueueItem(_os.getCurrentOrganization(), patient);
     if (existingOrder.isPresent()) {
-      throw new IllegalGraphqlArgumentException("Cannot create multiple queue entries for the same patient");
+      throw new IllegalGraphqlArgumentException(
+          "Cannot create multiple queue entries for the same patient");
     }
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
     if (!patient
@@ -171,8 +178,16 @@ public class TestOrderService {
     }
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
-    AskOnEntrySurvey survey = new AskOnEntrySurvey(pregnancy, symptoms, noSymptoms, symptomOnsetDate, firstTest,
-        priorTestDate, priorTestType, priorTestResult);
+    AskOnEntrySurvey survey =
+        new AskOnEntrySurvey(
+            pregnancy,
+            symptoms,
+            noSymptoms,
+            symptomOnsetDate,
+            firstTest,
+            priorTestDate,
+            priorTestType,
+            priorTestResult);
     PatientAnswers answers = new PatientAnswers(survey);
     _parepo.save(answers);
     newOrder.setAskOnEntrySurvey(answers);
@@ -195,12 +210,27 @@ public class TestOrderService {
       Boolean noSymptoms) {
     TestOrder order = retrieveTestOrder(patientId);
 
-    updateTimeOfTest(order, pregnancy, symptoms, firstTest, priorTestDate, priorTestType, priorTestResult,
-        symptomOnsetDate, noSymptoms);
+    updateTimeOfTest(
+        order,
+        pregnancy,
+        symptoms,
+        firstTest,
+        priorTestDate,
+        priorTestType,
+        priorTestResult,
+        symptomOnsetDate,
+        noSymptoms);
   }
 
-  private void updateTimeOfTest(TestOrder order, String pregnancy, Map<String, Boolean> symptoms, Boolean firstTest,
-      LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnsetDate,
+  private void updateTimeOfTest(
+      TestOrder order,
+      String pregnancy,
+      Map<String, Boolean> symptoms,
+      Boolean firstTest,
+      LocalDate priorTestDate,
+      String priorTestType,
+      TestResult priorTestResult,
+      LocalDate symptomOnsetDate,
       Boolean noSymptoms) {
     PatientAnswers answers = order.getAskOnEntrySurvey();
     AskOnEntrySurvey survey = answers.getSurvey();
@@ -261,7 +291,8 @@ public class TestOrderService {
 
     // generate a duplicate test_event that just has a status of REMOVED and the
     // reason
-    TestEvent newRemoveEvent = new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
+    TestEvent newRemoveEvent =
+        new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
 
     // order having reason text is way more useful when we allow actual corrections
@@ -293,11 +324,25 @@ public class TestOrderService {
   }
 
   // IMPLICITLY AUTHORIZED
-  public void updateMyTimeOfTestQuestions(String pregnancy, Map<String, Boolean> symptoms, boolean firstTest,
-      LocalDate priorTestDate, String priorTestType, TestResult priorTestResult, LocalDate symptomOnset,
+  public void updateMyTimeOfTestQuestions(
+      String pregnancy,
+      Map<String, Boolean> symptoms,
+      boolean firstTest,
+      LocalDate priorTestDate,
+      String priorTestType,
+      TestResult priorTestResult,
+      LocalDate symptomOnset,
       boolean noSymptoms) {
-    updateTimeOfTest(_patientContext.getLinkedOrder(), pregnancy, symptoms, firstTest, priorTestDate, priorTestType,
-        priorTestResult, symptomOnset, noSymptoms);
+    updateTimeOfTest(
+        _patientContext.getLinkedOrder(),
+        pregnancy,
+        symptoms,
+        firstTest,
+        priorTestDate,
+        priorTestType,
+        priorTestResult,
+        symptomOnset,
+        noSymptoms);
   }
 
   private static IllegalGraphqlArgumentException noSuchOrderFound() {

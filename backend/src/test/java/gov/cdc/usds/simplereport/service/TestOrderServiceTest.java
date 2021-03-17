@@ -3,8 +3,8 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -30,7 +30,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,18 +38,16 @@ import org.springframework.security.access.AccessDeniedException;
 @SuppressWarnings("checkstyle:MagicNumber")
 class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
-  @Autowired
-  private OrganizationService _organizationService;
-  @Autowired
-  private PersonService _personService;
-  @Autowired
-  private TestDataFactory _dataFactory;
+  @Autowired private OrganizationService _organizationService;
+  @Autowired private PersonService _personService;
+  @Autowired private TestDataFactory _dataFactory;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
   private static final PersonName CHARLES = new PersonName("Charles", "Mathew", "Albemarle", "Sr.");
   private static final PersonName DEXTER = new PersonName("Dexter", null, "Jones", null);
-  private static final PersonName ELIZABETH = new PersonName("Elizabeth", "Martha", "Merriwether", null);
+  private static final PersonName ELIZABETH =
+      new PersonName("Elizabeth", "Martha", "Merriwether", null);
   private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
   private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
   private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
@@ -131,11 +128,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void addPatientToQueue_standardUserAllFacilities_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
-    Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(), "8883334444", PersonRole.STAFF, null, null, null, null, false, false);
+    Person p =
+        _personService.addPatient(
+            null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
 
-    _service.addPatientToQueue(facility.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(), false,
-        LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(1, queue.size());
@@ -249,10 +271,35 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void addTestResult_standardUserAllFacilities_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
-    Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(), "8883334444", PersonRole.STAFF, null, null, null, null, false, false);
-    _service.addPatientToQueue(facility.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(), false,
-        LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+    Person p =
+        _personService.addPatient(
+            null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
+    _service.addPatientToQueue(
+        facility.getInternalId(),
+        p,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
     _service.addTestResult(
@@ -369,10 +416,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   void editTestResult_standardAllFacilitiesUser_ok() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
-    Person p = _personService.addPatient(null, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(), "8883334444", PersonRole.STAFF, null, null, null, null, false, false);
-    TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(),
-        false, LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+    Person p =
+        _personService.addPatient(
+            null,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
+    TestOrder o =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            p,
+            "",
+            Collections.<String, Boolean>emptyMap(),
+            false,
+            LocalDate.of(1865, 12, 25),
+            "",
+            TestResult.POSITIVE,
+            LocalDate.of(1865, 12, 25),
+            false);
     DeviceType devA = _dataFactory.getGenericDevice();
     assertNotEquals(o.getDeviceType().getName(), devA.getName());
 
@@ -429,8 +502,18 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
-    TestOrder o = _service.addPatientToQueue(facility.getInternalId(), p, "", Collections.<String, Boolean>emptyMap(),
-        false, LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+    TestOrder o =
+        _service.addPatientToQueue(
+            facility.getInternalId(),
+            p,
+            "",
+            Collections.<String, Boolean>emptyMap(),
+            false,
+            LocalDate.of(1865, 12, 25),
+            "",
+            TestResult.POSITIVE,
+            LocalDate.of(1865, 12, 25),
+            false);
     DeviceType devA = _dataFactory.getGenericDevice();
 
     _service.editQueueItem(
@@ -525,11 +608,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Facility facility = _organizationService.getFacilities(org).get(0);
     UUID facilityId = facility.getInternalId();
 
-    Person p1 = _personService.addPatient(facilityId, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-        _dataFactory.getAddress(), "8883334444", PersonRole.STAFF, null, null, null, null, false, false);
+    Person p1 =
+        _personService.addPatient(
+            facilityId,
+            "FOO",
+            "Fred",
+            null,
+            "",
+            "Sr.",
+            LocalDate.of(1865, 12, 25),
+            _dataFactory.getAddress(),
+            "8883334444",
+            PersonRole.STAFF,
+            null,
+            null,
+            null,
+            null,
+            false,
+            false);
 
-    _service.addPatientToQueue(facilityId, p1, "", Collections.<String, Boolean>emptyMap(), false,
-        LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+    _service.addPatientToQueue(
+        facilityId,
+        p1,
+        "",
+        Collections.<String, Boolean>emptyMap(),
+        false,
+        LocalDate.of(1865, 12, 25),
+        "",
+        TestResult.POSITIVE,
+        LocalDate.of(1865, 12, 25),
+        false);
 
     // get the first query count
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
@@ -538,11 +646,36 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     for (int ii = 0; ii < 2; ii++) {
       // add more tests to the queue. (which needs more patients)
-      Person p = _personService.addPatient(facilityId, "FOO", "Fred", null, "", "Sr.", LocalDate.of(1865, 12, 25),
-          _dataFactory.getAddress(), "8883334444", PersonRole.STAFF, null, null, null, null, false, false);
+      Person p =
+          _personService.addPatient(
+              facilityId,
+              "FOO",
+              "Fred",
+              null,
+              "",
+              "Sr.",
+              LocalDate.of(1865, 12, 25),
+              _dataFactory.getAddress(),
+              "8883334444",
+              PersonRole.STAFF,
+              null,
+              null,
+              null,
+              null,
+              false,
+              false);
 
-      _service.addPatientToQueue(facilityId, p, "", Collections.<String, Boolean>emptyMap(), false,
-          LocalDate.of(1865, 12, 25), "", TestResult.POSITIVE, LocalDate.of(1865, 12, 25), false);
+      _service.addPatientToQueue(
+          facilityId,
+          p,
+          "",
+          Collections.<String, Boolean>emptyMap(),
+          false,
+          LocalDate.of(1865, 12, 25),
+          "",
+          TestResult.POSITIVE,
+          LocalDate.of(1865, 12, 25),
+          false);
     }
 
     startQueryCount = _hibernateQueryInterceptor.getQueryCount();
@@ -575,14 +708,17 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     // verify the original order was updated
     TestOrder onlySavedOrder = _service.getTestResult(_e.getInternalId()).getTestOrder();
     assertEquals(reasonMsg, onlySavedOrder.getReasonForCorrection());
-    assertEquals(deleteMarkerEvent.getInternalId().toString(), onlySavedOrder.getTestEventId().toString());
+    assertEquals(
+        deleteMarkerEvent.getInternalId().toString(), onlySavedOrder.getTestEventId().toString());
     assertEquals(TestCorrectionStatus.REMOVED, onlySavedOrder.getCorrectionStatus());
 
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
     List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     assertEquals(1, events_after.size());
-    assertEquals(deleteMarkerEvent.getInternalId().toString(), events_after.get(0).getInternalId().toString());
+    assertEquals(
+        deleteMarkerEvent.getInternalId().toString(),
+        events_after.get(0).getInternalId().toString());
   }
 
   @Test
@@ -613,15 +749,21 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   private List<TestEvent> makedata() {
     Organization org = _organizationService.getCurrentOrganization();
     _site = _dataFactory.createValidFacility(org, "The Facility");
-    List<PersonName> patients = Arrays.asList(AMOS, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN, JANNELLE,
-        KACEY, LEELOO);
-    List<TestEvent> testEvents = patients.stream().map((PersonName p) -> {
-      Person person = _dataFactory.createMinimalPerson(org, _site, p);
-      return _dataFactory.createTestEvent(person, _site);
-    }).collect(Collectors.toList());
+    List<PersonName> patients =
+        Arrays.asList(
+            AMOS, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN, JANNELLE, KACEY, LEELOO);
+    List<TestEvent> testEvents =
+        patients.stream()
+            .map(
+                (PersonName p) -> {
+                  Person person = _dataFactory.createMinimalPerson(org, _site, p);
+                  return _dataFactory.createTestEvent(person, _site);
+                })
+            .collect(Collectors.toList());
     // Make one result in another facility
     _otherSite = _dataFactory.createValidFacility(org, "The Other Facility");
-    _dataFactory.createTestEvent(_dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite);
+    _dataFactory.createTestEvent(
+        _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite);
     return testEvents;
   }
 

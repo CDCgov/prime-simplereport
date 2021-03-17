@@ -12,8 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutationResolver {
 
-  @Autowired
-  private TestOrderService tos;
+  @Autowired private TestOrderService tos;
 
   public List<TestEvent> getTestResults(UUID facilityId, int pageNumber, int pageSize) {
     if (pageNumber < 0) {
