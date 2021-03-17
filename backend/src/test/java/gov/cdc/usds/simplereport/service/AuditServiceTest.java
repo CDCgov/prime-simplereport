@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 class AuditServiceTest extends BaseServiceTest<AuditService> {
@@ -37,10 +38,13 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     assertEquals("A", saved.getGraphqlQueryDetails().getOperationName());
     assertEquals(
         List.of(
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.START_TEST,
-            UserPermission.SUBMIT_TEST,
-            UserPermission.UPDATE_TEST),
+                UserPermission.SEARCH_PATIENTS,
+                UserPermission.START_TEST,
+                UserPermission.SUBMIT_TEST,
+                UserPermission.UPDATE_TEST)
+            .stream()
+            .map(Enum::name)
+            .collect(Collectors.toList()),
         saved.getUserPermissions());
   }
 }
