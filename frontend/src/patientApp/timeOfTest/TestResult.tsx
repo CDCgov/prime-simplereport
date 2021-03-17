@@ -1,12 +1,12 @@
 import { connect, useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
+import { capitalizeText } from "../../app/utils/text";
 
 const TestResult = () => {
   const patient = useSelector((state) => (state as any).patient as any);
   const fullName = formatFullName(patient);
   const testIsPositive = patient.lastTest.result === "POSITIVE";
-  const testResultColor = testIsPositive ? "text-secondary" : "text-green";
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
   const deviceType = patient.lastTest.deviceType;
 
@@ -14,15 +14,13 @@ const TestResult = () => {
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
       <div className="grid-container maxw-tablet">
         <div className="card usa-prose">
-          <h1 className="font-heading-lg">SARS-COV-2 result</h1>
+          <h1 className="font-heading-lg">SARS-CoV-2 result</h1>
           <h2 className="font-heading-sm">Patient</h2>
           <p className="margin-top-05">{fullName}</p>
           <div className="grid-row">
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
-              <p className={"margin-top-05 text-bold " + testResultColor}>
-                {patient.lastTest.result}
-              </p>
+              <p className="margin-top-05">{capitalizeText(patient.lastTest.result)}</p>
             </div>
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test date</h2>
