@@ -62,7 +62,7 @@ const TestResult = () => {
               </p>
               <p>
                 For further guidance, please consult the{" "}
-                <a href="https://www.cdc.gov/">
+                <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
                   Centers for Disease Control and Prevention (CDC)
                 </a>{" "}
                 website or contact your local health department.
@@ -92,7 +92,7 @@ const TestResult = () => {
               </ul>
               <p>
                 For further guidance, please consult the{" "}
-                <a href="https://www.cdc.gov/">
+                <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
                   Centers for Disease Control and Prevention (CDC)
                 </a>{" "}
                 website or contact your local health department
