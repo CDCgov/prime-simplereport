@@ -7,12 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -349,6 +352,36 @@ class PatientManagementTest extends BaseApiTest {
         "e",
         Optional.empty(),
         Optional.of("[d] is not a valid phone number"));
+  }
+
+  @Test
+  void queryingDeletedPatients_standardUser_fails() {
+    useOrgUser();
+    runQuery("deleted-person-query", null, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "GetDeletedPatients",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients"));
+  }
+
+  @Test
+  void queryingDeletedPatients_admin_ok() {
+    useOrgAdmin();
+    runQuery("deleted-person-query", null, null);
+    assertLastAuditEntry(
+        TestUserIdentities.ORG_ADMIN_USER,
+        "GetDeletedPatients",
+        EnumSet.allOf(UserPermission.class),
+        List.of());
   }
 
   private JsonNode doCreateAndFetch(

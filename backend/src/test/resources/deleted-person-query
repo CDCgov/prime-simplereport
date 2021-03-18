@@ -1,0 +1,8 @@
+query GetDeletedPatients {
+  patients(showDeleted: true) {
+    firstName
+    lastName
+    birthDate
+    telephone
+  }
+}
