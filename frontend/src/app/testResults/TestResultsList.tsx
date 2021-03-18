@@ -1,5 +1,5 @@
-import { gql } from "@apollo/client";
-import React, { useRef, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import moment from "moment";
 import classnames from "classnames";
@@ -12,14 +12,20 @@ import {
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
+import Pagination from "../commonComponents/Pagination";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
+
 import "./TestResultsList.scss";
 
-const testResultQuery = gql`
-  query GetFacilityResults($facilityId: ID!, $newerThanDate: DateTime) {
-    testResults(facilityId: $facilityId, newerThanDate: $newerThanDate) {
+export const testResultQuery = gql`
+  query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
+    testResults(
+      facilityId: $facilityId
+      pageNumber: $pageNumber
+      pageSize: $pageSize
+    ) {
       internalId
       dateTested
       result
@@ -45,29 +51,23 @@ const testResultQuery = gql`
 `;
 
 interface Props {
-  showAll: boolean;
-  setShowAll: (state: boolean) => void;
   data: any;
   trackAction: () => void;
   refetch: () => void;
+  page: number;
+  entriesPerPage: number;
+  totalEntries: number;
 }
 
 export const DetachedTestResultsList: any = ({
   data,
-  showAll,
-  setShowAll,
   refetch,
+  page,
+  entriesPerPage,
+  totalEntries,
 }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
-  const showMoreButton = useRef<HTMLButtonElement>(null);
-
-  const showCompleteResults = () => {
-    if (showMoreButton.current) {
-      showMoreButton.current.disabled = true;
-    }
-    setShowAll(true);
-  };
 
   if (printModalId) {
     return (
@@ -89,7 +89,7 @@ export const DetachedTestResultsList: any = ({
     );
   }
 
-  const testResults = data.testResults;
+  const testResults = data?.testResults || [];
 
   const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
@@ -100,7 +100,11 @@ export const DetachedTestResultsList: any = ({
     };
 
     if (testResults.length === 0) {
-      return <tr>"No results"</tr>;
+      return (
+        <tr>
+          <td>No results</td>
+        </tr>
+      );
     }
 
     // `sort` mutates the array, so make a copy
@@ -151,7 +155,13 @@ export const DetachedTestResultsList: any = ({
         <div className="grid-row">
           <div className="prime-container usa-card__container sr-test-results-list">
             <div className="usa-card__header">
-              <h2>Test Results {showAll ? "(all)" : "(past two days)"}</h2>
+              <h2>
+                Test Results
+                <span className="sr-showing-results-on-page">
+                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                  {totalEntries}
+                </span>
+              </h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -167,17 +177,14 @@ export const DetachedTestResultsList: any = ({
                 <tbody>{testResultRows()}</tbody>
               </table>
             </div>
-            {!showAll && (
-              <div className="sr-more-test-results">
-                <button
-                  className="usa-button"
-                  ref={showMoreButton}
-                  onClick={showCompleteResults}
-                >
-                  See all results
-                </button>
-              </div>
-            )}
+            <div className="usa-card__footer">
+              <Pagination
+                baseRoute="/results"
+                currentPage={page}
+                entriesPerPage={entriesPerPage}
+                totalEntries={totalEntries}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -185,31 +192,65 @@ export const DetachedTestResultsList: any = ({
   );
 };
 
+export const resultsCountQuery = gql`
+  query GetResultsCountByFacility($facilityId: ID!) {
+    testResultsCount(facilityId: $facilityId)
+  }
+`;
+
 const TestResultsList = (
-  props: Omit<Props, InjectedQueryWrapperProps | "showAll" | "setShowAll">
+  props: Omit<
+    Props,
+    InjectedQueryWrapperProps | "pageCount" | "entriesPerPage" | "totalEntries"
+  >
 ) => {
-  const [showAll, setShowAll] = useState(false);
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
+
+  const {
+    data: totalResults,
+    loading,
+    error,
+    refetch: refetchCount,
+  } = useQuery(resultsCountQuery, {
+    variables: { facilityId: activeFacilityId },
+    fetchPolicy: "no-cache",
+  });
 
   if (activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
 
-  // This gives us midnight of the previous day
-  const startDate = moment().subtract(1, "day").format("YYYY-MM-DD");
+  if (loading) {
+    return <p>Loading</p>;
+  }
+  if (error) {
+    throw error;
+  }
+
+  const totalEntries = totalResults.testResultsCount;
+  const entriesPerPage = 20;
+  const pageNumber = props.page || 1;
+
   return (
     <QueryWrapper<Props>
       query={testResultQuery}
       queryOptions={{
         variables: {
           facilityId: activeFacilityId,
-          newerThanDate: showAll ? null : startDate,
+          pageNumber: pageNumber - 1,
+          pageSize: entriesPerPage,
         },
       }}
+      onRefetch={refetchCount}
       Component={DetachedTestResultsList}
-      componentProps={{ ...props, showAll, setShowAll }}
+      componentProps={{
+        ...props,
+        page: pageNumber,
+        totalEntries,
+        entriesPerPage,
+      }}
     />
   );
 };

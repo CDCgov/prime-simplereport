@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -12,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
@@ -25,10 +27,11 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +45,22 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private PersonService _personService;
   @Autowired private TestDataFactory _dataFactory;
   @MockBean private SmsService _smsService;
+
+  private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
+  private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
+  private static final PersonName CHARLES = new PersonName("Charles", "Mathew", "Albemarle", "Sr.");
+  private static final PersonName DEXTER = new PersonName("Dexter", null, "Jones", null);
+  private static final PersonName ELIZABETH =
+      new PersonName("Elizabeth", "Martha", "Merriwether", null);
+  private static final PersonName FRANK = new PersonName("Frank", "Mathew", "Bones", "3");
+  private static final PersonName GALE = new PersonName("Gale", "Mary", "Vittorio", "PhD");
+  private static final PersonName HEINRICK = new PersonName("Heinrick", "Mark", "Silver", "III");
+  private static final PersonName IAN = new PersonName("Ian", "Brou", "Rutter", null);
+  private static final PersonName JANNELLE = new PersonName("Jannelle", "Martha", "Cromack", null);
+  private static final PersonName KACEY = new PersonName("Kacey", "L", "Mathie", null);
+  private static final PersonName LEELOO = new PersonName("Leeloo", "Dallas", "Multipass", null);
+  private Facility _site;
+  private Facility _otherSite;
 
   @BeforeEach
   void setupData() {
@@ -520,10 +539,10 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
+        () -> _service.getTestEventsResults(facility.getInternalId(), 0, 10));
 
     TestUserIdentities.setFacilityAuthorities(facility);
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 10);
   }
 
   @Test
@@ -575,13 +594,13 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     Person p = _dataFactory.createFullPerson(org);
 
     // Count queries with one order
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
 
     // Count queries with three order N+1 test
     _dataFactory.createTestEvent(p, facility);
     _dataFactory.createTestEvent(p, facility);
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     long endQueryCount = _hibernateQueryInterceptor.getQueryCount();
     assertEquals(endQueryCount, startQueryCount);
   }
@@ -687,8 +706,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     assertEquals(_e.getTestOrder().getInternalId(), _e.getTestOrderId());
 
-    List<TestEvent> events_before =
-        _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    List<TestEvent> events_before = _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     assertEquals(1, events_before.size());
 
     // verify the original order was updated
@@ -700,12 +718,68 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     // make sure the original item is removed from the result and ONLY the
     // "corrected" removed one is shown
-    List<TestEvent> events_after =
-        _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    List<TestEvent> events_after = _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     assertEquals(1, events_after.size());
     assertEquals(
         deleteMarkerEvent.getInternalId().toString(),
         events_after.get(0).getInternalId().toString());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestEventsResults_pagination() {
+    List<TestEvent> testEvents = makedata();
+    List<TestEvent> results_page0 = _service.getTestEventsResults(_site.getInternalId(), 0, 5);
+    List<TestEvent> results_page1 = _service.getTestEventsResults(_site.getInternalId(), 1, 5);
+    List<TestEvent> results_page2 = _service.getTestEventsResults(_site.getInternalId(), 2, 5);
+    List<TestEvent> results_page3 = _service.getTestEventsResults(_site.getInternalId(), 3, 5);
+
+    Collections.reverse(testEvents);
+
+    assertTestResultsList(results_page0, testEvents.subList(0, 5));
+    assertTestResultsList(results_page1, testEvents.subList(5, 10));
+    assertTestResultsList(results_page2, testEvents.subList(10, 11));
+    assertEquals(0, results_page3.size());
+  }
+
+  @Test
+  @WithSimpleReportOrgAdminUser
+  void getTestResultsCount() {
+    makedata();
+    int size = _service.getTestResultsCount(_site.getInternalId());
+    assertEquals(11, size);
+  }
+
+  private List<TestEvent> makedata() {
+    Organization org = _organizationService.getCurrentOrganization();
+    _site = _dataFactory.createValidFacility(org, "The Facility");
+    List<PersonName> patients =
+        Arrays.asList(
+            AMOS, ELIZABETH, CHARLES, DEXTER, FRANK, GALE, HEINRICK, IAN, JANNELLE, KACEY, LEELOO);
+    List<TestEvent> testEvents =
+        patients.stream()
+            .map(
+                (PersonName p) -> {
+                  Person person = _dataFactory.createMinimalPerson(org, _site, p);
+                  return _dataFactory.createTestEvent(person, _site);
+                })
+            .collect(Collectors.toList());
+    // Make one result in another facility
+    _otherSite = _dataFactory.createValidFacility(org, "The Other Facility");
+    _dataFactory.createTestEvent(
+        _dataFactory.createMinimalPerson(org, _otherSite, BRAD), _otherSite);
+    return testEvents;
+  }
+
+  private static void assertTestResultsList(List<TestEvent> found, List<TestEvent> expected) {
+    // check common elements first
+    for (int i = 0; i < expected.size() && i < found.size(); i++) {
+      assertEquals(expected.get(i).getInternalId(), found.get(i).getInternalId());
+    }
+    // *then* check if there are extras
+    if (expected.size() != found.size()) {
+      fail("Expected" + expected.size() + " items but found " + found.size());
+    }
   }
 
   @Test
@@ -721,14 +795,14 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
         () -> _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg));
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.getTestEventsResults(facility.getInternalId(), new Date(0)));
+        () -> _service.getTestEventsResults(facility.getInternalId(), 0, 10));
     assertThrows(
         AccessDeniedException.class,
         () -> _service.getTestResult(_e.getInternalId()).getTestOrder());
 
     TestUserIdentities.setFacilityAuthorities(facility);
     _service.correctTestMarkAsError(_e.getInternalId(), reasonMsg);
-    _service.getTestEventsResults(facility.getInternalId(), new Date(0));
+    _service.getTestEventsResults(facility.getInternalId(), 0, 10);
     _service.getTestResult(_e.getInternalId()).getTestOrder();
   }
 }

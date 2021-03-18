@@ -655,7 +655,7 @@
   }
 }
 
-.sr-time-of-test-buttons-footer {
+.aoe-modal__footer {
   background: color("white");
   border-bottom-left-radius: units(2px);
   border-top: units(1px) solid color("base-lighter");
@@ -669,6 +669,9 @@
   width: calc(
     #{units("tablet")} - #{units(2)} - #{units(1px)}
   ); // tablet - margin - border
+}
+
+.sr-time-of-test-buttons-footer {
   text-align: right;
 }
 

@@ -18,8 +18,16 @@ exports[`TestResultsList should render a list of tests 1`] = `
             class="usa-card__header"
           >
             <h2>
-              Test Results 
-              (past two days)
+              Test Results
+              <span
+                class="sr-showing-results-on-page"
+              >
+                Showing 
+                2
+                 of
+                 
+                2
+              </span>
             </h2>
           </div>
           <div
@@ -66,16 +74,16 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Melvin, Davis
+                    Cragell, Barb Whitaker
                   </th>
                   <td>
-                    Jan 12, 2021 5:56 PM
+                    Mar 17, 2021 7:27 PM
                   </td>
                   <td>
                     NEGATIVE
                   </td>
                   <td>
-                    LumiraDX
+                    Abbott IDNow
                   </td>
                   <td>
                     <button
@@ -117,16 +125,16 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="row"
                   >
-                    Whizzz, Cheez
+                    Colleer, Barde X
                   </th>
                   <td>
-                    Jan 4, 2021 12:00 AM
+                    Mar 17, 2021 7:27 PM
                   </td>
                   <td>
-                    UNDETERMINED
+                    NEGATIVE
                   </td>
                   <td>
-                    LumiraDX
+                    Abbott IDNow
                   </td>
                   <td>
                     <button
@@ -165,13 +173,27 @@ exports[`TestResultsList should render a list of tests 1`] = `
             </table>
           </div>
           <div
-            class="sr-more-test-results"
+            class="usa-card__footer"
           >
-            <button
-              class="usa-button"
+            <nav
+              aria-label="Pagination"
+              class="usa-pagination"
+              role="navigation"
             >
-              See all results
-            </button>
+              <ol>
+                <li>
+                  <a
+                    aria-label="Page 1"
+                    class="is-active"
+                    href="/results/1"
+                  >
+                    <span>
+                      1
+                    </span>
+                  </a>
+                </li>
+              </ol>
+            </nav>
           </div>
         </div>
       </div>
