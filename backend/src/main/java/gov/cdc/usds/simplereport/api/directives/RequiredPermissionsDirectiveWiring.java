@@ -16,11 +16,9 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
-  private static final Logger LOG = Logger.getLogger(RequiredPermissionsDirectiveWiring.class.getName());
   private static final String DIRECTIVE_NAME = "requiredPermissions";
   private final Set<UserPermission> verifiedPermissions = new HashSet<>();
   private final Set<UserPermission> verifiedMissingPermissions = new HashSet<>();
@@ -70,7 +68,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
         dfe -> {
           if (satisfiesRequiredPermissions(directive)
               && directiveOnParent.map(this::satisfiesRequiredPermissions).orElse(true)) {
-            LOG.info("Permission granted!");
             return originalDataFetcher.get(dfe);
           }
 
@@ -96,9 +93,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
   private boolean isUserSiteAdmin() {
     if (userIsSiteAdmin == null) {
-      LOG.info("Initializing userIsSiteAdmin");
       userIsSiteAdmin = userAuthorizationVerifier.userHasSiteAdminRole();
-      LOG.info(() -> "userIsSiteAdmin is " + userIsSiteAdmin);
     }
 
     return userIsSiteAdmin;
