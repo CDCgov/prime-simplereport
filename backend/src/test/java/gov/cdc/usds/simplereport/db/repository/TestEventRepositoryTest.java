@@ -92,7 +92,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     TestOrder bradleyOrder = _dataFactory.createTestOrder(brad, facility);
 
-    List<TestEvent> results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+    List<TestEvent> results =
+        _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
     assertEquals(0, results.size());
 
     _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
@@ -101,7 +102,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
 
-    results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+    results = _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
     assertEquals(3, results.size());
     assertEquals("Adam", results.get(0).getPatient().getFirstName());
     assertEquals("Charles", results.get(1).getPatient().getFirstName());

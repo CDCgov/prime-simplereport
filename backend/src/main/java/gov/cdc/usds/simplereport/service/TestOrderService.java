@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,9 @@ public class TestOrderService {
   private TestEventRepository _terepo;
   private PatientLinkService _pls;
   private final CurrentPatientContextHolder _patientContext;
+
+  public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
+  public static final int DEFAULT_PAGINATION_PAGESIZE = 5000;
 
   public TestOrderService(
       OrganizationService os,
@@ -69,10 +73,14 @@ public class TestOrderService {
 
   @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
-  public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
+  public List<TestEvent> getTestEventsResults(UUID facilityId, int pageOffset, int pageSize) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
-    return _terepo.getTestEventResults(
-        fac.getInternalId(), (newerThanDate != null) ? newerThanDate : new Date(0));
+    return _terepo.getTestEventResults(fac.getInternalId(), PageRequest.of(pageOffset, pageSize));
+  }
+
+  public int getTestResultsCount(UUID facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
+    return _terepo.getTestResultsCount(fac.getInternalId());
   }
 
   @Transactional(readOnly = true)
@@ -275,33 +283,40 @@ public class TestOrderService {
       throw new IllegalGraphqlArgumentException("TestEvent: could not load the parent order");
     }
 
-    // sanity check that two different users can't deleting the same event and delete it twice.
+    // sanity check that two different users can't deleting the same event and
+    // delete it twice.
     if (!testEventId.equals(order.getTestEventId())) {
       throw new IllegalGraphqlArgumentException("TestEvent: already deleted?");
     }
 
-    // generate a duplicate test_event that just has a status of REMOVED and the reason
+    // generate a duplicate test_event that just has a status of REMOVED and the
+    // reason
     TestEvent newRemoveEvent =
         new TestEvent(event, TestCorrectionStatus.REMOVED, reasonForCorrection);
     _terepo.save(newRemoveEvent);
 
-    // order having reason text is way more useful when we allow actual corrections not just
+    // order having reason text is way more useful when we allow actual corrections
+    // not just
     // deletes.
     order.setReasonForCorrection(reasonForCorrection);
     order.setTestEventRef(newRemoveEvent);
 
     // order.setOrderStatus(OrderStatus.CANCELED); NO: this makes it disappear.
 
-    // We currently don't do anything special with this CorrectionStatus on the order, but in the
+    // We currently don't do anything special with this CorrectionStatus on the
+    // order, but in the
     // next
-    // refactor, we will set this to TestCorrectionStatus.CORRECTED and it will go back into the
+    // refactor, we will set this to TestCorrectionStatus.CORRECTED and it will go
+    // back into the
     // queue to
     // be corrected.
     order.setCorrectionStatus(TestCorrectionStatus.REMOVED);
 
-    // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to think about the
+    // NOTE: WHEN we support actual corrections (versus just deleting). Make sure to
+    // think about the
     // TestOrder.dateTestedBackdate field.
-    // For example: when viewing the list of past TestEvents, and you see a correction,
+    // For example: when viewing the list of past TestEvents, and you see a
+    // correction,
     // what date should be shown if the original test being corrected was backdated?
     _repo.save(order);
 
