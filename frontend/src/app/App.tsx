@@ -123,9 +123,9 @@ const App = () => {
                   )}
                 />
                 <ProtectedRoute
-                  path="/results"
-                  render={() => {
-                    return <TestResultsList />;
+                  path="/results/:page?"
+                  render={({ match }: any) => {
+                    return <TestResultsList page={match.params.page} />;
                   }}
                   requiredPermissions={appPermissions.results.canView}
                   userPermissions={data.whoami.permissions}
