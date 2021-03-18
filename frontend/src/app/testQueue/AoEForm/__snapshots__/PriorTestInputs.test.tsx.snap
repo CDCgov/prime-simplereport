@@ -6,11 +6,6 @@ Array [
     className="usa-legend"
   >
     Is this your first COVID-19 test?
-    <span
-      className="usa-hint"
-    >
-       (optional)
-    </span>
   </div>,
   <div
     className="prime-previous-test-display margin-top-2"
@@ -24,11 +19,6 @@ Array [
       className="usa-legend usa-sr-only"
     >
       Is this your first covid test?
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </legend>
     <div
       className="usa-form-group prime-radio--horizontal"
@@ -85,11 +75,6 @@ Array [
       htmlFor="text-test-1"
     >
       Date of Most Recent Test
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </label>
     <input
       aria-required="false"
@@ -111,11 +96,6 @@ Array [
       htmlFor="drop-test-1"
     >
       Type of Prior Test
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </label>
     <select
       aria-required="false"
@@ -138,11 +118,6 @@ Array [
       htmlFor="drop-test-1"
     >
       Result of Prior Test
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </label>
     <select
       aria-required="false"

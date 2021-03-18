@@ -167,11 +167,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 className="usa-legend usa-sr-only"
               >
                 What are your symptoms?
-                <span
-                  className="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 className="usa-form-group"
@@ -510,11 +505,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Date of symptom onset
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -548,11 +538,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               className="usa-legend"
             >
               Is this your first COVID-19 test?
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </div>
             <div
               className="prime-previous-test-display margin-top-2"
@@ -566,11 +551,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 className="usa-legend usa-sr-only"
               >
                 Is this your first covid test?
-                <span
-                  className="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 className="usa-form-group prime-radio--horizontal"
@@ -640,11 +620,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               className="usa-legend"
             >
               Currently pregnant?
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </legend>
             <div
               className="usa-form-group"
