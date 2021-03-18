@@ -80,6 +80,10 @@ test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     useJUnitPlatform()
+    // uncomment this to log to stdout when each test starts, so you can tell what's going on
+    // testLogging {
+    //   events "started", "failed"
+    // }
 }
 
 configurations {

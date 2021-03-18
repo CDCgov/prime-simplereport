@@ -1,7 +1,8 @@
 spring:
-  profiles.include: no-security,no-okta-mgmt,local
+  profiles.include: no-security,no-okta-mgmt
   datasource:
     url: jdbc:postgresql://localhost:${test-db-port:5444}/simple_report
+    hikari.minimum-idle: 2 # when a context isn't being used, it should not leave lots of connections lying around
   liquibase:
     user: simple_report_migrations
     password: migrations456
@@ -9,6 +10,14 @@ spring:
     properties:
       hibernate:
         default_schema: simple_report
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: liquibase # this causes the liquibase connection pool to keep 10 connections active forever
+        # Excluding it here will probably not work, so let's be clear (and grep-friendly): if you get
+        # "org.postgresql.util.PSQLException: FATAL: remaining connection slots are reserved for non-replication superuser connections"
+        # there is a decent chance that this actuator has been activated and is making liquibase eat your database connections.
 logging:
   level:
     # Always have our own debug logging turned on in tests:
