@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -175,11 +174,10 @@ public abstract class BaseApiTest {
   private void setQueryHeaders() {
     LOG.info("Setting up graphql template authorization for {}", _userName);
     LOG.info("Setting custom headers: {}", _customHeaders.keySet());
-    HttpHeaders headers = new HttpHeaders();
-    headers.addAll(_customHeaders);
-    headers.add(
-        "Authorization", DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName);
-    _template.setHeaders(headers);
+    _template
+        .withClearHeaders()
+        .withBearerAuth(DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName)
+        .withAdditionalHeaders(_customHeaders);
     _customHeaders.clear();
   }
 
