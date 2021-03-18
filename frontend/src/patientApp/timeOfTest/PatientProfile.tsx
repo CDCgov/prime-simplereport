@@ -2,7 +2,7 @@ import moment from "moment";
 import { Redirect } from "react-router-dom";
 
 import { formatFullName } from "../../app/utils/user";
-import { formatAddress } from "../../app/utils/address";
+import { formatAddress, newLineSpan } from "../../app/utils/address";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
@@ -25,15 +25,6 @@ const PatientProfile = ({ patient }: Props) => {
   )?.label;
   const gender = GENDER_VALUES.find((val) => val.value === patient.gender)
     ?.label;
-
-  const newLineSpan = ({ text = "" }) => {
-    let key = 1;
-    return text.split("\n").map((str) => (
-      <span className="display-block" key={`newLineSpan${++key}`}>
-        {str}
-      </span>
-    ));
-  };
 
   const address = formatAddress({
     street: patient.street,

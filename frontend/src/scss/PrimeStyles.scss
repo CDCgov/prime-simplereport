@@ -247,7 +247,11 @@
   .ReactModal__Content {
     @include u-margin-x("4");
     max-height: 90vh;
-    width: units("mobile-lg");
+    width: 700px;
+    @media (max-width: 768px) {
+      width: units("mobile-lg");
+    }
+
   }
 
   .modal__container {
@@ -261,6 +265,17 @@
 
   .modal__heading {
     margin-right: units(3);
+  }
+
+  .modal__footer {
+    display: flex;
+    justify-content: flex-end;
+     * {
+      margin-right: 15px;
+      &:last-child {
+        margin-right: 0;
+      }
+     }
   }
 }
 

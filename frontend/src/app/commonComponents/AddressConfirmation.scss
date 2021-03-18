@@ -1,0 +1,43 @@
+.address__alert {
+  .usa-alert__heading {
+    font-size: 16px;
+    font-weight: 400;
+    padding-top: 5px;
+  }
+}
+
+.address__select .usa-form-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 10px;
+  .usa-radio {
+    border: 2px solid #e4e4e4;
+    padding: 10px;
+    border-radius: 3px;
+    .address__formated {
+      padding-left: 32px;
+    }
+  }
+  .usa-radio__input:disabled + .usa-radio__label::before {
+    display: none;
+  }
+  .usa-radio__input:disabled + .usa-radio {
+    border: 2px solid #eee;
+
+  }
+  .usa-radio__input:disabled + .usa-radio__label {
+    height: 100%;
+
+  }
+}
+
+
+.address__no-suggestion {
+  margin-top: 38px;
+  text-align: center;
+}
+
+.address__instructions{
+  font-weight: 600;
+  margin-top: 15px;
+}

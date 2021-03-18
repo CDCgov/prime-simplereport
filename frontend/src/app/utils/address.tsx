@@ -19,3 +19,11 @@ export function formatAddress(address: Address) {
   }`;
   return result;
 }
+
+export const newLineSpan = ({ text = "" }) => {
+  return text.split("\n").map((str, index) => (
+    <span className="display-block" key={`newLineSpan${index}`}>
+      {str}
+    </span>
+  ));
+};
