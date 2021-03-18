@@ -78,7 +78,7 @@ public class UserAuthorizationVerifier {
 
   public boolean userHasSiteAdminRole() {
     IdentityAttributes id = _supplier.get();
-    return id != null && _admins.contains(id.getUsername());
+    return id != null && _admins.contains(id.getUsername().toLowerCase());
   }
 
   public boolean userHasPermissions(Set<UserPermission> permissions) {
