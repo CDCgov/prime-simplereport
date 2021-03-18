@@ -49,8 +49,7 @@ public class AuditLoggingInstrumentation extends SimpleInstrumentation {
       state.setGraphqlDetails(
           new GraphQlInputs(
               parameters.getOperation(), parameters.getQuery(), parameters.getVariables()));
-      _auditService.logGraphQlEvent(state, List.of());
-      return new SimpleInstrumentationContext<>();
+      return new ExecutionResultContext(state);
     } catch (Exception e) {
       // we don't 100% trust this error not to get swallowed by graphql-java
       LOG.error("Extremely unexpected error creating instrumentation state for audit", e);

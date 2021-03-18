@@ -209,7 +209,7 @@ class ApiUserManagementTest extends BaseApiTest {
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
-        List.of());
+        List.of("addUser"));
   }
 
   @Test
@@ -265,7 +265,7 @@ class ApiUserManagementTest extends BaseApiTest {
         TestUserIdentities.SITE_ADMIN_USER,
         "addUserToCurrentOrgOp",
         Set.of(),
-        List.of());
+        List.of("addUserToCurrentOrg"));
   }
 
   @Test
