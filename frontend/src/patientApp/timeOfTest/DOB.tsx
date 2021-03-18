@@ -120,7 +120,6 @@ const DOB = () => {
                   ariaDescribedBy={"bdayFormat"}
                   hintText={"MM/DD/YYYY or MMDDYYYY"}
                   errorMessage={birthDateError}
-                  hideOptional={true}
                   validationStatus={birthDateError ? "error" : undefined}
                   onChange={(evt) => setBirthDate(evt.currentTarget.value)}
                   inputRef={dobRef}
