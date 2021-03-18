@@ -1,165 +1,45 @@
 import React, { useState } from "react";
-import { gql, useMutation } from "@apollo/client";
-import { toast } from "react-toastify";
-import {
-  useAppInsightsContext,
-  useTrackEvent,
-} from "@microsoft/applicationinsights-react-js";
-import moment from "moment";
-import { Prompt, Redirect } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { Prompt } from "react-router-dom";
+import { useSelector } from "react-redux";
 import classnames from "classnames";
+import { toast } from "react-toastify";
 
 import {
   PATIENT_TERM_PLURAL_CAP,
   PATIENT_TERM_CAP,
   stateCodes,
-} from "../../config/constants";
+} from "../../../config/constants";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
   YES_NO_VALUES,
-} from "../constants";
-import Breadcrumbs from "../commonComponents/Breadcrumbs";
-import TextInput from "../commonComponents/TextInput";
-import RadioGroup from "../commonComponents/RadioGroup";
-import RequiredMessage from "../commonComponents/RequiredMessage";
-import Dropdown from "../commonComponents/Dropdown";
-import { displayFullName, showError, showNotification } from "../utils";
-import "./EditPatient.scss";
-import Alert from "../commonComponents/Alert";
-import FormGroup from "../commonComponents/FormGroup";
-import Button from "../../app/commonComponents/Button";
-import { setPatient as reduxSetPatient } from "../../app/store";
-import { PxpApi } from "../../patientApp/PxpApiService";
-
-const ADD_PATIENT = gql`
-  mutation AddPatient(
-    $facilityId: ID
-    $firstName: String!
-    $middleName: String
-    $lastName: String!
-    $birthDate: LocalDate!
-    $street: String!
-    $streetTwo: String
-    $city: String
-    $state: String!
-    $zipCode: String!
-    $telephone: String!
-    $role: String
-    $email: String
-    $county: String
-    $race: String
-    $ethnicity: String
-    $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
-  ) {
-    addPatient(
-      facilityId: $facilityId
-      firstName: $firstName
-      middleName: $middleName
-      lastName: $lastName
-      birthDate: $birthDate
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      telephone: $telephone
-      role: $role
-      email: $email
-      county: $county
-      race: $race
-      ethnicity: $ethnicity
-      gender: $gender
-      residentCongregateSetting: $residentCongregateSetting
-      employedInHealthcare: $employedInHealthcare
-    ) {
-      internalId
-    }
-  }
-`;
-
-const UPDATE_PATIENT = gql`
-  mutation UpdatePatient(
-    $facilityId: ID
-    $patientId: ID!
-    $firstName: String!
-    $middleName: String
-    $lastName: String!
-    $birthDate: LocalDate!
-    $street: String!
-    $streetTwo: String
-    $city: String
-    $state: String!
-    $zipCode: String!
-    $telephone: String!
-    $role: String
-    $email: String
-    $county: String
-    $race: String
-    $ethnicity: String
-    $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
-  ) {
-    updatePatient(
-      facilityId: $facilityId
-      patientId: $patientId
-      firstName: $firstName
-      middleName: $middleName
-      lastName: $lastName
-      birthDate: $birthDate
-      street: $street
-      streetTwo: $streetTwo
-      city: $city
-      state: $state
-      zipCode: $zipCode
-      telephone: $telephone
-      role: $role
-      email: $email
-      county: $county
-      race: $race
-      ethnicity: $ethnicity
-      gender: $gender
-      residentCongregateSetting: $residentCongregateSetting
-      employedInHealthcare: $employedInHealthcare
-    ) {
-      internalId
-    }
-  }
-`;
+} from "../../constants";
+import Breadcrumbs from "../../commonComponents/Breadcrumbs";
+import TextInput from "../../commonComponents/TextInput";
+import RadioGroup from "../../commonComponents/RadioGroup";
+import RequiredMessage from "../../commonComponents/RequiredMessage";
+import Dropdown from "../../commonComponents/Dropdown";
+import { displayFullName, showError } from "../../utils";
+import "../EditPatient.scss";
+import FormGroup from "../../commonComponents/FormGroup";
+import Button from "../../commonComponents/Button";
 
 interface Props {
-  activeFacilityId: string;
+  patient: Person;
   patientId?: string;
-  patient?: any; //TODO: TYPES
-  isPxpView: boolean;
+  activeFacilityId: string;
+  savePerson: (person: Person, facility: string | null) => void;
   backCallback?: () => void;
-  saveCallback?: () => void;
+  isPxpView: boolean;
 }
 
-const PatientForm = (props: Props) => {
-  const appInsights = useAppInsightsContext();
-  const trackAddPatient = useTrackEvent(appInsights, "Add Patient", {});
-  const trackUpdatePatient = useTrackEvent(appInsights, "Update Patient", {});
-
-  const dispatch = useDispatch();
-
-  const [addPatient] = useMutation(ADD_PATIENT);
-  const [updatePatient] = useMutation(UPDATE_PATIENT);
+const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
-  const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState(
     {} as { [key: string]: string | undefined }
   );
-
-  const plid = useSelector((state: any) => state.plid);
-  const patientInStore = useSelector((state: any) => state.patient);
-
   const allFacilities = "~~ALL-FACILITIES~~";
   const [currentFacilityId, setCurrentFacilityId] = useState(
     patient.facility === null ? allFacilities : patient.facility?.id
@@ -181,7 +61,7 @@ const PatientForm = (props: Props) => {
     let value: string | null = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
-        ...patient[e.target.name],
+        ...(patient as any)[e.target.name],
         [e.target.value]: (e.target as any).checked,
       };
     } else if (value === allFacilities) {
@@ -292,7 +172,34 @@ const PatientForm = (props: Props) => {
     patient.lastName
   );
 
-  const savePatientData = () => {
+  const onRaceChange = (race: Race) => {
+    setFormChanged(true);
+    setPatient({ ...patient, race });
+  };
+
+  const onEthnicityChange = (ethnicity: Ethnicity) => {
+    setFormChanged(true);
+    setPatient({ ...patient, ethnicity });
+  };
+
+  const onGenderChange = (gender: Gender) => {
+    setFormChanged(true);
+    setPatient({ ...patient, gender });
+  };
+
+  const onResidentCongregateSettingChange = (
+    residentCongregateSetting: YesNo
+  ) => {
+    setFormChanged(true);
+    setPatient({ ...patient, residentCongregateSetting });
+  };
+
+  const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
+    setFormChanged(true);
+    setPatient({ ...patient, employedInHealthcare });
+  };
+
+  const onSave = () => {
     // Validate all fields with validation set up
     const fieldsToValidate = Object.keys(errors).map(
       (name) =>
@@ -323,152 +230,10 @@ const PatientForm = (props: Props) => {
     }
     // If no errors, submit
     setFormChanged(false);
-    const variables = {
-      facilityId:
-        currentFacilityId === allFacilities ? null : currentFacilityId,
-      firstName: patient.firstName,
-      middleName: patient.middleName,
-      lastName: patient.lastName,
-      birthDate: patient.birthDate,
-      street: patient.street,
-      streetTwo: patient.streetTwo,
-      city: patient.city,
-      state: patient.state,
-      zipCode: patient.zipCode,
-      telephone: patient.telephone,
-      role: patient.role,
-      email: patient.email,
-      county: patient.county,
-      race: patient.race,
-      ethnicity: patient.ethnicity,
-      gender: patient.gender,
-      residentCongregateSetting: patient.residentCongregateSetting === "YES",
-      employedInHealthcare: patient.employedInHealthcare === "YES",
-    };
-    if (props.isPxpView) {
-      // due to @JsonIgnores on Person to avoid duplicate recording, we have to
-      // inline the address so that it can be deserialized outside the context
-      // of GraphQL, which understands the flattened shape in its schema
-      const {
-        street,
-        streetTwo,
-        city,
-        state,
-        county,
-        zipCode,
-        ...withoutAddress
-      } = variables;
-      PxpApi.updatePatient(plid, patientInStore.birthDate, {
-        ...withoutAddress,
-        address: {
-          street: [street, streetTwo],
-          city,
-          state,
-          county,
-          zipCode,
-        },
-      }).then((updatedPatientFromApi: any) => {
-        showNotification(
-          toast,
-          <Alert
-            type="success"
-            title={`Your profile changes have been saved`}
-          />
-        );
-
-        const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-          ? "YES"
-          : "NO";
-        const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-          ? "YES"
-          : "NO";
-
-        dispatch(
-          reduxSetPatient({
-            ...updatedPatientFromApi,
-            residentCongregateSetting,
-            employedInHealthcare,
-          })
-        );
-        setSubmitted(true);
-      });
-    } else if (props.patientId) {
-      trackUpdatePatient({});
-      updatePatient({
-        variables: {
-          patientId: props.patientId,
-          ...variables,
-        },
-      }).then(() => {
-        showNotification(
-          toast,
-          <Alert
-            type="success"
-            title={`${PATIENT_TERM_CAP} Record Saved`}
-            body="Information record has been updated."
-          />
-        );
-        setSubmitted(true);
-      });
-    } else {
-      trackAddPatient({});
-      addPatient({ variables }).then(() => {
-        showNotification(
-          toast,
-          <Alert
-            type="success"
-            title={`${PATIENT_TERM_CAP} Record Created`}
-            body="New information record has been created."
-          />
-        );
-        setSubmitted(true);
-      });
-    }
-  };
-  // after the submit was success, redirect back to the List page
-  if (submitted) {
-    if (!props.isPxpView) {
-      return <Redirect to={`/patients/?facility=${props.activeFacilityId}`} />;
-    } else {
-      const patientInfoConfirmRedirect = () => {
-        return (
-          <Redirect
-            push
-            to={{
-              pathname: "/patient-info-confirm",
-            }}
-          />
-        );
-      };
-      props.saveCallback ? props.saveCallback() : patientInfoConfirmRedirect();
-    }
-  }
-
-  const onRaceChange = (race: Race) => {
-    setFormChanged(true);
-    setPatient({ ...patient, race });
-  };
-
-  const onEthnicityChange = (ethnicity: Ethnicity) => {
-    setFormChanged(true);
-    setPatient({ ...patient, ethnicity });
-  };
-
-  const onGenderChange = (gender: Gender) => {
-    setFormChanged(true);
-    setPatient({ ...patient, gender });
-  };
-
-  const onResidentCongregateSettingChange = (
-    residentCongregateSetting: YesNo
-  ) => {
-    setFormChanged(true);
-    setPatient({ ...patient, residentCongregateSetting });
-  };
-
-  const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
-    setFormChanged(true);
-    setPatient({ ...patient, employedInHealthcare });
+    props.savePerson(
+      patient,
+      currentFacilityId === allFacilities ? null : currentFacilityId
+    );
   };
 
   //TODO: when to save initial data? What if name isn't filled? required fields?
@@ -486,7 +251,7 @@ const PatientForm = (props: Props) => {
       >
         <Prompt
           when={formChanged}
-          message={(location) =>
+          message={() =>
             "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
           }
         />
@@ -515,7 +280,7 @@ const PatientForm = (props: Props) => {
               <button
                 className="usa-button prime-save-patient-changes"
                 disabled={!formChanged}
-                onClick={savePatientData}
+                onClick={onSave}
               >
                 Save changes
               </button>
@@ -654,7 +419,7 @@ const PatientForm = (props: Props) => {
             <TextInput
               label="Street address 2"
               name="streetTwo"
-              value={patient.streetTwo}
+              value={patient.streetTwo || ""}
               onChange={onChange}
             />
           </div>
@@ -662,7 +427,7 @@ const PatientForm = (props: Props) => {
             <TextInput
               label="City"
               name="city"
-              value={patient.city}
+              value={patient.city || ""}
               onChange={onChange}
             />
             <TextInput
@@ -754,28 +519,6 @@ const PatientForm = (props: Props) => {
             required
           />
         </FormGroup>
-        {!props.isPxpView && patient.testResults && (
-          <FormGroup title="Test history">
-            {patient.testResults.length !== 0 && (
-              <table className="usa-table usa-table--borderless">
-                <thead>
-                  <tr>
-                    <th scope="col">Date of Test</th>
-                    <th scope="col">Result</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {patient.testResults.map((r: any, i: number) => (
-                    <tr key={i}>
-                      <td>{moment(r.dateTested).format("lll")}</td>
-                      <td>{r.result}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </FormGroup>
-        )}
         <div
           className={
             props.isPxpView
@@ -787,7 +530,7 @@ const PatientForm = (props: Props) => {
             id="edit-patient-save-lower"
             className={props.isPxpView ? "" : "prime-save-patient-changes"}
             disabled={!formChanged}
-            onClick={savePatientData}
+            onClick={onSave}
             label={props.isPxpView ? "Save and continue" : "Save changes"}
           />
           {props.isPxpView && (
@@ -804,4 +547,4 @@ const PatientForm = (props: Props) => {
   );
 };
 
-export default PatientForm;
+export default PersonForm;
