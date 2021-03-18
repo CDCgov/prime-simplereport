@@ -87,7 +87,7 @@ const DOB = () => {
         }}
       />
     );
-  } else if (patient?.internalId) {
+  } else if (patient?.firstName) {
     return (
       <Redirect
         push
