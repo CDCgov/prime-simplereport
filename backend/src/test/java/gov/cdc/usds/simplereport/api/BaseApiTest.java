@@ -143,31 +143,6 @@ public abstract class BaseApiTest {
   }
 
   /**
-   * Run the query in the given resource file, check if the response has errors, and return the
-   * {@code data} section of the response if not. <b>NOTE</b>: Any headers that have been set on the
-   * {@link GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set
-   * them, modify the {{@link #setQueryHeaders(String)} method, or add another method that is called
-   * after it!
-   *
-   * @param queryFileName
-   * @return the "data" key from the server response.
-   * @throws AssertionFailedError if the response has errors
-   * @throws RuntimeException for unexpected errors
-   */
-  protected ObjectNode runQuery(String queryFileName) {
-    try {
-      setQueryHeaders();
-      GraphQLResponse response = _template.postForResource(queryFileName);
-      assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
-      JsonNode responseBody = response.readTree();
-      assertGraphQLOutcome(responseBody, null);
-      return (ObjectNode) responseBody.get("data");
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
    * CLEAR ALL HEADERS and then set the Authorization header the requested value, as well as any
    * other custom headers supplied for this request.
    */
@@ -181,13 +156,23 @@ public abstract class BaseApiTest {
     _customHeaders.clear();
   }
 
+  /** See {@link #runQuery(String, String, ObjectNode, String)}. */
+  protected ObjectNode runQuery(String queryFileName) {
+    return runQuery(queryFileName, null, null, null);
+  }
+
   /**
    * Run the query in the given resource file, check if the response has the expected error (either
    * none or a single specific error message), and return the {@code data} section of the response
    * if the error was as expected.
    */
   protected ObjectNode runQuery(String queryFileName, String expectedError) {
-    return runQuery(queryFileName, null, expectedError);
+    return runQuery(queryFileName, null, null, expectedError);
+  }
+
+  /** See {@link #runQuery(String,String,ObjectNode,String)}. */
+  protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
+    return runQuery(queryFileName, null, variables, expectedError);
   }
 
   /**
@@ -197,11 +182,20 @@ public abstract class BaseApiTest {
    * GraphQLTestTemplate} will be cleared at the beginning of this method: if you need to set them,
    * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
    * it!
+   *
+   * @param queryFileName the resource file name of the query
+   * @param operationName the operation name from the query file, in the event that the query file
+   *     is a multi-operation document (apparently). This turns out not to be needed for any of our
+   *     cases, but we can leave it supported for the day when it is.
+   * @return the "data" key from the server response.
+   * @throws AssertionFailedError if the response has errors
+   * @throws RuntimeException for unexpected errors
    */
-  protected ObjectNode runQuery(String queryFileName, ObjectNode variables, String expectedError) {
+  protected ObjectNode runQuery(
+      String queryFileName, String operationName, ObjectNode variables, String expectedError) {
     try {
       setQueryHeaders();
-      GraphQLResponse response = _template.perform(queryFileName, variables);
+      GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, expectedError);
@@ -212,7 +206,7 @@ public abstract class BaseApiTest {
   }
 
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
-    return runQuery(queryFileName, variables, null);
+    return runQuery(queryFileName, null, variables, null);
   }
 
   /**
@@ -251,8 +245,7 @@ public abstract class BaseApiTest {
       List<String> errorPaths) {
     ApiAuditEvent event = _auditService.getLastEvents(1).get(0);
     assertEquals(username, event.getUser().getLoginEmail());
-    // fix to come in v11.0.0 of the graphql-kickstart starter
-    // assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
+    assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
     if (permissions != null) {
       assertEquals(
           permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
