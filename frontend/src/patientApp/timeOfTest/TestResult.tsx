@@ -4,7 +4,7 @@ import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
 import { Patient } from "../../app/patients/ManagePatients";
 
-const serializeResult = (result: String) => {
+const serializeResult = (result: string) => {
   switch (result) {
     case "POSITIVE":
       return "Positive";
