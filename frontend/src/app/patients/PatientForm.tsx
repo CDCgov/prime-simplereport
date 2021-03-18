@@ -7,7 +7,6 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 import moment from "moment";
 import { Prompt, Redirect } from "react-router-dom";
-import Modal from "react-modal";
 import { useDispatch, useSelector } from "react-redux";
 import classnames from "classnames";
 
@@ -34,7 +33,6 @@ import FormGroup from "../commonComponents/FormGroup";
 import Button from "../../app/commonComponents/Button";
 import { setPatient as reduxSetPatient } from "../../app/store";
 import { PxpApi } from "../../patientApp/PxpApiService";
-import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg";
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -158,7 +156,6 @@ const PatientForm = (props: Props) => {
   const [errors, setErrors] = useState(
     {} as { [key: string]: string | undefined }
   );
-  const [helpModalOpen, setHelpModalOpen] = useState(false);
 
   const plid = useSelector((state: any) => state.plid);
   const patientInStore = useSelector((state: any) => state.patient);
@@ -707,13 +704,10 @@ const PatientForm = (props: Props) => {
           </div>
         </FormGroup>
         <FormGroup title="Demographics">
-          {props.isPxpView && (
-            <Button
-              className="usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
-              onClick={() => setHelpModalOpen(true)}
-              label="Why are we asking for this information?"
-            />
-          )}
+          <p className="usa-hint maxw-prose">
+            This information is important for public health efforts to recognize
+            and address inequality in health outcomes.
+          </p>
           <RadioGroup
             legend="Race"
             name="race"
@@ -806,42 +800,6 @@ const PatientForm = (props: Props) => {
           )}
         </div>
       </div>
-      <Modal
-        portalClassName="modal--basic"
-        isOpen={helpModalOpen}
-        onRequestClose={() => setHelpModalOpen(false)}
-        style={{
-          content: {
-            position: "initial",
-          },
-        }}
-        overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
-      >
-        <div className="modal__container">
-          <button
-            className="modal__close-button"
-            style={{ cursor: "pointer" }}
-            onClick={() => setHelpModalOpen(false)}
-          >
-            <img className="modal__close-img" src={iconClose} alt="Close" />
-          </button>
-          <div className="modal__content">
-            <h3 className="modal__heading">
-              Why are we asking for this information?
-            </h3>
-            <p>
-              Collecting data on demographics is important for improving public
-              health.
-            </p>
-            <p>
-              We know that public health problems are disproportionately higher
-              in some populations in the U.S., and this information can assist
-              with public health efforts to recognize and mitigate disparities
-              in health outcomes.
-            </p>
-          </div>
-        </div>
-      </Modal>
     </main>
   );
 };
