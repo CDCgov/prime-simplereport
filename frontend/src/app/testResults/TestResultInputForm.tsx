@@ -20,13 +20,7 @@ const TestResultInputForm: React.FC<Props> = ({
   onSubmit,
   onChange,
 }) => {
-  const onResultChange = (event: React.FormEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value as TestResult;
-    onChange(value);
-  };
-
-  const onResultClick = (event: React.FormEvent<HTMLInputElement>) => {
-    const value = (event.target as HTMLInputElement).value as TestResult;
+  const onResultClick = (value: TestResult) => {
     if (value === testResultValue) {
       onChange(undefined);
     }
@@ -49,7 +43,7 @@ const TestResultInputForm: React.FC<Props> = ({
           legend="Test result"
           legendSrOnly
           onClick={onResultClick}
-          onChange={onResultChange}
+          onChange={onChange}
           buttons={[
             {
               value: COVID_RESULTS.POSITIVE,

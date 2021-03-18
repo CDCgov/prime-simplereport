@@ -16,7 +16,12 @@ import {
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../config/constants";
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../constants";
+import {
+  RACE_VALUES,
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+  YES_NO_VALUES,
+} from "../constants";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import TextInput from "../commonComponents/TextInput";
 import RadioGroup from "../commonComponents/RadioGroup";
@@ -441,6 +446,34 @@ const PatientForm = (props: Props) => {
       props.saveCallback ? props.saveCallback() : patientInfoConfirmRedirect();
     }
   }
+
+  const onRaceChange = (race: Race) => {
+    setFormChanged(true);
+    setPatient({ ...patient, race });
+  };
+
+  const onEthnicityChange = (ethnicity: Ethnicity) => {
+    setFormChanged(true);
+    setPatient({ ...patient, ethnicity });
+  };
+
+  const onGenderChange = (gender: Gender) => {
+    setFormChanged(true);
+    setPatient({ ...patient, gender });
+  };
+
+  const onResidentCongregateSettingChange = (
+    residentCongregateSetting: YesNo
+  ) => {
+    setFormChanged(true);
+    setPatient({ ...patient, residentCongregateSetting });
+  };
+
+  const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
+    setFormChanged(true);
+    setPatient({ ...patient, employedInHealthcare });
+  };
+
   //TODO: when to save initial data? What if name isn't filled? required fields?
   return (
     <main
@@ -686,33 +719,30 @@ const PatientForm = (props: Props) => {
             name="race"
             buttons={RACE_VALUES}
             selectedRadio={patient.race}
-            onChange={onChange}
+            onChange={onRaceChange}
           />
           <RadioGroup
             legend="Ethnicity"
             name="ethnicity"
             buttons={ETHNICITY_VALUES}
             selectedRadio={patient.ethnicity}
-            onChange={onChange}
+            onChange={onEthnicityChange}
           />
           <RadioGroup
             legend="Biological Sex"
             name="gender"
             buttons={GENDER_VALUES}
             selectedRadio={patient.gender}
-            onChange={onChange}
+            onChange={onGenderChange}
           />
         </FormGroup>
         <FormGroup title="Other">
           <RadioGroup
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
+            buttons={YES_NO_VALUES}
             selectedRadio={patient.residentCongregateSetting}
-            onChange={onChange}
+            onChange={onResidentCongregateSettingChange}
             onBlur={validateField}
             validationStatus={validationStatus("residentCongregateSetting")}
             errorMessage={errors.residentCongregateSetting}
@@ -721,12 +751,9 @@ const PatientForm = (props: Props) => {
           <RadioGroup
             legend="Work in Healthcare?"
             name="employedInHealthcare"
-            buttons={[
-              { label: "Yes", value: "YES" },
-              { label: "No", value: "NO" },
-            ]}
+            buttons={YES_NO_VALUES}
             selectedRadio={patient.employedInHealthcare}
-            onChange={onChange}
+            onChange={onEmployedInHealthcareChange}
             onBlur={validateField}
             validationStatus={validationStatus("employedInHealthcare")}
             errorMessage={errors.employedInHealthcare}

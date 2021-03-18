@@ -83,7 +83,7 @@ describe("ManageUsers", () => {
     expect(container).toMatchSnapshot();
   });
   it("disables logged-in user's settings", async () => {
-    const { container, findByText, getByText } = render(
+    const { container, findByText, getByText, getByLabelText } = render(
       <MemoryRouter>
         <ManageUsers
           users={users}
@@ -99,6 +99,15 @@ describe("ManageUsers", () => {
 
     fireEvent.click(getByText(displayFullName("Bob", "", "Bobberoo")));
     await findByText("YOU");
+    expect(getByLabelText("admin", { exact: false })).toHaveAttribute(
+      "disabled"
+    );
+    expect(getByLabelText("user", { exact: false })).toHaveAttribute(
+      "disabled"
+    );
+    expect(getByLabelText("Entry only", { exact: false })).toHaveAttribute(
+      "disabled"
+    );
     expect(container).toMatchSnapshot();
   });
   it("passes user details to the addUserToOrg function", async () => {

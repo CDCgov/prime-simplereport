@@ -25,7 +25,7 @@ function conductTest(patientName) {
   this.section.modal.click("@noSymptoms");
   this.section.modal.expect.element("@firstTest").to.be.visible;
   this.api.execute(
-    'document.querySelector(\'input[name="prior_test_flag"][value="yes"]+label\').scrollIntoView()'
+    'document.querySelector(\'input[name="prior_test_flag"][value="YES"]+label\').scrollIntoView()'
   );
   this.section.modal.click("@firstTest");
   this.section.modal.expect.element("@pregnant").to.be.visible;
@@ -140,7 +140,7 @@ module.exports = {
         smartphoneRadio: 'input[name="qr-code"][value="smartphone"]+label',
         verbalRadio: 'input[name="qr-code"][value="verbal"]+label',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
-        firstTest: 'input[name="prior_test_flag"][value="yes"]+label',
+        firstTest: 'input[name="prior_test_flag"][value="YES"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',
         continueButton: "#aoe-form-save-button",
       },
