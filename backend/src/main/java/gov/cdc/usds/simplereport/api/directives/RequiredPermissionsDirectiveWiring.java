@@ -9,7 +9,6 @@ import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLObjectType;
 import graphql.schema.idl.SchemaDirectiveWiring;
 import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import java.util.Collection;
@@ -28,12 +27,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
   RequiredPermissionsDirectiveWiring(UserAuthorizationVerifier userAuthorizationVerifier) {
     this.userAuthorizationVerifier = userAuthorizationVerifier;
-  }
-
-  @Override
-  public GraphQLObjectType onObject(
-      SchemaDirectiveWiringEnvironment<GraphQLObjectType> environment) {
-    return environment.getElement();
   }
 
   @Override
@@ -90,11 +83,12 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private boolean satisfiesRequiredPermissions(RequiredPermissions requiredPermissions) {
-    return requiredPermissions.allOf().map(this::userHasPermissions).orElse(true)
-        && requiredPermissions
-            .anyOf()
-            .map(s -> s.stream().anyMatch(this::userHasPermission))
-            .orElse(true);
+    return isUserSiteAdmin()
+        || (requiredPermissions.allOf().map(this::userHasPermissions).orElse(true)
+            && requiredPermissions
+                .anyOf()
+                .map(s -> s.stream().anyMatch(this::userHasPermission))
+                .orElse(true));
   }
 
   private boolean isUserSiteAdmin() {
@@ -106,10 +100,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private boolean userHasPermissions(Set<UserPermission> userPermissions) {
-    if (isUserSiteAdmin()) {
-      return true;
-    }
-
     if (verifiedPermissions.containsAll(userPermissions)) {
       return true;
     }
@@ -127,10 +117,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private boolean userHasPermission(UserPermission userPermission) {
-    if (isUserSiteAdmin()) {
-      return true;
-    }
-
     if (verifiedPermissions.contains(userPermission)) {
       return true;
     }
