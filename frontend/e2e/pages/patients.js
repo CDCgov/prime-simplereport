@@ -24,11 +24,6 @@ function addPatient(dobFormat) {
   this.expect.section("@editPatient").to.be.visible;
   this.expect.section("@editPatient").to.contain.text("Add New Person");
   this.section.editPatient.setValue("@firstName", firstName);
-  this.section.editPatient.click("@saveButton");
-  this.expect.section("@editPatient").to.contain.text("Last name is required");
-  this.expect.section("@editPatient").to.contain.text("Facility is required");
-  this.section.editPatient.setValue("@lastName", lastName);
-  this.section.editPatient.setValue("@facility", "All facilities");
   this.section.editPatient.setValue("@dob", dobForInput);
   this.section.editPatient.setValue("@phone", phone);
   this.section.editPatient.setValue("@address", address);
@@ -36,6 +31,11 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@zip", zip);
   this.section.editPatient.click("@resident");
   this.section.editPatient.click("@healthcareWorker");
+  this.section.editPatient.click("@saveButton");
+  this.expect.section("@editPatient").to.contain.text("Last name is required");
+  this.expect.section("@editPatient").to.contain.text("Facility is required");
+  this.section.editPatient.setValue("@lastName", lastName);
+  this.section.editPatient.setValue("@facility", "All facilities");
   this.section.editPatient.click("@saveButton");
   this.expect.section("@patientList").to.be.visible;
   this.expect.section("@patientList").to.contain.text(fullName);

@@ -815,13 +815,11 @@ exports[`PatientForm snapshot 1`] = `
         >
           Demographics
         </legend>
-        <button
-          className="usa-button usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
-          onClick={[Function]}
-          type="button"
+        <p
+          className="usa-hint maxw-prose"
         >
-          Why are we asking for this information?
-        </button>
+          This information is important for public health efforts to recognize and address inequality in health outcomes.
+        </p>
         <fieldset
           className="usa-fieldset prime-radios"
         >
