@@ -220,16 +220,15 @@ public class UserAuthorizationVerifier {
     return patient.isPresent() && userCanViewPatient(patient.get());
   }
 
-  public boolean userCanAccessPatientLink(String patientLinkId) {
+  public boolean userCanAccessPatientLink(UUID patientLinkId) {
     if (patientLinkId == null) {
       return true;
     }
-    UUID patientLinkUuid = UUID.fromString(patientLinkId);
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     if (currentOrgRoles.isEmpty()) {
       return false;
     } else {
-      Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkUuid);
+      Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkId);
       return patientLink.isPresent()
           && currentOrgRoles.get().containsFacility(patientLink.get().getTestOrder().getFacility());
     }
