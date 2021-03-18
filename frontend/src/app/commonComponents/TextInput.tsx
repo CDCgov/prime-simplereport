@@ -40,6 +40,7 @@ interface Props {
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   format?: string;
   formatMessage?: string;
+  labelClassName?: string;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
@@ -66,6 +67,7 @@ export const TextInput = ({
   onChange,
   format,
   formatMessage,
+  labelClassName,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
   const [autoId] = useUniqueId("text", 1);
@@ -84,7 +86,8 @@ export const TextInput = ({
         className={classnames(
           "usa-label",
           labelSrOnly && "usa-sr-only",
-          validationStatus === "error" && "usa-label--error"
+          validationStatus === "error" && "usa-label--error",
+          labelClassName
         )}
         htmlFor={widgetId}
         aria-describedby={ariaDescribedBy}
