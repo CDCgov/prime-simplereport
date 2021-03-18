@@ -49,6 +49,8 @@ function verifyEmail(email) {
 }
 
 function completeQuestionnaire() {
+  this.section.app.expect.element("@textDelivery").to.be.visible;
+  this.section.app.click("@textDelivery");
   this.section.app.expect.element("@noSymptoms").to.be.visible;
   this.section.app.click("@noSymptoms");
   this.section.app.expect.element("@mostRecent").to.be.visible;
@@ -89,6 +91,7 @@ module.exports = {
         editPatientButton: "#edit-patient-profile-button",
         emailInput: 'input[name="email"]',
         savePatientButton: "#edit-patient-save-lower",
+        textDelivery: 'input[name="testResultDelivery"][value="SMS"]+label',
         noSymptoms: 'input[name="no_symptoms"][value="no"]+label',
         mostRecent: 'input[name="most_recent_flag"][value="yes"]+label',
         pregnant: 'input[name="pregnancy"][value="60001007"]+label',

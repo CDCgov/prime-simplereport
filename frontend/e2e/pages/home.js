@@ -22,6 +22,9 @@ function conductTest(patientName) {
     .section("@modal")
     .to.contain.text("Are you experiencing any of the following symptoms?");
   this.section.modal.expect.element("@noSymptoms").to.be.visible;
+  this.api.execute(
+    'document.querySelector(\'input[name="no_symptoms"][value="no"]+label\').scrollIntoView()'
+  );
   this.section.modal.click("@noSymptoms");
   this.section.modal.expect.element("@firstTest").to.be.visible;
   this.api.execute(
