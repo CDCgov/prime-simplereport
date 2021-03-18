@@ -233,10 +233,7 @@ public abstract class BaseApiTest {
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, expectedError);
-      return Optional.ofNullable(responseBody.get("data"))
-          .filter(ObjectNode.class::isInstance)
-          .map(ObjectNode.class::cast)
-          .orElse(null);
+      return (ObjectNode) responseBody.get("data");
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
