@@ -69,6 +69,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <tbody>
                 <tr
                   class="sr-test-result-row"
+                  data-patient-link="https://simplereport.gov//pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
                   <th
@@ -120,6 +121,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </tr>
                 <tr
                   class="sr-test-result-row"
+                  data-patient-link="https://simplereport.gov//pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
                   <th
