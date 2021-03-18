@@ -67,6 +67,9 @@ export interface Patient {
   role: string;
   lastTest: {
     dateAdded: string;
+    result: string;
+    dateTested: string;
+    deviceType: string;
   };
 }
 

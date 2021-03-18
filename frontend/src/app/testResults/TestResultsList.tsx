@@ -127,9 +127,11 @@ export const DetachedTestResultsList: any = ({
             "sr-test-result-row",
             removed && "sr-test-result-row--removed"
           )}
-          data-patient-link={`${getUrl()}pxp?plid=${
-            r?.patientLink?.internalId
-          }`}
+          data-patient-link={
+            r.patientLink
+              ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
+              : null
+          }
         >
           <th scope="row">
             {displayFullName(

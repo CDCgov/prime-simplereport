@@ -28,6 +28,21 @@ const initialState = {
     roleDescription: "",
     isAdmin: false,
   },
+  patient: {
+    internalId: "",
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    birthDate: "",
+    isDeleted: false,
+    role: "",
+    lastTest: {
+      dateAdded: "",
+      result: "",
+      dateTested: "",
+      deviceType: "",
+    },
+  },
 };
 
 const reducers = (state = initialState, action: any) => {

@@ -2,10 +2,12 @@ import { connect, useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
 import { capitalizeText } from "../../app/utils/text";
+import { RootState } from "../../app/store";
+import { Patient } from "../../app/patients/ManagePatients";
 
 const TestResult = () => {
-  const patient = useSelector((state) => (state as any).patient as any);
-  const fullName = formatFullName(patient);
+  const patient = useSelector<RootState, Patient>((state) => state.patient);
+  const fullName = formatFullName(patient as any);
   const testIsPositive = patient.lastTest.result === "POSITIVE";
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
   const deviceType = patient.lastTest.deviceType;
