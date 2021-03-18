@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.logging;
 
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.AuditService;
 import java.util.UUID;
@@ -51,9 +52,11 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       throws Exception {
     PatientLink patientLink = _context.getPatientLink();
     LOG.debug("Closing out request. Patient link is {}", patientLink);
+    int responseCode = response.getStatus();
     if (patientLink != null) { // this is noooot acceptable
       String requestId = MDC.get(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
-      _auditService.logRestEvent(requestId, request, _context.getOrganization(), patientLink);
+      Organization organization = _context.getOrganization();
+      _auditService.logRestEvent(requestId, request, responseCode, organization, patientLink);
     }
   }
 

@@ -1561,3 +1561,19 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__api_audit_event__patient_link
                     references: patient_link
+  - changeSet:
+      id: audit-http-response-codes
+      author: bwarfield@cdc.gov
+      comment: Add HTTP response code column to api_audit_event.
+      changes:
+        - addColumn:
+            tableName: api_audit_event
+            columns:
+              - column:
+                  name: response_code
+                  type: int
+                  remarks: The HTTP response code for this request (generally only interesting for REST requests).
+                  valueNumeric: 200 # backdate
+                  defaultValueNumeric: 200
+                  constraints:
+                    nullable: false

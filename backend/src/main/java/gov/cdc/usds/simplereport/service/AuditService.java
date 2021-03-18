@@ -60,9 +60,13 @@ public class AuditService {
 
   @Transactional(readOnly = false)
   public void logRestEvent(
-      String requestId, HttpServletRequest request, Organization org, PatientLink patientLink) {
+      String requestId,
+      HttpServletRequest request,
+      int responseCode,
+      Organization org,
+      PatientLink patientLink) {
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
-    _repo.save(new ApiAuditEvent(requestId, reqDetails, userInfo, org, patientLink));
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));
   }
 }
