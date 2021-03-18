@@ -5,13 +5,24 @@ import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.db.repository.FacilityRepository;
+import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
+import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
+import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -19,11 +30,13 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Authorization translation bean: looks at the current user and tells you what things they can do.
  */
 @Component(AuthorizationConfiguration.AUTHORIZER_BEAN)
+@Transactional(readOnly = true)
 public class UserAuthorizationVerifier {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserAuthorizationVerifier.class);
@@ -32,6 +45,11 @@ public class UserAuthorizationVerifier {
   private IdentitySupplier _supplier;
   private OrganizationService _orgService;
   private ApiUserRepository _userRepo;
+  private PersonRepository _personRepo;
+  private FacilityRepository _facilityRepo;
+  private TestEventRepository _testEventRepo;
+  private TestOrderRepository _testOrderRepo;
+  private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
 
   public UserAuthorizationVerifier(
@@ -39,23 +57,31 @@ public class UserAuthorizationVerifier {
       IdentitySupplier supplier,
       OrganizationService orgService,
       ApiUserRepository userRepo,
+      PersonRepository personRepo,
+      FacilityRepository facilityRepo,
+      TestEventRepository testEventRepo,
+      TestOrderRepository testOrderRepo,
+      PatientLinkRepository patientLinkRepo,
       OktaRepository oktaRepo) {
     super();
     this._admins = admins;
     this._supplier = supplier;
     this._orgService = orgService;
     this._userRepo = userRepo;
+    this._personRepo = personRepo;
+    this._facilityRepo = facilityRepo;
+    this._testEventRepo = testEventRepo;
+    this._testOrderRepo = testOrderRepo;
+    this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
   }
 
   public boolean userHasSiteAdminRole() {
-    isValidUser();
     IdentityAttributes id = _supplier.get();
     return id != null && _admins.contains(id.getUsername());
   }
 
   public boolean userHasPermissions(Set<UserPermission> permissions) {
-    isValidUser();
     Optional<OrganizationRoles> orgRoles = _orgService.getCurrentOrganizationRoles();
     // more troubleshooting help here.
     // Note: if your not reaching this code, then grep for
@@ -82,7 +108,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userIsNotSelf(UUID userId) {
-    isValidUser();
     IdentityAttributes id = _supplier.get();
     return !getUser(userId).getLoginEmail().equals(id.getUsername());
   }
@@ -92,7 +117,6 @@ public class UserAuthorizationVerifier {
   }
 
   public boolean userIsInSameOrg(UUID userId) {
-    isValidUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
     String otherUserEmail = getUser(userId).getLoginEmail();
     Optional<Organization> otherOrg =
@@ -108,7 +132,130 @@ public class UserAuthorizationVerifier {
             .equals(otherOrg.get().getExternalId());
   }
 
-  private void isValidUser() {
+  public boolean userCanViewTestEvent(UUID testEventId) {
+    if (testEventId == null) {
+      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else {
+      Optional<TestEvent> testEvent = _testEventRepo.findById(testEventId);
+      return testEvent.isPresent()
+          && currentOrgRoles.get().containsFacility(testEvent.get().getFacility());
+    }
+  }
+
+  public boolean userCanViewTestOrder(UUID testOrderId) {
+    if (testOrderId == null) {
+      return true;
+    }
+    Optional<TestOrder> testOrder = _testOrderRepo.findById(testOrderId);
+    return testOrder.isPresent() && userCanViewTestOrder(testOrder.get());
+  }
+
+  public boolean userCanViewTestOrder(TestOrder testOrder) {
+    if (testOrder == null) {
+      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    return currentOrgRoles.isPresent()
+        && currentOrgRoles.get().containsFacility(testOrder.getFacility());
+  }
+
+  public boolean userCanViewTestOrderOfPatient(UUID patientId) {
+    if (patientId == null) {
+      return true;
+    } else if (!userCanViewPatient(patientId)) {
+      return false;
+    }
+    Optional<Person> patient = _personRepo.findById(patientId);
+    if (patient.isEmpty()) {
+      return false;
+    }
+    Organization org = patient.get().getOrganization();
+    Optional<TestOrder> order = _testOrderRepo.fetchQueueItem(org, patient.get());
+    return (order.isPresent() && userCanViewTestOrder(order.get()));
+  }
+
+  public boolean userCanAccessFacility(UUID facilityId) {
+    if (facilityId == null) {
+      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else {
+      Optional<Facility> facility = _facilityRepo.findById(facilityId);
+      return facility.isPresent() && currentOrgRoles.get().containsFacility(facility.get());
+    }
+  }
+
+  public boolean userCanViewPatient(Person patient) {
+    if (patient == null) {
+      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else if (!currentOrgRoles
+        .get()
+        .getOrganization()
+        .getInternalId()
+        .equals(patient.getOrganization().getInternalId())) {
+      return false;
+    } else if (patient.getFacility() == null) {
+      return true;
+    } else {
+      return currentOrgRoles.isPresent()
+          && currentOrgRoles.get().containsFacility(patient.getFacility());
+    }
+  }
+
+  public boolean userCanViewPatient(UUID patientId) {
+    if (patientId == null) {
+      return true;
+    }
+    Optional<Person> patient = _personRepo.findById(patientId);
+    return patient.isPresent() && userCanViewPatient(patient.get());
+  }
+
+  public boolean userCanAccessPatientLink(UUID patientLinkId) {
+    if (patientLinkId == null) {
+      return true;
+    }
+    Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
+    if (currentOrgRoles.isEmpty()) {
+      return false;
+    } else {
+      Optional<PatientLink> patientLink = _patientLinkRepo.findById(patientLinkId);
+      return patientLink.isPresent()
+          && currentOrgRoles.get().containsFacility(patientLink.get().getTestOrder().getFacility());
+    }
+  }
+
+  public boolean userHasSpecificPatientSearchPermission(
+      UUID facilityId, boolean isArchived, String namePrefixMatch) {
+    Set<UserPermission> perms = new HashSet<>();
+
+    if (facilityId != null && !userCanAccessFacility(facilityId)) {
+      return false;
+    }
+    if (isArchived) {
+      perms.add(UserPermission.READ_ARCHIVED_PATIENT_LIST);
+    }
+    if (namePrefixMatch != null) {
+      perms.add(UserPermission.SEARCH_PATIENTS);
+    } else {
+      // because namePrefixMatch is null, they are reading permissions across all patients
+      perms.add(UserPermission.READ_PATIENT_LIST);
+    }
+
+    // check all the permissions in one call.
+    return userHasPermissions(perms);
+  }
+
+  public boolean userIsValid() {
     IdentityAttributes id = _supplier.get();
     if (id == null) {
       throw new UnidentifiedUserException();
@@ -117,6 +264,8 @@ public class UserAuthorizationVerifier {
     if (!found.isPresent()) {
       throw new NonexistentUserException();
     }
+
+    return true;
   }
 
   // This replicates getUser() in ApiUserService.java, but we cannot call that logic directly or

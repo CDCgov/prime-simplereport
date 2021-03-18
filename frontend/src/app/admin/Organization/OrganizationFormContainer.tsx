@@ -34,16 +34,16 @@ const CREATE_ORGANIZATION_MUTATION = gql`
     $zipCode: String!
     $phone: String
     $email: String
-    $orderingProviderFirstName: String!
+    $orderingProviderFirstName: String
     $orderingProviderMiddleName: String
-    $orderingProviderLastName: String!
+    $orderingProviderLastName: String
     $orderingProviderSuffix: String
-    $orderingProviderNPI: String!
-    $orderingProviderStreet: String!
+    $orderingProviderNPI: String
+    $orderingProviderStreet: String
     $orderingProviderStreetTwo: String
     $orderingProviderCity: String
-    $orderingProviderState: String!
-    $orderingProviderZipCode: String!
+    $orderingProviderState: String
+    $orderingProviderZipCode: String
     $orderingProviderPhone: String
     $deviceTypes: [String]!
     $defaultDevice: String!
@@ -139,7 +139,7 @@ const OrganizationFormContainer: any = (props: Props) => {
         orderingProviderCity: provider.city,
         orderingProviderState: provider.state,
         orderingProviderZipCode: provider.zipCode,
-        orderingProviderPhone: provider.phone,
+        orderingProviderPhone: provider.phone || null,
         deviceTypes: facility.deviceTypes,
         defaultDevice: facility.defaultDevice,
       },

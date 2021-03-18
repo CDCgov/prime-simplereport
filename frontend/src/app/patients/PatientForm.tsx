@@ -33,7 +33,7 @@ import iconClose from "../../../node_modules/uswds/dist/img/usa-icons/close.svg"
 
 const ADD_PATIENT = gql`
   mutation AddPatient(
-    $facilityId: String
+    $facilityId: ID
     $firstName: String!
     $middleName: String
     $lastName: String!
@@ -73,14 +73,16 @@ const ADD_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
-    )
+    ) {
+      internalId
+    }
   }
 `;
 
 const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
-    $facilityId: String
-    $patientId: String!
+    $facilityId: ID
+    $patientId: ID!
     $firstName: String!
     $middleName: String
     $lastName: String!
@@ -121,7 +123,9 @@ const UPDATE_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
-    )
+    ) {
+      internalId
+    }
   }
 `;
 

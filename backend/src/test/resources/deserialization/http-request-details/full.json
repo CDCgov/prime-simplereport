@@ -1,0 +1,8 @@
+{
+  "serverName":"my.private.cloud",
+  "remoteAddress":"192.168.33.23",
+  "forwardedAddresses":["192.168.251.2:80","10.240.32.158:443", "127.138.220.0:80"],
+  "forwardedProtocol":"gopher",
+  "originalHostName":"simplereport.int",
+  "requestUri":"/die/die/die"
+}

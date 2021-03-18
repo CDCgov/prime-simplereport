@@ -70,14 +70,14 @@ public class TestOrderService {
     _smss = smss;
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
-  public List<TestOrder> getQueue(String facilityId) {
-    Facility fac = _os.getFacilityInCurrentOrg(UUID.fromString(facilityId));
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
+  public List<TestOrder> getQueue(UUID facilityId) {
+    Facility fac = _os.getFacilityInCurrentOrg(facilityId);
     return _repo.fetchQueue(fac.getOrganization(), fac);
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
   public List<TestEvent> getTestEventsResults(UUID facilityId, Date newerThanDate) {
     Facility fac = _os.getFacilityInCurrentOrg(facilityId); // org access is checked here
     return _terepo.getTestEventResults(
@@ -85,30 +85,31 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
-  public TestEvent getTestResult(UUID id) {
+  @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
+  public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
-    return _terepo.findByOrganizationAndInternalId(org, id);
+    return _terepo.findByOrganizationAndInternalId(org, testEventId);
   }
 
   @Transactional(readOnly = true)
-  @AuthorizationConfiguration.RequirePermissionReadResultList
+  @AuthorizationConfiguration.RequirePermissionReadResultListForPatient
   public List<TestEvent> getTestResults(Person patient) {
-    return _terepo.findAllByPatient(patient);
+    // NOTE: this may change. do we really want to limit visible test results to only
+    // tests performed at accessible facilities?
+    return _terepo.findAllByPatientAndFacilities(patient, _os.getAccessibleFacilities());
   }
 
   @Transactional(readOnly = true)
-  public TestOrder getTestOrder(String id) {
+  public TestOrder getTestOrder(UUID id) {
     Organization org = _os.getCurrentOrganization();
-    return _repo
-        .fetchQueueItemById(org, UUID.fromString(id))
-        .orElseThrow(TestOrderService::noSuchOrderFound);
+    return _repo.fetchQueueItemById(org, id).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestOrder
   @Deprecated // switch to specifying device-specimen combo
-  public TestOrder editQueueItem(String id, String deviceId, String result, Date dateTested) {
-    TestOrder order = this.getTestOrder(id);
+  public TestOrder editQueueItem(
+      UUID testOrderId, String deviceId, String result, Date dateTested) {
+    TestOrder order = this.getTestOrder(testOrderId);
 
     if (deviceId != null) {
       order.setDeviceSpecimen(_dts.getDefaultForDeviceId(deviceId));
@@ -121,9 +122,10 @@ public class TestOrderService {
     return _repo.save(order);
   }
 
-  @AuthorizationConfiguration.RequirePermissionSubmitTest
+  @AuthorizationConfiguration.RequirePermissionSubmitTestForPatient
   @Deprecated // switch to using device specimen ID, using methods that ... don't exist yet!
-  public void addTestResult(String deviceID, TestResult result, String patientId, Date dateTested)
+  public TestOrder addTestResult(
+      String deviceID, TestResult result, UUID patientId, Date dateTested)
       throws NumberParseException {
     DeviceSpecimenType deviceSpecimen = _dts.getDefaultForDeviceId(deviceID);
     Organization org = _os.getCurrentOrganization();
@@ -143,12 +145,14 @@ public class TestOrderService {
 
     // After adding test result, create a new patient link and text it to the patient
     PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    String internalId = patientLink.getInternalId().toString();
+    UUID internalId = patientLink.getInternalId();
     _smss.sendToPatientLink(
         internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+    savedOrder.setPatientLink(patientLink);
+    return savedOrder;
   }
 
-  @AuthorizationConfiguration.RequirePermissionStartTest
+  @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
   public TestOrder addPatientToQueue(
       UUID facilityId,
       Person patient,
@@ -172,6 +176,16 @@ public class TestOrderService {
           "Cannot create multiple queue entries for the same patient");
     }
     Facility testFacility = _os.getFacilityInCurrentOrg(facilityId);
+    if (!patient
+            .getOrganization()
+            .getInternalId()
+            .equals(testFacility.getOrganization().getInternalId())
+        || (patient.getFacility() != null
+            && !patient.getFacility().getInternalId().equals(facilityId))) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot add patient to this queue: patient's facility and/or organization "
+              + "are incompatible with facility of queue");
+    }
     TestOrder newOrder = new TestOrder(patient, testFacility);
 
     AskOnEntrySurvey survey =
@@ -193,9 +207,9 @@ public class TestOrderService {
     return savedOrder;
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
   public void updateTimeOfTestQuestions(
-      String patientId,
+      UUID patientId,
       String pregnancy,
       Map<String, Boolean> symptoms,
       Boolean firstTest,
@@ -242,14 +256,14 @@ public class TestOrderService {
     _parepo.save(answers);
   }
 
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
-  public void removePatientFromQueue(String patientId) {
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForPatient
+  public void removePatientFromQueue(UUID patientId) {
     TestOrder order = retrieveTestOrder(patientId);
     order.cancelOrder();
     _repo.save(order);
   }
 
-  private TestOrder retrieveTestOrder(String patientId) {
+  private TestOrder retrieveTestOrder(UUID patientId) {
     Organization org = _os.getCurrentOrganization();
     Person patient = _ps.getPatientNoPermissionsCheck(patientId, org);
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
@@ -261,7 +275,7 @@ public class TestOrderService {
   }
 
   @Transactional
-  @AuthorizationConfiguration.RequirePermissionUpdateTest
+  @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
     Organization org = _os.getCurrentOrganization(); // always check against org
     // The client sends us a TestEvent, we need to map back to the Order.

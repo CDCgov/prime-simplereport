@@ -1,5 +1,5 @@
-{ 
-  patients {
+query GetPatients($facilityId: ID = null) {
+  patients(facilityId: $facilityId) {
     firstName
     lastName
     birthDate

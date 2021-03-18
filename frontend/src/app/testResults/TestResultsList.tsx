@@ -11,13 +11,14 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
+import { getUrl } from "../utils/url";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 import "./TestResultsList.scss";
 
 const testResultQuery = gql`
-  query GetFacilityResults($facilityId: String!, $newerThanDate: DateTime) {
+  query GetFacilityResults($facilityId: ID!, $newerThanDate: DateTime) {
     testResults(facilityId: $facilityId, newerThanDate: $newerThanDate) {
       internalId
       dateTested
@@ -35,6 +36,9 @@ const testResultQuery = gql`
         birthDate
         gender
         lookupId
+      }
+      patientLink {
+        internalId
       }
     }
   }
@@ -119,6 +123,9 @@ export const DetachedTestResultsList: any = ({
             "sr-test-result-row",
             removed && "sr-test-result-row--removed"
           )}
+          data-patient-link={`${getUrl()}pxp?plid=${
+            r?.patientLink?.internalId
+          }`}
         >
           <th scope="row">
             {displayFullName(

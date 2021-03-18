@@ -22,7 +22,7 @@ public class PatientDataResolver implements GraphQLResolver<Person> {
   }
 
   public TestEvent getLastTest(Person p) {
-    return _testEventService.getLastTestResultsForPatient(p);
+    return _testEventService.getLastTestResultsForPatientPermRestricted(p);
   }
 
   public ApiFacility getFacility(Person p) {

@@ -63,7 +63,7 @@ public class TestDataFactory {
   }
 
   public Facility createValidFacility(Organization org) {
-    return createValidFacility(org, "Injection Site");
+    return createValidFacility(org, "Imaginary Site");
   }
 
   public Facility createValidFacility(Organization org, String facilityName) {
@@ -90,6 +90,10 @@ public class TestDataFactory {
 
   public Person createMinimalPerson(Organization org) {
     return createMinimalPerson(org, null, "John", "Brown", "Boddie", "Jr.");
+  }
+
+  public Person createMinimalPerson(Organization org, Facility fac) {
+    return createMinimalPerson(org, fac, "Rebecca", "Grey", "Green", "III");
   }
 
   public Person createMinimalPerson(
@@ -173,6 +177,12 @@ public class TestDataFactory {
   public PatientLink createPatientLink(TestOrder order) {
     TestOrder to = _testOrderRepo.findById(order.getInternalId()).orElseThrow();
     PatientLink pl = new PatientLink(to);
+    return _patientLinkRepository.save(pl);
+  }
+
+  @Transactional
+  public PatientLink expirePatientLink(PatientLink pl) {
+    pl.expire();
     return _patientLinkRepository.save(pl);
   }
 

@@ -79,6 +79,11 @@ public class OrganizationService {
     return foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
   }
 
+  public Set<Facility> getAccessibleFacilities() {
+    Optional<OrganizationRoles> roles = getCurrentOrganizationRoles();
+    return roles.isPresent() ? roles.get().getFacilities() : Set.of();
+  }
+
   public Organization getCurrentOrganization() {
     OrganizationRoles orgRole =
         getCurrentOrganizationRoles().orElseThrow(MisconfiguredUserException::new);

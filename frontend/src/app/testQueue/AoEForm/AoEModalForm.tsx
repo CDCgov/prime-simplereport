@@ -28,7 +28,7 @@ interface LastTestData {
 }
 
 export const LAST_TEST_QUERY = gql`
-  query GetPatientsLastResult($patientId: String!) {
+  query GetPatientsLastResult($patientId: ID!) {
     patient(id: $patientId) {
       lastTest {
         dateTested
@@ -130,7 +130,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     patientLinkId = "",
   } = props;
 
-  const [modalView, setModalView] = useState("");
+  const [modalView, setModalView] = useState("verbal");
   const [patientLink, setPatientLink] = useState("");
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
