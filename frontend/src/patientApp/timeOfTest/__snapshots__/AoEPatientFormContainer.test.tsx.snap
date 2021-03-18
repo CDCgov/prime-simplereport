@@ -119,11 +119,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               className="usa-legend"
             >
               How would you like to receive a copy of your results?
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </legend>
             <div
               className="usa-form-group"
