@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
@@ -151,12 +152,15 @@ public class TestOrderService {
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
 
-    // After adding test result, create a new patient link and text it to the patient
-    PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
-    UUID internalId = patientLink.getInternalId();
-    _smss.sendToPatientLink(
-        internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
-    savedOrder.setPatientLink(patientLink);
+    if (TestResultDeliveryPreference.SMS == person.getTestResultDelivery()) {
+      // After adding test result, create a new patient link and text it to the patient
+      PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
+      UUID internalId = patientLink.getInternalId();
+      _smss.sendToPatientLink(
+          internalId, "Your Covid-19 test result is ready to view: " + patientLinkUrl + internalId);
+      savedOrder.setPatientLink(patientLink);
+    }
+
     return savedOrder;
   }
 

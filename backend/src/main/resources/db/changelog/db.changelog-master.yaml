@@ -1561,3 +1561,15 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__api_audit_event__patient_link
                     references: patient_link
+  - changeSet:
+      id: add-test-result-preferences
+      author: adam@skylight.digital
+      comment: Add column to Person for test result delivery preferences
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery
+                  type: *string
+                  remarks: Tracks the individual's preference for receiving test results

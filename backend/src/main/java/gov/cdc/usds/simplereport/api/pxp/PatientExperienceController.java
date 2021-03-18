@@ -115,6 +115,8 @@ public class PatientExperienceController {
         data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
         data.getSymptomOnset(),
         data.getNoSymptoms());
+
+    ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     pls.expireMyPatientLink();
   }
 }

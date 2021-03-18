@@ -39,6 +39,12 @@ enum TestCorrectionStatus {
   REMOVED
 }
 
+enum TestResultDeliveryPreference {
+  SMS
+  EMAIL
+  NONE
+}
+
 type TestDescription {
   name(nameType: String = "long"): String!
   loincCode: String!
@@ -78,6 +84,7 @@ type Patient {
   employedInHealthcare: Boolean
   lastTest: TestResult
   testResults: [TestResult!]!
+  testResultDelivery: TestResultDeliveryPreference
 }
 type Facility {
   id: ID
@@ -406,6 +413,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
+    testResultDelivery: TestResultDeliveryPreference
   ): String
   removePatientFromQueue(patientId: ID!): String
   clearQueue: Int
@@ -419,6 +427,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
+    testResultDelivery: TestResultDeliveryPreference
   ): String
   createDeviceType(
     name: String!

@@ -5,6 +5,7 @@ import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
+  getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button";
@@ -28,6 +29,7 @@ interface Props {
   patient: {
     internalId: string;
     gender: string;
+    testResultDelivery: string;
   };
   lastTest:
     | {
@@ -54,6 +56,7 @@ interface Props {
     priorTestType: string | undefined | null;
     firstTest: boolean;
     pregnancy: string | undefined;
+    testResultDelivery: string;
   }) => void;
   isModal: boolean;
   noValidation: boolean;
@@ -106,6 +109,9 @@ const AoEForm: React.FC<Props> = ({
   );
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
+  );
+  const [testResultDelivery, setTestResultDelivery] = useState(
+    patient.testResultDelivery
   );
 
   // form validation
@@ -183,6 +189,7 @@ const AoEForm: React.FC<Props> = ({
         symptomOnset: onsetDate,
         ...priorTest,
         pregnancy: pregnancyResponse,
+        testResultDelivery,
       });
       if (isModal && onClose) {
         onClose();
@@ -223,6 +230,15 @@ const AoEForm: React.FC<Props> = ({
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
         <RequiredMessage />
+        <FormGroup title="Test Result Delivery">
+          <RadioGroup
+            legend="How would you like to receive a copy of your results?"
+            name="testResultDelivery"
+            onChange={setTestResultDelivery}
+            buttons={getTestResultDeliveryPreferences()}
+            selectedRadio={testResultDelivery}
+          />
+        </FormGroup>
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
@@ -255,7 +271,7 @@ const AoEForm: React.FC<Props> = ({
           </div>
         </FormGroup>
 
-        {patient.gender !== "male" && (
+        {patient.gender?.toLowerCase() !== "male" && (
           <FormGroup title="Pregnancy">
             <RadioGroup
               legend="Currently pregnant?"
