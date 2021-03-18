@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
@@ -15,6 +16,7 @@ public class CurrentPatientContextHolder {
   private TestOrder _currentLinkedOrder;
   private PatientLink _currentPatientLink;
   private Person _currentPatient;
+  private Organization _organization;
 
   public TestOrder getLinkedOrder() {
     return _currentLinkedOrder;
@@ -28,6 +30,10 @@ public class CurrentPatientContextHolder {
     return _currentPatient;
   }
 
+  public Organization getOrganization() {
+    return _organization;
+  }
+
   public void setLinkedOrder(TestOrder currentLinkedOrder) {
     this._currentLinkedOrder = currentLinkedOrder;
   }
@@ -38,6 +44,7 @@ public class CurrentPatientContextHolder {
 
   public void setPatient(Person currentPatient) {
     this._currentPatient = currentPatient;
+    this._organization = currentPatient.getOrganization();
   }
 
   public boolean hasPatientLink() {

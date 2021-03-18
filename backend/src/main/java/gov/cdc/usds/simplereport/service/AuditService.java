@@ -1,10 +1,15 @@
 package gov.cdc.usds.simplereport.service;
 
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.hibernate.validator.constraints.Range;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,5 +56,13 @@ public class AuditService {
             userInfo.getPermissions(),
             userInfo.getIsAdmin(),
             userInfo.getOrganization().orElse(null)));
+  }
+
+  @Transactional(readOnly = false)
+  public void logRestEvent(
+      String requestId, HttpServletRequest request, Organization org, PatientLink patientLink) {
+    HttpRequestDetails reqDetails = new HttpRequestDetails(request);
+    ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
+    _repo.save(new ApiAuditEvent(requestId, reqDetails, userInfo, org, patientLink));
   }
 }

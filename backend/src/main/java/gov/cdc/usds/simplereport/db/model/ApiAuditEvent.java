@@ -104,6 +104,7 @@ public class ApiAuditEvent {
     // hibernate
   }
 
+  /** Constructor for graphql requests */
   public ApiAuditEvent(
       String requestId,
       HttpRequestDetails httpRequestDetails,
@@ -113,7 +114,6 @@ public class ApiAuditEvent {
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization org) {
-    super();
     this.requestId = requestId;
     this.httpRequestDetails = httpRequestDetails;
     this.graphqlQueryDetails = graphqlQueryDetails;
@@ -123,6 +123,20 @@ public class ApiAuditEvent {
     this.isAdminUser = isAdmin;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
+  }
+
+  /** Constructor for REST (patient-experience) requests */
+  public ApiAuditEvent(
+      String requestId,
+      HttpRequestDetails httpRequestDetails,
+      ApiUser user,
+      Organization organization,
+      PatientLink patientLink) {
+    this.requestId = requestId;
+    this.httpRequestDetails = httpRequestDetails;
+    this.user = user;
+    this.organization = organization;
+    this.patientLink = patientLink;
   }
 
   public UUID getId() {
