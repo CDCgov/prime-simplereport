@@ -24,7 +24,6 @@ interface Props<T> {
   validationStatus?: "error" | "success";
   variant?: "default" | "tile" | "horizontal";
   hintText?: string;
-  hideOptional?: boolean;
   disabled?: boolean;
   onChange: (value: T) => void;
   onClick?: (value: T) => void;
@@ -44,7 +43,6 @@ const RadioGroup = <T extends string>({
   required,
   variant,
   hintText,
-  hideOptional,
   onChange,
   onBlur,
   onClick,
@@ -67,14 +65,7 @@ const RadioGroup = <T extends string>({
         <legend
           className={classnames("usa-legend", legendSrOnly && "usa-sr-only")}
         >
-          {required ? (
-            <Required label={legend} />
-          ) : (
-            <Optional
-              className={hideOptional ? "display-none" : ""}
-              label={legend}
-            />
-          )}
+          {required ? <Required label={legend} /> : <Optional label={legend} />}
         </legend>
       )}
       {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
