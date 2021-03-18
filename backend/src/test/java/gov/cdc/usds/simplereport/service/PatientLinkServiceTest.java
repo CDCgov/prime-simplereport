@@ -31,7 +31,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   }
 
   @Test
-  void getPatientLinkCurrent() throws Exception {
+  void getPatientLink() throws Exception {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _dataFactory.createValidFacility(org);
     Person p = _dataFactory.createFullPerson(org);
@@ -51,9 +51,8 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             false);
     TestUserIdentities.setFacilityAuthorities();
 
-    Organization organization =
-        _service.getPatientLinkCurrent(to.getPatientLink().getInternalId().toString());
-    assertEquals(organization.getInternalId(), org.getInternalId());
+    PatientLink result = _service.getPatientLink(to.getPatientLink().getInternalId());
+    assertEquals(result.getInternalId(), to.getPatientLink().getInternalId());
   }
 
   @Test
@@ -77,7 +76,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             false);
     TestUserIdentities.setFacilityAuthorities();
 
-    Person patient = _service.getPatientFromLink(to.getPatientLink().getInternalId().toString());
+    Person patient = _service.getPatientFromLink(to.getPatientLink().getInternalId());
     assertEquals(patient.getInternalId(), p.getInternalId());
   }
 
@@ -101,12 +100,12 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             LocalDate.of(1865, 12, 25),
             false);
 
-    PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId().toString());
+    PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId());
     assertNotNull(pl.getRefreshedAt());
 
     TestUserIdentities.setFacilityAuthorities();
     assertThrows(
         AccessDeniedException.class,
-        () -> _service.refreshPatientLink(to.getPatientLink().getInternalId().toString()));
+        () -> _service.refreshPatientLink(to.getPatientLink().getInternalId()));
   }
 }

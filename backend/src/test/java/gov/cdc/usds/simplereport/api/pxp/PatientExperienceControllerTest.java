@@ -139,6 +139,77 @@ class PatientExperienceControllerTest {
   }
 
   @Test
+  void verifyLinkReturns410forExpiredLinks() throws Exception {
+    // GIVEN
+    TestUserIdentities.withStandardUser(
+        () -> _patientLink = _dataFactory.expirePatientLink(_patientLink));
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\"}";
+
+    // WHEN
+    MockHttpServletRequestBuilder builder =
+        put("/pxp/link/verify")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc.perform(builder).andExpect(status().is(410));
+  }
+
+  @Test
+  void questionnaireSubmissionExpiresPatientLink() throws Exception {
+    // GIVEN
+    String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    boolean noSymptoms = false;
+    String symptomOnsetDate = "2021-02-01";
+    String requestBody =
+        "{\"patientLinkId\":\""
+            + _patientLink.getInternalId()
+            + "\",\"dateOfBirth\":\""
+            + dob
+            + "\",\"data\":{\"noSymptoms\":"
+            + noSymptoms
+            + ",\"symptoms\":\"{\\\"25064002\\\":false,\\\"36955009\\\":false,\\\"43724002\\\":false,\\\"44169009\\\":false,\\\"49727002\\\":false,\\\"62315008\\\":false,\\\"64531003\\\":true,\\\"68235000\\\":false,\\\"68962001\\\":false,\\\"84229001\\\":true,\\\"103001002\\\":false,\\\"162397003\\\":false,\\\"230145002\\\":false,\\\"267036007\\\":false,\\\"422400008\\\":false,\\\"422587007\\\":false,\\\"426000000\\\":false}\",\"symptomOnset\":\""
+            + symptomOnsetDate
+            + "\",\"firstTest\":true,\"priorTestDate\":null,\"priorTestType\":null,\"priorTestResult\":null,\"pregnancy\":\"261665006\"}}";
+
+    // WHEN
+    MockHttpServletRequestBuilder submitBuilder =
+        put("/pxp/questions")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+    _mockMvc.perform(submitBuilder).andExpect(status().isOk());
+
+    // OKAY NOW DO IT AGAIN
+    MockHttpServletRequestBuilder verifyBuilder =
+        put("/pxp/link/verify")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    MockHttpServletRequestBuilder secondSubmitBuilder =
+        put("/pxp/questions")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content(requestBody);
+
+    // THEN
+    _mockMvc.perform(verifyBuilder).andExpect(status().isGone());
+    _mockMvc.perform(secondSubmitBuilder).andExpect(status().isGone());
+  }
+
+  @Test
   void verifyLinkSavesTimeOfConsent() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
