@@ -355,7 +355,7 @@ class PatientManagementTest extends BaseApiTest {
   }
 
   @Test
-  void queryingDeletedPatients_standardUser_fails() {
+  void queryingDeletedPatients_standardUser_fail() {
     useOrgUser();
     runQuery("deleted-person-query", null, ACCESS_ERROR);
     assertLastAuditEntry(
@@ -382,6 +382,55 @@ class PatientManagementTest extends BaseApiTest {
         "GetDeletedPatients",
         EnumSet.allOf(UserPermission.class),
         List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_standardUser_ok() {
+    useOrgUser();
+    runQuery("person-with-test-results-query", null, null);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "GetPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_entryOnly_fail() {
+    useOrgEntryOnly();
+    runQuery("person-with-test-results-query", null, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "GetPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients"));
+  }
+
+  @Test
+  void queryingPatientLastTestResult_entryOnly_ok() {
+    useOrgEntryOnly();
+    runQuery("person-with-last-test-result-query", null, ACCESS_ERROR);
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "GetPatientsWithLastTestResult",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients"));
   }
 
   private JsonNode doCreateAndFetch(

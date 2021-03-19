@@ -1,0 +1,12 @@
+query GetPatientsWithTestResults($facilityId: ID = null) {
+  patients(facilityId: $facilityId) {
+    firstName
+    lastName
+    birthDate
+    telephone
+    testResults {
+      dateAdded
+      result
+    }
+  }
+}

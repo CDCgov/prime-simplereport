@@ -227,7 +227,7 @@ type Query {
 type Mutation {
   uploadPatients(
     patientList: Upload!
-  ): String @requiredPermissions(allOf: ["EDIT_PATIENT"]) # TODO is this right?
+  ): String
   updateFacility(
     facilityId: ID!
     testingFacilityName: String!
@@ -437,8 +437,8 @@ type Mutation {
   ): String @requiredPermissions(allOf: ["START_TEST"])
   removePatientFromQueue(
     patientId: ID!
-  ): String @requiredPermissions(allOf: ["UPDATE_TEST"]) # TODO is this right?
-  clearQueue: Int @requiredPermissions(allOf: ["UPDATE_TEST"]) # TODO is this right?
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
+  clearQueue: Int
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
@@ -456,7 +456,7 @@ type Mutation {
     model: String!
     loincCode: String!
     swabType: String!
-  ): DeviceType @requiredPermissions(allOf: ["EDIT_FACILITY"]) # TODO is this right?
+  ): DeviceType
   updateDeviceType(
     id: String!
     name: String
@@ -464,7 +464,7 @@ type Mutation {
     model: String
     loincCode: String
     swabType: String
-  ): DeviceType @requiredPermissions(allOf: ["EDIT_FACILITY"]) # TODO is this right?
+  ): DeviceType
   sendPatientLinkSms(
     internalId: String!
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
