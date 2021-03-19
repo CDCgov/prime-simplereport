@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import classnames from "classnames";
+import moment from "moment";
 
 import {
   globalSymptomDefinitions,
@@ -30,6 +31,7 @@ interface Props {
     internalId: string;
     gender: string;
     testResultDelivery: string;
+    birthDate: string;
   };
   lastTest:
     | {
@@ -113,6 +115,8 @@ const AoEForm: React.FC<Props> = ({
   const [testResultDelivery, setTestResultDelivery] = useState(
     patient.testResultDelivery
   );
+
+  const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
 
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
@@ -230,15 +234,17 @@ const AoEForm: React.FC<Props> = ({
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
         <RequiredMessage />
-        <FormGroup title="Results">
-          <RadioGroup
-            legend="How would you like to receive a copy of your results?"
-            name="testResultDelivery"
-            onChange={setTestResultDelivery}
-            buttons={getTestResultDeliveryPreferences()}
-            selectedRadio={testResultDelivery}
-          />
-        </FormGroup>
+        {patientIsOver18 && (
+          <FormGroup title="Results">
+            <RadioGroup
+              legend="How would you like to receive a copy of your results?"
+              name="testResultDelivery"
+              onChange={setTestResultDelivery}
+              buttons={getTestResultDeliveryPreferences()}
+              selectedRadio={testResultDelivery}
+            />
+          </FormGroup>
+        )}
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
