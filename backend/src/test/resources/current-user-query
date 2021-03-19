@@ -1,4 +1,4 @@
-{
+query whoDat {
   whoami {
     id
     firstName
