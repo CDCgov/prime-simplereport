@@ -32,6 +32,17 @@ public class PatientLinkService {
             () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
   }
 
+  public PatientLink getRefreshedPatientLink(UUID internalId) {
+    PatientLink pl =
+        plrepo
+            .findById(internalId)
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    pl.refresh();
+    return plrepo.save(pl);
+  }
+
   public boolean verifyPatientLink(UUID internalId, LocalDate birthDate)
       throws ExpiredPatientLinkException {
     try {

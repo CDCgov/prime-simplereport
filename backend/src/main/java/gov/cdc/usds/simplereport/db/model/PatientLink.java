@@ -45,6 +45,10 @@ public class PatientLink extends EternalAuditedEntity {
     expiresAt = Date.from(Instant.now());
   }
 
+  public void refresh() {
+    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
+  }
+
   public boolean isLockedOut() {
     return failedAttempts >= LOCKOUT_THRESHOLD;
   }
