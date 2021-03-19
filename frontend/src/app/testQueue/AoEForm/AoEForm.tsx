@@ -230,7 +230,7 @@ const AoEForm: React.FC<Props> = ({
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
         <RequiredMessage />
-        <FormGroup title="Test Result Delivery">
+        <FormGroup title="Test result delivery">
           <RadioGroup
             legend="How would you like to receive a copy of your results?"
             name="testResultDelivery"
@@ -254,7 +254,7 @@ const AoEForm: React.FC<Props> = ({
           />
         </FormGroup>
 
-        <FormGroup title="Test History">
+        <FormGroup title="Test history">
           <div className="prime-formgroup__wrapper">
             <PriorTestInputs
               testTypeConfig={testConfig}

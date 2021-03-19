@@ -755,7 +755,7 @@ const PatientForm = (props: Props) => {
           />
         </FormGroup>
         {!props.isPxpView && patient.testResults && (
-          <FormGroup title="Test History">
+          <FormGroup title="Test history">
             {patient.testResults.length !== 0 && (
               <table className="usa-table usa-table--borderless">
                 <thead>
