@@ -434,6 +434,5 @@ type Mutation {
     loincCode: String
     swabType: String
   ): DeviceType
-  refreshPatientLink(internalId: String!): PatientLink
   sendPatientLinkSms(internalId: String!): String
 }

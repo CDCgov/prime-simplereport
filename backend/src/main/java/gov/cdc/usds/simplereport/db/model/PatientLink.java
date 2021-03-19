@@ -16,7 +16,7 @@ public class PatientLink extends EternalAuditedEntity {
 
   @Column private Date expiresAt;
 
-  @Column private Integer failedAttempts;
+  @Column() private byte failedAttempts;
 
   public PatientLink() {}
 
@@ -43,15 +43,14 @@ public class PatientLink extends EternalAuditedEntity {
     expiresAt = Date.from(Instant.now());
   }
 
-  public void refresh() {
-    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
-  }
-
   public boolean isLockedOut() {
     return failedAttempts >= 5;
   }
 
   public void addFailedAttempt() {
-    failedAttempts++;
+    // do not overflow the byte
+    if (failedAttempts < 127) {
+      failedAttempts++;
+    }
   }
 }

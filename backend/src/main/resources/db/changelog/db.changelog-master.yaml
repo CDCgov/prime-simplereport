@@ -1593,7 +1593,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: failed_attempts
-                  type: *tinyint
+                  type: tinyint
                   valueNumeric: 0
                   defaultValueNumeric: 0
                   constraints:
