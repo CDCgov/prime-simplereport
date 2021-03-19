@@ -8,7 +8,7 @@ const AddPatient = () => {
     (state) => (state as any).facility.id
   );
   if (activeFacilityId.length < 1) {
-    return <div>"No facility selected"</div>;
+    return <div>No facility selected</div>;
   }
   return (
     <PatientForm
