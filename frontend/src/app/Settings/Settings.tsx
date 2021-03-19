@@ -57,11 +57,12 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
                 <FacilityFormContainer facilityId={match.params.facilityId} />
               )}
             />
-            <Route
-              path={match.url + "/users"}
+            <Route 
+            path={match.url + "/organization"}
+            component={ManageOrganizationContainer} />
+             <Route
               component={ManageUsersContainer}
             />
-            <Route component={ManageOrganizationContainer} />
           </Switch>
         </PrimeErrorBoundary>
       </div>
