@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.UUID;
+import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,25 +67,15 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
 
   @Test
   void patientLinkLockout() throws Exception {
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-    assertFalse(
-        _service.verifyPatientLink(
-            _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
-    assertThrows(
-        ExpiredPatientLinkException.class,
+    BooleanSupplier failToVerify =
         () ->
             _service.verifyPatientLink(
-                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1)));
+                _patientLink.getInternalId(), _person.getBirthDate().plusDays(1));
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertFalse(failToVerify.getAsBoolean());
+    assertThrows(ExpiredPatientLinkException.class, () -> failToVerify.getAsBoolean());
   }
 }
