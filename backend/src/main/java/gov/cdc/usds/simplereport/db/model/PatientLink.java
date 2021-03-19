@@ -18,7 +18,7 @@ public class PatientLink extends EternalAuditedEntity {
 
   @Column private Date expiresAt;
 
-  @Column() private byte failedAttempts;
+  @Column private byte failedAttempts;
 
   public PatientLink() {}
 

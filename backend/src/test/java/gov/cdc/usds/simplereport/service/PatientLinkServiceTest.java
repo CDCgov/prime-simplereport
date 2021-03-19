@@ -14,6 +14,7 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
+import java.util.Date;
 import java.util.UUID;
 import java.util.function.BooleanSupplier;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,6 +56,13 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
   void getPatientFromLink() throws Exception {
     Person result = _service.getPatientFromLink(_patientLink.getInternalId());
     assertEquals(result.getInternalId(), _person.getInternalId());
+  }
+
+  @Test
+  void getRefreshedPatientLink() throws Exception {
+    Date previousExpiry = _patientLink.getExpiresAt();
+    PatientLink result = _service.getRefreshedPatientLink(_patientLink.getInternalId());
+    assertTrue(result.getExpiresAt().after(previousExpiry));
   }
 
   @Test
