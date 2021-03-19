@@ -230,7 +230,7 @@ const AoEForm: React.FC<Props> = ({
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
         <RequiredMessage />
-        <FormGroup title="Test result delivery">
+        <FormGroup title="Results">
           <RadioGroup
             legend="How would you like to receive a copy of your results?"
             name="testResultDelivery"
