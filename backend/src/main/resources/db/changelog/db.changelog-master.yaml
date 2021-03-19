@@ -1576,13 +1576,13 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.created_at WHERE expires_at is null; 
               UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.expires_at + interval '1 day'; 
       rollback:
-        - sql:
-            sql: |
-              UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day'; 
         - renameColumn:
             tableName: patient_link
             oldColumnName: expires_at
             newColumnName: refreshed_At
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day'; 
   - changeSet:
       id: add-patient_link-failed_attempts
       author: adam@skylight.digital
