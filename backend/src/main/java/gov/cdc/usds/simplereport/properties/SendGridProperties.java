@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.properties;
 
+import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
@@ -9,11 +10,11 @@ public final class SendGridProperties {
   private final boolean enabled;
   private final String apiKey;
   private final String fromEmail;
-  private final String accountRequestRecipient;
+  private final List<String> accountRequestRecipient;
 
   @ConstructorBinding
   public SendGridProperties(
-      boolean enabled, String apiKey, String fromEmail, String accountRequestRecipient) {
+      boolean enabled, String apiKey, String fromEmail, List<String> accountRequestRecipient) {
     this.enabled = enabled;
     this.apiKey = apiKey;
     this.fromEmail = fromEmail;
@@ -32,7 +33,7 @@ public final class SendGridProperties {
     return fromEmail;
   }
 
-  public String getAccountRequestRecipient() {
+  public List<String> getAccountRequestRecipient() {
     return accountRequestRecipient;
   }
 }

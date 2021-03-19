@@ -34,7 +34,5 @@ simple-report:
     account-request: true
   sendgrid:
     enabled: false
-    from-email: support@simplereport.gov
-    account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true

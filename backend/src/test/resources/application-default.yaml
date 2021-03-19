@@ -39,7 +39,9 @@ simple-report:
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
-    account-request-recipient: support@simplereport.gov
+    account-request-recipient: 
+      - usds@cdc.gov
+      - Protect-ServiceDesk@hhs.gov
   site-admin-emails:
     - ruby@example.com
   demo-users:
