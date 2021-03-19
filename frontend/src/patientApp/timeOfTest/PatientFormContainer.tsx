@@ -54,6 +54,7 @@ const PatientFormContainer = () => {
         activeFacilityId={facility.id}
         patientId={patient.internalId}
         isPxpView={true}
+        hideFacilitySelect={true}
         backCallback={() => {
           setPrevPage(true);
         }}

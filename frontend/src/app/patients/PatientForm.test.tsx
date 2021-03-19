@@ -56,6 +56,7 @@ describe("PatientForm", () => {
             activeFacilityId={facility.id}
             patientId={patient.internalId}
             isPxpView={true}
+            hideFacilitySelect={true}
             backCallback={() => {}}
             saveCallback={() => {}}
           />

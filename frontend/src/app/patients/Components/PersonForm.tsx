@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Prompt } from "react-router-dom";
-import { useSelector } from "react-redux";
 import classnames from "classnames";
 import { toast } from "react-toastify";
 
@@ -25,13 +24,17 @@ import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import Button from "../../commonComponents/Button";
 
+import FacilitySelect from "./FacilitySelect";
+
 interface Props {
   patient: Person;
+  facilityId: string | null;
   patientId?: string;
   activeFacilityId: string;
   savePerson: (person: Person, facility: string | null) => void;
   backCallback?: () => void;
   isPxpView: boolean;
+  hideFacilitySelect?: boolean;
 }
 
 const PersonForm = (props: Props) => {
@@ -40,19 +43,8 @@ const PersonForm = (props: Props) => {
   const [errors, setErrors] = useState(
     {} as { [key: string]: string | undefined }
   );
-  const allFacilities = "~~ALL-FACILITIES~~";
-  const [currentFacilityId, setCurrentFacilityId] = useState(
-    patient.facility === null ? allFacilities : patient.facility?.id
-  );
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
-  );
-  const facilityList = facilities.map((f: any) => ({
-    label: f.name,
-    value: f.id,
-  }));
-  facilityList.unshift({ label: "All facilities", value: allFacilities });
-  facilityList.unshift({ label: "-Select-", value: "" });
+
+  const [currentFacilityId, setCurrentFacilityId] = useState(props.facilityId);
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -64,8 +56,6 @@ const PersonForm = (props: Props) => {
         ...(patient as any)[e.target.name],
         [e.target.value]: (e.target as any).checked,
       };
-    } else if (value === allFacilities) {
-      value = null;
     }
     if (errors[name]) {
       validateField(e);
@@ -230,10 +220,7 @@ const PersonForm = (props: Props) => {
     }
     // If no errors, submit
     setFormChanged(false);
-    props.savePerson(
-      patient,
-      currentFacilityId === allFacilities ? null : currentFacilityId
-    );
+    props.savePerson(patient, currentFacilityId);
   };
 
   //TODO: when to save initial data? What if name isn't filled? required fields?
@@ -337,22 +324,17 @@ const PersonForm = (props: Props) => {
                 { label: "Visitor", value: "VISITOR" },
               ]}
             />
-            {!props.isPxpView && (
-              <Dropdown
-                label="Facility"
-                name="currentFacilityId"
-                selectedValue={currentFacilityId}
-                onChange={(e) => {
-                  setCurrentFacilityId(e.target.value);
-                  setFormChanged(true);
-                }}
-                onBlur={validateField}
-                validationStatus={validationStatus("currentFacilityId")}
-                errorMessage={errors.currentFacilityId}
-                options={facilityList}
-                required
-              />
-            )}
+            <FacilitySelect
+              facilityId={currentFacilityId}
+              onChange={(value: string | null) => {
+                setCurrentFacilityId(value);
+                setFormChanged(true);
+              }}
+              validateField={validateField}
+              validationStatus={validationStatus}
+              errors={errors}
+              hidden={props.hideFacilitySelect}
+            />
           </div>
           <div className="usa-form">
             <TextInput

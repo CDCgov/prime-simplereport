@@ -12,9 +12,6 @@ type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 
 interface Person extends Address {
-  facility: {
-    id: string;
-  };
   firstName: string;
   middleName: string;
   lastName: string;
