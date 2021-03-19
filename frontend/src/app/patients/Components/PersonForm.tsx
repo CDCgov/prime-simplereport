@@ -27,11 +27,11 @@ import Button from "../../commonComponents/Button";
 import FacilitySelect from "./FacilitySelect";
 
 interface Props {
-  patient: Person;
+  patient: Nullable<Person>;
   facilityId: string | null;
   patientId?: string;
   activeFacilityId: string;
-  savePerson: (person: Person, facility: string | null) => void;
+  savePerson: (person: Nullable<Person>, facility: string | null) => void;
   backCallback?: () => void;
   isPxpView: boolean;
   hideFacilitySelect?: boolean;
@@ -280,7 +280,7 @@ const PersonForm = (props: Props) => {
             <TextInput
               label="First name"
               name="firstName"
-              value={patient.firstName}
+              value={patient.firstName || ""}
               onChange={onChange}
               onBlur={validateField}
               validationStatus={validationStatus("firstName")}
@@ -290,13 +290,13 @@ const PersonForm = (props: Props) => {
             <TextInput
               label="Middle name"
               name="middleName"
-              value={patient.middleName}
+              value={patient.middleName || ""}
               onChange={onChange}
             />
             <TextInput
               label="Last name"
               name="lastName"
-              value={patient.lastName}
+              value={patient.lastName || ""}
               onChange={onChange}
               onBlur={validateField}
               validationStatus={validationStatus("lastName")}
@@ -308,13 +308,13 @@ const PersonForm = (props: Props) => {
             <TextInput
               label="Lookup ID"
               name="lookupId"
-              value={patient.lookupId}
+              value={patient.lookupId || ""}
               onChange={onChange}
             />
             <Dropdown
               label="Role"
               name="role"
-              selectedValue={patient.role}
+              selectedValue={patient.role || ""}
               onChange={onChange}
               options={[
                 { label: "-Select-", value: "" },
@@ -341,7 +341,7 @@ const PersonForm = (props: Props) => {
               type="date"
               label="Date of birth (mm/dd/yyyy)"
               name="birthDate"
-              value={patient.birthDate}
+              value={patient.birthDate || ""}
               onChange={onChange}
               onBlur={validateField}
               validationStatus={validationStatus("birthDate")}
@@ -358,7 +358,7 @@ const PersonForm = (props: Props) => {
                   type="tel"
                   label="Phone number"
                   name="telephone"
-                  value={patient.telephone}
+                  value={patient.telephone || ""}
                   onChange={onChange}
                   onBlur={validateField}
                   validationStatus={validationStatus("telephone")}
@@ -375,7 +375,7 @@ const PersonForm = (props: Props) => {
               type="email"
               label="Email address"
               name="email"
-              value={patient.email}
+              value={patient.email || ""}
               onChange={onChange}
               onBlur={validateField}
               validationStatus={validationStatus("email")}
@@ -389,7 +389,7 @@ const PersonForm = (props: Props) => {
             <TextInput
               label="Street address 1"
               name="street"
-              value={patient.street}
+              value={patient.street || ""}
               onChange={onChange}
               onBlur={validateField}
               validationStatus={validationStatus("street")}
@@ -415,7 +415,7 @@ const PersonForm = (props: Props) => {
             <TextInput
               label="County"
               name="county"
-              value={patient.county}
+              value={patient.county || ""}
               onChange={onChange}
             />
             <div className="grid-row grid-gap">
@@ -423,7 +423,7 @@ const PersonForm = (props: Props) => {
                 <Dropdown
                   label="State"
                   name="state"
-                  selectedValue={patient.state}
+                  selectedValue={patient.state || ""}
                   options={stateCodes.map((c) => ({ label: c, value: c }))}
                   defaultSelect
                   onChange={onChange}
@@ -437,7 +437,7 @@ const PersonForm = (props: Props) => {
                 <TextInput
                   label="Zip code"
                   name="zipCode"
-                  value={patient.zipCode}
+                  value={patient.zipCode || ""}
                   onChange={onChange}
                   onBlur={validateField}
                   validationStatus={validationStatus("zipCode")}
