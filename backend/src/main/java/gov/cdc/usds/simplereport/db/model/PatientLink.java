@@ -10,15 +10,11 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
-  public static final byte LOCKOUT_THRESHOLD = 5;
-
   @OneToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
 
-  @Column private Date expiresAt;
-
-  @Column private byte failedAttempts;
+  @Column private Date refreshedAt;
 
   public PatientLink() {}
 
@@ -30,37 +26,22 @@ public class PatientLink extends EternalAuditedEntity {
     return testOrder;
   }
 
-  public Date getExpiresAt() {
-    if (expiresAt == null) {
-      return Date.from(getCreatedAt().toInstant().plus(Duration.ofDays(1)));
+  public Date getRefreshedAt() {
+    if (refreshedAt == null) {
+      return getCreatedAt();
     }
-    return expiresAt;
+    return refreshedAt;
   }
 
   public boolean isExpired() {
-    return Instant.now().isAfter(getExpiresAt().toInstant());
+    return this.getRefreshedAt().before(Date.from(Instant.now().minus(Duration.ofDays(1))));
   }
 
   public void expire() {
-    expiresAt = Date.from(Instant.now());
+    this.refreshedAt = Date.from(Instant.now().minus(Duration.ofDays(1)));
   }
 
   public void refresh() {
-    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
-  }
-
-  public boolean isLockedOut() {
-    return failedAttempts >= LOCKOUT_THRESHOLD;
-  }
-
-  public void addFailedAttempt() {
-    // do not overflow the byte
-    if (failedAttempts < Byte.MAX_VALUE) {
-      failedAttempts++;
-    }
-  }
-
-  public void resetFailedAttempts() {
-    failedAttempts = 0;
+    this.refreshedAt = Date.from(Instant.now());
   }
 }
