@@ -59,6 +59,8 @@ public class PatientLinkService {
           throw new ExpiredPatientLinkException();
         }
         contextHolder.setContext(patientLink, testOrder, patient);
+        patientLink.resetFailedAttempts();
+        plrepo.save(patientLink);
         return true;
       }
 

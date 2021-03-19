@@ -59,4 +59,8 @@ public class PatientLink extends EternalAuditedEntity {
       failedAttempts++;
     }
   }
+
+  public void resetFailedAttempts() {
+    failedAttempts = 0;
+  }
 }
