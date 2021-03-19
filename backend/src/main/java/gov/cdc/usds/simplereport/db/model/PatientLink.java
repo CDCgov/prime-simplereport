@@ -10,7 +10,7 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
-  public static byte LOCKOUT_THRESHOLD = 5;
+  public static final byte LOCKOUT_THRESHOLD = 5;
 
   @OneToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
