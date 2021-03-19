@@ -120,7 +120,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
       );
     default:
       return (
-        <p>
+        <p className="display-none">
           An inconclusive result is neither positive nor negative. This result
           can occur from inadequate sample collection, very early-stage
           infection, or for patients close to recovery. With an inconclusive

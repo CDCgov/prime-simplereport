@@ -324,7 +324,9 @@ exports[`TestResult should show an inconclusive result 1`] = `
         >
           Notes
         </h2>
-        <p>
+        <p
+          class="display-none"
+        >
           An inconclusive result is neither positive nor negative. This result can occur from inadequate sample collection, very early-stage infection, or for patients close to recovery. With an inconclusive result, collecting and testing another sample is recommended. Please make an appointment for another test as soon as possible.
         </p>
         <p>
