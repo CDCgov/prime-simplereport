@@ -183,7 +183,7 @@ type User {
 type PatientLink {
   internalId: ID
   createdAt: DateTime
-  refreshedAt: DateTime
+  expiresAt: DateTime
   testOrder: TestOrder
 }
 

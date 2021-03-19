@@ -101,7 +101,7 @@ class PatientLinkServiceTest extends BaseServiceTest<PatientLinkService> {
             false);
 
     PatientLink pl = _service.refreshPatientLink(to.getPatientLink().getInternalId());
-    assertNotNull(pl.getRefreshedAt());
+    assertNotNull(pl.getExpiresAt());
 
     TestUserIdentities.setFacilityAuthorities();
     assertThrows(
