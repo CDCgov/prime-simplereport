@@ -1,25 +1,33 @@
 package gov.cdc.usds.simplereport.api;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
+import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest(
+    controllers = AccountRequestController.class,
+    excludeFilters =
+        @Filter(
+            classes = {AuditLoggingAdvice.class, WebConfiguration.class},
+            type = FilterType.ASSIGNABLE_TYPE))
 class AccountRequestControllerTest {
+
   @Autowired private MockMvc _mockMvc;
 
-  @MockBean EmailService emailService;
+  @MockBean private EmailService emailService;
 
   @Test
   void waitlistIsOk() throws Exception {
