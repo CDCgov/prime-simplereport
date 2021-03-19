@@ -73,12 +73,9 @@ const AddPatient = () => {
     return <div>No facility selected</div>;
   }
 
-  const savePerson = async (
-    person: Nullable<Person>,
-    facility: string | null
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     const variables = {
-      facilityId: facility,
+      facilityId: person.facilityId,
       firstName: person.firstName,
       middleName: person.middleName,
       lastName: person.lastName,
@@ -113,6 +110,7 @@ const AddPatient = () => {
   return (
     <PersonForm
       patient={{
+        facilityId: "",
         firstName: null,
         middleName: null,
         lastName: null,
@@ -133,7 +131,6 @@ const AddPatient = () => {
         state: null,
         zipCode: null,
       }}
-      facilityId={""}
       activeFacilityId={activeFacilityId}
       isPxpView={false}
       savePerson={savePerson}

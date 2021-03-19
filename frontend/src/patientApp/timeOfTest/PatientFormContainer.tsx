@@ -53,12 +53,9 @@ const PatientFormContainer = () => {
     );
   }
 
-  const savePerson = async (
-    person: Nullable<Person>,
-    facility: string | null
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     const variables = {
-      facilityId: facility,
+      facilityId: person.facilityId,
       firstName: person.firstName,
       middleName: person.middleName,
       lastName: person.lastName,
@@ -130,8 +127,10 @@ const PatientFormContainer = () => {
   return (
     <PatientTimeOfTestContainer currentPage={"profile"}>
       <PersonForm
-        patient={patient}
-        facilityId={patient.facility === null ? null : patient.facility?.id}
+        patient={{
+          ...patient,
+          facilityId: patient.facility === null ? null : patient.facility?.id,
+        }}
         activeFacilityId={facility.id}
         patientId={patient.internalId}
         isPxpView={true}

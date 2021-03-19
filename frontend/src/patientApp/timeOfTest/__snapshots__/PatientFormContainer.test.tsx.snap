@@ -342,8 +342,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                     <input
                       aria-required={true}
                       className="usa-input"
-                      data-format="^\\\\(?([0-9]{3})\\\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
-                      data-format-message="Phone number should have 10 digits"
                       id="7"
                       name="telephone"
                       onBlur={[Function]}
@@ -366,7 +364,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                 <input
                   aria-required="false"
                   className="usa-input"
-                  data-format="^(([^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+(\\\\.[^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+)*)|(\\\\\\".+\\\\\\"))@(([^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]+\\\\.)+[^<>()[\\\\]\\\\.,;:\\\\s@\\\\\\"]{2,})$"
                   id="8"
                   name="email"
                   onBlur={[Function]}

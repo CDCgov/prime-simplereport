@@ -2,9 +2,9 @@ import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { act } from "react-dom/test-utils";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
-import { act } from "react-dom/test-utils";
 
 const mockStore = configureStore([]);
 

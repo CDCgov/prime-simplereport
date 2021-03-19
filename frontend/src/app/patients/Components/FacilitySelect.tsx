@@ -6,14 +6,14 @@ import Dropdown from "../../commonComponents/Dropdown";
 interface Props {
   facilityId: string | null;
   onChange: (facilityId: string | null) => void;
-  validateField: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  validationStatus: (errorKey: string) => "error" | "success" | undefined;
+  validateField: () => void;
+  validationStatus: (name: keyof PersonFormData) => "error" | undefined;
   errors: { [key: string]: string | undefined };
   hidden?: boolean;
 }
 
 const ALL_FACILITIES = "~~ALL-FACILITIES~~";
-const NAME = "currentFacilityId";
+const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
   const facilities = useSelector(
@@ -45,7 +45,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
       }
       onChange={onChange}
       onBlur={props.validateField}
-      //   validationStatus={props.validationStatus(NAME)}
+      validationStatus={props.validationStatus(NAME)}
       errorMessage={props.errors[NAME]}
       options={facilityList}
       required

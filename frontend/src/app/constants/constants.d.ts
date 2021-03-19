@@ -27,3 +27,7 @@ interface Person extends Address {
   county: string;
   email: string;
 }
+
+interface PersonFormData extends Person {
+  facilityId: string | null;
+}

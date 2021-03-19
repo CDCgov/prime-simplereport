@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import classnames from "classnames";
 import { toast } from "react-toastify";
@@ -23,15 +23,15 @@ import { displayFullName, showError } from "../../utils";
 import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import Button from "../../commonComponents/Button";
+import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
 
 import FacilitySelect from "./FacilitySelect";
 
 interface Props {
-  patient: Nullable<Person>;
-  facilityId: string | null;
+  patient: Nullable<PersonFormData>;
   patientId?: string;
   activeFacilityId: string;
-  savePerson: (person: Nullable<Person>, facility: string | null) => void;
+  savePerson: (person: Nullable<PersonFormData>) => void;
   backCallback?: () => void;
   isPxpView: boolean;
   hideFacilitySelect?: boolean;
@@ -40,16 +40,35 @@ interface Props {
 const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
-  const [errors, setErrors] = useState(
-    {} as { [key: string]: string | undefined }
+  const [errors, setErrors] = useState<PersonErrors>({});
+
+  const clearError = useCallback(
+    (field: keyof PersonErrors) => {
+      if (errors[field]) {
+        setErrors({ ...errors, [field]: undefined });
+      }
+    },
+    [errors]
   );
 
-  const [currentFacilityId, setCurrentFacilityId] = useState(props.facilityId);
+  const validateField = useCallback(
+    async (field: keyof PersonErrors) => {
+      try {
+        clearError(field);
+        await personSchema.validateAt(field, patient);
+      } catch (e) {
+        setErrors((errors) => ({
+          ...errors,
+          [field]: allPersonErrors[field],
+        }));
+      }
+    },
+    [patient, clearError]
+  );
 
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    let name: string | null = e.target.name;
     let value: string | null = e.target.value;
     if (e.target.type === "checkbox") {
       value = {
@@ -57,82 +76,8 @@ const PersonForm = (props: Props) => {
         [e.target.value]: (e.target as any).checked,
       };
     }
-    if (errors[name]) {
-      validateField(e);
-    }
     setFormChanged(true);
     setPatient({ ...patient, [e.target.name]: value });
-  };
-
-  /**
-   * This function runs validation checks on form inputs.
-   * It can be attached to the onBlur prop of a TextInput, Dropdown, or RadioGroup
-   * @param {(HTMLInputElement|HTMLSelectElement)} target - The input to validate.
-   * @param {boolean} [setState=true] - Whether or not to update the state of the errors variable immediately. Defaults to true.
-   * @returns {(string|undefined)} The resulting error message for the input after validation
-   */
-  const validateField = (
-    { target }: { target: HTMLInputElement | HTMLSelectElement },
-    setState = true
-  ) => {
-    // Get input name, value, and label
-    const { name } = target;
-    let value: string | null = target.value;
-    let label = (target.labels as any)[0].firstChild.data;
-
-    // For radio groups, value should indicate whether one radio is checked or not
-    if (
-      name === "residentCongregateSetting" ||
-      name === "employedInHealthcare"
-    ) {
-      // Two parents above the input is div.usa-form-group, which contains both radio buttons
-      const radioInputs = target?.parentElement?.parentElement?.getElementsByTagName(
-        "input"
-      );
-      // If either is checked, return a value, if neither is checked, value is null
-      value = [0, 1].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
-        .length
-        ? "true"
-        : null;
-      // The label for a RadioGroup comes from the text in fieldset.prime-radios legend
-      label =
-        target?.parentElement?.parentElement?.parentElement?.firstChild
-          ?.firstChild?.textContent;
-    }
-
-    // Get validation relevant properties of the input, required and format
-    const required: boolean =
-      target.getAttribute("aria-required") === "true" ||
-      target.getAttribute("data-required") === "true";
-    const format: string | null = target.getAttribute("data-format");
-
-    // Initialize error message
-    let errorMessage = undefined;
-
-    // Required validation check
-    if ((!value || value === "- Select -") && required) {
-      errorMessage = `${label} is required`;
-      // Format validation check
-    } else if (format) {
-      const regex = new RegExp(format);
-      if (value && !value.match(regex)) {
-        const formatMessage: string | null = target.getAttribute(
-          "data-format-message"
-        );
-        errorMessage = formatMessage || `${label} has an incorrect format`;
-      }
-    }
-
-    // Only set errors state variable if setState is true
-    // It should be false on form submit, since we are validating many fields at once
-    if (setState) {
-      setErrors({
-        ...errors,
-        [name]: errorMessage,
-      });
-    }
-
-    return errorMessage;
   };
 
   /**
@@ -141,19 +86,8 @@ const PersonForm = (props: Props) => {
    * @param {string} name - The name of the input to check.
    * @returns {string} "success" if valid, "error" if invalid
    */
-  const validationStatus = (name: string) => {
-    // If the input has never been validated before, initialize a key into the errors state variable
-    if (!(name in errors)) {
-      setErrors({
-        ...errors,
-        [name]: undefined,
-      });
-      return "success";
-    } else if (errors[name] === undefined) {
-      return "success";
-    } else {
-      return "error";
-    }
+  const validationStatus = (name: keyof PersonFormData) => {
+    return errors[name] ? "error" : undefined;
   };
 
   const fullName = displayFullName(
@@ -189,38 +123,43 @@ const PersonForm = (props: Props) => {
     setPatient({ ...patient, employedInHealthcare });
   };
 
-  const onSave = () => {
-    // Validate all fields with validation set up
-    const fieldsToValidate = Object.keys(errors).map(
-      (name) =>
-        document.getElementsByName(name)[0] as
-          | HTMLInputElement
-          | HTMLSelectElement
-    );
-    const newErrors: { [key: string]: string | undefined } = {};
-    fieldsToValidate.forEach(
-      (field) =>
-        (newErrors[field.name] = validateField({ target: field }, false))
-    );
-    const remainingErrors = Object.entries(newErrors).filter(
-      ([name, error]) => error !== undefined
-    );
-    if (remainingErrors.length) {
-      remainingErrors.reverse();
-      const firstErrorName = remainingErrors[0][0];
-      const firstErrorField = document.getElementsByName(firstErrorName)[0] as
-        | HTMLInputElement
-        | HTMLSelectElement;
-      firstErrorField.focus();
-      remainingErrors.forEach(([name, error]) =>
-        showError(toast, "Please correct before submitting", error)
+  const onFacilityChange = (facilityId: string | null) => {
+    setFormChanged(true);
+    setPatient({ ...patient, facilityId });
+  };
+
+  const onSave = async () => {
+    try {
+      await personSchema.validate(patient, { abortEarly: false });
+    } catch (e) {
+      const errors: PersonErrors = e.inner.reduce(
+        (
+          acc: PersonErrors,
+          el: { path: keyof PersonErrors; message: string }
+        ) => {
+          acc[el.path] = allPersonErrors[el.path];
+          return acc;
+        },
+        {} as PersonErrors
       );
-      setErrors(newErrors);
+      setErrors(errors);
+      let focusedOnError = false;
+
+      Object.entries(errors).forEach(([name, error]) => {
+        if (!error) {
+          return;
+        }
+        if (!focusedOnError) {
+          document.getElementsByName(name)[0].focus();
+          focusedOnError = true;
+        }
+        showError(toast, "Please correct before submitting", error);
+      });
       return;
     }
     // If no errors, submit
     setFormChanged(false);
-    props.savePerson(patient, currentFacilityId);
+    props.savePerson(patient);
   };
 
   //TODO: when to save initial data? What if name isn't filled? required fields?
@@ -282,7 +221,9 @@ const PersonForm = (props: Props) => {
               name="firstName"
               value={patient.firstName || ""}
               onChange={onChange}
-              onBlur={validateField}
+              onBlur={() => {
+                validateField("firstName");
+              }}
               validationStatus={validationStatus("firstName")}
               errorMessage={errors.firstName}
               required
@@ -298,7 +239,9 @@ const PersonForm = (props: Props) => {
               name="lastName"
               value={patient.lastName || ""}
               onChange={onChange}
-              onBlur={validateField}
+              onBlur={() => {
+                validateField("lastName");
+              }}
               validationStatus={validationStatus("lastName")}
               errorMessage={errors.lastName}
               required
@@ -325,12 +268,11 @@ const PersonForm = (props: Props) => {
               ]}
             />
             <FacilitySelect
-              facilityId={currentFacilityId}
-              onChange={(value: string | null) => {
-                setCurrentFacilityId(value);
-                setFormChanged(true);
+              facilityId={patient.facilityId}
+              onChange={onFacilityChange}
+              validateField={() => {
+                validateField("facilityId");
               }}
-              validateField={validateField}
               validationStatus={validationStatus}
               errors={errors}
               hidden={props.hideFacilitySelect}
@@ -343,7 +285,9 @@ const PersonForm = (props: Props) => {
               name="birthDate"
               value={patient.birthDate || ""}
               onChange={onChange}
-              onBlur={validateField}
+              onBlur={() => {
+                validateField("birthDate");
+              }}
               validationStatus={validationStatus("birthDate")}
               errorMessage={errors.birthDate}
               required
@@ -360,13 +304,11 @@ const PersonForm = (props: Props) => {
                   name="telephone"
                   value={patient.telephone || ""}
                   onChange={onChange}
-                  onBlur={validateField}
+                  onBlur={() => {
+                    validateField("telephone");
+                  }}
                   validationStatus={validationStatus("telephone")}
                   errorMessage={errors.telephone}
-                  format={
-                    "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$"
-                  }
-                  formatMessage={"Phone number should have 10 digits"}
                   required
                 />
               </div>
@@ -377,12 +319,11 @@ const PersonForm = (props: Props) => {
               name="email"
               value={patient.email || ""}
               onChange={onChange}
-              onBlur={validateField}
+              onBlur={() => {
+                validateField("email");
+              }}
               validationStatus={validationStatus("email")}
               errorMessage={errors.email}
-              format={
-                '^(([^<>()[\\]\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\.,;:\\s@\\"]+)*)|(\\".+\\"))@(([^<>()[\\]\\.,;:\\s@\\"]+\\.)+[^<>()[\\]\\.,;:\\s@\\"]{2,})$'
-              }
             />
           </div>
           <div className="usa-form">
@@ -391,7 +332,9 @@ const PersonForm = (props: Props) => {
               name="street"
               value={patient.street || ""}
               onChange={onChange}
-              onBlur={validateField}
+              onBlur={() => {
+                validateField("street");
+              }}
               validationStatus={validationStatus("street")}
               errorMessage={errors.street}
               required
@@ -427,7 +370,9 @@ const PersonForm = (props: Props) => {
                   options={stateCodes.map((c) => ({ label: c, value: c }))}
                   defaultSelect
                   onChange={onChange}
-                  onBlur={validateField}
+                  onBlur={() => {
+                    validateField("state");
+                  }}
                   validationStatus={validationStatus("state")}
                   errorMessage={errors.state}
                   required
@@ -439,7 +384,9 @@ const PersonForm = (props: Props) => {
                   name="zipCode"
                   value={patient.zipCode || ""}
                   onChange={onChange}
-                  onBlur={validateField}
+                  onBlur={() => {
+                    validateField("zipCode");
+                  }}
                   validationStatus={validationStatus("zipCode")}
                   errorMessage={errors.zipCode}
                   format={"^\\d{5}(-\\d{4})?$"}
@@ -484,7 +431,9 @@ const PersonForm = (props: Props) => {
             buttons={YES_NO_VALUES}
             selectedRadio={patient.residentCongregateSetting}
             onChange={onResidentCongregateSettingChange}
-            onBlur={validateField}
+            onBlur={() => {
+              validateField("residentCongregateSetting");
+            }}
             validationStatus={validationStatus("residentCongregateSetting")}
             errorMessage={errors.residentCongregateSetting}
             required
@@ -495,7 +444,9 @@ const PersonForm = (props: Props) => {
             buttons={YES_NO_VALUES}
             selectedRadio={patient.employedInHealthcare}
             onChange={onEmployedInHealthcareChange}
-            onBlur={validateField}
+            onBlur={() => {
+              validateField("employedInHealthcare");
+            }}
             validationStatus={validationStatus("employedInHealthcare")}
             errorMessage={errors.employedInHealthcare}
             required

@@ -116,12 +116,9 @@ const EditPatient = (props: Props) => {
     : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
 
-  const savePerson = async (
-    person: Nullable<Person>,
-    facility: string | null
-  ) => {
+  const savePerson = async (person: Nullable<PersonFormData>) => {
     const variables = {
-      facilityId: facility,
+      facilityId: person.facilityId,
       firstName: person.firstName,
       middleName: person.middleName,
       lastName: person.lastName,
@@ -166,12 +163,11 @@ const EditPatient = (props: Props) => {
         <PersonForm
           patient={{
             ...data.patient,
+            facilityId:
+              data.patient.facility === null ? null : data.patient.facility?.id,
             residentCongregateSetting,
             employedInHealthcare,
           }}
-          facilityId={
-            data.patient.facility === null ? null : data.patient.facility?.id
-          }
           patientId={props.patientId}
           activeFacilityId={props.facilityId}
           isPxpView={false}
