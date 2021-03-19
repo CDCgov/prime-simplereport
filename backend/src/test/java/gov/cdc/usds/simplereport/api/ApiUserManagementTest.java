@@ -55,7 +55,7 @@ class ApiUserManagementTest extends BaseApiTest {
     assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_2));
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
-        "current-user-query-operation",
+        "whoDat",
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
             UserPermission.SEARCH_PATIENTS,
@@ -199,7 +199,7 @@ class ApiUserManagementTest extends BaseApiTest {
     runQuery("add-user", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
-        "add-user-operation",
+        "addUserOp",
         Set.of(
             UserPermission.READ_PATIENT_LIST,
             UserPermission.SEARCH_PATIENTS,
@@ -242,7 +242,7 @@ class ApiUserManagementTest extends BaseApiTest {
         extractPermissionsFromUser(user));
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER,
-        "add-user-operation",
+        "addUserToCurrentOrgOp",
         EnumSet.allOf(UserPermission.class),
         List.of());
     assertUserCanAccessExactFacilities(user, Set.of());
@@ -263,7 +263,7 @@ class ApiUserManagementTest extends BaseApiTest {
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.SITE_ADMIN_USER,
-        "add-user-to-current-org-operation",
+        "addUserToCurrentOrgOp",
         Set.of(),
         List.of("addUserToCurrentOrg"));
   }
@@ -530,7 +530,7 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
-        "current-user-query",
+        "whoDat",
         Set.of(
             UserPermission.START_TEST,
             UserPermission.SEARCH_PATIENTS,
@@ -550,10 +550,7 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgEntryOnly();
     who = (ObjectNode) runQuery("current-user-query").get("whoami");
     assertLastAuditEntry(
-        TestUserIdentities.ENTRY_ONLY_USER,
-        "current-user-query",
-        EnumSet.allOf(UserPermission.class),
-        null);
+        TestUserIdentities.ENTRY_ONLY_USER, "whoDat", EnumSet.allOf(UserPermission.class), null);
     assertEquals(who.get("role").asText(), Role.ADMIN.name());
     assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
     assertUserCanAccessAllFacilities(who);
