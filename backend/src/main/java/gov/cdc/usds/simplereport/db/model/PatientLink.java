@@ -10,6 +10,8 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
+  public static byte LOCKOUT_THRESHOLD = 5;
+
   @OneToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
@@ -44,12 +46,12 @@ public class PatientLink extends EternalAuditedEntity {
   }
 
   public boolean isLockedOut() {
-    return failedAttempts >= 5;
+    return failedAttempts >= LOCKOUT_THRESHOLD;
   }
 
   public void addFailedAttempt() {
     // do not overflow the byte
-    if (failedAttempts < 127) {
+    if (failedAttempts < Byte.MAX_VALUE) {
       failedAttempts++;
     }
   }
