@@ -1,10 +1,9 @@
 import React from "react";
 import classnames from "classnames";
+import { UIDConsumer } from "react-uid";
 
 import Required from "../commonComponents/Required";
 import Optional from "../commonComponents/Optional";
-
-import useUniqueIds from "./useUniqueIds";
 
 // Checkbox objects need a value and label but also can have intrinsic `input`
 // DOM properties such as `disabled`, `readonly`, `aria-xxx` etc.
@@ -42,7 +41,6 @@ const Checkboxes = (props: Props) => {
     required,
     inputRef,
   } = props;
-  const checkboxIds = useUniqueIds("check", boxes.length);
 
   return (
     <fieldset
@@ -67,32 +65,38 @@ const Checkboxes = (props: Props) => {
           {errorMessage}
         </div>
       )}
-      <div
-        className={classnames(
-          "usa-form-group",
-          validationStatus === "error" && "usa-form-group--error"
-        )}
-      >
-        {boxes.map(({ value, label, disabled, checked, ...inputProps }, i) => (
-          <div className="usa-checkbox" key={checkboxIds[i]}>
-            <input
-              className="usa-checkbox__input"
-              checked={checked || checkedValues?.[value] || false}
-              id={checkboxIds[i]}
-              onChange={onChange}
-              type="checkbox"
-              value={value}
-              name={name}
-              ref={inputRef}
-              disabled={disabled || props.disabled}
-              {...inputProps}
-            />
-            <label className="usa-checkbox__label" htmlFor={checkboxIds[i]}>
-              {label}
-            </label>
+      <UIDConsumer>
+        {(_, uid) => (
+          <div
+            className={classnames(
+              "usa-form-group",
+              validationStatus === "error" && "usa-form-group--error"
+            )}
+          >
+            {boxes.map(
+              ({ value, label, disabled, checked, ...inputProps }, i) => (
+                <div className="usa-checkbox" key={uid(i)}>
+                  <input
+                    className="usa-checkbox__input"
+                    checked={checked || checkedValues?.[value] || false}
+                    id={uid(i)}
+                    onChange={onChange}
+                    type="checkbox"
+                    value={value}
+                    name={name}
+                    ref={inputRef}
+                    disabled={disabled || props.disabled}
+                    {...inputProps}
+                  />
+                  <label className="usa-checkbox__label" htmlFor={uid(i)}>
+                    {label}
+                  </label>
+                </div>
+              )
+            )}
           </div>
-        ))}
-      </div>
+        )}
+      </UIDConsumer>
     </fieldset>
   );
 };

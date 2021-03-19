@@ -1,7 +1,7 @@
 import React from "react";
 import classnames from "classnames";
+import { UIDConsumer } from "react-uid";
 
-import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
 import Optional from "./Optional";
 
@@ -12,7 +12,6 @@ type Options<T> = {
 }[];
 
 interface Props<T> {
-  id?: string;
   name?: string;
   legend?: React.ReactNode;
   legendSrOnly?: boolean;
@@ -31,7 +30,6 @@ interface Props<T> {
 }
 
 const RadioGroup = <T extends string>({
-  id,
   name,
   legend,
   legendSrOnly,
@@ -48,8 +46,6 @@ const RadioGroup = <T extends string>({
   onClick,
   disabled,
 }: Props<T>): React.ReactElement => {
-  const [autoId] = useUniqueId("radio", 1);
-  const widgetId = id || autoId;
   const inputClass = classnames(
     "usa-radio__input",
     variant === "tile" && "usa-radio__input--tile"
@@ -75,43 +71,44 @@ const RadioGroup = <T extends string>({
           {errorMessage}
         </div>
       )}
-      <div
-        className={classnames(
-          "usa-form-group",
-          variant === "horizontal" && "prime-radio--horizontal",
-          validationStatus === "error" && "usa-form-group--error"
+      <UIDConsumer>
+        {(_, uid) => (
+          <div
+            className={classnames(
+              "usa-form-group",
+              variant === "horizontal" && "prime-radio--horizontal",
+              validationStatus === "error" && "usa-form-group--error"
+            )}
+          >
+            {buttons.map((c, i) => {
+              const labelClasses = classnames(
+                "usa-radio__label",
+                (c.disabled || disabled) && "text-base"
+              );
+              return (
+                <div className={groupClass} key={uid(c.value)}>
+                  <input
+                    type="radio"
+                    id={uid(c.value)}
+                    name={name}
+                    value={c.value}
+                    data-required={required || "false"}
+                    disabled={disabled || c.disabled || false}
+                    className={inputClass}
+                    checked={c.value === selectedRadio}
+                    onClick={onClick ? () => onClick(c.value) : undefined}
+                    onChange={() => onChange(c.value)}
+                    onBlur={onBlur}
+                  />
+                  <label className={labelClasses} htmlFor={uid(c.value)}>
+                    {c.label}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
         )}
-      >
-        {buttons.map((c, i) => {
-          const labelClasses = classnames(
-            "usa-radio__label",
-            (c.disabled || disabled) && "text-base"
-          );
-          return (
-            <div className={groupClass} key={c.value}>
-              <input
-                type="radio"
-                id={`${widgetId}_${c.value}_${i}`}
-                name={name}
-                value={c.value}
-                data-required={required || "false"}
-                disabled={disabled || c.disabled || false}
-                className={inputClass}
-                checked={c.value === selectedRadio}
-                onClick={onClick ? () => onClick(c.value) : undefined}
-                onChange={() => onChange(c.value)}
-                onBlur={onBlur}
-              />
-              <label
-                className={labelClasses}
-                htmlFor={`${widgetId}_${c.value}_${i}`}
-              >
-                {c.label}
-              </label>
-            </div>
-          );
-        })}
-      </div>
+      </UIDConsumer>
     </fieldset>
   );
 };

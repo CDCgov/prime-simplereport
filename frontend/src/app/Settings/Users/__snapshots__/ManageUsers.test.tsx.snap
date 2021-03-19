@@ -118,14 +118,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_ADMIN_0"
+                    id="4-val-ADMIN"
                     name="role"
                     type="radio"
                     value="ADMIN"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_ADMIN_0"
+                    for="4-val-ADMIN"
                   >
                     Admin (full permissions)
                   </label>
@@ -138,14 +138,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_USER_1"
+                    id="4-val-USER"
                     name="role"
                     type="radio"
                     value="USER"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_USER_1"
+                    for="4-val-USER"
                   >
                     Standard user (manage results and profiles)
                   </label>
@@ -157,14 +157,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                     class="usa-radio__input"
                     data-required="false"
                     disabled=""
-                    id="radio-test-1_ENTRY_ONLY_2"
+                    id="4-val-ENTRY_ONLY"
                     name="role"
                     type="radio"
                     value="ENTRY_ONLY"
                   />
                   <label
                     class="usa-radio__label text-base"
-                    for="radio-test-1_ENTRY_ONLY_2"
+                    for="4-val-ENTRY_ONLY"
                   >
                     Entry only (conduct tests)
                   </label>
@@ -199,14 +199,14 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                   <input
                     class="usa-checkbox__input"
                     disabled=""
-                    id="check-test-1"
+                    id="5-val-0"
                     name="all-facilities"
                     type="checkbox"
                     value="ALL_FACILITIES"
                   />
                   <label
                     class="usa-checkbox__label"
-                    for="check-test-1"
+                    for="5-val-0"
                   >
                     Access all facilities
                   </label>
@@ -428,14 +428,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   <input
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_ADMIN_0"
+                    id="1-val-ADMIN"
                     name="role"
                     type="radio"
                     value="ADMIN"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_ADMIN_0"
+                    for="1-val-ADMIN"
                   >
                     Admin (full permissions)
                   </label>
@@ -447,14 +447,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     checked=""
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_USER_1"
+                    id="1-val-USER"
                     name="role"
                     type="radio"
                     value="USER"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_USER_1"
+                    for="1-val-USER"
                   >
                     Standard user (manage results and profiles)
                   </label>
@@ -465,14 +465,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                   <input
                     class="usa-radio__input"
                     data-required="false"
-                    id="radio-test-1_ENTRY_ONLY_2"
+                    id="1-val-ENTRY_ONLY"
                     name="role"
                     type="radio"
                     value="ENTRY_ONLY"
                   />
                   <label
                     class="usa-radio__label"
-                    for="radio-test-1_ENTRY_ONLY_2"
+                    for="1-val-ENTRY_ONLY"
                   >
                     Entry only (conduct tests)
                   </label>
@@ -506,14 +506,14 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 >
                   <input
                     class="usa-checkbox__input"
-                    id="check-test-1"
+                    id="2-val-0"
                     name="all-facilities"
                     type="checkbox"
                     value="ALL_FACILITIES"
                   />
                   <label
                     class="usa-checkbox__label"
-                    for="check-test-1"
+                    for="2-val-0"
                   >
                     Access all facilities
                   </label>

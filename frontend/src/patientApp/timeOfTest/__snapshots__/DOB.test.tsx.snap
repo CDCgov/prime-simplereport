@@ -20,7 +20,7 @@ exports[`DOB snapshot matches 1`] = `
         <label
           aria-describedby="bdayFormat"
           className="usa-label"
-          htmlFor="text-test-1"
+          htmlFor="1"
         >
           Date of birth
         </label>
@@ -33,7 +33,7 @@ exports[`DOB snapshot matches 1`] = `
           aria-required="false"
           autoComplete="bday"
           className="usa-input"
-          id="text-test-1"
+          id="1"
           inputMode="numeric"
           name="birthDate"
           onChange={[Function]}

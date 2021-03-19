@@ -28,7 +28,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_POSITIVE_0"
+          id="1-val-POSITIVE"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -37,7 +37,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_POSITIVE_0"
+          htmlFor="1-val-POSITIVE"
         >
           Positive (+)
         </label>
@@ -50,7 +50,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_NEGATIVE_1"
+          id="1-val-NEGATIVE"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -59,7 +59,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_NEGATIVE_1"
+          htmlFor="1-val-NEGATIVE"
         >
           Negative (-)
         </label>
@@ -72,7 +72,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_UNDETERMINED_2"
+          id="1-val-UNDETERMINED"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -81,7 +81,7 @@ exports[`TestResultInputForm should render with a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_UNDETERMINED_2"
+          htmlFor="1-val-UNDETERMINED"
         >
           Inconclusive
         </label>
@@ -131,7 +131,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_POSITIVE_0"
+          id="2-val-POSITIVE"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -140,7 +140,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_POSITIVE_0"
+          htmlFor="2-val-POSITIVE"
         >
           Positive (+)
         </label>
@@ -153,7 +153,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_NEGATIVE_1"
+          id="2-val-NEGATIVE"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -162,7 +162,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_NEGATIVE_1"
+          htmlFor="2-val-NEGATIVE"
         >
           Negative (-)
         </label>
@@ -175,7 +175,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_UNDETERMINED_2"
+          id="2-val-UNDETERMINED"
           name="covid-test-result-5d315d18-82f8-4025-a051-1a509e15c880"
           onChange={[Function]}
           onClick={[Function]}
@@ -184,7 +184,7 @@ exports[`TestResultInputForm should render without a value 1`] = `
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_UNDETERMINED_2"
+          htmlFor="2-val-UNDETERMINED"
         >
           Inconclusive
         </label>
