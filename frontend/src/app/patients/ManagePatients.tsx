@@ -219,16 +219,18 @@ export const DetachedManagePatients = ({
                 </span>
               </h2>
               <div>
-                {!showFilters && (
-                  <Button
-                    icon={faSlidersH}
-                    onClick={() => {
-                      setShowFilters(true);
-                    }}
-                  >
-                    Filter
-                  </Button>
-                )}
+                <Button
+                  icon={faSlidersH}
+                  onClick={() => {
+                    if (showFilters) {
+                      setNamePrefixMatch(null);
+                      setDebounced(null);
+                    }
+                    setShowFilters(!showFilters);
+                  }}
+                >
+                  {showFilters ? "Clear filters" : "Filter"}
+                </Button>
                 {canEditUser ? (
                   <LinkWithQuery
                     className="usa-button usa-button--primary"
@@ -242,30 +244,21 @@ export const DetachedManagePatients = ({
               </div>
             </div>
             {showFilters && (
-              <div className="display-flex flex-row flex-justify flex-align-center bg-base-lightest padding-x-3 padding-y-2">
+              <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
                 <SearchInput
                   label="Person"
                   onInputChange={(e) => {
                     setDebounced(e.target.value);
                   }}
-                  onSearchClick={() => {}}
+                  onSearchClick={(e) => {
+                    e.preventDefault();
+                    setNamePrefixMatch(debounced);
+                  }}
                   queryString={debounced || ""}
                   className="display-inline-block"
                   placeholder=""
                   focusOnMount
                 />
-                <div>
-                  <Button
-                    variant="outline"
-                    onClick={() => {
-                      setNamePrefixMatch(null);
-                      setDebounced(null);
-                      setShowFilters(false);
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
-                </div>
               </div>
             )}
             <div className="usa-card__body sr-patient-list">
