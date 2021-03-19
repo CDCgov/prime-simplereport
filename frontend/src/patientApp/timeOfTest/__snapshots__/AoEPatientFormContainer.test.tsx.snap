@@ -22,7 +22,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             className="usa-step-indicator__segment-label"
           >
             Profile information
-
+             
             <span
               className="usa-sr-only"
             >
@@ -38,7 +38,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             className="usa-step-indicator__segment-label"
           >
             Symptoms and history
-
+             
             <span
               className="usa-sr-only"
             >
@@ -69,7 +69,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
             <span
               className="usa-step-indicator__total-steps"
             >
-              of
+              of 
               2
             </span>
           </span>
@@ -88,7 +88,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
       <p
         className="message--required"
       >
-        All fields marked with
+        All fields marked with 
         <span
           className="usa-sr-only"
         >
