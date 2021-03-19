@@ -1,7 +1,7 @@
 directive @requiredPermissions(
   anyOf: [String!],
   allOf: [String!]
-) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
+) on FIELD_DEFINITION | ARGUMENT_DEFINITION
 
 # java.util.Date implementation
 scalar DateTime
@@ -58,7 +58,7 @@ type DeviceType {
   swabType: String
 }
 
-type Patient @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"]) {
+type Patient {
   internalId: ID
   facility: Facility
   lookupId: String
@@ -202,7 +202,7 @@ type Query {
     pageSize: Int
     showDeleted: Boolean =  false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
-  ): [Patient]
+  ): [Patient] @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(
     facilityId: ID
     showDeleted: Boolean = false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])

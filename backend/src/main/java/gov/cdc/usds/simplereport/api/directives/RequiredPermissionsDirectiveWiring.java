@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.api.directives;
 
-import gov.cdc.usds.simplereport.api.model.errors.MissingPermissionsException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.authorization.UserPermissionPrincipal;
-import graphql.execution.ExecutionPath;
+import graphql.execution.DataFetcherResult;
+import graphql.execution.ResultPath;
 import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -13,14 +15,14 @@ import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
-import graphql.schema.GraphQLModifiedType;
-import graphql.schema.GraphQLType;
+import graphql.schema.GraphQLNonNull;
 import graphql.schema.idl.SchemaDirectiveWiring;
 import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -38,7 +40,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   public GraphQLArgument onArgument(SchemaDirectiveWiringEnvironment<GraphQLArgument> environment) {
     var requiredPermissions = new RequiredPermissions();
     gatherRequiredPermissions(requiredPermissions, environment.getElement());
-    gatherRequiredPermissionsFromType(requiredPermissions, environment.getElement().getType());
     var argument = environment.getElement();
 
     var originalDataFetcher = environment.getFieldDataFetcher();
@@ -60,7 +61,10 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
             return originalDataFetcher.get(dfe);
           }
 
-          throw new MissingPermissionsException();
+          throw new IllegalGraphqlArgumentException(
+              "Current user does not have permission to supply a non-default value for ["
+                  + argument.getName()
+                  + "]");
         };
 
     FieldCoordinates coordinates =
@@ -74,9 +78,9 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   @Override
   public GraphQLFieldDefinition onField(
       SchemaDirectiveWiringEnvironment<GraphQLFieldDefinition> environment) {
+    GraphQLFieldDefinition fieldDefinition = environment.getElement();
     var requiredPermissions = new RequiredPermissions();
     gatherRequiredPermissions(requiredPermissions, environment.getElement());
-    gatherRequiredPermissionsFromType(requiredPermissions, environment.getElement().getType());
 
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
@@ -90,7 +94,22 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
             return originalDataFetcher.get(dfe);
           }
 
-          throw new MissingPermissionsException();
+          var path = dfe.getExecutionStepInfo().getPath();
+          var error =
+              new IllegalGraphqlFieldAccessException(
+                  "Current user does not have permission to request [" + path + "]",
+                  List.of(fieldDefinition.getDefinition().getSourceLocation()),
+                  path.toList());
+
+          // We can either return this error (wrapped in a DataFetcherResult) or throw it. The
+          // former will set the data requested to `null`, and the latter will set the data's parent
+          // to null. We only need to do the latter if the field requested is non-nullable in the
+          // schema.
+          if (fieldDefinition.getType() instanceof GraphQLNonNull) {
+            throw error;
+          }
+
+          return DataFetcherResult.newResult().error(error).build();
         };
 
     FieldCoordinates coordinates =
@@ -109,7 +128,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private boolean satisfiesRequiredPermissions(
-      RequiredPermissions requiredPermissions, Subject subject, ExecutionPath path) {
+      RequiredPermissions requiredPermissions, Subject subject, ResultPath path) {
     // Site admins are always allowed through
     if (!subject.getPrincipals(SiteAdminPrincipal.class).isEmpty()) {
       return true;
@@ -136,18 +155,6 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
     }
 
     return true;
-  }
-
-  private static void gatherRequiredPermissionsFromType(
-      RequiredPermissions permissionsAccumulator, GraphQLType type) {
-    if (type instanceof GraphQLDirectiveContainer) {
-      gatherRequiredPermissions(permissionsAccumulator, (GraphQLDirectiveContainer) type);
-    }
-
-    if (type instanceof GraphQLModifiedType) {
-      gatherRequiredPermissionsFromType(
-          permissionsAccumulator, ((GraphQLModifiedType) type).getWrappedType());
-    }
   }
 
   private static void gatherRequiredPermissions(

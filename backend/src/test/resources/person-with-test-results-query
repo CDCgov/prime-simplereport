@@ -1,5 +1,5 @@
-query GetPatientsWithTestResults($facilityId: ID = null) {
-  patients(facilityId: $facilityId) {
+query GetPatientsWithTestResults($namePrefixMatch: String = null) {
+  patients(namePrefixMatch: $namePrefixMatch) {
     firstName
     lastName
     birthDate

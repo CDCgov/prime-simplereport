@@ -119,7 +119,7 @@ class PatientManagementTest extends BaseApiTest {
         "1-800-BIZ-NAME",
         "notbitter",
         Optional.empty(),
-        Optional.of(ACCESS_ERROR));
+        Optional.of("Current user does not have permission to request [/addPatient]"));
   }
 
   @Test
@@ -357,7 +357,10 @@ class PatientManagementTest extends BaseApiTest {
   @Test
   void queryingDeletedPatients_standardUser_fail() {
     useOrgUser();
-    runQuery("deleted-person-query", null, ACCESS_ERROR);
+    runQuery(
+        "deleted-person-query",
+        null,
+        "Current user does not have permission to supply a non-default value for [showDeleted]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "GetDeletedPatients",
@@ -385,9 +388,20 @@ class PatientManagementTest extends BaseApiTest {
   }
 
   @Test
-  void queryingPatientTestResults_standardUser_ok() {
+  void queryingPatientTestResults_standardUser_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
     useOrgUser();
-    runQuery("person-with-test-results-query", null, null);
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+
+    runQuery("person-with-test-results-query", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "GetPatientsWithTestResults",
@@ -404,9 +418,22 @@ class PatientManagementTest extends BaseApiTest {
   }
 
   @Test
-  void queryingPatientTestResults_entryOnly_fail() {
+  void queryingPatientTestResults_entryOnly_fail() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
     useOrgEntryOnly();
-    runQuery("person-with-test-results-query", null, ACCESS_ERROR);
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery(
+        "person-with-test-results-query",
+        variables,
+        "Current user does not have permission to request [/patients[0]/testResults]");
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
         "GetPatientsWithTestResults",
@@ -415,13 +442,23 @@ class PatientManagementTest extends BaseApiTest {
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
-        List.of("patients"));
+        List.of("patients", "0", "testResults"));
   }
 
   @Test
-  void queryingPatientLastTestResult_entryOnly_ok() {
+  void queryingPatientLastTestResult_entryOnly_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
     useOrgEntryOnly();
-    runQuery("person-with-last-test-result-query", null, ACCESS_ERROR);
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery("person-with-last-test-result-query", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
         "GetPatientsWithLastTestResult",
@@ -430,7 +467,7 @@ class PatientManagementTest extends BaseApiTest {
             UserPermission.START_TEST,
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
-        List.of("patients"));
+        List.of());
   }
 
   private JsonNode doCreateAndFetch(
