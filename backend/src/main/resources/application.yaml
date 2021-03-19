@@ -62,9 +62,9 @@ simple-report:
     role-prefix: "SR-DEV-TENANT:"
   sendgrid:
     enabled: false
-    from-email: admin@simplereport.gov
+    from-email: support@simplereport.gov
     account-request-recipient: 
-      - usds@cdc.gov
+      - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
 logging:
   pattern:

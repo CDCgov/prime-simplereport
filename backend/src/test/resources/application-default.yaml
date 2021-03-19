@@ -40,7 +40,7 @@ simple-report:
     enabled: false
     from-email: support@simplereport.gov
     account-request-recipient: 
-      - usds@cdc.gov
+      - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
   site-admin-emails:
     - ruby@example.com
