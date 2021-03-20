@@ -10,7 +10,7 @@ import Alert from "../commonComponents/Alert";
 
 import PersonForm from "./Components/PersonForm";
 
-const ADD_PATIENT = gql`
+export const ADD_PATIENT = gql`
   mutation AddPatient(
     $facilityId: ID
     $firstName: String!
