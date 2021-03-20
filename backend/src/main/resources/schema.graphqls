@@ -122,13 +122,6 @@ type Organization {
   externalId: String
   testingFacility: [Facility]
 }
-# When starting from the patient, take a more limited view
-type PatientTestResult { # TODO this isn't used anywhere; should it be deleted?
-  internalId: ID
-  id: ID
-  dateTested: DateTime
-  result: ResultValue
-}
 # TestResult and TestOrder should have the same properties
 type TestOrder {
   internalId: ID
@@ -195,7 +188,7 @@ type PatientLink {
 }
 
 type Query {
-  deviceType: [DeviceType] # TODO what permission is required here?
+  deviceType: [DeviceType]
   patients(
     facilityId: ID
     pageNumber: Int
