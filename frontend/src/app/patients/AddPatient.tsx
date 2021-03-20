@@ -4,11 +4,16 @@ import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
+import {
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 
 import PersonForm from "./Components/PersonForm";
+import Breadcrumbs from "../commonComponents/Breadcrumbs";
+import Button from "../commonComponents/Button";
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -71,6 +76,7 @@ const AddPatient = () => {
   const activeFacilityId: string = useSelector(
     (state) => (state as any).facility.id
   );
+  const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   if (redirect) {
@@ -91,37 +97,79 @@ const AddPatient = () => {
         body="New information record has been created."
       />
     );
-    setRedirect(`/patients/?facility=${activeFacilityId}`);
+    setRedirect(personPath);
   };
 
   return (
-    <PersonForm
-      patient={{
-        facilityId: "",
-        firstName: null,
-        middleName: null,
-        lastName: null,
-        lookupId: null,
-        role: null,
-        race: null,
-        ethnicity: null,
-        gender: null,
-        residentCongregateSetting: null,
-        employedInHealthcare: null,
-        birthDate: null,
-        telephone: null,
-        county: null,
-        email: null,
-        street: null,
-        streetTwo: null,
-        city: null,
-        state: null,
-        zipCode: null,
-      }}
-      activeFacilityId={activeFacilityId}
-      isPxpView={false}
-      savePerson={savePerson}
-    />
+    <main className={"prime-edit-patient prime-home"}>
+      <div className={"grid-container margin-bottom-4"}>
+        <PersonForm
+          patient={{
+            facilityId: "",
+            firstName: null,
+            middleName: null,
+            lastName: null,
+            lookupId: null,
+            role: null,
+            race: null,
+            ethnicity: null,
+            gender: null,
+            residentCongregateSetting: null,
+            employedInHealthcare: null,
+            birthDate: null,
+            telephone: null,
+            county: null,
+            email: null,
+            street: null,
+            streetTwo: null,
+            city: null,
+            state: null,
+            zipCode: null,
+          }}
+          activeFacilityId={activeFacilityId}
+          savePerson={savePerson}
+          getHeader={(_, onSave, formChanged) => (
+            <>
+              <Breadcrumbs
+                crumbs={[
+                  {
+                    link: personPath,
+                    text: PATIENT_TERM_PLURAL_CAP,
+                  },
+                  {
+                    link: "",
+                    text: `Add New ${PATIENT_TERM_CAP}`,
+                  },
+                ]}
+              />
+              <div className="prime-edit-patient-heading">
+                <div>
+                  <h1>Add New ${PATIENT_TERM_CAP}</h1>
+                </div>
+                <button
+                  className="usa-button prime-save-patient-changes"
+                  disabled={!formChanged}
+                  onClick={onSave}
+                >
+                  Save changes
+                </button>
+              </div>
+            </>
+          )}
+          getFooter={(onSave, formChanged) => (
+            <div className="prime-edit-patient-heading">
+              <Button
+                id="edit-patient-save-lower"
+                className="prime-save-patient-changes"
+                disabled={!formChanged}
+                onClick={onSave}
+                label="Save changes"
+              />
+            </div>
+          )}
+        />
+      </div>
+    </main>
   );
 };
 

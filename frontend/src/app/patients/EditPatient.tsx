@@ -3,11 +3,16 @@ import { gql, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 
-import { PATIENT_TERM_CAP } from "../../config/constants";
-import { showNotification } from "../utils";
+import {
+  PATIENT_TERM_CAP,
+  PATIENT_TERM_PLURAL_CAP,
+} from "../../config/constants";
+import { displayFullName, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 
 import PersonForm from "./Components/PersonForm";
+import Breadcrumbs from "../commonComponents/Breadcrumbs";
+import Button from "../commonComponents/Button";
 
 export const GET_PATIENT = gql`
   query GetPatientDetails($id: ID!) {
@@ -109,6 +114,7 @@ const EditPatient = (props: Props) => {
     UPDATE_PATIENT
   );
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
+  const personPath = `/patients/?facility=${props.facilityId}`;
 
   if (redirect) {
     return <Redirect to={redirect} />;
@@ -137,23 +143,70 @@ const EditPatient = (props: Props) => {
       />
     );
 
-    setRedirect(`/patients/?facility=${props.facilityId}`);
+    setRedirect(personPath);
   };
+
+  const getTitle = (person: Nullable<PersonFormData>) =>
+    displayFullName(person.firstName, person.middleName, person.lastName);
 
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">
-        <PersonForm
-          patient={{
-            ...data.patient,
-            facilityId:
-              data.patient.facility === null ? null : data.patient.facility?.id,
-          }}
-          patientId={props.patientId}
-          activeFacilityId={props.facilityId}
-          isPxpView={false}
-          savePerson={savePerson}
-        />
+        <main className={"prime-edit-patient prime-home"}>
+          <div className={"grid-container margin-bottom-4"}>
+            <PersonForm
+              patient={{
+                ...data.patient,
+                facilityId:
+                  data.patient.facility === null
+                    ? null
+                    : data.patient.facility?.id,
+              }}
+              patientId={props.patientId}
+              activeFacilityId={props.facilityId}
+              savePerson={savePerson}
+              getHeader={(person, onSave, formChanged) => (
+                <>
+                  <Breadcrumbs
+                    crumbs={[
+                      {
+                        link: personPath,
+                        text: PATIENT_TERM_PLURAL_CAP,
+                      },
+                      {
+                        link: "",
+                        text: getTitle(person),
+                      },
+                    ]}
+                  />
+                  <div className="prime-edit-patient-heading">
+                    <div>
+                      <h1>{getTitle(person)}</h1>
+                    </div>
+                    <button
+                      className="usa-button prime-save-patient-changes"
+                      disabled={!formChanged}
+                      onClick={onSave}
+                    >
+                      Save changes
+                    </button>
+                  </div>
+                </>
+              )}
+              getFooter={(onSave, formChanged) => (
+                <div className="prime-edit-patient-heading">
+                  <Button
+                    id="edit-patient-save-lower"
+                    className="prime-save-patient-changes"
+                    disabled={!formChanged}
+                    onClick={onSave}
+                    label="Save changes"
+                  />
+                </div>
+              )}
+            />
+          </div>
+        </main>
       </div>
     </div>
   );

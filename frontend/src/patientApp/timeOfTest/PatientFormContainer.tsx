@@ -9,6 +9,7 @@ import PersonForm from "../../app/patients/Components/PersonForm";
 import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import { showNotification } from "../../app/utils";
 import Alert from "../../app/commonComponents/Alert";
+import Button from "../../app/commonComponents/Button";
 
 const PatientFormContainer = () => {
   const [prevPage, setPrevPage] = useState(false);
@@ -93,20 +94,37 @@ const PatientFormContainer = () => {
 
   return (
     <PatientTimeOfTestContainer currentPage={"profile"}>
-      <PersonForm
-        patient={{
-          ...patient,
-          facilityId: patient.facility === null ? null : patient.facility?.id,
-        }}
-        activeFacilityId={facility.id}
-        patientId={patient.internalId}
-        isPxpView={true}
-        hideFacilitySelect={true}
-        backCallback={() => {
-          setPrevPage(true);
-        }}
-        savePerson={savePerson}
-      />
+      <main className={"prime-edit-patient prime-home padding-top-0"}>
+        <div>
+          <PersonForm
+            patient={{
+              ...patient,
+              facilityId:
+                patient.facility === null ? null : patient.facility?.id,
+            }}
+            activeFacilityId={facility.id}
+            patientId={patient.internalId}
+            hideFacilitySelect={true}
+            savePerson={savePerson}
+            getFooter={(onSave, formChanged) => (
+              <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
+                <Button
+                  id="edit-patient-save-lower"
+                  disabled={!formChanged}
+                  onClick={onSave}
+                  label="Save and continue"
+                />
+                <Button
+                  className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
+                  variant="outline"
+                  label={"Back"}
+                  onClick={() => setPrevPage(true)}
+                />
+              </div>
+            )}
+          />
+        </div>
+      </main>
     </PatientTimeOfTestContainer>
   );
 };

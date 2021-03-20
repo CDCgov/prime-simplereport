@@ -1,26 +1,19 @@
 import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
-import classnames from "classnames";
 import { toast } from "react-toastify";
 
-import {
-  PATIENT_TERM_PLURAL_CAP,
-  PATIENT_TERM_CAP,
-  stateCodes,
-} from "../../../config/constants";
+import { stateCodes } from "../../../config/constants";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
   ROLE_VALUES,
 } from "../../constants";
-import Breadcrumbs from "../../commonComponents/Breadcrumbs";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import { displayFullName, showError } from "../../utils";
+import { showError } from "../../utils";
 import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
-import Button from "../../commonComponents/Button";
 import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
@@ -33,9 +26,13 @@ interface Props {
   patientId?: string;
   activeFacilityId: string;
   savePerson: (person: Nullable<PersonFormData>) => void;
-  backCallback?: () => void;
-  isPxpView: boolean;
   hideFacilitySelect?: boolean;
+  getHeader?: (
+    person: Nullable<PersonFormData>,
+    onSave: () => void,
+    formChanged: boolean
+  ) => React.ReactNode;
+  getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
 }
 
 const PersonForm = (props: Props) => {
@@ -84,12 +81,6 @@ const PersonForm = (props: Props) => {
     return errors[name] ? "error" : undefined;
   };
 
-  const fullName = displayFullName(
-    patient.firstName,
-    patient.middleName,
-    patient.lastName
-  );
-
   const onSave = async () => {
     try {
       await personSchema.validate(patient, { abortEarly: false });
@@ -133,250 +124,182 @@ const PersonForm = (props: Props) => {
   };
 
   return (
-    <main
-      className={classnames(
-        "prime-edit-patient prime-home",
-        props.isPxpView && "padding-top-0"
-      )}
-    >
-      <div
-        className={classnames(
-          !props.isPxpView && "grid-container margin-bottom-4"
-        )}
-      >
-        <Prompt
-          when={formChanged}
-          message={() =>
-            "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
-          }
-        />
-        {!props.isPxpView && (
-          <>
-            <Breadcrumbs
-              crumbs={[
-                {
-                  link: `/patients/?facility=${props.activeFacilityId}`,
-                  text: PATIENT_TERM_PLURAL_CAP,
-                },
-                {
-                  link: "",
-                  text: !props.patientId
-                    ? `Add New ${PATIENT_TERM_CAP}`
-                    : fullName,
-                },
-              ]}
-            />
-            <div className="prime-edit-patient-heading">
-              <div>
-                <h1>
-                  {!props.patientId ? `Add New ${PATIENT_TERM_CAP}` : fullName}
-                </h1>
-              </div>
-              <button
-                className="usa-button prime-save-patient-changes"
-                disabled={!formChanged}
-                onClick={onSave}
-              >
-                Save changes
-              </button>
-            </div>
-          </>
-        )}
-        <RequiredMessage />
-        <FormGroup title="General info">
-          <div className="usa-form">
-            <Input
-              {...commonInputProps}
-              label="First name"
-              field="firstName"
-              required
-            />
-            <Input
-              {...commonInputProps}
-              field="middleName"
-              label="Middle name"
-            />
-            <Input
-              {...commonInputProps}
-              field="lastName"
-              label="Last name"
-              required
-            />
-          </div>
-          <div className="usa-form">
-            <Input {...commonInputProps} field="lookupId" label="Lookup ID" />
-            <Select
-              label="Role"
-              name="role"
-              value={patient.role || ""}
-              onChange={onPersonChange("role")}
-              options={ROLE_VALUES}
-            />
-            <FacilitySelect
-              facilityId={patient.facilityId}
-              onChange={onPersonChange("facilityId")}
-              validateField={() => {
-                validateField("facilityId");
-              }}
-              validationStatus={validationStatus}
-              errors={errors}
-              hidden={props.hideFacilitySelect}
-            />
-          </div>
-          <div className="usa-form">
-            <Input
-              {...commonInputProps}
-              field="birthDate"
-              label="Date of birth (mm/dd/yyyy)"
-              type="date"
-              required
-            />
-          </div>
-        </FormGroup>
-        <FormGroup title="Contact information">
-          <div className="usa-form">
-            <div className="grid-row grid-gap">
-              <div className="mobile-lg:grid-col-6">
-                <Input
-                  {...commonInputProps}
-                  field="telephone"
-                  label="Phone number"
-                  type="tel"
-                  required
-                />
-              </div>
-            </div>
-            <Input
-              {...commonInputProps}
-              field="email"
-              label="Email address"
-              type="email"
-            />
-          </div>
-          <div className="usa-form">
-            <Input
-              {...commonInputProps}
-              field="street"
-              label="Street address 1"
-              required
-            />
-          </div>
-          <div className="usa-form">
-            <Input
-              {...commonInputProps}
-              field="streetTwo"
-              label="Street address 2"
-            />
-          </div>
-          <div className="usa-form">
-            <Input {...commonInputProps} field="city" label="City" />
-            <Input {...commonInputProps} field="county" label="County" />
-            <div className="grid-row grid-gap">
-              <div className="mobile-lg:grid-col-6">
-                <Select
-                  label="State"
-                  name="state"
-                  value={patient.state || ""}
-                  options={stateCodes.map((c) => ({ label: c, value: c }))}
-                  defaultSelect
-                  onChange={onPersonChange("state")}
-                  onBlur={() => {
-                    validateField("state");
-                  }}
-                  validationStatus={validationStatus("state")}
-                  errorMessage={errors.state}
-                  required
-                />
-              </div>
-              <div className="mobile-lg:grid-col-6">
-                <Input
-                  {...commonInputProps}
-                  field="zipCode"
-                  label="Zip code"
-                  required
-                />
-              </div>
-            </div>
-          </div>
-        </FormGroup>
-        <FormGroup title="Demographics">
-          <p className="usa-hint maxw-prose">
-            This information is important for public health efforts to recognize
-            and address inequality in health outcomes.
-          </p>
-          <RadioGroup
-            legend="Race"
-            name="race"
-            buttons={RACE_VALUES}
-            selectedRadio={patient.race}
-            onChange={onPersonChange("race")}
-          />
-          <RadioGroup
-            legend="Ethnicity"
-            name="ethnicity"
-            buttons={ETHNICITY_VALUES}
-            selectedRadio={patient.ethnicity}
-            onChange={onPersonChange("ethnicity")}
-          />
-          <RadioGroup
-            legend="Biological Sex"
-            name="gender"
-            buttons={GENDER_VALUES}
-            selectedRadio={patient.gender}
-            onChange={onPersonChange("gender")}
-          />
-        </FormGroup>
-        <FormGroup title="Other">
-          <YesNoRadioGroup
-            legend="Resident in congregate care/living setting?"
-            name="residentCongregateSetting"
-            value={patient.residentCongregateSetting}
-            onChange={onPersonChange("residentCongregateSetting")}
-            onBlur={() => {
-              validateField("residentCongregateSetting");
-            }}
-            validationStatus={validationStatus("residentCongregateSetting")}
-            errorMessage={errors.residentCongregateSetting}
+    <>
+      <Prompt
+        when={formChanged}
+        message={() =>
+          "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
+        }
+      />
+      {props.getHeader && props.getHeader(patient, onSave, formChanged)}
+      <RequiredMessage />
+      <FormGroup title="General info">
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            label="First name"
+            field="firstName"
             required
           />
-          <YesNoRadioGroup
-            legend="Work in Healthcare?"
-            name="employedInHealthcare"
-            value={patient.employedInHealthcare}
-            onChange={onPersonChange("employedInHealthcare")}
-            onBlur={() => {
-              validateField("employedInHealthcare");
-            }}
-            validationStatus={validationStatus("employedInHealthcare")}
-            errorMessage={errors.employedInHealthcare}
+          <Input {...commonInputProps} field="middleName" label="Middle name" />
+          <Input
+            {...commonInputProps}
+            field="lastName"
+            label="Last name"
             required
           />
-        </FormGroup>
-        <div
-          className={
-            props.isPxpView
-              ? "mobile-lg:display-flex flex-justify-end margin-top-2"
-              : "prime-edit-patient-heading"
-          }
-        >
-          <Button
-            id="edit-patient-save-lower"
-            className={props.isPxpView ? "" : "prime-save-patient-changes"}
-            disabled={!formChanged}
-            onClick={onSave}
-            label={props.isPxpView ? "Save and continue" : "Save changes"}
-          />
-          {props.isPxpView && (
-            <Button
-              className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
-              variant="outline"
-              label={"Back"}
-              onClick={props.backCallback}
-            />
-          )}
         </div>
-      </div>
-    </main>
+        <div className="usa-form">
+          <Input {...commonInputProps} field="lookupId" label="Lookup ID" />
+          <Select
+            label="Role"
+            name="role"
+            value={patient.role || ""}
+            onChange={onPersonChange("role")}
+            options={ROLE_VALUES}
+          />
+          <FacilitySelect
+            facilityId={patient.facilityId}
+            onChange={onPersonChange("facilityId")}
+            validateField={() => {
+              validateField("facilityId");
+            }}
+            validationStatus={validationStatus}
+            errors={errors}
+            hidden={props.hideFacilitySelect}
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="birthDate"
+            label="Date of birth (mm/dd/yyyy)"
+            type="date"
+            required
+          />
+        </div>
+      </FormGroup>
+      <FormGroup title="Contact information">
+        <div className="usa-form">
+          <div className="grid-row grid-gap">
+            <div className="mobile-lg:grid-col-6">
+              <Input
+                {...commonInputProps}
+                field="telephone"
+                label="Phone number"
+                type="tel"
+                required
+              />
+            </div>
+          </div>
+          <Input
+            {...commonInputProps}
+            field="email"
+            label="Email address"
+            type="email"
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="street"
+            label="Street address 1"
+            required
+          />
+        </div>
+        <div className="usa-form">
+          <Input
+            {...commonInputProps}
+            field="streetTwo"
+            label="Street address 2"
+          />
+        </div>
+        <div className="usa-form">
+          <Input {...commonInputProps} field="city" label="City" />
+          <Input {...commonInputProps} field="county" label="County" />
+          <div className="grid-row grid-gap">
+            <div className="mobile-lg:grid-col-6">
+              <Select
+                label="State"
+                name="state"
+                value={patient.state || ""}
+                options={stateCodes.map((c) => ({ label: c, value: c }))}
+                defaultSelect
+                onChange={onPersonChange("state")}
+                onBlur={() => {
+                  validateField("state");
+                }}
+                validationStatus={validationStatus("state")}
+                errorMessage={errors.state}
+                required
+              />
+            </div>
+            <div className="mobile-lg:grid-col-6">
+              <Input
+                {...commonInputProps}
+                field="zipCode"
+                label="Zip code"
+                required
+              />
+            </div>
+          </div>
+        </div>
+      </FormGroup>
+      <FormGroup title="Demographics">
+        <p className="usa-hint maxw-prose">
+          This information is important for public health efforts to recognize
+          and address inequality in health outcomes.
+        </p>
+        <RadioGroup
+          legend="Race"
+          name="race"
+          buttons={RACE_VALUES}
+          selectedRadio={patient.race}
+          onChange={onPersonChange("race")}
+        />
+        <RadioGroup
+          legend="Ethnicity"
+          name="ethnicity"
+          buttons={ETHNICITY_VALUES}
+          selectedRadio={patient.ethnicity}
+          onChange={onPersonChange("ethnicity")}
+        />
+        <RadioGroup
+          legend="Biological Sex"
+          name="gender"
+          buttons={GENDER_VALUES}
+          selectedRadio={patient.gender}
+          onChange={onPersonChange("gender")}
+        />
+      </FormGroup>
+      <FormGroup title="Other">
+        <YesNoRadioGroup
+          legend="Resident in congregate care/living setting?"
+          name="residentCongregateSetting"
+          value={patient.residentCongregateSetting}
+          onChange={onPersonChange("residentCongregateSetting")}
+          onBlur={() => {
+            validateField("residentCongregateSetting");
+          }}
+          validationStatus={validationStatus("residentCongregateSetting")}
+          errorMessage={errors.residentCongregateSetting}
+          required
+        />
+        <YesNoRadioGroup
+          legend="Work in Healthcare?"
+          name="employedInHealthcare"
+          value={patient.employedInHealthcare}
+          onChange={onPersonChange("employedInHealthcare")}
+          onBlur={() => {
+            validateField("employedInHealthcare");
+          }}
+          validationStatus={validationStatus("employedInHealthcare")}
+          errorMessage={errors.employedInHealthcare}
+          required
+        />
+      </FormGroup>
+      {props.getFooter && props.getFooter(onSave, formChanged)}
+    </>
   );
 };
 
