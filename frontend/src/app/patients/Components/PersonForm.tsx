@@ -10,7 +10,6 @@ import {
 } from "../../../config/constants";
 import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
 import Breadcrumbs from "../../commonComponents/Breadcrumbs";
-import TextInput from "../../commonComponents/TextInput";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import Dropdown from "../../commonComponents/Dropdown";
@@ -20,6 +19,7 @@ import FormGroup from "../../commonComponents/FormGroup";
 import Button from "../../commonComponents/Button";
 import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
+import Input from "../../commonComponents/Input";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -62,6 +62,13 @@ const PersonForm = (props: Props) => {
     [patient, clearError]
   );
 
+  const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
+    value: PersonFormData[K]
+  ) => {
+    setFormChanged(true);
+    setPatient({ ...patient, [field]: value });
+  };
+
   const onChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -91,38 +98,6 @@ const PersonForm = (props: Props) => {
     patient.middleName,
     patient.lastName
   );
-
-  const onRaceChange = (race: Race) => {
-    setFormChanged(true);
-    setPatient({ ...patient, race });
-  };
-
-  const onEthnicityChange = (ethnicity: Ethnicity) => {
-    setFormChanged(true);
-    setPatient({ ...patient, ethnicity });
-  };
-
-  const onGenderChange = (gender: Gender) => {
-    setFormChanged(true);
-    setPatient({ ...patient, gender });
-  };
-
-  const onResidentCongregateSettingChange = (
-    residentCongregateSetting: boolean
-  ) => {
-    setFormChanged(true);
-    setPatient({ ...patient, residentCongregateSetting });
-  };
-
-  const onEmployedInHealthcareChange = (employedInHealthcare: boolean) => {
-    setFormChanged(true);
-    setPatient({ ...patient, employedInHealthcare });
-  };
-
-  const onFacilityChange = (facilityId: string | null) => {
-    setFormChanged(true);
-    setPatient({ ...patient, facilityId });
-  };
 
   const onSave = async () => {
     try {
@@ -158,7 +133,14 @@ const PersonForm = (props: Props) => {
     props.savePerson(patient);
   };
 
-  //TODO: when to save initial data? What if name isn't filled? required fields?
+  const commonInputProps = {
+    formObject: patient,
+    onChange: onPersonChange,
+    validate: validateField,
+    getValidationStatus: validationStatus,
+    errors: errors,
+  };
+
   return (
     <main
       className={classnames(
@@ -212,44 +194,26 @@ const PersonForm = (props: Props) => {
         <RequiredMessage />
         <FormGroup title="General info">
           <div className="usa-form">
-            <TextInput
+            <Input
+              {...commonInputProps}
               label="First name"
-              name="firstName"
-              value={patient.firstName || ""}
-              onChange={onChange}
-              onBlur={() => {
-                validateField("firstName");
-              }}
-              validationStatus={validationStatus("firstName")}
-              errorMessage={errors.firstName}
+              field="firstName"
               required
             />
-            <TextInput
+            <Input
+              {...commonInputProps}
+              field="middleName"
               label="Middle name"
-              name="middleName"
-              value={patient.middleName || ""}
-              onChange={onChange}
             />
-            <TextInput
+            <Input
+              {...commonInputProps}
+              field="lastName"
               label="Last name"
-              name="lastName"
-              value={patient.lastName || ""}
-              onChange={onChange}
-              onBlur={() => {
-                validateField("lastName");
-              }}
-              validationStatus={validationStatus("lastName")}
-              errorMessage={errors.lastName}
               required
             />
           </div>
           <div className="usa-form">
-            <TextInput
-              label="Lookup ID"
-              name="lookupId"
-              value={patient.lookupId || ""}
-              onChange={onChange}
-            />
+            <Input {...commonInputProps} field="lookupId" label="Lookup ID" />
             <Dropdown
               label="Role"
               name="role"
@@ -265,7 +229,7 @@ const PersonForm = (props: Props) => {
             />
             <FacilitySelect
               facilityId={patient.facilityId}
-              onChange={onFacilityChange}
+              onChange={onPersonChange("facilityId")}
               validateField={() => {
                 validateField("facilityId");
               }}
@@ -275,17 +239,11 @@ const PersonForm = (props: Props) => {
             />
           </div>
           <div className="usa-form">
-            <TextInput
-              type="date"
+            <Input
+              {...commonInputProps}
+              field="birthDate"
               label="Date of birth (mm/dd/yyyy)"
-              name="birthDate"
-              value={patient.birthDate || ""}
-              onChange={onChange}
-              onBlur={() => {
-                validateField("birthDate");
-              }}
-              validationStatus={validationStatus("birthDate")}
-              errorMessage={errors.birthDate}
+              type="date"
               required
             />
           </div>
@@ -294,69 +252,40 @@ const PersonForm = (props: Props) => {
           <div className="usa-form">
             <div className="grid-row grid-gap">
               <div className="mobile-lg:grid-col-6">
-                <TextInput
-                  type="tel"
+                <Input
+                  {...commonInputProps}
+                  field="telephone"
                   label="Phone number"
-                  name="telephone"
-                  value={patient.telephone || ""}
-                  onChange={onChange}
-                  onBlur={() => {
-                    validateField("telephone");
-                  }}
-                  validationStatus={validationStatus("telephone")}
-                  errorMessage={errors.telephone}
+                  type="tel"
                   required
                 />
               </div>
             </div>
-            <TextInput
-              type="email"
+            <Input
+              {...commonInputProps}
+              field="email"
               label="Email address"
-              name="email"
-              value={patient.email || ""}
-              onChange={onChange}
-              onBlur={() => {
-                validateField("email");
-              }}
-              validationStatus={validationStatus("email")}
-              errorMessage={errors.email}
+              type="email"
             />
           </div>
           <div className="usa-form">
-            <TextInput
+            <Input
+              {...commonInputProps}
+              field="street"
               label="Street address 1"
-              name="street"
-              value={patient.street || ""}
-              onChange={onChange}
-              onBlur={() => {
-                validateField("street");
-              }}
-              validationStatus={validationStatus("street")}
-              errorMessage={errors.street}
               required
             />
           </div>
           <div className="usa-form">
-            <TextInput
+            <Input
+              {...commonInputProps}
+              field="streetTwo"
               label="Street address 2"
-              name="streetTwo"
-              value={patient.streetTwo || ""}
-              onChange={onChange}
             />
           </div>
           <div className="usa-form">
-            <TextInput
-              label="City"
-              name="city"
-              value={patient.city || ""}
-              onChange={onChange}
-            />
-            <TextInput
-              label="County"
-              name="county"
-              value={patient.county || ""}
-              onChange={onChange}
-            />
+            <Input {...commonInputProps} field="city" label="City" />
+            <Input {...commonInputProps} field="county" label="County" />
             <div className="grid-row grid-gap">
               <div className="mobile-lg:grid-col-6">
                 <Dropdown
@@ -375,18 +304,10 @@ const PersonForm = (props: Props) => {
                 />
               </div>
               <div className="mobile-lg:grid-col-6">
-                <TextInput
+                <Input
+                  {...commonInputProps}
+                  field="zipCode"
                   label="Zip code"
-                  name="zipCode"
-                  value={patient.zipCode || ""}
-                  onChange={onChange}
-                  onBlur={() => {
-                    validateField("zipCode");
-                  }}
-                  validationStatus={validationStatus("zipCode")}
-                  errorMessage={errors.zipCode}
-                  format={"^\\d{5}(-\\d{4})?$"}
-                  formatMessage={"Zip code should have 5 digits"}
                   required
                 />
               </div>
@@ -403,21 +324,21 @@ const PersonForm = (props: Props) => {
             name="race"
             buttons={RACE_VALUES}
             selectedRadio={patient.race}
-            onChange={onRaceChange}
+            onChange={onPersonChange("race")}
           />
           <RadioGroup
             legend="Ethnicity"
             name="ethnicity"
             buttons={ETHNICITY_VALUES}
             selectedRadio={patient.ethnicity}
-            onChange={onEthnicityChange}
+            onChange={onPersonChange("ethnicity")}
           />
           <RadioGroup
             legend="Biological Sex"
             name="gender"
             buttons={GENDER_VALUES}
             selectedRadio={patient.gender}
-            onChange={onGenderChange}
+            onChange={onPersonChange("gender")}
           />
         </FormGroup>
         <FormGroup title="Other">
@@ -425,7 +346,7 @@ const PersonForm = (props: Props) => {
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
             value={patient.residentCongregateSetting}
-            onChange={onResidentCongregateSettingChange}
+            onChange={onPersonChange("residentCongregateSetting")}
             onBlur={() => {
               validateField("residentCongregateSetting");
             }}
@@ -437,7 +358,7 @@ const PersonForm = (props: Props) => {
             legend="Work in Healthcare?"
             name="employedInHealthcare"
             value={patient.employedInHealthcare}
-            onChange={onEmployedInHealthcareChange}
+            onChange={onPersonChange("employedInHealthcare")}
             onBlur={() => {
               validateField("employedInHealthcare");
             }}
