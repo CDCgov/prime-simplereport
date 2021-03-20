@@ -49,6 +49,14 @@ export const RACE_VALUES: { value: Race; label: string }[] = [
   },
 ];
 
+export const ROLE_VALUES: { value: Role; label: string }[] = [
+  { label: "-Select-", value: "" },
+  { label: "Staff", value: "STAFF" },
+  { label: "Resident", value: "RESIDENT" },
+  { label: "Student", value: "STUDENT" },
+  { label: "Visitor", value: "VISITOR" },
+];
+
 export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
   { label: "Hispanic or Latino", value: "hispanic" },
   { label: "Not Hispanic", value: "not_hispanic" },

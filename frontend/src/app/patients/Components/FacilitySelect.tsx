@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import Dropdown from "../../commonComponents/Dropdown";
+import Select from "../../commonComponents/Select";
 
 interface Props {
   facilityId: string | null;
@@ -31,18 +31,15 @@ const FacilitySelect: React.FC<Props> = (props) => {
   facilityList.unshift({ label: "All facilities", value: ALL_FACILITIES });
   facilityList.unshift({ label: "-Select-", value: "" });
 
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
+  const onChange = (value: string | null) => {
     props.onChange(value === ALL_FACILITIES ? null : value);
   };
 
   return (
-    <Dropdown
+    <Select
       label="Facility"
       name={NAME}
-      selectedValue={
-        props.facilityId === null ? ALL_FACILITIES : props.facilityId
-      }
+      value={props.facilityId === null ? ALL_FACILITIES : props.facilityId}
       onChange={onChange}
       onBlur={props.validateField}
       validationStatus={props.validationStatus(NAME)}

@@ -8,11 +8,15 @@ import {
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../../config/constants";
-import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
+import {
+  RACE_VALUES,
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+  ROLE_VALUES,
+} from "../../constants";
 import Breadcrumbs from "../../commonComponents/Breadcrumbs";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
-import Dropdown from "../../commonComponents/Dropdown";
 import { displayFullName, showError } from "../../utils";
 import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
@@ -20,6 +24,7 @@ import Button from "../../commonComponents/Button";
 import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
+import Select from "../../commonComponents/Select";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -67,20 +72,6 @@ const PersonForm = (props: Props) => {
   ) => {
     setFormChanged(true);
     setPatient({ ...patient, [field]: value });
-  };
-
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    let value: string | null = e.target.value;
-    if (e.target.type === "checkbox") {
-      value = {
-        ...(patient as any)[e.target.name],
-        [e.target.value]: (e.target as any).checked,
-      };
-    }
-    setFormChanged(true);
-    setPatient({ ...patient, [e.target.name]: value });
   };
 
   /**
@@ -214,18 +205,12 @@ const PersonForm = (props: Props) => {
           </div>
           <div className="usa-form">
             <Input {...commonInputProps} field="lookupId" label="Lookup ID" />
-            <Dropdown
+            <Select
               label="Role"
               name="role"
-              selectedValue={patient.role || ""}
-              onChange={onChange}
-              options={[
-                { label: "-Select-", value: "" },
-                { label: "Staff", value: "STAFF" },
-                { label: "Resident", value: "RESIDENT" },
-                { label: "Student", value: "STUDENT" },
-                { label: "Visitor", value: "VISITOR" },
-              ]}
+              value={patient.role || ""}
+              onChange={onPersonChange("role")}
+              options={ROLE_VALUES}
             />
             <FacilitySelect
               facilityId={patient.facilityId}
@@ -288,13 +273,13 @@ const PersonForm = (props: Props) => {
             <Input {...commonInputProps} field="county" label="County" />
             <div className="grid-row grid-gap">
               <div className="mobile-lg:grid-col-6">
-                <Dropdown
+                <Select
                   label="State"
                   name="state"
-                  selectedValue={patient.state || ""}
+                  value={patient.state || ""}
                   options={stateCodes.map((c) => ({ label: c, value: c }))}
                   defaultSelect
-                  onChange={onChange}
+                  onChange={onPersonChange("state")}
                   onBlur={() => {
                     validateField("state");
                   }}
