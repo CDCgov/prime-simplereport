@@ -92,16 +92,8 @@ interface Props {
   patientId: string;
 }
 
-interface EditPatientParams
-  extends Nullable<
-    Omit<
-      PersonFormData,
-      "residentCongregateSetting" | "employedInHealthcare" | "lookupId"
-    >
-  > {
+interface EditPatientParams extends Nullable<Omit<PersonFormData, "lookupId">> {
   patientId: string;
-  residentCongregateSetting: boolean;
-  employedInHealthcare: boolean;
 }
 
 interface EditPatientResponse {
@@ -129,22 +121,11 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const residentCongregateSetting = data.patient.residentCongregateSetting
-    ? "YES"
-    : "NO";
-  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
-
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    const variables = {
-      ...person,
-      residentCongregateSetting: person.residentCongregateSetting === "YES",
-      employedInHealthcare: person.employedInHealthcare === "YES",
-    };
-
     await updatePatient({
       variables: {
         patientId: props.patientId,
-        ...variables,
+        ...person,
       },
     });
     showNotification(
@@ -167,8 +148,6 @@ const EditPatient = (props: Props) => {
             ...data.patient,
             facilityId:
               data.patient.facility === null ? null : data.patient.facility?.id,
-            residentCongregateSetting,
-            employedInHealthcare,
           }}
           patientId={props.patientId}
           activeFacilityId={props.facilityId}

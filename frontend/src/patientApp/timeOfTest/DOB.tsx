@@ -39,10 +39,6 @@ const DOB = () => {
         plid,
         date.format("YYYY-MM-DD")
       );
-      const residentCongregateSetting = response.residentCongregateSetting
-        ? "YES"
-        : "NO";
-      const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
       dispatch(
         updateOrganization({
           name: response.organizationName,
@@ -51,8 +47,6 @@ const DOB = () => {
       dispatch(
         setPatient({
           ...response,
-          residentCongregateSetting,
-          employedInHealthcare,
         })
       );
     } catch (error) {

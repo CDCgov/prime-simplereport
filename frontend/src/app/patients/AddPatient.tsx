@@ -58,16 +58,7 @@ export const ADD_PATIENT = gql`
   }
 `;
 
-interface AddPatientParams
-  extends Nullable<
-    Omit<
-      PersonFormData,
-      "residentCongregateSetting" | "employedInHealthcare" | "lookupId"
-    >
-  > {
-  residentCongregateSetting: boolean;
-  employedInHealthcare: boolean;
-}
+interface AddPatientParams extends Nullable<Omit<PersonFormData, "lookupId">> {}
 
 interface AddPatientResponse {
   internalId: string;
@@ -91,12 +82,7 @@ const AddPatient = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    const variables = {
-      ...person,
-      residentCongregateSetting: person.residentCongregateSetting === "YES",
-      employedInHealthcare: person.employedInHealthcare === "YES",
-    };
-    await addPatient({ variables });
+    await addPatient({ variables: { ...person } });
     showNotification(
       toast,
       <Alert

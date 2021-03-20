@@ -11,8 +11,6 @@ interface UpdatePatientData
   extends Nullable<
     Omit<
       PersonFormData,
-      | "residentCongregateSetting"
-      | "employedInHealthcare"
       | "lookupId"
       | "street"
       | "streetTwo"
@@ -22,8 +20,6 @@ interface UpdatePatientData
       | "zipCode"
     >
   > {
-  residentCongregateSetting: boolean;
-  employedInHealthcare: boolean;
   address: {
     street: [string | null, string | null];
     city: string | null;

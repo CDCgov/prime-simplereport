@@ -61,8 +61,6 @@ const PatientFormContainer = () => {
       state,
       county,
       zipCode,
-      residentCongregateSetting,
-      employedInHealthcare,
       ...withoutAddress
     } = person;
     const updatedPatientFromApi = await PxpApi.updatePatient(
@@ -70,8 +68,6 @@ const PatientFormContainer = () => {
       patientInStore.birthDate,
       {
         ...withoutAddress,
-        residentCongregateSetting: person.residentCongregateSetting === "YES",
-        employedInHealthcare: person.employedInHealthcare === "YES",
         address: {
           street: [street, streetTwo],
           city,
@@ -89,12 +85,6 @@ const PatientFormContainer = () => {
     dispatch(
       reduxSetPatient({
         ...updatedPatientFromApi,
-        residentCongregateSetting: updatedPatientFromApi.residentCongregateSetting
-          ? "YES"
-          : "NO",
-        employedInHealthcare: updatedPatientFromApi.employedInHealthcare
-          ? "YES"
-          : "NO",
       })
     );
 

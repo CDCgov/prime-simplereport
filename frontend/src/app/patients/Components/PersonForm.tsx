@@ -8,12 +8,7 @@ import {
   PATIENT_TERM_CAP,
   stateCodes,
 } from "../../../config/constants";
-import {
-  RACE_VALUES,
-  ETHNICITY_VALUES,
-  GENDER_VALUES,
-  YES_NO_VALUES,
-} from "../../constants";
+import { RACE_VALUES, ETHNICITY_VALUES, GENDER_VALUES } from "../../constants";
 import Breadcrumbs from "../../commonComponents/Breadcrumbs";
 import TextInput from "../../commonComponents/TextInput";
 import RadioGroup from "../../commonComponents/RadioGroup";
@@ -24,6 +19,7 @@ import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import Button from "../../commonComponents/Button";
 import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
+import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -112,13 +108,13 @@ const PersonForm = (props: Props) => {
   };
 
   const onResidentCongregateSettingChange = (
-    residentCongregateSetting: YesNo
+    residentCongregateSetting: boolean
   ) => {
     setFormChanged(true);
     setPatient({ ...patient, residentCongregateSetting });
   };
 
-  const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
+  const onEmployedInHealthcareChange = (employedInHealthcare: boolean) => {
     setFormChanged(true);
     setPatient({ ...patient, employedInHealthcare });
   };
@@ -425,11 +421,10 @@ const PersonForm = (props: Props) => {
           />
         </FormGroup>
         <FormGroup title="Other">
-          <RadioGroup
+          <YesNoRadioGroup
             legend="Resident in congregate care/living setting?"
             name="residentCongregateSetting"
-            buttons={YES_NO_VALUES}
-            selectedRadio={patient.residentCongregateSetting}
+            value={patient.residentCongregateSetting}
             onChange={onResidentCongregateSettingChange}
             onBlur={() => {
               validateField("residentCongregateSetting");
@@ -438,11 +433,10 @@ const PersonForm = (props: Props) => {
             errorMessage={errors.residentCongregateSetting}
             required
           />
-          <RadioGroup
+          <YesNoRadioGroup
             legend="Work in Healthcare?"
             name="employedInHealthcare"
-            buttons={YES_NO_VALUES}
-            selectedRadio={patient.employedInHealthcare}
+            value={patient.employedInHealthcare}
             onChange={onEmployedInHealthcareChange}
             onBlur={() => {
               validateField("employedInHealthcare");

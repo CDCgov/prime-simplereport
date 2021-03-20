@@ -49,8 +49,8 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   race: yup.string().nullable() as any,
   ethnicity: yup.string().nullable() as any,
   gender: yup.string().nullable() as any,
-  residentCongregateSetting: yup.string().required() as any,
-  employedInHealthcare: yup.string().required() as any,
+  residentCongregateSetting: yup.bool().required() as any,
+  employedInHealthcare: yup.bool().required() as any,
 });
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;

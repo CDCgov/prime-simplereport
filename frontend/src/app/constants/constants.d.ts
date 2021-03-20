@@ -20,8 +20,8 @@ interface Person extends Address {
   race: Race;
   ethnicity: Ethnicity;
   gender: Gender;
-  residentCongregateSetting: YesNo;
-  employedInHealthcare: YesNo;
+  residentCongregateSetting: boolean;
+  employedInHealthcare: boolean;
   birthDate: string;
   telephone: string;
   county: string;

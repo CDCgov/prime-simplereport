@@ -108,6 +108,7 @@ describe("AddPatient", () => {
               firstName: "Alice",
               middleName: null,
               lastName: "Hamilton",
+              lookupId: null,
               birthDate: "1970-09-22",
               street: "25 Shattuck St",
               streetTwo: null,

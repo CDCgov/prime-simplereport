@@ -1191,7 +1191,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-radio"
                 >
                   <input
-                    checked={false}
+                    checked={true}
                     className="usa-radio__input"
                     data-required={true}
                     disabled={false}
@@ -1258,7 +1258,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-radio"
                 >
                   <input
-                    checked={false}
+                    checked={true}
                     className="usa-radio__input"
                     data-required={true}
                     disabled={false}
