@@ -173,15 +173,15 @@ describe("AddPatient", () => {
           })[0]
         );
         await act(async () => {
-          await new Promise((resolve) => setTimeout(resolve, 0));
+          await new Promise((resolve) => setTimeout(resolve, 100));
         });
       });
-      it("disables the save button", async () => {
+      it("redirects to the person tab", () => {
         expect(
-          (screen.queryAllByText("Save", {
+          screen.getByText(`/patients/?facility=${mockFacilityID}`, {
             exact: false,
-          })[0] as HTMLButtonElement).disabled
-        ).toBeTruthy();
+          })
+        ).toBeInTheDocument();
       });
     });
 
