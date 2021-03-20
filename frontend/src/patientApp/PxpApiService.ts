@@ -4,6 +4,35 @@ const headers = {
   Accept: "application/json",
 };
 
+// due to @JsonIgnores on Person to avoid duplicate recording, we have to
+// inline the address so that it can be deserialized outside the context
+// of GraphQL, which understands the flattened shape in its schema
+interface UpdatePatientData
+  extends Nullable<
+    Omit<
+      PersonFormData,
+      | "residentCongregateSetting"
+      | "employedInHealthcare"
+      | "lookupId"
+      | "street"
+      | "streetTwo"
+      | "city"
+      | "state"
+      | "county"
+      | "zipCode"
+    >
+  > {
+  residentCongregateSetting: boolean;
+  employedInHealthcare: boolean;
+  address: {
+    street: [string | null, string | null];
+    city: string | null;
+    state: string | null;
+    county: string | null;
+    zipCode: string | null;
+  };
+}
+
 export class PxpApi {
   static validateDateOfBirth(
     patientLinkId: string,
@@ -42,7 +71,11 @@ export class PxpApi {
     });
   }
 
-  static updatePatient(patientLinkId: string, dateOfBirth: string, data: any) {
+  static updatePatient(
+    patientLinkId: string,
+    dateOfBirth: string,
+    data: UpdatePatientData
+  ) {
     return fetch(`${API_URL}/patient`, {
       method: "put",
       mode: "cors",

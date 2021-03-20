@@ -92,12 +92,30 @@ interface Props {
   patientId: string;
 }
 
+interface EditPatientParams
+  extends Nullable<
+    Omit<
+      PersonFormData,
+      "residentCongregateSetting" | "employedInHealthcare" | "lookupId"
+    >
+  > {
+  patientId: string;
+  residentCongregateSetting: boolean;
+  employedInHealthcare: boolean;
+}
+
+interface EditPatientResponse {
+  internalId: string;
+}
+
 const EditPatient = (props: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
   });
-  const [updatePatient] = useMutation(UPDATE_PATIENT);
+  const [updatePatient] = useMutation<EditPatientResponse, EditPatientParams>(
+    UPDATE_PATIENT
+  );
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
 
   if (redirect) {
@@ -118,23 +136,7 @@ const EditPatient = (props: Props) => {
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
     const variables = {
-      facilityId: person.facilityId,
-      firstName: person.firstName,
-      middleName: person.middleName,
-      lastName: person.lastName,
-      birthDate: person.birthDate,
-      street: person.street,
-      streetTwo: person.streetTwo,
-      city: person.city,
-      state: person.state,
-      zipCode: person.zipCode,
-      telephone: person.telephone,
-      role: person.role,
-      email: person.email,
-      county: person.county,
-      race: person.race,
-      ethnicity: person.ethnicity,
-      gender: person.gender,
+      ...person,
       residentCongregateSetting: person.residentCongregateSetting === "YES",
       employedInHealthcare: person.employedInHealthcare === "YES",
     };

@@ -54,30 +54,6 @@ const PatientFormContainer = () => {
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
-    const variables = {
-      facilityId: person.facilityId,
-      firstName: person.firstName,
-      middleName: person.middleName,
-      lastName: person.lastName,
-      birthDate: person.birthDate,
-      street: person.street,
-      streetTwo: person.streetTwo,
-      city: person.city,
-      state: person.state,
-      zipCode: person.zipCode,
-      telephone: person.telephone,
-      role: person.role,
-      email: person.email,
-      county: person.county,
-      race: person.race,
-      ethnicity: person.ethnicity,
-      gender: person.gender,
-      residentCongregateSetting: person.residentCongregateSetting === "YES",
-      employedInHealthcare: person.employedInHealthcare === "YES",
-    };
-    // due to @JsonIgnores on Person to avoid duplicate recording, we have to
-    // inline the address so that it can be deserialized outside the context
-    // of GraphQL, which understands the flattened shape in its schema
     const {
       street,
       streetTwo,
@@ -85,13 +61,17 @@ const PatientFormContainer = () => {
       state,
       county,
       zipCode,
+      residentCongregateSetting,
+      employedInHealthcare,
       ...withoutAddress
-    } = variables;
+    } = person;
     const updatedPatientFromApi = await PxpApi.updatePatient(
       plid,
       patientInStore.birthDate,
       {
         ...withoutAddress,
+        residentCongregateSetting: person.residentCongregateSetting === "YES",
+        employedInHealthcare: person.employedInHealthcare === "YES",
         address: {
           street: [street, streetTwo],
           city,
@@ -106,18 +86,15 @@ const PatientFormContainer = () => {
       <Alert type="success" title={`Your profile changes have been saved`} />
     );
 
-    const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-      ? "YES"
-      : "NO";
-    const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-      ? "YES"
-      : "NO";
-
     dispatch(
       reduxSetPatient({
         ...updatedPatientFromApi,
-        residentCongregateSetting,
-        employedInHealthcare,
+        residentCongregateSetting: updatedPatientFromApi.residentCongregateSetting
+          ? "YES"
+          : "NO",
+        employedInHealthcare: updatedPatientFromApi.employedInHealthcare
+          ? "YES"
+          : "NO",
       })
     );
 

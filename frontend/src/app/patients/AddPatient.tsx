@@ -58,8 +58,25 @@ export const ADD_PATIENT = gql`
   }
 `;
 
+interface AddPatientParams
+  extends Nullable<
+    Omit<
+      PersonFormData,
+      "residentCongregateSetting" | "employedInHealthcare" | "lookupId"
+    >
+  > {
+  residentCongregateSetting: boolean;
+  employedInHealthcare: boolean;
+}
+
+interface AddPatientResponse {
+  internalId: string;
+}
+
 const AddPatient = () => {
-  const [addPatient] = useMutation(ADD_PATIENT);
+  const [addPatient] = useMutation<AddPatientResponse, AddPatientParams>(
+    ADD_PATIENT
+  );
   const activeFacilityId: string = useSelector(
     (state) => (state as any).facility.id
   );
@@ -75,23 +92,7 @@ const AddPatient = () => {
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
     const variables = {
-      facilityId: person.facilityId,
-      firstName: person.firstName,
-      middleName: person.middleName,
-      lastName: person.lastName,
-      birthDate: person.birthDate,
-      street: person.street,
-      streetTwo: person.streetTwo,
-      city: person.city,
-      state: person.state,
-      zipCode: person.zipCode,
-      telephone: person.telephone,
-      role: person.role,
-      email: person.email,
-      county: person.county,
-      race: person.race,
-      ethnicity: person.ethnicity,
-      gender: person.gender,
+      ...person,
       residentCongregateSetting: person.residentCongregateSetting === "YES",
       employedInHealthcare: person.employedInHealthcare === "YES",
     };
