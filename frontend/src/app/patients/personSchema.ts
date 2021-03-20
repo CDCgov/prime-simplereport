@@ -5,8 +5,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export type RequiredPersonFields = PartialBy<
-  Nullable<PersonFormData>,
+type OptionalFields =
   | "middleName"
   | "lookupId"
   | "role"
@@ -18,7 +17,11 @@ export type RequiredPersonFields = PartialBy<
   | "ethnicity"
   | "gender"
   | "residentCongregateSetting"
-  | "employedInHealthcare"
+  | "employedInHealthcare";
+
+export type RequiredPersonFields = PartialBy<
+  Nullable<PersonFormData>,
+  OptionalFields
 >;
 
 export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({

@@ -5,22 +5,23 @@ import { UIDConsumer } from "react-uid";
 import Required from "./Required";
 import Optional from "./Optional";
 
+export type HTMLInputElementType =
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "month"
+  | "number"
+  | "password"
+  | "search"
+  | "tel"
+  | "text"
+  | "time"
+  | "url"
+  | "week";
+
 interface Props {
   name: string;
-  type?:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "month"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url"
-    | "week"
-    | "bday";
+  type?: HTMLInputElementType;
   label: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
@@ -28,7 +29,7 @@ interface Props {
   errorMessage?: React.ReactNode;
   groupClassName?: string;
   validationStatus?: "error" | "success";
-  autoComplete?: string;
+  autoComplete?: "on" | "off";
   size?: number;
   pattern?: string;
   inputMode?: string;

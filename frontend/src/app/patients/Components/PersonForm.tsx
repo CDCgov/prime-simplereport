@@ -55,8 +55,8 @@ const PersonForm = (props: Props) => {
         clearError(field);
         await personSchema.validateAt(field, patient);
       } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
+        setErrors((existingErrors) => ({
+          ...existingErrors,
           [field]: allPersonErrors[field],
         }));
       }
@@ -85,7 +85,7 @@ const PersonForm = (props: Props) => {
     try {
       await personSchema.validate(patient, { abortEarly: false });
     } catch (e) {
-      const errors: PersonErrors = e.inner.reduce(
+      const newErrors: PersonErrors = e.inner.reduce(
         (
           acc: PersonErrors,
           el: { path: keyof PersonErrors; message: string }
@@ -95,10 +95,10 @@ const PersonForm = (props: Props) => {
         },
         {} as PersonErrors
       );
-      setErrors(errors);
+      setErrors(newErrors);
       let focusedOnError = false;
 
-      Object.entries(errors).forEach(([name, error]) => {
+      Object.entries(newErrors).forEach(([name, error]) => {
         if (!error) {
           return;
         }

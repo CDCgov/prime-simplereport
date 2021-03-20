@@ -31,7 +31,7 @@ exports[`DOB snapshot matches 1`] = `
         </span>
         <input
           aria-required="false"
-          autoComplete="bday"
+          autoComplete="on"
           className="usa-input"
           id="1"
           inputMode="numeric"

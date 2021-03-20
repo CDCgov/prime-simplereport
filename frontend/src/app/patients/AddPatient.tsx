@@ -10,10 +10,10 @@ import {
 } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-
-import PersonForm from "./Components/PersonForm";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import Button from "../commonComponents/Button";
+
+import PersonForm from "./Components/PersonForm";
 
 export const ADD_PATIENT = gql`
   mutation AddPatient(
@@ -63,7 +63,7 @@ export const ADD_PATIENT = gql`
   }
 `;
 
-interface AddPatientParams extends Nullable<Omit<PersonFormData, "lookupId">> {}
+type AddPatientParams = Nullable<Omit<PersonFormData, "lookupId">>;
 
 interface AddPatientResponse {
   internalId: string;

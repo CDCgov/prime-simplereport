@@ -84,9 +84,7 @@ exports[`PatientFormContainer snapshot 1`] = `
     <main
       className="prime-edit-patient prime-home padding-top-0"
     >
-      <div
-        className=""
-      >
+      <div>
         <p
           className="message--required"
         >

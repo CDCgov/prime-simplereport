@@ -9,10 +9,10 @@ import {
 } from "../../config/constants";
 import { displayFullName, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-
-import PersonForm from "./Components/PersonForm";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import Button from "../commonComponents/Button";
+
+import PersonForm from "./Components/PersonForm";
 
 export const GET_PATIENT = gql`
   query GetPatientDetails($id: ID!) {

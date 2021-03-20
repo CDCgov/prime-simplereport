@@ -24,18 +24,30 @@ const YesNoRadioGroup: React.FC<Props> = ({
   validationStatus,
   errorMessage,
   required,
-}) => (
-  <RadioGroup
-    legend={legend}
-    name={name}
-    buttons={YES_NO_VALUES}
-    selectedRadio={value === true ? "YES" : value === false ? "NO" : null}
-    onChange={(value) => onChange(value === "YES")}
-    onBlur={onBlur}
-    validationStatus={validationStatus}
-    errorMessage={errorMessage}
-    required={required}
-  />
-);
+}) => {
+  const getSelectedRadio = (): YesNo | null => {
+    switch (value) {
+      case true:
+        return "YES";
+      case false:
+        return "NO";
+      default:
+        return null;
+    }
+  };
+  return (
+    <RadioGroup
+      legend={legend}
+      name={name}
+      buttons={YES_NO_VALUES}
+      selectedRadio={getSelectedRadio()}
+      onChange={(v) => onChange(v === "YES")}
+      onBlur={onBlur}
+      validationStatus={validationStatus}
+      errorMessage={errorMessage}
+      required={required}
+    />
+  );
+};
 
 export default YesNoRadioGroup;

@@ -1,6 +1,6 @@
 import React from "react";
 
-import TextInput from "./TextInput";
+import TextInput, { HTMLInputElementType } from "./TextInput";
 
 interface Props<T> {
   field: keyof T;
@@ -10,7 +10,7 @@ interface Props<T> {
   validate: (field: keyof T) => Promise<void>;
   getValidationStatus: (name: keyof T) => "error" | undefined;
   errors: Partial<Record<keyof T, string>>;
-  type?: "text" | "date" | "tel" | "email";
+  type?: HTMLInputElementType;
   required?: boolean;
 }
 

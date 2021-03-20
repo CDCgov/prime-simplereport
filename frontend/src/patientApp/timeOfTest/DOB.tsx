@@ -106,7 +106,7 @@ const DOB = () => {
                   label={"Date of birth"}
                   name={"birthDate"}
                   type={"password"}
-                  autoComplete={"bday"}
+                  autoComplete={"on"}
                   value={birthDate}
                   size={8}
                   pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}
