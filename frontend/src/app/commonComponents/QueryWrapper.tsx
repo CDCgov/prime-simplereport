@@ -24,10 +24,12 @@ export function QueryWrapper<ComponentProps>({
   children,
   Component,
   componentProps,
+  displayLoadingIndicator = true,
 }: {
   query: ReturnType<typeof gql>;
   queryOptions?: QueryHookOptions;
   onRefetch?: () => void;
+  displayLoadingIndicator?: boolean;
   children?: React.ReactNode;
   Component: React.ComponentType<ComponentProps>;
   componentProps: Omit<ComponentProps, InjectedQueryWrapperProps>;
@@ -41,7 +43,7 @@ export function QueryWrapper<ComponentProps>({
       ...queryOptions,
     }
   );
-  if (loading) {
+  if (displayLoadingIndicator && loading) {
     return <p>Loading</p>;
   }
   if (error) {
