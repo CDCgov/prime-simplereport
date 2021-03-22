@@ -30,18 +30,10 @@ public class PatientLinkService {
   @Autowired private CurrentPatientContextHolder contextHolder;
 
   public PatientLink getPatientLink(UUID internalId) {
-    PatientLink pl =
-        plrepo
-            .findById(internalId)
-            .orElseThrow(
-                () ->
-                    new IllegalGraphqlArgumentException("No patient link with that ID was found"));
-    if (pl.getFailedAttempts() == null) {
-      PatientLinkFailedAttempt plfa = new PatientLinkFailedAttempt(pl);
-      plfarepo.save(plfa);
-      pl.setFailedAttempts(plfa);
-    }
-    return pl;
+    return plrepo
+        .findById(internalId)
+        .orElseThrow(
+            () -> new IllegalGraphqlArgumentException("No patient link with that ID was found"));
   }
 
   public PatientLink getRefreshedPatientLink(UUID internalId) {
@@ -60,6 +52,11 @@ public class PatientLinkService {
     try {
       PatientLink patientLink = getPatientLink(internalId);
       PatientLinkFailedAttempt plfa = patientLink.getFailedAttempts();
+      if (plfa == null) {
+        plfa = new PatientLinkFailedAttempt(patientLink);
+        plfarepo.save(plfa);
+        patientLink.setFailedAttempts(plfa);
+      }
       if (plfa.isLockedOut()) {
         throw new ExpiredPatientLinkException();
       }
@@ -98,11 +95,7 @@ public class PatientLinkService {
             .orElseThrow(
                 () -> new IllegalGraphqlArgumentException("No test order with that ID was found"));
     PatientLink pl = new PatientLink(to);
-    PatientLink savedPl = plrepo.save(pl);
-    PatientLinkFailedAttempt plfa = new PatientLinkFailedAttempt(savedPl);
-    plfarepo.save(plfa);
-    savedPl.setFailedAttempts(plfa);
-    return savedPl;
+    return plrepo.save(pl);
   }
 
   public PatientLink expireMyPatientLink() {
