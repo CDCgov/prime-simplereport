@@ -57,11 +57,6 @@ Array [
         className="usa-legend usa-sr-only"
       >
         What are your symptoms?
-        <span
-          className="usa-hint"
-        >
-           (optional)
-        </span>
       </legend>
       <div
         className="usa-form-group"
@@ -400,11 +395,6 @@ Array [
       htmlFor="text-test-1"
     >
       Date of symptom onset
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </label>
     <input
       aria-required="false"

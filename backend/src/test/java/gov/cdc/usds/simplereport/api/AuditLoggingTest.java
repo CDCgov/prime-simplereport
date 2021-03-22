@@ -40,10 +40,7 @@ class AuditLoggingTest extends BaseApiTest {
     runQuery("current-user-query");
     ApiAuditEvent event =
         assertLastAuditEntry(
-            TestUserIdentities.STANDARD_USER,
-            "current-user-query-operation",
-            STANDARD_PERMS_TODAY,
-            null);
+            TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
@@ -67,10 +64,7 @@ class AuditLoggingTest extends BaseApiTest {
     runQuery("current-user-query");
     ApiAuditEvent event =
         assertLastAuditEntry(
-            TestUserIdentities.STANDARD_USER,
-            "current-user-query-operation",
-            STANDARD_PERMS_TODAY,
-            null);
+            TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
@@ -87,7 +81,7 @@ class AuditLoggingTest extends BaseApiTest {
     ApiAuditEvent event =
         assertLastAuditEntry(
             TestUserIdentities.OTHER_ORG_ADMIN,
-            "current-user-query-operation",
+            "whoDat",
             EnumSet.allOf(UserPermission.class),
             null);
     assertTimestampSanity(event);

@@ -33,13 +33,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 @ConditionalOnWebApplication
 public class DemoAuthenticationConfiguration {
 
-  public static final String DEMO_AUTHORIZATION_FLAG = "Bearer SR-DEMO-LOGIN ";
+  public static final String DEMO_AUTHORIZATION_FLAG = "SR-DEMO-LOGIN ";
+  private static final String DEMO_BEARER_PREFIX = "Bearer " + DEMO_AUTHORIZATION_FLAG;
 
   private static final Logger LOG = LoggerFactory.getLogger(DemoAuthenticationConfiguration.class);
 
   /**
    * Creates and registers a {@link Filter} that runs before each request is processed by the
-   * servlet. It checks for an Authorization header that starts with {@link
+   * servlet. It checks for an Authorization header with a Bearer token that starts with {@link
    * #DEMO_AUTHORIZATION_FLAG}, and if it finds one it "logs in" a user with the username found in
    * the rest of that Authorization header. Interpreting the resulting {@link Authentication} is
    * expected to be the problem of the other beans created by this configuration class.
@@ -55,9 +56,9 @@ public class DemoAuthenticationConfiguration {
           HttpServletRequest req2 = (HttpServletRequest) request;
           String authHeader = req2.getHeader("Authorization");
           LOG.info("Auth type is {}, header is {}", req2.getAuthType(), authHeader);
-          if (authHeader != null && authHeader.startsWith(DEMO_AUTHORIZATION_FLAG)) {
+          if (authHeader != null && authHeader.startsWith(DEMO_BEARER_PREFIX)) {
             LOG.trace("Parsing authorization header [{}]", authHeader);
-            String userName = authHeader.substring(DEMO_AUTHORIZATION_FLAG.length());
+            String userName = authHeader.substring(DEMO_BEARER_PREFIX.length());
             securityContext.setAuthentication(
                 new TestingAuthenticationToken(userName, null, List.of()));
           }

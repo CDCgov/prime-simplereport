@@ -167,11 +167,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 className="usa-legend usa-sr-only"
               >
                 What are your symptoms?
-                <span
-                  className="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 className="usa-form-group"
@@ -510,11 +505,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Date of symptom onset
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -548,11 +538,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               className="usa-legend"
             >
               Is this your first COVID-19 test?
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </div>
             <div
               className="prime-previous-test-display margin-top-2"
@@ -566,11 +551,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                 className="usa-legend usa-sr-only"
               >
                 Is this your first covid test?
-                <span
-                  className="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 className="usa-form-group prime-radio--horizontal"
@@ -583,15 +563,15 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="radio-test-1_yes_0"
+                    id="radio-test-1_YES_0"
                     name="prior_test_flag"
                     onChange={[Function]}
                     type="radio"
-                    value="yes"
+                    value="YES"
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="radio-test-1_yes_0"
+                    htmlFor="radio-test-1_YES_0"
                   >
                     Yes
                   </label>
@@ -604,15 +584,15 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="radio-test-1_no_1"
+                    id="radio-test-1_NO_1"
                     name="prior_test_flag"
                     onChange={[Function]}
                     type="radio"
-                    value="no"
+                    value="NO"
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="radio-test-1_no_1"
+                    htmlFor="radio-test-1_NO_1"
                   >
                     No
                   </label>
@@ -640,11 +620,6 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
               className="usa-legend"
             >
               Currently pregnant?
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </legend>
             <div
               className="usa-form-group"

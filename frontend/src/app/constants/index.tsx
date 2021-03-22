@@ -18,7 +18,7 @@ export const TEST_RESULT_DESCRIPTIONS = {
   UNDETERMINED: "Inconclusive",
 };
 
-export const RACE_VALUES = [
+export const RACE_VALUES: { value: Race; label: string }[] = [
   {
     value: "native",
     label: "American Indian or Alaskan Native",
@@ -49,12 +49,17 @@ export const RACE_VALUES = [
   },
 ];
 
-export const ETHNICITY_VALUES = [
+export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
   { label: "Hispanic or Latino", value: "hispanic" },
   { label: "Not Hispanic", value: "not_hispanic" },
 ];
-export const GENDER_VALUES = [
+export const GENDER_VALUES: { value: Gender; label: string }[] = [
   { label: "Male", value: "male" },
   { label: "Female", value: "female" },
   { label: "Other", value: "other" },
+];
+
+export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
+  { label: "Yes", value: "YES" },
+  { label: "No", value: "NO" },
 ];

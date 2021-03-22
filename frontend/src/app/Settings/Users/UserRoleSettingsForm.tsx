@@ -37,10 +37,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
   loggedInUser,
   onUpdateUser,
 }) => {
-  const updateRole = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const role = e.target.value as Role;
+  const updateRole = (role: Role) => {
     onUpdateUser("role", role);
   };
 
@@ -53,7 +50,7 @@ const UserRoleSettingsForm: React.FC<Props> = ({
         name="role"
         buttons={ROLES}
         selectedRadio={activeUser.role}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateRole(e)}
+        onChange={updateRole}
         disabled={
           activeUser.id === loggedInUser.id ||
           process.env.REACT_APP_EDIT_USER_ROLE === "false"

@@ -299,8 +299,7 @@ const AoEModalForm = (props: AoEModalProps) => {
         <RadioGroup
           legend="How would you like to complete the questionnaire?"
           name="qr-code"
-          type="radio"
-          onChange={(evt) => chooseModalView(evt.currentTarget.value)}
+          onChange={chooseModalView}
           buttons={modalViewValues}
           selectedRadio={modalView}
           className="margin-top-205"
