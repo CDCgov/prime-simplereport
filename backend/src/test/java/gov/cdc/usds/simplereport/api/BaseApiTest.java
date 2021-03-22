@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
@@ -36,14 +37,19 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.opentest4j.AssertionFailedError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -62,8 +68,9 @@ public abstract class BaseApiTest {
   @Autowired private AuditService _auditService;
   @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
+  @Autowired private TestRestTemplate restTemplate;
+  @Autowired private ObjectMapper objectMapper;
   @MockBean private AddressValidationService _addressValidation;
-
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
 
@@ -142,6 +149,10 @@ public abstract class BaseApiTest {
     _oktaRepo.reset();
   }
 
+  private String getBearerAuth() {
+    return DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName;
+  }
+
   /**
    * CLEAR ALL HEADERS and then set the Authorization header the requested value, as well as any
    * other custom headers supplied for this request.
@@ -151,9 +162,28 @@ public abstract class BaseApiTest {
     LOG.info("Setting custom headers: {}", _customHeaders.keySet());
     _template
         .withClearHeaders()
-        .withBearerAuth(DemoAuthenticationConfiguration.DEMO_AUTHORIZATION_FLAG + _userName)
+        .withBearerAuth(getBearerAuth())
         .withAdditionalHeaders(_customHeaders);
     _customHeaders.clear();
+  }
+
+  protected ObjectNode runMultipart(LinkedMultiValueMap<String, Object> parts) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBearerAuth(getBearerAuth());
+    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+    HttpEntity<LinkedMultiValueMap<String, Object>> request =
+        new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
+    try {
+      ResponseEntity<String> responseEntity =
+          restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
+      GraphQLResponse response = new GraphQLResponse(responseEntity, objectMapper);
+      assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      JsonNode responseBody = response.readTree();
+      assertGraphQLOutcome(responseBody, null);
+      return (ObjectNode) responseBody.get("data");
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /** See {@link #runQuery(String, String, ObjectNode, String)}. */

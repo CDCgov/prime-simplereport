@@ -1,0 +1,42 @@
+package gov.cdc.usds.simplereport.api;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import java.io.IOException;
+import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+
+public class PatientUploadTest extends BaseApiTest {
+  public static final int PATIENT_PAGEOFFSET = 0;
+  public static final int PATIENT_PAGESIZE = 1000;
+
+  @Test
+  void uploadPatientCSV() throws Exception {
+    useSuperUser();
+    JsonNode response = uploadPatients();
+    assertEquals(
+        "\"Successfully uploaded 1 record(s)\"", response.get("uploadPatients").toString());
+  }
+
+  private JsonNode uploadPatients() throws IOException {
+    LinkedMultiValueMap<String, Object> parts = new LinkedMultiValueMap<>();
+    parts.add(
+        "operations",
+        new HttpEntity<>(
+            "{\"operationName\":\"UploadPatients\",\"variables\":{\"patientList\":null},\"query\":\"mutation UploadPatients($patientList: Upload!) {\n  uploadPatients(patientList: $patientList)\n}\n\"}",
+            new HttpHeaders()));
+    parts.add("map", new HttpEntity<>("{\"1\":[\"variables.patientList\"]}", new HttpHeaders()));
+    HttpHeaders csvHeaders = new HttpHeaders();
+    csvHeaders.setContentType(MediaType.parseMediaType("text/csv"));
+    parts.add(
+        "1",
+        new HttpEntity<>(
+            "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City ,County,State,ZipCode,PhoneNumber,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId\nBest,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,Yes,No,Staff,foo@example.com,",
+            csvHeaders));
+    return (JsonNode) runMultipart(parts);
+  }
+}

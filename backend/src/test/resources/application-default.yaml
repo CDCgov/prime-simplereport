@@ -45,64 +45,67 @@ simple-report:
   demo-users:
     # These users are mapped to constants in TestUserIdentities. Do not modify casually!
     alternate-users:
-    - identity: # STANDARD_USER
-        username: bobbity@example.com
-        first-name: Bobbity
-        middle-name: Bob
-        last-name: Bobberoo
-      authorization: # USER_ORG_ROLES
-        organization-external-id: DIS_ORG
-        granted-roles: NO_ACCESS, USER
-        facilities:
-          - Injection Site
-    - identity: # org admin
-        username: admin@example.com
-        first-name: Alice
-        last-name: Andrews
-      authorization: # ADMIN_ORG_ROLES
-        organization-external-id: DIS_ORG
-        granted-roles:  NO_ACCESS, ADMIN
-    - identity: # entry-only
-        username: nobody@example.com
-        first-name: Nemo
-        last-name: Nixon
-      authorization: # ENTRY_ONLY_ORG_ROLES
-        organization-external-id: DIS_ORG
-        granted-roles: NO_ACCESS, ENTRY_ONLY
-        facilities:
-          - Testing Site
-    - identity: # standard user with all-facility access
-        username: allfacilities@example.com
-        first-name: Wendy
-        middle-name: Wanda
-        last-name: Williams
-      authorization: # USER_ALL_FACILITIES_ORG_ROLES
-        organization-external-id: DIS_ORG
-        granted-roles: NO_ACCESS, USER, ALL_FACILITIES
-    - identity: #SITE_ADMIN_USER
-        username: ruby@example.com
-        first-name: Ruby
-        middle-name: Raven
-        last-name: Reynolds
-    - identity: # OUTSIDE_ORG_USER
-        username: intruder@pirate.com
-        first-name: Bootstrap
-        middle-name: Bill
-        last-name: Turner
-      authorization:
-        organization-external-id: DAT_ORG
-        granted-roles: NO_ACCESS, USER
-    - identity: # OUTSIDE_ORG_ADMIN
-        username: captain@pirate.com
-        first-name: Jack
-        last-name: Sparrow
-      authorization:
-        organization-external-id: DAT_ORG
-        granted-roles: NO_ACCESS, ADMIN
-    - identity: # BROKEN
-        username: castaway@pirate.com
-        first-name: Candida
-        last-name: Cannotlogin
+      - identity: # STANDARD_USER
+          username: bobbity@example.com
+          first-name: Bobbity
+          middle-name: Bob
+          last-name: Bobberoo
+        authorization: # USER_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, USER
+          facilities:
+            - Injection Site
+      - identity: # org admin
+          username: admin@example.com
+          first-name: Alice
+          last-name: Andrews
+        authorization: # ADMIN_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # entry-only
+          username: nobody@example.com
+          first-name: Nemo
+          last-name: Nixon
+        authorization: # ENTRY_ONLY_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ENTRY_ONLY
+          facilities:
+            - Testing Site
+      - identity: # standard user with all-facility access
+          username: allfacilities@example.com
+          first-name: Wendy
+          middle-name: Wanda
+          last-name: Williams
+        authorization: # USER_ALL_FACILITIES_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, USER, ALL_FACILITIES
+      - identity: #SITE_ADMIN_USER
+          username: ruby@example.com
+          first-name: Ruby
+          middle-name: Raven
+          last-name: Reynolds
+        authorization: # USER_ALL_FACILITIES_ORG_ROLES
+          organization-external-id: DIS_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # OUTSIDE_ORG_USER
+          username: intruder@pirate.com
+          first-name: Bootstrap
+          middle-name: Bill
+          last-name: Turner
+        authorization:
+          organization-external-id: DAT_ORG
+          granted-roles: NO_ACCESS, USER
+      - identity: # OUTSIDE_ORG_ADMIN
+          username: captain@pirate.com
+          first-name: Jack
+          last-name: Sparrow
+        authorization:
+          organization-external-id: DAT_ORG
+          granted-roles: NO_ACCESS, ADMIN
+      - identity: # BROKEN
+          username: castaway@pirate.com
+          first-name: Candida
+          last-name: Cannotlogin
 simple-report-initialization:
   organizations:
     - org-name: Dis Organization
