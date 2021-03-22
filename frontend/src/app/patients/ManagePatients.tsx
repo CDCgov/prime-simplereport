@@ -106,6 +106,7 @@ export const DetachedManagePatients = ({
   refetch,
   setNamePrefixMatch,
   isAdmin,
+  activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -124,8 +125,11 @@ export const DetachedManagePatients = ({
     } else if (!queryString) {
       setNamePrefixMatch(null);
     }
-    history.push(`${process.env.PUBLIC_URL}/patients/1`);
-  }, [queryString, setNamePrefixMatch, history]);
+    history.push({
+      pathname: `${process.env.PUBLIC_URL}/patients/1`,
+      search: `?facility=${activeFacilityId}`,
+    });
+  }, [queryString, setNamePrefixMatch, history, activeFacilityId]);
 
   if (archivePerson) {
     return (
