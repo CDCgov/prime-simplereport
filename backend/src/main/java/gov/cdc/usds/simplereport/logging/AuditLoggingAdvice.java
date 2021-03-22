@@ -29,9 +29,9 @@ public class AuditLoggingAdvice {
   private final CurrentPatientContextHolder _contextHolder;
 
   public AuditLoggingAdvice(
-      AuditService _auditService, CurrentPatientContextHolder _contextHolder) {
-    this._auditService = _auditService;
-    this._contextHolder = _contextHolder;
+      AuditService auditService, CurrentPatientContextHolder contextHolder) {
+    this._auditService = auditService;
+    this._contextHolder = contextHolder;
   }
 
   @ExceptionHandler
