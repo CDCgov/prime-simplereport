@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSelector } from "react-redux";
 import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
 import { useHistory } from "react-router";
 
@@ -28,7 +27,7 @@ import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
 
-const patientsCountQuery = gql`
+export const patientsCountQuery = gql`
   query GetPatientsCountByFacility(
     $facilityId: ID!
     $showDeleted: Boolean!
@@ -42,7 +41,7 @@ const patientsCountQuery = gql`
   }
 `;
 
-const patientQuery = gql`
+export const patientQuery = gql`
   query GetPatientsByFacility(
     $facilityId: ID!
     $pageNumber: Int!
@@ -95,6 +94,7 @@ interface Props {
   data?: { patients: Patient[] };
   refetch: () => null;
   setNamePrefixMatch: (namePrefixMatch: string | null) => void;
+  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -105,6 +105,7 @@ export const DetachedManagePatients = ({
   totalEntries,
   refetch,
   setNamePrefixMatch,
+  isAdmin,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
   const [showFilters, setShowFilters] = useState(false);
@@ -220,6 +221,8 @@ export const DetachedManagePatients = ({
               </h2>
               <div>
                 <Button
+                  variant={!showFilters ? "outline" : undefined}
+                  className={showFilters ? "sr-active-button" : undefined}
                   icon={faSlidersH}
                   onClick={() => {
                     if (showFilters) {
@@ -273,7 +276,13 @@ export const DetachedManagePatients = ({
                   </tr>
                 </thead>
                 <tbody aria-live="polite">
-                  {data ? patientRows(data.patients) : "Loading..."}
+                  {data ? (
+                    patientRows(data.patients)
+                  ) : (
+                    <tr>
+                      <td colSpan={5}>Loading...</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
@@ -290,7 +299,7 @@ export const DetachedManagePatients = ({
               </div>
             )}
           </div>
-          <PatientUpload onSuccess={refetch} />
+          {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
     </main>
@@ -306,17 +315,13 @@ type InjectedContainerProps =
 const ManagePatients = (
   props: Omit<Props, InjectedQueryWrapperProps | InjectedContainerProps>
 ) => {
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
-  );
-
   const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
 
   const { data: totalPatients, error, refetch: refetchCount } = useQuery(
     patientsCountQuery,
     {
       variables: {
-        facilityId: activeFacilityId,
+        facilityId: props.activeFacilityId,
         showDeleted: false,
         namePrefixMatch,
       },
@@ -324,7 +329,7 @@ const ManagePatients = (
     }
   );
 
-  if (activeFacilityId.length < 1) {
+  if (props.activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
 
@@ -340,7 +345,7 @@ const ManagePatients = (
       query={patientQuery}
       queryOptions={{
         variables: {
-          facilityId: activeFacilityId,
+          facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
           showDeleted: props.showDeleted || false,

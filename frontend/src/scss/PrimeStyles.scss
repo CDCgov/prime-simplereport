@@ -143,6 +143,10 @@
 }
 
 // other buttons
+.sr-active-button {
+  background-color: color($theme-color-primary-darker);
+  color: #fff;
+}
 
 .prime-red-icon {
   color: color($theme-color-secondary);
