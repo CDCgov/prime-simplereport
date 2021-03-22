@@ -126,7 +126,7 @@ export const DetachedManagePatients = ({
       setNamePrefixMatch(null);
     }
     history.push({
-      pathname: `${process.env.PUBLIC_URL}/patients/1`,
+      pathname: `/patients/1`,
       search: `?facility=${activeFacilityId}`,
     });
   }, [queryString, setNamePrefixMatch, history, activeFacilityId]);
