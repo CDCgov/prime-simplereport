@@ -1,6 +1,5 @@
 import React from "react";
 import { gql, useMutation } from "@apollo/client";
-import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 import { showError, showNotification } from "../utils";
@@ -18,13 +17,6 @@ interface Props {
 
 const PatientUpload = ({ onSuccess }: Props) => {
   const [upload] = useMutation(uploadPatients);
-
-  const isGlobalAdmin = useSelector(
-    (state) => (state as any)?.user?.isAdmin as boolean
-  );
-  if (!isGlobalAdmin) {
-    return null;
-  }
 
   const bulkUpload = async ({
     target: { files },
