@@ -18,7 +18,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 /**
  * HandlerInterceptor to set a request ID for patient experience REST handlers, as well as logging
- * audit information for patient requests.
+ * audit information for successful patient requests. (Requests that raise exceptions are handled by
+ * {@link AuditLoggingAdvice#logAndRethrow(HttpServletRequest, Exception)}
  */
 @Component
 @ConditionalOnWebApplication
@@ -33,7 +34,7 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
       throws Exception {
-    LOG.debug(
+    LOG.trace(
         "Pre-handling a method={} request for uri={} using handler={}",
         request.getMethod(),
         request.getRequestURI(),
@@ -51,12 +52,14 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       ModelAndView modelAndView)
       throws Exception {
     PatientLink patientLink = _context.getPatientLink();
-    LOG.debug("Closing out request. Patient link is {}", patientLink);
+    LOG.trace("Closing out request. Patient link is {}", patientLink);
     int responseCode = response.getStatus();
-    if (patientLink != null) { // this is noooot acceptable
+    if (patientLink != null) {
       String requestId = MDC.get(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
       Organization organization = _context.getOrganization();
       _auditService.logRestEvent(requestId, request, responseCode, organization, patientLink);
+    } else {
+      LOG.trace("No patient link found"); // unauthenticated handlers
     }
   }
 
@@ -64,6 +67,7 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
   public void afterCompletion(
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
       throws Exception {
+    LOG.trace("Final logging cleanup step.");
     MDC.remove(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
   }
 }
