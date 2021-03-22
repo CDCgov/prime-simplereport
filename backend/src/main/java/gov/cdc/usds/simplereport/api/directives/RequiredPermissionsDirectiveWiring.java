@@ -38,9 +38,9 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
   @Override
   public GraphQLArgument onArgument(SchemaDirectiveWiringEnvironment<GraphQLArgument> environment) {
-    var requiredPermissions = new RequiredPermissions();
-    gatherRequiredPermissions(requiredPermissions, environment.getElement());
-    var argument = environment.getElement();
+    var requiredPermissionsBuilder = RequiredPermissions.builder();
+    gatherRequiredPermissions(requiredPermissionsBuilder, environment.getElement());
+    var requiredPermissions = requiredPermissionsBuilder.build();
 
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
@@ -52,14 +52,11 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
           throw new IllegalGraphqlArgumentException(
               "Current user does not have permission to supply a non-default value for ["
-                  + argument.getName()
+                  + environment.getElement().getName()
                   + "]");
         };
 
-    FieldCoordinates coordinates =
-        FieldCoordinates.coordinates(
-            environment.getFieldsContainer(), environment.getFieldDefinition());
-    environment.getCodeRegistry().dataFetcher(coordinates, newDataFetcher);
+    overwriteOriginalDataFetcher(environment, newDataFetcher);
 
     return environment.getElement();
   }
@@ -68,8 +65,9 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   public GraphQLFieldDefinition onField(
       SchemaDirectiveWiringEnvironment<GraphQLFieldDefinition> environment) {
     GraphQLFieldDefinition fieldDefinition = environment.getElement();
-    var requiredPermissions = new RequiredPermissions();
-    gatherRequiredPermissions(requiredPermissions, environment.getElement());
+    var requiredPermissionsBuilder = RequiredPermissions.builder();
+    gatherRequiredPermissions(requiredPermissionsBuilder, environment.getElement());
+    var requiredPermissions = requiredPermissionsBuilder.build();
 
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
@@ -97,10 +95,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
           return DataFetcherResult.newResult().error(error).build();
         };
 
-    FieldCoordinates coordinates =
-        FieldCoordinates.coordinates(
-            environment.getFieldsContainer(), environment.getFieldDefinition());
-    environment.getCodeRegistry().dataFetcher(coordinates, newDataFetcher);
+    overwriteOriginalDataFetcher(environment, newDataFetcher);
 
     return environment.getElement();
   }
@@ -160,13 +155,21 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private static void gatherRequiredPermissions(
-      RequiredPermissions permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
+      RequiredPermissions.Builder permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
     Optional.ofNullable(queryElement.getDirective(DIRECTIVE_NAME))
         .ifPresent(
             d -> {
               fromStringListArgument(d, "allOf").ifPresent(permissionsAccumulator::withAllOf);
               fromStringListArgument(d, "anyOf").ifPresent(permissionsAccumulator::withAnyOf);
             });
+  }
+
+  private static void overwriteOriginalDataFetcher(
+      SchemaDirectiveWiringEnvironment<?> environment, DataFetcher<?> newDataFetcher) {
+    FieldCoordinates coordinates =
+        FieldCoordinates.coordinates(
+            environment.getFieldsContainer(), environment.getFieldDefinition());
+    environment.getCodeRegistry().dataFetcher(coordinates, newDataFetcher);
   }
 
   @SuppressWarnings("unchecked")
@@ -180,22 +183,12 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   }
 
   private static class RequiredPermissions {
-    private final Set<UserPermission> allOf = new HashSet<>();
-    private final Set<Set<UserPermission>> anyOfClauses = new HashSet<>();
+    private final Set<UserPermission> allOf;
+    private final Set<Set<UserPermission>> anyOfClauses;
 
-    void withAllOf(Set<UserPermission> allOf) {
-      this.allOf.addAll(allOf);
-    }
+    private RequiredPermissions(Set<UserPermission> allOf, Set<Set<UserPermission>> anyOfClauses) {
+      this.allOf = Set.copyOf(allOf);
 
-    void withAnyOf(Set<UserPermission> anyOf) {
-      this.anyOfClauses.add(anyOf.stream().collect(Collectors.toUnmodifiableSet()));
-    }
-
-    Set<UserPermission> getAllOf() {
-      return Collections.unmodifiableSet(allOf);
-    }
-
-    Set<Set<UserPermission>> getAnyOfClauses() {
       // Reduce the anyOf clauses such that if the set contains {[A, B], [A, B, C]}, the resultant
       // clause set will be {[A, B]}, as (anyOf [A, B, C]) must be true if (anyOf [A, B]) is true
       // This reduction will iterate over the clauses in ascending order by length, then only add
@@ -210,8 +203,36 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
                   clauses.add(s);
                 }
               });
+      this.anyOfClauses = Collections.unmodifiableSet(clauses);
+    }
 
-      return Collections.unmodifiableSet(clauses);
+    static Builder builder() {
+      return new Builder();
+    }
+
+    Set<UserPermission> getAllOf() {
+      return allOf;
+    }
+
+    Set<Set<UserPermission>> getAnyOfClauses() {
+      return anyOfClauses;
+    }
+
+    private static class Builder {
+      private final Set<UserPermission> allOf = new HashSet<>();
+      private final Set<Set<UserPermission>> anyOfClauses = new HashSet<>();
+
+      void withAllOf(Set<UserPermission> allOf) {
+        this.allOf.addAll(allOf);
+      }
+
+      void withAnyOf(Set<UserPermission> anyOf) {
+        this.anyOfClauses.add(anyOf.stream().collect(Collectors.toUnmodifiableSet()));
+      }
+
+      RequiredPermissions build() {
+        return new RequiredPermissions(allOf, anyOfClauses);
+      }
     }
   }
 }
