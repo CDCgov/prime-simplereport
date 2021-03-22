@@ -59,7 +59,8 @@ public class PatientLinkService {
       throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
-      if (patientLink.isLockedOut()) {
+      PatientLinkFailedAttempt plfa = patientLink.getFailedAttempts();
+      if (plfa.isLockedOut()) {
         throw new ExpiredPatientLinkException();
       }
 
@@ -71,13 +72,13 @@ public class PatientLinkService {
           throw new ExpiredPatientLinkException();
         }
         contextHolder.setContext(patientLink, testOrder, patient);
-        patientLink.resetFailedAttempts();
-        plrepo.save(patientLink);
+        plfa.resetFailedAttempts();
+        plfarepo.save(plfa);
         return true;
       }
 
-      patientLink.addFailedAttempt();
-      plrepo.save(patientLink);
+      plfa.addFailedAttempt();
+      plfarepo.save(plfa);
       return false;
     } catch (IllegalGraphqlArgumentException e) {
       // patient link id was invalid

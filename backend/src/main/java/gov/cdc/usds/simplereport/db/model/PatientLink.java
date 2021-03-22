@@ -57,16 +57,4 @@ public class PatientLink extends EternalAuditedEntity {
   public void setFailedAttempts(PatientLinkFailedAttempt plfa) {
     failedAttempts = plfa;
   }
-
-  public boolean isLockedOut() {
-    return failedAttempts.isLockedOut();
-  }
-
-  public void addFailedAttempt() {
-    failedAttempts.addFailedAttempt();
-  }
-
-  public void resetFailedAttempts() {
-    failedAttempts.resetFailedAttempts();
-  }
 }
