@@ -1585,7 +1585,7 @@ databaseChangeLog:
               UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day';
   - changeSet:
       id: add-patient_link_failed_attempt
-      author: nick@skylight.digital
+      author: nclyde@skylight.digital
       comment: Adds a non-audited join table to patient_link that tracks the number of failed attempts to authenticate
       changes:
         - createTable:
