@@ -35,7 +35,8 @@ public class AuditService {
   }
 
   public List<ApiAuditEvent> getLastEvents(@Range(min = 1, max = MAX_EVENT_FETCH) int count) {
-    return _repo.findFirst10ByOrderByEventTimestampDesc().subList(0, count);
+    List<ApiAuditEvent> events = _repo.findFirst10ByOrderByEventTimestampDesc();
+    return count <= events.size() ? events.subList(0, count) : events;
   }
 
   public long countAuditEvents() {
@@ -65,6 +66,7 @@ public class AuditService {
       int responseCode,
       Organization org,
       PatientLink patientLink) {
+    LOG.trace("Saving audit event for {}", requestId);
     HttpRequestDetails reqDetails = new HttpRequestDetails(request);
     ApiUser userInfo = _userService.getCurrentApiUserInContainedTransaction();
     _repo.save(new ApiAuditEvent(requestId, reqDetails, responseCode, userInfo, org, patientLink));

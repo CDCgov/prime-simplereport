@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -17,8 +18,6 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -28,31 +27,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 @AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class PatientExperienceControllerTest {
+class PatientExperienceControllerTest extends BaseFullStackTest {
   @Autowired private MockMvc _mockMvc;
-
-  @Autowired private TestDataFactory _dataFactory;
 
   @Autowired private TimeOfConsentService _tocService;
 
   @Autowired private PatientExperienceController _controller;
-
-  @Autowired private DbTruncator _truncator;
 
   private Organization _org;
   private Facility _site;
 
   @BeforeEach
   void init() {
-    _truncator.truncateAll();
+    truncateDb();
     TestUserIdentities.withStandardUser(
         () -> {
           _org = _dataFactory.createValidOrg();
@@ -86,6 +79,7 @@ class PatientExperienceControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isForbidden());
+    assertNoAuditEvent();
   }
 
   @Test
@@ -109,6 +103,7 @@ class PatientExperienceControllerTest {
 
     // THEN
     this._mockMvc.perform(builder).andExpect(status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, null);
   }
 
   @Test
@@ -136,6 +131,7 @@ class PatientExperienceControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
         .andExpect(jsonPath("$.lastName", is(_person.getLastName())));
+    assertLastAuditEntry(HttpStatus.OK, null);
   }
 
   @Test
@@ -161,6 +157,7 @@ class PatientExperienceControllerTest {
 
     // THEN
     _mockMvc.perform(builder).andExpect(status().is(410));
+    assertLastAuditEntry(HttpStatus.GONE, null);
   }
 
   @Test
