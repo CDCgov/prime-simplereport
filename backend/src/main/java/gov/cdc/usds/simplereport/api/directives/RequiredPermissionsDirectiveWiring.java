@@ -45,19 +45,8 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
         dfe -> {
-          var argValue = dfe.getArgument(argument.getName());
-          // If the user has not set a value for this argument (or has set it to the default value),
-          // don't enforce a permissioned gate.
-          if ((argValue == null || Objects.equals(argValue, argument.getDefaultValue()))) {
-            return originalDataFetcher.get(dfe);
-          }
-
-          if (getSubjectFrom(dfe)
-              .map(
-                  subject ->
-                      satisfiesRequiredPermissions(
-                          requiredPermissions, subject, dfe.getExecutionStepInfo().getPath()))
-              .orElse(false)) {
+          if (argumentHasDefaultOrNullValue(dfe, environment.getElement())
+              || requesterHasRequisitePermissions(dfe, requiredPermissions)) {
             return originalDataFetcher.get(dfe);
           }
 
@@ -85,12 +74,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
         dfe -> {
-          if (getSubjectFrom(dfe)
-              .map(
-                  subject ->
-                      satisfiesRequiredPermissions(
-                          requiredPermissions, subject, dfe.getExecutionStepInfo().getPath()))
-              .orElse(false)) {
+          if (requesterHasRequisitePermissions(dfe, requiredPermissions)) {
             return originalDataFetcher.get(dfe);
           }
 
@@ -102,9 +86,10 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
                   path.toList());
 
           // We can either return this error (wrapped in a DataFetcherResult) or throw it. The
-          // former will set the data requested to `null`, and the latter will set the data's parent
-          // to null. We only need to do the latter if the field requested is non-nullable in the
-          // schema.
+          // former will set the data requested to `null`, and the latter will set the data's
+          // closest non-nullable ancestor to `null`. This directive prefers redacting as little as
+          // possible, so the error is only thrown if the field to which access is being denied is
+          // non-nullable in the schema.
           if (fieldDefinition.getType() instanceof GraphQLNonNull) {
             throw error;
           }
@@ -118,6 +103,23 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
     environment.getCodeRegistry().dataFetcher(coordinates, newDataFetcher);
 
     return environment.getElement();
+  }
+
+  private boolean argumentHasDefaultOrNullValue(
+      DataFetchingEnvironment dfe, GraphQLArgument argument) {
+    var argValue = dfe.getArgument(argument.getName());
+
+    return argValue == null || Objects.equals(argValue, argument.getDefaultValue());
+  }
+
+  private boolean requesterHasRequisitePermissions(
+      DataFetchingEnvironment dfe, RequiredPermissions requiredPermissions) {
+    return getSubjectFrom(dfe)
+        .map(
+            subject ->
+                satisfiesRequiredPermissions(
+                    requiredPermissions, subject, dfe.getExecutionStepInfo().getPath()))
+        .orElse(false);
   }
 
   private Optional<Subject> getSubjectFrom(DataFetchingEnvironment dfe) {
@@ -141,7 +143,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
     if (!userPermissions.containsAll(requiredPermissions.getAllOf())) {
       LOG.info(
-          "User does not have all of [{}]; denying access at {}",
+          "User does not have all of {}; denying access at {}",
           requiredPermissions.getAllOf(),
           path);
       return false;
@@ -149,7 +151,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
     for (var clause : requiredPermissions.getAnyOfClauses()) {
       if (clause.stream().noneMatch(userPermissions::contains)) {
-        LOG.info("User does not have at least one of [{}]; denying access at {}", clause, path);
+        LOG.info("User does not have at least one of {}; denying access at {}", clause, path);
         return false;
       }
     }
