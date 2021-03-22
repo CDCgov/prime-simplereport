@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
@@ -14,11 +15,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
 
+/**
+ * Base class for all tests that simulate fully-integrated API requests by either patients or
+ * providers.
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public abstract class BaseFullStackTest {
 
   @Autowired private DbTruncator _truncator;
@@ -57,13 +64,17 @@ public abstract class BaseFullStackTest {
     return event;
   }
 
-  protected ApiAuditEvent assertLastAuditEntry(HttpStatus status, String requestUri) {
+  protected ApiAuditEvent assertLastAuditEntry(
+      HttpStatus status, String requestUri, String requestId) {
     ApiAuditEvent event = getTimeCheckedEvent();
     HttpRequestDetails requestDetails = event.getHttpRequestDetails();
     if (requestUri != null) {
       assertEquals(requestUri, requestDetails.getRequestUri());
     }
     assertEquals(status.value(), event.getResponseCode(), "HTTP status code");
+    if (requestId != null) {
+      assertEquals(requestId, event.getRequestId(), "SimpleReport request ID");
+    }
     return event;
   }
 

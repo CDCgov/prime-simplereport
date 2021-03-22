@@ -52,7 +52,7 @@ public class AuditLoggingAdvice {
           "Saving audit entry for patientLinkId={}, organizationId={}",
           patientLink.getInternalId(),
           org.getInternalId());
-      String requestId = MDC.get(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
+      String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
       _auditService.logRestEvent(requestId, request, responseCode, org, patientLink);
     } else {
       LOG.trace("No patient link found: no audit entry needed");

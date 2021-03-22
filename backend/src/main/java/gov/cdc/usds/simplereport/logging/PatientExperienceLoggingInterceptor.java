@@ -40,7 +40,8 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
         request.getRequestURI(),
         handler);
     String requestId = UUID.randomUUID().toString();
-    MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, requestId);
+    MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, requestId);
+    response.addHeader(LoggingConstants.REQUEST_ID_HEADER, requestId);
     return true;
   }
 
@@ -55,7 +56,7 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
     LOG.trace("Closing out request. Patient link is {}", patientLink);
     int responseCode = response.getStatus();
     if (patientLink != null) {
-      String requestId = MDC.get(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
+      String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
       Organization organization = _context.getOrganization();
       _auditService.logRestEvent(requestId, request, responseCode, organization, patientLink);
     } else {
@@ -68,6 +69,6 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
       throws Exception {
     LOG.trace("Final logging cleanup step.");
-    MDC.remove(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY);
+    MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
   }
 }

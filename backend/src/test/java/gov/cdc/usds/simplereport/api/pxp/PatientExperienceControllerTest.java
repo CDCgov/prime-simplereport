@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -17,6 +18,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
@@ -26,14 +28,18 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@AutoConfigureMockMvc
 class PatientExperienceControllerTest extends BaseFullStackTest {
+
+  private static final String ANSWER_QUESTIONS = "/pxp/questions";
+  private static final String VERIFY_LINK = "/pxp/link/verify";
+
   @Autowired private MockMvc _mockMvc;
 
   @Autowired private TimeOfConsentService _tocService;
@@ -72,13 +78,16 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
-    this._mockMvc.perform(builder).andExpect(status().isForbidden());
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isForbidden())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
     assertNoAuditEvent();
   }
 
@@ -95,15 +104,15 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    this._mockMvc.perform(builder).andExpect(status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, null);
+    String requestId = runBuilderReturningRequestId(builder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -119,19 +128,24 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
-        .andExpect(jsonPath("$.lastName", is(_person.getLastName())));
-    assertLastAuditEntry(HttpStatus.OK, null);
+    String requestId =
+        _mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
+            .andExpect(jsonPath("$.lastName", is(_person.getLastName())))
+            .andReturn()
+            .getResponse()
+            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+
+    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -149,15 +163,15 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc.perform(builder).andExpect(status().is(410));
-    assertLastAuditEntry(HttpStatus.GONE, null);
+    String requestId = runBuilderReturningRequestId(builder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -179,31 +193,34 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder submitBuilder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
-    _mockMvc.perform(submitBuilder).andExpect(status().isOk());
+    String requestId = runBuilderReturningRequestId(submitBuilder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, ANSWER_QUESTIONS, requestId);
 
     // OKAY NOW DO IT AGAIN
     MockHttpServletRequestBuilder verifyBuilder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     MockHttpServletRequestBuilder secondSubmitBuilder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc.perform(verifyBuilder).andExpect(status().isGone());
-    _mockMvc.perform(secondSubmitBuilder).andExpect(status().isGone());
+    requestId = runBuilderReturningRequestId(verifyBuilder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
+    requestId = runBuilderReturningRequestId(secondSubmitBuilder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, ANSWER_QUESTIONS, requestId);
   }
 
   @Test
@@ -219,7 +236,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -285,7 +302,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -297,5 +314,15 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     AskOnEntrySurvey survey = _dataFactory.getAoESurveyForTestOrder(_testOrder.getInternalId());
     assertEquals(survey.getNoSymptoms(), noSymptoms);
     assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse(symptomOnsetDate));
+  }
+
+  private String runBuilderReturningRequestId(RequestBuilder builder, ResultMatcher statusMatcher)
+      throws Exception {
+    return _mockMvc
+        .perform(builder)
+        .andExpect(statusMatcher)
+        .andReturn()
+        .getResponse()
+        .getHeader(LoggingConstants.REQUEST_ID_HEADER);
   }
 }
