@@ -54,7 +54,7 @@
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
     "prebuild": "yarn compile-scss",
-    "build": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
+    "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
     "lint": "npm-run-all -p lint:eslint lint:prettier",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write",
