@@ -3,7 +3,10 @@ package gov.cdc.usds.simplereport.api;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
+import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.EnumSet;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +23,11 @@ public class PatientUploadTest extends BaseApiTest {
     JsonNode response = uploadPatients();
     assertEquals(
         "\"Successfully uploaded 1 record(s)\"", response.get("uploadPatients").toString());
+    assertLastAuditEntry(
+        TestUserIdentities.SITE_ADMIN_USER,
+        "UploadPatients",
+        EnumSet.allOf(UserPermission.class),
+        null);
   }
 
   private JsonNode uploadPatients() throws IOException {
