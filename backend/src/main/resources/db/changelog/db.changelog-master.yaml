@@ -1579,7 +1579,7 @@ databaseChangeLog:
         - renameColumn:
             tableName: patient_link
             oldColumnName: expires_at
-            newColumnName: refreshed_At
+            newColumnName: refreshed_at
         - sql:
             sql: |
               UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day';
