@@ -37,20 +37,20 @@ services:
       - dev-net
     depends_on:
       - db
-  # schemaspy:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile.schemaspy
-  #     network: dev-net
-  #   ports:
-  #     - "${SR_SCHEMASPY_PORT:-8081}:80"
-  #   environment:
-  #     HOST: dev-net
-  #   networks:
-  #     - dev-net
-  #   depends_on:
-  #   - db
-  #   - api
+  schemaspy:
+    build:
+      context: .
+      dockerfile: Dockerfile.schemaspy
+      network: dev-net
+    ports:
+      - "${SR_SCHEMASPY_PORT:-8081}:80"
+    environment:
+      HOST: dev-net
+    networks:
+      - dev-net
+    depends_on:
+    - db
+    - api
 volumes:
   simple-report-dev-db-data:
 networks:
