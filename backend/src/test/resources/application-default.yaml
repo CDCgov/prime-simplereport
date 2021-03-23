@@ -42,6 +42,8 @@ simple-report:
     account-request-recipient: 
       - support@simplereport.gov
       - Protect-ServiceDesk@hhs.gov
+    waitlist-recipient: 
+      - support@simplereport.gov
   site-admin-emails:
     - ruby@example.com
   demo-users:

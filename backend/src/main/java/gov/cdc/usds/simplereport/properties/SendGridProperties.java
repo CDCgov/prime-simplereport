@@ -11,14 +11,20 @@ public final class SendGridProperties {
   private final String apiKey;
   private final String fromEmail;
   private final List<String> accountRequestRecipient;
+  private final List<String> waitlistRecipient;
 
   @ConstructorBinding
   public SendGridProperties(
-      boolean enabled, String apiKey, String fromEmail, List<String> accountRequestRecipient) {
+      boolean enabled,
+      String apiKey,
+      String fromEmail,
+      List<String> accountRequestRecipient,
+      List<String> waitlistRecipient) {
     this.enabled = enabled;
     this.apiKey = apiKey;
     this.fromEmail = fromEmail;
     this.accountRequestRecipient = accountRequestRecipient;
+    this.waitlistRecipient = waitlistRecipient;
   }
 
   public boolean getEnabled() {
@@ -35,5 +41,9 @@ public final class SendGridProperties {
 
   public List<String> getAccountRequestRecipient() {
     return accountRequestRecipient;
+  }
+
+  public List<String> getWaitlistRecipient() {
+    return waitlistRecipient;
   }
 }
