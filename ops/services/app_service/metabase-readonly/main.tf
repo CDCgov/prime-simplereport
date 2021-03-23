@@ -1,39 +1,70 @@
-# Steps:
-# X. Create a connection to the database (or use the existing connection, if possible) under the administrative login
-# X. Add a new readonly role using the postgres_role and postgres_grant functions
-# 3. Add a new Metabase connection (hopefully more sensibly, with DB_USER and DB_PASS)
+# Initializing a new readonly user and granting them the proper permissions has to be done via 
+# psql, because the postgres terraform library does not allow granting column-level 
+# restrictions on roles.
 
-# Need to: 
-# X add a var file to store the server_name and login information
-# X add a data file/vault file to store the secret password
-# - Create a readonly role using Azure (since postgresql_grant doesn't allow for column-level permissions)
-# - Store all the required secrets in Azure (username, password, port, host)
+locals {
+  grant_command = <<EOF
+  psql \
+  --host ${var.postgres_server_name} \
+  --port ${var.postgres_port} \
+  --username ${var.administrator_login} \
+  --dbname "${var.postgres_db_name}" \
+  --command "
+    CREATE ROLE ${var.postgres_readonly_user} with LOGIN ENCRYPTED PASSWORD
+    '${var.postgres_readonly_pass}';
+    GRANT USAGE ON SCHEMA public TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE facility_device_type TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE device_type TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE organization TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE patient_answers TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE facility TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE patient_link TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE data_hub_upload TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE time_of_consent TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE specimen_type TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE device_specimen_type TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE facility_device_specimen_type TO ${var.postgres_readonly_user};
+    GRANT SELECT ON TABLE test_order TO ${var.postgres_readonly_user};
 
-# Notes/Suspicions/Etc
-# - Given the existing setup, I suspect (but can't confirm) that the /ops/services/database is used to manage the app connection to the database, 
-#       while ops/services/postgres_db is used to create the db in Azure
-# - It's not possible to create/manage the readonly user within terraform, because the postgres_grant action only supports granting table-level
-#   permissions and we need column-level permissions to protect PII.
-#   (terraform contributor is working to add this feature, but it's not in production yet: https://github.com/cyrilgdn/terraform-provider-postgresql/issues/23)
-# - As a result, we need to create the role and manage the permissions manually in Azure.
-# - MB_GOOGLE_AUTH_AUTO_CREATE_ACCOUNTS_DOMAIN could be useful for configuring authentication - just give the permission to anyone with a 
-#   CDC email address. 
-
-
-
-# Connect to the database
-# I'm not actually sure it's necessary to do this at all - we can't do anything with
-# the administrative login, since there's no way to secure the proper permissions in TF
-/*
-provider "postgresql" {
-  host = var.postgres_server_name
-  port = 5432
-  database = "simple_report"
-  username = var.administrator_login
-  #probably need to somehow connect this to the db_password in postgres_db/data
-  password = data.azurerm_key_vault_secret.db_password.value
+    GRANT SELECT (internal_id, created_at, updated_at, last_seen, is_deleted) ON TABLE api_user
+    TO ${var.postgres_readonly_user};
+    
+    GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id)
+    ON TABLE provider TO ${var.postgres_readonly_user};
+                
+    GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, employed_in_healthcare,
+    resident_congregate_setting, facility_id, race, gender, ethnicity, lookup_id, role)
+    ON TABLE person TO ${var.postgres_readonly_user};
+                
+    GRANT SELECT (device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, 
+    device_type_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, 
+    prior_corrected_test_event_id, internal_id, reason_for_correction)
+    ON TABLE test_event TO ${var.postgres_readonly_user};
+  "
+  EOF
 }
-*/
+
+resource "null_resource" "add_readonly_db_user" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command    = var.run_readonly_user_create == false ? "echo" : locals.grant_command
+    on_failure = continue
+    # Commented this out for now since password is coming from the Vault, 
+    # but that might not be correct
+    # environment = {
+    #   PGPASSWORD = module.db_secrets.password
+    # }
+  }
+
+  depends_on = [
+    azurerm_key_vault_secret.postgres_readonly_user
+    # it should really depend on the password, but I'm not sure if it's possible
+    # to depend on data instead of a resource
+  ]
+}
 
 resource "azurerm_app_service" "metabase-readonly" {
     name = var.name
@@ -90,7 +121,6 @@ resource "azurerm_key_vault_access_policy" "app_secret_access" {
   depends_on = [azurerm_app_service.metabase-readonly]
 }
 
-# Need to look into all of this further - what is it doing and why is it here?
 resource "azurerm_app_service_virtual_network_swift_connection" "metabase_readonly_vnet_integration" {
   app_service_id = azurerm_app_service.metabase-readonly.id
   subnet_id      = var.webapp_subnet_id

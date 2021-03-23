@@ -28,6 +28,14 @@ variable "webapp_subnet_id" {
   description = "Webapp Subnet ID"
 }
 
+variable "global_vault_id" {
+  type = string
+}
+
+variable "run_readonly_user_create" {
+  default = true
+}
+
 variable "administrator_login" {
   default = "simple_report"
 }
