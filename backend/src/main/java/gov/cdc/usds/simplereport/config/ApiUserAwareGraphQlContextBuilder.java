@@ -1,9 +1,5 @@
 package gov.cdc.usds.simplereport.config;
 
-import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRolePrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
