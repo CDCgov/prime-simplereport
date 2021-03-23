@@ -2,17 +2,13 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
-import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class AuditLoggingTest extends BaseApiTest {
@@ -27,15 +23,9 @@ class AuditLoggingTest extends BaseApiTest {
           UserPermission.START_TEST,
           UserPermission.UPDATE_TEST,
           UserPermission.SUBMIT_TEST);
-  private Date _start;
-
-  @BeforeEach
-  void setNow() {
-    _start = new Date();
-  }
 
   @Test
-  void auditableRequest_noInterestingHeaders_boringAudit() {
+  void auditableGraphqlRequest_noInterestingHeaders_boringAudit() {
     useOrgUser();
     runQuery("current-user-query");
     ApiAuditEvent event =
@@ -56,7 +46,7 @@ class AuditLoggingTest extends BaseApiTest {
   }
 
   @Test
-  void auditableRequest_interestingHeaders_auditCorrect() {
+  void auditableGraphqlRequest_interestingHeaders_auditCorrect() {
     useOrgUser();
     addHeader("X-FORWARDED-FOR", "10.10.3.2:1"); // old joke
     addHeader("X-forwarded-Proto", "ssh");
@@ -75,7 +65,7 @@ class AuditLoggingTest extends BaseApiTest {
   }
 
   @Test
-  void auditableRequest_nonStandardOrgUser_correctUserAndOrg() {
+  void auditableGraphqlRequest_nonStandardOrgUser_correctUserAndOrg() {
     useOutsideOrgAdmin();
     runQuery("current-user-query");
     ApiAuditEvent event =
@@ -88,16 +78,5 @@ class AuditLoggingTest extends BaseApiTest {
     assertEquals(
         "DAT_ORG", // this should be a constant
         event.getOrganization().getExternalId());
-  }
-
-  private void assertTimestampSanity(ApiAuditEvent event) {
-    Date eventTimestamp = event.getEventTimestamp();
-    Date postQuery = new Date();
-    assertTrue(
-        _start.before(eventTimestamp) || _start.equals(eventTimestamp),
-        "event timestamp after test start");
-    assertTrue(
-        postQuery.after(eventTimestamp) || postQuery.equals(eventTimestamp),
-        "event timestamp before now");
   }
 }

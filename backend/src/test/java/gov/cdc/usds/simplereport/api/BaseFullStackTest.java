@@ -2,7 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
@@ -90,5 +90,20 @@ public abstract class BaseFullStackTest {
         _testStart.after(event.getEventTimestamp()),
         "event must have been created during this test");
     return event;
+  }
+
+  protected void assertTimestampSanity(ApiAuditEvent event, Date beforeRequest) {
+    Date eventTimestamp = event.getEventTimestamp();
+    Date postQuery = new Date();
+    assertTrue(
+        beforeRequest.before(eventTimestamp) || beforeRequest.equals(eventTimestamp),
+        "event timestamp after test start");
+    assertTrue(
+        postQuery.after(eventTimestamp) || postQuery.equals(eventTimestamp),
+        "event timestamp before now");
+  }
+
+  protected void assertTimestampSanity(ApiAuditEvent event) {
+    assertTimestampSanity(event, _testStart);
   }
 }
