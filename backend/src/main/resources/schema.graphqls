@@ -41,7 +41,6 @@ enum TestCorrectionStatus {
 
 enum TestResultDeliveryPreference {
   SMS
-  EMAIL
   NONE
 }
 
