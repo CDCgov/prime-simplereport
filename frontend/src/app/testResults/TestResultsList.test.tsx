@@ -53,6 +53,7 @@ const testResults = [
       lookupId: null,
       __typename: "Patient",
     },
+    noSymptoms: true,
     __typename: "TestResult",
   },
   {
@@ -75,6 +76,7 @@ const testResults = [
       lookupId: null,
       __typename: "Patient",
     },
+    noSymptoms: false,
     __typename: "TestResult",
   },
 ];
