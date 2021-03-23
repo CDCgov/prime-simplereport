@@ -88,9 +88,7 @@ ReactDOM.render(
         <Router basename={process.env.PUBLIC_URL}>
           <Switch>
             <Route path="/health" component={HealthChecks} />
-            {process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED === "true" ? (
-              <Route path="/pxp" component={PatientApp} />
-            ) : null}
+            <Route path="/pxp" component={PatientApp} />
             <Route path="/" component={App} />
           </Switch>
         </Router>

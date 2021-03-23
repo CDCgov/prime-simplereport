@@ -33,9 +33,6 @@ logging:
 simple-report:
   authorization:
     role-prefix: "SR-UNITTEST-TENANT:"
-  feature-flags:
-    patient-links: true
-    account-request: true
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
