@@ -6,7 +6,7 @@ export const QUEUE_NOTIFICATION_TYPES = {
 };
 
 export const ALERT_CONTENT = {
-  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (patient) => {
+  [QUEUE_NOTIFICATION_TYPES.ADDED_TO_QUEUE__SUCCESS]: (patient: any) => {
     return {
       type: "success",
       title: `${displayFullName(
@@ -17,7 +17,7 @@ export const ALERT_CONTENT = {
       body: "Newly added patients go to the bottom of the queue",
     };
   },
-  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient) => {
+  [QUEUE_NOTIFICATION_TYPES.SUBMITTED_RESULT__SUCCESS]: (patient: any) => {
     return {
       type: "success",
       title: `Result was saved and reported for ${displayFullName(
@@ -29,3 +29,7 @@ export const ALERT_CONTENT = {
     };
   },
 };
+
+export const MIN_SEARCH_CHARACTER_COUNT = 2;
+
+export const SEARCH_DEBOUNCE_TIME = 500;

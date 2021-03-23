@@ -1,9 +1,10 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import classnames from "classnames";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useSelector } from "react-redux";
+import { faSlidersH } from "@fortawesome/free-solid-svg-icons";
+import { useHistory } from "react-router";
 
 import { displayFullName } from "../utils";
 import { PATIENT_TERM, PATIENT_TERM_PLURAL_CAP } from "../../config/constants";
@@ -16,19 +17,31 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import Pagination from "../commonComponents/Pagination";
+import { useDebounce } from "../testQueue/addToQueue/useDebounce";
+import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
+import Button from "../commonComponents/Button";
+import SearchInput from "../testQueue/addToQueue/SearchInput";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
 
 import "./ManagePatients.scss";
 
-const patientsCountQuery = gql`
-  query GetPatientsCountByFacility($facilityId: ID!, $showDeleted: Boolean!) {
-    patientsCount(facilityId: $facilityId, showDeleted: $showDeleted)
+export const patientsCountQuery = gql`
+  query GetPatientsCountByFacility(
+    $facilityId: ID!
+    $showDeleted: Boolean!
+    $namePrefixMatch: String
+  ) {
+    patientsCount(
+      facilityId: $facilityId
+      showDeleted: $showDeleted
+      namePrefixMatch: $namePrefixMatch
+    )
   }
 `;
 
-const patientQuery = gql`
+export const patientQuery = gql`
   query GetPatientsByFacility(
     $facilityId: ID!
     $pageNumber: Int!
@@ -76,10 +89,12 @@ interface Props {
   canDeleteUser: boolean;
   currentPage?: number;
   entriesPerPage: number;
-  totalEntries: number;
+  totalEntries?: number;
   showDeleted?: boolean;
-  data: { patients: Patient[] };
+  data?: { patients: Patient[] };
   refetch: () => null;
+  setNamePrefixMatch: (namePrefixMatch: string | null) => void;
+  isAdmin: boolean;
 }
 
 export const DetachedManagePatients = ({
@@ -89,8 +104,32 @@ export const DetachedManagePatients = ({
   entriesPerPage,
   totalEntries,
   refetch,
+  setNamePrefixMatch,
+  isAdmin,
+  activeFacilityId,
 }: Props) => {
   const [archivePerson, setArchivePerson] = useState<Patient | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const history = useHistory();
+
+  const [queryString, debounced, setDebounced] = useDebounce<string | null>(
+    null,
+    {
+      debounceTime: SEARCH_DEBOUNCE_TIME,
+    }
+  );
+
+  useEffect(() => {
+    if (queryString && queryString.length > 1) {
+      setNamePrefixMatch(queryString);
+    } else if (!queryString) {
+      setNamePrefixMatch(null);
+    }
+    history.push({
+      pathname: `/patients/1`,
+      search: `?facility=${activeFacilityId}`,
+    });
+  }, [queryString, setNamePrefixMatch, history, activeFacilityId]);
 
   if (archivePerson) {
     return (
@@ -105,6 +144,14 @@ export const DetachedManagePatients = ({
   }
 
   const patientRows = (patients: Patient[]) => {
+    if (patients.length === 0) {
+      return (
+        <tr>
+          <td colSpan={5}>No results</td>
+        </tr>
+      );
+    }
+
     return patients.map((patient: Patient) => {
       let fullName = displayFullName(
         patient.firstName,
@@ -166,21 +213,61 @@ export const DetachedManagePatients = ({
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
                 <span className="sr-showing-patients-on-page">
-                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
-                  {totalEntries}
+                  {totalEntries === undefined ? (
+                    "Loading..."
+                  ) : (
+                    <>
+                      Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                      {totalEntries}
+                    </>
+                  )}
                 </span>
               </h2>
-              {canEditUser ? (
-                <LinkWithQuery
-                  className="usa-button usa-button--primary"
-                  to={`/add-patient`}
-                  id="add-patient-button"
+              <div>
+                <Button
+                  variant={!showFilters ? "outline" : undefined}
+                  className={showFilters ? "sr-active-button" : undefined}
+                  icon={faSlidersH}
+                  onClick={() => {
+                    if (showFilters) {
+                      setNamePrefixMatch(null);
+                      setDebounced(null);
+                    }
+                    setShowFilters(!showFilters);
+                  }}
                 >
-                  <FontAwesomeIcon icon="plus" />
-                  {` Add ${PATIENT_TERM}`}
-                </LinkWithQuery>
-              ) : null}
+                  {showFilters ? "Clear filters" : "Filter"}
+                </Button>
+                {canEditUser ? (
+                  <LinkWithQuery
+                    className="usa-button usa-button--primary"
+                    to={`/add-patient`}
+                    id="add-patient-button"
+                  >
+                    <FontAwesomeIcon icon="plus" />
+                    {` Add ${PATIENT_TERM}`}
+                  </LinkWithQuery>
+                ) : null}
+              </div>
             </div>
+            {showFilters && (
+              <div className="display-flex flex-row bg-base-lightest padding-x-3 padding-y-2">
+                <SearchInput
+                  label="Person"
+                  onInputChange={(e) => {
+                    setDebounced(e.target.value);
+                  }}
+                  onSearchClick={(e) => {
+                    e.preventDefault();
+                    setNamePrefixMatch(debounced);
+                  }}
+                  queryString={debounced || ""}
+                  className="display-inline-block"
+                  placeholder=""
+                  focusOnMount
+                />
+              </div>
+            )}
             <div className="usa-card__body sr-patient-list">
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
@@ -192,56 +279,69 @@ export const DetachedManagePatients = ({
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>{patientRows(data.patients)}</tbody>
+                <tbody aria-live="polite">
+                  {data ? (
+                    patientRows(data.patients)
+                  ) : (
+                    <tr>
+                      <td colSpan={5}>Loading...</td>
+                    </tr>
+                  )}
+                </tbody>
               </table>
             </div>
-            <div className="usa-card__footer">
-              <Pagination
-                baseRoute="/patients"
-                currentPage={currentPage}
-                entriesPerPage={entriesPerPage}
-                totalEntries={totalEntries}
-              />
-            </div>
+            {data?.patients && data.patients.length > 0 && (
+              <div className="usa-card__footer">
+                {totalEntries && (
+                  <Pagination
+                    baseRoute="/patients"
+                    currentPage={currentPage}
+                    entriesPerPage={entriesPerPage}
+                    totalEntries={totalEntries}
+                  />
+                )}
+              </div>
+            )}
           </div>
-          <PatientUpload onSuccess={refetch} />
+          {isAdmin && <PatientUpload onSuccess={refetch} />}
         </div>
       </div>
     </main>
   );
 };
 
-type InjectedContainerProps = "pageCount" | "entriesPerPage" | "totalEntries";
+type InjectedContainerProps =
+  | "pageCount"
+  | "entriesPerPage"
+  | "totalEntries"
+  | "setNamePrefixMatch";
 
 const ManagePatients = (
   props: Omit<Props, InjectedQueryWrapperProps | InjectedContainerProps>
 ) => {
-  const activeFacilityId = useSelector(
-    (state) => (state as any).facility.id as string
+  const [namePrefixMatch, setNamePrefixMatch] = useState<string | null>(null);
+
+  const { data: totalPatients, error, refetch: refetchCount } = useQuery(
+    patientsCountQuery,
+    {
+      variables: {
+        facilityId: props.activeFacilityId,
+        showDeleted: false,
+        namePrefixMatch,
+      },
+      fetchPolicy: "no-cache",
+    }
   );
 
-  const {
-    data: totalPatients,
-    loading,
-    error,
-    refetch: refetchCount,
-  } = useQuery(patientsCountQuery, {
-    variables: { facilityId: activeFacilityId, showDeleted: false },
-    fetchPolicy: "no-cache",
-  });
-
-  if (activeFacilityId.length < 1) {
+  if (props.activeFacilityId.length < 1) {
     return <div>"No facility selected"</div>;
   }
 
-  if (loading) {
-    return <p>Loading</p>;
-  }
   if (error) {
     throw error;
   }
 
-  const totalEntries = totalPatients.patientsCount;
+  const totalEntries = totalPatients?.patientsCount;
   const entriesPerPage = 20;
   const pageNumber = props.currentPage || 1;
   return (
@@ -249,19 +349,22 @@ const ManagePatients = (
       query={patientQuery}
       queryOptions={{
         variables: {
-          facilityId: activeFacilityId,
+          facilityId: props.activeFacilityId,
           pageNumber: pageNumber - 1,
           pageSize: entriesPerPage,
           showDeleted: props.showDeleted || false,
+          namePrefixMatch,
         },
       }}
       onRefetch={refetchCount}
       Component={DetachedManagePatients}
+      displayLoadingIndicator={false}
       componentProps={{
         ...props,
         totalEntries,
         currentPage: pageNumber,
         entriesPerPage,
+        setNamePrefixMatch,
       }}
     />
   );
