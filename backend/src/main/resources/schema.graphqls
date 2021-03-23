@@ -1,7 +1,20 @@
+# Requires that the requester have a certain permission level.
+#
+# If applied to a field, the requester must meet the required permission level in order to request
+# or traverse the targeted field. If the requirement is not met, `null` will be supplied for the
+# targeted field and an error returned.
+#
+# If applied to an object, the request must meet the required permission level in order to request
+# any fields of the object. If any child fields are themselves targeted with this directive, the
+# requester must satisfy both object- and field-level directives to request or traverse said fields.
+#
+# If applied to an argument, the requester must meet the required permission level in order to
+# supply a non-default value for the targeted argument; otherwise, an error will be returned and the
+# query or mutation housing the argument will not be executed.
 directive @requiredPermissions(
-  anyOf: [String!],
-  allOf: [String!]
-) on FIELD_DEFINITION | ARGUMENT_DEFINITION
+  anyOf: [String!] # if the requester lacks any of these permissions, deny
+  allOf: [String!] # if the requester has any of these permissions, permit
+) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
 
 # java.util.Date implementation
 scalar DateTime
@@ -58,7 +71,7 @@ type DeviceType {
   swabType: String
 }
 
-type Patient {
+type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]) {
   internalId: ID
   facility: Facility
   lookupId: String

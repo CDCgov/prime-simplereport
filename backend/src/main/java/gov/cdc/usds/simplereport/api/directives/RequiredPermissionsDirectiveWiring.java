@@ -16,6 +16,7 @@ import graphql.schema.GraphQLDirective;
 import graphql.schema.GraphQLDirectiveContainer;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLNonNull;
+import graphql.schema.GraphQLObjectType;
 import graphql.schema.idl.SchemaDirectiveWiring;
 import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import java.util.Collection;
@@ -76,45 +77,48 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
     gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
     var requiredPermissions = requiredPermissionsBuilder.build();
 
-    var originalDataFetcher = environment.getFieldDataFetcher();
-    DataFetcher<?> newDataFetcher =
-        dfe -> {
-          if (requesterHasRequisitePermissions(dfe, requiredPermissions)) {
-            return originalDataFetcher.get(dfe);
-          }
-
-          var path = dfe.getExecutionStepInfo().getPath();
-          var error =
-              new IllegalGraphqlFieldAccessException(
-                  "Current user does not have permission to request [" + path + "]",
-                  List.of(fieldDefinition.getDefinition().getSourceLocation()),
-                  path.toList());
-
-          // We can either return this error (wrapped in a DataFetcherResult) or throw it. The
-          // former will set the data requested to `null`, and the latter will set the data's
-          // closest non-nullable ancestor to `null`. This directive prefers redacting as little as
-          // possible, so the error is only thrown if the field to which access is being denied is
-          // non-nullable in the schema.
-          if (fieldDefinition.getType() instanceof GraphQLNonNull) {
-            throw error;
-          }
-
-          return DataFetcherResult.newResult().error(error).build();
-        };
-
-    overwriteOriginalDataFetcher(environment, newDataFetcher);
+    overwriteOriginalDataFetcher(
+        environment,
+        new PermissionedFieldDataFetcher<>(
+            requiredPermissions, environment.getFieldDataFetcher(), fieldDefinition));
 
     return environment.getElement();
   }
 
-  private boolean argumentHasDefaultOrNullValue(
+  @Override
+  public GraphQLObjectType onObject(
+      SchemaDirectiveWiringEnvironment<GraphQLObjectType> environment) {
+    var target = environment.getElement();
+    var requiredPermissionsBuilder = RequiredPermissions.builder();
+    gatherRequiredPermissions(requiredPermissionsBuilder, target);
+    var requiredPermissions = requiredPermissionsBuilder.build();
+    for (var child : target.getChildren()) {
+      if (child instanceof GraphQLFieldDefinition) {
+        GraphQLFieldDefinition childField = (GraphQLFieldDefinition) child;
+        var coordinates = FieldCoordinates.coordinates(target, childField);
+
+        environment
+            .getCodeRegistry()
+            .dataFetcher(
+                coordinates,
+                new PermissionedFieldDataFetcher<>(
+                    requiredPermissions,
+                    environment.getCodeRegistry().getDataFetcher(coordinates, childField),
+                    childField));
+      }
+    }
+
+    return target;
+  }
+
+  private static boolean argumentHasDefaultOrNullValue(
       DataFetchingEnvironment dfe, GraphQLArgument argument) {
     var argValue = dfe.getArgument(argument.getName());
 
     return argValue == null || Objects.equals(argValue, argument.getDefaultValue());
   }
 
-  private boolean requesterHasRequisitePermissions(
+  private static boolean requesterHasRequisitePermissions(
       DataFetchingEnvironment dfe, RequiredPermissions requiredPermissions) {
     return getSubjectFrom(dfe)
         .map(
@@ -124,14 +128,14 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
         .orElse(false);
   }
 
-  private Optional<Subject> getSubjectFrom(DataFetchingEnvironment dfe) {
+  private static Optional<Subject> getSubjectFrom(DataFetchingEnvironment dfe) {
     return Optional.ofNullable(dfe.getContext())
         .filter(GraphQLContext.class::isInstance)
         .map(GraphQLContext.class::cast)
         .flatMap(GraphQLContext::getSubject);
   }
 
-  private boolean satisfiesRequiredPermissions(
+  private static boolean satisfiesRequiredPermissions(
       RequiredPermissions requiredPermissions, Subject subject, ResultPath path) {
     // Site admins are always allowed through
     if (!subject.getPrincipals(SiteAdminPrincipal.class).isEmpty()) {
@@ -244,6 +248,66 @@ public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring
       RequiredPermissions build() {
         return new RequiredPermissions(allOf, anyOfClauses);
       }
+    }
+  }
+
+  private static class PermissionedFieldDataFetcher<T> implements DataFetcher<T> {
+    private final RequiredPermissions requiredPermissions;
+    private final DataFetcher<T> proxied;
+    private final GraphQLFieldDefinition fieldDefinition;
+
+    private PermissionedFieldDataFetcher(
+        RequiredPermissions requiredPermissions,
+        DataFetcher<T> proxied,
+        GraphQLFieldDefinition fieldDefinition) {
+      // If the proxied data fetcher is itself an instance of this class, collapse this fetcher and
+      // the fetcher it proxies into a single fetcher by combining the permissions each requires.
+      // This situation arises when a @requiredPermissions directive has been applied to an object
+      // and separately to one or more of its properties.
+      if (proxied instanceof PermissionedFieldDataFetcher) {
+        PermissionedFieldDataFetcher<T> proxiedFetcher = (PermissionedFieldDataFetcher<T>) proxied;
+        var compositePermissions = RequiredPermissions.builder();
+        for (var rp :
+            new RequiredPermissions[] {requiredPermissions, proxiedFetcher.requiredPermissions}) {
+          compositePermissions.withAllOf(rp.getAllOf());
+          rp.getAnyOfClauses().forEach(compositePermissions::withAnyOf);
+        }
+
+        requiredPermissions = compositePermissions.build();
+        proxied = proxiedFetcher.proxied;
+      }
+
+      this.requiredPermissions = requiredPermissions;
+      this.proxied = proxied;
+      this.fieldDefinition = fieldDefinition;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public T get(DataFetchingEnvironment dfe) throws Exception {
+      if (requesterHasRequisitePermissions(dfe, requiredPermissions)) {
+        return proxied.get(dfe);
+      }
+
+      var path = dfe.getExecutionStepInfo().getPath();
+      var error =
+          new IllegalGraphqlFieldAccessException(
+              "Current user does not have permission to request [" + path + "]",
+              List.of(fieldDefinition.getDefinition().getSourceLocation()),
+              path.toList());
+
+      // We can either return this error (wrapped in a DataFetcherResult) or throw it. The
+      // former will set the data requested to `null`, and the latter will set the data's
+      // closest non-nullable ancestor to `null`. This directive prefers redacting as little as
+      // possible, so the error is only thrown if the field to which access is being denied is
+      // non-nullable in the schema.
+      if (fieldDefinition.getType() instanceof GraphQLNonNull) {
+        throw error;
+      }
+
+      // This is legal in GraphQL-Java, but the type T|DataFetcherResult<T> is not representable in
+      // the Java type system. Thanks to type erasure, the cast to T is not present at runtime.
+      return (T) DataFetcherResult.newResult().error(error).build();
     }
   }
 }
