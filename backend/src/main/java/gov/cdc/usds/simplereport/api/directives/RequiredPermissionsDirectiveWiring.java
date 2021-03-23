@@ -2,9 +2,9 @@ package gov.cdc.usds.simplereport.api.directives;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlFieldAccessException;
+import gov.cdc.usds.simplereport.config.GraphQlSchemaDirectiveConfig;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
-import gov.cdc.usds.simplereport.config.authorization.UserPermissionPrincipal;
 import graphql.execution.DataFetcherResult;
 import graphql.execution.ResultPath;
 import graphql.kickstart.execution.context.GraphQLContext;
@@ -21,6 +21,7 @@ import graphql.schema.idl.SchemaDirectiveWiringEnvironment;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -31,28 +32,34 @@ import javax.security.auth.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
+/**
+ * Wiring for a schema directive that enforces that a user must have certain permissions to traverse
+ * a given schema node. The @requiredPermissions directive can require that the user have all of one
+ * or more permissions, any of several permissions, or both. The directive can be applied to
+ * queries, mutations, field definitions, and argument definitions.
+ */
+public class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
   private static final Logger LOG =
       LoggerFactory.getLogger(RequiredPermissionsDirectiveWiring.class);
-  private static final String DIRECTIVE_NAME = "requiredPermissions";
 
   @Override
   public GraphQLArgument onArgument(SchemaDirectiveWiringEnvironment<GraphQLArgument> environment) {
+    GraphQLArgument argument = environment.getElement();
     var requiredPermissionsBuilder = RequiredPermissions.builder();
-    gatherRequiredPermissions(requiredPermissionsBuilder, environment.getElement());
+    gatherRequiredPermissions(requiredPermissionsBuilder, argument);
     var requiredPermissions = requiredPermissionsBuilder.build();
 
     var originalDataFetcher = environment.getFieldDataFetcher();
     DataFetcher<?> newDataFetcher =
         dfe -> {
-          if (argumentHasDefaultOrNullValue(dfe, environment.getElement())
+          if (argumentHasDefaultOrNullValue(dfe, argument)
               || requesterHasRequisitePermissions(dfe, requiredPermissions)) {
             return originalDataFetcher.get(dfe);
           }
 
           throw new IllegalGraphqlArgumentException(
               "Current user does not have permission to supply a non-default value for ["
-                  + environment.getElement().getName()
+                  + argument.getName()
                   + "]");
         };
 
@@ -66,7 +73,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
       SchemaDirectiveWiringEnvironment<GraphQLFieldDefinition> environment) {
     GraphQLFieldDefinition fieldDefinition = environment.getElement();
     var requiredPermissionsBuilder = RequiredPermissions.builder();
-    gatherRequiredPermissions(requiredPermissionsBuilder, environment.getElement());
+    gatherRequiredPermissions(requiredPermissionsBuilder, fieldDefinition);
     var requiredPermissions = requiredPermissionsBuilder.build();
 
     var originalDataFetcher = environment.getFieldDataFetcher();
@@ -131,10 +138,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
       return true;
     }
 
-    var userPermissions =
-        subject.getPrincipals(UserPermissionPrincipal.class).stream()
-            .map(UserPermissionPrincipal::toUserPermission)
-            .collect(Collectors.toSet());
+    var userPermissions = subject.getPrincipals(UserPermission.class);
 
     if (!userPermissions.containsAll(requiredPermissions.getAllOf())) {
       LOG.info(
@@ -156,7 +160,9 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
 
   private static void gatherRequiredPermissions(
       RequiredPermissions.Builder permissionsAccumulator, GraphQLDirectiveContainer queryElement) {
-    Optional.ofNullable(queryElement.getDirective(DIRECTIVE_NAME))
+    Optional.ofNullable(
+            queryElement.getDirective(
+                GraphQlSchemaDirectiveConfig.REQUIRED_PERMISSIONS_DIRECTIVE_NAME))
         .ifPresent(
             d -> {
               fromStringListArgument(d, "allOf").ifPresent(permissionsAccumulator::withAllOf);
@@ -179,7 +185,11 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
         .map(GraphQLArgument::getValue)
         .filter(Collection.class::isInstance)
         .map(c -> (Collection<String>) c)
-        .map(c -> c.stream().map(UserPermission::valueOf).collect(Collectors.toUnmodifiableSet()));
+        .map(
+            c ->
+                c.stream()
+                    .map(UserPermission::valueOf)
+                    .collect(Collectors.toCollection(() -> EnumSet.noneOf(UserPermission.class))));
   }
 
   private static class RequiredPermissions {
@@ -196,6 +206,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
       // reduced set.
       var clauses = new HashSet<Set<UserPermission>>();
       anyOfClauses.stream()
+          .filter(s -> s.stream().noneMatch(allOf::contains))
           .sorted(Comparator.comparingInt(Set::size))
           .forEach(
               s -> {
@@ -219,7 +230,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
     }
 
     private static class Builder {
-      private final Set<UserPermission> allOf = new HashSet<>();
+      private final Set<UserPermission> allOf = EnumSet.noneOf(UserPermission.class);
       private final Set<Set<UserPermission>> anyOfClauses = new HashSet<>();
 
       void withAllOf(Set<UserPermission> allOf) {
@@ -227,7 +238,7 @@ class RequiredPermissionsDirectiveWiring implements SchemaDirectiveWiring {
       }
 
       void withAnyOf(Set<UserPermission> anyOf) {
-        this.anyOfClauses.add(anyOf.stream().collect(Collectors.toUnmodifiableSet()));
+        this.anyOfClauses.add(EnumSet.copyOf(anyOf));
       }
 
       RequiredPermissions build() {

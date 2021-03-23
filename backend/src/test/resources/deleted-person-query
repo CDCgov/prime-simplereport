@@ -1,4 +1,4 @@
-query GetDeletedPatients {
+query getDeletedPatients {
   patients(showDeleted: true) {
     firstName
     lastName

@@ -1,11 +1,13 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
+import java.security.Principal;
+
 /**
  * Permissions that a user may hold, usually via their {@link OrganizationRole}.
  *
  * <p>DO: Keep updated with UserPermission in schema.graphqls
  */
-public enum UserPermission {
+public enum UserPermission implements Principal {
   READ_PATIENT_LIST,
   READ_ARCHIVED_PATIENT_LIST,
   SEARCH_PATIENTS,
@@ -20,4 +22,9 @@ public enum UserPermission {
   SUBMIT_TEST,
   EXPORT_TEST_EVENT,
   ACCESS_ALL_FACILITIES;
+
+  @Override
+  public String getName() {
+    return name();
+  }
 }

@@ -193,7 +193,7 @@ type Query {
     facilityId: ID
     pageNumber: Int
     pageSize: Int
-    showDeleted: Boolean =  false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+    showDeleted: Boolean = false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
     namePrefixMatch: String
   ): [Patient] @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
   patientsCount(

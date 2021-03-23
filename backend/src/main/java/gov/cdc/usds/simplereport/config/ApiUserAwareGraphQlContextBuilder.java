@@ -1,7 +1,10 @@
 package gov.cdc.usds.simplereport.config;
 
+import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRolePrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
-import gov.cdc.usds.simplereport.config.authorization.UserPermissionPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
 import graphql.kickstart.execution.context.GraphQLContext;
@@ -19,6 +22,11 @@ import javax.websocket.server.HandshakeRequest;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
+/**
+ * A GraphQL context builder that injects the current API user as the context's subject. The subject
+ * is populated with the user's granted permissions, whether the user is a site admin, the user's
+ * granted roles, and the organization and facilities to which the user has been granted access.
+ */
 @Component
 class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder {
   private final ApiUserService apiUserService;
@@ -56,12 +64,10 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
     var principals = new HashSet<Principal>();
 
     if (currentUser.getIsAdmin()) {
-      principals.add(new SiteAdminPrincipal());
+      principals.add(SiteAdminPrincipal.getInstance());
     }
 
-    currentUser.getPermissions().stream()
-        .map(UserPermissionPrincipal::new)
-        .forEach(principals::add);
+    principals.addAll(currentUser.getPermissions());
 
     return new Subject(true, principals, Collections.emptySet(), Collections.emptySet());
   }

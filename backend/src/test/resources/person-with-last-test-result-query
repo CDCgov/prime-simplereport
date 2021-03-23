@@ -1,4 +1,4 @@
-query GetPatientsWithLastTestResult($namePrefixMatch: String = null) {
+query getPatientsWithLastTestResult($namePrefixMatch: String = null) {
   patients(namePrefixMatch: $namePrefixMatch) {
     firstName
     lastName

@@ -363,7 +363,7 @@ class PatientManagementTest extends BaseApiTest {
         "Current user does not have permission to supply a non-default value for [showDeleted]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
-        "GetDeletedPatients",
+        "getDeletedPatients",
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
             UserPermission.SEARCH_PATIENTS,
@@ -382,7 +382,7 @@ class PatientManagementTest extends BaseApiTest {
     runQuery("deleted-person-query", null, null);
     assertLastAuditEntry(
         TestUserIdentities.ORG_ADMIN_USER,
-        "GetDeletedPatients",
+        "getDeletedPatients",
         EnumSet.allOf(UserPermission.class),
         List.of());
   }
@@ -404,7 +404,7 @@ class PatientManagementTest extends BaseApiTest {
     runQuery("person-with-test-results-query", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
-        "GetPatientsWithTestResults",
+        "getPatientsWithTestResults",
         EnumSet.of(
             UserPermission.READ_PATIENT_LIST,
             UserPermission.SEARCH_PATIENTS,
@@ -436,7 +436,7 @@ class PatientManagementTest extends BaseApiTest {
         "Current user does not have permission to request [/patients[0]/testResults]");
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
-        "GetPatientsWithTestResults",
+        "getPatientsWithTestResults",
         EnumSet.of(
             UserPermission.SEARCH_PATIENTS,
             UserPermission.START_TEST,
@@ -461,7 +461,7 @@ class PatientManagementTest extends BaseApiTest {
     runQuery("person-with-last-test-result-query", variables, null);
     assertLastAuditEntry(
         TestUserIdentities.ENTRY_ONLY_USER,
-        "GetPatientsWithLastTestResult",
+        "getPatientsWithLastTestResult",
         EnumSet.of(
             UserPermission.SEARCH_PATIENTS,
             UserPermission.START_TEST,
