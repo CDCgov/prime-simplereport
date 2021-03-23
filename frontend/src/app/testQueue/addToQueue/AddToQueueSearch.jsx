@@ -7,15 +7,17 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../../commonComponents/Alert";
-import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
+import {
+  QUEUE_NOTIFICATION_TYPES,
+  ALERT_CONTENT,
+  MIN_SEARCH_CHARACTER_COUNT,
+  SEARCH_DEBOUNCE_TIME,
+} from "../constants";
 import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
-
-const MIN_SEARCH_CHARACTER_COUNT = 2;
-const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {

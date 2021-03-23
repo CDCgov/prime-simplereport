@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import { hasPermission, appPermissions } from "../permissions";
+import { RootState } from "../store";
 
 import ManagePatients from "./ManagePatients";
 
@@ -9,7 +10,10 @@ const ManagePatientsContainer = (props: { page?: number }) => {
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );
-  const user = useSelector((state) => (state as any).user as User);
+  const user = useSelector<RootState, User>((state) => state.user);
+  const isAdmin = useSelector<RootState, boolean>(
+    (state) => state.user.isAdmin
+  );
 
   const canEditUser = hasPermission(
     user.permissions,
@@ -28,6 +32,7 @@ const ManagePatientsContainer = (props: { page?: number }) => {
       canEditUser={canEditUser}
       canDeleteUser={canDeleteUser}
       currentPage={props.page}
+      isAdmin={isAdmin}
     />
   );
 };

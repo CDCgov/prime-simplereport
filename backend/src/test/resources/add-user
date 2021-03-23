@@ -1,4 +1,4 @@
-mutation addUser(
+mutation addUserOp(
     $firstName: String,
     $middleName: String,
     $lastName: String!,
