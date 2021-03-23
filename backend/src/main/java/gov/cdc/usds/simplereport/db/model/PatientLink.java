@@ -3,10 +3,8 @@ package gov.cdc.usds.simplereport.db.model;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
@@ -17,9 +15,6 @@ public class PatientLink extends EternalAuditedEntity {
   private TestOrder testOrder;
 
   @Column private Date expiresAt;
-
-  @OneToOne(mappedBy = "patientLink", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-  private PatientLinkFailedAttempt failedAttempts;
 
   public PatientLink() {}
 
@@ -48,13 +43,5 @@ public class PatientLink extends EternalAuditedEntity {
 
   public void refresh() {
     expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
-  }
-
-  public PatientLinkFailedAttempt getFailedAttempts() {
-    return failedAttempts;
-  }
-
-  public void setFailedAttempts(PatientLinkFailedAttempt plfa) {
-    failedAttempts = plfa;
   }
 }
