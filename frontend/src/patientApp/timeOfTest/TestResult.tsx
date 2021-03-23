@@ -1,4 +1,4 @@
-import { connect, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
