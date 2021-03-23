@@ -13,7 +13,7 @@
 # query or mutation housing the argument will not be executed.
 directive @requiredPermissions(
   anyOf: [String!] # if the requester lacks any of these permissions, deny
-  allOf: [String!] # if the requester has any of these permissions, permit
+  allOf: [String!] # if the requester lacks all of these permissions, deny
 ) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
 
 # java.util.Date implementation
