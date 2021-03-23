@@ -1561,3 +1561,50 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__api_audit_event__patient_link
                     references: patient_link
+  - changeSet:
+      id: rename-patient_link-refreshed_at
+      author: adam@skylight.digital
+      comment: Rename patient_link.refreshed_at to expires_at
+      changes:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: refreshed_at
+            newColumnName: expires_at
+        - sql:
+            remarks: Add 24hs to the timestamps, because that was the default expiry
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.created_at WHERE expires_at is null; 
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.expires_at + interval '1 day';
+      rollback:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: expires_at
+            newColumnName: refreshed_at
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day';
+  - changeSet:
+      id: add-patient_link_failed_attempt
+      author: nclyde@skylight.digital
+      comment: Adds a non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+      changes:
+        - createTable:
+            tableName: patient_link_failed_attempt
+            remarks: A non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+            columns:
+              - column:
+                  name: patient_link_internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity, and a foreign key to patient_link
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk__failed_attempts__patient_link
+                    references: patient_link
+              - column:
+                  name: failed_attempts
+                  type: tinyint
+                  valueNumeric: 0
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
