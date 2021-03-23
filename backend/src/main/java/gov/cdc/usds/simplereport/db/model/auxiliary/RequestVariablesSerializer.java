@@ -5,14 +5,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.nimbusds.jose.util.StandardCharset;
+import gov.cdc.usds.simplereport.api.model.errors.AuditLogFailureException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.stream.Collectors;
 import javax.servlet.http.Part;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class RequestVariablesSerializer extends JsonSerializer<Map<String, Object>> {
+  private static final Logger LOG = LoggerFactory.getLogger(RequestVariablesSerializer.class);
 
   private Object parseValue(Object value) {
     if (value instanceof Part) {
@@ -23,7 +27,8 @@ public class RequestVariablesSerializer extends JsonSerializer<Map<String, Objec
             .lines()
             .collect(Collectors.joining("\n"));
       } catch (IOException e) {
-        return "Unable to read file";
+        LOG.error("Unable to read uploaded file while writing audit log", e);
+        throw new AuditLogFailureException();
       }
     }
     return value;
