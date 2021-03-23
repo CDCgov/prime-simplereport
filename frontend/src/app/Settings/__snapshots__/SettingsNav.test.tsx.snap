@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SettingsNav displays the nav order correctly and defaults to 'Manage Users' 1`] = `
+<div>
+  <nav
+    aria-label="Secondary navigation"
+    class="prime-secondary-nav"
+  >
+    <ul
+      class="usa-nav__secondary-links prime-nav"
+    >
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          href="/settings"
+        >
+          Manage Users
+        </a>
+      </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          href="/settings/facilities"
+        >
+          Manage Facilities
+        </a>
+      </li>
+      <li
+        class="usa-nav__secondary-item"
+      >
+        <a
+          href="/settings/organization"
+        >
+          Manage Organization
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+`;

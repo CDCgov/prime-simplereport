@@ -58,10 +58,10 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
               )}
             />
             <Route
-              path={match.url + "/users"}
-              component={ManageUsersContainer}
+              path={match.url + "/organization"}
+              component={ManageOrganizationContainer}
             />
-            <Route component={ManageOrganizationContainer} />
+            <Route component={ManageUsersContainer} />
           </Switch>
         </PrimeErrorBoundary>
       </div>
