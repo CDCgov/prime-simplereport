@@ -1,5 +1,9 @@
 package gov.cdc.usds.simplereport.config;
 
+import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
+import gov.cdc.usds.simplereport.config.authorization.OrganizationRolePrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
@@ -59,11 +63,19 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
     var currentUser = apiUserService.getCurrentUserInfo();
     var principals = new HashSet<Principal>();
 
+    principals.add(new ApiUserPrincipal(currentUser.getWrappedUser()));
+
     if (currentUser.getIsAdmin()) {
       principals.add(SiteAdminPrincipal.getInstance());
     }
 
     principals.addAll(currentUser.getPermissions());
+
+    currentUser.getOrganization().map(OrganizationPrincipal::new).ifPresent(principals::add);
+
+    currentUser.getRoles().stream().map(OrganizationRolePrincipal::new).forEach(principals::add);
+
+    currentUser.getFacilities().stream().map(FacilityPrincipal::new).forEach(principals::add);
 
     return new Subject(true, principals, Collections.emptySet(), Collections.emptySet());
   }

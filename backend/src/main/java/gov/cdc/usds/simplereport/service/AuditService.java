@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
@@ -41,15 +44,33 @@ public class AuditService {
   public void logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
     LOG.trace("Saving audit event for {}", state.getRequestId());
     UserInfo userInfo = _userService.getCurrentUserInfo();
+    logGraphQlEvent(
+        state,
+        errorPaths,
+        userInfo.getWrappedUser(),
+        userInfo.getPermissions(),
+        userInfo.getIsAdmin(),
+        userInfo.getOrganization().orElse(null));
+  }
+
+  @Transactional(readOnly = false)
+  public void logGraphQlEvent(
+      GraphqlQueryState state,
+      List<String> errorPaths,
+      ApiUser user,
+      List<UserPermission> permissions,
+      boolean isAdmin,
+      Organization organization) {
+    LOG.trace("Saving audit event for {}", state.getRequestId());
     _repo.save(
         new ApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
             state.getGraphqlDetails(),
             errorPaths,
-            userInfo.getWrappedUser(),
-            userInfo.getPermissions(),
-            userInfo.getIsAdmin(),
-            userInfo.getOrganization().orElse(null)));
+            user,
+            permissions,
+            isAdmin,
+            organization));
   }
 }
