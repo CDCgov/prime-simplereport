@@ -43,6 +43,10 @@ public class PatientLinkService {
             .orElseThrow(
                 () ->
                     new IllegalGraphqlArgumentException("No patient link with that ID was found"));
+    PatientLinkFailedAttempt patientLinkFailedAttempt =
+        plfarepo.findById(pl.getInternalId()).orElse(new PatientLinkFailedAttempt(pl));
+    patientLinkFailedAttempt.resetFailedAttempts();
+    plfarepo.save(patientLinkFailedAttempt);
     pl.refresh();
     return plrepo.save(pl);
   }
