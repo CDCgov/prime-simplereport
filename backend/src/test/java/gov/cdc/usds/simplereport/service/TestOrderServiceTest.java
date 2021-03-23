@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
@@ -17,6 +20,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
@@ -250,9 +254,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false);
+    Person pWithSmsDelivery =
+        _personService.updateTestResultDeliveryPreference(
+            p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
         facility.getInternalId(),
-        p,
+        pWithSmsDelivery,
         "",
         Collections.<String, Boolean>emptyMap(),
         false,
@@ -265,6 +272,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
+
+    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
 
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
