@@ -1101,8 +1101,8 @@ databaseChangeLog:
                   name: correction_status
                   type: ${database.defaultSchemaName}.test_correction_status
                   remarks: Enumeration of type of correction. This column is used for non-delete corrections.
-                  defaultValue: 'ORIGINAL'
-                  value: 'ORIGINAL'
+                  defaultValue: "ORIGINAL"
+                  value: "ORIGINAL"
                   constraints:
                     nullable: false
               - column:
@@ -1131,8 +1131,8 @@ databaseChangeLog:
                   name: correction_status
                   type: ${database.defaultSchemaName}.test_correction_status
                   remarks: Enumeration of type of correction.
-                  defaultValue: 'ORIGINAL'
-                  value: 'ORIGINAL'
+                  defaultValue: "ORIGINAL"
+                  value: "ORIGINAL"
                   constraints:
                     nullable: false
               - column:
@@ -1202,8 +1202,8 @@ databaseChangeLog:
       changes:
         - addColumn:
             tableName: api_user
-            # while we would love to use the proper (non-nullable) reference column below, there are 
-            # already records in this table and we cannot add default values to the existing reference 
+            # while we would love to use the proper (non-nullable) reference column below, there are
+            # already records in this table and we cannot add default values to the existing reference
             # column without recreating it entirely
             columns:
               - column:
@@ -1363,7 +1363,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.device_type;
             expectedResult: 1
       changes:
         - sql:
@@ -1444,7 +1444,7 @@ databaseChangeLog:
         - onSqlOutput: FAIL
         - onFail: MARK_RAN
         - sqlCheck:
-            sql:  SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
+            sql: SELECT case when count(1) > 0 then 1 else 0 end FROM ${database.defaultSchemaName}.test_order WHERE device_type_id is null;
             expectedResult: 1
       changes:
         - sql:
@@ -1561,6 +1561,53 @@ databaseChangeLog:
                     nullable: true
                     foreignKeyName: fk__api_audit_event__patient_link
                     references: patient_link
+  - changeSet:
+      id: rename-patient_link-refreshed_at
+      author: adam@skylight.digital
+      comment: Rename patient_link.refreshed_at to expires_at
+      changes:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: refreshed_at
+            newColumnName: expires_at
+        - sql:
+            remarks: Add 24hs to the timestamps, because that was the default expiry
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.created_at WHERE expires_at is null; 
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.expires_at + interval '1 day';
+      rollback:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: expires_at
+            newColumnName: refreshed_at
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day';
+  - changeSet:
+      id: add-patient_link_failed_attempt
+      author: nclyde@skylight.digital
+      comment: Adds a non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+      changes:
+        - createTable:
+            tableName: patient_link_failed_attempt
+            remarks: A non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+            columns:
+              - column:
+                  name: patient_link_internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity, and a foreign key to patient_link
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk__failed_attempts__patient_link
+                    references: patient_link
+              - column:
+                  name: failed_attempts
+                  type: tinyint
+                  valueNumeric: 0
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false
   - changeSet:
       id: add-test-result-preferences
       author: adam@skylight.digital

@@ -191,7 +191,7 @@ type User {
 type PatientLink {
   internalId: ID
   createdAt: DateTime
-  refreshedAt: DateTime
+  expiresAt: DateTime
   testOrder: TestOrder
 }
 
@@ -444,6 +444,5 @@ type Mutation {
     loincCode: String
     swabType: String
   ): DeviceType
-  refreshPatientLink(internalId: String!): PatientLink
   sendPatientLinkSms(internalId: String!): String
 }
