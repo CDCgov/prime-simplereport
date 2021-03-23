@@ -27,11 +27,7 @@ import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
-export enum TestResult {
-  POSITIVE = "POSITIVE",
-  NEGATIVE = "NEGATIVE",
-  UNDETERMINED = "UNDETERMINED",
-}
+export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 
@@ -107,7 +103,6 @@ const UPDATE_AOE = gql`
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
-    $testResultDelivery: TestResultDeliveryPreference
   ) {
     updateTimeOfTestQuestions(
       patientId: $patientId
@@ -119,7 +114,6 @@ const UPDATE_AOE = gql`
       priorTestType: $priorTestType
       priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
-      testResultDelivery: $testResultDelivery
     )
   }
 `;

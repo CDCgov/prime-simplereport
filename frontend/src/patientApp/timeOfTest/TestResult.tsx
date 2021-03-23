@@ -4,12 +4,7 @@ import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
 import { Patient } from "../../app/patients/ManagePatients";
 import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
-
-const testResultDisplayValue: { [key in TestResultType]: string } = {
-  [TestResultType.POSITIVE]: "Positive",
-  [TestResultType.NEGATIVE]: "Negative",
-  [TestResultType.UNDETERMINED]: "Inconclusive",
-};
+import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../app/constants";
 
 const TestResult = () => {
   const patient = useSelector<RootState, Patient>((state) => state.patient);
@@ -28,7 +23,7 @@ const TestResult = () => {
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
               <p className="margin-top-05">
-                {testResultDisplayValue[patient.lastTest.result]}
+                {TEST_RESULT_DESCRIPTIONS[patient.lastTest.result]}
               </p>
             </div>
             <div className="grid-col usa-prose">
@@ -59,7 +54,7 @@ interface TestResultNotesProps {
 
 const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
   switch (props.result) {
-    case TestResultType.POSITIVE:
+    case COVID_RESULTS.POSITIVE:
       return (
         <>
           <p>Please self-isolate at home. You can be around others after:</p>
@@ -90,7 +85,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
           </p>
         </>
       );
-    case TestResultType.NEGATIVE:
+    case COVID_RESULTS.NEGATIVE:
       return (
         <>
           <p>

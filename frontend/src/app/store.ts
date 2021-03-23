@@ -1,6 +1,6 @@
 import { createStore } from "redux";
 
-import { TestResult as TestResultType } from "../app/testQueue/QueueItem";
+import { COVID_RESULTS } from "../app/constants";
 
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
@@ -40,7 +40,7 @@ const initialState = {
     role: "",
     lastTest: {
       dateAdded: "",
-      result: TestResultType.UNDETERMINED,
+      result: COVID_RESULTS.INCONCLUSIVE,
       dateTested: "",
       deviceTypeModel: "",
     },
