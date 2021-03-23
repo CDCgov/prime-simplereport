@@ -10,36 +10,36 @@ locals {
   --username ${var.administrator_login} \
   --dbname "${var.postgres_db_name}" \
   --command "
-    CREATE ROLE ${var.postgres_readonly_user} with LOGIN ENCRYPTED PASSWORD
-    '${var.postgres_readonly_pass}';
-    GRANT USAGE ON SCHEMA public TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE facility_device_type TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE device_type TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE organization TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE patient_answers TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE facility TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE patient_link TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE data_hub_upload TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE time_of_consent TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE specimen_type TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE device_specimen_type TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE facility_device_specimen_type TO ${var.postgres_readonly_user};
-    GRANT SELECT ON TABLE test_order TO ${var.postgres_readonly_user};
+    CREATE ROLE ${data.azurerm_key_vault_secret.postgres_readonly_user.value} with LOGIN ENCRYPTED PASSWORD
+    '${data.azurerm_key_vault_secret.postgres_readonly_pass.value}';
+    GRANT USAGE ON SCHEMA public TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility_device_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE device_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE organization TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE patient_answers TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE patient_link TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE data_hub_upload TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE time_of_consent TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE device_specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility_device_specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE test_order TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
 
     GRANT SELECT (internal_id, created_at, updated_at, last_seen, is_deleted) ON TABLE api_user
-    TO ${var.postgres_readonly_user};
+    TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
     
     GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id)
-    ON TABLE provider TO ${var.postgres_readonly_user};
+    ON TABLE provider TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
                 
     GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, employed_in_healthcare,
     resident_congregate_setting, facility_id, race, gender, ethnicity, lookup_id, role)
-    ON TABLE person TO ${var.postgres_readonly_user};
+    ON TABLE person TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
                 
     GRANT SELECT (device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, 
     device_type_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, 
     prior_corrected_test_event_id, internal_id, reason_for_correction)
-    ON TABLE test_event TO ${var.postgres_readonly_user};
+    ON TABLE test_event TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
   "
   EOF
 }
@@ -78,8 +78,8 @@ resource "azurerm_app_service" "metabase-readonly" {
     }
 
     app_settings = {
-        "MB_DB_USER"                     = var.postgres_readonly_user
-        "MB_DB_PASS"                     = var.postgres_readonly_pass
+        "MB_DB_USER"                     = data.azurerm_key_vault_secret.postgres_readonly_user.value
+        "MB_DB_PASS"                     = data.azurerm_key_vault_secret.postgres_readonly_pass.value
         "MB_DB_NAME"                     = var.postgres_db_name
         "MB_DB_TYPE"                     = "postgres"
         "MB_DB_HOST"                     = var.postgres_server_name

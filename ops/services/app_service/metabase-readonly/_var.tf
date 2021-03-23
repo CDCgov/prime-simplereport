@@ -45,16 +45,6 @@ variable "postgres_server_name" {
   description = "PostgreSQL Server name"
 }
 
-variable "postgres_readonly_user" {
-  type        = string
-  description = "PostgreSQL Database readonly user"
-}
-
-variable "postgres_readonly_pass" {
-  type        = string
-  description = "PostgreSQL Database readonly password"
-}
-
 variable "postgres_port" {
   type        = string
   description = "PostgreSQL database port"

@@ -13,8 +13,6 @@ module "metabase-readonly" {
     tenant_id               = data.azurerm_client_config.current.tenant_id
 
     postgres_server_name    = data.terraform_remote_state.persistent_prod.outputs.postgres_server_name
-    postgres_readonly_user  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.postgres_readonly_user.id})"
-    postgres_readonly_pass  = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.postgres_readonly_pass.id})"
     postgres_port           = 5432
     postgres_db_name        = "simple_report"
 }
