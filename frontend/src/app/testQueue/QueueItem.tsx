@@ -27,7 +27,11 @@ import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+export enum TestResult {
+  POSITIVE = "POSITIVE",
+  NEGATIVE = "NEGATIVE",
+  UNDETERMINED = "UNDETERMINED",
+}
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 

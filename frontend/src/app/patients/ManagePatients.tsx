@@ -21,6 +21,7 @@ import { useDebounce } from "../testQueue/addToQueue/useDebounce";
 import { SEARCH_DEBOUNCE_TIME } from "../testQueue/constants";
 import Button from "../commonComponents/Button";
 import SearchInput from "../testQueue/addToQueue/SearchInput";
+import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 
 import PatientUpload from "./PatientUpload";
 import ArchivePersonModal from "./ArchivePersonModal";
@@ -80,9 +81,9 @@ export interface Patient {
   role: string;
   lastTest: {
     dateAdded: string;
-    result: string;
+    result: TestResultType;
     dateTested: string;
-    deviceType: string;
+    deviceTypeModel: string;
   };
 }
 

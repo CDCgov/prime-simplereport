@@ -1,5 +1,7 @@
 import { createStore } from "redux";
 
+import { TestResult as TestResultType } from "../app/testQueue/QueueItem";
+
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 const UPDATE_FACILITY = "UPDATE_FACILITY";
@@ -38,9 +40,9 @@ const initialState = {
     role: "",
     lastTest: {
       dateAdded: "",
-      result: "",
+      result: TestResultType.UNDETERMINED,
       dateTested: "",
-      deviceType: "",
+      deviceTypeModel: "",
     },
   },
 };

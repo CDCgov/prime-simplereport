@@ -1,4 +1,3 @@
-import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Router } from "react-router-dom";
@@ -26,9 +25,7 @@ describe("TestResult", () => {
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
         <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <TestResult />
-          </MockedProvider>
+          <TestResult />
         </Provider>
       </Router>
     );
@@ -55,9 +52,7 @@ describe("TestResult", () => {
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
         <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <TestResult />
-          </MockedProvider>
+          <TestResult />
         </Provider>
       </Router>
     );
@@ -84,9 +79,7 @@ describe("TestResult", () => {
     const { container, getByText } = render(
       <Router history={createMemoryHistory()}>
         <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <TestResult />
-          </MockedProvider>
+          <TestResult />
         </Provider>
       </Router>
     );

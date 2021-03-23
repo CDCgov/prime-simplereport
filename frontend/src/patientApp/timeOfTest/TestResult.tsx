@@ -3,24 +3,19 @@ import { connect, useSelector } from "react-redux";
 import { formatFullName } from "../../app/utils/user";
 import { RootState } from "../../app/store";
 import { Patient } from "../../app/patients/ManagePatients";
+import { TestResult as TestResultType } from "../../app/testQueue/QueueItem";
 
-const serializeResult = (result: string) => {
-  switch (result) {
-    case "POSITIVE":
-      return "Positive";
-    case "NEGATIVE":
-      return "Negative";
-    default:
-      return "Inconclusive";
-  }
+const testResultDisplayValue: { [key in TestResultType]: string } = {
+  [TestResultType.POSITIVE]: "Positive",
+  [TestResultType.NEGATIVE]: "Negative",
+  [TestResultType.UNDETERMINED]: "Inconclusive",
 };
 
 const TestResult = () => {
   const patient = useSelector<RootState, Patient>((state) => state.patient);
   const fullName = formatFullName(patient as any);
   const dateTested = new Date(patient.lastTest.dateTested).toLocaleDateString();
-  const deviceType = patient.lastTest.deviceType;
-  const result = serializeResult(patient.lastTest.result);
+  const deviceType = patient.lastTest.deviceTypeModel;
 
   return (
     <main className="patient-app padding-top-105 padding-bottom-4 bg-base-lightest">
@@ -32,7 +27,9 @@ const TestResult = () => {
           <div className="grid-row">
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test result</h2>
-              <p className="margin-top-05">{result}</p>
+              <p className="margin-top-05">
+                {testResultDisplayValue[patient.lastTest.result]}
+              </p>
             </div>
             <div className="grid-col usa-prose">
               <h2 className="font-heading-sm">Test date</h2>
@@ -42,7 +39,7 @@ const TestResult = () => {
           <h2 className="font-heading-sm">Test device</h2>
           <p className="margin-top-05">{deviceType}</p>
           <h2 className="font-heading-sm">Notes</h2>
-          <TestResultNotes result={result} />
+          <TestResultNotes result={patient.lastTest.result} />
           <p>
             For further guidance, please consult the{" "}
             <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
@@ -57,12 +54,12 @@ const TestResult = () => {
 };
 
 interface TestResultNotesProps {
-  result: string;
+  result: TestResultType;
 }
 
 const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
   switch (props.result) {
-    case "Positive":
+    case TestResultType.POSITIVE:
       return (
         <>
           <p>Please self-isolate at home. You can be around others after:</p>
@@ -93,7 +90,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
           </p>
         </>
       );
-    case "Negative":
+    case TestResultType.NEGATIVE:
       return (
         <>
           <p>
@@ -131,4 +128,4 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
   }
 };
 
-export default connect()(TestResult);
+export default TestResult;
