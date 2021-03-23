@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import java.security.Principal;
-import java.util.Objects;
 
 /** A principal asserting that the bearer subject is a SimpleReport site administrator. */
 public final class SiteAdminPrincipal implements Principal {
