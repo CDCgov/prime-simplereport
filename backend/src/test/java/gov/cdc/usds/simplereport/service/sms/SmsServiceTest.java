@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service.sms;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -14,11 +15,13 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.service.BaseServiceTest;
 import gov.cdc.usds.simplereport.service.OrganizationService;
+import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.test_util.DbTruncator;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportStandardUser;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
+import java.util.Date;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -33,6 +36,8 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
   @Autowired DbTruncator _truncator;
 
   @Autowired SmsService _smsService;
+
+  @Autowired PatientLinkService _patientLinkService;
 
   @Autowired OrganizationService _organizationService;
 
@@ -111,5 +116,22 @@ class SmsServiceTest extends BaseServiceTest<SmsService> {
           _smsService.sendToPatientLink(
               _patientLink.getInternalId(), "yup here we are, testing stuff");
         });
+  }
+
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
+  void sendPatientLinkSmsUpdatesPatientLinkExpiry() throws NumberParseException {
+    // GIVEN
+    _person = _dataFactory.createFullPerson(_org);
+    createTestOrderAndPatientLink(_person);
+    Date previousExpiry = _patientLink.getExpiresAt();
+
+    // WHEN
+    _smsService.sendToPatientLink(_patientLink.getInternalId(), "ding, it's a text");
+    PatientLink updatedPatientLink =
+        _patientLinkService.getPatientLink(_patientLink.getInternalId());
+
+    // THEN
+    assertTrue(previousExpiry.before(updatedPatientLink.getExpiresAt()));
   }
 }

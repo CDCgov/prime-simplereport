@@ -41,7 +41,7 @@ public class SmsService {
   @AuthorizationConfiguration.RequirePermissionStartTestWithPatientLink
   @Transactional
   public String sendToPatientLink(UUID patientLinkId, String text) throws NumberParseException {
-    PatientLink pl = pls.getPatientLink(patientLinkId);
+    PatientLink pl = pls.getRefreshedPatientLink(patientLinkId);
     return sendToPerson(pl.getTestOrder().getPatient(), text);
   }
 
