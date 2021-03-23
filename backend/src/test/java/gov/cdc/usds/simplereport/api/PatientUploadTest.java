@@ -19,12 +19,12 @@ public class PatientUploadTest extends BaseApiTest {
 
   @Test
   void uploadPatientCSV() throws Exception {
-    useSuperUser();
+    useSuperUserWithOrg();
     JsonNode response = uploadPatients();
     assertEquals(
         "\"Successfully uploaded 1 record(s)\"", response.get("uploadPatients").toString());
     assertLastAuditEntry(
-        TestUserIdentities.SITE_ADMIN_USER,
+        TestUserIdentities.SITE_ADMIN_USER_WITH_ORG,
         "UploadPatients",
         EnumSet.allOf(UserPermission.class),
         null);

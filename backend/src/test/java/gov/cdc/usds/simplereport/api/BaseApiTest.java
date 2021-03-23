@@ -106,6 +106,10 @@ public abstract class BaseApiTest {
     _userName = TestUserIdentities.SITE_ADMIN_USER;
   }
 
+  protected void useSuperUserWithOrg() {
+    _userName = TestUserIdentities.SITE_ADMIN_USER_WITH_ORG;
+  }
+
   protected void useBrokenUser() {
     _userName = TestUserIdentities.BROKEN_USER;
   }

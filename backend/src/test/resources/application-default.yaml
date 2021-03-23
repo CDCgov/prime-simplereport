@@ -42,6 +42,7 @@ simple-report:
     account-request-recipient: support@simplereport.gov
   site-admin-emails:
     - ruby@example.com
+    - notruby@example.com
   demo-users:
     # These users are mapped to constants in TestUserIdentities. Do not modify casually!
     alternate-users:
@@ -81,6 +82,11 @@ simple-report:
           granted-roles: NO_ACCESS, USER, ALL_FACILITIES
       - identity: #SITE_ADMIN_USER
           username: ruby@example.com
+          first-name: Ruby
+          middle-name: Raven
+          last-name: Reynolds
+      - identity: #SITE_ADMIN_USER_WITH_ORG
+          username: notruby@example.com
           first-name: Ruby
           middle-name: Raven
           last-name: Reynolds
