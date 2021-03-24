@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.db.model.auxiliary;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import java.util.Map;
 
 /**
@@ -13,6 +14,8 @@ public class GraphQlInputs {
 
   private final String operationName;
   private final String query;
+
+  @JsonSerialize(using = RequestVariablesSerializer.class)
   private final Map<String, Object> variables;
 
   @JsonCreator

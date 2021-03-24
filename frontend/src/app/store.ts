@@ -1,5 +1,7 @@
 import { createStore } from "redux";
 
+import { COVID_RESULTS } from "../app/constants";
+
 const SET_INITIAL_STATE = "SET_INITIAL_STATE";
 const UPDATE_ORGANIZATION = "UPDATE_ORGANIZATION";
 const UPDATE_FACILITY = "UPDATE_FACILITY";
@@ -27,6 +29,21 @@ const initialState = {
     permissions: [],
     roleDescription: "",
     isAdmin: false,
+  },
+  patient: {
+    internalId: "",
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    birthDate: "",
+    isDeleted: false,
+    role: "",
+    lastTest: {
+      dateAdded: "",
+      result: COVID_RESULTS.INCONCLUSIVE,
+      dateTested: "",
+      deviceTypeModel: "",
+    },
   },
 };
 

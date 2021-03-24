@@ -7,7 +7,7 @@ function addPatient(dobFormat) {
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   const fullName = `${lastName}, ${firstName}`;
-  const dob = dayjs(faker.date.past(100));
+  const dob = dayjs(faker.date.between("1920-01-01", "2002-12-31"));
   const dobForInput = dob.format(dobFormat);
   const dobForPatientLink = dob.format("MM/DD/YYYY");
   const phone = faker.phone.phoneNumberFormat(0);

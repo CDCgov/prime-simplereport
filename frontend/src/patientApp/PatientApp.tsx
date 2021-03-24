@@ -18,6 +18,7 @@ import AoEPatientFormContainer from "./timeOfTest/AoEPatientFormContainer";
 import PatientLanding from "./timeOfTest/PatientLanding";
 import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientFormContainer from "./timeOfTest/PatientFormContainer";
+import TestResult from "./timeOfTest/TestResult";
 import Patient404 from "./timeOfTest/Patient404";
 
 interface WrapperProps {
@@ -104,6 +105,7 @@ const PatientApp = () => {
                     )}
                   />
                   <Route path="/success" component={PatientLanding} />
+                  <Route path="/test-result" component={TestResult} />
                 </Switch>
               </Router>
               <ToastContainer

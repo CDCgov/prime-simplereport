@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -15,6 +16,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.annotations.Type;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -63,6 +65,11 @@ public class Person extends OrganizationScopedEternalEntity {
 
   @Column(nullable = false)
   private boolean residentCongregateSetting;
+
+  @Column
+  @Type(type = "pg_enum")
+  @Enumerated(EnumType.STRING)
+  private TestResultDeliveryPreference testResultDelivery;
 
   protected Person() {
     /* for hibernate */
@@ -273,5 +280,13 @@ public class Person extends OrganizationScopedEternalEntity {
     public static final String LAST_NAME = "lastName";
 
     private SpecField() {} // sonarcloud codesmell
+  }
+
+  public TestResultDeliveryPreference getTestResultDelivery() {
+    return testResultDelivery;
+  }
+
+  public void setTestResultDelivery(TestResultDeliveryPreference testResultDelivery) {
+    this.testResultDelivery = testResultDelivery;
   }
 }
