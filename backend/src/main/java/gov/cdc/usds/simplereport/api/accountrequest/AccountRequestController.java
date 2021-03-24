@@ -37,7 +37,7 @@ public class AccountRequestController {
     String subject = "New waitlist request";
     String content = body.generateEmailBody();
 
-    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
+    emailService.send(sendGridProperties.getWaitlistRecipient(), subject, content);
   }
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("")
