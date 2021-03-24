@@ -23,10 +23,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 class="sr-showing-results-on-page"
               >
                 Showing 
-                2
+                3
                  of
                  
-                2
+                3
               </span>
             </h2>
           </div>
@@ -92,6 +92,9 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
+                    No
+                  </td>
+                  <td>
                     Arthur A Admin
                   </td>
                   <td>
@@ -147,7 +150,68 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
+                    Unknown
+                  </td>
+                  <td>
                     Ursula User
+                  </td>
+                  <td>
+                    <button
+                      aria-expanded="false"
+                      aria-haspopup="true"
+                      class="rc-menu-button sr-actions-menu"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="svg-inline--fa fa-ellipsis-h fa-w-16 fa-2x "
+                        data-icon="ellipsis-h"
+                        data-prefix="fas"
+                        focusable="false"
+                        role="img"
+                        viewBox="0 0 512 512"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M328 256c0 39.8-32.2 72-72 72s-72-32.2-72-72 32.2-72 72-72 72 32.2 72 72zm104-72c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72zm-352 0c-39.8 0-72 32.2-72 72s32.2 72 72 72 72-32.2 72-72-32.2-72-72-72z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                      <span
+                        class="usa-sr-only"
+                      >
+                        More actions
+                      </span>
+                    </button>
+                    <div
+                      class="rc-menu-container"
+                      role="presentation"
+                    />
+                  </td>
+                </tr>
+                <tr
+                  class="sr-test-result-row"
+                  data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
+                  title=""
+                >
+                  <th
+                    scope="row"
+                  >
+                    Gerard, Sam G
+                  </th>
+                  <td>
+                    Mar 17, 2021 7:27 PM
+                  </td>
+                  <td>
+                    NEGATIVE
+                  </td>
+                  <td>
+                    Abbott IDNow
+                  </td>
+                  <td>
+                    Yes
+                  </td>
+                  <td>
+                    Ethan Entry
                   </td>
                   <td>
                     <button
