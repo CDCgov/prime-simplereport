@@ -61,6 +61,7 @@ export const queueQuery = gql`
         middleName
         lastName
         gender
+        testResultDelivery
       }
       result
       dateTested

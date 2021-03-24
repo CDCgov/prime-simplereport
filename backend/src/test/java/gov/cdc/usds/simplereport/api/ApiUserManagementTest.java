@@ -196,7 +196,7 @@ class ApiUserManagementTest extends BaseApiTest {
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
             Role.USER.name());
-    runQuery("add-user", variables, ACCESS_ERROR);
+    runQuery("add-user", variables, "Current user does not have permission to request [/addUser]");
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "addUserOp",
@@ -279,7 +279,10 @@ class ApiUserManagementTest extends BaseApiTest {
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
             Role.USER.name());
-    runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
+    runQuery(
+        "add-user-to-current-org",
+        variables,
+        "Current user does not have permission to request [/addUserToCurrentOrg]");
   }
 
   @Test
@@ -370,7 +373,10 @@ class ApiUserManagementTest extends BaseApiTest {
     useOrgUser();
 
     ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
-    runQuery("update-user", updateVariables, ACCESS_ERROR);
+    runQuery(
+        "update-user",
+        updateVariables,
+        "Current user does not have permission to request [/updateUser]");
   }
 
   @Test
@@ -495,7 +501,10 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode updateRoleVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
-    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
+    runQuery(
+        "update-user-role",
+        updateRoleVariables,
+        "Current user does not have permission to request [/updateUserRole]");
   }
 
   @Test
@@ -521,7 +530,10 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode updateRoleVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
 
-    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
+    runQuery(
+        "update-user-role",
+        updateRoleVariables,
+        "Current user does not have permission to request [/updateUserRole]");
   }
 
   @Test
@@ -758,7 +770,10 @@ class ApiUserManagementTest extends BaseApiTest {
     ObjectNode updatePrivilegesVariables =
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
-    runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
+    runQuery(
+        "update-user-privileges",
+        updatePrivilegesVariables,
+        "Current user does not have permission to request [/updateUserPrivileges]");
   }
 
   @Test
@@ -884,7 +899,10 @@ class ApiUserManagementTest extends BaseApiTest {
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
-    runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
+    runQuery(
+        "set-user-is-deleted",
+        deleteVariables,
+        "Current user does not have permission to request [/setUserIsDeleted]");
   }
 
   @Test
@@ -909,7 +927,10 @@ class ApiUserManagementTest extends BaseApiTest {
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
-    runQuery("set-user-is-deleted", deleteVariables, ACCESS_ERROR);
+    runQuery(
+        "set-user-is-deleted",
+        deleteVariables,
+        "Current user does not have permission to request [/setUserIsDeleted]");
   }
 
   @Test
@@ -983,7 +1004,7 @@ class ApiUserManagementTest extends BaseApiTest {
 
   @Test
   void getUsers_orgUser_failure() {
-    runQuery("users-query", ACCESS_ERROR);
+    runQuery("users-query", "Current user does not have permission to request [/users]");
   }
 
   private List<ObjectNode> toList(ArrayNode arr) {

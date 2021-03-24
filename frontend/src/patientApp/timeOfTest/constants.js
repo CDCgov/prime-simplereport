@@ -46,3 +46,8 @@ export const getTimeOfTestSteps = () => [
     order: 1,
   },
 ];
+
+export const getTestResultDeliveryPreferences = () => [
+  { label: "Text message", value: "SMS" },
+  { label: "None", value: "NONE" },
+];
