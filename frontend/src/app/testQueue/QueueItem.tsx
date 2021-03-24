@@ -482,7 +482,6 @@ const QueueItem: any = ({
     </button>
   );
 
-  // the problem: this switches from being a label to a legend, they have different styling
   const testDateFields =
     useCurrentDateTime === "false" ? (
       <li className="prime-li">
@@ -515,7 +514,10 @@ const QueueItem: any = ({
           {closeButton}
           <div className="grid-row">
             <div className="tablet:grid-col-9">
-              <div className="grid-row prime-test-name usa-card__header" id="patient-name-header">
+              <div
+                className="grid-row prime-test-name usa-card__header"
+                id="patient-name-header"
+              >
                 <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
@@ -581,7 +583,6 @@ const QueueItem: any = ({
                           useCurrentDateTime === "false"
                             ? "testdate-checkbox"
                             : ""
-                            
                         }
                         legend={
                           useCurrentDateTime === "true" ? "Test date" : null
@@ -657,6 +658,3 @@ QueueItem.propTypes = {
   devices: PropTypes.arrayOf(devicePropType),
 };
 export default QueueItem;
-
-
-// might just be able to turn off display-block for the legend and have it work
