@@ -42,7 +42,7 @@ public class TestOrder extends BaseTestInfo {
   @JoinFormula(
       "("
           + "SELECT pl.internal_id "
-          + "FROM simple_report.patient_link pl "
+          + "FROM {h-schema}patient_link pl "
           + "WHERE pl.test_order_id = internal_id "
           + "ORDER BY pl.created_at DESC "
           + "LIMIT 1"
