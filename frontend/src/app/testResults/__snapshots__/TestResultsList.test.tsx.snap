@@ -62,11 +62,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Symptoms
-                  </th>
-                  <th
-                    scope="col"
-                  >
                     Actions
                   </th>
                 </tr>
@@ -90,9 +85,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
-                  </td>
-                  <td>
-                    No
                   </td>
                   <td>
                     <button
@@ -145,9 +137,6 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
-                  </td>
-                  <td>
-                    Yes
                   </td>
                   <td>
                     <button
