@@ -60,7 +60,6 @@ const testResults = [
         lastName: "Admin",
       },
     },
-    noSymptoms: true,
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
@@ -93,7 +92,6 @@ const testResults = [
         lastName: "User",
       },
     },
-    noSymptoms: false,
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
