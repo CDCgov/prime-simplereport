@@ -16,6 +16,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.annotations.Type;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -65,6 +66,8 @@ public class Person extends OrganizationScopedEternalEntity {
   @Column(nullable = false)
   private boolean residentCongregateSetting;
 
+  @Column
+  @Type(type = "pg_enum")
   @Enumerated(EnumType.STRING)
   private TestResultDeliveryPreference testResultDelivery;
 

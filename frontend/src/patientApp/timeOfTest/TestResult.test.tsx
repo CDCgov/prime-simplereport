@@ -16,7 +16,7 @@ describe("TestResult", () => {
         firstName: "Bob",
         lastName: "Barker",
         lastTest: {
-          deviceType: "Testing device",
+          deviceTypeModel: "Testing device",
           dateTested: "08/27/2020",
           result: "POSITIVE",
         },

@@ -1613,10 +1613,24 @@ databaseChangeLog:
       author: adam@skylight.digital
       comment: Add column to Person for test result delivery preferences
       changes:
+        - sql:
+            remarks: Create an enum for test result delivery
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY as ENUM('SMS', 'NONE');
         - addColumn:
             tableName: person
             columns:
               - column:
                   name: test_result_delivery
-                  type: *string
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
                   remarks: Tracks the individual's preference for receiving test results
+      rollback:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery
+        - sql:
+            remarks: Drop enum for test result delivery
+            sql: |
+              DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY;
