@@ -100,6 +100,7 @@ exports[`TestQueue should render the test queue 1`] = `
             >
               <div
                 class="grid-row prime-test-name usa-card__header"
+                id="patient-name-header"
               >
                 <h2>
                   Doe, John A
@@ -180,7 +181,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <ul
-                    class="prime-ul"
+                    class="prime-ul patient-information-ul"
                   >
                     <li
                       class="prime-li"
@@ -399,6 +400,7 @@ exports[`TestQueue should render the test queue 1`] = `
             >
               <div
                 class="grid-row prime-test-name usa-card__header"
+                id="patient-name-header"
               >
                 <h2>
                   Smith, Jane
@@ -479,7 +481,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <ul
-                    class="prime-ul"
+                    class="prime-ul patient-information-ul"
                   >
                     <li
                       class="prime-li"
