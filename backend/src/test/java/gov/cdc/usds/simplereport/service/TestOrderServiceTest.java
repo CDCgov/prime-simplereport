@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -16,6 +20,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.service.sms.SmsService;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyAllFacilitiesUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
@@ -33,6 +39,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.access.AccessDeniedException;
 
 @SuppressWarnings("checkstyle:MagicNumber")
@@ -41,6 +48,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   @Autowired private OrganizationService _organizationService;
   @Autowired private PersonService _personService;
   @Autowired private TestDataFactory _dataFactory;
+  @MockBean private SmsService _smsService;
 
   private static final PersonName AMOS = new PersonName("Amos", null, "Quint", null);
   private static final PersonName BRAD = new PersonName("Bradley", "Z.", "Jones", "Jr.");
@@ -65,7 +73,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void roundTrip() {
+  void roundTrip() throws NumberParseException {
     Facility facility =
         _dataFactory.createValidFacility(_organizationService.getCurrentOrganization());
     Person p =
@@ -225,7 +233,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void addTestResult_orgAdmin_ok() {
+  void addTestResult_orgAdmin_ok() throws NumberParseException {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -246,9 +254,12 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             false,
             false);
+    Person pWithSmsDelivery =
+        _personService.updateTestResultDeliveryPreference(
+            p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
         facility.getInternalId(),
-        p,
+        pWithSmsDelivery,
         "",
         Collections.<String, Boolean>emptyMap(),
         false,
@@ -262,13 +273,15 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
     _service.addTestResult(
         devA.getInternalId().toString(), TestResult.POSITIVE, p.getInternalId(), null);
 
+    verify(_smsService).sendToPatientLink(any(UUID.class), anyString());
+
     List<TestOrder> queue = _service.getQueue(facility.getInternalId());
     assertEquals(0, queue.size());
   }
 
   @Test
   @WithSimpleReportStandardAllFacilitiesUser
-  void addTestResult_standardUserAllFacilities_ok() {
+  void addTestResult_standardUserAllFacilities_ok() throws NumberParseException {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p =
@@ -311,7 +324,7 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
 
   @Test
   @WithSimpleReportStandardUser
-  void addTestResult_standardUser_successDependsOnFacilityAccess() {
+  void addTestResult_standardUser_successDependsOnFacilityAccess() throws NumberParseException {
     Facility facility1 =
         _dataFactory.createValidFacility(
             _organizationService.getCurrentOrganization(), "First One");

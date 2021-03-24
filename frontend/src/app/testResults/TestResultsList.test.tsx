@@ -53,6 +53,9 @@ const testResults = [
       lookupId: null,
       __typename: "Patient",
     },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
     __typename: "TestResult",
   },
   {
@@ -74,6 +77,9 @@ const testResults = [
       gender: "female",
       lookupId: null,
       __typename: "Patient",
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
     __typename: "TestResult",
   },

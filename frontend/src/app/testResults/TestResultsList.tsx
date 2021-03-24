@@ -11,6 +11,7 @@ import {
   QueryWrapper,
 } from "../commonComponents/QueryWrapper";
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
+import { getUrl } from "../utils/url";
 import Pagination from "../commonComponents/Pagination";
 
 import TestResultPrintModal from "./TestResultPrintModal";
@@ -41,6 +42,9 @@ export const testResultQuery = gql`
         birthDate
         gender
         lookupId
+      }
+      patientLink {
+        internalId
       }
     }
   }
@@ -123,6 +127,11 @@ export const DetachedTestResultsList: any = ({
             "sr-test-result-row",
             removed && "sr-test-result-row--removed"
           )}
+          data-patient-link={
+            r.patientLink
+              ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
+              : null
+          }
         >
           <th scope="row">
             {displayFullName(
