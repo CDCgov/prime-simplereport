@@ -19,6 +19,16 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
 
+function symptomsDisplay(noSymptoms: boolean | null) {
+  if (noSymptoms === true) {
+    return "No";
+  }
+  if (noSymptoms === false) {
+    return "Yes";
+  }
+  return "Unknown";
+}
+
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
     testResults(
@@ -43,6 +53,7 @@ export const testResultQuery = gql`
         gender
         lookupId
       }
+      noSymptoms
       patientLink {
         internalId
       }
@@ -143,6 +154,7 @@ export const DetachedTestResultsList: any = ({
           <td>{moment(r.dateTested).format("lll")}</td>
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
+          <td>{symptomsDisplay(r.noSymptoms)}</td>
           <td>
             <ActionsMenu items={actionItems} />
           </td>
@@ -173,6 +185,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Symptoms</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
