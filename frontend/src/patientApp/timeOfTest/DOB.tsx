@@ -77,8 +77,17 @@ const DOB = () => {
       </main>
     );
   }
-
-  if (patient) {
+  if (patient?.orderStatus === "COMPLETED") {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/test-result",
+          search: `?plid=${plid}`,
+        }}
+      />
+    );
+  } else if (patient?.firstName) {
     return (
       <Redirect
         push

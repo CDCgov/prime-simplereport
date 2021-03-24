@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import classnames from "classnames";
+import moment from "moment";
 
 import {
   globalSymptomDefinitions,
   getTestTypes,
   getPregnancyResponses,
+  getTestResultDeliveryPreferences,
 } from "../../../patientApp/timeOfTest/constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Button from "../../commonComponents/Button";
@@ -28,6 +30,8 @@ interface Props {
   patient: {
     internalId: string;
     gender: string;
+    testResultDelivery: string;
+    birthDate: string;
   };
   lastTest:
     | {
@@ -54,6 +58,7 @@ interface Props {
     priorTestType: string | undefined | null;
     firstTest: boolean;
     pregnancy: string | undefined;
+    testResultDelivery: string;
   }) => void;
   isModal: boolean;
   noValidation: boolean;
@@ -107,6 +112,11 @@ const AoEForm: React.FC<Props> = ({
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
+  const [testResultDelivery, setTestResultDelivery] = useState(
+    patient.testResultDelivery
+  );
+
+  const patientIsOver18 = moment().diff(patient.birthDate, "years") >= 18;
 
   // form validation
   const [symptomError, setSymptomError] = useState<string | undefined>();
@@ -183,6 +193,7 @@ const AoEForm: React.FC<Props> = ({
         symptomOnset: onsetDate,
         ...priorTest,
         pregnancy: pregnancyResponse,
+        testResultDelivery,
       });
       if (isModal && onClose) {
         onClose();
@@ -223,6 +234,17 @@ const AoEForm: React.FC<Props> = ({
           <div className="margin-top-4 border-top border-base-lighter" />
         )}
         <RequiredMessage />
+        {patientIsOver18 && (
+          <FormGroup title="Results">
+            <RadioGroup
+              legend="How would you like to receive a copy of your results?"
+              name="testResultDelivery"
+              onChange={setTestResultDelivery}
+              buttons={getTestResultDeliveryPreferences()}
+              selectedRadio={testResultDelivery}
+            />
+          </FormGroup>
+        )}
         <FormGroup title="Symptoms">
           <SymptomInputs
             noSymptoms={noSymptoms}
@@ -238,7 +260,7 @@ const AoEForm: React.FC<Props> = ({
           />
         </FormGroup>
 
-        <FormGroup title="Test History">
+        <FormGroup title="Test history">
           <div className="prime-formgroup__wrapper">
             <PriorTestInputs
               testTypeConfig={testConfig}
@@ -255,7 +277,7 @@ const AoEForm: React.FC<Props> = ({
           </div>
         </FormGroup>
 
-        {patient.gender !== "male" && (
+        {patient.gender?.toLowerCase() !== "male" && (
           <FormGroup title="Pregnancy">
             <RadioGroup
               legend="Currently pregnant?"

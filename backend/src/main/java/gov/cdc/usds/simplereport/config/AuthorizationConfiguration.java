@@ -69,9 +69,6 @@ public class AuthorizationConfiguration {
   private static final String SPEL_HAS_PERMISSION_SUBMIT_TEST =
       SPEL_HAS_PERMISSION + "SUBMIT_TEST" + ")";
 
-  private static final String SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT =
-      SPEL_HAS_PERMISSION + "EXPORT_TEST_EVENT" + ")";
-
   private static final String SPEL_HAS_PERMISSION_ACCESS_ALL_FACILITIES =
       SPEL_HAS_PERMISSION + "ACCESS_ALL_FACILITIES" + ")";
 
@@ -406,10 +403,4 @@ public class AuthorizationConfiguration {
           + " && "
           + SPEL_CAN_VIEW_TEST_ORDER_OF_PATIENT)
   public @interface RequirePermissionSubmitTestForPatient {}
-
-  /** Require the current user to have the {@link UserPermission#EXPORT_TEST_EVENT} permission. */
-  @Retention(RUNTIME)
-  @Target(METHOD)
-  @PreAuthorize(SPEL_IS_VALID + " && " + SPEL_HAS_PERMISSION_EXPORT_TEST_EVENT)
-  public @interface RequirePermissionExportTestEvent {}
 }

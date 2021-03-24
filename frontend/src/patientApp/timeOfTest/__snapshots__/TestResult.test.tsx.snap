@@ -1,0 +1,343 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TestResult should show a negative result 1`] = `
+<div>
+  <main
+    class="patient-app padding-top-105 padding-bottom-4 bg-base-lightest"
+  >
+    <div
+      class="grid-container maxw-tablet"
+    >
+      <div
+        class="card usa-prose"
+      >
+        <h1
+          class="font-heading-lg"
+        >
+          SARS-CoV-2 result
+        </h1>
+        <h2
+          class="font-heading-sm"
+        >
+          Patient
+        </h2>
+        <p
+          class="margin-top-05"
+        >
+          Bob Barker
+        </p>
+        <div
+          class="grid-row"
+        >
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test result
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              Negative
+            </p>
+          </div>
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test date
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              8/27/2020
+            </p>
+          </div>
+        </div>
+        <h2
+          class="font-heading-sm"
+        >
+          Test device
+        </h2>
+        <p
+          class="margin-top-05"
+        />
+        <h2
+          class="font-heading-sm"
+        >
+          Notes
+        </h2>
+        <p>
+          Antigen tests can return inaccurate or false results and follow up testing may be needed. Continue social distancing and wearing a mask. Contact your healthcare provider to determine if additional testing is needed especially if you experience any of these COVID-19 symptoms:
+        </p>
+        <ul>
+          <li>
+            Fever or chills
+          </li>
+          <li>
+            Cough
+          </li>
+          <li>
+            Shortness of breath or difficulty breathing
+          </li>
+          <li>
+            Fatigue
+          </li>
+          <li>
+            Muscle or body aches
+          </li>
+          <li>
+            Headache
+          </li>
+          <li>
+            New loss of taste or smell
+          </li>
+          <li>
+            Sore throat
+          </li>
+          <li>
+            Congestion or runny nose
+          </li>
+          <li>
+            Nausea or vomiting
+          </li>
+          <li>
+            Diarrhea
+          </li>
+        </ul>
+        <p>
+          For further guidance, please consult the
+           
+          <a
+            href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+          >
+            Centers for Disease Control and Prevention (CDC)
+          </a>
+           
+          website or contact your local health department.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+`;
+
+exports[`TestResult should show a positive result 1`] = `
+<div>
+  <main
+    class="patient-app padding-top-105 padding-bottom-4 bg-base-lightest"
+  >
+    <div
+      class="grid-container maxw-tablet"
+    >
+      <div
+        class="card usa-prose"
+      >
+        <h1
+          class="font-heading-lg"
+        >
+          SARS-CoV-2 result
+        </h1>
+        <h2
+          class="font-heading-sm"
+        >
+          Patient
+        </h2>
+        <p
+          class="margin-top-05"
+        >
+          Bob Barker
+        </p>
+        <div
+          class="grid-row"
+        >
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test result
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              Positive
+            </p>
+          </div>
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test date
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              8/27/2020
+            </p>
+          </div>
+        </div>
+        <h2
+          class="font-heading-sm"
+        >
+          Test device
+        </h2>
+        <p
+          class="margin-top-05"
+        >
+          Testing device
+        </p>
+        <h2
+          class="font-heading-sm"
+        >
+          Notes
+        </h2>
+        <p>
+          Please self-isolate at home. You can be around others after:
+        </p>
+        <ul>
+          <li>
+            10 days since symptoms first appeared 
+            <b>
+              and
+            </b>
+          </li>
+          <li>
+            24 hours with no fever without the use of fever-reducing medications 
+            <b>
+              and
+            </b>
+          </li>
+          <li>
+            Other symptoms of COVID-19 are improving*
+          </li>
+        </ul>
+        <p>
+          *Loss of taste and smell may persist for weeks or months after recovery and need not delay the end of isolation​
+        </p>
+        <p>
+          Most people do not require testing to decide when they can be around others; however, if your healthcare provider recommends testing, they will let you know when you can resume being around others based on your test results.
+        </p>
+        <p>
+          Note that these recommendations 
+          <b>
+            do not
+          </b>
+           apply to persons with severe COVID-19 or with severely weakened immune systems (immunocompromised).
+        </p>
+        <p>
+          For further guidance, please consult the
+           
+          <a
+            href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+          >
+            Centers for Disease Control and Prevention (CDC)
+          </a>
+           
+          website or contact your local health department.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+`;
+
+exports[`TestResult should show an inconclusive result 1`] = `
+<div>
+  <main
+    class="patient-app padding-top-105 padding-bottom-4 bg-base-lightest"
+  >
+    <div
+      class="grid-container maxw-tablet"
+    >
+      <div
+        class="card usa-prose"
+      >
+        <h1
+          class="font-heading-lg"
+        >
+          SARS-CoV-2 result
+        </h1>
+        <h2
+          class="font-heading-sm"
+        >
+          Patient
+        </h2>
+        <p
+          class="margin-top-05"
+        >
+          Bob Barker
+        </p>
+        <div
+          class="grid-row"
+        >
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test result
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              Inconclusive
+            </p>
+          </div>
+          <div
+            class="grid-col usa-prose"
+          >
+            <h2
+              class="font-heading-sm"
+            >
+              Test date
+            </h2>
+            <p
+              class="margin-top-05"
+            >
+              8/27/2020
+            </p>
+          </div>
+        </div>
+        <h2
+          class="font-heading-sm"
+        >
+          Test device
+        </h2>
+        <p
+          class="margin-top-05"
+        />
+        <h2
+          class="font-heading-sm"
+        >
+          Notes
+        </h2>
+        <p
+          class="display-none"
+        >
+          An inconclusive result is neither positive nor negative. This result can occur from inadequate sample collection, very early-stage infection, or for patients close to recovery. With an inconclusive result, collecting and testing another sample is recommended. Please make an appointment for another test as soon as possible.
+        </p>
+        <p>
+          For further guidance, please consult the
+           
+          <a
+            href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html"
+          >
+            Centers for Disease Control and Prevention (CDC)
+          </a>
+           
+          website or contact your local health department.
+        </p>
+      </div>
+    </div>
+  </main>
+</div>
+`;

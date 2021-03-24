@@ -23,6 +23,7 @@ public class TestUserIdentities {
   public static final String TEST_FACILITY_2 = "Injection Site";
 
   public static final String SITE_ADMIN_USER = "ruby@example.com";
+  public static final String SITE_ADMIN_USER_WITH_ORG = "notruby@example.com";
   public static final String STANDARD_USER = "bobbity@example.com";
   public static final String ENTRY_ONLY_USER = "nobody@example.com";
   public static final String ORG_ADMIN_USER = "admin@example.com";
