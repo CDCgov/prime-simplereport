@@ -42,18 +42,18 @@ export const TrainingNotification: React.FC = () => {
         contentLabel="SimpleReport training site"
         ariaHideApp={process.env.NODE_ENV !== "test"}
       >
-        <div className="sr-training-modal border-0 usa-card__container">
+        <div className="sr-training-modal margin-1">
           <div className="display-flex flex-align-start">
             <img
               src={logo}
               alt="SimpleReport logo"
               className="width-10 margin-right-3 margin-top-1"
             />
-            <div>
-              <h1 className="font-heading-lg margin-top-05">
+            <div className="usa-prose">
+              <h1 className="font-heading-xl text-normal">
                 Welcome to the SimpleReport training site!
               </h1>
-              <h2 className="font-heading-md margin-bottom-0">
+              <h2 className="font-heading-lg text-normal margin-top-105">
                 A few important reminders:
               </h2>
               <ul>
