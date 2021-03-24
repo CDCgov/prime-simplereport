@@ -53,6 +53,9 @@ const testResults = [
       lookupId: null,
       __typename: "Patient",
     },
+    createdBy: {
+      name: "Arthur Admin",
+    },
     __typename: "TestResult",
   },
   {
@@ -74,6 +77,9 @@ const testResults = [
       gender: "female",
       lookupId: null,
       __typename: "Patient",
+    },
+    createdBy: {
+      name: "Ursula User",
     },
     __typename: "TestResult",
   },

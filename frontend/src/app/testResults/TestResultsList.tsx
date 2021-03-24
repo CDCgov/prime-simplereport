@@ -42,6 +42,9 @@ export const testResultQuery = gql`
         gender
         lookupId
       }
+      createdBy {
+        name
+      }
     }
   }
 `;
@@ -134,6 +137,7 @@ export const DetachedTestResultsList: any = ({
           <td>{moment(r.dateTested).format("lll")}</td>
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
+          <td>{r.createdBy.name}</td>
           <td>
             <ActionsMenu items={actionItems} />
           </td>
@@ -164,6 +168,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Submitter</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>

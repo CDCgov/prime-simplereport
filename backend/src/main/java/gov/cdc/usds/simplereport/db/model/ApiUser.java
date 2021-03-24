@@ -53,4 +53,8 @@ public class ApiUser extends EternalSystemManagedEntity {
   public PersonName getNameInfo() {
     return nameInfo;
   }
+
+  public String getName() {
+    return this.getNameInfo().toString();
+  }
 }

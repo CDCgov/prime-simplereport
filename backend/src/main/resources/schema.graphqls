@@ -174,6 +174,7 @@ type TestResult {
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
+  createdBy: ApiUser
 }
 
 # Note: we assume a user's email and login username are the same thing.
@@ -191,6 +192,10 @@ type User {
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
   roles: [Role!]!
+}
+
+type ApiUser {
+  name: String!
 }
 
 type PatientLink {
