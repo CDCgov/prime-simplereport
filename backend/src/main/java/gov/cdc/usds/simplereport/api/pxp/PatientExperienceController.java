@@ -9,11 +9,12 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
-import gov.cdc.usds.simplereport.api.model.pxp.PxpApiWrapper;
-import gov.cdc.usds.simplereport.api.model.pxp.PxpPersonWrapper;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
+import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
@@ -67,18 +68,19 @@ public class PatientExperienceController {
    * returns the full patient object if so, otherwise it throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpPersonWrapper getPatientLinkVerify(@RequestBody PxpApiWrapper<Void> body) {
+  public PxpVerifyResponse getPatientLinkVerify(@RequestBody PxpRequestWrapper<Void> body) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
     PatientLink pl = pls.getPatientLink(plid);
+    OrderStatus os = pl.getTestOrder().getOrderStatus();
     Person p = pls.getPatientFromLink(plid);
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);
 
-    return new PxpPersonWrapper(p, te);
+    return new PxpVerifyResponse(p, os, te);
   }
 
   @PutMapping("/patient")
-  public Person updatePatient(@RequestBody PxpApiWrapper<Person> body) {
+  public Person updatePatient(@RequestBody PxpRequestWrapper<Person> body) {
     Person person = body.getData();
     return ps.updateMe(
         parseString(person.getFirstName()),
@@ -98,7 +100,7 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/questions")
-  public void patientLinkSubmit(@RequestBody PxpApiWrapper<AoEQuestions> body) {
+  public void patientLinkSubmit(@RequestBody PxpRequestWrapper<AoEQuestions> body) {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 
@@ -111,6 +113,8 @@ public class PatientExperienceController {
         data.getPriorTestResult() == null ? null : TestResult.valueOf(data.getPriorTestResult()),
         data.getSymptomOnset(),
         data.getNoSymptoms());
+
+    ps.updateMyTestResultDeliveryPreference(data.getTestResultDelivery());
     pls.expireMyPatientLink();
   }
 }
