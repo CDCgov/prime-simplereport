@@ -1,3 +1,21 @@
+# Requires that the requester have a certain permission level.
+#
+# If applied to a field, the requester must meet the required permission level in order to request
+# or traverse the targeted field. If the requirement is not met, `null` will be supplied for the
+# targeted field and an error returned.
+#
+# If applied to an object, the request must meet the required permission level in order to request
+# any fields of the object. If any child fields are themselves targeted with this directive, the
+# requester must satisfy both object- and field-level directives to request or traverse said fields.
+#
+# If applied to an argument, the requester must meet the required permission level in order to
+# supply a non-default value for the targeted argument; otherwise, an error will be returned and the
+# query or mutation housing the argument will not be executed.
+directive @requiredPermissions(
+  anyOf: [String!] # if the requester lacks any of these permissions, deny
+  allOf: [String!] # if the requester lacks all of these permissions, deny
+) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
+
 # java.util.Date implementation
 scalar DateTime
 # java.time.LocalDate
@@ -52,7 +70,8 @@ type DeviceType {
   loincCode: String
   swabType: String
 }
-type Patient {
+
+type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]) {
   internalId: ID
   facility: Facility
   lookupId: String
@@ -60,25 +79,26 @@ type Patient {
   middleName: String
   lastName: String
   suffix: String
-  race: String
+  race: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   birthDate: LocalDate
-  gender: String
-  ethnicity: String
-  street: String
-  streetTwo: String
-  city: String
-  county: String
-  state: String
-  zipCode: String
-  telephone: String
-  email: String
-  role: String
-  isDeleted: Boolean
-  residentCongregateSetting: Boolean
-  employedInHealthcare: Boolean
-  lastTest: TestResult
-  testResults: [TestResult!]!
+  gender: String  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  ethnicity: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  street: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  streetTwo: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  city: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  county: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  state: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  zipCode: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  telephone: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  email: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  isDeleted: Boolean  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
+  testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
 }
+
 type Facility {
   id: ID
   name: String
@@ -114,13 +134,6 @@ type Organization {
   name: String
   externalId: String
   testingFacility: [Facility]
-}
-# When starting from the patient, take a more limited view
-type PatientTestResult {
-  internalId: ID
-  id: ID
-  dateTested: DateTime
-  result: ResultValue
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
@@ -183,79 +196,104 @@ type User {
 type PatientLink {
   internalId: ID
   createdAt: DateTime
-  refreshedAt: DateTime
+  expiresAt: DateTime
   testOrder: TestOrder
 }
 
 type Query {
   deviceType: [DeviceType]
-  patients(facilityId: String, pageNumber: Int, pageSize: Int, showDeleted: Boolean, namePrefixMatch: String): [Patient]
-  patientsCount(facilityId: String, showDeleted: Boolean, namePrefixMatch: String): Int
-  patient(id: String!): Patient
+  patients(
+    facilityId: ID
+    pageNumber: Int
+    pageSize: Int
+    showDeleted: Boolean = false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+    namePrefixMatch: String
+  ): [Patient] @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
+  patientsCount(
+    facilityId: ID
+    showDeleted: Boolean = false @requiredPermissions(allOf: ["READ_ARCHIVED_PATIENT_LIST"])
+    namePrefixMatch: String
+  ): Int @requiredPermissions(anyOf: ["SEARCH_PATIENTS", "READ_PATIENT_LIST"])
+  patient(id: ID!): Patient
   organization: Organization
   organizations: [Organization]
-  queue(facilityId: String!): [TestOrder]
-  testResults(facilityId: String!, newerThanDate: DateTime): [TestResult]
-  testResult(id: String!): TestResult
-  users: [User]
+  queue(
+    facilityId: ID!
+  ): [TestOrder] @requiredPermissions(anyOf: ["START_TEST", "UPDATE_TEST", "SUBMIT_TEST"])
+  testResults(
+    facilityId: ID!
+    pageNumber: Int
+    pageSize: Int
+  ): [TestResult] @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCount(facilityId: ID!): Int @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResult(id: ID!): TestResult @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
 type Mutation {
-  uploadPatients(patientList: Upload!): String
+  uploadPatients(
+    patientList: Upload!
+  ): String
   updateFacility(
-    facilityId: String!
+    facilityId: ID!
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
-  ): String
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
   addFacility(
     testingFacilityName: String!
     cliaNumber: String
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
-  ): String
-  updateOrganization(name: String!): String
+  ): String @requiredPermissions(allOf: ["EDIT_FACILITY"])
+  updateOrganization(
+    name: String!
+  ): String @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   createOrganization(
     name: String!
     externalId: String!
@@ -264,22 +302,24 @@ type Mutation {
     street: String!
     streetTwo: String
     city: String
-    county: String @deprecated(reason: "county is derived from smarty streets lookup")
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
     state: String!
     zipCode: String!
     phone: String
     email: String
-    orderingProviderFirstName: String!
+    orderingProviderFirstName: String
     orderingProviderMiddleName: String
-    orderingProviderLastName: String!
+    orderingProviderLastName: String
     orderingProviderSuffix: String
-    orderingProviderNPI: String!
-    orderingProviderStreet: String!
+    orderingProviderNPI: String
+    orderingProviderStreet: String
     orderingProviderStreetTwo: String
     orderingProviderCity: String
-    orderingProviderCounty: String @deprecated(reason: "county is derived from smarty streets lookup")
-    orderingProviderState: String!
-    orderingProviderZipCode: String!
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
@@ -292,7 +332,7 @@ type Mutation {
     email: String!
     organizationExternalId: String!
     role: Role!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   addUserToCurrentOrg(
     firstName: String
     middleName: String
@@ -300,30 +340,30 @@ type Mutation {
     suffix: String
     email: String!
     role: Role!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
     firstName: String
     middleName: String
     lastName: String!
     suffix: String
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserRole(
     id: ID!
     role: Role!
-  ): Role
+  ): Role @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
     facilities: [ID!]
     role: Role!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   setUserIsDeleted(
     id: ID!
     deleted: Boolean!
-  ): User
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   addPatient(
-    facilityId: String
+    facilityId: ID
     lookupId: String
     firstName: String!
     middleName: String
@@ -344,10 +384,10 @@ type Mutation {
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
-  ): String
+  ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
-    facilityId: String
-    patientId: String!
+    facilityId: ID
+    patientId: ID!
     lookupId: String
     firstName: String!
     middleName: String
@@ -368,24 +408,30 @@ type Mutation {
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
-  ): String
-  setPatientIsDeleted(id: String!, deleted: Boolean!): Patient
+  ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
+  setPatientIsDeleted(
+    id: ID!
+    deleted: Boolean!
+  ): Patient @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])
   addTestResult(
     deviceId: String!
     result: String!
-    patientId: String!
+    patientId: ID!
     dateTested: DateTime
-  ): String
+  ): TestOrder @requiredPermissions(allOf: ["SUBMIT_TEST"])
   editQueueItem(
-    id: String!
+    id: ID!
     deviceId: String
     result: String
     dateTested: DateTime
-  ): TestOrder
-  correctTestMarkAsError(id: String!, reason: String): TestResult
+  ): TestOrder @requiredPermissions(allOf: ["UPDATE_TEST"])
+  correctTestMarkAsError(
+    id: ID!,
+    reason: String
+  ): TestResult @requiredPermissions(allOf: ["UPDATE_TEST"])
   addPatientToQueue(
-    facilityId: String!
-    patientId: String!
+    facilityId: ID!
+    patientId: ID!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
@@ -394,11 +440,13 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
-  ): String
-  removePatientFromQueue(patientId: String!): String
+  ): String @requiredPermissions(allOf: ["START_TEST"])
+  removePatientFromQueue(
+    patientId: ID!
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   clearQueue: Int
   updateTimeOfTestQuestions(
-    patientId: String!
+    patientId: ID!
     pregnancy: String
     symptoms: String
     firstTest: Boolean
@@ -407,7 +455,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
-  ): String
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   createDeviceType(
     name: String!
     manufacturer: String!
@@ -423,6 +471,7 @@ type Mutation {
     loincCode: String
     swabType: String
   ): DeviceType
-  refreshPatientLink(internalId: String!): PatientLink
-  sendPatientLinkSms(internalId: String!): String
+  sendPatientLinkSms(
+    internalId: String!
+  ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
 }

@@ -11,37 +11,41 @@ exports[`TestQueue should render the test queue 1`] = `
       <div
         class="grid-row position-relative"
       >
-        <form
-          class="usa-search usa-search--small prime-search-input"
-          role="search"
-        >
-          <label
-            class="usa-sr-only"
-            for="search-field-small"
+        <div>
+          <form
+            class="usa-search usa-search--small prime-search-input display-inline-block"
+            role="search"
           >
-            Search
-          </label>
-          <input
-            autocomplete="off"
-            class="usa-input"
-            id="search-field-small"
-            name="search"
-            placeholder="Search for a person to start their test"
-            type="search"
-            value=""
-          />
-          <button
-            class="usa-button"
-            disabled=""
-            type="submit"
-          >
-            <span
+            <label
               class="usa-sr-only"
+              for="search-field-small"
             >
               Search
-            </span>
-          </button>
-        </form>
+            </label>
+            <div>
+              <input
+                autocomplete="off"
+                class="usa-input"
+                id="search-field-small"
+                name="search"
+                placeholder="Search for a person to start their test"
+                type="search"
+                value=""
+              />
+              <button
+                class="usa-button"
+                disabled=""
+                type="submit"
+              >
+                <span
+                  class="usa-sr-only"
+                >
+                  Search
+                </span>
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
       <div
         class="grid-container prime-container prime-queue-item usa-card__container"
@@ -189,11 +193,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           for="drop-test-1"
                         >
                           Device
-                          <span
-                            class="usa-hint"
-                          >
-                             (optional)
-                          </span>
                         </label>
                         <select
                           aria-required="false"
@@ -224,11 +223,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-legend"
                         >
                           Test date
-                          <span
-                            class="usa-hint"
-                          >
-                             (optional)
-                          </span>
                         </legend>
                         <div
                           class="usa-form-group"
@@ -276,11 +270,6 @@ exports[`TestQueue should render the test queue 1`] = `
                     class="usa-legend usa-sr-only"
                   >
                     Test result
-                    <span
-                      class="usa-hint"
-                    >
-                       (optional)
-                    </span>
                   </legend>
                   <div
                     class="usa-form-group"
@@ -503,11 +492,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           for="drop-test-1"
                         >
                           Device
-                          <span
-                            class="usa-hint"
-                          >
-                             (optional)
-                          </span>
                         </label>
                         <select
                           aria-required="false"
@@ -538,11 +522,6 @@ exports[`TestQueue should render the test queue 1`] = `
                           class="usa-legend"
                         >
                           Test date
-                          <span
-                            class="usa-hint"
-                          >
-                             (optional)
-                          </span>
                         </legend>
                         <div
                           class="usa-form-group"
@@ -590,11 +569,6 @@ exports[`TestQueue should render the test queue 1`] = `
                     class="usa-legend usa-sr-only"
                   >
                     Test result
-                    <span
-                      class="usa-hint"
-                    >
-                       (optional)
-                    </span>
                   </legend>
                   <div
                     class="usa-form-group"

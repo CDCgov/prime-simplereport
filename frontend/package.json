@@ -50,7 +50,7 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "prestart": "rm -rf .eslintcache",
+    "prestart": "rm -rf .eslintcache && yarn",
     "start": "REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) npm-run-all -p watch-css start-js",
     "start-js": "react-scripts start",
     "prebuild": "yarn compile-scss",

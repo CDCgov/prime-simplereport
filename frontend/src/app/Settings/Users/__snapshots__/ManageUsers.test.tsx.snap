@@ -107,11 +107,6 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 class="usa-legend usa-sr-only"
               >
                 Roles
-                <span
-                  class="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 class="usa-form-group"
@@ -194,11 +189,6 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
                 class="usa-legend usa-sr-only"
               >
                 Access all facilities
-                <span
-                  class="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 class="usa-form-group"
@@ -428,11 +418,6 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 class="usa-legend usa-sr-only"
               >
                 Roles
-                <span
-                  class="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 class="usa-form-group"
@@ -512,11 +497,6 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                 class="usa-legend usa-sr-only"
               >
                 Access all facilities
-                <span
-                  class="usa-hint"
-                >
-                   (optional)
-                </span>
               </legend>
               <div
                 class="usa-form-group"

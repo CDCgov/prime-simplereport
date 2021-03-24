@@ -1,5 +1,5 @@
-query GetFacilityResults($facilityId: String!, $nameType: String = "long") {
-  testResults(facilityId: $facilityId) {
+query GetResultById($id: ID!, $nameType: String = "long") {
+  testResult(id: $id) {
     internalId
     dateTested
     result

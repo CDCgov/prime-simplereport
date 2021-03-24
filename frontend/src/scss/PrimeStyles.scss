@@ -143,6 +143,10 @@
 }
 
 // other buttons
+.sr-active-button {
+  background-color: color($theme-color-primary-darker);
+  color: #fff;
+}
 
 .prime-red-icon {
   color: color($theme-color-secondary);
@@ -647,7 +651,7 @@
   }
 }
 
-.sr-time-of-test-buttons-footer {
+.aoe-modal__footer {
   background: color("white");
   border-bottom-left-radius: units(2px);
   border-top: units(1px) solid color("base-lighter");
@@ -661,6 +665,9 @@
   width: calc(
     #{units("tablet")} - #{units(2)} - #{units(1px)}
   ); // tablet - margin - border
+}
+
+.sr-time-of-test-buttons-footer {
   text-align: right;
 }
 
@@ -707,4 +714,8 @@
   h3 {
     font-size: size("body", "sm");
   }
+}
+
+.maxw-prose {
+  max-width: 68ex;
 }

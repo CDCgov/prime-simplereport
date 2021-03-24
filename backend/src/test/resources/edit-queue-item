@@ -1,4 +1,4 @@
-mutation EditQueueItem($id: String!, $deviceId: String, $result: String, $dateTested: DateTime) {
+mutation EditQueueItem($id: ID!, $deviceId: String, $result: String, $dateTested: DateTime) {
     editQueueItem(
       id: $id,
       deviceId: $deviceId,

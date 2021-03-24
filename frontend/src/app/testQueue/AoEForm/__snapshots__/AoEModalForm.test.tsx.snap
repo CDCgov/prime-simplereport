@@ -45,11 +45,6 @@ Array [
       className="usa-legend"
     >
       How would you like to complete the questionnaire?
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </legend>
     <div
       className="usa-form-group"
@@ -160,11 +155,6 @@ Array [
       className="usa-legend"
     >
       How would you like to complete the questionnaire?
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </legend>
     <div
       className="usa-form-group"
@@ -264,11 +254,6 @@ Array [
       className="usa-legend"
     >
       How would you like to complete the questionnaire?
-      <span
-        className="usa-hint"
-      >
-         (optional)
-      </span>
     </legend>
     <div
       className="usa-form-group"
@@ -301,7 +286,7 @@ Array [
         className="usa-radio"
       >
         <input
-          checked={false}
+          checked={true}
           className="usa-radio__input"
           data-required="false"
           disabled={false}

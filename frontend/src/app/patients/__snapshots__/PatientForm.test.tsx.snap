@@ -75,11 +75,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Middle name
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -133,11 +128,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Lookup ID
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -157,11 +147,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="drop-test-1"
             >
               Role
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <select
               aria-required="false"
@@ -297,11 +282,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Email address
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -361,11 +341,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               Street address 2
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -389,11 +364,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               City
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -413,11 +383,6 @@ exports[`PatientForm snapshot 1`] = `
               htmlFor="text-test-1"
             >
               County
-              <span
-                className="usa-hint"
-              >
-                 (optional)
-              </span>
             </label>
             <input
               aria-required="false"
@@ -815,13 +780,11 @@ exports[`PatientForm snapshot 1`] = `
         >
           Demographics
         </legend>
-        <button
-          className="usa-button usa-button--unstyled margin-top-1 margin-bottom-2 line-height-sans-2"
-          onClick={[Function]}
-          type="button"
+        <p
+          className="usa-hint maxw-prose"
         >
-          Why are we asking for this information?
-        </button>
+          This information is important for public health efforts to recognize and address inequality in health outcomes.
+        </p>
         <fieldset
           className="usa-fieldset prime-radios"
         >
@@ -829,11 +792,6 @@ exports[`PatientForm snapshot 1`] = `
             className="usa-legend"
           >
             Race
-            <span
-              className="usa-hint"
-            >
-               (optional)
-            </span>
           </legend>
           <div
             className="usa-form-group"
@@ -994,11 +952,6 @@ exports[`PatientForm snapshot 1`] = `
             className="usa-legend"
           >
             Ethnicity
-            <span
-              className="usa-hint"
-            >
-               (optional)
-            </span>
           </legend>
           <div
             className="usa-form-group"
@@ -1054,11 +1007,6 @@ exports[`PatientForm snapshot 1`] = `
             className="usa-legend"
           >
             Biological Sex
-            <span
-              className="usa-hint"
-            >
-               (optional)
-            </span>
           </legend>
           <div
             className="usa-form-group"

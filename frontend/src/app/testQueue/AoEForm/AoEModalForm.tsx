@@ -28,7 +28,7 @@ interface LastTestData {
 }
 
 export const LAST_TEST_QUERY = gql`
-  query GetPatientsLastResult($patientId: String!) {
+  query GetPatientsLastResult($patientId: ID!) {
     patient(id: $patientId) {
       lastTest {
         dateTested
@@ -130,7 +130,7 @@ const AoEModalForm = (props: AoEModalProps) => {
     patientLinkId = "",
   } = props;
 
-  const [modalView, setModalView] = useState("");
+  const [modalView, setModalView] = useState("verbal");
   const [patientLink, setPatientLink] = useState("");
   const [smsSuccess, setSmsSuccess] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -234,11 +234,6 @@ const AoEModalForm = (props: AoEModalProps) => {
   );
 
   const modalContents = () => {
-    // the pre-patient-experience situation is way simpler!
-    if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== "true") {
-      return verbalForm;
-    }
-
     let innerContents = null;
     switch (modalView) {
       case "verbal":
@@ -299,8 +294,7 @@ const AoEModalForm = (props: AoEModalProps) => {
         <RadioGroup
           legend="How would you like to complete the questionnaire?"
           name="qr-code"
-          type="radio"
-          onChange={(evt) => chooseModalView(evt.currentTarget.value)}
+          onChange={chooseModalView}
           buttons={modalViewValues}
           selectedRadio={modalView}
           className="margin-top-205"

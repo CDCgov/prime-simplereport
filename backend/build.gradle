@@ -14,7 +14,7 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 ext {
-    kickstartVersion = '8.0.0'
+    kickstartVersion = '11.0.0'
 }
 repositories {
     mavenCentral()
@@ -54,6 +54,12 @@ dependencies {
     // Twilio for SMS
     implementation group: "com.twilio.sdk", name: "twilio", version: "8.7.0"
 
+    // SendGrid for Email
+    implementation 'com.sendgrid:sendgrid-java:4.7.2'
+
+    // Jsoup for input sanitization
+    implementation 'org.jsoup:jsoup:1.13.1'
+
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
@@ -74,6 +80,10 @@ test {
     // people sometimes export this to run local dev more easily: don't let it break the tests
     environment "SPRING_PROFILES_ACTIVE", ""
     useJUnitPlatform()
+    // uncomment this to log to stdout when each test starts, so you can tell what's going on
+    // testLogging {
+    //   events "started", "failed"
+    // }
 }
 
 configurations {

@@ -10,52 +10,45 @@ export type RequiredFacilityFields = PartialBy<
   "id" | "email" | "streetTwo" | "city" | "orderingProvider"
 >;
 
-type RequiredProviderFields = Partial<Provider>;
+type RequiredProviderFields = Nullable<Partial<Provider>>;
 
 const providerSchema: yup.SchemaOf<RequiredProviderFields> = yup.object({
-  firstName: yup.string(),
-  middleName: yup.string(),
-  lastName: yup.string(),
-  suffix: yup.string(),
-  NPI: yup.string(),
-  phone: yup.string(),
-  street: yup.string(),
-  streetTwo: yup.string(),
-  city: yup.string(),
-  state: yup.string(),
-  zipCode: yup.string(),
+  firstName: yup.string().nullable(),
+  middleName: yup.string().nullable(),
+  lastName: yup.string().nullable(),
+  suffix: yup.string().nullable(),
+  NPI: yup.string().nullable(),
+  phone: yup.string().nullable(),
+  street: yup.string().nullable(),
+  streetTwo: yup.string().nullable(),
+  city: yup.string().nullable(),
+  state: yup.string().nullable(),
+  zipCode: yup.string().nullable(),
 });
 
 export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
-  name: yup.string().required("Facility name is missing"),
-  cliaNumber: yup.string().required("Facility CLIA number is missing"),
-  street: yup.string().required("Facility street is missing"),
-  zipCode: yup.string().required("Facility zip code is missing"),
-  deviceTypes: yup
-    .array()
-    .of(yup.string().required())
-    .min(1, "Facility must have at least one device")
-    .required("Facility must have at least one device"),
-  defaultDevice: yup.string().required("Facility must have a default device"),
-  orderingProvider: providerSchema.required(),
+  name: yup.string().required(),
+  cliaNumber: yup.string().required(),
+  street: yup.string().required(),
+  zipCode: yup.string().required(),
+  deviceTypes: yup.array().of(yup.string().required()).min(1).required(),
+  defaultDevice: yup.string().required(),
+  orderingProvider: providerSchema.nullable(),
   phone: yup
     .string()
-    .test({
-      test: function (input) {
-        const message = "Invalid phone number";
-        if (!input) {
-          return this.createError({ message });
-        }
-        const number = phoneUtil.parseAndKeepRawInput(input, "US");
-        return phoneUtil.isValidNumber(number) || this.createError({ message });
-      },
+    .test(function (input) {
+      if (!input) {
+        return false;
+      }
+      const number = phoneUtil.parseAndKeepRawInput(input, "US");
+      return phoneUtil.isValidNumber(number);
     })
-    .required("Facility phone number is missing"),
-  state: yup.string().required("Facility state is missing"),
+    .required(),
+  state: yup.string().required(),
   id: yup.string(),
-  email: yup.string().email(),
-  streetTwo: yup.string(),
-  city: yup.string(),
+  email: yup.string().email().nullable(),
+  streetTwo: yup.string().nullable(),
+  city: yup.string().nullable(),
 });
 
 type FacilityErrorKeys =
@@ -73,3 +66,33 @@ type FacilityErrorKeys =
   | "orderingProvider.zipCode";
 
 export type FacilityErrors = Partial<Record<FacilityErrorKeys, string>>;
+
+const orderingProviderFormatError = (field: string) =>
+  `"Ordering provider ${field} is incorrectly formatted"`;
+
+export const allFacilityErrors: Required<FacilityErrors> = {
+  id: "ID is missing",
+  email: "Email is missing or incorrectly formatted",
+  city: "City is incorrectly formatted",
+  cliaNumber: "CLIA number is missing",
+  defaultDevice: "A default device must be selected",
+  deviceTypes: "There must be at least one device",
+  name: "Facility name is missing",
+  phone: "Facility phone number is missing or invalid",
+  street: "Facility street is missing",
+  streetTwo: "Facility street is incorrectly formatted",
+  zipCode: "Facility zip code is missing",
+  state: "Facility state is missing",
+  orderingProvider: "Ordering provider is incorrectly formatted",
+  "orderingProvider.NPI": orderingProviderFormatError("NPI"),
+  "orderingProvider.city": orderingProviderFormatError("city"),
+  "orderingProvider.firstName": orderingProviderFormatError("first name"),
+  "orderingProvider.lastName": orderingProviderFormatError("last name"),
+  "orderingProvider.middleName": orderingProviderFormatError("middle name"),
+  "orderingProvider.phone": orderingProviderFormatError("phone"),
+  "orderingProvider.state": orderingProviderFormatError("state"),
+  "orderingProvider.street": orderingProviderFormatError("street"),
+  "orderingProvider.streetTwo": orderingProviderFormatError("street"),
+  "orderingProvider.suffix": orderingProviderFormatError("suffix"),
+  "orderingProvider.zipCode": orderingProviderFormatError("zip code"),
+};

@@ -1,54 +1,146 @@
-import { render } from "@testing-library/react";
+import { MockedProvider } from "@apollo/client/testing";
+import { render, screen } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { MemoryRouter } from "react-router";
+import configureStore from "redux-mock-store";
 
-import { DetachedTestResultsList } from "./TestResultsList";
+import TestResultsList, {
+  DetachedTestResultsList,
+  resultsCountQuery,
+  testResultQuery,
+} from "./TestResultsList";
+
+const mockStore = configureStore([]);
+const store = mockStore({
+  organization: {
+    name: "Organization Name",
+  },
+  user: {
+    firstName: "Kim",
+    lastName: "Mendoza",
+  },
+  facilities: [
+    { id: "1", name: "Facility 1" },
+    { id: "2", name: "Facility 2" },
+  ],
+  facility: { id: "1", name: "Facility 1" },
+});
+
+jest.mock("@microsoft/applicationinsights-react-js", () => ({
+  useAppInsightsContext: () => {},
+  useTrackEvent: jest.fn(),
+}));
 
 // Data copied from Chrome network window
 const testResults = [
   {
-    internalId: "3c7998ca-b072-4201-877d-9a1523b0f10c",
-    dateTested: "2021-01-04T00:00:00Z",
-    result: "UNDETERMINED",
+    internalId: "0969da96-b211-41cd-ba61-002181f0918d",
+    dateTested: "2021-03-17T19:27:23.806Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
     deviceType: {
-      internalId: "f5bd2103-ce04-4290-94a4-ffeea170b0f9",
-      name: "LumiraDX",
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
       __typename: "DeviceType",
     },
     patient: {
-      internalId: "633ad102-30f9-4465-b035-bc0c39123fb4",
-      firstName: "Cheez",
-      middleName: "",
-      lastName: "Whizzz",
+      internalId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
+      firstName: "Barb",
+      middleName: "Whitaker",
+      lastName: "Cragell",
+      birthDate: "1960-11-07",
+      gender: "male",
+      lookupId: null,
       __typename: "Patient",
     },
     __typename: "TestResult",
   },
   {
-    internalId: "a65bce75-4771-4611-a3b1-9fd6e3d34a1d",
-    dateTested: "2021-01-12T17:56:07.403Z",
+    internalId: "7c768a5d-ef90-44cd-8050-b96dd77f51d5",
+    dateTested: "2021-03-17T19:27:21.052Z",
     result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
     deviceType: {
-      internalId: "f5bd2103-ce04-4290-94a4-ffeea170b0f9",
-      name: "LumiraDX",
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
       __typename: "DeviceType",
     },
     patient: {
-      internalId: "1eb99bc3-52b1-4bd7-9268-4cfea80a3f8d",
-      firstName: "Davis",
-      middleName: "",
-      lastName: "Melvin",
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Barde",
+      middleName: "X",
+      lastName: "Colleer",
+      birthDate: "1960-11-07",
+      gender: "female",
+      lookupId: null,
       __typename: "Patient",
     },
     __typename: "TestResult",
   },
 ];
 
+const mocks = [
+  {
+    request: {
+      query: resultsCountQuery,
+      variables: {
+        facilityId: "1",
+      },
+    },
+    result: {
+      data: {
+        testResultsCount: testResults.length,
+      },
+    },
+  },
+  {
+    request: {
+      query: testResultQuery,
+      variables: {
+        facilityId: "1",
+        pageNumber: 0,
+        pageSize: 20,
+      },
+    },
+    result: {
+      data: {
+        testResults,
+      },
+    },
+  },
+];
+
 describe("TestResultsList", () => {
   it("should render a list of tests", async () => {
     const { container, getByText } = render(
-      <DetachedTestResultsList data={{ testResults }} />
+      <MemoryRouter>
+        <DetachedTestResultsList
+          data={{ testResults }}
+          page={1}
+          entriesPerPage={20}
+          totalEntries={testResults.length}
+        />
+      </MemoryRouter>
     );
     expect(getByText("Test Results", { exact: false })).toBeInTheDocument();
-    expect(getByText("Whizzz, Cheez")).toBeInTheDocument();
+    expect(getByText("Cragell, Barb Whitaker")).toBeInTheDocument();
     expect(container).toMatchSnapshot();
+  });
+  it("should call appropriate gql endpoints for pagination", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+    expect(
+      await screen.findByText("Test Results", { exact: false })
+    ).toBeInTheDocument();
+    expect(
+      await screen.findByText("Cragell, Barb Whitaker")
+    ).toBeInTheDocument();
   });
 });

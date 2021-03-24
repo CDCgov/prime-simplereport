@@ -1487,3 +1487,124 @@ databaseChangeLog:
                     nullable: false
                     foreignKeyName: fk__patient_link__time_of_consent
                     references: patient_link
+  - changeSet:
+      id: add-audit-event-table
+      author: bwarfield@cdc.gov
+      comment: Add table for API request auditing.
+      changes:
+        - createTable:
+            tableName: api_audit_event
+            remarks: An API access event that we record for HIPAA auditing.
+            columns:
+              - column:
+                  name: id
+                  type: *idtype
+                  remarks: The internal database identifier for this audit event.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: event_timestamp
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: request_id
+                  remarks: The correlation ID from the application logs.
+                  type: *string
+              - column:
+                  name: http_request_details
+                  remarks: Key details of the HTTP request.
+                  type: jsonb
+                  constraints:
+                    nullable: false
+              - column:
+                  name: graphql_query_details
+                  remarks: Lightly structured information about the graphql request.
+                  type: jsonb
+              - column:
+                  name: graphql_error_paths
+                  remarks: The list of paths in the graphql response that had errors (usually empty).
+                  type: "text[]"
+              - column:
+                  name: api_user_id
+                  type: *idtype
+                  remarks: The user who performed this action.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__api_audit_event__api_user
+                    references: api_user
+              - column:
+                  name: is_admin_user
+                  type: boolean
+                  remarks: Was the user a site administrator at the time the request was made.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_permissions
+                  remarks: The permissions attached to the user when the request was made.
+                  type: "text[]"
+              - column:
+                  name: organization_id
+                  type: *idtype
+                  remarks: The organization within which this request was performed (if applicable).
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__api_audit_event__organization
+                    references: organization
+              - column:
+                  name: patient_link_id
+                  type: *idtype
+                  remarks: The "magic" patient link that the patient used to perform this action (if applicable).
+                  constraints:
+                    nullable: true
+                    foreignKeyName: fk__api_audit_event__patient_link
+                    references: patient_link
+  - changeSet:
+      id: rename-patient_link-refreshed_at
+      author: adam@skylight.digital
+      comment: Rename patient_link.refreshed_at to expires_at
+      changes:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: refreshed_at
+            newColumnName: expires_at
+        - sql:
+            remarks: Add 24hs to the timestamps, because that was the default expiry
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.created_at WHERE expires_at is null; 
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET expires_at = pl.expires_at + interval '1 day';
+      rollback:
+        - renameColumn:
+            tableName: patient_link
+            oldColumnName: expires_at
+            newColumnName: refreshed_at
+        - sql:
+            sql: |
+              UPDATE ${database.defaultSchemaName}.patient_link pl SET refreshed_at = pl.refreshed_at - interval '1 day';
+  - changeSet:
+      id: add-patient_link_failed_attempt
+      author: nclyde@skylight.digital
+      comment: Adds a non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+      changes:
+        - createTable:
+            tableName: patient_link_failed_attempt
+            remarks: A non-audited join table to patient_link that tracks the number of failed attempts to authenticate
+            columns:
+              - column:
+                  name: patient_link_internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity, and a foreign key to patient_link
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+                    foreignKeyName: fk__failed_attempts__patient_link
+                    references: patient_link
+              - column:
+                  name: failed_attempts
+                  type: tinyint
+                  valueNumeric: 0
+                  defaultValueNumeric: 0
+                  constraints:
+                    nullable: false

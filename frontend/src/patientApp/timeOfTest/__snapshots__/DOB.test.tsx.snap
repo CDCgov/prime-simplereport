@@ -23,11 +23,6 @@ exports[`DOB snapshot matches 1`] = `
           htmlFor="text-test-1"
         >
           Date of birth
-          <span
-            className="usa-hint display-none"
-          >
-             (optional)
-          </span>
         </label>
         <span
           className="usa-hint text-ls-1"

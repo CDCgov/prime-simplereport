@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
 import javax.persistence.Column;
@@ -9,12 +10,11 @@ import javax.persistence.OneToOne;
 
 @Entity
 public class PatientLink extends EternalAuditedEntity {
-
   @OneToOne(optional = false)
   @JoinColumn(name = "test_order_id", nullable = false)
   private TestOrder testOrder;
 
-  @Column private Date refreshedAt;
+  @Column private Date expiresAt;
 
   public PatientLink() {}
 
@@ -26,14 +26,22 @@ public class PatientLink extends EternalAuditedEntity {
     return testOrder;
   }
 
-  public Date getRefreshedAt() {
-    if (refreshedAt == null) {
-      return getCreatedAt();
+  public Date getExpiresAt() {
+    if (expiresAt == null) {
+      return Date.from(getCreatedAt().toInstant().plus(Duration.ofDays(1)));
     }
-    return refreshedAt;
+    return expiresAt;
+  }
+
+  public boolean isExpired() {
+    return Instant.now().isAfter(getExpiresAt().toInstant());
+  }
+
+  public void expire() {
+    expiresAt = Date.from(Instant.now());
   }
 
   public void refresh() {
-    this.refreshedAt = Date.from(Instant.now());
+    expiresAt = Date.from(Instant.now().plus(Duration.ofDays(1)));
   }
 }

@@ -4,13 +4,21 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +48,11 @@ class PatientManagementTest extends BaseApiTest {
 
   @Test
   void createAndFetchOnePatientIsoDate() throws Exception {
+    useOrgAdmin();
     String firstName = "Sansa";
     JsonNode patients =
-        doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
+        doCreateAndFetch(
+            firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.empty());
     assertTrue(patients.has(0), "At least one patient found");
     JsonNode sansa = patients.get(0);
     assertEquals(firstName, sansa.get("firstName").asText());
@@ -54,36 +64,466 @@ class PatientManagementTest extends BaseApiTest {
   void createPatient_adminUser_ok() throws Exception {
     useOrgAdmin();
     String firstName = "Sansa";
-    doCreateAndFetch(firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter");
+    doCreateAndFetch(
+        firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.empty());
+  }
+
+  @Test
+  void createPatient_standardUser_successDependsOnFacilityAccess() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+    UUID facilityId = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.of(facilityId),
+        Optional.of(ACCESS_ERROR));
+
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.of(facilityId),
+        Optional.empty());
+
+    updateSelfPrivileges(Role.USER, false, Set.of(facilityId));
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.of(facilityId),
+        Optional.empty());
   }
 
   @Test
   void createPatient_entryUser_fail() throws Exception {
     useOrgEntryOnly();
-    String firstName = "Sansa";
     executeAddPersonMutation(
-        firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.of(ACCESS_ERROR));
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.of("Current user does not have permission to request [/addPatient]"));
+  }
+
+  @Test
+  void updatePatient_adminUser_ok() throws Exception {
+    useOrgAdmin();
+
+    UUID facility1Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
+    UUID facility2Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_2);
+
+    JsonNode p1 =
+        executeAddPersonMutation(
+                "Sansa",
+                "Stark",
+                "1100-12-25",
+                "1-800-BIZ-NAME",
+                "notbitter",
+                Optional.empty(),
+                Optional.empty())
+            .get("addPatient");
+    executeUpdatePersonMutation(
+        UUID.fromString(p1.get("internalId").asText()),
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    JsonNode p2 =
+        executeAddPersonMutation(
+                "Jimmy",
+                "Neutron",
+                "2000-12-25",
+                "1-800-NEU-TRON",
+                "boygenius",
+                Optional.of(facility1Id),
+                Optional.empty())
+            .get("addPatient");
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility1Id),
+        Optional.empty());
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility2Id),
+        Optional.empty());
+  }
+
+  @Test
+  void updatePatient_standardUser_successDependsOnFacilityAccess() throws Exception {
+    UUID facility1Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
+    UUID facility2Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_2);
+
+    JsonNode p1 =
+        executeAddPersonMutation(
+                "Sansa",
+                "Stark",
+                "1100-12-25",
+                "1-800-BIZ-NAME",
+                "notbitter",
+                Optional.empty(),
+                Optional.empty())
+            .get("addPatient");
+    executeUpdatePersonMutation(
+        UUID.fromString(p1.get("internalId").asText()),
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    updateSelfPrivileges(Role.USER, false, Set.of(facility1Id));
+    JsonNode p2 =
+        executeAddPersonMutation(
+                "Jimmy",
+                "Neutron",
+                "2000-12-25",
+                "1-800-NEU-TRON",
+                "boygenius",
+                Optional.of(facility1Id),
+                Optional.empty())
+            .get("addPatient");
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility1Id),
+        Optional.empty());
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility2Id),
+        Optional.of(ACCESS_ERROR));
+
+    updateSelfPrivileges(Role.USER, false, Set.of(facility1Id, facility2Id));
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility2Id),
+        Optional.empty());
+
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    executeUpdatePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()),
+        "Jimmy",
+        "Proton",
+        "2000-12-25",
+        "1-800-NEU-TRON",
+        "boygenius",
+        Optional.of(facility1Id),
+        Optional.empty());
+  }
+
+  @Test
+  void setPatientIsDeleted_adminUser_ok() throws Exception {
+    useOrgAdmin();
+
+    UUID facility1Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
+
+    JsonNode p1 =
+        executeAddPersonMutation(
+                "Sansa",
+                "Stark",
+                "1100-12-25",
+                "1-800-BIZ-NAME",
+                "notbitter",
+                Optional.empty(),
+                Optional.empty())
+            .get("addPatient");
+    executeDeletePersonMutation(UUID.fromString(p1.get("internalId").asText()), Optional.empty());
+
+    JsonNode p2 =
+        executeAddPersonMutation(
+                "Jimmy",
+                "Neutron",
+                "2000-12-25",
+                "1-800-NEU-TRON",
+                "boygenius",
+                Optional.of(facility1Id),
+                Optional.empty())
+            .get("addPatient");
+    executeDeletePersonMutation(UUID.fromString(p2.get("internalId").asText()), Optional.empty());
+  }
+
+  @Test
+  void setPatientIsDeleted_standardUser_successDependsOnFacilityAccess() throws Exception {
+    UUID facility1Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_1);
+    UUID facility2Id = extractAllFacilitiesInOrg().get(TestUserIdentities.TEST_FACILITY_2);
+
+    JsonNode p1 =
+        executeAddPersonMutation(
+                "Sansa",
+                "Stark",
+                "1100-12-25",
+                "1-800-BIZ-NAME",
+                "notbitter",
+                Optional.empty(),
+                Optional.empty())
+            .get("addPatient");
+    executeDeletePersonMutation(UUID.fromString(p1.get("internalId").asText()), Optional.empty());
+
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    JsonNode p2 =
+        executeAddPersonMutation(
+                "Jimmy",
+                "Neutron",
+                "2000-12-25",
+                "1-800-NEU-TRON",
+                "boygenius",
+                Optional.of(facility1Id),
+                Optional.empty())
+            .get("addPatient");
+    JsonNode p3 =
+        executeAddPersonMutation(
+                "Kim",
+                "Possible",
+                "2005-12-25",
+                "1-800-KIM-POSS",
+                "callmebeepme",
+                Optional.of(facility2Id),
+                Optional.empty())
+            .get("addPatient");
+
+    updateSelfPrivileges(Role.USER, false, Set.of());
+    executeDeletePersonMutation(
+        UUID.fromString(p2.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+    executeDeletePersonMutation(
+        UUID.fromString(p3.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+
+    updateSelfPrivileges(Role.USER, false, Set.of(facility1Id));
+    executeDeletePersonMutation(UUID.fromString(p2.get("internalId").asText()), Optional.empty());
+    executeDeletePersonMutation(
+        UUID.fromString(p3.get("internalId").asText()), Optional.of(ACCESS_ERROR));
+
+    updateSelfPrivileges(Role.USER, true, Set.of());
+    executeDeletePersonMutation(UUID.fromString(p3.get("internalId").asText()), Optional.empty());
   }
 
   @Test
   void failsOnInvalidPhoneNumber() throws Exception {
     executeAddPersonMutation(
-        "a", "b", "2020-12-29", "d", "e", Optional.of("[d] is not a valid phone number"));
+        "a",
+        "b",
+        "2020-12-29",
+        "d",
+        "e",
+        Optional.empty(),
+        Optional.of("[d] is not a valid phone number"));
+  }
+
+  @Test
+  void queryingDeletedPatients_standardUser_fail() {
+    useOrgUser();
+    runQuery(
+        "deleted-person-query",
+        null,
+        "Current user does not have permission to supply a non-default value for [showDeleted]");
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "getDeletedPatients",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients"));
+  }
+
+  @Test
+  void queryingDeletedPatients_admin_ok() {
+    useOrgAdmin();
+    runQuery("deleted-person-query", null, null);
+    assertLastAuditEntry(
+        TestUserIdentities.ORG_ADMIN_USER,
+        "getDeletedPatients",
+        EnumSet.allOf(UserPermission.class),
+        List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_standardUser_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgUser();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+
+    runQuery("person-with-test-results-query", variables, null);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "getPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_entryOnly_fail() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgEntryOnly();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery(
+        "person-with-test-results-query",
+        variables,
+        "Current user does not have permission to request [/patients[0]/testResults]");
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "getPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients", "0", "testResults"));
+  }
+
+  @Test
+  void queryingPatientLastTestResult_entryOnly_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgEntryOnly();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery("person-with-last-test-result-query", variables, null);
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "getPatientsWithLastTestResult",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of());
   }
 
   private JsonNode doCreateAndFetch(
-      String firstName, String lastName, String birthDate, String phone, String lookupId)
+      String firstName,
+      String lastName,
+      String birthDate,
+      String phone,
+      String lookupId,
+      Optional<UUID> facilityId)
       throws IOException {
-    executeAddPersonMutation(firstName, lastName, birthDate, phone, lookupId, Optional.empty());
-    JsonNode patients = fetchPatients();
+    executeAddPersonMutation(
+        firstName, lastName, birthDate, phone, lookupId, facilityId, Optional.empty());
+    JsonNode patients = fetchPatients(facilityId);
     return patients;
   }
 
-  private JsonNode fetchPatients() {
-    return (JsonNode) runQuery("person-query").get("patients");
+  private JsonNode fetchPatients(Optional<UUID> facilityId) {
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+    return (JsonNode) runQuery("person-query", variables).get("patients");
   }
 
   private JsonNode fetchPatientsWithFacility() {
     return (JsonNode) runQuery("person-with-facility-query").get("patients");
+  }
+
+  private JsonNode executeUpdatePersonMutation(
+      UUID patientId,
+      String firstName,
+      String lastName,
+      String birthDate,
+      String phone,
+      String lookupId,
+      Optional<UUID> facilityId,
+      Optional<String> expectedError)
+      throws IOException {
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("patientId", patientId.toString())
+            .put("firstName", firstName)
+            .put("lastName", lastName)
+            .put("birthDate", birthDate)
+            .put("telephone", phone)
+            .put("lookupId", lookupId)
+            .put("facilityId", facilityId.map(UUID::toString).orElse(null));
+    return runQuery("update-person", variables, expectedError.orElse(null)).get("updatePatient");
+  }
+
+  private JsonNode executeDeletePersonMutation(UUID patientId, Optional<String> expectedError)
+      throws IOException {
+    ObjectNode variables =
+        JsonNodeFactory.instance.objectNode().put("id", patientId.toString()).put("deleted", true);
+    return runQuery("delete-person", variables, expectedError.orElse(null))
+        .get("setPatientIsDeleted");
   }
 }

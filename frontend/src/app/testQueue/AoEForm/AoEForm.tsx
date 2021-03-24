@@ -196,7 +196,13 @@ const AoEForm: React.FC<Props> = ({
   };
 
   const buttonGroup = (
-    <div className="sr-time-of-test-buttons sr-time-of-test-buttons-footer">
+    <div
+      className={classnames(
+        "sr-time-of-test-buttons",
+        "sr-time-of-test-buttons-footer",
+        { "aoe-modal__footer": isModal }
+      )}
+    >
       <Button
         id="aoe-form-save-button"
         className="margin-right-0"
@@ -254,8 +260,7 @@ const AoEForm: React.FC<Props> = ({
             <RadioGroup
               legend="Currently pregnant?"
               name="pregnancy"
-              type="radio"
-              onChange={(evt) => setPregnancyResponse(evt.currentTarget.value)}
+              onChange={setPregnancyResponse}
               buttons={pregnancyResponses}
               selectedRadio={pregnancyResponse}
             />

@@ -35,11 +35,11 @@ interface Props {
   inputMode?: string;
   ariaDescribedBy?: string;
   hintText?: string;
-  hideOptional?: boolean;
   inputRef?: React.RefObject<HTMLInputElement>;
   onChange: React.ChangeEventHandler<HTMLInputElement>;
   format?: string;
   formatMessage?: string;
+  labelClassName?: string;
 }
 
 type InputProps = JSX.IntrinsicElements["input"];
@@ -61,11 +61,11 @@ export const TextInput = ({
   inputMode,
   ariaDescribedBy,
   hintText,
-  hideOptional,
   inputRef,
   onChange,
   format,
   formatMessage,
+  labelClassName,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
   const [autoId] = useUniqueId("text", 1);
@@ -84,19 +84,13 @@ export const TextInput = ({
         className={classnames(
           "usa-label",
           labelSrOnly && "usa-sr-only",
-          validationStatus === "error" && "usa-label--error"
+          validationStatus === "error" && "usa-label--error",
+          labelClassName
         )}
         htmlFor={widgetId}
         aria-describedby={ariaDescribedBy}
       >
-        {required ? (
-          <Required label={label} />
-        ) : (
-          <Optional
-            className={hideOptional ? "display-none" : ""}
-            label={label}
-          />
-        )}
+        {required ? <Required label={label} /> : <Optional label={label} />}
       </label>
       {validationStatus === "error" && (
         <span className="usa-error-message" id={errorId} role="alert">

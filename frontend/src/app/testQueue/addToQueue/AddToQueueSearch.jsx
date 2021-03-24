@@ -1,24 +1,26 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { gql, useQuery, useMutation } from "@apollo/client";
+import { gql, useMutation, useLazyQuery } from "@apollo/client";
 import {
   useAppInsightsContext,
   useTrackEvent,
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../../commonComponents/Alert";
-import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
+import {
+  QUEUE_NOTIFICATION_TYPES,
+  ALERT_CONTENT,
+  MIN_SEARCH_CHARACTER_COUNT,
+  SEARCH_DEBOUNCE_TIME,
+} from "../constants";
 import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
 
-const MIN_SEARCH_CHARACTER_COUNT = 2;
-const SEARCH_DEBOUNCE_TIME = 500;
-
 export const QUERY_PATIENT = gql`
-  query GetPatientsByFacility($facilityId: String!, $namePrefixMatch: String) {
+  query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
     patients(
       facilityId: $facilityId
       pageNumber: 0
@@ -39,8 +41,8 @@ export const QUERY_PATIENT = gql`
 
 const ADD_PATIENT_TO_QUEUE = gql`
   mutation AddPatientToQueue(
-    $facilityId: String!
-    $patientId: String!
+    $facilityId: ID!
+    $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
@@ -67,7 +69,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
 
 const UPDATE_AOE = gql`
   mutation UpdateAOE(
-    $patientId: String!
+    $patientId: ID!
     $symptoms: String
     $symptomOnset: LocalDate
     $pregnancy: String
@@ -102,7 +104,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
     runIf: (q) => q.length >= MIN_SEARCH_CHARACTER_COUNT,
   });
 
-  const { data, error } = useQuery(QUERY_PATIENT, {
+  const [queryPatients, { data, error }] = useLazyQuery(QUERY_PATIENT, {
     fetchPolicy: "no-cache",
     variables: { facilityId, namePrefixMatch: queryString },
   });
@@ -111,6 +113,12 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
   const [updateAoe] = useMutation(UPDATE_AOE);
 
   const allowQuery = debounced.length >= MIN_SEARCH_CHARACTER_COUNT;
+
+  useEffect(() => {
+    if (queryString.trim() !== "") {
+      queryPatients();
+    }
+  }, [queryString, queryPatients]);
 
   if (error) {
     throw error;

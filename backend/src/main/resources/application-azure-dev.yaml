@@ -17,7 +17,6 @@ simple-report:
     - jeremy.a.zitomer@omb.eop.gov
     - nicholas.scialli@usds.dhs.gov
     - qrk8@cdc.gov # Sparkle
-    - David.w.methvin@omb.eop.gov
     - thomas.a.nielsen@omb.eop.gov
     - adam@skylight.digital
     - josh@skylight.digital
@@ -30,7 +29,9 @@ simple-report:
     upload-schedule: "0 0/15 * * * *" # every 15min on the clock 1:00, 1:15, 1:30, etc
     max-csv-rows: 25
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
-  feature-flags:
-    patient-links: true
+  sendgrid:
+    enabled: false
+    from-email: support@simplereport.gov
+    account-request-recipient: support@simplereport.gov
 twilio:
   enabled: true

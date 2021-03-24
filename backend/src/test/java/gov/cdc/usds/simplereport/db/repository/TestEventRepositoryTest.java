@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
         new TestEvent(
             TestResult.UNDETERMINED, place.getDefaultDeviceSpecimen(), patient, place, order));
     flush();
-    List<TestEvent> found = _repo.findAllByPatient(patient);
+    List<TestEvent> found = _repo.findAllByPatientAndFacilities(patient, Set.of(place));
     assertEquals(2, found.size());
   }
 
@@ -91,7 +92,8 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     TestOrder bradleyOrder = _dataFactory.createTestOrder(brad, facility);
 
-    List<TestEvent> results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+    List<TestEvent> results =
+        _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
     assertEquals(0, results.size());
 
     _dataFactory.doTest(bradleyOrder, TestResult.NEGATIVE);
@@ -100,7 +102,7 @@ class TestEventRepositoryTest extends BaseRepositoryTest {
     pause();
     _dataFactory.doTest(adamOrder, TestResult.UNDETERMINED);
 
-    results = _repo.getTestEventResults(facility.getInternalId(), new Date(0));
+    results = _repo.getTestEventResults(facility.getInternalId(), PageRequest.of(0, 10));
     assertEquals(3, results.size());
     assertEquals("Adam", results.get(0).getPatient().getFirstName());
     assertEquals("Charles", results.get(1).getPatient().getFirstName());

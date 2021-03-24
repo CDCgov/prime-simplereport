@@ -81,9 +81,7 @@ describe("AoEModalForm", () => {
 
     it("has a distinct view for 'text'", async () => {
       act(() => {
-        component.root
-          .findByProps({ name: "qr-code" })
-          .props.onChange({ currentTarget: { value: "text" } });
+        component.root.findByProps({ name: "qr-code" }).props.onChange("text");
       });
       expect(component.toJSON()).toMatchSnapshot();
     });
@@ -92,7 +90,7 @@ describe("AoEModalForm", () => {
       act(() => {
         component.root
           .findByProps({ name: "qr-code" })
-          .props.onChange({ currentTarget: { value: "verbal" } });
+          .props.onChange("verbal");
       });
       expect(component.toJSON()).toMatchSnapshot();
     });

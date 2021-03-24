@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import moment from "moment";
 
-import { COVID_RESULTS, TEST_RESULT_DESCRIPTIONS } from "../../constants";
+import {
+  COVID_RESULTS,
+  TEST_RESULT_DESCRIPTIONS,
+  YES_NO_VALUES,
+} from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
@@ -124,10 +128,10 @@ const PriorTestInputs: React.FC<Props> = ({
             { label: "No", value: "no" },
           ]}
           selectedRadio={lastTestAnswer}
-          onChange={(e) => {
+          onChange={(value) => {
             setIsFirstTest(false);
-            setlastTestAnswer(e.target.value);
-            if (e.target.value === "yes") {
+            setlastTestAnswer(value);
+            if (value === "yes") {
               // Fill in last test info using this data
               // TODO: update when test history has test type
               setPriorTestType("2");
@@ -160,15 +164,12 @@ const PriorTestInputs: React.FC<Props> = ({
       </div>
 
       <RadioGroup
-        buttons={[
-          { label: "Yes", value: "yes" },
-          { label: "No", value: "no" },
-        ]}
+        buttons={YES_NO_VALUES}
         selectedRadio={
-          isFirstTest === true ? "yes" : isFirstTest === false ? "no" : ""
+          isFirstTest === true ? "YES" : isFirstTest === false ? "NO" : ""
         }
-        onChange={(e) => {
-          setIsFirstTest(e.target.value === "yes");
+        onChange={(value) => {
+          setIsFirstTest(value === "YES");
         }}
         legend="Is this your first covid test?"
         legendSrOnly
