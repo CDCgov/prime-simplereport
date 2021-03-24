@@ -30,6 +30,6 @@ simple-report:
       - qxr5@cdc.gov
     waitlist-recipient: 
       - adam@skylight.digital
-    enabled: false
+    enabled: true
 twilio:
   enabled: true
