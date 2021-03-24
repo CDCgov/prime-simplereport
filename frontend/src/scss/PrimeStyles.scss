@@ -722,8 +722,10 @@
 
 .sr-training-banner {
   background-color: #e7f6f8;
-  .usa-alert {
-    margin-left: -2rem;
+  @media screen and (min-width: 1024px) {
+    .usa-alert {
+      margin-left: -2rem;
+    }
   }
 }
 
