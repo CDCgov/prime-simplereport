@@ -179,6 +179,7 @@ type TestResult {
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
+  createdBy: ApiUser
   patientLink: PatientLink
 }
 
@@ -197,6 +198,16 @@ type User {
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
   roles: [Role!]!
+}
+
+type ApiUser {
+  nameInfo: NameInfo
+}
+
+type NameInfo {
+  firstName: String
+  middleName: String
+  lastName: String
 }
 
 type PatientLink {
