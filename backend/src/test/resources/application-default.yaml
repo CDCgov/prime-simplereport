@@ -33,13 +33,14 @@ logging:
 simple-report:
   authorization:
     role-prefix: "SR-UNITTEST-TENANT:"
-  feature-flags:
-    patient-links: true
-    account-request: true
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
-    account-request-recipient: support@simplereport.gov
+    account-request-recipient: 
+      - support@simplereport.gov
+      - Protect-ServiceDesk@hhs.gov
+    waitlist-recipient: 
+      - support@simplereport.gov
   site-admin-emails:
     - ruby@example.com
     - notruby@example.com

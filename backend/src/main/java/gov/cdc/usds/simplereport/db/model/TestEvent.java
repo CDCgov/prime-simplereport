@@ -117,4 +117,8 @@ public class TestEvent extends BaseTestInfo {
   public UUID getPriorCorrectedTestEventId() {
     return priorCorrectedTestEventId;
   }
+
+  public PatientLink getPatientLink() {
+    return order.getPatientLink();
+  }
 }

@@ -62,6 +62,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
+                    Symptoms
+                  </th>
+                  <th
+                    scope="col"
+                  >
                     Submitter
                   </th>
                   <th
@@ -74,6 +79,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <tbody>
                 <tr
                   class="sr-test-result-row"
+                  data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
                   <th
@@ -89,6 +95,9 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
+                  </td>
+                  <td>
+                    No
                   </td>
                   <td>
                     Arthur Admin
@@ -128,6 +137,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                 </tr>
                 <tr
                   class="sr-test-result-row"
+                  data-patient-link="https://simplereport.gov/pxp?plid=68c543e8-7c65-4047-955c-e3f65bb8b58a"
                   title=""
                 >
                   <th
@@ -143,6 +153,9 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   </td>
                   <td>
                     Abbott IDNow
+                  </td>
+                  <td>
+                    Yes
                   </td>
                   <td>
                     Ursula User

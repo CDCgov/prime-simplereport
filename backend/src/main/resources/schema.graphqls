@@ -57,6 +57,11 @@ enum TestCorrectionStatus {
   REMOVED
 }
 
+enum TestResultDeliveryPreference {
+  SMS
+  NONE
+}
+
 type TestDescription {
   name(nameType: String = "long"): String!
   loincCode: String!
@@ -97,6 +102,7 @@ type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS"
   employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultDelivery: TestResultDeliveryPreference
 }
 
 type Facility {
@@ -175,6 +181,7 @@ type TestResult {
   correctionStatus: String
   reasonForCorrection: String
   createdBy: ApiUser
+  patientLink: PatientLink
 }
 
 # Note: we assume a user's email and login username are the same thing.
@@ -445,6 +452,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
+    testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["START_TEST"])
   removePatientFromQueue(
     patientId: ID!
@@ -460,6 +468,7 @@ type Mutation {
     priorTestResult: String
     symptomOnset: LocalDate
     noSymptoms: Boolean
+    testResultDelivery: TestResultDeliveryPreference
   ): String @requiredPermissions(allOf: ["UPDATE_TEST"])
   createDeviceType(
     name: String!

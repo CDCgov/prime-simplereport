@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.testresult;
 
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.TestDescription;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
@@ -88,5 +89,9 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
 
   public ApiFacility getFacility(TestEvent testEvent) {
     return new ApiFacility(testEvent.getFacility());
+  }
+
+  public PatientLink getPatientLink(TestEvent testEvent) {
+    return testEvent.getPatientLink();
   }
 }

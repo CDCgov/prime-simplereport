@@ -12,14 +12,12 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Note that this controller is unauthorized. */
-@ConditionalOnProperty(name = "simple-report.feature-flags.account-request", havingValue = "true")
 @RestController
 @RequestMapping(ACCOUNT_REQUEST)
 public class AccountRequestController {
@@ -39,7 +37,7 @@ public class AccountRequestController {
     String subject = "New waitlist request";
     String content = body.generateEmailBody();
 
-    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
+    emailService.send(sendGridProperties.getWaitlistRecipient(), subject, content);
   }
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("")
