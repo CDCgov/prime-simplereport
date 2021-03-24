@@ -7,6 +7,7 @@
             default-src 'self';
             script-src 'self' dap.digitalgov.gov www.google-analytics.com;
             style-src 'self' 'unsafe-inline';
+            img-src 'self' data:;
             connect-src 'self' www.google-analytics.com https://dc.services.visualstudio.com/v2/track %REACT_APP_BACKEND_URL%;
         ">
     <meta charset="utf-8" />
