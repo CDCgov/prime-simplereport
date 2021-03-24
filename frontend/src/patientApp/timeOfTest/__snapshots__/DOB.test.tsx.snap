@@ -39,7 +39,7 @@ exports[`DOB snapshot matches 1`] = `
           onChange={[Function]}
           pattern="([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"
           size={8}
-          type="bday"
+          type="password"
           value=""
         />
       </div>
