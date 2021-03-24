@@ -85,7 +85,7 @@ Running spring app locally and db in docker on port 5433
 1. Run ` SR_DB_PORT=5433 gradle bootRun --args='--spring.profiles.active=dev'`
 1. view site at http://localhost:8080
 
-### Running the app with Make
+### Running the app with Make or start.sh
 
 For development, it may be more convenient to start the front and backends simultaneously. This can be done by running the following command in the root directory of the project:
 
@@ -95,6 +95,22 @@ make # "make start" if you're nasty
 
 This will start up both servers in "watch" mode, so that changes to the source
 code result in an immediate rebuild.
+
+If you'd like to use a local installation of PostgreSQL, run the following to create a local database:
+
+```bash
+# Run this to create or reset the local db. Assumes your $USER has superuser privileges.
+# If not, use POSTGRES_USER=postgres
+POSTGRES_USER=$USER LIB_DIR="$(pwd)/backend/db-setup" POSTGRES_DB=postgres ./backend/db-setup/create-db.sh
+```
+
+Then run this to start the app:
+
+```bash
+./start.sh
+```
+
+This will also start up both servers in "watch" mode. Press CTRL-C to exit and cleanup the servers cleanly.
 
 ### Updating user role
 
@@ -209,12 +225,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
-```
-- enable the patient links QR code feature flag
-```
-simple-report:
-  feature-flags:
-    patient-links: true
 ```
 
 ### SchemaSpy

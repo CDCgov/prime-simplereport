@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.api.pxp;
 
 import com.google.i18n.phonenumbers.NumberParseException;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.PatientLinkService;
 import gov.cdc.usds.simplereport.service.sms.SmsService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -24,9 +23,5 @@ public class PatientLinkMutationResolver implements GraphQLMutationResolver {
     return smsService.sendToPatientLink(
         internalId,
         "Please fill out your Covid-19 pre-test questionnaire: " + patientLinkUrl + internalId);
-  }
-
-  public PatientLink refreshPatientLink(String internalId) {
-    return pls.refreshPatientLink(UUID.fromString(internalId));
   }
 }
