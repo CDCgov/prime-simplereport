@@ -5,7 +5,7 @@ import moment from "moment";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
+import { displayFullName, displayFullNameInOrder } from "../utils";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -42,6 +42,13 @@ export const testResultQuery = gql`
         birthDate
         gender
         lookupId
+      }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
       }
       patientLink {
         internalId
@@ -144,6 +151,13 @@ export const DetachedTestResultsList: any = ({
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
           <td>
+            {displayFullNameInOrder(
+              r.createdBy.nameInfo.firstName,
+              r.createdBy.nameInfo.middleName,
+              r.createdBy.nameInfo.lastName
+            )}
+          </td>
+          <td>
             <ActionsMenu items={actionItems} />
           </td>
         </tr>
@@ -173,6 +187,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Submitter</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
