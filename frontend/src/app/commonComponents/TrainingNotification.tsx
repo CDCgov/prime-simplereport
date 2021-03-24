@@ -21,7 +21,7 @@ export const TrainingNotification: React.FC = () => {
 
   return (
     <>
-      <div className="usa-site-alert usa-site-alert--info usa-site-alert--slim">
+      <div className="usa-site-alert usa-site-alert--info usa-site-alert--slim border-top border-base-lighter">
         <Alert type="info" role="alert">
           This is a training site with fake data to be used for training
           purposes only
