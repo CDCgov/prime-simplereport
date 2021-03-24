@@ -67,17 +67,15 @@ export const TrainingNotification: React.FC = () => {
                   Results entered on this training site will not be reported.
                 </li>
               </ul>
+              <Button
+                onClick={() => {
+                  setAcknowledged(true);
+                }}
+                className="margin-right-0"
+              >
+                Got it, thanks
+              </Button>
             </div>
-          </div>
-          <div className="text-right margin-top-3">
-            <Button
-              onClick={() => {
-                setAcknowledged(true);
-              }}
-              className="margin-right-0"
-            >
-              Got it, thanks
-            </Button>
           </div>
         </div>
       </Modal>
