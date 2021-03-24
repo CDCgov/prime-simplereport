@@ -53,6 +53,13 @@ const testResults = [
       lookupId: null,
       __typename: "Patient",
     },
+    createdBy: {
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
+    },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
@@ -77,6 +84,13 @@ const testResults = [
       gender: "female",
       lookupId: null,
       __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ursula",
+        middleName: "",
+        lastName: "User",
+      },
     },
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
