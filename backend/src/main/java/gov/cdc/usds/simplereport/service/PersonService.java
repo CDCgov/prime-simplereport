@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -222,7 +223,7 @@ public class PersonService {
       LocalDate birthDate,
       StreetAddress address,
       String telephone,
-      PersonRole role, //
+      PersonRole role,
       String email,
       String race,
       String ethnicity,
@@ -246,6 +247,23 @@ public class PersonService {
         gender,
         residentCongregateSetting,
         employedInHealthcare);
+    return _repo.save(toUpdate);
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
+  public Person updateTestResultDeliveryPreference(
+      UUID patientId, TestResultDeliveryPreference testResultDelivery) {
+    Person toUpdate = _repo.findById(patientId).orElseThrow();
+    toUpdate.setTestResultDelivery(testResultDelivery);
+    return _repo.save(toUpdate);
+  }
+
+  // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
+  // is verified, so there is no authorization check
+  public Person updateMyTestResultDeliveryPreference(
+      TestResultDeliveryPreference testResultDelivery) {
+    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
+    toUpdate.setTestResultDelivery(testResultDelivery);
     return _repo.save(toUpdate);
   }
 

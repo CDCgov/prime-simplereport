@@ -44,8 +44,9 @@ public class AccountRequestController {
     String subject = "New waitlist request";
     String content = body.generateEmailBody();
     LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
-    emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
+    emailService.send(sendGridProperties.getWaitlistRecipient(), subject, content);
   }
+
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("")
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {

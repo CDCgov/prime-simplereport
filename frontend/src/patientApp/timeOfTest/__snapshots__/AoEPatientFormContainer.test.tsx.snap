@@ -529,7 +529,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
           <legend
             className="prime-formgroup-heading usa-legend"
           >
-            Test History
+            Test history
           </legend>
           <div
             className="prime-formgroup__wrapper"
