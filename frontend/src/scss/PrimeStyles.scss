@@ -719,21 +719,3 @@
 .maxw-prose {
   max-width: 68ex;
 }
-
-.sr-training-banner {
-  background-color: #e7f6f8;
-  @media screen and (min-width: 1024px) {
-    .usa-alert {
-      margin-left: -2rem;
-    }
-  }
-}
-
-.sr-training-modal {
-  ul {
-    margin-bottom: 0;
-    li {
-      margin: 0.5em 0;
-    }
-  }
-}

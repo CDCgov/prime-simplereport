@@ -21,13 +21,11 @@ export const TrainingNotification: React.FC = () => {
 
   return (
     <>
-      <div className="sr-training-banner">
-        <div className="usa-nav-container">
-          <Alert type="info" role="alert" slim>
-            This is a training site with fake data to be used for training
-            purposes only
-          </Alert>
-        </div>
+      <div className="usa-site-alert usa-site-alert--info usa-site-alert--slim">
+        <Alert type="info" role="alert">
+          This is a training site with fake data to be used for training
+          purposes only
+        </Alert>
       </div>
       <Modal
         isOpen={!acknowledged}
