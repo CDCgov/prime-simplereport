@@ -37,8 +37,7 @@ const Alert = ({ type, title, body, role, children, slim }: Props) => {
   return (
     <div
       className={classes}
-      // eslint-disable-next-line jsx-a11y/aria-props
-      aria-role={role ? role : type === "error" ? "alert" : "region"}
+      role={role ? role : type === "error" ? "alert" : "region"}
     >
       <div className="usa-alert__body">
         {title && <h3 className="usa-alert__heading">{title}</h3>}

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 
+import logo from "../../img/simplereport-logomark-color.svg";
+
 import Alert from "./Alert";
 import Button from "./Button";
-
-import logo from "../../img/simplereport-logomark-color.svg";
 
 const SESSION_IDENTIFIER = "trainingAcknowledged";
 
@@ -23,7 +23,7 @@ export const TrainingNotification: React.FC = () => {
     <>
       <div className="sr-training-banner">
         <div className="usa-nav-container">
-          <Alert type="info" slim>
+          <Alert type="info" role="alert" slim>
             This is a training site with fake data to be used for training
             purposes only
           </Alert>
@@ -86,5 +86,3 @@ export const TrainingNotification: React.FC = () => {
     </>
   );
 };
-
-Modal.setAppElement("#root");
