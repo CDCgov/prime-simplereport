@@ -54,7 +54,11 @@ const testResults = [
       __typename: "Patient",
     },
     createdBy: {
-      name: "Arthur Admin",
+      nameInfo: {
+        firstName: "Arthur",
+        middleName: "A",
+        lastName: "Admin",
+      },
     },
     noSymptoms: true,
     patientLink: {
@@ -83,7 +87,11 @@ const testResults = [
       __typename: "Patient",
     },
     createdBy: {
-      name: "Ursula User",
+      nameInfo: {
+        firstName: "Ursula",
+        middleName: "",
+        lastName: "User",
+      },
     },
     noSymptoms: false,
     patientLink: {

@@ -100,7 +100,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     No
                   </td>
                   <td>
-                    Arthur Admin
+                    Arthur A Admin
                   </td>
                   <td>
                     <button

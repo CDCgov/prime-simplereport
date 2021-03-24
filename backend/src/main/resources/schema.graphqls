@@ -202,7 +202,13 @@ type User {
 }
 
 type ApiUser {
-  name: String!
+  nameInfo: NameInfo
+}
+
+type NameInfo {
+  firstName: String
+  middleName: String
+  lastName: String
 }
 
 type PatientLink {
