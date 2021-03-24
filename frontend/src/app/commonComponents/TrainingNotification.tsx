@@ -1,14 +1,90 @@
+import { useEffect, useState } from "react";
+import Modal from "react-modal";
+
 import Alert from "./Alert";
+import Button from "./Button";
+
+import logo from "../../img/simplereport-logomark-color.svg";
+
+const SESSION_IDENTIFIER = "trainingAcknowledged";
+
+const initialAcknowledged = !!sessionStorage.getItem(SESSION_IDENTIFIER);
 
 export const TrainingNotification: React.FC = () => {
+  const [acknowledged, setAcknowledged] = useState(initialAcknowledged);
+
+  useEffect(() => {
+    if (acknowledged) {
+      sessionStorage.setItem(SESSION_IDENTIFIER, "yes");
+    }
+  }, [acknowledged]);
+
   return (
-    <div className="sr-training-banner">
-      <div className="usa-nav-container">
-        <Alert type="info" slim>
-          This is a training site with fake data to be used for training
-          purposes only
-        </Alert>
+    <>
+      <div className="sr-training-banner">
+        <div className="usa-nav-container">
+          <Alert type="info" slim>
+            This is a training site with fake data to be used for training
+            purposes only
+          </Alert>
+        </div>
       </div>
-    </div>
+      <Modal
+        isOpen={!acknowledged}
+        style={{
+          content: {
+            maxHeight: "90vh",
+            width: "50em",
+            position: "initial",
+          },
+        }}
+        overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+        contentLabel="SimpleReport training site"
+        ariaHideApp={process.env.NODE_ENV !== "test"}
+      >
+        <div className="sr-training-modal border-0 usa-card__container">
+          <div className="display-flex flex-align-start">
+            <img
+              src={logo}
+              alt="SimpleReport logo"
+              className="width-10 margin-right-3 margin-top-1"
+            />
+            <div>
+              <h1 className="font-heading-lg margin-top-05">
+                Welcome to the SimpleReport training site!
+              </h1>
+              <h2 className="font-heading-md margin-bottom-0">
+                A few important reminders:
+              </h2>
+              <ul>
+                <li>
+                  This is a training site with fake data to be used for training
+                  purposes only.
+                </li>
+                <li>
+                  Do not use personally identifiable information (PII) or
+                  protected health information (PHI).
+                </li>
+                <li>
+                  Results entered on this training site will not be reported.
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="text-right margin-top-3">
+            <Button
+              onClick={() => {
+                setAcknowledged(true);
+              }}
+              className="margin-right-0"
+            >
+              Got it, thanks
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 };
+
+Modal.setAppElement("#root");
