@@ -27,7 +27,6 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -40,7 +39,6 @@ import org.springframework.web.bind.annotation.RestController;
  * routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
  * documentation on both sides
  */
-@ConditionalOnProperty(name = "simple-report.feature-flags.patient-links", havingValue = "true")
 @PreAuthorize(
     "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
 @RestController
