@@ -234,11 +234,6 @@ const AoEModalForm = (props: AoEModalProps) => {
   );
 
   const modalContents = () => {
-    // the pre-patient-experience situation is way simpler!
-    if (process.env.REACT_APP_PATIENT_EXPERIENCE_ENABLED !== "true") {
-      return verbalForm;
-    }
-
     let innerContents = null;
     switch (modalView) {
       case "verbal":

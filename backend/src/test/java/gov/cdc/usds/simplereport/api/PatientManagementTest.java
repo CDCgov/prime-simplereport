@@ -7,12 +7,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.api.model.Role;
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -116,7 +119,7 @@ class PatientManagementTest extends BaseApiTest {
         "1-800-BIZ-NAME",
         "notbitter",
         Optional.empty(),
-        Optional.of(ACCESS_ERROR));
+        Optional.of("Current user does not have permission to request [/addPatient]"));
   }
 
   @Test
@@ -349,6 +352,122 @@ class PatientManagementTest extends BaseApiTest {
         "e",
         Optional.empty(),
         Optional.of("[d] is not a valid phone number"));
+  }
+
+  @Test
+  void queryingDeletedPatients_standardUser_fail() {
+    useOrgUser();
+    runQuery(
+        "deleted-person-query",
+        null,
+        "Current user does not have permission to supply a non-default value for [showDeleted]");
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "getDeletedPatients",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients"));
+  }
+
+  @Test
+  void queryingDeletedPatients_admin_ok() {
+    useOrgAdmin();
+    runQuery("deleted-person-query", null, null);
+    assertLastAuditEntry(
+        TestUserIdentities.ORG_ADMIN_USER,
+        "getDeletedPatients",
+        EnumSet.allOf(UserPermission.class),
+        List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_standardUser_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgUser();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+
+    runQuery("person-with-test-results-query", variables, null);
+    assertLastAuditEntry(
+        TestUserIdentities.STANDARD_USER,
+        "getPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.READ_PATIENT_LIST,
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.READ_RESULT_LIST,
+            UserPermission.EDIT_PATIENT,
+            UserPermission.ARCHIVE_PATIENT,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of());
+  }
+
+  @Test
+  void queryingPatientTestResults_entryOnly_fail() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgEntryOnly();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery(
+        "person-with-test-results-query",
+        variables,
+        "Current user does not have permission to request [/patients[0]/testResults]");
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "getPatientsWithTestResults",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of("patients", "0", "testResults"));
+  }
+
+  @Test
+  void queryingPatientLastTestResult_entryOnly_ok() throws Exception {
+    executeAddPersonMutation(
+        "Sansa",
+        "Stark",
+        "1100-12-25",
+        "1-800-BIZ-NAME",
+        "notbitter",
+        Optional.empty(),
+        Optional.empty());
+
+    useOrgEntryOnly();
+    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
+    runQuery("person-with-last-test-result-query", variables, null);
+    assertLastAuditEntry(
+        TestUserIdentities.ENTRY_ONLY_USER,
+        "getPatientsWithLastTestResult",
+        EnumSet.of(
+            UserPermission.SEARCH_PATIENTS,
+            UserPermission.START_TEST,
+            UserPermission.UPDATE_TEST,
+            UserPermission.SUBMIT_TEST),
+        List.of());
   }
 
   private JsonNode doCreateAndFetch(
