@@ -2,9 +2,11 @@ package gov.cdc.usds.simplereport.api.queue;
 
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
+import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.ApiTestOrder;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestOrderService;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -27,8 +29,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _ps = ps;
   }
 
-  public ApiTestOrder addTestResult(
-      String deviceID, String result, UUID patientID, Date dateTested) {
+  public ApiTestOrder addTestResult(String deviceID, String result, UUID patientID, Date dateTested)
+      throws NumberParseException {
     return new ApiTestOrder(
         _tos.addTestResult(deviceID, TestResult.valueOf(result), patientID, dateTested));
   }
@@ -47,7 +49,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       String priorTestType,
       String priorTestResult,
       LocalDate symptomOnset,
-      boolean noSymptoms)
+      boolean noSymptoms,
+      TestResultDeliveryPreference testResultDelivery)
       throws JSONException {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
@@ -64,6 +67,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
             (priorTestResult == null) ? null : TestResult.valueOf(priorTestResult),
             symptomOnset,
             noSymptoms);
+
+    _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
 
     return to.getPatientLink().getInternalId().toString();
   }
@@ -85,7 +90,8 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
       String priorTestType,
       String priorTestResult,
       LocalDate symptomOnset,
-      boolean noSymptoms) {
+      boolean noSymptoms,
+      TestResultDeliveryPreference testResultDelivery) {
 
     Map<String, Boolean> symptomsMap = parseSymptoms(symptoms);
 
@@ -99,5 +105,7 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
         priorTestResult == null ? null : TestResult.valueOf(priorTestResult),
         symptomOnset,
         noSymptoms);
+
+    _ps.updateTestResultDeliveryPreference(patientID, testResultDelivery);
   }
 }

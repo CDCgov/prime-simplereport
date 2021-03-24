@@ -29,7 +29,7 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
           EnumSet<OrganizationRole> actual = EnumSet.copyOf(u.getRoles());
           assertEquals(expected, actual);
         };
-    assertEquals(users.size(), 4);
+    assertEquals(users.size(), 5);
     assertEquals(users.get(0).getEmail(), "admin@example.com");
     roleCheck.accept(users.get(0), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN));
     assertEquals(users.get(1).getEmail(), "allfacilities@example.com");

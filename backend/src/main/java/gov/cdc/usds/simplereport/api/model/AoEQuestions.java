@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 
 public class AoEQuestions {
@@ -11,6 +12,7 @@ public class AoEQuestions {
   String priorTestResult;
   LocalDate symptomOnset;
   boolean noSymptoms;
+  TestResultDeliveryPreference testResultDelivery;
 
   public String getPregnancy() {
     return pregnancy;
@@ -74,5 +76,13 @@ public class AoEQuestions {
 
   public void setNoSymptoms(boolean noSymptoms) {
     this.noSymptoms = noSymptoms;
+  }
+
+  public TestResultDeliveryPreference getTestResultDelivery() {
+    return testResultDelivery;
+  }
+
+  public void setDeliveryPreference(TestResultDeliveryPreference testResultDelivery) {
+    this.testResultDelivery = testResultDelivery;
   }
 }

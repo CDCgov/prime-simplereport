@@ -35,9 +35,6 @@ simple-report:
     - jessica.cox@hhs.gov
     - vanessa.bonetti@hhs.gov
   patient-link-url: https://simplereport.gov/app/pxp?plid=
-  feature-flags:
-    patient-links: true
-    account-request: true
   sendgrid:
     enabled: true
 twilio:
