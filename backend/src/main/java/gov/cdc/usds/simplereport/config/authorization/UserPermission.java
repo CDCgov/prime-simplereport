@@ -20,7 +20,6 @@ public enum UserPermission implements Principal {
   START_TEST,
   UPDATE_TEST,
   SUBMIT_TEST,
-  EXPORT_TEST_EVENT,
   ACCESS_ALL_FACILITIES;
 
   @Override

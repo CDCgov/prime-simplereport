@@ -8,23 +8,23 @@ import java.time.LocalDate;
  * come with a request body containing this top-level object, with a valid PatientLink.internalId
  * and the corresponding Patient (Person)'s birthDate
  */
-public class PxpApiWrapper<T> {
+public class PxpRequestWrapper<T> {
   private String patientLinkId;
   private LocalDate dateOfBirth;
   private T data;
 
-  public PxpApiWrapper() {}
+  public PxpRequestWrapper() {}
 
-  public PxpApiWrapper(String patientLinkId) {
+  public PxpRequestWrapper(String patientLinkId) {
     this.patientLinkId = patientLinkId;
   }
 
-  public PxpApiWrapper(String patientLinkId, LocalDate dateOfBirth) {
+  public PxpRequestWrapper(String patientLinkId, LocalDate dateOfBirth) {
     this.patientLinkId = patientLinkId;
     this.dateOfBirth = dateOfBirth;
   }
 
-  public PxpApiWrapper(String patientLinkId, LocalDate dateOfBirth, T data) {
+  public PxpRequestWrapper(String patientLinkId, LocalDate dateOfBirth, T data) {
     this.patientLinkId = patientLinkId;
     this.dateOfBirth = dateOfBirth;
     this.data = data;

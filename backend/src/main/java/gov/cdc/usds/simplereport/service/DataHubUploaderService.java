@@ -4,10 +4,8 @@ import com.fasterxml.jackson.dataformat.csv.CsvGenerator;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import gov.cdc.usds.simplereport.api.model.TestEventExport;
-import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.db.model.DataHubUpload;
-import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.DataHubUploadStatus;
 import gov.cdc.usds.simplereport.db.repository.DataHubUploadRespository;
@@ -23,10 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
-import javax.persistence.NoResultException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -50,7 +45,6 @@ public class DataHubUploaderService {
   private final DataHubUploadRespository _dataHubUploadRepo;
   private final UploadTrackingService _trackingService;
   private final SlackMessageService _slack;
-  private final OrganizationService _organizationService;
 
   private String _fileContents;
   private Date _nextTimestamp;
@@ -63,14 +57,12 @@ public class DataHubUploaderService {
       TestEventRepository testReportEventsRepo,
       DataHubUploadRespository dataHubUploadRepo,
       UploadTrackingService trackingService,
-      SlackMessageService slack,
-      OrganizationService organizationService) {
+      SlackMessageService slack) {
     _config = config;
     _testReportEventsRepo = testReportEventsRepo;
     _trackingService = trackingService;
     _dataHubUploadRepo = dataHubUploadRepo;
     _slack = slack;
-    _organizationService = organizationService;
 
     LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
 
@@ -108,10 +100,6 @@ public class DataHubUploaderService {
     return simpleDateFormat.format(d);
   }
 
-  private static Date utcStringToDate(String s) {
-    return Date.from(Instant.parse(s));
-  }
-
   // we put this in a function because the query can return null and it abstracts it out
   private Date getLatestRecordedTimestamp() {
     DataHubUpload lastUpload =
@@ -125,19 +113,6 @@ public class DataHubUploaderService {
           "No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
       return null;
     }
-  }
-
-  // backwards compatible while refactoring
-  private void createTestEventCSV(String lastEndCreateOn)
-      throws IOException, DateTimeParseException, NoResultException {
-    final Date DATE_1MIN_AGO = new Date(System.currentTimeMillis() - TimeUnit.MINUTES.toMillis(1));
-    if (lastEndCreateOn.length() == 0) {
-      // This should only happen when database is empty
-      LOG.error(
-          "No default timestamp, will return everything. Use url to set initial lastEndCreateOn.");
-      throw new NoResultException("No default lastEndCreateOn, everything would match.");
-    }
-    createTestEventCSV(utcStringToDate(lastEndCreateOn), DATE_1MIN_AGO);
   }
 
   private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
@@ -198,68 +173,6 @@ public class DataHubUploaderService {
     URI url = UriComponentsBuilder.fromUriString(_config.getUploadUrl()).build().toUri();
 
     _resultJson = restTemplate.postForObject(url, contentsAsResource, String.class);
-  }
-
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public String createTestCSVForDataHub(String organizationExternalId) throws IOException {
-    Organization organization = _organizationService.getOrganization(organizationExternalId);
-    List<TestEvent> events =
-        _testReportEventsRepo.findAllByOrganizationOrderByCreatedAtDesc(organization);
-    this.setFileContents(events);
-    return this._fileContents;
-  }
-
-  // ultimately, it would be nice if each row had an ID that could be dedupped on the server.
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public Map<String, String> uploadTestEventCSVToDataHub(
-      final String apiKey, String lastEndCreateOn) {
-    try {
-      this.init();
-      // this will be null if there are no enties in the tracking table.
-      // This is important for first-ever-run and then if the webpage is run again after the db is
-      // initialized
-      Date lastTimestamp = getLatestRecordedTimestamp();
-      if (lastTimestamp == null) {
-        DataHubUpload upload = _trackingService.startUpload(utcStringToDate(lastEndCreateOn));
-        LOG.info("Added {} to data_hub_upload table", upload.getInternalId());
-        // database has no entries. FIRST EVER RUN.
-        this.createTestEventCSV(lastEndCreateOn);
-        if (this._rowCount == 0) {
-          LOG.warn("No rows were found for uploadTestEventCSVToDataHub.");
-        } else {
-          _trackingService.markRowCount(upload, _rowCount, _nextTimestamp);
-          try {
-            this.uploadCSVDocument(apiKey);
-            _trackingService.markSucceeded(upload, _resultJson, _warnMessage);
-          } catch (RestClientException e) {
-            _trackingService.markFailed(upload, this._resultJson, e);
-          }
-        }
-      } else {
-        // run the new code and ignore the lastEndCreateOn passed in.
-        dataHubUploaderTask();
-      }
-
-      return Map.of(
-          "result",
-          "ok",
-          "lastTimestamp",
-          dateToUTCString(this._nextTimestamp),
-          "rowsSent",
-          String.valueOf(this._rowCount),
-          "uploadResultId",
-          this._resultJson,
-          "message",
-          this._warnMessage);
-    } catch (RestClientException err) {
-      return Map.of(
-          "result",
-          "error",
-          "message",
-          "Err: uploading csv to data-hub failed. error='" + err.toString() + "'");
-    } catch (IOException err) {
-      return Map.of("result", "error", "messsage", err.toString());
-    }
   }
 
   public void dataHubUploaderTask() {
