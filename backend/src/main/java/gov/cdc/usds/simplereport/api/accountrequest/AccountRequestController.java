@@ -41,7 +41,7 @@ public class AccountRequestController {
   /** Read the waitlist request and generate an email body, then send with the emailService */
   @PostMapping("/waitlist")
   public void submitWaitlistRequest(@Valid @RequestBody WaitlistRequest body) throws IOException {
-    String subject = "New waitlist request";
+    String subject = "TEST: New waitlist request";
     String content = body.generateEmailBody();
     LOG.info("Waitlist request submitted: {}", objectMapper.writeValueAsString(body));
     emailService.send(sendGridProperties.getWaitlistRecipient(), subject, content);
@@ -50,7 +50,7 @@ public class AccountRequestController {
   /** Read the account request and generate an email body, then send with the emailService */
   @PostMapping("")
   public void submitAccountRequest(@Valid @RequestBody AccountRequest body) throws IOException {
-    String subject = "New account request";
+    String subject = "TEST: New account request";
     String content = body.generateEmailBody();
     LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, content);
