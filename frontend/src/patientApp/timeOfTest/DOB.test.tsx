@@ -34,7 +34,7 @@ describe("DOB", () => {
     let utils: RenderResult;
 
     async function setup(utils: RenderResult) {
-      const input = await utils.findByRole("textbox");
+      const input = await utils.findByLabelText("Date of birth");
       const button = await utils.findByRole("button");
       return { input, button };
     }

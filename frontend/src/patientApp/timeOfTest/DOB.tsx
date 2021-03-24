@@ -111,7 +111,7 @@ const DOB = () => {
                 <TextInput
                   label={"Date of birth"}
                   name={"birthDate"}
-                  type={"bday"}
+                  type={"password"}
                   autoComplete={"bday"}
                   value={birthDate}
                   size={8}
