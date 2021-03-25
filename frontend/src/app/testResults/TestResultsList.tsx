@@ -5,7 +5,7 @@ import moment from "moment";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
+import { displayFullName, displayFullNameInOrder } from "../utils";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -18,16 +18,6 @@ import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
-
-function symptomsDisplay(noSymptoms: boolean | null) {
-  if (noSymptoms === true) {
-    return "No";
-  }
-  if (noSymptoms === false) {
-    return "Yes";
-  }
-  return "Unknown";
-}
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
@@ -53,7 +43,13 @@ export const testResultQuery = gql`
         gender
         lookupId
       }
-      noSymptoms
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
       patientLink {
         internalId
       }
@@ -154,7 +150,13 @@ export const DetachedTestResultsList: any = ({
           <td>{moment(r.dateTested).format("lll")}</td>
           <td>{r.result}</td>
           <td>{r.deviceType.name}</td>
-          <td>{symptomsDisplay(r.noSymptoms)}</td>
+          <td>
+            {displayFullNameInOrder(
+              r.createdBy.nameInfo.firstName,
+              r.createdBy.nameInfo.middleName,
+              r.createdBy.nameInfo.lastName
+            )}
+          </td>
           <td>
             <ActionsMenu items={actionItems} />
           </td>
@@ -185,7 +187,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Date of Test</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
-                    <th scope="col">Symptoms</th>
+                    <th scope="col">Submitter</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>

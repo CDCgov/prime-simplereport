@@ -62,7 +62,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
-                    Symptoms
+                    Submitter
                   </th>
                   <th
                     scope="col"
@@ -92,7 +92,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    No
+                    Arthur A Admin
                   </td>
                   <td>
                     <button
@@ -147,7 +147,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     Abbott IDNow
                   </td>
                   <td>
-                    Yes
+                    Ursula User
                   </td>
                   <td>
                     <button

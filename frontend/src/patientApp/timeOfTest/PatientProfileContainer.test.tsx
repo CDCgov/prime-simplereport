@@ -18,8 +18,8 @@ describe("PatientProfileContainer", () => {
   it("snapshot", () => {
     const store = mockStore({
       patient: {
-        residentCongregateSetting: "Yes",
-        employedInHealthcare: "Yes",
+        residentCongregateSetting: true,
+        employedInHealthcare: true,
         birthDate: "",
         street: "8 Pine Ct",
       },

@@ -1,27 +1,27 @@
 import React from "react";
 import classnames from "classnames";
+import { UIDConsumer } from "react-uid";
 
-import useUniqueId from "./useUniqueIds";
 import Required from "./Required";
 import Optional from "./Optional";
 
+export type HTMLInputElementType =
+  | "date"
+  | "datetime-local"
+  | "email"
+  | "month"
+  | "number"
+  | "password"
+  | "search"
+  | "tel"
+  | "text"
+  | "time"
+  | "url"
+  | "week";
+
 interface Props {
-  id?: string;
   name: string;
-  type?:
-    | "date"
-    | "datetime-local"
-    | "email"
-    | "month"
-    | "number"
-    | "password"
-    | "search"
-    | "tel"
-    | "text"
-    | "time"
-    | "url"
-    | "week"
-    | "bday";
+  type?: HTMLInputElementType;
   label: React.ReactNode;
   labelSrOnly?: boolean;
   value?: string | null;
@@ -29,7 +29,7 @@ interface Props {
   errorMessage?: React.ReactNode;
   groupClassName?: string;
   validationStatus?: "error" | "success";
-  autoComplete?: string;
+  autoComplete?: "on" | "off";
   size?: number;
   pattern?: string;
   inputMode?: string;
@@ -45,7 +45,6 @@ interface Props {
 type InputProps = JSX.IntrinsicElements["input"];
 
 export const TextInput = ({
-  id,
   name,
   type,
   label,
@@ -68,61 +67,61 @@ export const TextInput = ({
   labelClassName,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
-  const [autoId] = useUniqueId("text", 1);
-  const widgetId = id || autoId;
-  const errorId = `${widgetId}__error`;
-
   return (
-    <div
-      className={classnames(
-        "usa-form-group",
-        className,
-        validationStatus === "error" && "usa-form-group--error"
+    <UIDConsumer>
+      {(id) => (
+        <div
+          className={classnames(
+            "usa-form-group",
+            className,
+            validationStatus === "error" && "usa-form-group--error"
+          )}
+        >
+          <label
+            className={classnames(
+              "usa-label",
+              labelSrOnly && "usa-sr-only",
+              validationStatus === "error" && "usa-label--error",
+              labelClassName
+            )}
+            htmlFor={id}
+            aria-describedby={ariaDescribedBy}
+          >
+            {required ? <Required label={label} /> : <Optional label={label} />}
+          </label>
+          {validationStatus === "error" && (
+            <span className="usa-error-message" id={`error_${id}`} role="alert">
+              <span className="usa-sr-only">Error: </span>
+              {errorMessage}
+            </span>
+          )}
+          {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
+          <input
+            className={classnames(
+              "usa-input",
+              validationStatus === "error" && "usa-input-error"
+            )}
+            id={id}
+            name={name}
+            value={value || ""}
+            type={type || "text"}
+            aria-required={required || "false"}
+            onChange={onChange}
+            autoComplete={autoComplete}
+            size={size}
+            pattern={pattern}
+            inputMode={inputMode}
+            ref={inputRef}
+            data-format={format}
+            data-format-message={formatMessage}
+            {...inputProps}
+            {...(validationStatus === "error"
+              ? { "aria-describedby": `error_${id}` }
+              : null)}
+          />
+        </div>
       )}
-    >
-      <label
-        className={classnames(
-          "usa-label",
-          labelSrOnly && "usa-sr-only",
-          validationStatus === "error" && "usa-label--error",
-          labelClassName
-        )}
-        htmlFor={widgetId}
-        aria-describedby={ariaDescribedBy}
-      >
-        {required ? <Required label={label} /> : <Optional label={label} />}
-      </label>
-      {validationStatus === "error" && (
-        <span className="usa-error-message" id={errorId} role="alert">
-          <span className="usa-sr-only">Error: </span>
-          {errorMessage}
-        </span>
-      )}
-      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
-      <input
-        className={classnames(
-          "usa-input",
-          validationStatus === "error" && "usa-input-error"
-        )}
-        id={widgetId}
-        name={name}
-        value={value || ""}
-        type={type || "text"}
-        aria-required={required || "false"}
-        onChange={onChange}
-        autoComplete={autoComplete}
-        size={size}
-        pattern={pattern}
-        inputMode={inputMode}
-        ref={inputRef}
-        data-format={format}
-        data-format-message={formatMessage}
-        {...inputProps}
-        {...(validationStatus === "error"
-          ? { "aria-describedby": errorId }
-          : null)}
-      />
-    </div>
+    </UIDConsumer>
   );
 };
 

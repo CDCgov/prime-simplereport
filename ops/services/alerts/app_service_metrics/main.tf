@@ -5,7 +5,7 @@ resource "azurerm_monitor_metric_alert" "cpu_util" {
   scopes              = [var.app_service_plan_id]
   frequency           = "PT1M"
   window_size         = "PT5M"
-  enabled             = var.enabled
+  enabled             = contains(var.disabled_alerts, "cpu_util") ? false : true
 
   criteria {
     aggregation      = "Average"
@@ -28,7 +28,7 @@ resource "azurerm_monitor_metric_alert" "mem_util" {
   frequency           = "PT1M"
   window_size         = "PT5M"
   severity            = var.severity
-  enabled             = var.enabled
+  enabled             = contains(var.disabled_alerts, "mem_util") ? false : true
 
   criteria {
     aggregation      = "Average"
@@ -51,7 +51,7 @@ resource "azurerm_monitor_metric_alert" "http_response_time" {
   frequency           = "PT1M"
   window_size         = "PT5M"
   severity            = var.severity
-  enabled             = var.enabled
+  enabled             = contains(var.disabled_alerts, "http_response_time") ? false : true
 
   criteria {
     aggregation      = "Average"
@@ -75,7 +75,7 @@ resource "azurerm_monitor_metric_alert" "http_5xx_errors" {
   frequency           = "PT1M"
   window_size         = "PT5M"
   severity            = var.severity
-  enabled             = var.enabled
+  enabled             = contains(var.disabled_alerts, "http_5xx_errors") ? false : true
 
   criteria {
     aggregation      = "Average"
@@ -98,7 +98,7 @@ resource "azurerm_monitor_metric_alert" "http_4xx_errors" {
   frequency           = "PT1M"
   window_size         = "PT5M"
   severity            = var.severity
-  enabled             = var.enabled
+  enabled             = contains(var.disabled_alerts, "http_4xx_errors") ? false : true
 
   criteria {
     aggregation      = "Average"

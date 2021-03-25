@@ -16,7 +16,7 @@ module "monitoring" {
   rg_location   = data.azurerm_resource_group.training.location
   rg_name       = data.azurerm_resource_group.training.name
 
-  app_url = "${local.env}.simeplreport.gov"
+  app_url = "${local.env}.simplereport.gov"
 
   tags = local.management_tags
 }

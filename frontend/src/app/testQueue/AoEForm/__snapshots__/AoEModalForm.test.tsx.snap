@@ -57,7 +57,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_text_0"
+          id="2-val-text"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -65,7 +65,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_text_0"
+          htmlFor="2-val-text"
         >
           Text link to complete on smartphone
           <span
@@ -81,7 +81,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_verbal_1"
+          id="2-val-verbal"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -89,7 +89,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_verbal_1"
+          htmlFor="2-val-verbal"
         >
           Complete questionnaire verbally
         </label>
@@ -167,7 +167,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_text_0"
+          id="3-val-text"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -175,7 +175,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_text_0"
+          htmlFor="3-val-text"
         >
           Text link to complete on smartphone
           <span
@@ -191,7 +191,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_verbal_1"
+          id="3-val-verbal"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -199,7 +199,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_verbal_1"
+          htmlFor="3-val-verbal"
         >
           Complete questionnaire verbally
         </label>
@@ -266,7 +266,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_text_0"
+          id="1-val-text"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -274,7 +274,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_text_0"
+          htmlFor="1-val-text"
         >
           Text link to complete on smartphone
           <span
@@ -290,7 +290,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_verbal_1"
+          id="1-val-verbal"
           name="qr-code"
           onChange={[Function]}
           type="radio"
@@ -298,7 +298,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_verbal_1"
+          htmlFor="1-val-verbal"
         >
           Complete questionnaire verbally
         </label>
