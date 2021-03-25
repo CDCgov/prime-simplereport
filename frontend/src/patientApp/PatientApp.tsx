@@ -1,8 +1,17 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, {
+  FunctionComponent,
+  useEffect,
+  Component as ReactComponent,
+} from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import {
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  Redirect,
+} from "react-router-dom";
 import { AppInsightsContext } from "@microsoft/applicationinsights-react-js";
 
 import { reactPlugin } from "../app/AppInsights";
@@ -37,9 +46,27 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
   return <>{children}</>;
 };
 
+// const GuardedRoute =  ({ render, component: Component, auth, ...rest }: any) => (
+//   <Route {...rest} render={(props) => (
+//       auth === true
+//           ? <Component {...props} />
+//           : <Redirect to='/' />
+//   )} />
+// );
+
 const PatientApp = () => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
+  const patient = useSelector((state: any) => state.patient);
+
+  if (plid) {
+    window.history.replaceState(
+      {},
+      document.title,
+      window.location.origin + window.location.pathname + `?plid=${plid}`
+    );
+    //   window.location.search = `plid=${plid}`;
+  }
 
   useEffect(() => {
     dispatch(
@@ -47,7 +74,7 @@ const PatientApp = () => {
         plid: getPatientLinkIdFromUrl(),
       })
     );
-  }, [dispatch]);
+  });
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>

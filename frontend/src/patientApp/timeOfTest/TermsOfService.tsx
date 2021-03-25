@@ -12,9 +12,7 @@ const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
 
   if (nextPage) {
     console.info(props.location);
-    return (
-      <Redirect push to={`/birth-date-confirmation${props.location.search}`} />
-    );
+    return <Redirect to={`/birth-date-confirmation${props.location.search}`} />;
   }
 
   return (

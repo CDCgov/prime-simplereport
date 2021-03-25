@@ -23,7 +23,6 @@ const PatientProfileContainer = () => {
   if (prevPage) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/birth-date-confirmation",
         }}
@@ -34,7 +33,6 @@ const PatientProfileContainer = () => {
   if (editPage) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/patient-info-edit",
         }}
@@ -45,7 +43,6 @@ const PatientProfileContainer = () => {
   if (nextPage) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/patient-info-symptoms",
         }}
