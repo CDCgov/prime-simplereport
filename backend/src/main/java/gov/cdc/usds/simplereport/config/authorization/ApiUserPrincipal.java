@@ -22,14 +22,8 @@ public final class ApiUserPrincipal implements Principal {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    ApiUserPrincipal that = (ApiUserPrincipal) o;
-    return apiUser.equals(that.apiUser);
+    return this == o
+        || (o instanceof ApiUserPrincipal && apiUser.equals(((ApiUserPrincipal) o).apiUser));
   }
 
   @Override

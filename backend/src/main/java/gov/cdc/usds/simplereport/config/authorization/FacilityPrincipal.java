@@ -22,14 +22,8 @@ public final class FacilityPrincipal implements Principal {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    FacilityPrincipal that = (FacilityPrincipal) o;
-    return facility.equals(that.facility);
+    return this == o
+        || (o instanceof FacilityPrincipal && facility.equals(((FacilityPrincipal) o).facility));
   }
 
   @Override

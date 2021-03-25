@@ -23,14 +23,9 @@ public final class OrganizationPrincipal implements Principal {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (o == null || getClass() != o.getClass()) {
-      return false;
-    }
-    OrganizationPrincipal that = (OrganizationPrincipal) o;
-    return organization.equals(that.organization);
+    return this == o
+        || (o instanceof OrganizationPrincipal
+            && organization.equals(((OrganizationPrincipal) o).organization));
   }
 
   @Override
