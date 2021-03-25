@@ -17,6 +17,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
+import java.util.Optional;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -56,15 +57,15 @@ public class Person extends OrganizationScopedEternalEntity {
   @Column private String telephone;
   @Column private String email;
 
-  @Column(nullable = false)
-  private boolean employedInHealthcare;
+  @Column
+  private Boolean employedInHealthcare;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private PersonRole role;
 
-  @Column(nullable = false)
-  private boolean residentCongregateSetting;
+  @Column
+  private Boolean residentCongregateSetting;
 
   @Column
   @Type(type = "pg_enum")
@@ -97,8 +98,8 @@ public class Person extends OrganizationScopedEternalEntity {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     super(organization);
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -110,8 +111,8 @@ public class Person extends OrganizationScopedEternalEntity {
     this.race = race;
     this.ethnicity = ethnicity;
     this.gender = gender;
-    this.residentCongregateSetting = residentCongregateSetting;
-    this.employedInHealthcare = employedInHealthcare;
+    this.residentCongregateSetting = convertOptionalBoolean(residentCongregateSetting);
+    this.employedInHealthcare = convertOptionalBoolean(employedInHealthcare);
   }
 
   public Person(PersonName names, Organization org, Facility fac) {
@@ -135,8 +136,8 @@ public class Person extends OrganizationScopedEternalEntity {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -150,8 +151,8 @@ public class Person extends OrganizationScopedEternalEntity {
     this.race = race;
     this.ethnicity = ethnicity;
     this.gender = gender;
-    this.residentCongregateSetting = residentCongregateSetting;
-    this.employedInHealthcare = employedInHealthcare;
+    this.residentCongregateSetting = convertOptionalBoolean(residentCongregateSetting);
+    this.employedInHealthcare = convertOptionalBoolean(employedInHealthcare);
   }
 
   public Facility getFacility() {
@@ -214,12 +215,12 @@ public class Person extends OrganizationScopedEternalEntity {
     return gender;
   }
 
-  public Boolean getResidentCongregateSetting() {
-    return residentCongregateSetting;
+  public Optional<Boolean> getResidentCongregateSetting() {
+    return residentCongregateSetting==null ? Optional.empty() : Optional.of(residentCongregateSetting);
   }
 
-  public Boolean getEmployedInHealthcare() {
-    return employedInHealthcare;
+  public Optional<Boolean> getEmployedInHealthcare() {
+    return employedInHealthcare==null ? Optional.empty() : Optional.of(employedInHealthcare);
   }
 
   @JsonIgnore
@@ -266,6 +267,10 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public PersonRole getRole() {
     return role;
+  }
+
+  private Boolean convertOptionalBoolean(Optional<Boolean> bool) {
+    return bool.isPresent() ? bool.get() : null;
   }
 
   // these field names strings are used by Specification builders

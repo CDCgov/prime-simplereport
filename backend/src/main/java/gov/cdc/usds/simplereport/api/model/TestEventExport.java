@@ -86,6 +86,16 @@ public class TestEventExport {
           "refused", "ASKU" // Asked, but unknown
           );
 
+  private String boolToYesNoUnk(Optional<Boolean> value) {
+    if (value == null || value.isEmpty()) {
+      return "U";
+    } else if (value.get()) {
+      return "Y";
+    } else {
+      return "N";
+    }
+  }
+
   private String boolToYesNoUnk(Boolean value) {
     if (value == null) {
       return "U";

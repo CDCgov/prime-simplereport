@@ -10,6 +10,7 @@ import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -169,17 +170,25 @@ public class Translators {
         "\"" + g + "\" must be one of [" + String.join(", ", GENDERS) + "].");
   }
 
-  private static final Map<String, Boolean> YES_NO =
-      Map.of("y", true, "yes", true, "n", false, "no", false, "true", true, "false", false);
+  private static final Map<String, Optional<Boolean>> YES_NO =
+      Map.of(
+        "y", Optional.of(true),
+        "yes", Optional.of(true),
+        "n", Optional.of(false),
+        "no", Optional.of(false),
+        "true", Optional.of(true),
+        "false", Optional.of(false),
+        "u", Optional.empty(),
+        "unknown", Optional.empty());
 
-  public static Boolean parseYesNo(String v) {
+  public static Optional<Boolean> parseYesNo(String v) {
     String stringValue = parseString(v);
     if (stringValue == null) {
-      return null;
+      return Optional.empty();
     }
-    Boolean boolValue = YES_NO.get(stringValue.toLowerCase());
+    Optional<Boolean> boolValue = YES_NO.get(stringValue.toLowerCase());
     if (boolValue == null) {
-      throw IllegalGraphqlArgumentException.invalidInput(v, "value");
+        throw IllegalGraphqlArgumentException.invalidInput(v, "value");
     }
     return boolValue;
   }

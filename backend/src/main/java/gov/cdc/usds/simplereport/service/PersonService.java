@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
@@ -188,8 +189,8 @@ public class PersonService {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -228,8 +229,8 @@ public class PersonService {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     Person toUpdate = _patientContext.getLinkedOrder().getPatient();
     toUpdate.updatePatient(
         toUpdate.getLookupId(),
@@ -284,8 +285,8 @@ public class PersonService {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -304,6 +305,8 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
 
+        // it seems to be coming through as false here, which is a problem
+    System.out.println("BOOYAH! UpdatedPatient: " + residentCongregateSetting + " " + patientToUpdate.getResidentCongregateSetting());
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);
   }

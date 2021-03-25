@@ -62,4 +62,5 @@ export const GENDER_VALUES: { value: Gender; label: string }[] = [
 export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "Yes", value: "YES" },
   { label: "No", value: "NO" },
+  { label: "Unknown", value: "UNKNOWN"},
 ];

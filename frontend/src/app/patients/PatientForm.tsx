@@ -53,8 +53,8 @@ const ADD_PATIENT = gql`
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
   ) {
     addPatient(
       facilityId: $facilityId
@@ -102,8 +102,8 @@ const UPDATE_PATIENT = gql`
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -220,7 +220,7 @@ const PatientForm = (props: Props) => {
         "input"
       );
       // If either is checked, return a value, if neither is checked, value is null
-      value = [0, 1].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
+      value = [0, 1, 2].map((i) => radioInputs?.item(i)?.checked).filter((v) => v)
         .length
         ? "true"
         : null;
@@ -459,12 +459,14 @@ const PatientForm = (props: Props) => {
     setPatient({ ...patient, gender });
   };
 
-  const onResidentCongregateSettingChange = (
-    residentCongregateSetting: YesNo
-  ) => {
-    setFormChanged(true);
-    setPatient({ ...patient, residentCongregateSetting });
-  };
+  const onResidentCongregateSettingChange = (residentCongregateSetting : YesNo) => {
+    setFormChanged(true)
+    setPatient({...patient, residentCongregateSetting})
+    console.log("RESIDENT CHANGED");
+    // aha! Somehow, here, patient isn't being set correctly (defaults to no)
+    console.log(residentCongregateSetting);
+    console.log(patient);
+  }
 
   const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
     setFormChanged(true);

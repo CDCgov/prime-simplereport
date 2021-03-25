@@ -8,4 +8,4 @@ type Race =
   | "refused";
 type Ethnicity = "hispanic" | "not_hispanic";
 type Gender = "male" | "female" | "other";
-type YesNo = "YES" | "NO";
+type YesNo = "YES" | "NO" | "UNKNOWN";

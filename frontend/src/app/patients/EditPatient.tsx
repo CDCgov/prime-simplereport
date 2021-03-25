@@ -49,9 +49,20 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  const residentCongregateSetting = data.patient.residentCongregateSetting
-    ? "YES"
-    : "NO";
+  console.log("residentcongregatesetting: ", data.patient.residentCongregateSetting);
+
+  let residentCongregateSetting;
+  if (data.patient.residentCongregateSetting == null) {
+    residentCongregateSetting = "UNKNOWN";
+  } else if (data.patient.residentCongregateSetting == true) {
+    residentCongregateSetting = "YES";
+  } else {
+    residentCongregateSetting = "NO";
+  }
+
+  // const residentCongregateSetting = data.patient.residentCongregateSetting
+  //   ? "YES"
+  //   : "NO";
   const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
     <div className="bg-base-lightest">

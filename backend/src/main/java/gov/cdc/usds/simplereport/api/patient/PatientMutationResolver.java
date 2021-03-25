@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
+import java.util.Optional;
 import javax.servlet.http.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,8 +71,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     return _ps.addPatient(
         facilityId,
         parseString(lookupId),
@@ -118,8 +119,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String race,
       String ethnicity,
       String gender,
-      Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Optional<Boolean> residentCongregateSetting,
+      Optional<Boolean> employedInHealthcare) {
     return _ps.updatePatient(
         facilityId,
         patientId,
