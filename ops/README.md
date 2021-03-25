@@ -24,7 +24,10 @@ On Mac with homebrew
 ```bash
 brew install azure-cli
 az login
+az account set --subscription "$SUB_ID"
 ```
+
+`$SUB_ID` is the Subscription ID in the console when you click on the subscription. You don't technically have to set an active subscription, but Terraform won't work properly if you don't, as many permissions are subscription-based.
 
 #### Okta
 
