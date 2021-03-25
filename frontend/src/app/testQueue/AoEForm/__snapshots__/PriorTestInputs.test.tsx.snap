@@ -31,7 +31,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_YES_0"
+          id="1-val-YES"
           name="prior_test_flag"
           onChange={[Function]}
           type="radio"
@@ -39,7 +39,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_YES_0"
+          htmlFor="1-val-YES"
         >
           Yes
         </label>
@@ -52,7 +52,7 @@ Array [
           className="usa-radio__input"
           data-required="false"
           disabled={false}
-          id="radio-test-1_NO_1"
+          id="1-val-NO"
           name="prior_test_flag"
           onChange={[Function]}
           type="radio"
@@ -60,7 +60,7 @@ Array [
         />
         <label
           className="usa-radio__label"
-          htmlFor="radio-test-1_NO_1"
+          htmlFor="1-val-NO"
         >
           No
         </label>
@@ -72,14 +72,14 @@ Array [
   >
     <label
       className="usa-label"
-      htmlFor="text-test-1"
+      htmlFor="2"
     >
       Date of Most Recent Test
     </label>
     <input
       aria-required="false"
       className="usa-input"
-      id="text-test-1"
+      id="2"
       max="2021-02-06"
       min="2020-02-01"
       name="prior_test_date"
@@ -93,19 +93,21 @@ Array [
   >
     <label
       className="usa-label"
-      htmlFor="drop-test-1"
+      htmlFor="3"
     >
       Type of Prior Test
     </label>
     <select
       aria-required="false"
       className="usa-select"
-      id="drop-test-1"
+      id="3"
       name="prior_test_type"
       onChange={[Function]}
       value=""
     >
-      <option>
+      <option
+        value=""
+      >
         - Select -
       </option>
     </select>
@@ -115,19 +117,21 @@ Array [
   >
     <label
       className="usa-label"
-      htmlFor="drop-test-1"
+      htmlFor="4"
     >
       Result of Prior Test
     </label>
     <select
       aria-required="false"
       className="usa-select"
-      id="drop-test-1"
+      id="4"
       name="prior_test_result"
       onChange={[Function]}
       value=""
     >
-      <option>
+      <option
+        value=""
+      >
         - Select -
       </option>
       <option

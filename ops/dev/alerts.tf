@@ -6,4 +6,5 @@ module "metric_alerts" {
   action_group_id     = data.terraform_remote_state.global.outputs.slack_alert_action_id
   rg_name             = data.azurerm_resource_group.rg.name
   tags                = local.management_tags
+  disabled_alerts     = ["cpu_util", "mem_util"]
 }

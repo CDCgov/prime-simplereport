@@ -35,6 +35,7 @@ export const QUERY_PATIENT = gql`
       birthDate
       gender
       telephone
+      testResultDelivery
     }
   }
 `;
@@ -51,6 +52,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     addPatientToQueue(
       facilityId: $facilityId
@@ -63,6 +65,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
       priorTestType: $priorTestType
       priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
+      testResultDelivery: $testResultDelivery
     )
   }
 `;
@@ -146,6 +149,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestResult,
       priorTestDate,
       priorTestType,
+      testResultDelivery,
     },
     createOrUpdate = "create"
   ) => {
@@ -162,6 +166,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestDate,
       priorTestType,
       priorTestResult,
+      testResultDelivery,
     };
     if (createOrUpdate === "create") {
       callback = addPatientToQueue;

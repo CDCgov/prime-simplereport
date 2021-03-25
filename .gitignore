@@ -4,3 +4,5 @@
 *.tfvars
 .terraform.lock.hcl
 node_modules
+*.swp
+*.swo

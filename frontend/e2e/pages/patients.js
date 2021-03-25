@@ -7,10 +7,10 @@ function addPatient(dobFormat) {
   const firstName = faker.name.firstName();
   const lastName = faker.name.lastName();
   const fullName = `${lastName}, ${firstName}`;
-  const dob = dayjs(faker.date.past(100));
+  const dob = dayjs(faker.date.between("1920-01-01", "2002-12-31"));
   const dobForInput = dob.format(dobFormat);
   const dobForPatientLink = dob.format("MM/DD/YYYY");
-  const phone = faker.phone.phoneNumberFormat(0);
+  const phone = "(800) 232-4636";
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
@@ -75,7 +75,7 @@ module.exports = {
       elements: {
         firstName: 'input[name="firstName"]',
         lastName: 'input[name="lastName"]',
-        facility: 'select[name="currentFacilityId"]',
+        facility: 'select[name="facilityId"]',
         dob: 'input[name="birthDate"]',
         phone: 'input[name="telephone"]',
         address: 'input[name="street"]',
