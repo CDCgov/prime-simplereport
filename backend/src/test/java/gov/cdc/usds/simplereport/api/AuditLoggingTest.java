@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
@@ -110,9 +111,7 @@ class AuditLoggingTest extends BaseApiTest {
             .put("patientLinkId", link.getInternalId().toString())
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
-    _mockMvc
-        .perform(withJsonContent(put(PXP_LINK_VERIFY), requestBody))
-        .andExpect(status().isOk());
+    _mockMvc.perform(withJsonContent(put(PXP_LINK_VERIFY), requestBody)).andExpect(status().isOk());
 
     ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, PXP_LINK_VERIFY, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");

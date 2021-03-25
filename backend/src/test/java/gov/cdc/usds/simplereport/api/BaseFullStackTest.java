@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
@@ -113,11 +114,12 @@ public abstract class BaseFullStackTest {
     assertTimestampSanity(event, _testStart);
   }
 
-  protected MockHttpServletRequestBuilder withJsonContent(MockHttpServletRequestBuilder builder, String jsonContent) {
-    return builder.contentType(MediaType.APPLICATION_JSON_VALUE)
+  protected MockHttpServletRequestBuilder withJsonContent(
+      MockHttpServletRequestBuilder builder, String jsonContent) {
+    return builder
+        .contentType(MediaType.APPLICATION_JSON_VALUE)
         .accept(MediaType.APPLICATION_JSON)
         .characterEncoding("UTF-8")
         .content(jsonContent);
-  
   }
 }

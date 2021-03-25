@@ -28,8 +28,7 @@ public class AuditLoggingAdvice {
   private final AuditService _auditService;
   private final CurrentPatientContextHolder _contextHolder;
 
-  public AuditLoggingAdvice(
-      AuditService auditService, CurrentPatientContextHolder contextHolder) {
+  public AuditLoggingAdvice(AuditService auditService, CurrentPatientContextHolder contextHolder) {
     this._auditService = auditService;
     this._contextHolder = contextHolder;
   }
