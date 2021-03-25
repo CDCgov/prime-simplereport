@@ -1,9 +1,9 @@
 import React from "react";
 import classnames from "classnames";
+import { UIDConsumer } from "react-uid";
 
 import Required from "../commonComponents/Required";
 
-import useUniqueIds from "./useUniqueIds";
 import Optional from "./Optional";
 
 export interface Option {
@@ -44,45 +44,51 @@ const Dropdown: React.FC<Props & SelectProps> = ({
   errorMessage,
   ...inputProps
 }) => {
-  const [selectId] = useUniqueIds("drop", 1);
-
   return (
-    <div
-      className={classnames(
-        "usa-form-group prime-dropdown ",
-        validationStatus === "error" && "usa-form-group--error",
-        className
-      )}
-    >
-      {label && (
-        <label className="usa-label" htmlFor={selectId}>
-          {required ? <Required label={label} /> : <Optional label={label} />}
-        </label>
-      )}
-      {validationStatus === "error" && (
-        <div className="usa-error-message" role="alert">
-          <span className="usa-sr-only">Error: </span>
-          {errorMessage}
+    <UIDConsumer>
+      {(id) => (
+        <div
+          className={classnames(
+            "usa-form-group prime-dropdown ",
+            validationStatus === "error" && "usa-form-group--error",
+            className
+          )}
+        >
+          {label && (
+            <label className="usa-label" htmlFor={id}>
+              {required ? (
+                <Required label={label} />
+              ) : (
+                <Optional label={label} />
+              )}
+            </label>
+          )}
+          {validationStatus === "error" && (
+            <div className="usa-error-message" role="alert">
+              <span className="usa-sr-only">Error: </span>
+              {errorMessage}
+            </div>
+          )}
+          <select
+            className="usa-select"
+            name={name}
+            id={id}
+            aria-required={required || "false"}
+            onChange={onChange}
+            value={selectedValue || defaultOption || ""}
+            disabled={disabled}
+            {...inputProps}
+          >
+            {defaultSelect && <option value="">- Select -</option>}
+            {options.map(({ value, label, disabled }) => (
+              <option key={value} value={value} disabled={disabled}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
       )}
-      <select
-        className="usa-select"
-        name={name}
-        id={selectId}
-        aria-required={required || "false"}
-        onChange={onChange}
-        value={selectedValue || defaultOption || ""}
-        disabled={disabled}
-        {...inputProps}
-      >
-        {defaultSelect && <option value={undefined}>- Select -</option>}
-        {options.map(({ value, label, disabled }, i) => (
-          <option key={value + i} value={value} disabled={disabled}>
-            {label}
-          </option>
-        ))}
-      </select>
-    </div>
+    </UIDConsumer>
   );
 };
 
