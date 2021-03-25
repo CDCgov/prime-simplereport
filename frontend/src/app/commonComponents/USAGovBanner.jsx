@@ -97,14 +97,6 @@ export default class USAGovBanner extends React.Component {
                 </span>
               </button>
             </div>
-            {process.env.REACT_APP_IS_TRAINING_SITE === "true" ? (
-              <div className="usa-banner__inner">
-                <p className="usa-banner__header-text">
-                  This is a publicly available website to be used for training
-                  purposes only
-                </p>
-              </div>
-            ) : null}
           </header>
           {this.renderAccordionContent()}
         </div>
