@@ -1,3 +1,73 @@
+locals {
+  app_setting_defaults = {
+    "MB_DB_CONNECTION_URI"           = var.postgres_url
+    "WEBSITE_VNET_ROUTE_ALL"         = 1
+    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
+    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
+  }
+
+  grant_command = <<EOF
+  psql \
+  --host ${var.postgres_server_name} \
+  --port ${var.postgres_port} \
+  --username ${var.administrator_login} \
+  --dbname "${var.postgres_db_name}" \
+  --command "
+    CREATE ROLE ${data.azurerm_key_vault_secret.postgres_readonly_user.value} with LOGIN ENCRYPTED PASSWORD
+    '${data.azurerm_key_vault_secret.postgres_readonly_pass.value}';
+    GRANT USAGE ON SCHEMA public TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility_device_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE device_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE organization TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE patient_answers TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE patient_link TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE data_hub_upload TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE time_of_consent TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE device_specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE facility_device_specimen_type TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    GRANT SELECT ON TABLE test_order TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+
+    GRANT SELECT (internal_id, created_at, updated_at, last_seen, is_deleted) ON TABLE api_user
+    TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+    
+    GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id)
+    ON TABLE provider TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+                
+    GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, organization_id, employed_in_healthcare,
+    resident_congregate_setting, facility_id, race, gender, ethnicity, lookup_id, role)
+    ON TABLE person TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+                
+    GRANT SELECT (device_specimen_type_id, created_at, created_by, updated_at, updated_by, patient_id, organization_id, 
+    device_type_id, result, facility_id, survey_data, date_tested_backdate, test_order_id, correction_status, 
+    prior_corrected_test_event_id, internal_id, reason_for_correction)
+    ON TABLE test_event TO ${data.azurerm_key_vault_secret.postgres_readonly_user.value};
+  "
+  EOF
+}
+
+variable "app_settings_overrides" {
+  description = "override values for app_settings"
+  default = {}
+}
+
+resource "null_resource" "add_readonly_db_user" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command    = var.run_readonly_user_create == false ? "echo" : locals.grant_command
+    on_failure = continue
+  }
+
+  depends_on = [
+    azurerm_key_vault_secret.postgres_readonly_user,
+    azurerm_key_vault_secret.postgres_readonly_pass
+  ]
+}
+
 resource "azurerm_app_service" "metabase" {
   name                = var.name
   resource_group_name = var.resource_group_name
@@ -10,12 +80,7 @@ resource "azurerm_app_service" "metabase" {
     linux_fx_version = "DOCKER|metabase/metabase"
   }
 
-  app_settings = {
-    "MB_DB_CONNECTION_URI"           = var.postgres_url
-    "WEBSITE_VNET_ROUTE_ALL"         = 1
-    "WEBSITE_DNS_SERVER"             = "168.63.129.16"
-    "APPINSIGHTS_INSTRUMENTATIONKEY" = var.ai_instrumentation_key
-  }
+  app_settings = merge(local.app_setting_defaults, var.app_settings_overrides)
 
   identity {
     type = "SystemAssigned"

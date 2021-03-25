@@ -56,6 +56,16 @@ data "azurerm_key_vault_secret" "metabase_db_uri" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
+data "azurerm_key_vault_secret" "postgres_readonly_user" {
+  name        = "simple-report-${local.env}-postgres_readonly_user"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
+data "azurerm_key_vault_secret" "postgres_readonly_pass" {
+  name        = "simple-report-${local.env}-postgres_readonly_pass"
+  key_vault_id = data.azurerm_key_vault.sr_global.id
+}
+
 data "azurerm_key_vault_secret" "datahub_api_key" {
   name         = "datahub-api-key-dev"
   key_vault_id = data.azurerm_key_vault.sr_global.id
