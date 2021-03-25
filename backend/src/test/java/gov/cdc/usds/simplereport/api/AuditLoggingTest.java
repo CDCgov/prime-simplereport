@@ -2,16 +2,37 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
+import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 class AuditLoggingTest extends BaseApiTest {
+
+  private static final String ACCOUNT_REQUEST = "/account-request/waitlist";
+
+  private static final String PXP_LINK_VERIFY = "/pxp/link/verify";
+
+  @Autowired private MockMvc _mockMvc;
 
   private static final Set<UserPermission> STANDARD_PERMS_TODAY =
       Set.of(
@@ -78,5 +99,87 @@ class AuditLoggingTest extends BaseApiTest {
     assertEquals(
         "DAT_ORG", // this should be a constant
         event.getOrganization().getExternalId());
+  }
+
+  @Test
+  void auditableRestRequest_noHeaders_boringAudit() throws Exception {
+    PatientLink link = createLink();
+    String requestBody =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("patientLinkId", link.getInternalId().toString())
+            .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
+            .toString();
+    _mockMvc
+        .perform(withJsonContent(put(PXP_LINK_VERIFY), requestBody))
+        .andExpect(status().isOk());
+
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, PXP_LINK_VERIFY, null);
+    assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
+    assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
+
+    HttpRequestDetails httpDetails = event.getHttpRequestDetails(); // we already checked requestUri
+    // defaults
+    assertEquals("localhost", httpDetails.getServerName());
+    assertEquals("127.0.0.1", httpDetails.getRemoteAddress());
+    // not supplied
+    assertEquals(List.of(), httpDetails.getForwardedAddresses());
+    assertNull(httpDetails.getForwardedProtocol());
+    assertNull(httpDetails.getOriginalHostName());
+  }
+
+  private PatientLink createLink() {
+    MutableObject<PatientLink> linkHolder = new MutableObject<>();
+    TestUserIdentities.withStandardUser(
+        () -> {
+          Organization org = _dataFactory.createValidOrg();
+          Facility site = _dataFactory.createValidFacility(org);
+          Person person = _dataFactory.createFullPerson(org);
+          TestOrder testOrder = _dataFactory.createTestOrder(person, site);
+          linkHolder.setValue(_dataFactory.createPatientLink(testOrder));
+        });
+    return linkHolder.getValue();
+  }
+
+  @Test
+  void auditableRestRequest_funnyHeaders_auditCorrect() throws Exception {
+    PatientLink link = createLink();
+    String requestBody =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("patientLinkId", link.getInternalId().toString())
+            .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
+            .toString();
+    MockHttpServletRequestBuilder req =
+        withJsonContent(put(PXP_LINK_VERIFY), requestBody)
+            .header("X-forwarded-PROTO", "gopher")
+            .header("x-ORIGINAL-HOST", "simplereport.simple")
+            .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
+    _mockMvc.perform(req).andExpect(status().isOk());
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, PXP_LINK_VERIFY, null);
+    assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
+    assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
+
+    HttpRequestDetails httpDetails = event.getHttpRequestDetails(); // we already checked requestUri
+    // defaults
+    assertEquals("localhost", httpDetails.getServerName());
+    assertEquals("127.0.0.1", httpDetails.getRemoteAddress());
+
+    assertEquals(
+        List.of("192.168.153.128:80", "10.3.1.1:443"), httpDetails.getForwardedAddresses());
+    assertEquals("gopher", httpDetails.getForwardedProtocol());
+    assertEquals("simplereport.simple", httpDetails.getOriginalHostName());
+  }
+
+  @Test
+  void nonAuditableRestRequest_noAudit() throws Exception {
+    String requestBody =
+        "{\"name\":\"Angela Chan\",\"email\":\"qasas@mailinator.com\",\"phone\":\"+1 (157) 294-1842\","
+            + "\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\","
+            + "\"referral\":\"Ea error voluptate v\"}";
+    _mockMvc
+        .perform(withJsonContent(post(ACCOUNT_REQUEST), requestBody))
+        .andExpect(status().isOk());
+    assertNoAuditEvent();
   }
 }

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
@@ -19,6 +20,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /**
  * Base class for all tests that simulate fully-integrated API requests by either patients or
@@ -64,9 +67,12 @@ public abstract class BaseFullStackTest {
     return event;
   }
 
+  /** REST audit event checker: includes "this is not graphql" checks" */
   protected ApiAuditEvent assertLastAuditEntry(
       HttpStatus status, String requestUri, String requestId) {
     ApiAuditEvent event = getTimeCheckedEvent();
+    assertNull(event.getGraphqlQueryDetails());
+    assertEquals(null, event.getGraphqlErrorPaths());
     HttpRequestDetails requestDetails = event.getHttpRequestDetails();
     if (requestUri != null) {
       assertEquals(requestUri, requestDetails.getRequestUri());
@@ -105,5 +111,13 @@ public abstract class BaseFullStackTest {
 
   protected void assertTimestampSanity(ApiAuditEvent event) {
     assertTimestampSanity(event, _testStart);
+  }
+
+  protected MockHttpServletRequestBuilder withJsonContent(MockHttpServletRequestBuilder builder, String jsonContent) {
+    return builder.contentType(MediaType.APPLICATION_JSON_VALUE)
+        .accept(MediaType.APPLICATION_JSON)
+        .characterEncoding("UTF-8")
+        .content(jsonContent);
+  
   }
 }
