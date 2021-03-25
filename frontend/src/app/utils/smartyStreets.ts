@@ -52,13 +52,6 @@ export const getBestSuggestion = async (
     const response = await client.send(lookup);
     return getAddress(response.lookups[0].result[0]);
   } catch (error) {
-    if (
-      error instanceof SmartyStreetsError ||
-      error instanceof core.Errors.SmartyError
-    ) {
-      console.error("Unable to validate address:", error.message);
-    } else {
-      throw error;
-    }
+    console.error("Unable to validate address:", error.message);
   }
 };
