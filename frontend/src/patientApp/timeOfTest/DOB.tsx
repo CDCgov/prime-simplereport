@@ -77,8 +77,17 @@ const DOB = () => {
       </main>
     );
   }
-
-  if (patient) {
+  if (patient?.orderStatus === "COMPLETED") {
+    return (
+      <Redirect
+        push
+        to={{
+          pathname: "/test-result",
+          search: `?plid=${plid}`,
+        }}
+      />
+    );
+  } else if (patient?.firstName) {
     return (
       <Redirect
         push
@@ -102,7 +111,7 @@ const DOB = () => {
                 <TextInput
                   label={"Date of birth"}
                   name={"birthDate"}
-                  type={"bday"}
+                  type={"password"}
                   autoComplete={"bday"}
                   value={birthDate}
                   size={8}

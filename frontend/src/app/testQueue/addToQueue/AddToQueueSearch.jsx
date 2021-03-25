@@ -7,15 +7,17 @@ import {
 } from "@microsoft/applicationinsights-react-js";
 
 import Alert from "../../commonComponents/Alert";
-import { QUEUE_NOTIFICATION_TYPES, ALERT_CONTENT } from "../constants";
+import {
+  QUEUE_NOTIFICATION_TYPES,
+  ALERT_CONTENT,
+  MIN_SEARCH_CHARACTER_COUNT,
+  SEARCH_DEBOUNCE_TIME,
+} from "../constants";
 import { showNotification } from "../../utils";
 
 import SearchResults from "./SearchResults";
 import SearchInput from "./SearchInput";
 import { useDebounce } from "./useDebounce";
-
-const MIN_SEARCH_CHARACTER_COUNT = 2;
-const SEARCH_DEBOUNCE_TIME = 500;
 
 export const QUERY_PATIENT = gql`
   query GetPatientsByFacility($facilityId: ID!, $namePrefixMatch: String) {
@@ -33,6 +35,7 @@ export const QUERY_PATIENT = gql`
       birthDate
       gender
       telephone
+      testResultDelivery
     }
   }
 `;
@@ -49,6 +52,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     addPatientToQueue(
       facilityId: $facilityId
@@ -61,6 +65,7 @@ const ADD_PATIENT_TO_QUEUE = gql`
       priorTestType: $priorTestType
       priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
+      testResultDelivery: $testResultDelivery
     )
   }
 `;
@@ -144,6 +149,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestResult,
       priorTestDate,
       priorTestType,
+      testResultDelivery,
     },
     createOrUpdate = "create"
   ) => {
@@ -160,6 +166,7 @@ const AddToQueueSearchBox = ({ refetchQueue, facilityId, patientsInQueue }) => {
       priorTestDate,
       priorTestType,
       priorTestResult,
+      testResultDelivery,
     };
     if (createOrUpdate === "create") {
       callback = addPatientToQueue;

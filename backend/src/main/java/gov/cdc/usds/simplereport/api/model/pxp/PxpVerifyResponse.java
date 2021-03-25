@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.model.pxp;
 
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
+import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import java.time.LocalDate;
@@ -13,12 +14,14 @@ import java.util.Date;
  * – unfortunately the JsonIgnores include stuff we need, which somehow get serialized in the
  * GraphQL endpoints
  */
-public class PxpPersonWrapper {
+public class PxpVerifyResponse {
   private Person p;
+  private OrderStatus os;
   private PxpTestEventWrapper te;
 
-  public PxpPersonWrapper(Person p, TestEvent te) {
+  public PxpVerifyResponse(Person p, OrderStatus os, TestEvent te) {
     this.p = p;
+    this.os = os;
     this.te = te != null ? new PxpTestEventWrapper(te) : null;
   }
 
@@ -112,6 +115,10 @@ public class PxpPersonWrapper {
     }
     return p.getOrganization().getOrganizationName();
   }
+
+  public OrderStatus getOrderStatus() {
+    return os;
+  }
 }
 
 class PxpTestEventWrapper {
@@ -127,5 +134,9 @@ class PxpTestEventWrapper {
 
   public TestResult getResult() {
     return te.getResult();
+  }
+
+  public String getDeviceTypeModel() {
+    return te.getTestOrder().getDeviceSpecimen().getDeviceType().getModel();
   }
 }

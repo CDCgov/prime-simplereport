@@ -22,6 +22,9 @@ function conductTest(patientName) {
     .section("@modal")
     .to.contain.text("Are you experiencing any of the following symptoms?");
   this.section.modal.expect.element("@noSymptoms").to.be.visible;
+  this.api.execute(
+    'document.querySelector(\'input[name="no_symptoms"][value="no"]+label\').scrollIntoView()'
+  );
   this.section.modal.click("@noSymptoms");
   this.section.modal.expect.element("@firstTest").to.be.visible;
   this.api.execute(
@@ -80,6 +83,27 @@ function getPatientLink(patientName) {
   });
 }
 
+function getResultPatientLink(patientName) {
+  this.expect.section("@navbar").to.be.visible;
+  this.section.navbar.expect.element("@resultsLink").to.be.visible;
+  this.section.navbar.click("@resultsLink");
+  this.section.app.expect.element("@resultsTable").to.be.visible;
+  this.section.app.expect.element("@testResultRow").to.be.visible;
+  this.section.app.expect
+    .element("@testResultRow")
+    .to.contain.text(patientName);
+
+  return new Promise((resolve) => {
+    this.getAttribute(
+      "tr.sr-test-result-row:first-of-type",
+      "data-patient-link",
+      ({ value: patientLink }) => {
+        resolve(patientLink);
+      }
+    );
+  });
+}
+
 function verifyQuestionnaireCompleted(patientName) {
   this.expect.section("@queueCard").to.be.visible;
   this.expect.section("@queueCard").to.contain.text(patientName);
@@ -110,6 +134,7 @@ module.exports = {
     {
       conductTest,
       getPatientLink,
+      getResultPatientLink,
       verifyQuestionnaireCompleted,
     },
   ],
@@ -119,6 +144,7 @@ module.exports = {
       elements: {
         searchBar: "#search-field-small",
         resultsTable: ".usa-table",
+        testResultRow: "tr.sr-test-result-row:first-of-type",
       },
     },
     navbar: {

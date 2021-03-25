@@ -14,7 +14,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
+import org.hibernate.annotations.JoinFormula;
 import org.hibernate.annotations.Type;
 import org.json.JSONObject;
 
@@ -38,7 +38,15 @@ public class TestOrder extends BaseTestInfo {
   @Column(columnDefinition = "uuid")
   private UUID testEventId; // id used directly without needing to load
 
-  @OneToOne(mappedBy = "testOrder")
+  @ManyToOne
+  @JoinFormula(
+      "("
+          + "SELECT pl.internal_id "
+          + "FROM {h-schema}patient_link pl "
+          + "WHERE pl.test_order_id = internal_id "
+          + "ORDER BY pl.created_at DESC "
+          + "LIMIT 1"
+          + ")")
   private PatientLink patientLink;
 
   protected TestOrder() {
