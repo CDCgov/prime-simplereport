@@ -35,7 +35,7 @@ export const Input = <T extends { [key: string]: any }>({
       value={formObject[field] || ""}
       onChange={onChangeHandler}
       onBlur={() => {
-        validate(label);
+        validate(field);
       }}
       validationStatus={getValidationStatus(field)}
       errorMessage={errors[field]}
