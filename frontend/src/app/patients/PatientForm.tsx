@@ -53,8 +53,8 @@ const ADD_PATIENT = gql`
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean
-    $employedInHealthcare: Boolean
+    $residentCongregateSetting: String
+    $employedInHealthcare: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -102,8 +102,8 @@ const UPDATE_PATIENT = gql`
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean
-    $employedInHealthcare: Boolean
+    $residentCongregateSetting: String
+    $employedInHealthcare: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -342,8 +342,8 @@ const PatientForm = (props: Props) => {
       race: patient.race,
       ethnicity: patient.ethnicity,
       gender: patient.gender,
-      residentCongregateSetting: patient.residentCongregateSetting === "YES",
-      employedInHealthcare: patient.employedInHealthcare === "YES",
+      residentCongregateSetting: patient.residentCongregateSetting,
+      employedInHealthcare: patient.employedInHealthcare,
     };
     if (props.isPxpView) {
       // due to @JsonIgnores on Person to avoid duplicate recording, we have to
@@ -376,12 +376,13 @@ const PatientForm = (props: Props) => {
           />
         );
 
-        const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting
-          ? "YES"
-          : "NO";
-        const employedInHealthcare = updatedPatientFromApi.employedInHealthcare
-          ? "YES"
-          : "NO";
+        // let residentCongregateSetting;
+        // if (updatedPatientFromApi.residentCongregateSetting)
+
+        const residentCongregateSetting = updatedPatientFromApi.residentCongregateSetting;
+        const employedInHealthcare = updatedPatientFromApi.employedInHealthcare;
+          // ? "YES"
+          // : "NO";
 
         dispatch(
           reduxSetPatient({
@@ -462,13 +463,10 @@ const PatientForm = (props: Props) => {
   const onResidentCongregateSettingChange = (residentCongregateSetting : YesNo) => {
     setFormChanged(true)
     setPatient({...patient, residentCongregateSetting})
-    console.log("RESIDENT CHANGED");
-    // aha! Somehow, here, patient isn't being set correctly (defaults to no)
-    console.log(residentCongregateSetting);
-    console.log(patient);
   }
 
   const onEmployedInHealthcareChange = (employedInHealthcare: YesNo) => {
+    console.log(employedInHealthcare);
     setFormChanged(true);
     setPatient({ ...patient, employedInHealthcare });
   };

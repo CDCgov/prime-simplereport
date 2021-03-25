@@ -220,6 +220,7 @@ public class Person extends OrganizationScopedEternalEntity {
   }
 
   public Optional<Boolean> getEmployedInHealthcare() {
+    System.out.println("BOOYAH PERSON EMPLOYED IN HEALTHCARE: " + employedInHealthcare);
     return employedInHealthcare==null ? Optional.empty() : Optional.of(employedInHealthcare);
   }
 

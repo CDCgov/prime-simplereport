@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -20,7 +21,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.UUID;
-import java.util.Optional;
 import javax.servlet.http.Part;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,8 +71,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String race,
       String ethnicity,
       String gender,
-      Optional<Boolean> residentCongregateSetting,
-      Optional<Boolean> employedInHealthcare) {
+      String residentCongregateSetting,
+      String employedInHealthcare) {
     return _ps.addPatient(
         facilityId,
         parseString(lookupId),
@@ -94,8 +94,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),
-        residentCongregateSetting,
-        employedInHealthcare);
+        parseYesNo(residentCongregateSetting),
+        parseYesNo(employedInHealthcare));
   }
 
   public Person updatePatient(
@@ -119,8 +119,9 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String race,
       String ethnicity,
       String gender,
-      Optional<Boolean> residentCongregateSetting,
-      Optional<Boolean> employedInHealthcare) {
+      String residentCongregateSetting,
+      String employedInHealthcare) {
+        System.out.println("BOOYAH UPDATED PATIENT EMPLOYMENT: " + employedInHealthcare);
     return _ps.updatePatient(
         facilityId,
         patientId,
@@ -143,8 +144,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseRace(race),
         parseEthnicity(ethnicity),
         parseGender(gender),
-        residentCongregateSetting,
-        employedInHealthcare);
+        parseYesNo(residentCongregateSetting),
+        parseYesNo(employedInHealthcare));
   }
 
   public Person setPatientIsDeleted(UUID id, Boolean deleted) {

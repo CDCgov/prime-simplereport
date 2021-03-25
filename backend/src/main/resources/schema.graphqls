@@ -97,8 +97,8 @@ type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS"
   email: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   role: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   isDeleted: Boolean  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  residentCongregateSetting: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  employedInHealthcare: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultDelivery: TestResultDeliveryPreference
@@ -388,8 +388,8 @@ type Mutation {
     race: String
     ethnicity: String
     gender: String
-    residentCongregateSetting: Boolean
-    employedInHealthcare: Boolean
+    residentCongregateSetting: String
+    employedInHealthcare: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID
@@ -412,8 +412,8 @@ type Mutation {
     race: String
     ethnicity: String
     gender: String
-    residentCongregateSetting: Boolean
-    employedInHealthcare: Boolean
+    residentCongregateSetting: String
+    employedInHealthcare: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(
     id: ID!
