@@ -18,10 +18,13 @@ directive @requiredPermissions(
 
 # graphql-java-extended-validation directives
 directive @Size(
-  min : Int = 0, max : Int = 2147483647, message : String = "graphql.validation.Size.message"
+  min: Int!
+  max: Int!
+  message: String = "graphql.validation.Size.message"
 ) on ARGUMENT_DEFINITION
 directive @Pattern(
-  regexp : String! =".*", message : String = "graphql.validation.Pattern.message"
+  regexp: String!
+  message: String = "graphql.validation.Pattern.message"
 ) on ARGUMENT_DEFINITION
 
 # java.util.Date implementation
@@ -413,21 +416,21 @@ type Mutation {
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
     patientId: ID! @Size(min: 36, max: 36)
-    lookupId: String @Size(min: 0, max: 256)
-    firstName: String! @Size(min: 0, max: 256)
-    middleName: String @Size(min: 0, max: 256)
-    lastName: String! @Size(min: 0, max: 256)
+    lookupId: String
+    firstName: String!
+    middleName: String
+    lastName: String!
     suffix: String @Size(min: 0, max: 32)
     birthDate: LocalDate!
-    street: String! @Size(min: 0, max: 256)
-    streetTwo: String @Size(min: 0, max: 256)
-    city: String @Size(min: 0, max: 256)
+    street: String!
+    streetTwo: String
+    city: String
     state: String! @Pattern(regexp: "[A-Z]{2}", message: "Use 2 letter state code")
     zipCode: String! @Pattern(regexp: "[0-9]{5}(-[0-9]{4})?", message: "Use ZIP or ZIP+4 format")
-    telephone: String! @Pattern(regexp: "\\([0-9]{3}\\) [0-9]{3}-[0-9]{4}", message: "Invalid phone number format")
+    telephone: String!
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
-    county: String @Size(min: 0, max: 256)
+    county: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
     gender: String @Size(min: 0, max: 32)
