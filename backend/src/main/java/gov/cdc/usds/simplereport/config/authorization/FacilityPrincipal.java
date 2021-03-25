@@ -1,19 +1,15 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import gov.cdc.usds.simplereport.db.model.Facility;
-import java.security.Principal;
 import java.util.Objects;
 
-public final class FacilityPrincipal implements Principal {
+/** A principal that represents the facility affiliation of a SimpleReport user. */
+public final class FacilityPrincipal extends NamedPrincipal {
   private final Facility facility;
 
   public FacilityPrincipal(Facility facility) {
-    this.facility = Objects.requireNonNull(facility);
-  }
-
-  @Override
-  public String getName() {
-    return facility.getFacilityName();
+    super("FACILITY:" + facility.getFacilityName());
+    this.facility = facility;
   }
 
   public Facility getFacility() {

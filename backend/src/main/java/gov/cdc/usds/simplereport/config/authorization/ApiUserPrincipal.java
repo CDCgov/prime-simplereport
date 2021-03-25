@@ -1,19 +1,15 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
 import gov.cdc.usds.simplereport.db.model.ApiUser;
-import java.security.Principal;
 import java.util.Objects;
 
-public final class ApiUserPrincipal implements Principal {
+/** A principal that represents the stored attributes of a SimpleReport user. */
+public final class ApiUserPrincipal extends NamedPrincipal {
   private final ApiUser apiUser;
 
   public ApiUserPrincipal(ApiUser apiUser) {
-    this.apiUser = Objects.requireNonNull(apiUser);
-  }
-
-  @Override
-  public String getName() {
-    return apiUser.getLoginEmail();
+    super("USER:" + apiUser.getLoginEmail());
+    this.apiUser = apiUser;
   }
 
   public ApiUser getApiUser() {

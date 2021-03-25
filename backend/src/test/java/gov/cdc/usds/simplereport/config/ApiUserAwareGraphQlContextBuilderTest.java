@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
-import gov.cdc.usds.simplereport.config.authorization.OrganizationRolePrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
@@ -60,26 +59,18 @@ class ApiUserAwareGraphQlContextBuilderTest {
     assertNotNull(subject);
     assertEquals(
         new HashSet<>(userInfo.getPermissions()), subject.getPrincipals(UserPermission.class));
-    assertEquals(
-        new HashSet<>(userInfo.getRoles()),
-        subject.getPrincipals(OrganizationRolePrincipal.class).stream()
-            .map(OrganizationRolePrincipal::getOrganizationRole)
-            .collect(Collectors.toSet()));
+    assertEquals(new HashSet<>(userInfo.getRoles()), subject.getPrincipals(OrganizationRole.class));
     assertEquals(
         new HashSet<>(userInfo.getFacilities()),
         subject.getPrincipals(FacilityPrincipal.class).stream()
             .map(FacilityPrincipal::getFacility)
             .collect(Collectors.toSet()));
     assertEquals(
-        userInfo.getOrganization().map(Set::of).orElseGet(Set::of),
-        subject.getPrincipals(OrganizationPrincipal.class).stream()
-            .map(OrganizationPrincipal::getOrganization)
-            .collect(Collectors.toSet()));
+        userInfo.getOrganization().map(OrganizationPrincipal::new).orElse(null),
+        subject.getPrincipals(OrganizationPrincipal.class).stream().findFirst().orElse(null));
     assertEquals(
-        Set.of(userInfo.getWrappedUser()),
-        subject.getPrincipals(ApiUserPrincipal.class).stream()
-            .map(ApiUserPrincipal::getApiUser)
-            .collect(Collectors.toSet()));
+        new ApiUserPrincipal(userInfo.getWrappedUser()),
+        subject.getPrincipals(ApiUserPrincipal.class).stream().findFirst().orElseThrow());
     assertEquals(userInfo.getIsAdmin(), !subject.getPrincipals(SiteAdminPrincipal.class).isEmpty());
   }
 

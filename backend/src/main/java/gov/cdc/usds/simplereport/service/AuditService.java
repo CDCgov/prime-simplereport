@@ -42,7 +42,6 @@ public class AuditService {
 
   @Transactional(readOnly = false)
   public void logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
-    LOG.trace("Saving audit event for {}", state.getRequestId());
     UserInfo userInfo = _userService.getCurrentUserInfo();
     logGraphQlEvent(
         state,
