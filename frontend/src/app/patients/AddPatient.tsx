@@ -12,6 +12,7 @@ import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import Button from "../commonComponents/Button";
+import { RootState } from "../store";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -70,11 +71,12 @@ interface AddPatientResponse {
 }
 
 const AddPatient = () => {
-  const [addPatient] = useMutation<AddPatientResponse, AddPatientParams>(
-    ADD_PATIENT
-  );
-  const activeFacilityId: string = useSelector(
-    (state) => (state as any).facility.id
+  const [addPatient, { loading }] = useMutation<
+    AddPatientResponse,
+    AddPatientParams
+  >(ADD_PATIENT);
+  const activeFacilityId: string = useSelector<RootState, string>(
+    (state) => state.facility.id
   );
   const personPath = `/patients/?facility=${activeFacilityId}`;
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
@@ -144,14 +146,14 @@ const AddPatient = () => {
               />
               <div className="prime-edit-patient-heading">
                 <div>
-                  <h1>Add New ${PATIENT_TERM_CAP}</h1>
+                  <h1>Add New {PATIENT_TERM_CAP}</h1>
                 </div>
                 <button
                   className="usa-button prime-save-patient-changes"
-                  disabled={!formChanged}
+                  disabled={loading || !formChanged}
                   onClick={onSave}
                 >
-                  Save changes
+                  {loading ? "Saving..." : "Save changes"}
                 </button>
               </div>
             </>
@@ -161,9 +163,9 @@ const AddPatient = () => {
               <Button
                 id="edit-patient-save-lower"
                 className="prime-save-patient-changes"
-                disabled={!formChanged}
+                disabled={loading || !formChanged}
                 onClick={onSave}
-                label="Save changes"
+                label={loading ? "Saving..." : "Save changes"}
               />
             </div>
           )}

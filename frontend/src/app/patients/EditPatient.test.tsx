@@ -95,7 +95,7 @@ describe("EditPatient", () => {
         </Provider>
       );
       await act(async () => {
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await screen.findAllByText("Franecki, Eugenia", { exact: false });
       });
     });
 

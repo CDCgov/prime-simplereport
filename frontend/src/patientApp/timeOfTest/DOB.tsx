@@ -44,11 +44,7 @@ const DOB = () => {
           name: response.organizationName,
         })
       );
-      dispatch(
-        setPatient({
-          ...response,
-        })
-      );
+      dispatch(setPatient(response));
     } catch (error) {
       if (error?.status === 410) {
         setLinkExpiredError(true);

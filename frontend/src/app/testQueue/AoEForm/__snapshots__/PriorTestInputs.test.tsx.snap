@@ -105,7 +105,9 @@ Array [
       onChange={[Function]}
       value=""
     >
-      <option>
+      <option
+        value=""
+      >
         - Select -
       </option>
     </select>
@@ -127,7 +129,9 @@ Array [
       onChange={[Function]}
       value=""
     >
-      <option>
+      <option
+        value=""
+      >
         - Select -
       </option>
       <option

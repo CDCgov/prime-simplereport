@@ -1,6 +1,14 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
+import {
+  RACE_VALUES,
+  ROLE_VALUES,
+  ETHNICITY_VALUES,
+  GENDER_VALUES,
+} from "../constants";
+import { Option } from "../commonComponents/Dropdown";
+
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -24,12 +32,14 @@ export type RequiredPersonFields = PartialBy<
   OptionalFields
 >;
 
+const getValues = (options: Option[]) => options.map(({ value }) => value);
+
 export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
   middleName: yup.string().nullable(),
   lastName: yup.string().required(),
   lookupId: yup.string().nullable(),
-  role: yup.string().nullable() as any,
+  role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
   birthDate: yup.string().required(),
   facilityId: yup.string().nullable().min(1) as any,
   telephone: yup
@@ -49,11 +59,11 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   county: yup.string().nullable(),
   state: yup.string().required(),
   zipCode: yup.string().required(),
-  race: yup.string().nullable() as any,
-  ethnicity: yup.string().nullable() as any,
-  gender: yup.string().nullable() as any,
-  residentCongregateSetting: yup.bool().required() as any,
-  employedInHealthcare: yup.bool().required() as any,
+  race: yup.mixed().oneOf([...getValues(RACE_VALUES), "", null]),
+  ethnicity: yup.mixed().oneOf([...getValues(ETHNICITY_VALUES), "", null]),
+  gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
+  residentCongregateSetting: yup.bool().required(),
+  employedInHealthcare: yup.bool().required(),
 });
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;

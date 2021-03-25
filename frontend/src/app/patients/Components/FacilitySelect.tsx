@@ -2,6 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import Select from "../../commonComponents/Select";
+import { RootState } from "../../store";
 
 interface Props {
   facilityId: string | null;
@@ -16,20 +17,19 @@ const ALL_FACILITIES = "~~ALL-FACILITIES~~";
 const NAME = "facilityId";
 
 const FacilitySelect: React.FC<Props> = (props) => {
-  const facilities = useSelector(
-    (state) => (state as any).facilities as Facility[]
+  const facilities = useSelector<RootState, Facility[]>(
+    (state) => state.facilities
   );
 
   if (props.hidden) {
     return null;
   }
 
-  const facilityList = facilities.map((f: any) => ({
+  const facilityList = facilities.map((f) => ({
     label: f.name,
     value: f.id,
   }));
   facilityList.unshift({ label: "All facilities", value: ALL_FACILITIES });
-  facilityList.unshift({ label: "-Select-", value: "" });
 
   const onChange = (value: string | null) => {
     props.onChange(value === ALL_FACILITIES ? null : value);
@@ -45,6 +45,7 @@ const FacilitySelect: React.FC<Props> = (props) => {
       validationStatus={props.validationStatus(NAME)}
       errorMessage={props.errors[NAME]}
       options={facilityList}
+      defaultSelect={true}
       required
     />
   );

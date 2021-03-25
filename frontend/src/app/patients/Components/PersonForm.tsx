@@ -157,6 +157,7 @@ const PersonForm = (props: Props) => {
             value={patient.role || ""}
             onChange={onPersonChange("role")}
             options={ROLE_VALUES}
+            defaultSelect={true}
           />
           <FacilitySelect
             facilityId={patient.facilityId}

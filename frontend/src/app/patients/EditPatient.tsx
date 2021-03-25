@@ -110,9 +110,10 @@ const EditPatient = (props: Props) => {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
   });
-  const [updatePatient] = useMutation<EditPatientResponse, EditPatientParams>(
-    UPDATE_PATIENT
-  );
+  const [updatePatient, { loading: editPersonLoading }] = useMutation<
+    EditPatientResponse,
+    EditPatientParams
+  >(UPDATE_PATIENT);
   const [redirect, setRedirect] = useState<string | undefined>(undefined);
   const personPath = `/patients/?facility=${props.facilityId}`;
 
@@ -185,10 +186,10 @@ const EditPatient = (props: Props) => {
                     </div>
                     <button
                       className="usa-button prime-save-patient-changes"
-                      disabled={!formChanged}
+                      disabled={editPersonLoading || !formChanged}
                       onClick={onSave}
                     >
-                      Save changes
+                      {editPersonLoading ? "Saving..." : "Save changes"}
                     </button>
                   </div>
                 </>
@@ -198,9 +199,9 @@ const EditPatient = (props: Props) => {
                   <Button
                     id="edit-patient-save-lower"
                     className="prime-save-patient-changes"
-                    disabled={!formChanged}
+                    disabled={editPersonLoading || !formChanged}
                     onClick={onSave}
-                    label="Save changes"
+                    label={editPersonLoading ? "Saving..." : "Save changes"}
                   />
                 </div>
               )}

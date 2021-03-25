@@ -239,7 +239,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   <option
                     value=""
                   >
-                    -Select-
+                    - Select -
                   </option>
                   <option
                     value="STAFF"
@@ -508,7 +508,9 @@ exports[`PatientFormContainer snapshot 1`] = `
                       onChange={[Function]}
                       value=""
                     >
-                      <option>
+                      <option
+                        value=""
+                      >
                         - Select -
                       </option>
                       <option

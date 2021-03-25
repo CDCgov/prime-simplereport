@@ -50,7 +50,6 @@ export const RACE_VALUES: { value: Race; label: string }[] = [
 ];
 
 export const ROLE_VALUES: { value: Role; label: string }[] = [
-  { label: "-Select-", value: "" },
   { label: "Staff", value: "STAFF" },
   { label: "Resident", value: "RESIDENT" },
   { label: "Student", value: "STUDENT" },

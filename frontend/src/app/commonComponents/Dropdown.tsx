@@ -79,9 +79,9 @@ const Dropdown: React.FC<Props & SelectProps> = ({
             disabled={disabled}
             {...inputProps}
           >
-            {defaultSelect && <option value={undefined}>- Select -</option>}
-            {options.map(({ value, label, disabled }, i) => (
-              <option key={value + i} value={value} disabled={disabled}>
+            {defaultSelect && <option value="">- Select -</option>}
+            {options.map(({ value, label, disabled }) => (
+              <option key={value} value={value} disabled={disabled}>
                 {label}
               </option>
             ))}

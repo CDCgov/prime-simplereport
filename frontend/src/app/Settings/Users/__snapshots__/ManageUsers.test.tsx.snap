@@ -552,7 +552,9 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                     class="usa-select"
                     id="select-facility"
                   >
-                    <option>
+                    <option
+                      value=""
+                    >
                       - Select -
                     </option>
                     <option
