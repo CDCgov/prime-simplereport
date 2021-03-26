@@ -58,13 +58,12 @@ export const AddressConfirmationModal: React.FC<Props> = ({
       return null;
     }
     return (
-      <div className="address__alert">
-        <Alert
-          type="warning"
-          title="The address you entered could not be verified"
-          role="alert"
-        />
-      </div>
+      <Alert
+        type="warning"
+        body="The address you entered could not be verified"
+        role="alert"
+        slim
+      />
     );
   };
 
