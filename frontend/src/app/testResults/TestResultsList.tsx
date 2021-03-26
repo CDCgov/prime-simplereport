@@ -153,7 +153,7 @@ export const DetachedTestResultsList: any = ({
               DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
             </span>
           </th>
-          <td>{moment(r.dateTested).format("lll")}</td>
+          <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
           <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
           <td>{r.deviceType.name}</td>
           <td>
@@ -189,8 +189,8 @@ export const DetachedTestResultsList: any = ({
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP} Name</th>
-                    <th scope="col">Date of Test</th>
+                    <th scope="col">{PATIENT_TERM_CAP}</th>
+                    <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
                     <th scope="col">Submitter</th>
