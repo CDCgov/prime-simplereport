@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Redirect, useHistory } from "react-router-dom";
+import { useState } from "react";
+import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import Button from "../../app/commonComponents/Button";
@@ -8,33 +8,17 @@ import PatientTimeOfTestContainer from "../PatientTimeOfTestContainer";
 import PatientProfile from "./PatientProfile";
 
 const PatientProfileContainer = () => {
-  const history = useHistory();
   const [nextPage, setNextPage] = useState(false);
   const [editPage, setEditPage] = useState(false);
-  const [prevPage, setPrevPage] = useState(false);
+  const plid = useSelector((state: any) => state.plid);
   const patient = useSelector((state) => (state as any).patient as any);
-
-  history.listen((loc, action) => {
-    if (action === "POP") {
-      setPrevPage(true);
-    }
-  });
-
-  if (prevPage) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/birth-date-confirmation",
-        }}
-      />
-    );
-  }
 
   if (editPage) {
     return (
       <Redirect
         to={{
           pathname: "/patient-info-edit",
+          search: `?plid=${plid}`,
         }}
       />
     );
@@ -45,6 +29,7 @@ const PatientProfileContainer = () => {
       <Redirect
         to={{
           pathname: "/patient-info-symptoms",
+          search: `?plid=${plid}`,
         }}
       />
     );

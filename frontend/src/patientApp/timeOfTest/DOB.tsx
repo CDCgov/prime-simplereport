@@ -81,6 +81,7 @@ const DOB = () => {
       <Redirect
         to={{
           pathname: "/patient-info-confirm",
+          search: `?plid=${plid}`,
         }}
       />
     );

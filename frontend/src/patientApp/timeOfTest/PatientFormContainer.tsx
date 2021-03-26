@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { useHistory, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { setPatient as reduxSetPatient } from "../../app/store";
@@ -26,18 +26,12 @@ const PatientFormContainer = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const history = useHistory();
-  history.listen((_loc, action) => {
-    if (action === "POP") {
-      setPrevPage(true);
-    }
-  });
-
   if (prevPage) {
     return (
       <Redirect
         to={{
           pathname: "/patient-info-confirm",
+          search: `?plid=${plid}`,
         }}
       />
     );
@@ -46,9 +40,9 @@ const PatientFormContainer = () => {
   if (nextPage) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/patient-info-symptoms",
+          search: `?plid=${plid}`,
         }}
       />
     );
