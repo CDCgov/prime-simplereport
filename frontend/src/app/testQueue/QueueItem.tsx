@@ -559,7 +559,7 @@ const QueueItem: any = ({
                   </ul>
                 </div>
                 <div className="grid-row">
-                  <ul className="prime-ul patient-information-ul">
+                  <ul className="prime-ul test-information-ul">
                     <li className="prime-li">
                       <Dropdown
                         options={options}
