@@ -4,7 +4,10 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 
+import renderer from "react-test-renderer";
+
 import EditPatient, { GET_PATIENT } from "./EditPatient";
+import { Renderer } from "react-dom";
 
 const mockStore = configureStore([]);
 
@@ -125,5 +128,18 @@ describe("EditPatient", () => {
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
-  });
+
+      describe("snapshot", () => {
+        const component = renderer.create(
+          <Provider store={store}>
+          <MockedProvider mocks={[]} addTypename={false}>
+            <EditPatient
+              facilityId={mockFacilityID}
+              patientId={mockPatientID}
+            />
+          </MockedProvider>
+        </Provider>);
+    expect(component.toJSON()).toMatchSnapshot();
+      });
+    });
 });
