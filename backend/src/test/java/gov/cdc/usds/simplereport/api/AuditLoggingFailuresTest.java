@@ -8,7 +8,10 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
@@ -36,12 +39,24 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestClientException;
 
+/**
+ * Tests around edges of audit logging.
+ *
+ * <ol>
+ *   <li>Do we successfully abort request processing if the audit log fails?
+ *   <li>Do we successfully log requests where an error takes place in the main transaction?
+ * </ol>
+ *
+ * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this is
+ * in any case what the graphql tests use, so there is no additional cost).
+ */
 class AuditLoggingFailuresTest extends BaseApiTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuditLoggingFailuresTest.class);
+
   @Autowired private TestRestTemplate _restTemplate;
   @Autowired private OrganizationService _orgService;
 
@@ -86,8 +101,11 @@ class AuditLoggingFailuresTest extends BaseApiTest {
         .thenThrow(new IllegalArgumentException("naughty naughty"));
     useOrgUserAllFacilityAccess();
     ObjectNode args = patientArgs().put("symptoms", "{}").put("noSymptoms", true);
-    assertThrows(NullPointerException.class, () -> runQuery("update-time-of-test", args));
-    // this is not... precisely as it should be?
+    String clientErrorMessage =
+        assertThrows(NullPointerException.class, () -> runQuery("update-time-of-test", args))
+            .getMessage();
+    assertEquals( // I would characterize this as a bug in the test framework
+        "Body is empty with status 400", clientErrorMessage);
   }
 
   @Test
@@ -113,18 +131,17 @@ class AuditLoggingFailuresTest extends BaseApiTest {
   }
 
   @Test
-  void restQuery_auditFailure_noDataReturned() {
+  void restQuery_auditFailure_noDataReturned()
+      throws JsonMappingException, JsonProcessingException {
     when(_auditRepo.save(_eventCaptor.capture())).thenThrow(HibernateException.class);
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
-    // also not quite how we would draw it up
-    assertThrows(
-        RestClientException.class,
-        () ->
-            _restTemplate.exchange(
-                "/pxp/link/verify", HttpMethod.PUT, requestEntity, String.class));
-    /*    LOG.info("Got response {} after audit failure", resp);
-    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, resp.getStatusCode());
-    assertEquals("", resp.getBody()); */
+    ResponseEntity<String> resp =
+        _restTemplate.exchange("/pxp/link/verify", HttpMethod.PUT, requestEntity, String.class);
+    assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
+    JsonNode responseJson = new ObjectMapper().readTree(resp.getBody());
+    assertEquals(400, responseJson.get("status").asInt());
+    assertEquals("Bad Request", responseJson.get("error").asText());
+    assertEquals("/pxp/link/verify", responseJson.get("path").asText());
   }
 
   private ObjectNode makeVerifyLinkArgs() {

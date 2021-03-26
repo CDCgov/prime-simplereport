@@ -1,16 +1,11 @@
 package gov.cdc.usds.simplereport.logging;
 
-import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
-import gov.cdc.usds.simplereport.db.model.Organization;
-import gov.cdc.usds.simplereport.db.model.PatientLink;
-import gov.cdc.usds.simplereport.service.AuditService;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -27,9 +22,6 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
 
   private static final Logger LOG =
       LoggerFactory.getLogger(PatientExperienceLoggingInterceptor.class);
-
-  @Autowired private CurrentPatientContextHolder _context;
-  @Autowired private AuditService _auditService;
 
   @Override
   public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -52,16 +44,8 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       Object handler,
       ModelAndView modelAndView)
       throws Exception {
-    PatientLink patientLink = _context.getPatientLink();
-    LOG.trace("Closing out request. Patient link is {}", patientLink);
-    int responseCode = response.getStatus();
-    if (patientLink != null) {
-      String requestId = MDC.get(LoggingConstants.REQUEST_ID_MDC_KEY);
-      Organization organization = _context.getOrganization();
-      _auditService.logRestEvent(requestId, request, responseCode, organization, patientLink);
-    } else {
-      LOG.trace("No patient link found"); // unauthenticated handlers
-    }
+    // this turns out not to be a place where we can modify the response status in case of failures,
+    // so we had to move that service call somewhere else
   }
 
   @Override

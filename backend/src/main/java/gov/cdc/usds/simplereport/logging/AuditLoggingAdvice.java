@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.service.AuditService;
+import gov.cdc.usds.simplereport.service.errors.RestAuditFailureException;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,9 @@ public class AuditLoggingAdvice {
     Class<? extends Exception> exceptionType = e.getClass();
     LOG.debug(
         "Checking for response status and patient link for exception of type={}", exceptionType);
-    if (_contextHolder.hasPatientLink()) {
+    if (e instanceof RestAuditFailureException) {
+      LOG.debug("Audit logging already failed: not trying again");
+    } else if (_contextHolder.hasPatientLink()) {
       ResponseStatus responseStatus =
           AnnotationUtils.findAnnotation(exceptionType, ResponseStatus.class);
       int responseCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
