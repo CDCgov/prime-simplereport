@@ -3,7 +3,6 @@ import { Redirect } from "react-router-dom";
 
 import { formatFullName } from "../../app/utils/user";
 import { formatAddress } from "../../app/utils/address";
-import { capitalizeText } from "../../app/utils/text";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
@@ -80,14 +79,18 @@ const PatientProfile = ({ patient }: Props) => {
         Resident in congregate care/living setting
       </h3>
       <p>
-        {patient.residentCongregateSetting
-          ? capitalizeText(patient.residentCongregateSetting)
+        {patient.residentCongregateSetting === true
+          ? "Yes"
+          : patient.residentCongregateSetting === false
+          ? "No"
           : notProvided}
       </p>
       <h3 className="font-heading-sm">Employed in healthcare</h3>
       <p>
-        {patient.employedInHealthcare
-          ? capitalizeText(patient.employedInHealthcare)
+        {patient.employedInHealthcare === true
+          ? "Yes"
+          : patient.employedInHealthcare === false
+          ? "No"
           : notProvided}
       </p>
     </div>

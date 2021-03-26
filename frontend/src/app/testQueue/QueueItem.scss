@@ -1,4 +1,18 @@
+#patient-name-header {
+  padding: 1em;
+  padding-left: 2em;
+}
+
 .testdate-checkbox {
-  top: 2em;
+  margin-top: 2rem;
   position: relative;
+} 
+
+.usa-label, .usa-legend {
+  display:inline !important;
+  line-height: 1.6 !important;
+}
+
+.prime-ul, .patient-information-ul {
+  margin:0rem; 
 }

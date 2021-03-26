@@ -39,22 +39,12 @@ const DOB = () => {
         plid,
         date.format("YYYY-MM-DD")
       );
-      const residentCongregateSetting = response.residentCongregateSetting
-        ? "YES"
-        : "NO";
-      const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
       dispatch(
         updateOrganization({
           name: response.organizationName,
         })
       );
-      dispatch(
-        setPatient({
-          ...response,
-          residentCongregateSetting,
-          employedInHealthcare,
-        })
-      );
+      dispatch(setPatient(response));
     } catch (error) {
       if (error?.status === 410) {
         setLinkExpiredError(true);
@@ -112,7 +102,7 @@ const DOB = () => {
                   label={"Date of birth"}
                   name={"birthDate"}
                   type={"password"}
-                  autoComplete={"bday"}
+                  autoComplete={"on"}
                   value={birthDate}
                   size={8}
                   pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}

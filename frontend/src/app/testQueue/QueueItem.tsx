@@ -514,7 +514,10 @@ const QueueItem: any = ({
           {closeButton}
           <div className="grid-row">
             <div className="tablet:grid-col-9">
-              <div className="grid-row prime-test-name usa-card__header">
+              <div
+                className="grid-row prime-test-name usa-card__header"
+                id="patient-name-header"
+              >
                 <h2>{patientFullNameLastFirst}</h2>
                 <TestTimerWidget timer={timer} />
               </div>
@@ -556,7 +559,7 @@ const QueueItem: any = ({
                   </ul>
                 </div>
                 <div className="grid-row">
-                  <ul className="prime-ul">
+                  <ul className="prime-ul patient-information-ul">
                     <li className="prime-li">
                       <Dropdown
                         options={options}
