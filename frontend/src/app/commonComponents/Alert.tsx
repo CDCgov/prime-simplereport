@@ -1,4 +1,5 @@
 import React from "react";
+import classnames from "classnames";
 
 /**
  * Provides one of four standard alert types.
@@ -21,21 +22,29 @@ import React from "react";
 interface Props {
   type: "info" | "success" | "warning" | "error";
   role?: "alert" | "alertdialog" | "region";
-  title: React.ReactNode;
+  title?: React.ReactNode;
   body?: React.ReactNode;
   children?: React.ReactNode;
+  slim?: boolean;
 }
-const Alert = ({ type, title, body, role, children }: Props) => (
-  <div
-    className={`usa-alert usa-alert--${type}`}
-    // eslint-disable-next-line jsx-a11y/aria-props
-    aria-role={role ? role : type === "error" ? "alert" : "region"}
-  >
-    <div className="usa-alert__body">
-      <h3 className="usa-alert__heading">{title}</h3>
-      <div className="usa-alert__text">{body || children}</div>
+const Alert = ({ type, title, body, role, children, slim }: Props) => {
+  const classes = classnames(
+    "usa-alert",
+    `usa-alert--${type}`,
+    slim && "usa-alert--slim"
+  );
+
+  return (
+    <div
+      className={classes}
+      role={role ? role : type === "error" ? "alert" : "region"}
+    >
+      <div className="usa-alert__body">
+        {title && <h3 className="usa-alert__heading">{title}</h3>}
+        <div className="usa-alert__text">{body || children}</div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default Alert;

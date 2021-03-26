@@ -54,7 +54,7 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
     final long queryStart = System.currentTimeMillis();
     final String executionId = parameters.getExecutionInput().getExecutionId().toString();
     // Add the execution ID to the sfl4j MDC
-    MDC.put(GraphQLLoggingHelpers.GRAPHQL_QUERY_MDC_KEY, executionId);
+    MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, executionId);
 
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();
