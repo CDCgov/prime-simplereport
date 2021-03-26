@@ -7,11 +7,8 @@ export function formatAddress(address: Address) {
   }${address.state && address.zipCode ? " " : ""}${address.zipCode}`;
 
   let result = address.street;
-  result += `${
-    result.length > 0 && address.streetTwo
-      ? "\n" + address.streetTwo
-      : address.streetTwo
-  }`;
+  const streetTwo = address.streetTwo ? address.streetTwo : "";
+  result += `${result.length > 0 && streetTwo ? "\n" + streetTwo : streetTwo}`;
   result += `${
     result.length > 0 && lastAddressLine
       ? "\n" + lastAddressLine
