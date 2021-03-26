@@ -12,6 +12,8 @@ import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("patientLinkService")
 @Transactional(readOnly = false)
 public class PatientLinkService {
+
+  private static final Logger LOG = LoggerFactory.getLogger(PatientLinkService.class);
+
   @Autowired private PatientLinkRepository plrepo;
 
   @Autowired private PatientLinkFailedAttemptRepository plfarepo;
@@ -55,6 +60,8 @@ public class PatientLinkService {
       throws ExpiredPatientLinkException {
     try {
       PatientLink patientLink = getPatientLink(internalId);
+      LOG.trace("Found a patient link for id={}", internalId);
+
       PatientLinkFailedAttempt patientLinkFailedAttempt =
           plfarepo
               .findById(patientLink.getInternalId())
@@ -66,11 +73,13 @@ public class PatientLinkService {
       TestOrder testOrder = patientLink.getTestOrder();
       Person patient = testOrder.getPatient();
 
-      if (testOrder.getPatient().getBirthDate().equals(birthDate)) {
+      if (patient.getBirthDate().equals(birthDate)) {
+        LOG.trace("Successfully authenticated patient {}", patient.getInternalId());
+        contextHolder.setContext(patientLink, testOrder, patient);
         if (patientLink.isExpired()) {
+          LOG.trace("Link is expired!");
           throw new ExpiredPatientLinkException();
         }
-        contextHolder.setContext(patientLink, testOrder, patient);
         patientLinkFailedAttempt.resetFailedAttempts();
         plfarepo.save(patientLinkFailedAttempt);
         return true;

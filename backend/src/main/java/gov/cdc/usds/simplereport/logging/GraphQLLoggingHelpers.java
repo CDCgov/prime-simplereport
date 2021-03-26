@@ -18,7 +18,6 @@ import org.slf4j.MDC;
 public class GraphQLLoggingHelpers {
 
   private static final Logger LOG = LoggerFactory.getLogger(GraphQLLoggingHelpers.class);
-  public static final String GRAPHQL_QUERY_MDC_KEY = "graphql-query";
 
   private GraphQLLoggingHelpers() {
     // Not used
@@ -90,7 +89,7 @@ public class GraphQLLoggingHelpers {
             request.setSuccess(true);
           }
           // Clear the MDC context
-          MDC.remove(GRAPHQL_QUERY_MDC_KEY);
+          MDC.remove(LoggingConstants.REQUEST_ID_MDC_KEY);
           client.trackRequest(request);
         });
   }

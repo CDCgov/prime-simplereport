@@ -6,9 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -16,9 +18,8 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.TimeOfConsent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
+import gov.cdc.usds.simplereport.logging.LoggingConstants;
 import gov.cdc.usds.simplereport.service.TimeOfConsentService;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,32 +28,30 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class PatientExperienceControllerTest {
-  @Autowired private MockMvc _mockMvc;
+class PatientExperienceControllerTest extends BaseFullStackTest {
 
-  @Autowired private TestDataFactory _dataFactory;
+  private static final String ANSWER_QUESTIONS = "/pxp/questions";
+  private static final String VERIFY_LINK = "/pxp/link/verify";
+
+  @Autowired private MockMvc _mockMvc;
 
   @Autowired private TimeOfConsentService _tocService;
 
   @Autowired private PatientExperienceController _controller;
-
-  @Autowired private DbTruncator _truncator;
 
   private Organization _org;
   private Facility _site;
 
   @BeforeEach
   void init() {
-    _truncator.truncateAll();
+    truncateDb();
     TestUserIdentities.withStandardUser(
         () -> {
           _org = _dataFactory.createValidOrg();
@@ -79,13 +78,17 @@ class PatientExperienceControllerTest {
         "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
-    this._mockMvc.perform(builder).andExpect(status().isForbidden());
+    this._mockMvc
+        .perform(builder)
+        .andExpect(status().isForbidden())
+        .andExpect(header().exists(LoggingConstants.REQUEST_ID_HEADER));
+    assertNoAuditEvent();
   }
 
   @Test
@@ -101,14 +104,15 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    this._mockMvc.perform(builder).andExpect(status().isOk());
+    String requestId = runBuilderReturningRequestId(builder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -124,18 +128,24 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc
-        .perform(builder)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
-        .andExpect(jsonPath("$.lastName", is(_person.getLastName())));
+    String requestId =
+        _mockMvc
+            .perform(builder)
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.firstName", is(_person.getFirstName())))
+            .andExpect(jsonPath("$.lastName", is(_person.getLastName())))
+            .andReturn()
+            .getResponse()
+            .getHeader(LoggingConstants.REQUEST_ID_HEADER);
+
+    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -153,14 +163,15 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc.perform(builder).andExpect(status().is(410));
+    String requestId = runBuilderReturningRequestId(builder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
   }
 
   @Test
@@ -182,31 +193,34 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder submitBuilder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
-    _mockMvc.perform(submitBuilder).andExpect(status().isOk());
+    String requestId = runBuilderReturningRequestId(submitBuilder, status().isOk());
+    assertLastAuditEntry(HttpStatus.OK, ANSWER_QUESTIONS, requestId);
 
     // OKAY NOW DO IT AGAIN
     MockHttpServletRequestBuilder verifyBuilder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     MockHttpServletRequestBuilder secondSubmitBuilder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     // THEN
-    _mockMvc.perform(verifyBuilder).andExpect(status().isGone());
-    _mockMvc.perform(secondSubmitBuilder).andExpect(status().isGone());
+    requestId = runBuilderReturningRequestId(verifyBuilder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
+    requestId = runBuilderReturningRequestId(secondSubmitBuilder, status().isGone());
+    assertLastAuditEntry(HttpStatus.GONE, ANSWER_QUESTIONS, requestId);
   }
 
   @Test
@@ -222,7 +236,7 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/link/verify")
+        put(VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -288,7 +302,7 @@ class PatientExperienceControllerTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/questions")
+        put(ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -300,5 +314,15 @@ class PatientExperienceControllerTest {
     AskOnEntrySurvey survey = _dataFactory.getAoESurveyForTestOrder(_testOrder.getInternalId());
     assertEquals(survey.getNoSymptoms(), noSymptoms);
     assertEquals(survey.getSymptomOnsetDate(), LocalDate.parse(symptomOnsetDate));
+  }
+
+  private String runBuilderReturningRequestId(RequestBuilder builder, ResultMatcher statusMatcher)
+      throws Exception {
+    return _mockMvc
+        .perform(builder)
+        .andExpect(statusMatcher)
+        .andReturn()
+        .getResponse()
+        .getHeader(LoggingConstants.REQUEST_ID_HEADER);
   }
 }
