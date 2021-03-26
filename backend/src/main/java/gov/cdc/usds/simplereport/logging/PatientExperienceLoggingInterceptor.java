@@ -45,7 +45,8 @@ public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {
       ModelAndView modelAndView)
       throws Exception {
     // this turns out not to be a place where we can modify the response status in case of failures,
-    // so we had to move that service call somewhere else
+    // so we had to move that service call somewhere else (currently, RestAuditLogManager, which is
+    // called through a @PostAuthorize annotation, but this comment may not be kept up to date)
   }
 
   @Override

@@ -73,7 +73,7 @@ public abstract class BaseFullStackTest {
       HttpStatus status, String requestUri, String requestId) {
     ApiAuditEvent event = getTimeCheckedEvent();
     assertNull(event.getGraphqlQueryDetails());
-    assertEquals(null, event.getGraphqlErrorPaths());
+    assertNull(event.getGraphqlErrorPaths());
     HttpRequestDetails requestDetails = event.getHttpRequestDetails();
     if (requestUri != null) {
       assertEquals(requestUri, requestDetails.getRequestUri());

@@ -42,7 +42,9 @@ import org.springframework.web.bind.annotation.RestController;
  * its routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
  * documentation on both sides.
  *
- * <p>Similarly, this controller sends information to the audit log via a {@link PostAuthorize}
+ * <p>Similarly, this controller sends information to the audit log via a {@link PostAuthorize}.
+ * Because of this, every handler method of this controller is required to have an {@link
+ * HttpServletRequest} argument named {@code request}.
  */
 @PreAuthorize(
     "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")

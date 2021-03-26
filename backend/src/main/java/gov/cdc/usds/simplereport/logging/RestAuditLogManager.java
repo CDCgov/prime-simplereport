@@ -31,6 +31,19 @@ public class RestAuditLogManager {
     this._contextHolder = contextHolder;
   }
 
+  /**
+   * To be called from a PostAuthorize annotation or otherwise at the end of request processing, but
+   * before the response is actually handed back off to tomcat. Saves the audit log, or if it cannot
+   * be saved throws an exception so that there is no response to the user about the action they
+   * just attempted.
+   *
+   * @param request the {@link HttpServletRequest} that is being handled.
+   * @param resultObject the object being returned by the controller method, presumably for Jackson
+   *     converting to a JSON response body. Not currently used, to the annoyance of Sonar.
+   * @return true if the request should be allowed to complete, false otherwise (in this case, only
+   *     if we get to this but there is no patient link available, which indicates something wonky
+   *     happened.).
+   */
   public boolean logRestSuccess(HttpServletRequest request, Object resultObject) {
     PatientLink patientLink = _contextHolder.getPatientLink();
     if (patientLink == null) {
