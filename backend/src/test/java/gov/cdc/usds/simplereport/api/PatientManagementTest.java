@@ -19,8 +19,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Tests for adding and fetching patients through the API */
@@ -468,6 +472,44 @@ class PatientManagementTest extends BaseApiTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
         List.of());
+  }
+
+  @ParameterizedTest
+  @MethodSource("updatePersonIllegalArguments")
+  void updatePatient_invalidArguments_expectedError(
+      String argName, String argValue, String expectedError) throws Exception {
+    ObjectNode patient =
+        (ObjectNode)
+            executeAddPersonMutation(
+                    "Sansa",
+                    "Stark",
+                    "1100-12-25",
+                    "1-800-BIZ-NAME",
+                    "notbitter",
+                    Optional.empty(),
+                    Optional.empty())
+                .get("addPatient");
+
+    ObjectNode variables =
+        JsonNodeFactory.instance
+            .objectNode()
+            .put("patientId", patient.get("internalId").asText())
+            .put("firstName", patient.get("firstName").asText())
+            .put("lastName", patient.get("lastName").asText())
+            .put("birthDate", "1100-12-25")
+            .put(argName, argValue);
+    runQuery("update-person", variables, expectedError);
+  }
+
+  private static Stream<Arguments> updatePersonIllegalArguments() {
+    return Stream.of(
+        Arguments.of("role", "x".repeat(33), "/updatePatient/role size must be between 0 and 32"),
+        Arguments.of(
+            "patientId", "x".repeat(35), "/updatePatient/patientId size must be between 36 and 36"),
+        Arguments.of(
+            "firstName",
+            "x".repeat(500),
+            "/updatePatient/firstName size must be between 0 and 256"));
   }
 
   private JsonNode doCreateAndFetch(
