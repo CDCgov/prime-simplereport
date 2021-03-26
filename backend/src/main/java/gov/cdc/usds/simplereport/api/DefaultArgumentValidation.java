@@ -26,10 +26,11 @@ import java.util.Set;
  * Enforces a default maximum length on all string, list, and map arguments to GraphQL queries and
  * mutations.
  *
- * This default validator is only applied if the argument is not already targeted by a validation
- * directive that can express a size constraint (e.g., `@Size` or `@Pattern`). Cf. the
- * DIRECTIVES_OVERRIDING_DEFAULT_RULE static variable for which validation directives will disable
- * the default validation rule.
+ * <p>This default validator is only applied if the argument is not already targeted by a validation
+ * directive that can express a size constraint (e.g., <code>@Size</code> or <code>@Pattern</code>).
+ *
+ * @see DefaultArgumentValidation#DIRECTIVES_OVERRIDING_DEFAULT_RULE for which validation directives
+ *     will disable the default validation rule.
  */
 public class DefaultArgumentValidation implements ValidationRule {
   private static final Set<String> DIRECTIVES_OVERRIDING_DEFAULT_RULE = Set.of("Size", "Pattern");
