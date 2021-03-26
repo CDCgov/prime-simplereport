@@ -476,7 +476,7 @@ class PatientManagementTest extends BaseApiTest {
 
   @ParameterizedTest
   @MethodSource("updatePersonIllegalArguments")
-  void updatePatient_mutation_arguments_are_validated(
+  void updatePatient_invalidArguments_expectedError(
       String argName, String argValue, String expectedError) throws Exception {
     ObjectNode patient =
         (ObjectNode)
