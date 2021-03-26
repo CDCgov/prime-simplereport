@@ -172,14 +172,14 @@ public class Translators {
 
   private static final Map<String, Optional<Boolean>> YES_NO =
       Map.of(
-        "y", Optional.of(true),
-        "yes", Optional.of(true),
-        "n", Optional.of(false),
-        "no", Optional.of(false),
-        "true", Optional.of(true),
-        "false", Optional.of(false),
-        "u", Optional.empty(),
-        "unknown", Optional.empty());
+          "y", Optional.of(true),
+          "yes", Optional.of(true),
+          "n", Optional.of(false),
+          "no", Optional.of(false),
+          "true", Optional.of(true),
+          "false", Optional.of(false),
+          "u", Optional.empty(),
+          "unknown", Optional.empty());
 
   public static Optional<Boolean> parseYesNo(String v) {
     String stringValue = parseString(v);
@@ -188,7 +188,7 @@ public class Translators {
     }
     Optional<Boolean> boolValue = YES_NO.get(stringValue.toLowerCase());
     if (boolValue == null) {
-        throw IllegalGraphqlArgumentException.invalidInput(v, "value");
+      throw IllegalGraphqlArgumentException.invalidInput(v, "value");
     }
     return boolValue;
   }

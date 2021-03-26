@@ -19,11 +19,16 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
+
+// (emmastephenson): draw out some of the common People objects into a shared class
+// TestOrderServiceTest could also use this extraction (especially with the Flintstones)
+// Start a branch on top of this one for more readable PRs
 
 @SuppressWarnings("checkstyle:MagicNumber")
 class PersonServiceTest extends BaseServiceTest<PersonService> {
@@ -79,8 +84,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        false,
-        false);
+        Optional.of(false),
+        Optional.of(false));
     _service.addPatient(
         _site1.getInternalId(),
         "BAR",
@@ -96,8 +101,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        false,
-        false);
+        Optional.of(false),
+        Optional.of(false));
     _service.addPatient(
         _site2.getInternalId(),
         "BAZ",
@@ -113,8 +118,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        false,
-        false);
+        Optional.of(false),
+        Optional.of(false));
     List<Person> all =
         _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null);
     assertEquals(3, all.size());
@@ -147,8 +152,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        false,
-        false);
+        Optional.of(false),
+        Optional.of(false));
 
     assertThrows(
         AccessDeniedException.class,
@@ -168,8 +173,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
-                false,
-                false));
+                Optional.of(false),
+                Optional.of(false)));
 
     TestUserIdentities.setFacilityAuthorities(fac);
     _service.addPatient(
@@ -187,8 +192,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
-        false,
-        false);
+        Optional.of(false),
+        Optional.of(false));
   }
 
   @Test
@@ -211,8 +216,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
-                false,
-                false));
+                Optional.of(false),
+                Optional.of(false)));
   }
 
   @Test
@@ -238,8 +243,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     TestUserIdentities.setFacilityAuthorities();
 
     assertThrows(AccessDeniedException.class, () -> _service.setIsDeleted(p.getInternalId(), true));
@@ -272,8 +277,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     _service.setIsDeleted(p.getInternalId(), true);
     assertEquals(
@@ -315,8 +320,8 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     assertEquals(
         1, _service.getPatients(null, PATIENT_PAGEOFFSET, PATIENT_PAGESIZE, false, null).size());

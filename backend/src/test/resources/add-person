@@ -11,8 +11,8 @@ mutation createPersonEntry(
     $zipCode: String = "00000",
     $telephone: String = "(900)-GOT-STUBBLE",
     $role: String = "staff",
-    $flagCongregate: Boolean = true,
-    $flagHealthcare: Boolean = false,
+    $flagCongregate: String = "true",
+    $flagHealthcare: String = "false",
     ){
   addPatient(
     facilityId: $facilityId

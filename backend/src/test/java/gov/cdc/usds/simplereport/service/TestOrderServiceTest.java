@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,8 +93,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -152,8 +153,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -192,8 +193,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     assertThrows(
         AccessDeniedException.class,
@@ -252,8 +253,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     Person pWithSmsDelivery =
         _personService.updateTestResultDeliveryPreference(
             p.getInternalId(), TestResultDeliveryPreference.SMS);
@@ -300,8 +301,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     _service.addPatientToQueue(
         facility.getInternalId(),
         p,
@@ -350,8 +351,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     Person p2 =
         _personService.addPatient(
             facility1.getInternalId(),
@@ -368,8 +369,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     _service.addPatientToQueue(
         facility1.getInternalId(),
@@ -445,8 +446,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     TestOrder o =
         _service.addPatientToQueue(
             facility.getInternalId(),
@@ -637,8 +638,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             null,
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
 
     _service.addPatientToQueue(
         facilityId,
@@ -675,8 +676,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null,
               null,
               null,
-              false,
-              false);
+              Optional.of(false),
+              Optional.of(false));
 
       _service.addPatientToQueue(
           facilityId,

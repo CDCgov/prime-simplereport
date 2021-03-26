@@ -230,8 +230,11 @@ public abstract class BaseApiTest {
     try {
       setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
+      System.out.println("BOOYAH GraphQL response: " + response.toString());
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      System.out.println("BOOYAH GraphQL status: " + response.getStatusCode().toString());
       JsonNode responseBody = response.readTree();
+      System.out.println("BOOYAH GraphQL response body: " + responseBody.toString());
       assertGraphQLOutcome(responseBody, expectedError);
       return (ObjectNode) responseBody.get("data");
     } catch (IOException e) {

@@ -14,9 +14,9 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.validation.constraints.Size;
 import org.springframework.data.domain.PageRequest;
@@ -305,8 +305,12 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
 
-        // it seems to be coming through as false here, which is a problem
-    System.out.println("BOOYAH! UpdatedPatient: " + residentCongregateSetting + " " + patientToUpdate.getResidentCongregateSetting());
+    // it seems to be coming through as false here, which is a problem
+    System.out.println(
+        "BOOYAH! UpdatedPatient: "
+            + residentCongregateSetting
+            + " "
+            + patientToUpdate.getResidentCongregateSetting());
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);
   }

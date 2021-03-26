@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -138,8 +139,8 @@ public class TestDataFactory {
             "W",
             null,
             "M",
-            false,
-            false);
+            Optional.of(false),
+            Optional.of(false));
     return _personRepo.save(p);
   }
 

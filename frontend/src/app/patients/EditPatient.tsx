@@ -36,6 +36,17 @@ interface Props {
   patientId: string;
 }
 
+function translateBoolToYesNoUnk(bool: string | null) {
+  if (bool === "true") {
+    return "YES";
+  } else if (bool === "false") {
+    return "NO";
+  }
+  else {
+    return "UNKNOWN";
+  }
+}
+
 const EditPatient = (props: Props) => {
   const { data, loading, error } = useQuery(GET_PATIENT, {
     variables: { id: props.patientId || "" },
@@ -49,21 +60,9 @@ const EditPatient = (props: Props) => {
     return <p>error loading patient with id {props.patientId}...</p>;
   }
 
-  console.log("residentcongregatesetting: ", data.patient.residentCongregateSetting);
+  const residentCongregateSetting = translateBoolToYesNoUnk(data.patient.residentCongregateSetting);
+  const employedInHealthcare = translateBoolToYesNoUnk(data.patient.employedInHealthcare);
 
-  let residentCongregateSetting;
-  if (data.patient.residentCongregateSetting == null) {
-    residentCongregateSetting = "UNKNOWN";
-  } else if (data.patient.residentCongregateSetting == true) {
-    residentCongregateSetting = "YES";
-  } else {
-    residentCongregateSetting = "NO";
-  }
-
-  // const residentCongregateSetting = data.patient.residentCongregateSetting
-  //   ? "YES"
-  //   : "NO";
-  const employedInHealthcare = data.patient.employedInHealthcare ? "YES" : "NO";
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">

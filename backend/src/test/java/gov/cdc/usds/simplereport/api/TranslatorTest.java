@@ -16,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import java.time.LocalDate;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
 class TranslatorTest {
@@ -213,20 +215,24 @@ class TranslatorTest {
 
   @Test
   void testEmptyParseYesNo() {
-    assertNull(parseYesNo(""));
+    assertEquals(Optional.empty(), parseYesNo(""));
+    // assertNull(parseYesNo(""));
   }
 
   @Test
   void testNullParseYesNo() {
-    assertNull(parseYesNo(null));
+    assertEquals(Optional.empty(), parseYesNo(null));
+    // assertNull(parseYesNo(null));
   }
 
   @Test
   void testValidParseYesNo() {
-    assertEquals(true, parseYesNo("y"));
-    assertEquals(true, parseYesNo("yEs"));
-    assertEquals(false, parseYesNo("n"));
-    assertEquals(false, parseYesNo("nO"));
+    assertEquals(Optional.of(true), parseYesNo("y"));
+    assertEquals(Optional.of(true), parseYesNo("yEs"));
+    assertEquals(Optional.of(false), parseYesNo("n"));
+    assertEquals(Optional.of(false), parseYesNo("nO"));
+    assertEquals(Optional.empty(), parseYesNo("U"));
+    assertEquals(Optional.empty(), parseYesNo("unKnown"));
   }
 
   @Test

@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.PersistenceException;
 import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
@@ -53,8 +54,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 null,
                 "",
                 "",
-                false,
-                false));
+                Optional.of(false),
+                Optional.of(false)));
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     List<TestOrder> queue = _repo.fetchQueue(gwu, otherSite);
     assertEquals(0, queue.size());
@@ -90,8 +91,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 null,
                 "",
                 "",
-                false,
-                false));
+                Optional.of(false),
+                Optional.of(false)));
     Facility site = _dataFactory.createValidFacility(gtown);
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);

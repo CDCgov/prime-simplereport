@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -17,7 +18,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import org.hibernate.annotations.Type;
-import java.util.Optional;
 
 /**
  * The person record (generally, a patient getting a test).
@@ -57,15 +57,13 @@ public class Person extends OrganizationScopedEternalEntity {
   @Column private String telephone;
   @Column private String email;
 
-  @Column
-  private Boolean employedInHealthcare;
+  @Column private Boolean employedInHealthcare;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private PersonRole role;
 
-  @Column
-  private Boolean residentCongregateSetting;
+  @Column private Boolean residentCongregateSetting;
 
   @Column
   @Type(type = "pg_enum")
@@ -216,12 +214,14 @@ public class Person extends OrganizationScopedEternalEntity {
   }
 
   public Optional<Boolean> getResidentCongregateSetting() {
-    return residentCongregateSetting==null ? Optional.empty() : Optional.of(residentCongregateSetting);
+    return residentCongregateSetting == null
+        ? Optional.empty()
+        : Optional.of(residentCongregateSetting);
   }
 
   public Optional<Boolean> getEmployedInHealthcare() {
     System.out.println("BOOYAH PERSON EMPLOYED IN HEALTHCARE: " + employedInHealthcare);
-    return employedInHealthcare==null ? Optional.empty() : Optional.of(employedInHealthcare);
+    return employedInHealthcare == null ? Optional.empty() : Optional.of(employedInHealthcare);
   }
 
   @JsonIgnore

@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
@@ -120,8 +121,8 @@ class PersonSerializationTest {
             "marathon",
             "generic",
             "Male-ish",
-            true,
-            false);
+            Optional.of(true),
+            Optional.of(false));
     return p;
   }
 

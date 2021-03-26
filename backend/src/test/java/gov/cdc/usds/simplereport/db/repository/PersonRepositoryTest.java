@@ -10,6 +10,7 @@ import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -47,8 +48,8 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             null,
             "",
             "",
-            false,
-            false));
+            Optional.of(false),
+            Optional.of(false)));
 
     List<Person> found =
         _repo.findAll(

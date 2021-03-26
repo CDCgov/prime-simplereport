@@ -121,7 +121,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String gender,
       String residentCongregateSetting,
       String employedInHealthcare) {
-        System.out.println("BOOYAH UPDATED PATIENT EMPLOYMENT: " + employedInHealthcare);
+    System.out.println("BOOYAH UPDATED PATIENT EMPLOYMENT: " + employedInHealthcare);
     return _ps.updatePatient(
         facilityId,
         patientId,
