@@ -18,7 +18,7 @@ interface Props {
 }
 
 type addressOptions = "userAddress" | "suggested";
-
+const ERROR_MESSAGE = "Please choose to an address or go back to edit";
 export const AddressConfirmationModal: React.FC<Props> = ({
   userEnteredAddress,
   suggestedAddress,
@@ -26,11 +26,10 @@ export const AddressConfirmationModal: React.FC<Props> = ({
   onConfirm,
   onClose,
 }) => {
-  const [selectedAddress, setSelectedAddress] = useState<addressOptions>(
-    "userAddress"
-  );
+  const [selectedAddress, setSelectedAddress] = useState<addressOptions>();
+  const [error, setError] = useState<boolean>(false);
 
-  const getSelectedAddress = (): AddressWithMetaData => {
+  const getSelectedAddress = (): AddressWithMetaData | undefined => {
     if (selectedAddress === "userAddress") {
       return userEnteredAddress;
     } else if (selectedAddress === "suggested") {
@@ -39,7 +38,19 @@ export const AddressConfirmationModal: React.FC<Props> = ({
       }
       return suggestedAddress;
     }
-    throw Error(`Unhandled address selection: ${suggestedAddress}`);
+    return undefined;
+  };
+
+  const validate = () => {
+    if (selectedAddress) {
+      return;
+    }
+    setError(true);
+  };
+
+  const onSave = () => {
+    const address = getSelectedAddress();
+    address ? onConfirm(address) : setError(true);
   };
 
   const getAlert = () => {
@@ -89,8 +100,19 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     };
   };
 
+  const onChange = (selection: addressOptions) => {
+    setSelectedAddress(selection);
+    setError(!selection);
+  };
+
+  const closeModal = () => {
+    setSelectedAddress(undefined);
+    setError(false);
+    onClose();
+  };
+
   return (
-    <Modal onClose={onClose} showModal={showModal}>
+    <Modal onClose={closeModal} showModal={showModal}>
       <Modal.Header>Address Validation</Modal.Header>
       {getAlert()}
       <div className="address__instructions">
@@ -107,17 +129,16 @@ export const AddressConfirmationModal: React.FC<Props> = ({
           getSuggestedOption(),
         ]}
         selectedRadio={selectedAddress}
-        onChange={setSelectedAddress}
+        onChange={onChange}
+        onBlur={validate}
+        validationStatus={error ? "error" : undefined}
+        errorMessage={error ? ERROR_MESSAGE : undefined}
       />
       <Modal.Footer>
-        <Button variant="unstyled" onClick={onClose}>
-          {" "}
+        <Button variant="unstyled" onClick={closeModal}>
           <FontAwesomeIcon icon={"arrow-left"} /> Go back to edit address
         </Button>
-        <Button
-          id="save-confirmed-address"
-          onClick={() => onConfirm(getSelectedAddress())}
-        >
+        <Button id="save-confirmed-address" onClick={onSave}>
           Save changes
         </Button>
       </Modal.Footer>

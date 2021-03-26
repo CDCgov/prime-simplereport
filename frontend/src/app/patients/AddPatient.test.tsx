@@ -185,6 +185,15 @@ describe("AddPatient", () => {
           const modal = screen.getByRole("dialog", {
             exact: false,
           });
+
+          fireEvent.click(
+            within(modal).getByLabelText("Use address as entered", {
+              exact: false,
+            }),
+            {
+              target: { value: "userAddress" },
+            }
+          );
           await act(async () => {
             fireEvent.click(
               within(modal).getByText("Save changes", {
