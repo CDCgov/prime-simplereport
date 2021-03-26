@@ -461,7 +461,7 @@ type Mutation {
     facilityId: ID!
     patientId: ID!
     pregnancy: String
-    symptoms: String
+    symptoms: String @Size(min: 0, max: 1024)
     firstTest: Boolean
     priorTestDate: LocalDate
     priorTestType: String
@@ -477,7 +477,7 @@ type Mutation {
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
-    symptoms: String
+    symptoms: String @Size(min: 0, max: 1024)
     firstTest: Boolean
     priorTestDate: LocalDate
     priorTestType: String
