@@ -23,7 +23,6 @@ public class GraphQlInputs {
       @JsonProperty("operationName") String operationName,
       @JsonProperty("query") String query,
       @JsonProperty("variables") Map<String, Object> variables) {
-    super();
     this.operationName = operationName;
     this.query = query;
     this.variables = variables;

@@ -1,0 +1,23 @@
+mutation UpdateAOE(
+  $patientId: ID!
+  $symptoms: String
+  $symptomOnset: LocalDate
+  $pregnancy: String
+  $firstTest: Boolean
+  $priorTestDate: LocalDate
+  $priorTestType: String
+  $priorTestResult: String
+  $noSymptoms: Boolean
+) {
+  updateTimeOfTestQuestions(
+    patientId: $patientId
+    pregnancy: $pregnancy
+    symptoms: $symptoms
+    noSymptoms: $noSymptoms
+    firstTest: $firstTest
+    priorTestDate: $priorTestDate
+    priorTestType: $priorTestType
+    priorTestResult: $priorTestResult
+    symptomOnset: $symptomOnset
+  )
+}
