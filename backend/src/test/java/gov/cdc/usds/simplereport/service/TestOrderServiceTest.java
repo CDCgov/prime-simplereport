@@ -596,22 +596,27 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
   }
 
   // watch for N+1 queries
-  @WithSimpleReportStandardUser
+  @Test
+  @WithSimpleReportStandardAllFacilitiesUser
   void fetchTestEventsResults_getTestEventsResults_NPlusOne() {
     Organization org = _organizationService.getCurrentOrganization();
     Facility facility = _organizationService.getFacilities(org).get(0);
     Person p = _dataFactory.createFullPerson(org);
 
     // Count queries with one order
-    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
     long startQueryCount = _hibernateQueryInterceptor.getQueryCount();
-
-    // Count queries with three order N+1 test
-    _dataFactory.createTestEvent(p, facility);
-    _dataFactory.createTestEvent(p, facility);
     _service.getTestEventsResults(facility.getInternalId(), 0, 50);
-    long endQueryCount = _hibernateQueryInterceptor.getQueryCount();
-    assertEquals(endQueryCount, startQueryCount);
+    long firstPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+
+    // add more data
+    _dataFactory.createTestEvent(p, facility);
+    _dataFactory.createTestEvent(p, facility);
+
+    // Count queries again and make queries made didn't increase
+    startQueryCount = _hibernateQueryInterceptor.getQueryCount();
+    _service.getTestEventsResults(facility.getInternalId(), 0, 50);
+    long secondPassTotal = _hibernateQueryInterceptor.getQueryCount() - startQueryCount;
+    assertEquals(secondPassTotal, firstPassTotal);
   }
 
   @Test
