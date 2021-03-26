@@ -4,10 +4,8 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 
-import renderer from "react-test-renderer";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
-import { Renderer } from "react-dom";
 
 const mockStore = configureStore([]);
 
@@ -50,6 +48,7 @@ describe("EditPatient", () => {
   });
 
   describe("facility select input", () => {
+    let component: any;
     beforeEach(async () => {
       const mocks = [
         {
@@ -87,7 +86,7 @@ describe("EditPatient", () => {
         },
       ];
 
-      render(
+      component = render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <EditPatient
@@ -106,6 +105,10 @@ describe("EditPatient", () => {
       expect(
         screen.queryAllByText("Franecki, Eugenia", { exact: false })[0]
       ).toBeInTheDocument();
+    });
+
+    it("matches screenshot", () => {
+      expect(component).toMatchSnapshot();
     });
 
     describe("facility select input", () => {
@@ -128,18 +131,5 @@ describe("EditPatient", () => {
         expect(facilityInput.value).toBe(mockFacilityID);
       });
     });
-
-      describe("snapshot", () => {
-        const component = renderer.create(
-          <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <EditPatient
-              facilityId={mockFacilityID}
-              patientId={mockPatientID}
-            />
-          </MockedProvider>
-        </Provider>);
-    expect(component.toJSON()).toMatchSnapshot();
-      });
     });
 });
