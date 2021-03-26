@@ -13,11 +13,14 @@ import {
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
 import Pagination from "../commonComponents/Pagination";
+import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
+
+type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
@@ -151,7 +154,7 @@ export const DetachedTestResultsList: any = ({
             </span>
           </th>
           <td>{moment(r.dateTested).format("lll")}</td>
-          <td>{r.result}</td>
+          <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
           <td>{r.deviceType.name}</td>
           <td>
             {displayFullNameInOrder(
