@@ -11,11 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * HandlerInterceptor to set a request ID for patient experience REST handlers, as well as logging
- * audit information for successful patient requests. (Requests that raise exceptions are handled by
- * {@link AuditLoggingAdvice#logAndRethrow(HttpServletRequest, Exception)}
- */
+/** HandlerInterceptor to set a request ID for patient experience REST handlers. */
 @Component
 @ConditionalOnWebApplication
 public class PatientExperienceLoggingInterceptor implements HandlerInterceptor {

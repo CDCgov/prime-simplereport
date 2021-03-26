@@ -26,7 +26,6 @@ public class RestAuditLogManager {
   private static final int DEFAULT_SUCCESS = HttpStatus.OK.value();
 
   public RestAuditLogManager(AuditService auditService, CurrentPatientContextHolder contextHolder) {
-    super();
     this._auditService = auditService;
     this._contextHolder = contextHolder;
   }
