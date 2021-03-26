@@ -81,6 +81,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="row"
                   >
                     Cragell, Barb Whitaker
+                    <span
+                      class="display-block text-gray-30 font-ui-2xs"
+                    >
+                      DOB: 
+                      11/07/1960
+                    </span>
                   </th>
                   <td>
                     Mar 17, 2021 7:27 PM
@@ -136,6 +142,12 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="row"
                   >
                     Colleer, Barde X
+                    <span
+                      class="display-block text-gray-30 font-ui-2xs"
+                    >
+                      DOB: 
+                      11/07/1960
+                    </span>
                   </th>
                   <td>
                     Mar 17, 2021 7:27 PM
