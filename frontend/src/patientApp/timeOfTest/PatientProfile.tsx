@@ -1,5 +1,6 @@
 import moment from "moment";
 import { Redirect } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { formatFullName } from "../../app/utils/user";
 import { formatAddress, newLineSpan } from "../../app/utils/address";
@@ -8,15 +9,22 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
 } from "../../app/constants";
-import { getPatientLinkIdFromUrl } from "../../app/utils/url";
 
 interface Props {
   patient: any;
 }
 
 const PatientProfile = ({ patient }: Props) => {
+  const plid = useSelector((state: any) => state.plid);
   if (!patient) {
-    return <Redirect to={`/?plid=${getPatientLinkIdFromUrl()}`} />;
+    return (
+      <Redirect
+        to={{
+          pathname: "/",
+          search: `?plid=${plid}`,
+        }}
+      />
+    );
   }
   const fullName = formatFullName(patient);
   const race = RACE_VALUES.find((val) => val.value === patient.race)?.label;

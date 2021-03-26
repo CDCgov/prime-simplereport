@@ -16,6 +16,21 @@ directive @requiredPermissions(
   allOf: [String!] # if the requester lacks all of these permissions, deny
 ) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
 
+# These directives come from the graphql-java-extended-validation package. This package offers a
+# number of additional directives (@Range, @Digits, etc.) that can be pulled in and enforced
+# automatically by graphql-java-extended-validation once they are defined in this file.
+# Cf. https://github.com/graphql-java/graphql-java-extended-validation for a complete list of
+# directives that can be used.
+directive @Size(
+  min: Int!
+  max: Int!
+  message: String = "graphql.validation.Size.message"
+) on ARGUMENT_DEFINITION
+directive @Pattern(
+  regexp: String!
+  message: String = "graphql.validation.Pattern.message"
+) on ARGUMENT_DEFINITION
+
 # java.util.Date implementation
 scalar DateTime
 # java.time.LocalDate
@@ -403,26 +418,26 @@ type Mutation {
     employedInHealthcare: Boolean!
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
-    facilityId: ID
-    patientId: ID!
+    facilityId: ID @Size(min: 36, max: 36)
+    patientId: ID! @Size(min: 36, max: 36)
     lookupId: String
     firstName: String!
     middleName: String
     lastName: String!
-    suffix: String
+    suffix: String @Size(min: 0, max: 32)
     birthDate: LocalDate!
     street: String!
     streetTwo: String
     city: String
-    state: String!
-    zipCode: String!
+    state: String! @Pattern(regexp: "[A-Z]{2}", message: "Use 2 letter state code")
+    zipCode: String! @Pattern(regexp: "[0-9]{5}(-[0-9]{4})?", message: "Use ZIP or ZIP+4 format")
     telephone: String!
-    role: String
-    email: String
+    role: String @Size(min: 0, max: 32)
+    email: String @Size(min: 3, max: 254)
     county: String
-    race: String
-    ethnicity: String
-    gender: String
+    race: String @Size(min: 0, max: 32)
+    ethnicity: String @Size(min: 0, max: 32)
+    gender: String @Size(min: 0, max: 32)
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
@@ -450,7 +465,7 @@ type Mutation {
     facilityId: ID!
     patientId: ID!
     pregnancy: String
-    symptoms: String
+    symptoms: String @Size(min: 0, max: 1024)
     firstTest: Boolean
     priorTestDate: LocalDate
     priorTestType: String
@@ -466,7 +481,7 @@ type Mutation {
   updateTimeOfTestQuestions(
     patientId: ID!
     pregnancy: String
-    symptoms: String
+    symptoms: String @Size(min: 0, max: 1024)
     firstTest: Boolean
     priorTestDate: LocalDate
     priorTestType: String
