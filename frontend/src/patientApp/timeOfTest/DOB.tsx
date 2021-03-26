@@ -70,7 +70,6 @@ const DOB = () => {
   if (patient?.orderStatus === "COMPLETED") {
     return (
       <Redirect
-        push
         to={{
           pathname: "/test-result",
           search: `?plid=${plid}`,
@@ -80,9 +79,9 @@ const DOB = () => {
   } else if (patient?.firstName) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/patient-info-confirm",
+          search: `?plid=${plid}`,
         }}
       />
     );
