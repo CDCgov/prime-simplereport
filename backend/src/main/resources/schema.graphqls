@@ -16,7 +16,11 @@ directive @requiredPermissions(
   allOf: [String!] # if the requester lacks all of these permissions, deny
 ) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
 
-# graphql-java-extended-validation directives
+# These directives come from the graphql-java-extended-validation package. This package offers a
+# number of additional directives (@Range, @Digits, etc.) that can be pulled in and enforced
+# automatically by graphql-java-extended-validation once they are defined in this file.
+# Cf. https://github.com/graphql-java/graphql-java-extended-validation for a complete list of
+# directives that can be used.
 directive @Size(
   min: Int!
   max: Int!

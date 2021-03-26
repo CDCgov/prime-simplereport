@@ -22,6 +22,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Enforces a default maximum length on all string, list, and map arguments to GraphQL queries and
+ * mutations.
+ *
+ * This default validator is only applied if the argument is not already targeted by a validation
+ * directive that can express a size constraint (e.g., `@Size` or `@Pattern`). Cf. the
+ * DIRECTIVES_OVERRIDING_DEFAULT_RULE static variable for which validation directives will disable
+ * the default validation rule.
+ */
 public class DefaultArgumentValidation implements ValidationRule {
   private static final Set<String> DIRECTIVES_OVERRIDING_DEFAULT_RULE = Set.of("Size", "Pattern");
   private static final Set<String> SCALARS_APPLIED_TO =
@@ -60,6 +69,15 @@ public class DefaultArgumentValidation implements ValidationRule {
     return errors; // this method must return a modifiable collection
   }
 
+  /**
+   * Determine whether the default size validation applies to a given type. This will return `true`
+   * for strings (including "special string" i.e custom scalars), lists, and maps; returns `false`
+   * otherwise. If the supplied type is a "modified" type (e.g., `String!`), the type is unwrapped,
+   * and the function recurs.
+   *
+   * @param type the GraphQL type to inspect
+   * @return true for strings (including "special string" i.e custom scalars), lists, and maps
+   */
   private boolean appliesToType(GraphQLType type) {
     if (type instanceof GraphQLScalarType) {
       return SCALARS_APPLIED_TO.contains(((GraphQLScalarType) type).getName());
