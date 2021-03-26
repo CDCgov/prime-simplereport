@@ -16,6 +16,7 @@ const PatientProfileContainer = () => {
   if (editPage) {
     return (
       <Redirect
+        push
         to={{
           pathname: "/patient-info-edit",
           search: `?plid=${plid}`,

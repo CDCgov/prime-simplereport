@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect, useSelector, useDispatch } from "react-redux";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { setPatient as reduxSetPatient } from "../../app/store";
@@ -12,7 +12,7 @@ import Alert from "../../app/commonComponents/Alert";
 import Button from "../../app/commonComponents/Button";
 
 const PatientFormContainer = () => {
-  const [prevPage, setPrevPage] = useState(false);
+  const history = useHistory();
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state: any) => state.patient);
   const facility = useSelector((state: any) => state.facility);
@@ -25,17 +25,6 @@ const PatientFormContainer = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-
-  if (prevPage) {
-    return (
-      <Redirect
-        to={{
-          pathname: "/patient-info-confirm",
-          search: `?plid=${plid}`,
-        }}
-      />
-    );
-  }
 
   if (nextPage) {
     return (
@@ -112,7 +101,7 @@ const PatientFormContainer = () => {
                   className="margin-top-1 mobile-lg:margin-top-0 margin-right-0"
                   variant="outline"
                   label={"Back"}
-                  onClick={() => setPrevPage(true)}
+                  onClick={() => history.goBack()}
                 />
               </div>
             )}
