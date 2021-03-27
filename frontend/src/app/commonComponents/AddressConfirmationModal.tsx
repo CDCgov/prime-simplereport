@@ -72,7 +72,7 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     return (
       <>
         <b>{title}:</b>
-        <div className="address__formated">
+        <div className="address__formated usa-checkbox__label-description">
           {newLineSpan({ text: `${formatAddress(address)}${lastLine}` })}
         </div>
       </>
@@ -112,14 +112,14 @@ export const AddressConfirmationModal: React.FC<Props> = ({
 
   return (
     <Modal onClose={closeModal} showModal={showModal}>
-      <Modal.Header>Address Validation</Modal.Header>
+      <Modal.Header>Address validation</Modal.Header>
       {getAlert()}
-      <div className="address__instructions">
+      <p className="address__instructions">
         Please select an option to continue:
-      </div>
+      </p>
       <RadioGroup
         name="addressSelect"
-        className="address__select"
+        className="address__select margin-top-0"
         buttons={[
           {
             value: "userAddress",
@@ -131,11 +131,13 @@ export const AddressConfirmationModal: React.FC<Props> = ({
         onChange={onChange}
         onBlur={validate}
         validationStatus={error ? "error" : undefined}
+        variant="tile"
         errorMessage={error ? ERROR_MESSAGE : undefined}
       />
       <Modal.Footer>
         <Button variant="unstyled" onClick={closeModal}>
-          <FontAwesomeIcon icon={"arrow-left"} /> Go back to edit address
+          <FontAwesomeIcon icon={"arrow-left"} />
+          <span className="margin-left-1">Go back to edit address</span>
         </Button>
         <Button id="save-confirmed-address" onClick={onSave}>
           Save changes

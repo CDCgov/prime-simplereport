@@ -270,8 +270,10 @@
   .modal__footer {
     display: flex;
     justify-content: flex-end;
-     * {
-      margin-right: 15px;
+
+    > *:not(:first-child) {
+      margin-left: units(2);
+
       &:last-child {
         margin-right: 0;
       }

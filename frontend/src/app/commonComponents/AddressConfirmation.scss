@@ -1,35 +1,34 @@
-.address__select .usa-form-group {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 10px;
+.address__select {
+  .usa-form-group {
+    display: flex;
+    gap: 16px; // units(2)
+  }
+
   .usa-radio {
-    border: 2px solid #e4e4e4;
-    padding: 10px;
-    border-radius: 3px;
-    .address__formated {
-      padding-left: 32px;
+    flex: 1 1;
+  }
+
+  .usa-radio__label {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .usa-radio__input:disabled {
+    + .usa-radio__label {
+      flex: 1 1;
+      justify-content: center;
+
+      &::before {
+        display: none;
+      }
     }
   }
-  .usa-radio__input:disabled + .usa-radio__label::before {
-    display: none;
-  }
-  .usa-radio__input:disabled + .usa-radio {
-    border: 2px solid #eee;
-
-  }
-  .usa-radio__input:disabled + .usa-radio__label {
-    height: 100%;
-
-  }
 }
-
 
 .address__no-suggestion {
-  margin-top: 38px;
-  text-align: center;
+  align-self: center;
 }
 
-.address__instructions{
-  font-weight: 600;
-  margin-top: 15px;
+.address__instructions {
+  font-weight: bold;
 }
