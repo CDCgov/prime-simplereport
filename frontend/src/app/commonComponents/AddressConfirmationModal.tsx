@@ -113,6 +113,7 @@ export const AddressConfirmationModal: React.FC<Props> = ({
   return (
     <Modal onClose={closeModal} showModal={showModal}>
       <Modal.Header>Address validation</Modal.Header>
+      <div className="border-top border-base-lighter margin-x-neg-205"></div>
       {getAlert()}
       <p className="address__instructions">
         Please select an option to continue:
@@ -134,15 +135,18 @@ export const AddressConfirmationModal: React.FC<Props> = ({
         variant="tile"
         errorMessage={error ? ERROR_MESSAGE : undefined}
       />
-      <Modal.Footer>
-        <Button variant="unstyled" onClick={closeModal}>
-          <FontAwesomeIcon icon={"arrow-left"} />
-          <span className="margin-left-1">Go back to edit address</span>
-        </Button>
-        <Button id="save-confirmed-address" onClick={onSave}>
-          Save changes
-        </Button>
-      </Modal.Footer>
+      <div className="margin-top-4">
+        <div className="border-top border-base-lighter margin-bottom-2 margin-x-neg-205"></div>
+        <Modal.Footer>
+          <Button variant="unstyled" onClick={closeModal}>
+            <FontAwesomeIcon icon={"arrow-left"} />
+            <span className="margin-left-1">Go back to edit address</span>
+          </Button>
+          <Button id="save-confirmed-address" onClick={onSave}>
+            Save changes
+          </Button>
+        </Modal.Footer>
+      </div>
     </Modal>
   );
 };
