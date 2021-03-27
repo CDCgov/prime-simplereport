@@ -757,7 +757,6 @@
   }
 
   .radio--disabled {
-    border-color: color("base-lightest");
     display: flex;
   }
 
@@ -768,6 +767,7 @@
 
   .usa-radio__input:disabled {
     + .usa-radio__label {
+      border-color: color("base-lightest");
       flex: 1 1;
       justify-content: center;
 
