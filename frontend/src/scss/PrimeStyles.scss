@@ -744,3 +744,44 @@
 .maxw-prose {
   max-width: 68ex;
 }
+
+// Address validation
+.address__select {
+  .usa-form-group {
+    display: flex;
+    gap: units(2);
+  }
+
+  .usa-radio {
+    flex: 1 1;
+  }
+
+  .radio--disabled {
+    border-color: color("base-lightest");
+    display: flex;
+  }
+
+  .usa-radio__label {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .usa-radio__input:disabled {
+    + .usa-radio__label {
+      flex: 1 1;
+      justify-content: center;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.address__no-suggestion {
+  align-self: center;
+}
+
+.address__instructions {
+  font-weight: bold;
+}
