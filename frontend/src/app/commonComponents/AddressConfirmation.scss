@@ -1,0 +1,41 @@
+@import "../../scss/app-settings.scss";
+
+.address__select {
+  .usa-form-group {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .usa-radio {
+    flex: 1 1;
+  }
+
+  .radio--disabled {
+    display: flex;
+  }
+
+  .usa-radio__label {
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .usa-radio__input:disabled {
+    + .usa-radio__label {
+      border-color: $theme-color-base-lightest;
+      flex: 1 1;
+      justify-content: center;
+
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.address__no-suggestion {
+  align-self: center;
+}
+
+.address__instructions {
+  font-weight: bold;
+}
