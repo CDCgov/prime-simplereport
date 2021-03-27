@@ -1,5 +1,3 @@
-@import "../../scss/app-settings.scss";
-
 .address__select {
   .usa-form-group {
     display: flex;
@@ -21,7 +19,7 @@
 
   .usa-radio__input:disabled {
     + .usa-radio__label {
-      border-color: $theme-color-base-lightest;
+      border-color: #f0f0f0; // base-lightest
       flex: 1 1;
       justify-content: center;
 
