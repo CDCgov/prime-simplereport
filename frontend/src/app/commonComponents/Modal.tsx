@@ -7,7 +7,7 @@ const Header: React.FC<{}> = ({ children }) => (
   <h3 className="modal__heading">{children}</h3>
 );
 const Footer: React.FC<{}> = ({ children }) => (
-  <h3 className="modal__footer">{children}</h3>
+  <div className="modal__footer">{children}</div>
 );
 
 interface Props {
