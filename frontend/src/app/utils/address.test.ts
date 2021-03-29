@@ -45,6 +45,17 @@ describe("formatAddress", () => {
     };
     expect(formatAddress(address)).toBe("123 Green Street\nAPT 1\nNew City");
   });
+  test("street2 is null", () => {
+    const address = {
+      street: "123 Green Street",
+      streetTwo: null,
+      city: "New City",
+      state: "",
+      county: "",
+      zipCode: "",
+    };
+    expect(formatAddress(address)).toBe("123 Green Street\nNew City");
+  });
   test("with street, streetTwo, city, and state", () => {
     const address = {
       street: "123 Green Street",

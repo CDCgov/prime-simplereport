@@ -9,6 +9,7 @@ type Options<T> = {
   label: React.ReactNode;
   value: T;
   disabled?: boolean;
+  className?: string;
 }[];
 
 interface Props<T> {
@@ -85,8 +86,9 @@ const RadioGroup = <T extends string>({
                 "usa-radio__label",
                 (c.disabled || disabled) && "text-base"
               );
+              const className = classnames(groupClass, c.className);
               return (
-                <div className={groupClass} key={uid(c.value)}>
+                <div className={className} key={uid(c.value)}>
                   <input
                     type="radio"
                     id={uid(c.value)}
