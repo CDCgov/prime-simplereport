@@ -200,7 +200,8 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
    * it!
    *
-   * @param queryFileName the resource file name of the query
+   * @param queryFileName the resource file name of the query (to be found in
+   *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
    *     is a multi-operation document (apparently). This turns out not to be needed for any of our
    *     cases, but we can leave it supported for the day when it is.
@@ -210,6 +211,9 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    */
   protected ObjectNode runQuery(
       String queryFileName, String operationName, ObjectNode variables, String expectedError) {
+    if (queryFileName != null && !queryFileName.contains("/")) {
+      queryFileName = "queries/" + queryFileName;
+    }
     try {
       setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
