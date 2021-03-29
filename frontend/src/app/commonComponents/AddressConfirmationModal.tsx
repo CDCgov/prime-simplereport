@@ -83,6 +83,7 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     value: addressOptions;
     label: ReactNode;
     disabled?: boolean;
+    className?: string;
   } => {
     if (suggestedAddress) {
       return {
@@ -93,9 +94,12 @@ export const AddressConfirmationModal: React.FC<Props> = ({
     return {
       value: "suggested",
       label: (
-        <div className="address__no-suggestion">No suggested address found</div>
+        <span className="address__no-suggestion">
+          No suggested address found
+        </span>
       ),
       disabled: true,
+      className: "radio--disabled",
     };
   };
 
