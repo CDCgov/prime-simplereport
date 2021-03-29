@@ -1,9 +1,9 @@
 package gov.cdc.usds.simplereport.api.graphql;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -117,17 +117,11 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     ResponseEntity<String> resp =
         _restTemplate.exchange("/pxp/link/verify", HttpMethod.PUT, requestEntity, String.class);
     LOG.info("Response body is {}", resp.getBody());
-    verify(_auditRepo, atLeastOnce()).save(_eventCaptor.capture());
-    _eventCaptor
-        .getAllValues()
-        .forEach(
-            e ->
-                LOG.info(
-                    "Captured REST request {} {} {}",
-                    e.getRequestId(),
-                    e.getHttpRequestDetails().getRequestUri(),
-                    e.getResponseCode()));
-    assertEquals(500, _eventCaptor.getValue().getResponseCode());
+    verify(_auditRepo).save(_eventCaptor.capture());
+    assertThat(_eventCaptor.getValue())
+        .as("Saved audit event")
+        .matches(e -> e.getHttpRequestDetails().getRequestUri().equals("/pxp/link/verify"))
+        .hasFieldOrPropertyWithValue("responseCode", 500);
   }
 
   @Test
