@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service;
 public class SmsService {
   private static final Logger LOG = LoggerFactory.getLogger(SmsService.class);
 
-  @Value("${twilio.from-number:+14045312484}")
+  @Value("${twilio.from-number:+12023014570")
   private String rawFromNumber;
 
   @Autowired PatientLinkService pls;
