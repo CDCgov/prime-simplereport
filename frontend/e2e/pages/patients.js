@@ -37,6 +37,8 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@lastName", lastName);
   this.section.editPatient.setValue("@facility", "All facilities");
   this.section.editPatient.click("@saveButton");
+  this.section.confirmAddressModal.click("@addressSelect");
+  this.section.confirmAddressModal.click("@save");
   this.expect.section("@patientList").to.be.visible;
   this.expect.section("@patientList").to.contain.text(fullName);
 
@@ -86,5 +88,12 @@ module.exports = {
         saveButton: ".prime-save-patient-changes",
       },
     },
+    confirmAddressModal: {
+      selector: ".modal__container",
+      elements: {
+        save: "#save-confirmed-address",
+        addressSelect: 'input[name="addressSelect"]+label',
+      },
+    }
   },
 };

@@ -72,6 +72,8 @@ public class ApiAuditEvent {
   @Type(type = "jsonb")
   private HttpRequestDetails httpRequestDetails;
 
+  @Column private int responseCode;
+
   @Column
   @Type(type = "jsonb")
   private GraphQlInputs graphqlQueryDetails;
@@ -104,6 +106,8 @@ public class ApiAuditEvent {
     // hibernate
   }
 
+  /** Constructor for graphql requests */
+  @SuppressWarnings("checkstyle:MagicNumber") // seriously not importing HttpStatus for this
   public ApiAuditEvent(
       String requestId,
       HttpRequestDetails httpRequestDetails,
@@ -113,7 +117,6 @@ public class ApiAuditEvent {
       List<UserPermission> permissions,
       boolean isAdmin,
       Organization org) {
-    super();
     this.requestId = requestId;
     this.httpRequestDetails = httpRequestDetails;
     this.graphqlQueryDetails = graphqlQueryDetails;
@@ -123,6 +126,23 @@ public class ApiAuditEvent {
     this.isAdminUser = isAdmin;
     this.userPermissions =
         permissions.stream().map(UserPermission::name).sorted().collect(Collectors.toList());
+    this.responseCode = 200;
+  }
+
+  /** Constructor for REST (patient-experience) requests */
+  public ApiAuditEvent(
+      String requestId,
+      HttpRequestDetails httpRequestDetails,
+      int responseStatus,
+      ApiUser user,
+      Organization organization,
+      PatientLink patientLink) {
+    this.requestId = requestId;
+    this.httpRequestDetails = httpRequestDetails;
+    this.responseCode = responseStatus;
+    this.user = user;
+    this.organization = organization;
+    this.patientLink = patientLink;
   }
 
   public UUID getId() {
@@ -139,6 +159,10 @@ public class ApiAuditEvent {
 
   public HttpRequestDetails getHttpRequestDetails() {
     return httpRequestDetails;
+  }
+
+  public int getResponseCode() {
+    return responseCode;
   }
 
   public GraphQlInputs getGraphqlQueryDetails() {
