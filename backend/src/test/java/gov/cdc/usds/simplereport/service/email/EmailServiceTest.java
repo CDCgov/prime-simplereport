@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.service.email;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+
 import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import java.io.IOException;
