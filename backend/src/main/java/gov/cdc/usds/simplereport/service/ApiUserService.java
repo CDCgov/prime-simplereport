@@ -6,9 +6,9 @@ import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
+import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -40,7 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-  @Autowired private SiteAdminEmailList _siteAdmins;
+  @Autowired private AuthorizationProperties _authProperties;
 
   @Autowired private ApiUserRepository _apiUserRepo;
 
@@ -172,7 +172,7 @@ public class ApiUserService {
   }
 
   public boolean isAdmin(ApiUser user) {
-    return _siteAdmins.contains(user.getLoginEmail());
+    return _oktaRepo.isEmailInGroup(_authProperties.getAdminGroupName(), user.getLoginEmail());
   }
 
   // Creating separate getCurrentApiUser() methods because the auditing use case and

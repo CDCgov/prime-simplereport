@@ -6,4 +6,4 @@ okta:
 simple-report:
   authorization:
     role-claim: dev_roles
-    role-prefix: "SR-DEV-TENANT:"
+    environment-name: "DEV"

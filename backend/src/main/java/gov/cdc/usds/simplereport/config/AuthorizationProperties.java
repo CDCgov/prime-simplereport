@@ -7,12 +7,14 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @ConstructorBinding
 public class AuthorizationProperties {
 
-  private String roleClaim;
-  private String rolePrefix;
+  private final String roleClaim;
+  private final String rolePrefix;
+  private final String adminGroupName;
 
-  public AuthorizationProperties(String roleClaim, String rolePrefix) {
-    this.roleClaim = roleClaim;
-    this.rolePrefix = rolePrefix;
+  public AuthorizationProperties(String environmentName) {
+    this.roleClaim = environmentName.toLowerCase() + "_roles";
+    this.rolePrefix = "SR-" + environmentName.toUpperCase() + "-TENANT:";
+    this.adminGroupName = "SR-" + environmentName.toUpperCase() + "-ADMINS";
   }
 
   public String getRoleClaim() {
@@ -21,5 +23,9 @@ public class AuthorizationProperties {
 
   public String getRolePrefix() {
     return rolePrefix;
+  }
+
+  public String getAdminGroupName() {
+    return adminGroupName;
   }
 }

@@ -9,7 +9,6 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationExtractor;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.repository.BaseRepositoryTest;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
@@ -85,7 +84,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 @EnableConfigurationProperties({
   InitialSetupProperties.class,
   AuthorizationProperties.class,
-  SiteAdminEmailList.class,
   DataHubConfig.class,
 })
 public class SliceTestConfiguration {

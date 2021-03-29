@@ -40,4 +40,6 @@ public interface OktaRepository {
   public void deleteFacility(Facility facility);
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username);
+
+  public boolean isEmailInGroup(final String groupName, final String email);
 }

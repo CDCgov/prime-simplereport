@@ -14,8 +14,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 class OrganizationExtractorTest {
 
-  private static final AuthorizationProperties MOCK_PROPS =
-      new AuthorizationProperties(null, "SR-UNITTEST-TENANT:");
+  private static final AuthorizationProperties MOCK_PROPS = new AuthorizationProperties("UNITTEST");
 
   @Test
   void convert_emptyList_emptyReturn() {
