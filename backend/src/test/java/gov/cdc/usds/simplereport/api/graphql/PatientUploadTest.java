@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -13,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 
-public class PatientUploadTest extends BaseApiTest {
+public class PatientUploadTest extends BaseGraphqlTest {
   public static final int PATIENT_PAGEOFFSET = 0;
   public static final int PATIENT_PAGESIZE = 1000;
 

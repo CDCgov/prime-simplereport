@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -45,9 +46,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public abstract class BaseApiTest extends BaseFullStackTest {
+/** Base class for GraphQL API full-stack tests. */
+public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(BaseApiTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BaseGraphqlTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
@@ -115,10 +117,7 @@ public abstract class BaseApiTest extends BaseFullStackTest {
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
         .thenReturn(_dataFactory.getAddress());
-    TestUserIdentities.withStandardUser(
-        () -> {
-          _initService.initAll();
-        });
+    TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
     assertNull(
@@ -225,18 +224,6 @@ public abstract class BaseApiTest extends BaseFullStackTest {
 
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
     return runQuery(queryFileName, null, variables, null);
-  }
-
-  /**
-   * Check if the given response has an {@code errors} section, and if so, fail the test using the
-   * errors section as a failure message.
-   */
-  protected static void assertGraphQLSuccess(GraphQLResponse resp) {
-    try {
-      assertGraphQLOutcome(resp.readTree(), null);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**
