@@ -13,7 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 
-public class PatientUploadTest extends BaseGraphqlTest {
+class PatientUploadTest extends BaseGraphqlTest {
   public static final int PATIENT_PAGEOFFSET = 0;
   public static final int PATIENT_PAGESIZE = 1000;
 
@@ -43,7 +43,8 @@ public class PatientUploadTest extends BaseGraphqlTest {
     parts.add(
         "1",
         new HttpEntity<>(
-            "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City ,County,State,ZipCode,PhoneNumber,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId\nBest,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,Yes,No,Staff,foo@example.com,",
+            "LastName,FirstName,MiddleName,Suffix,Race,DOB,biologicalSex,Ethnicity,Street,Street2,City ,County,State,ZipCode,PhoneNumber,employedInHealthcare,residentCongregateSetting,Role,Email,facilityId\n"
+                + "Best,Tim,,,White,5/11/1933,Male,Not_Hispanic,123 Main Street,,Washington,,DC,20008,5656667777,Yes,No,Staff,foo@example.com,",
             csvHeaders));
     return (JsonNode) runMultipart(parts);
   }
