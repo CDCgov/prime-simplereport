@@ -57,6 +57,7 @@ jobs:
           REACT_APP_BACKEND_URL: https://training.simplereport.gov/api
           REACT_APP_IS_TRAINING_SITE: true
           PUBLIC_URL: /app/
+          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
         run: yarn run build
       - uses: azure/login@v1
         with:

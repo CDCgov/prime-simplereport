@@ -8,6 +8,10 @@ interface Address {
   zipCode: string;
 }
 
+interface AddressWithMetaData extends Address {
+  county: string;
+}
+
 interface Facility extends Address {
   id: string;
   cliaNumber: string;

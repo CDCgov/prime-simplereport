@@ -53,11 +53,12 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Build deploy artifact
-        env: 
+        env:
           REACT_APP_BASE_URL: https://dev.simplereport.gov
           REACT_APP_APPINSIGHTS_KEY: 29a75c50-8485-4d80-8e1b-41b1a091abb6
           REACT_APP_BACKEND_URL: https://dev.simplereport.gov/api
           PUBLIC_URL: /app/
+          REACT_APP_SMARTY_STREETS_KEY: ${{ secrets.SMARTY_STREETS_KEY }}
         run: yarn run build
       - uses: azure/login@v1
         with:
