@@ -18,6 +18,8 @@ import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
+import { getBestSuggestion } from "../../utils/smartyStreets";
+import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -39,6 +41,10 @@ const PersonForm = (props: Props) => {
   const [formChanged, setFormChanged] = useState(false);
   const [patient, setPatient] = useState(props.patient);
   const [errors, setErrors] = useState<PersonErrors>({});
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [addressSuggestion, setAddressSuggestion] = useState<
+    AddressWithMetaData | undefined
+  >();
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -81,7 +87,24 @@ const PersonForm = (props: Props) => {
     return errors[name] ? "error" : undefined;
   };
 
-  const onSave = async () => {
+  const getAddress = (p: Nullable<PersonFormData>): AddressWithMetaData => {
+    return {
+      street: p.street || "",
+      streetTwo: p.streetTwo,
+      city: p.city,
+      state: p.state || "",
+      zipCode: p.zipCode || "",
+      county: p.county || "",
+    };
+  };
+
+  const validatePatientAddress = async () => {
+    const suggestedAddress = await getBestSuggestion(getAddress(patient));
+    setAddressSuggestion(suggestedAddress);
+    setAddressModalOpen(true);
+  };
+
+  const validateForm = async () => {
     try {
       await personSchema.validate(patient, { abortEarly: false });
     } catch (e) {
@@ -110,9 +133,21 @@ const PersonForm = (props: Props) => {
       });
       return;
     }
-    // If no errors, submit
+    if (
+      JSON.stringify(getAddress(patient)) ===
+      JSON.stringify(getAddress(props.patient))
+    ) {
+      onSave();
+    } else {
+      validatePatientAddress();
+    }
+  };
+  const onSave = (address?: AddressWithMetaData) => {
+    const person = address ? { ...patient, ...address } : patient;
+    setPatient(person);
+    setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(patient);
+    props.savePerson(person);
   };
 
   const commonInputProps = {
@@ -131,7 +166,7 @@ const PersonForm = (props: Props) => {
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
-      {props.getHeader && props.getHeader(patient, onSave, formChanged)}
+      {props.getHeader && props.getHeader(patient, validateForm, formChanged)}
       <RequiredMessage />
       <FormGroup title="General info">
         <div className="usa-form">
@@ -299,7 +334,14 @@ const PersonForm = (props: Props) => {
           required
         />
       </FormGroup>
-      {props.getFooter && props.getFooter(onSave, formChanged)}
+      {props.getFooter && props.getFooter(validateForm, formChanged)}
+      <AddressConfirmationModal
+        userEnteredAddress={getAddress(patient)}
+        suggestedAddress={addressSuggestion}
+        showModal={addressModalOpen}
+        onConfirm={onSave}
+        onClose={() => setAddressModalOpen(false)}
+      />
     </>
   );
 };

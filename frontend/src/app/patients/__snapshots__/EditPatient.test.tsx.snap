@@ -1252,6 +1252,9 @@ Object {
         </div>
       </div>
     </div>
+    <div
+      class="modal--basic"
+    />
   </body>,
   "container": <div>
     <div
