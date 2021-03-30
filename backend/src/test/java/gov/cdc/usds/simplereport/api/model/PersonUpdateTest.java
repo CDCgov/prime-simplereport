@@ -1,7 +1,8 @@
 package gov.cdc.usds.simplereport.api.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 class PersonUpdateTest {
@@ -18,13 +19,13 @@ class PersonUpdateTest {
             + "\"residentCongregateSetting\":false,"
             + "\"employedInHealthcare\":true,"
             + "\"address\":{"
-              + "\"street\":[\"12 Someplace\",\"CA\"],"
-              + "\"city\":null,"
-              + "\"state\":\"CA\","
-              + "\"county\":null,"
-              + "\"postalCode\":\"67890\""
+            + "\"street\":[\"12 Someplace\",\"CA\"],"
+            + "\"city\":null,"
+            + "\"state\":\"CA\","
+            + "\"county\":null,"
+            + "\"postalCode\":\"67890\""
             + "}"
-          + "}";
+            + "}";
 
     var mapper = new ObjectMapper();
     var parsed = mapper.readValue(serialized, PersonUpdate.class);
