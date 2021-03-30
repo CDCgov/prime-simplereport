@@ -196,7 +196,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             USERNAMES.get(0),
             TestUserIdentities.DEFAULT_ORGANIZATION,
             Role.USER.name());
-    runQuery("add-user", variables, "Current user does not have permission to request [/addUser]");
+    runQuery("add-user", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
         "addUserOp",

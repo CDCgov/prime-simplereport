@@ -7,7 +7,8 @@ type Organization {
   internalId: ID
   name: String
   externalId: String
-  testingFacility: [Facility]
+  testingFacility: [Facility] @deprecated(reason: "Use the one that makes sense")
+  facilities: [Facility!]!
 }
 
 type Facility {
@@ -83,6 +84,7 @@ type NameInfo {
   firstName: String
   middleName: String
   lastName: String
+  suffix: String
 }
 
 # Patient and test types
@@ -178,8 +180,9 @@ type PatientLink {
 # Queries and mutations for everyday use
 
 type Query {
-  organization: Organization
-  deviceType: [DeviceType]
+  organization: Organization @deprecated(reason: "this information is already loaded from the 'whoami' endpoint")
+  deviceType: [DeviceType] @deprecated(reason: "use the pluralized form to reduce confusion")
+  deviceTypes: [DeviceType]
   patients(
     facilityId: ID
     pageNumber: Int
