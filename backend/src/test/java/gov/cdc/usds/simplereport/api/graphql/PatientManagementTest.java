@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,7 +28,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /** Tests for adding and fetching patients through the API */
-class PatientManagementTest extends BaseApiTest {
+class PatientManagementTest extends BaseGraphqlTest {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;

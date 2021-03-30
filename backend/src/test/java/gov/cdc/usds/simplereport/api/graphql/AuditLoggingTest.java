@@ -1,5 +1,6 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -27,7 +28,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-class AuditLoggingTest extends BaseApiTest {
+class AuditLoggingTest extends BaseGraphqlTest {
 
   private static final String ACCOUNT_REQUEST = "/account-request/waitlist";
 
@@ -50,9 +51,10 @@ class AuditLoggingTest extends BaseApiTest {
   void auditableGraphqlRequest_noInterestingHeaders_boringAudit() {
     useOrgUser();
     runQuery("current-user-query");
+    String requestId = getGraphqlRequestIdHeader();
     ApiAuditEvent event =
         assertLastAuditEntry(
-            TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
+            requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
@@ -74,9 +76,10 @@ class AuditLoggingTest extends BaseApiTest {
     addHeader("X-forwarded-Proto", "ssh");
     addHeader("x-ORIGINAL-host", "simplereport.ly");
     runQuery("current-user-query");
+    String requestId = getGraphqlRequestIdHeader();
     ApiAuditEvent event =
         assertLastAuditEntry(
-            TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
+            requestId, TestUserIdentities.STANDARD_USER, "whoDat", STANDARD_PERMS_TODAY, null);
     assertTimestampSanity(event);
     assertEquals(TestUserIdentities.DEFAULT_ORGANIZATION, event.getOrganization().getExternalId());
 
@@ -92,6 +95,7 @@ class AuditLoggingTest extends BaseApiTest {
     runQuery("current-user-query");
     ApiAuditEvent event =
         assertLastAuditEntry(
+            getGraphqlRequestIdHeader(),
             TestUserIdentities.OTHER_ORG_ADMIN,
             "whoDat",
             EnumSet.allOf(UserPermission.class),
@@ -100,6 +104,12 @@ class AuditLoggingTest extends BaseApiTest {
     assertEquals(
         "DAT_ORG", // this should be a constant
         event.getOrganization().getExternalId());
+  }
+
+  private String getGraphqlRequestIdHeader() {
+    List<String> header = getLastResponse().getHeaders().get("X-Simplereport-RequestId");
+    assertThat(header).isNotNull().hasSize(1);
+    return header.get(0);
   }
 
   @Test

@@ -1,25 +1,41 @@
 package gov.cdc.usds.simplereport.api;
 
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
+import gov.cdc.usds.simplereport.config.WebConfiguration;
+import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
 import gov.cdc.usds.simplereport.service.email.EmailService;
+import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan.Filter;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-@AutoConfigureMockMvc
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@WebMvcTest(
+    controllers = AccountRequestController.class,
+    excludeFilters =
+        @Filter(
+            classes = {AuditLoggingAdvice.class, WebConfiguration.class},
+            type = FilterType.ASSIGNABLE_TYPE))
 class AccountRequestControllerTest {
+
   @Autowired private MockMvc _mockMvc;
 
-  @MockBean EmailService emailService;
+  @MockBean private EmailService emailService;
+  @Captor private ArgumentCaptor<String> contentCaptor;
 
   @Test
   void waitlistIsOk() throws Exception {
@@ -34,6 +50,18 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+    verify(emailService)
+        .send(
+            eq(List.of("support@simplereport.gov")),
+            eq("New waitlist request"),
+            contentCaptor.capture());
+    String content = contentCaptor.getValue();
+    assertThat(content)
+        .contains(
+            "new SimpleReport waitlist request",
+            "Angela Chan",
+            "qasas@mailinator.com",
+            "Exercitation odit pr");
   }
 
   @Test
@@ -49,6 +77,7 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+    verifyNoInteractions(emailService);
   }
 
   @Test
@@ -64,6 +93,19 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+    verify(emailService)
+        .send(
+            eq(List.of("support@simplereport.gov", "Protect-ServiceDesk@hhs.gov")),
+            eq("New account request"),
+            contentCaptor.capture());
+    String content = contentCaptor.getValue();
+    assertThat(content)
+        .contains(
+            "new SimpleReport account request",
+            "Mary",
+            "Lopez",
+            "kyvuzoxy@mailinator.com",
+            "Reprehenderit nostr");
   }
 
   @Test
@@ -79,5 +121,6 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isBadRequest());
+    verifyNoInteractions(emailService);
   }
 }
