@@ -14,7 +14,12 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
-import {allPersonErrors, personSchema, PersonErrors, personUpdateSchema} from "../personSchema";
+import {
+  allPersonErrors,
+  personSchema,
+  PersonErrors,
+  personUpdateSchema,
+} from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -46,7 +51,7 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
-  const {isPatientView = false} = props;
+  const { isPatientView = false } = props;
   const schema = isPatientView ? personUpdateSchema : personSchema;
 
   const clearError = useCallback(

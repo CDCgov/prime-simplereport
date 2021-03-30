@@ -33,7 +33,10 @@ export type RequiredPersonFields = PartialBy<
   OptionalFields
 >;
 
-export type PersonUpdateFields = PartialBy<Nullable<PersonUpdate>, UpdateOptionalFields>;
+export type PersonUpdateFields = PartialBy<
+  Nullable<PersonUpdate>,
+  UpdateOptionalFields
+>;
 
 const getValues = (options: Option[]) => options.map(({ value }) => value);
 
@@ -64,7 +67,9 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   employedInHealthcare: yup.bool().required(),
 };
 
-export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(updateFieldSchemata);
+export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
+  updateFieldSchemata
+);
 
 export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   firstName: yup.string().required(),
