@@ -1,7 +1,7 @@
 const Patient404 = () => {
   return (
     <main>
-      <div className="grid-container maxw-tablet">
+      <div className="grid-container usa-section maxw-tablet usa-prose">
         <h1>Page not found</h1>
         <p>
           We're sorry, we can't find the page you're looking for. It might have
