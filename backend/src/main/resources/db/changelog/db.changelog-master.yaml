@@ -1650,3 +1650,15 @@ databaseChangeLog:
                   defaultValueNumeric: 200
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-person-preferred-language
+      author: nicholas.a.scialli@omb.eop.gov
+      comment: Add column to Person for preferred language
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: preferred_language
+                  type: *string
+                  remarks: Tracks the individual's preferred language
