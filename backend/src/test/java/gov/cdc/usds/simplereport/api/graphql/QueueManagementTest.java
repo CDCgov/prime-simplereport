@@ -85,8 +85,9 @@ class QueueManagementTest extends BaseGraphqlTest {
     performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
-    assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
-    assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
+    assertEquals(
+        deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
+    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
     assertNull(updatedTestOrder.getTestEventId());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);
