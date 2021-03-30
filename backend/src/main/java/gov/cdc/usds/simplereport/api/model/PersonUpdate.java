@@ -43,20 +43,12 @@ public class PersonUpdate {
     return address;
   }
 
-  public String getTelephone() {
-    return telephone;
-  }
-
-  public PersonRole getRole() {
-    return role;
-  }
-
   public String getEmail() {
     return email;
   }
 
-  public String getRace() {
-    return race;
+  public Boolean getEmployedInHealthcare() {
+    return employedInHealthcare;
   }
 
   public String getEthnicity() {
@@ -67,12 +59,20 @@ public class PersonUpdate {
     return gender;
   }
 
+  public String getRace() {
+    return race;
+  }
+
   public Boolean getResidentCongregateSetting() {
     return residentCongregateSetting;
   }
 
-  public Boolean getEmployedInHealthcare() {
-    return employedInHealthcare;
+  public PersonRole getRole() {
+    return role;
+  }
+
+  public String getTelephone() {
+    return telephone;
   }
 
   @Override
