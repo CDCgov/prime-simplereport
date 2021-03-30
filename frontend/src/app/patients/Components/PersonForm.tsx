@@ -75,7 +75,7 @@ const PersonForm = (props: Props) => {
         }));
       }
     },
-    [patient, clearError]
+    [patient, clearError, schema]
   );
 
   const onPersonChange = <K extends keyof PersonFormData>(field: K) => (
