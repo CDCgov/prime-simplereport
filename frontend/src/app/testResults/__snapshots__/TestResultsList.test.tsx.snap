@@ -208,12 +208,18 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="row"
                   >
                     Gerard, Sam G
+                    <span
+                      class="display-block text-gray-30 font-ui-2xs"
+                    >
+                      DOB: 
+                      11/07/1960
+                    </span>
                   </th>
                   <td>
-                    Mar 17, 2021 7:27 PM
+                    03/17/2021 7:27pm
                   </td>
                   <td>
-                    NEGATIVE
+                    Negative
                   </td>
                   <td>
                     Abbott IDNow
