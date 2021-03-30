@@ -63,6 +63,8 @@ const testResults = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    noSymptoms: true,
+    symptoms: "{}",
     __typename: "TestResult",
   },
   {
@@ -95,6 +97,42 @@ const testResults = [
     patientLink: {
       internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
     },
+    noSymptoms: false,
+    symptoms: "{}",
+    __typename: "TestResult",
+  },
+  {
+    internalId: "7c768a5d-ef90-44cd-8050-b96dd7aaa1d5",
+    dateTested: "2021-03-17T19:27:21.052Z",
+    result: "NEGATIVE",
+    correctionStatus: "ORIGINAL",
+    deviceType: {
+      internalId: "8c1a8efe-8951-4f84-a4c9-dcea561d7fbb",
+      name: "Abbott IDNow",
+      __typename: "DeviceType",
+    },
+    patient: {
+      internalId: "f74ad245-3a69-44b5-bb6d-efe06308bb85",
+      firstName: "Sam",
+      middleName: "G",
+      lastName: "Gerard",
+      birthDate: "1960-11-07",
+      gender: "male",
+      lookupId: null,
+      __typename: "Patient",
+    },
+    createdBy: {
+      nameInfo: {
+        firstName: "Ethan",
+        middleName: "",
+        lastName: "Entry",
+      },
+    },
+    patientLink: {
+      internalId: "68c543e8-7c65-4047-955c-e3f65bb8b58a",
+    },
+    noSymptoms: false,
+    symptoms: '{"someSymptom":"true"}',
     __typename: "TestResult",
   },
 ];
