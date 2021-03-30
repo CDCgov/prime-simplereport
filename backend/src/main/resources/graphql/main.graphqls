@@ -123,7 +123,6 @@ type Patient
     @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
     @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
-  testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultDelivery: TestResultDeliveryPreference
 }
 # TestResult and TestOrder should have the same properties
