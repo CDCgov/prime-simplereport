@@ -71,6 +71,8 @@ public class Person extends OrganizationScopedEternalEntity {
   @Enumerated(EnumType.STRING)
   private TestResultDeliveryPreference testResultDelivery;
 
+  @Column private String preferredLanguage;
+
   protected Person() {
     /* for hibernate */
   }
@@ -98,7 +100,8 @@ public class Person extends OrganizationScopedEternalEntity {
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     super(organization);
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
@@ -112,6 +115,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
   }
 
   public Person(PersonName names, Organization org, Facility fac) {
@@ -136,7 +140,8 @@ public class Person extends OrganizationScopedEternalEntity {
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
@@ -152,6 +157,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
   }
 
   public Facility getFacility() {
@@ -266,6 +272,10 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public PersonRole getRole() {
     return role;
+  }
+
+  public String getPreferredLanguage() {
+    return preferredLanguage;
   }
 
   // these field names strings are used by Specification builders
