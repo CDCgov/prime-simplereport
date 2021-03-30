@@ -189,7 +189,8 @@ public class PersonService {
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -207,7 +208,8 @@ public class PersonService {
             ethnicity,
             gender,
             residentCongregateSetting,
-            employedInHealthcare);
+            employedInHealthcare,
+            preferredLanguage);
 
     updatePersonFacility(newPatient, facilityId);
     return _repo.save(newPatient);
@@ -229,7 +231,8 @@ public class PersonService {
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person toUpdate = _patientContext.getLinkedOrder().getPatient();
     toUpdate.updatePatient(
         toUpdate.getLookupId(),
@@ -246,7 +249,8 @@ public class PersonService {
         ethnicity,
         gender,
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage);
     return _repo.save(toUpdate);
   }
 
@@ -285,7 +289,8 @@ public class PersonService {
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -302,7 +307,8 @@ public class PersonService {
         ethnicity,
         gender,
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare, 
+        preferredLanguage);
 
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);
