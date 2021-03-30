@@ -63,8 +63,8 @@ resource "null_resource" "add_readonly_db_user" {
   }
 
   depends_on = [
-    azurerm_key_vault_secret.postgres_readonly_user,
-    azurerm_key_vault_secret.postgres_readonly_pass
+    data.azurerm_key_vault_secret.postgres_readonly_user,
+    data.azurerm_key_vault_secret.postgres_readonly_pass
   ]
 }
 
@@ -94,7 +94,10 @@ resource "azurerm_app_service" "metabase" {
       }
     }
   }
-  depends_on = [azurerm_postgresql_database.metabase]
+  depends_on = [
+    azurerm_postgresql_database.metabase,
+    null_resource.add_readonly_db_user
+  ]
 }
 
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
