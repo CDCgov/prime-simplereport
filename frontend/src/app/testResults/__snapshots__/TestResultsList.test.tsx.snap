@@ -42,12 +42,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="col"
                   >
                     Person
-                     Name
                   </th>
                   <th
                     scope="col"
                   >
-                    Date of Test
+                    Test date
                   </th>
                   <th
                     scope="col"
@@ -81,12 +80,18 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="row"
                   >
                     Cragell, Barb Whitaker
+                    <span
+                      class="display-block text-gray-30 font-ui-2xs"
+                    >
+                      DOB: 
+                      11/07/1960
+                    </span>
                   </th>
                   <td>
-                    Mar 17, 2021 7:27 PM
+                    03/17/2021 7:27pm
                   </td>
                   <td>
-                    NEGATIVE
+                    Negative
                   </td>
                   <td>
                     Abbott IDNow
@@ -136,12 +141,18 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     scope="row"
                   >
                     Colleer, Barde X
+                    <span
+                      class="display-block text-gray-30 font-ui-2xs"
+                    >
+                      DOB: 
+                      11/07/1960
+                    </span>
                   </th>
                   <td>
-                    Mar 17, 2021 7:27 PM
+                    03/17/2021 7:27pm
                   </td>
                   <td>
-                    NEGATIVE
+                    Negative
                   </td>
                   <td>
                     Abbott IDNow

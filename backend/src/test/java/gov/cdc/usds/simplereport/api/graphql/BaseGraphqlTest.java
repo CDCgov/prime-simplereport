@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -45,9 +46,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-public abstract class BaseApiTest extends BaseFullStackTest {
+/** Base class for GraphQL API full-stack tests. */
+public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(BaseApiTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BaseGraphqlTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
@@ -59,8 +61,10 @@ public abstract class BaseApiTest extends BaseFullStackTest {
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private ObjectMapper objectMapper;
   @MockBean private AddressValidationService _addressValidation;
+
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
+  private ResponseEntity<String> _lastResponse;
 
   protected void useOrgUser() {
     _userName = TestUserIdentities.STANDARD_USER;
@@ -109,18 +113,20 @@ public abstract class BaseApiTest extends BaseFullStackTest {
     _customHeaders.add(name, value);
   }
 
+  protected ResponseEntity<String> getLastResponse() {
+    return _lastResponse;
+  }
+
   @BeforeEach
   public void setup() {
     truncateDb();
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
         .thenReturn(_dataFactory.getAddress());
-    TestUserIdentities.withStandardUser(
-        () -> {
-          _initService.initAll();
-        });
+    TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
+    _lastResponse = null;
     assertNull(
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
@@ -162,10 +168,9 @@ public abstract class BaseApiTest extends BaseFullStackTest {
     HttpEntity<LinkedMultiValueMap<String, Object>> request =
         new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
     try {
-      ResponseEntity<String> responseEntity =
-          restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
-      GraphQLResponse response = new GraphQLResponse(responseEntity, objectMapper);
-      assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      _lastResponse = restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
+      assertEquals(HttpStatus.OK, _lastResponse.getStatusCode(), "Servlet response should be OK");
+      GraphQLResponse response = new GraphQLResponse(_lastResponse, objectMapper);
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, null);
       return (ObjectNode) responseBody.get("data");
@@ -201,7 +206,8 @@ public abstract class BaseApiTest extends BaseFullStackTest {
    * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
    * it!
    *
-   * @param queryFileName the resource file name of the query
+   * @param queryFileName the resource file name of the query (to be found in
+   *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
    *     is a multi-operation document (apparently). This turns out not to be needed for any of our
    *     cases, but we can leave it supported for the day when it is.
@@ -211,10 +217,14 @@ public abstract class BaseApiTest extends BaseFullStackTest {
    */
   protected ObjectNode runQuery(
       String queryFileName, String operationName, ObjectNode variables, String expectedError) {
+    if (queryFileName != null && !queryFileName.contains("/")) {
+      queryFileName = "queries/" + queryFileName;
+    }
     try {
       setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      _lastResponse = response.getRawResponse();
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, expectedError);
       return (ObjectNode) responseBody.get("data");
@@ -225,18 +235,6 @@ public abstract class BaseApiTest extends BaseFullStackTest {
 
   protected ObjectNode runQuery(String queryFileName, ObjectNode variables) {
     return runQuery(queryFileName, null, variables, null);
-  }
-
-  /**
-   * Check if the given response has an {@code errors} section, and if so, fail the test using the
-   * errors section as a failure message.
-   */
-  protected static void assertGraphQLSuccess(GraphQLResponse resp) {
-    try {
-      assertGraphQLOutcome(resp.readTree(), null);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
   }
 
   /**

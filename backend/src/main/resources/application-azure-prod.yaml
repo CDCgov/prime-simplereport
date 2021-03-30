@@ -39,3 +39,4 @@ simple-report:
     enabled: true
 twilio:
   enabled: true
+  from-number: "+14045312484"
