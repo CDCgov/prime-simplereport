@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-class ApiUserManagementTest extends BaseApiTest {
+class ApiUserManagementTest extends BaseGraphqlTest {
 
   private static final String NO_USER_ERROR = "Cannot find user.";
 

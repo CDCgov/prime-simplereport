@@ -5,23 +5,36 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.sendgrid.helpers.mail.Mail;
-import gov.cdc.usds.simplereport.service.BaseServiceTest;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
+import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import java.io.IOException;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-class EmailServiceTest extends BaseServiceTest<EmailService> {
-  @MockBean EmailProvider mockSendGrid;
+@ExtendWith(MockitoExtension.class)
+class EmailServiceTest {
 
+  private static final SendGridProperties FAKE_PROPERTIES =
+      new SendGridProperties(true, null, "me@example.com", List.of(), List.of());
+
+  @Mock EmailProvider mockSendGrid;
   @Captor ArgumentCaptor<Mail> mail;
 
+  private EmailService _service;
+
+  @BeforeEach
+  void initService() {
+    _service = new EmailService(mockSendGrid, FAKE_PROPERTIES);
+  }
+
   @Test
-  @WithSimpleReportSiteAdminUser
   void sendEmail() throws IOException {
+
     // GIVEN
     String toEmail = "test@foo.com";
     String subject = "Testing the email service";
@@ -38,7 +51,6 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
   }
 
   @Test
-  @WithSimpleReportSiteAdminUser
   void sendMultiRecipientEmail() throws IOException {
     // GIVEN
     List<String> tos =
