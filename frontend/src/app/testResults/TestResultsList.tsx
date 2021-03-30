@@ -13,11 +13,14 @@ import {
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
 import Pagination from "../commonComponents/Pagination";
+import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
+
+type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
@@ -161,9 +164,12 @@ export const DetachedTestResultsList: any = ({
               r.patient.middleName,
               r.patient.lastName
             )}
+            <span className="display-block text-gray-30 font-ui-2xs">
+              DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
+            </span>
           </th>
-          <td>{moment(r.dateTested).format("lll")}</td>
-          <td>{r.result}</td>
+          <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
+          <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
           <td>{r.deviceType.name}</td>
           <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
           <td>
@@ -199,8 +205,8 @@ export const DetachedTestResultsList: any = ({
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP} Name</th>
-                    <th scope="col">Date of Test</th>
+                    <th scope="col">{PATIENT_TERM_CAP}</th>
+                    <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
                     <th scope="col">Submitter</th>

@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-class DeviceManagementTest extends BaseApiTest {
+class DeviceManagementTest extends BaseGraphqlTest {
 
   @Test
   void listDeviceTypes_orgUser_expectedDevices() {

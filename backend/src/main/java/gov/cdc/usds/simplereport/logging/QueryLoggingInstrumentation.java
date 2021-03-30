@@ -7,6 +7,7 @@ import graphql.execution.instrumentation.InstrumentationContext;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.parameters.InstrumentationExecutionParameters;
 import graphql.execution.instrumentation.parameters.InstrumentationValidationParameters;
+import graphql.kickstart.servlet.context.GraphQLServletContext;
 import graphql.language.Field;
 import graphql.language.OperationDefinition;
 import graphql.validation.ValidationError;
@@ -53,8 +54,10 @@ public class QueryLoggingInstrumentation extends SimpleInstrumentation {
       InstrumentationExecutionParameters parameters) {
     final long queryStart = System.currentTimeMillis();
     final String executionId = parameters.getExecutionInput().getExecutionId().toString();
-    // Add the execution ID to the sfl4j MDC
+    // Add the execution ID to the sfl4j MDC and the response headers
     MDC.put(LoggingConstants.REQUEST_ID_MDC_KEY, executionId);
+    GraphQLServletContext context = parameters.getContext();
+    context.getHttpServletResponse().setHeader(LoggingConstants.REQUEST_ID_HEADER, executionId);
 
     // Create a new Azure Telemetry Event
     final RequestTelemetry requestTelemetry = new RequestTelemetry();

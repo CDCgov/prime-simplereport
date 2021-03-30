@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -7,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
-import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.hibernate.validator.constraints.Range;
@@ -44,19 +44,24 @@ public class AuditService {
   }
 
   @Transactional(readOnly = false)
-  public void logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
+  public void logGraphQlEvent(
+      GraphqlQueryState state,
+      List<String> errorPaths,
+      ApiUser user,
+      List<UserPermission> permissions,
+      boolean isAdmin,
+      Organization organization) {
     LOG.trace("Saving audit event for {}", state.getRequestId());
-    UserInfo userInfo = _userService.getCurrentUserInfo();
     _repo.save(
         new ApiAuditEvent(
             state.getRequestId(),
             state.getHttpDetails(),
             state.getGraphqlDetails(),
             errorPaths,
-            userInfo.getWrappedUser(),
-            userInfo.getPermissions(),
-            userInfo.getIsAdmin(),
-            userInfo.getOrganization().orElse(null)));
+            user,
+            permissions,
+            isAdmin,
+            organization));
   }
 
   @Transactional(readOnly = false)

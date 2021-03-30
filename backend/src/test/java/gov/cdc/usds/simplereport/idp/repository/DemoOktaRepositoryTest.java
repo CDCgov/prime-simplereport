@@ -1,6 +1,9 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -10,21 +13,14 @@ import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatcher;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 
-@SpringBootTest(properties = {"spring.main.web-application-type=NONE"})
-@Import(SliceTestConfiguration.class)
 class DemoOktaRepositoryTest {
 
   private static final IdentityAttributes AMOS =
@@ -40,17 +36,12 @@ class DemoOktaRepositoryTest {
   private static final Facility ABC_1 = getFacility(UUID.randomUUID(), ABC);
   private static final Facility ABC_2 = getFacility(UUID.randomUUID(), ABC);
 
-  @Autowired private DemoOktaRepository _repo;
+  private DemoOktaRepository _repo = new DemoOktaRepository();
 
   @BeforeEach
   public void setup() {
     _repo.reset();
     createOrgAndFacilities();
-  }
-
-  @AfterEach
-  public void cleanup() {
-    _repo.reset();
   }
 
   @Test
