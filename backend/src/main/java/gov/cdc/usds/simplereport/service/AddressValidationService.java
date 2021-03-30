@@ -62,11 +62,13 @@ public class AddressValidationService {
     ArrayList<Candidate> results = lookup.getResult();
 
     if (results.isEmpty()) {
-      String errorMessage =
-          fieldName != null
-              ? "The " + fieldName + " address could not be verified"
-              : "The address you entered could not be verified";
-      throw new IllegalGraphqlArgumentException(errorMessage);
+      return new StreetAddress(
+          lookup.getStreet(),
+          lookup.getSecondary(),
+          lookup.getCity(),
+          lookup.getState(),
+          lookup.getZipCode(),
+          "");
     }
 
     // If the address is invalid then Smarty street returns 0 results.
