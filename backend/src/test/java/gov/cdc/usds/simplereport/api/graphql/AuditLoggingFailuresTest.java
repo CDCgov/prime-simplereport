@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -115,12 +116,13 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
         .storeTimeOfConsent(any(PatientLink.class));
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
-        _restTemplate.exchange("/pxp/link/verify", HttpMethod.PUT, requestEntity, String.class);
+        _restTemplate.exchange(
+            ResourceLinks.VERIFY_LINK, HttpMethod.PUT, requestEntity, String.class);
     LOG.info("Response body is {}", resp.getBody());
     verify(_auditRepo).save(_eventCaptor.capture());
     assertThat(_eventCaptor.getValue())
         .as("Saved audit event")
-        .matches(e -> e.getHttpRequestDetails().getRequestUri().equals("/pxp/link/verify"))
+        .matches(e -> e.getHttpRequestDetails().getRequestUri().equals(ResourceLinks.VERIFY_LINK))
         .hasFieldOrPropertyWithValue("responseCode", 500);
   }
 
@@ -130,12 +132,13 @@ class AuditLoggingFailuresTest extends BaseGraphqlTest {
     when(_auditRepo.save(_eventCaptor.capture())).thenThrow(HibernateException.class);
     HttpEntity<JsonNode> requestEntity = new HttpEntity<JsonNode>(makeVerifyLinkArgs());
     ResponseEntity<String> resp =
-        _restTemplate.exchange("/pxp/link/verify", HttpMethod.PUT, requestEntity, String.class);
+        _restTemplate.exchange(
+            ResourceLinks.VERIFY_LINK, HttpMethod.PUT, requestEntity, String.class);
     assertEquals(HttpStatus.BAD_REQUEST, resp.getStatusCode());
     JsonNode responseJson = new ObjectMapper().readTree(resp.getBody());
     assertEquals(400, responseJson.get("status").asInt());
     assertEquals("Bad Request", responseJson.get("error").asText());
-    assertEquals("/pxp/link/verify", responseJson.get("path").asText());
+    assertEquals(ResourceLinks.VERIFY_LINK, responseJson.get("path").asText());
   }
 
   private ObjectNode makeVerifyLinkArgs() {
