@@ -54,7 +54,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 "",
                 false,
-                false));
+                false,
+                "French"));
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     List<TestOrder> queue = _repo.fetchQueue(gwu, otherSite);
     assertEquals(0, queue.size());
@@ -91,7 +92,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 "",
                 false,
-                false));
+                false,
+                "English"));
     Facility site = _dataFactory.createValidFacility(gtown);
     TestOrder order = _repo.save(new TestOrder(hoya, site));
     assertNotNull(order);

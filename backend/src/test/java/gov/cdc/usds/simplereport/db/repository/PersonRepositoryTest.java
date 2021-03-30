@@ -48,7 +48,8 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             "",
             "",
             false,
-            false));
+            false,
+            "Spanish"));
 
     List<Person> found =
         _repo.findAll(

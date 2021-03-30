@@ -125,7 +125,8 @@ public class UploadService {
             parseEthnicity(getRow(row, "Ethnicity", false)),
             parseGender(getRow(row, "biologicalSex", false)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
-            parseYesNo(getRow(row, "employedInHealthcare", true)));
+            parseYesNo(getRow(row, "employedInHealthcare", true)),
+            parseString(getRow(row, "preferredLanguage", false)));
       } catch (IllegalGraphqlArgumentException e) {
         throw new IllegalGraphqlArgumentException(
             "Error on row " + rowNumber + "; " + e.getMessage());
@@ -161,6 +162,7 @@ public class UploadService {
           .addColumn("residentCongregateSetting", CsvSchema.ColumnType.STRING)
           .addColumn("Role", CsvSchema.ColumnType.STRING)
           .addColumn("Email", CsvSchema.ColumnType.STRING)
+          .addColumn("preferredLanguage", CsvSchema.ColumnType.STRING)
           .addColumn(FACILITY_ID, CsvSchema.ColumnType.STRING)
           .setUseHeader(false) // no valid header row detected
           .build();

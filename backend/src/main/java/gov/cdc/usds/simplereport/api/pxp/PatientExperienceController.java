@@ -105,7 +105,8 @@ public class PatientExperienceController {
         parseEthnicity(person.getEthnicity()),
         parseGender(person.getGender()),
         person.getResidentCongregateSetting(),
-        person.getEmployedInHealthcare());
+        person.getEmployedInHealthcare(),
+        parseString(person.getPreferredLanguage()));
   }
 
   @PutMapping("/questions")

@@ -93,7 +93,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "English");
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -153,7 +154,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "Spanish");
 
     _service.addPatientToQueue(
         facility.getInternalId(),
@@ -193,7 +195,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "German");
 
     assertThrows(
         AccessDeniedException.class,
@@ -253,7 +256,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "French");
     Person pWithSmsDelivery =
         _personService.updateTestResultDeliveryPreference(
             p.getInternalId(), TestResultDeliveryPreference.SMS);
@@ -301,7 +305,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "Spanish");
     _service.addPatientToQueue(
         facility.getInternalId(),
         p,
@@ -351,7 +356,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "English");
     Person p2 =
         _personService.addPatient(
             facility1.getInternalId(),
@@ -369,7 +375,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "Spanish");
 
     _service.addPatientToQueue(
         facility1.getInternalId(),
@@ -446,7 +453,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "English");
     TestOrder o =
         _service.addPatientToQueue(
             facility.getInternalId(),
@@ -643,7 +651,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             null,
             null,
             false,
-            false);
+            false,
+            "Spanish");
 
     _service.addPatientToQueue(
         facilityId,
@@ -681,7 +690,8 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
               null,
               null,
               false,
-              false);
+              false,
+              "French");
 
       _service.addPatientToQueue(
           facilityId,

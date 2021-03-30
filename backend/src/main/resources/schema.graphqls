@@ -114,6 +114,7 @@ type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS"
   isDeleted: Boolean  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   residentCongregateSetting: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   employedInHealthcare: Boolean @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  preferredLanguage: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResults: [TestResult!]! @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultDelivery: TestResultDeliveryPreference
@@ -416,6 +417,7 @@ type Mutation {
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
+    preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -440,6 +442,7 @@ type Mutation {
     gender: String @Size(min: 0, max: 32)
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
+    preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(
     id: ID!
