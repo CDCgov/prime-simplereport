@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.db.repository.ApiAuditEventRepository;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
-import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.hibernate.validator.constraints.Range;
@@ -42,18 +41,6 @@ public class AuditService {
 
   public long countAuditEvents() {
     return _repo.count();
-  }
-
-  @Transactional(readOnly = false)
-  public void logGraphQlEvent(GraphqlQueryState state, List<String> errorPaths) {
-    UserInfo userInfo = _userService.getCurrentUserInfo();
-    logGraphQlEvent(
-        state,
-        errorPaths,
-        userInfo.getWrappedUser(),
-        userInfo.getPermissions(),
-        userInfo.getIsAdmin(),
-        userInfo.getOrganization().orElse(null));
   }
 
   @Transactional(readOnly = false)
