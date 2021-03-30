@@ -45,6 +45,10 @@ const PatientFormContainer = () => {
       state,
       county,
       zipCode,
+      firstName,
+      middleName,
+      lastName,
+      birthDate,
       ...withoutAddress
     } = person;
     const updatedPatientFromApi = await PxpApi.updatePatient(
@@ -89,6 +93,7 @@ const PatientFormContainer = () => {
             patientId={patient.internalId}
             hideFacilitySelect={true}
             savePerson={savePerson}
+            isPatientView={true}
             getFooter={(onSave, formChanged) => (
               <div className="mobile-lg:display-flex flex-justify-end margin-top-2">
                 <Button

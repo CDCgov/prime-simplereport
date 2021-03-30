@@ -14,7 +14,7 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
 import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
-import { allPersonErrors, personSchema, PersonErrors } from "../personSchema";
+import {allPersonErrors, personSchema, PersonErrors, personUpdateSchema} from "../personSchema";
 import YesNoRadioGroup from "../../commonComponents/YesNoRadioGroup";
 import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
@@ -35,6 +35,7 @@ interface Props {
     formChanged: boolean
   ) => React.ReactNode;
   getFooter: (onSave: () => void, formChanged: boolean) => React.ReactNode;
+  isPatientView?: boolean;
 }
 
 const PersonForm = (props: Props) => {
@@ -45,6 +46,8 @@ const PersonForm = (props: Props) => {
   const [addressSuggestion, setAddressSuggestion] = useState<
     AddressWithMetaData | undefined
   >();
+  const {isPatientView = false} = props;
+  const schema = isPatientView ? personUpdateSchema : personSchema;
 
   const clearError = useCallback(
     (field: keyof PersonErrors) => {
@@ -59,7 +62,7 @@ const PersonForm = (props: Props) => {
     async (field: keyof PersonErrors) => {
       try {
         clearError(field);
-        await personSchema.validateAt(field, patient);
+        await schema.validateAt(field, patient);
       } catch (e) {
         setErrors((existingErrors) => ({
           ...existingErrors,
@@ -106,7 +109,7 @@ const PersonForm = (props: Props) => {
 
   const validateForm = async () => {
     try {
-      await personSchema.validate(patient, { abortEarly: false });
+      await schema.validate(patient, { abortEarly: false });
     } catch (e) {
       const newErrors: PersonErrors = e.inner.reduce(
         (
@@ -174,14 +177,21 @@ const PersonForm = (props: Props) => {
             {...commonInputProps}
             label="First name"
             field="firstName"
-            required
+            required={!isPatientView}
+            disabled={isPatientView}
           />
-          <Input {...commonInputProps} field="middleName" label="Middle name" />
+          <Input
+            {...commonInputProps}
+            field="middleName"
+            label="Middle name"
+            disabled={isPatientView}
+          />
           <Input
             {...commonInputProps}
             field="lastName"
             label="Last name"
-            required
+            required={!isPatientView}
+            disabled={isPatientView}
           />
         </div>
         <div className="usa-form">
@@ -211,7 +221,8 @@ const PersonForm = (props: Props) => {
             field="birthDate"
             label="Date of birth (mm/dd/yyyy)"
             type="date"
-            required
+            required={!isPatientView}
+            disabled={isPatientView}
           />
         </div>
       </FormGroup>

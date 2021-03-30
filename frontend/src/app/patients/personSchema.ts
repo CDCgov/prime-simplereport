@@ -13,8 +13,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-type OptionalFields =
-  | "middleName"
+type UpdateOptionalFields =
   | "lookupId"
   | "role"
   | "email"
@@ -27,21 +26,20 @@ type OptionalFields =
   | "residentCongregateSetting"
   | "employedInHealthcare";
 
+type OptionalFields = UpdateOptionalFields | "middleName";
+
 export type RequiredPersonFields = PartialBy<
   Nullable<PersonFormData>,
   OptionalFields
 >;
 
+export type PersonUpdateFields = PartialBy<Nullable<PersonUpdate>, UpdateOptionalFields>;
+
 const getValues = (options: Option[]) => options.map(({ value }) => value);
 
-export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
-  firstName: yup.string().required(),
-  middleName: yup.string().nullable(),
-  lastName: yup.string().required(),
+const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   lookupId: yup.string().nullable(),
   role: yup.mixed().oneOf([...getValues(ROLE_VALUES), "UNKNOWN", "", null]),
-  birthDate: yup.string().required(),
-  facilityId: yup.string().nullable().min(1) as any,
   telephone: yup
     .string()
     .test(function (input) {
@@ -64,6 +62,17 @@ export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
   residentCongregateSetting: yup.bool().required(),
   employedInHealthcare: yup.bool().required(),
+};
+
+export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(updateFieldSchemata);
+
+export const personSchema: yup.SchemaOf<RequiredPersonFields> = yup.object({
+  firstName: yup.string().required(),
+  middleName: yup.string().nullable(),
+  lastName: yup.string().required(),
+  birthDate: yup.string().required(),
+  facilityId: yup.string().nullable().min(1) as any,
+  ...updateFieldSchemata,
 });
 
 export type PersonErrors = Partial<Record<keyof PersonFormData, string>>;
