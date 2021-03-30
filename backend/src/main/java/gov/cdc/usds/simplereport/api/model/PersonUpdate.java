@@ -19,15 +19,15 @@ public class PersonUpdate {
 
   @JsonCreator
   public PersonUpdate(
-      @JsonProperty StreetAddress address,
-      @JsonProperty String telephone,
-      @JsonProperty PersonRole role,
-      @JsonProperty String email,
-      @JsonProperty String race,
-      @JsonProperty String ethnicity,
-      @JsonProperty String gender,
-      @JsonProperty Boolean residentCongregateSetting,
-      @JsonProperty Boolean employedInHealthcare) {
+      @JsonProperty("address") StreetAddress address,
+      @JsonProperty("telephone") String telephone,
+      @JsonProperty("role") PersonRole role,
+      @JsonProperty("email") String email,
+      @JsonProperty("race") String race,
+      @JsonProperty("ethnicity") String ethnicity,
+      @JsonProperty("gender") String gender,
+      @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
+      @JsonProperty("employedInHealthcare") Boolean employedInHealthcare) {
     this.address = address;
     this.telephone = telephone;
     this.role = role;
