@@ -5,9 +5,9 @@ resource "azurerm_key_vault_secret" "postgres_readonly_user" {
 }
 
 resource "azurerm_key_vault_secret" "postgres_readonly_pass" {
-    key_vault_id = var.global_vault_id
-    name = "simple-report-${var.env}-postgres-readonly-pass"
-    value = random_password.random_readonly_password.result
+  key_vault_id = var.global_vault_id
+  name         = "simple-report-${var.env}-postgres-readonly-pass"
+  value        = random_password.random_readonly_password.result
 }
 
 resource "random_password" "random_readonly_password" {

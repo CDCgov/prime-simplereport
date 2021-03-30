@@ -49,7 +49,7 @@ locals {
 
 variable "app_settings_overrides" {
   description = "override values for app_settings"
-  default = {}
+  default     = {}
 }
 
 resource "null_resource" "add_readonly_db_user" {
