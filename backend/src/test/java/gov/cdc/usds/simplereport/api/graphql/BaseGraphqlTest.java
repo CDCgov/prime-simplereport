@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,23 +13,18 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.graphql.spring.boot.test.GraphQLResponse;
 import com.graphql.spring.boot.test.GraphQLTestTemplate;
+import gov.cdc.usds.simplereport.api.BaseFullStackTest;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.config.authorization.DemoAuthenticationConfiguration;
-import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration.DemoUser;
-import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.idp.repository.DemoOktaRepository;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
-import gov.cdc.usds.simplereport.service.AuditService;
 import gov.cdc.usds.simplereport.service.OrganizationInitializingService;
-import gov.cdc.usds.simplereport.test_util.DbTruncator;
-import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import gov.cdc.usds.simplereport.test_util.TestUserIdentities;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -40,8 +35,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -53,19 +46,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public abstract class BaseApiTest {
+/** Base class for GraphQL API full-stack tests. */
+public abstract class BaseGraphqlTest extends BaseFullStackTest {
 
-  private static final Logger LOG = LoggerFactory.getLogger(BaseApiTest.class);
+  private static final Logger LOG = LoggerFactory.getLogger(BaseGraphqlTest.class);
 
   protected static final String ACCESS_ERROR =
       "Current user does not have permission for this action";
 
-  @Autowired private DbTruncator _truncator;
   @Autowired private OrganizationInitializingService _initService;
-  @Autowired private TestDataFactory _dataFactory;
   @Autowired private DemoOktaRepository _oktaRepo;
-  @Autowired private AuditService _auditService;
   @Autowired private GraphQLTestTemplate _template;
   @Autowired private DemoUserConfiguration _users;
   @Autowired private TestRestTemplate restTemplate;
@@ -73,10 +63,6 @@ public abstract class BaseApiTest {
   @MockBean private AddressValidationService _addressValidation;
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
-
-  protected void truncateDb() {
-    _truncator.truncateAll();
-  }
 
   protected void useOrgUser() {
     _userName = TestUserIdentities.STANDARD_USER;
@@ -131,10 +117,7 @@ public abstract class BaseApiTest {
     _oktaRepo.reset();
     when(_addressValidation.getValidatedAddress(any(), any()))
         .thenReturn(_dataFactory.getAddress());
-    TestUserIdentities.withStandardUser(
-        () -> {
-          _initService.initAll();
-        });
+    TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
     assertNull(
@@ -217,7 +200,8 @@ public abstract class BaseApiTest {
    * modify the {{@link #setQueryHeaders(String)} method, or add another method that is called after
    * it!
    *
-   * @param queryFileName the resource file name of the query
+   * @param queryFileName the resource file name of the query (to be found in
+   *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
    *     is a multi-operation document (apparently). This turns out not to be needed for any of our
    *     cases, but we can leave it supported for the day when it is.
@@ -227,6 +211,9 @@ public abstract class BaseApiTest {
    */
   protected ObjectNode runQuery(
       String queryFileName, String operationName, ObjectNode variables, String expectedError) {
+    if (queryFileName != null && !queryFileName.contains("/")) {
+      queryFileName = "queries/" + queryFileName;
+    }
     try {
       setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
@@ -244,18 +231,6 @@ public abstract class BaseApiTest {
   }
 
   /**
-   * Check if the given response has an {@code errors} section, and if so, fail the test using the
-   * errors section as a failure message.
-   */
-  protected static void assertGraphQLSuccess(GraphQLResponse resp) {
-    try {
-      assertGraphQLOutcome(resp.readTree(), null);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
    * Check if the given response body has an {@code errors} section. If so, if we have an expected
    * error, check that the errors section contains it; if we do not, then fail the test.
    *
@@ -270,27 +245,6 @@ public abstract class BaseApiTest {
     } else {
       assertThat(errorNode.get(0).get("message").asText()).contains(expectedError);
     }
-  }
-
-  protected ApiAuditEvent assertLastAuditEntry(
-      String username,
-      String operationName,
-      Set<UserPermission> permissions,
-      List<String> errorPaths) {
-    ApiAuditEvent event = _auditService.getLastEvents(1).get(0);
-    assertEquals(username, event.getUser().getLoginEmail());
-    assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
-    if (permissions != null) {
-      assertEquals(
-          permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
-          Set.copyOf(event.getUserPermissions()),
-          "Recorded user permissions");
-    }
-    if (errorPaths == null) {
-      errorPaths = List.of();
-    }
-    assertEquals(errorPaths, event.getGraphqlErrorPaths(), "Query paths with errors");
-    return event;
   }
 
   protected ObjectNode executeAddPersonMutation(

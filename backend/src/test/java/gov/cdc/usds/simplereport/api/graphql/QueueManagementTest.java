@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @WithSimpleReportStandardUser // this is ridiculously sneaky
-class QueueManagementTest extends BaseApiTest {
+class QueueManagementTest extends BaseGraphqlTest {
 
   private static final String QUERY = "queue-dates-query";
 
@@ -85,8 +85,9 @@ class QueueManagementTest extends BaseApiTest {
     performQueueUpdateMutation(variables, Optional.empty());
 
     TestOrder updatedTestOrder = _testOrderService.getTestOrder(orderId);
-    assertEquals(updatedTestOrder.getDeviceType().getInternalId().toString(), deviceId);
-    assertEquals(updatedTestOrder.getTestResult(), TestResult.POSITIVE);
+    assertEquals(
+        deviceId, updatedTestOrder.getDeviceType().getInternalId().toString(), "device type ID");
+    assertEquals(TestResult.POSITIVE, updatedTestOrder.getTestResult());
     assertNull(updatedTestOrder.getTestEventId());
 
     ObjectNode singleQueueEntry = (ObjectNode) fetchQueue().get(0);

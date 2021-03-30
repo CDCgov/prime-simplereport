@@ -118,7 +118,7 @@ describe("AddPatient", () => {
               telephone: "617-432-1000",
               role: null,
               email: null,
-              county: null,
+              county: "",
               race: null,
               ethnicity: null,
               gender: null,
@@ -167,21 +167,48 @@ describe("AddPatient", () => {
             "Work in Healthcare": { label: "Yes", value: "Yes" },
           }
         );
-        fireEvent.click(
-          screen.queryAllByText("Save", {
-            exact: false,
-          })[0]
-        );
         await act(async () => {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          fireEvent.click(
+            screen.queryAllByText("Save", {
+              exact: false,
+            })[0]
+          );
         });
       });
-      it("redirects to the person tab", () => {
-        expect(
-          screen.getByText(`/patients/?facility=${mockFacilityID}`, {
+      it("show the address validation modal", async () => {
+        await screen.getByText(`Address Validation`, {
+          exact: false,
+        });
+      });
+      describe("Submitting Address Verification", () => {
+        beforeEach(async () => {
+          const modal = screen.getByRole("dialog", {
             exact: false,
-          })
-        ).toBeInTheDocument();
+          });
+
+          fireEvent.click(
+            within(modal).getByLabelText("Use address as entered", {
+              exact: false,
+            }),
+            {
+              target: { value: "userAddress" },
+            }
+          );
+          await act(async () => {
+            fireEvent.click(
+              within(modal).getByText("Save changes", {
+                exact: false,
+              })
+            );
+          });
+        });
+        it("redirects to the person tab", () => {
+          expect(
+            screen.getByText(`/patients/?facility=${mockFacilityID}`, {
+              exact: false,
+            })
+          ).toBeInTheDocument();
+        });
       });
     });
 

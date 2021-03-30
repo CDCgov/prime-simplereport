@@ -181,7 +181,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <ul
-                    class="prime-ul patient-information-ul"
+                    class="prime-ul test-information-ul"
                   >
                     <li
                       class="prime-li"
@@ -481,7 +481,7 @@ exports[`TestQueue should render the test queue 1`] = `
                   class="grid-row"
                 >
                   <ul
-                    class="prime-ul patient-information-ul"
+                    class="prime-ul test-information-ul"
                   >
                     <li
                       class="prime-li"

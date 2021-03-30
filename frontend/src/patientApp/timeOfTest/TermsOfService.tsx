@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Redirect, RouteComponentProps, withRouter } from "react-router";
 
 import Button from "../../app/commonComponents/Button";
@@ -9,11 +10,16 @@ const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
   props
 ) => {
   const [nextPage, setNextPage] = useState(false);
+  const plid = useSelector((state: any) => state.plid);
 
   if (nextPage) {
-    console.info(props.location);
     return (
-      <Redirect push to={`/birth-date-confirmation${props.location.search}`} />
+      <Redirect
+        to={{
+          pathname: "/birth-date-confirmation",
+          search: `?plid=${plid}`,
+        }}
+      />
     );
   }
 

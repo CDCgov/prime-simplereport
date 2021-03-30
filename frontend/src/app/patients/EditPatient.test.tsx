@@ -47,6 +47,7 @@ describe("EditPatient", () => {
   });
 
   describe("facility select input", () => {
+    let component: any;
     beforeEach(async () => {
       const mocks = [
         {
@@ -84,7 +85,7 @@ describe("EditPatient", () => {
         },
       ];
 
-      render(
+      component = render(
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <EditPatient
@@ -103,6 +104,10 @@ describe("EditPatient", () => {
       expect(
         screen.queryAllByText("Franecki, Eugenia", { exact: false })[0]
       ).toBeInTheDocument();
+    });
+
+    it("matches screenshot", () => {
+      expect(component).toMatchSnapshot();
     });
 
     describe("facility select input", () => {

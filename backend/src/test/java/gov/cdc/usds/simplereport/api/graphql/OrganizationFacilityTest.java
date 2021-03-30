@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,7 +8,7 @@ import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class OrganizationFacilityTest extends BaseApiTest {
+class OrganizationFacilityTest extends BaseGraphqlTest {
 
   @Autowired private DeviceTypeService _deviceService;
 
