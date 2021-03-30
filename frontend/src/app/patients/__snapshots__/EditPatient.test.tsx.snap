@@ -102,6 +102,7 @@ Object {
                         </span>
                       </label>
                       <input
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
                         id="21"
@@ -120,6 +121,7 @@ Object {
                         Middle name
                       </label>
                       <input
+                        aria-disabled="false"
                         aria-required="false"
                         class="usa-input"
                         id="22"
@@ -148,6 +150,7 @@ Object {
                         </span>
                       </label>
                       <input
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
                         id="23"
@@ -286,6 +289,7 @@ Object {
                         </span>
                       </label>
                       <input
+                        aria-disabled="false"
                         aria-required="true"
                         class="usa-input"
                         id="27"
@@ -1354,6 +1358,7 @@ Object {
                       </span>
                     </label>
                     <input
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
                       id="21"
@@ -1372,6 +1377,7 @@ Object {
                       Middle name
                     </label>
                     <input
+                      aria-disabled="false"
                       aria-required="false"
                       class="usa-input"
                       id="22"
@@ -1400,6 +1406,7 @@ Object {
                       </span>
                     </label>
                     <input
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
                       id="23"
@@ -1538,6 +1545,7 @@ Object {
                       </span>
                     </label>
                     <input
+                      aria-disabled="false"
                       aria-required="true"
                       class="usa-input"
                       id="27"
