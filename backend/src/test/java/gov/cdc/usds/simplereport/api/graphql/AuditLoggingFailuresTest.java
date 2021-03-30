@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -53,7 +53,7 @@ import org.springframework.http.ResponseEntity;
  * Since MockMvc does not wrap error handling, this uses TestRestTemplate for PXP requests (this is
  * in any case what the graphql tests use, so there is no additional cost).
  */
-class AuditLoggingFailuresTest extends BaseApiTest {
+class AuditLoggingFailuresTest extends BaseGraphqlTest {
 
   private static final Logger LOG = LoggerFactory.getLogger(AuditLoggingFailuresTest.class);
 

@@ -7,13 +7,17 @@ import com.sendgrid.helpers.mail.objects.Personalization;
 import gov.cdc.usds.simplereport.properties.SendGridProperties;
 import java.io.IOException;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
-  @Autowired private EmailProvider emailProvider;
-  @Autowired private SendGridProperties sendGridProperties;
+  private final EmailProvider emailProvider;
+  private final SendGridProperties sendGridProperties;
+
+  public EmailService(EmailProvider emailProvider, SendGridProperties sendGridProperties) {
+    this.emailProvider = emailProvider;
+    this.sendGridProperties = sendGridProperties;
+  }
 
   public String send(List<String> toEmail, String subject, String message) throws IOException {
     Mail mail = new Mail();

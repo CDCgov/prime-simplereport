@@ -1,4 +1,4 @@
-package gov.cdc.usds.simplereport.api;
+package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @WithSimpleReportStandardUser // hackedy hack
-class TestResultTest extends BaseApiTest {
+class TestResultTest extends BaseGraphqlTest {
 
   @Autowired private TestDataFactory _dataFactory;
   @Autowired private OrganizationService _orgService;
