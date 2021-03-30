@@ -61,8 +61,10 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
   @Autowired private TestRestTemplate restTemplate;
   @Autowired private ObjectMapper objectMapper;
   @MockBean private AddressValidationService _addressValidation;
+
   private String _userName = null;
   private MultiValueMap<String, String> _customHeaders;
+  private ResponseEntity<String> _lastResponse;
 
   protected void useOrgUser() {
     _userName = TestUserIdentities.STANDARD_USER;
@@ -111,6 +113,10 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     _customHeaders.add(name, value);
   }
 
+  protected ResponseEntity<String> getLastResponse() {
+    return _lastResponse;
+  }
+
   @BeforeEach
   public void setup() {
     truncateDb();
@@ -120,6 +126,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     TestUserIdentities.withStandardUser(_initService::initAll);
     useOrgUser();
     _customHeaders = new LinkedMultiValueMap<String, String>();
+    _lastResponse = null;
     assertNull(
         // Dear future reader: this is not negotiable. If you set a default user, then patients will
         // show up as being the default user instead of themselves. This would be bad.
@@ -161,10 +168,9 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
     HttpEntity<LinkedMultiValueMap<String, Object>> request =
         new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
     try {
-      ResponseEntity<String> responseEntity =
-          restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
-      GraphQLResponse response = new GraphQLResponse(responseEntity, objectMapper);
-      assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      _lastResponse = restTemplate.exchange("/graphql", HttpMethod.POST, request, String.class);
+      assertEquals(HttpStatus.OK, _lastResponse.getStatusCode(), "Servlet response should be OK");
+      GraphQLResponse response = new GraphQLResponse(_lastResponse, objectMapper);
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, null);
       return (ObjectNode) responseBody.get("data");
@@ -218,6 +224,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
       setQueryHeaders();
       GraphQLResponse response = _template.perform(queryFileName, operationName, variables);
       assertEquals(HttpStatus.OK, response.getStatusCode(), "Servlet response should be OK");
+      _lastResponse = response.getRawResponse();
       JsonNode responseBody = response.readTree();
       assertGraphQLOutcome(responseBody, expectedError);
       return (ObjectNode) responseBody.get("data");

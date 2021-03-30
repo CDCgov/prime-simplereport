@@ -52,9 +52,21 @@ public abstract class BaseFullStackTest {
       String operationName,
       Set<UserPermission> permissions,
       List<String> errorPaths) {
+    return assertLastAuditEntry(null, username, operationName, permissions, errorPaths);
+  }
+
+  protected ApiAuditEvent assertLastAuditEntry(
+      String requestId,
+      String username,
+      String operationName,
+      Set<UserPermission> permissions,
+      List<String> errorPaths) {
     ApiAuditEvent event = getTimeCheckedEvent();
     assertEquals(username, event.getUser().getLoginEmail());
     assertEquals(operationName, event.getGraphqlQueryDetails().getOperationName());
+    if (requestId != null) {
+      assertEquals(requestId, event.getRequestId());
+    }
     if (permissions != null) {
       assertEquals(
           permissions.stream().map(UserPermission::name).collect(Collectors.toSet()),
