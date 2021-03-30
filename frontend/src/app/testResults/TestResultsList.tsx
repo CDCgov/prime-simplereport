@@ -56,6 +56,8 @@ export const testResultQuery = gql`
       patientLink {
         internalId
       }
+      symptoms
+      noSymptoms
     }
   }
 `;
@@ -67,6 +69,19 @@ interface Props {
   page: number;
   entriesPerPage: number;
   totalEntries: number;
+}
+
+function hasSymptoms(noSymptoms: boolean, symptoms: string) {
+  if (noSymptoms) {
+    return "No";
+  }
+  const symptomsList: Record<string, string> = JSON.parse(symptoms);
+  for (let key in symptomsList) {
+    if (symptomsList[key] === "true") {
+      return "Yes";
+    }
+  }
+  return "Unknown";
 }
 
 export const DetachedTestResultsList: any = ({
@@ -156,6 +171,7 @@ export const DetachedTestResultsList: any = ({
           <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
           <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
           <td>{r.deviceType.name}</td>
+          <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
           <td>
             {displayFullNameInOrder(
               r.createdBy.nameInfo.firstName,
