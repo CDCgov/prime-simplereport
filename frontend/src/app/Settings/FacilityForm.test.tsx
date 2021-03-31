@@ -102,7 +102,7 @@ describe("FacilityForm", () => {
     });
     expect(saveFacility).toBeCalledTimes(0);
   });
-  it("warns about an invalid optional email field", async () => {
+  it("validates optional email field", async () => {
     render(
       <MemoryRouter>
         <FacilityForm
@@ -129,5 +129,13 @@ describe("FacilityForm", () => {
       fireEvent.click(saveButton);
     });
     expect(saveFacility).toBeCalledTimes(0);
+
+    fireEvent.change(emailInput, {
+      target: { value: "foofacility@example.com" },
+    });
+    await waitFor(async () => {
+      fireEvent.click(saveButton);
+    });
+    expect(saveFacility).toBeCalledTimes(1);
   });
 });
