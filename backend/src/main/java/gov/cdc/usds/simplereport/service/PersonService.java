@@ -216,11 +216,6 @@ public class PersonService {
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
   public Person updateMe(
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      LocalDate birthDate,
       StreetAddress address,
       String telephone,
       PersonRole role,
@@ -233,11 +228,11 @@ public class PersonService {
     Person toUpdate = _patientContext.getLinkedOrder().getPatient();
     toUpdate.updatePatient(
         toUpdate.getLookupId(),
-        firstName,
-        middleName,
-        lastName,
-        suffix,
-        birthDate,
+        toUpdate.getFirstName(),
+        toUpdate.getMiddleName(),
+        toUpdate.getLastName(),
+        toUpdate.getSuffix(),
+        toUpdate.getBirthDate(),
         address,
         telephone,
         role,

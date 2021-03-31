@@ -12,6 +12,7 @@ interface Props<T> {
   errors: Partial<Record<keyof T, string>>;
   type?: HTMLInputElementType;
   required?: boolean;
+  disabled?: boolean;
 }
 
 export const Input = <T extends { [key: string]: any }>({
@@ -24,6 +25,7 @@ export const Input = <T extends { [key: string]: any }>({
   errors,
   type,
   required,
+  disabled,
 }: Props<T>): React.ReactElement => {
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(field)(e.target.value);
@@ -41,6 +43,7 @@ export const Input = <T extends { [key: string]: any }>({
       errorMessage={errors[field]}
       type={type}
       required={required}
+      disabled={disabled}
     />
   );
 };

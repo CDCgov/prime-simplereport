@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
-/** Created by nickrobison on 11/17/20 */
+/** Resolver for {@link Organization} related queries */
 @Component
 public class OrganizationResolver implements GraphQLQueryResolver {
 
@@ -36,6 +36,8 @@ public class OrganizationResolver implements GraphQLQueryResolver {
     // this is N+1-ey right now, but it's no better than it was before through
     // OrganizationDataResolver and this gets called _extremely_ rarely.
     // Something to clean up in a future PR.
+    // Suggested implementation: get all (non-deleted) facilities (from non-deleted organizations),
+    // and group them by their Organization attribute.
     return _organizationService.getOrganizations().stream()
         .map(o -> new ApiOrganization(o, _organizationService.getFacilities(o)))
         .collect(Collectors.toList());

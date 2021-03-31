@@ -281,11 +281,6 @@ public class TestOrderService {
     return _repo.fetchQueueItem(org, patient).orElseThrow(TestOrderService::noSuchOrderFound);
   }
 
-  @AuthorizationConfiguration.RequireGlobalAdminUser
-  public int cancelAll() {
-    return _repo.cancelAllPendingOrders(_os.getCurrentOrganization());
-  }
-
   @Transactional
   @AuthorizationConfiguration.RequirePermissionUpdateTestForTestEvent
   public TestEvent correctTestMarkAsError(UUID testEventId, String reasonForCorrection) {
