@@ -102,4 +102,32 @@ describe("FacilityForm", () => {
     });
     expect(saveFacility).toBeCalledTimes(0);
   });
+  it("warns about an invalid optional email field", async () => {
+    render(
+      <MemoryRouter>
+        <FacilityForm
+          facility={validFacility}
+          deviceOptions={devices}
+          saveFacility={saveFacility}
+        />
+      </MemoryRouter>
+    );
+    const saveButton = await screen.findByText("Save changes");
+    const emailInput = screen.getByLabelText("Email", {
+      exact: false,
+    });
+    fireEvent.change(emailInput, { target: { value: "123-456-7890" } });
+    fireEvent.blur(emailInput);
+
+    expect(
+      await screen.findByText("Email is incorrectly formatted", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(async () => {
+      fireEvent.click(saveButton);
+    });
+    expect(saveFacility).toBeCalledTimes(0);
+  });
 });
