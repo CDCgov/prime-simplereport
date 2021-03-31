@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ErrorPage displays the correct error message 1`] = `
+<div>
+  <main>
+    <div
+      class="error-img-container"
+    >
+      <div
+        class="usa-logo"
+      >
+        <img
+          alt="{process.env.REACT_APP_TITLE}"
+          src="simplereport-logo-color.svg"
+        />
+      </div>
+    </div>
+    <div
+      class="grid-container maxw-tablet error-text-container"
+    >
+      <h1
+        class="error-h1"
+      >
+        Something went wrong :(
+      </h1>
+      <p>
+        Please try refreshing your browser.
+      </p>
+      <p>
+        If the problem continues, contact support@simplereport.gov for support.
+      </p>
+    </div>
+  </main>
+</div>
+`;
