@@ -90,11 +90,7 @@ const App = () => {
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary
-        onError={(error: any) => (
-          <ErrorPage></ErrorPage>
-        )}
-      >
+      <PrimeErrorBoundary onError={(error: any) => <ErrorPage></ErrorPage>}>
         <WithFacility>
           <div className="App">
             <div id="main-wrapper">

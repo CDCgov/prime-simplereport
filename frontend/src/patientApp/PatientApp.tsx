@@ -10,6 +10,7 @@ import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
+import ErrorPage from "../app/commonComponents/ErrorPage";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -21,7 +22,6 @@ import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import TestResult from "./timeOfTest/TestResult";
 import Patient404 from "./timeOfTest/Patient404";
 import GuardedRoute from "./GuardedRoute";
-import ErrorPage from "../app/commonComponents/ErrorPage";
 
 interface WrapperProps {
   plid: string;
@@ -55,11 +55,7 @@ const PatientApp = () => {
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary
-        onError={(error: any) => (
-          <ErrorPage></ErrorPage>
-        )}
-      >
+      <PrimeErrorBoundary onError={(error: any) => <ErrorPage></ErrorPage>}>
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
