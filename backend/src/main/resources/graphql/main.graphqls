@@ -15,6 +15,7 @@ type Facility {
   id: ID
   name: String
   cliaNumber: String
+  address: AddressInfo
   street: String
   streetTwo: String
   city: String
@@ -35,6 +36,7 @@ type Provider {
   lastName: String
   suffix: String
   NPI: String
+  address: AddressInfo
   street: String
   streetTwo: String
   city: String
@@ -83,13 +85,6 @@ type ApiUser {
   nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
 }
 
-type NameInfo {
-  firstName: String
-  middleName: String
-  lastName: String
-  suffix: String
-}
-
 # Patient and test types
 
 type Patient
@@ -109,6 +104,7 @@ type Patient
   gender: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  address: AddressInfo @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   street: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   streetTwo: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   city: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
