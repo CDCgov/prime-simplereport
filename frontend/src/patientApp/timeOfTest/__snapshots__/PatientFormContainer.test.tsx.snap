@@ -246,6 +246,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   aria-disabled={true}
                   aria-required="false"
                   className="usa-input"
+                  disabled={true}
                   id="5"
                   name="birthDate"
                   onBlur={[Function]}
