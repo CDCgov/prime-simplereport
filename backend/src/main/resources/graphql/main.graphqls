@@ -75,7 +75,7 @@ type User {
   organization: Organization
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
-  roles: [Role!]!
+  roles: [Role!]! @deprecated(reason: "Users have only one role now")
 }
 
 type ApiUser {
