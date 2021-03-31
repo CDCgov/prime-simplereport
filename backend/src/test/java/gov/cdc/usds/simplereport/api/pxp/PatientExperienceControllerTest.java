@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import gov.cdc.usds.simplereport.api.BaseFullStackTest;
+import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -36,9 +37,6 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 class PatientExperienceControllerTest extends BaseFullStackTest {
-
-  private static final String ANSWER_QUESTIONS = "/pxp/questions";
-  private static final String VERIFY_LINK = "/pxp/link/verify";
 
   @Autowired private MockMvc _mockMvc;
 
@@ -78,7 +76,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
         "{\"patientLinkId\":\"" + UUID.randomUUID() + "\",\"dateOfBirth\":\"" + dob + "\"}";
 
     MockHttpServletRequestBuilder builder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -104,7 +102,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -112,7 +110,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     String requestId = runBuilderReturningRequestId(builder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -128,7 +126,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -145,7 +143,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
             .getResponse()
             .getHeader(LoggingConstants.REQUEST_ID_HEADER);
 
-    assertLastAuditEntry(HttpStatus.OK, VERIFY_LINK, requestId);
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -163,7 +161,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -171,7 +169,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     String requestId = runBuilderReturningRequestId(builder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
+    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
   }
 
   @Test
@@ -193,24 +191,24 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder submitBuilder =
-        put(ANSWER_QUESTIONS)
+        put(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
     String requestId = runBuilderReturningRequestId(submitBuilder, status().isOk());
-    assertLastAuditEntry(HttpStatus.OK, ANSWER_QUESTIONS, requestId);
+    assertLastAuditEntry(HttpStatus.OK, ResourceLinks.ANSWER_QUESTIONS, requestId);
 
     // OKAY NOW DO IT AGAIN
     MockHttpServletRequestBuilder verifyBuilder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
             .content(requestBody);
 
     MockHttpServletRequestBuilder secondSubmitBuilder =
-        put(ANSWER_QUESTIONS)
+        put(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -218,9 +216,9 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // THEN
     requestId = runBuilderReturningRequestId(verifyBuilder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, VERIFY_LINK, requestId);
+    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.VERIFY_LINK, requestId);
     requestId = runBuilderReturningRequestId(secondSubmitBuilder, status().isGone());
-    assertLastAuditEntry(HttpStatus.GONE, ANSWER_QUESTIONS, requestId);
+    assertLastAuditEntry(HttpStatus.GONE, ResourceLinks.ANSWER_QUESTIONS, requestId);
   }
 
   @Test
@@ -236,7 +234,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(VERIFY_LINK)
+        put(ResourceLinks.VERIFY_LINK)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -269,7 +267,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put("/pxp/patient")
+        put(ResourceLinks.UPDATE_PATIENT)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -302,7 +300,7 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
 
     // WHEN
     MockHttpServletRequestBuilder builder =
-        put(ANSWER_QUESTIONS)
+        put(ResourceLinks.ANSWER_QUESTIONS)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
