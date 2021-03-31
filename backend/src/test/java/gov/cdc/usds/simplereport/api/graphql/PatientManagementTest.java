@@ -392,64 +392,6 @@ class PatientManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void queryingPatientTestResults_standardUser_ok() throws Exception {
-    executeAddPersonMutation(
-        "Sansa",
-        "Stark",
-        "1100-12-25",
-        "1-800-BIZ-NAME",
-        "notbitter",
-        Optional.empty(),
-        Optional.empty());
-
-    useOrgUser();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
-
-    runQuery("person-with-test-results-query", variables, null);
-    assertLastAuditEntry(
-        TestUserIdentities.STANDARD_USER,
-        "getPatientsWithTestResults",
-        EnumSet.of(
-            UserPermission.READ_PATIENT_LIST,
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.READ_RESULT_LIST,
-            UserPermission.EDIT_PATIENT,
-            UserPermission.ARCHIVE_PATIENT,
-            UserPermission.START_TEST,
-            UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
-        List.of());
-  }
-
-  @Test
-  void queryingPatientTestResults_entryOnly_fail() throws Exception {
-    executeAddPersonMutation(
-        "Sansa",
-        "Stark",
-        "1100-12-25",
-        "1-800-BIZ-NAME",
-        "notbitter",
-        Optional.empty(),
-        Optional.empty());
-
-    useOrgEntryOnly();
-    ObjectNode variables = JsonNodeFactory.instance.objectNode().put("namePrefixMatch", "San");
-    runQuery(
-        "person-with-test-results-query",
-        variables,
-        "Current user does not have permission to request [/patients[0]/testResults]");
-    assertLastAuditEntry(
-        TestUserIdentities.ENTRY_ONLY_USER,
-        "getPatientsWithTestResults",
-        EnumSet.of(
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.START_TEST,
-            UserPermission.UPDATE_TEST,
-            UserPermission.SUBMIT_TEST),
-        List.of("patients", "0", "testResults"));
-  }
-
-  @Test
   void queryingPatientLastTestResult_entryOnly_ok() throws Exception {
     executeAddPersonMutation(
         "Sansa",
