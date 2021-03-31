@@ -5,10 +5,10 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
-import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
+import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -89,14 +89,9 @@ public class PatientExperienceController {
 
   @PutMapping("/patient")
   public Person updatePatient(
-      @RequestBody PxpRequestWrapper<Person> body, HttpServletRequest request) {
-    Person person = body.getData();
+      @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
+    PersonUpdate person = body.getData();
     return ps.updateMe(
-        parseString(person.getFirstName()),
-        parseString(person.getMiddleName()),
-        parseString(person.getLastName()),
-        parseString(person.getSuffix()),
-        person.getBirthDate(),
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
         parsePhoneNumber(person.getTelephone()),
         person.getRole(),

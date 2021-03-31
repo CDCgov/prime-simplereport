@@ -253,19 +253,19 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
   void updatePatientReturnsUpdatedPerson() throws Exception {
     // GIVEN
     String dob = _person.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-    String newFirstName = "Blob";
-    String newLastName = "McBlobster";
+    String newTelephone = "(212) 867-5309";
+    String newEmail = "fake@example.com";
 
     String requestBody =
         "{\"patientLinkId\":\""
             + _patientLink.getInternalId()
             + "\",\"dateOfBirth\":\""
             + dob
-            + "\",\"data\":{\"firstName\":\""
-            + newFirstName
-            + "\",\"middleName\":null,\"lastName\":\""
-            + newLastName
-            + "\",\"birthDate\":\"0101-01-01\",\"telephone\":\"123-123-1234\",\"role\":\"UNKNOWN\",\"email\":null,\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
+            + "\",\"data\":{\"telephone\":\""
+            + newTelephone
+            + "\",\"role\":\"UNKNOWN\",\"email\":\""
+            + newEmail
+            + "\",\"race\":\"refused\",\"ethnicity\":\"not_hispanic\",\"gender\":\"female\",\"residentCongregateSetting\":false,\"employedInHealthcare\":true,\"address\":{\"street\":[\"12 Someplace\",\"CA\"],\"city\":null,\"state\":\"CA\",\"county\":null,\"zipCode\":\"67890\"}}}";
 
     // WHEN
     MockHttpServletRequestBuilder builder =
@@ -279,8 +279,8 @@ class PatientExperienceControllerTest extends BaseFullStackTest {
     _mockMvc
         .perform(builder)
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.firstName", is(newFirstName)))
-        .andExpect(jsonPath("$.lastName", is(newLastName)));
+        .andExpect(jsonPath("$.telephone", is(newTelephone)))
+        .andExpect(jsonPath("$.email", is(newEmail)));
   }
 
   @Test
