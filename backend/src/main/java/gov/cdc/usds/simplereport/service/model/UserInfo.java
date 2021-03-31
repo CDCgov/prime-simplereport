@@ -3,8 +3,11 @@ package gov.cdc.usds.simplereport.service.model;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
+import gov.cdc.usds.simplereport.db.model.DatabaseEntity;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PersonEntity;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -12,9 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class UserInfo {
+public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, PersonEntity {
 
-  private ApiUser wrapped;
   private Optional<Organization> org;
   private boolean isAdmin;
   private List<UserPermission> permissions;
@@ -22,7 +24,7 @@ public class UserInfo {
   private List<Facility> facilities;
 
   public UserInfo(ApiUser user, Optional<OrganizationRoles> orgwrapper, boolean isAdmin) {
-    this.wrapped = user;
+    super(user);
     this.org = orgwrapper.map(OrganizationRoles::getOrganization);
     this.permissions = new ArrayList<>();
     this.roles =
@@ -35,28 +37,18 @@ public class UserInfo {
     this.isAdmin = isAdmin;
   }
 
-  public UUID getId() {
+  @Override
+  public UUID getInternalId() {
     return wrapped.getInternalId();
+  }
+
+  @Override
+  public PersonName getNameInfo() {
+    return getWrapped().getNameInfo();
   }
 
   public Optional<Organization> getOrganization() {
     return org;
-  }
-
-  public String getFirstName() {
-    return wrapped.getNameInfo().getFirstName();
-  }
-
-  public String getMiddleName() {
-    return wrapped.getNameInfo().getMiddleName();
-  }
-
-  public String getLastName() {
-    return wrapped.getNameInfo().getLastName();
-  }
-
-  public String getSuffix() {
-    return wrapped.getNameInfo().getSuffix();
   }
 
   // Note: we assume a user's email and login username are the same thing.

@@ -29,6 +29,7 @@ type Facility {
 }
 
 type Provider {
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String
@@ -62,6 +63,7 @@ type TestDescription {
 # Note: the login username is the user's email
 type User {
   id: ID
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String!
@@ -77,7 +79,8 @@ type User {
 }
 
 type ApiUser {
-  nameInfo: NameInfo
+  name: NameInfo
+  nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
 }
 
 type NameInfo {
@@ -96,6 +99,7 @@ type Patient
   internalId: ID
   facility: Facility
   lookupId: String
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String

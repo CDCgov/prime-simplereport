@@ -1,17 +1,17 @@
 package gov.cdc.usds.simplereport.api.model;
 
+import gov.cdc.usds.simplereport.api.model.facets.PersonWrapper;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
+import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-public class User {
-
-  private UserInfo wrapped;
+public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserInfo> {
 
   public User(UserInfo user) {
-    this.wrapped = user;
+    super(user);
   }
 
   public UUID getId() {
@@ -20,22 +20,6 @@ public class User {
 
   public Optional<ApiOrganization> getOrganization() {
     return wrapped.getOrganization().map(o -> new ApiOrganization(o, wrapped.getFacilities()));
-  }
-
-  public String getFirstName() {
-    return wrapped.getFirstName();
-  }
-
-  public String getMiddleName() {
-    return wrapped.getMiddleName();
-  }
-
-  public String getLastName() {
-    return wrapped.getLastName();
-  }
-
-  public String getSuffix() {
-    return wrapped.getSuffix();
   }
 
   // Note: we assume a user's email and login username are the same thing.
