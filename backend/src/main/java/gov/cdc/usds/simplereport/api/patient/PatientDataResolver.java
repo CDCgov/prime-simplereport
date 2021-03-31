@@ -1,23 +1,21 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
+import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.TestEventService;
-import graphql.kickstart.tools.GraphQLResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import graphql.kickstart.tools.GraphQLResolver;
 
 @Component
-public class PatientDataResolver implements GraphQLResolver<Person> {
+public class PatientDataResolver
+    implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
 
   @Autowired private TestEventService _testEventService;
-
-  public PersonName getName(Person p) {
-    return p.getNameInfo();
-  }
 
   public TestEvent getLastTest(Person p) {
     return _testEventService.getLastTestResultsForPatientPermRestricted(p);

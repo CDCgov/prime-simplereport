@@ -91,5 +91,6 @@ type AddressInfo {
   streetTwo: String
   city: String
   county: String
+  state: String
   postalCode: String
 }
