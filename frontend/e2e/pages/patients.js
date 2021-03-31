@@ -14,7 +14,6 @@ function addPatient(dobFormat) {
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
-  const role = "STUDENT";
   const studentId = faker.random.uuid();
 
   this.expect.section("@navbar").to.be.visible;
@@ -31,7 +30,7 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@address", address);
   this.section.editPatient.setValue("@state", state);
   this.section.editPatient.setValue("@zip", zip);
-  this.section.editPatient.setValue("@role", role);
+  this.section.editPatient.click("@studentRole");
   this.expect.section("@editPatient").to.contain.text("Student ID");
   this.section.editPatient.setValue("@lookupId", studentId);
   this.section.editPatient.click("@resident");
@@ -88,7 +87,7 @@ module.exports = {
         address: 'input[name="street"]',
         state: 'select[name="state"]',
         zip: 'input[name="zipCode"]',
-        role: 'select[name="role"]',
+        studentRole: 'select[name="role"] option[value=STUDENT]',
         lookupId: 'input[name="lookupId"]',
         resident: 'input[name="residentCongregateSetting"]+label',
         healthcareWorker: 'input[name="employedInHealthcare"]+label',
