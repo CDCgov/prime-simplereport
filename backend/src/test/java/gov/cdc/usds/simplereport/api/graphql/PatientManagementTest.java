@@ -59,7 +59,10 @@ class PatientManagementTest extends BaseGraphqlTest {
             firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.empty());
     assertTrue(patients.has(0), "At least one patient found");
     JsonNode sansa = patients.get(0);
-    org.slf4j.LoggerFactory.getLogger(getClass()).info("Sansa looks like {}", sansa);
+    // check that both ID fields exist and are equal
+    assertTrue(sansa.has("id"), "'id' field present");
+    assertTrue(sansa.has("internalId"), "'internalId' field present");
+    assertEquals(sansa.get("id").asText(), sansa.get("internalId").asText());
     // check name through both flat and structured graph nodes
     assertEquals(firstName, sansa.get("firstName").asText());
     assertEquals(firstName, sansa.path("name").get("firstName").asText());

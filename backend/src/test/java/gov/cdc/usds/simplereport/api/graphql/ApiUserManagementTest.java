@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.api.graphql;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -67,7 +68,12 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.SUBMIT_TEST),
         null);
 
-    JsonNode facilityNode = who.path("organization").path("facilities").get(0);
+    JsonNode orgNode = who.path("organization");
+    assertTrue(orgNode.has("id"), "'id' field present on organization");
+    assertTrue(orgNode.has("internalId"), "'internalId' field present on organization");
+    assertEquals(orgNode.get("id").asText(), orgNode.get("internalId").asText());
+
+    JsonNode facilityNode = orgNode.path("facilities").get(0);
     assertEquals("Injection Site", facilityNode.get("name").asText());
     assertEquals("2797 N Cerrada de Beto", facilityNode.get("street").asText());
     assertEquals("2797 N Cerrada de Beto", facilityNode.path("address").get("streetOne").asText());
@@ -420,181 +426,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void updateUserRole_adminUser_success() {
-    useOrgAdmin();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
-    String id = addUser.get("id").asText();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-
-    ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
-    assertEquals(Role.ADMIN.name(), resp.get("updateUserRole").asText());
-  }
-
-  @Test
-  void updateUserRole_superUser_success() {
-    useSuperUser();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-
-    ObjectNode resp = runQuery("update-user-role", updateRoleVariables);
-    assertEquals(Role.ADMIN.name(), resp.get("updateUserRole").asText());
-  }
-
-  @Test
-  void updateUserRole_outsideOrgAdmin_failure() {
-    useSuperUser();
-
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
-
-    useOutsideOrgAdmin();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-
-    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
-  }
-
-  @Test
-  void updateUserRole_outsideOrgUser_failure() {
-    useSuperUser();
-
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
-
-    useOutsideOrgUser();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-
-    runQuery(
-        "update-user-role",
-        updateRoleVariables,
-        "Current user does not have permission to request [/updateUserRole]");
-  }
-
-  @Test
-  void updateUserRole_orgUser_failure() {
-    useSuperUser();
-
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
-
-    useOrgUser();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-
-    runQuery(
-        "update-user-role",
-        updateRoleVariables,
-        "Current user does not have permission to request [/updateUserRole]");
-  }
-
-  @Test
-  void updateUserRole_orgAdmin_roleUpdated() {
-    useOrgEntryOnly();
-    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    assertLastAuditEntry(
-        TestUserIdentities.ENTRY_ONLY_USER,
-        "whoDat",
-        Set.of(
-            UserPermission.START_TEST,
-            UserPermission.SEARCH_PATIENTS,
-            UserPermission.SUBMIT_TEST,
-            UserPermission.UPDATE_TEST),
-        null);
-    assertEquals(who.get("role").asText(), Role.ENTRY_ONLY.name());
-    assertEquals(Set.of(Role.ENTRY_ONLY), extractRolesFromUser(who));
-    String id = who.get("id").asText();
-    assertUserCanAccessExactFacilities(who, Set.of(TestUserIdentities.TEST_FACILITY_1));
-
-    useOrgAdmin();
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-    runQuery("update-user-role", updateRoleVariables);
-
-    useOrgEntryOnly();
-    who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    assertLastAuditEntry(
-        TestUserIdentities.ENTRY_ONLY_USER, "whoDat", EnumSet.allOf(UserPermission.class), null);
-    assertEquals(who.get("role").asText(), Role.ADMIN.name());
-    assertEquals(Set.of(Role.ADMIN), extractRolesFromUser(who));
-    assertUserCanAccessAllFacilities(who);
-  }
-
-  @Test
-  void updateUserRole_self_failure() {
-    useOrgAdmin();
-    ObjectNode who = (ObjectNode) runQuery("current-user-query").get("whoami");
-    String id = who.get("id").asText();
-
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ENTRY_ONLY.name());
-    runQuery("update-user-role", updateRoleVariables, ACCESS_ERROR);
-  }
-
-  @Test
   void updateUserPrivileges_orgAdmin_success() {
     useOrgAdmin();
 
@@ -734,7 +565,6 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.ACCESS_ALL_FACILITIES),
         extractPermissionsFromUser(updateUser));
 
-    useOrgAdmin();
     assertUserCanAccessAllFacilities(updateUser);
   }
 
@@ -761,6 +591,34 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
 
     runQuery("update-user-privileges", updatePrivilegesVariables, ACCESS_ERROR);
+  }
+
+  @Test
+  void updateUserPrivileges_outsideOrgUser_failure() {
+    useSuperUser();
+
+    ObjectNode addVariables =
+        getAddUserVariables(
+            "Rhonda",
+            "Janet",
+            "Jones",
+            "III",
+            USERNAMES.get(0),
+            TestUserIdentities.DEFAULT_ORGANIZATION,
+            Role.ENTRY_ONLY.name());
+    ObjectNode addResp = runQuery("add-user", addVariables);
+    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    String id = addUser.get("id").asText();
+
+    useOutsideOrgUser();
+
+    ObjectNode updatePrivilegesVariables =
+        getUpdateUserPrivilegesVariables(id, Role.ENTRY_ONLY, false, Set.of());
+
+    runQuery(
+        "update-user-privileges",
+        updatePrivilegesVariables,
+        "Current user does not have permission to request [/updateUserPrivileges]");
   }
 
   @Test
@@ -827,6 +685,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
     ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
     String id = addUser.get("id").asText();
+    assertTrue(fetchUserList().stream().anyMatch(o -> id.equals(o.get("id").asText())));
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
@@ -834,9 +693,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode resp = runQuery("set-user-is-deleted", deleteVariables);
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-    runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
+    assertTrue(fetchUserList().stream().noneMatch(o -> id.equals(o.get("id").asText())));
   }
 
   @Test
@@ -862,9 +719,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode resp = runQuery("set-user-is-deleted", deleteVariables);
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
-    ObjectNode updateRoleVariables =
-        JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
-    runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
+    useOrgAdmin();
+    assertTrue(fetchUserList().stream().noneMatch(o -> id.equals(o.get("id").asText())));
   }
 
   @Test
@@ -918,6 +774,17 @@ class ApiUserManagementTest extends BaseGraphqlTest {
         "set-user-is-deleted",
         deleteVariables,
         "Current user does not have permission to request [/setUserIsDeleted]");
+  }
+
+  @Test
+  void getWhoami_entryOnlyUser_facilitiesRestricted() {
+    useOrgEntryOnly();
+    assertThrows(
+        AssertionError.class,
+        () -> {
+          ObjectNode user = (ObjectNode) runQuery("current-user-query").get("whoami");
+          assertUserCanAccessAllFacilities(user);
+        });
   }
 
   @Test
@@ -994,8 +861,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
       runQuery("add-user-to-current-org", userVariables);
     }
 
-    ObjectNode resp = runQuery("users-query");
-    List<ObjectNode> usersRetrieved = toList((ArrayNode) resp.get("users"));
+    List<ObjectNode> usersRetrieved = fetchUserList();
 
     assertTrue(usersRetrieved.size() > usersAdded.size());
 
@@ -1015,6 +881,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
           userAdded.get("organizationExternalId").asText());
       assertEquals(EnumSet.allOf(UserPermission.class), extractPermissionsFromUser(userRetrieved));
     }
+  }
+
+  private List<ObjectNode> fetchUserList() {
+    return toList((ArrayNode) runQuery("users-query").get("users"));
   }
 
   @Test
