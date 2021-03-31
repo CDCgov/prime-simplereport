@@ -1,0 +1,61 @@
+# Queries and mutations that are used only by site admins
+extend type Query {
+  organizations: [Organization]
+}
+extend type Mutation {
+  createDeviceType(
+    name: String!
+    manufacturer: String!
+    model: String!
+    loincCode: String!
+    swabType: String!
+  ): DeviceType
+  updateDeviceType(
+    id: String!
+    name: String
+    manufacturer: String
+    model: String
+    loincCode: String
+    swabType: String
+  ): DeviceType
+  clearQueue: Int
+  addUser(
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+    organizationExternalId: String!
+    role: Role!
+  ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
+  createOrganization(
+    name: String!
+    externalId: String!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    defaultDevice: String!
+  ): Organization
+}
