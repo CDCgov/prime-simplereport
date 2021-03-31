@@ -4,6 +4,7 @@ import {
   fireEvent,
   cleanup,
   within,
+  waitFor,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -22,6 +23,10 @@ jest.mock("react-router-dom", () => ({
     listen: jest.fn(),
     push: jest.fn(),
   }),
+}));
+
+jest.mock("../utils/smartyStreets", () => ({
+  getBestSuggestion: jest.fn(),
 }));
 
 const fillOutForm = (
@@ -133,6 +138,38 @@ describe("AddPatient", () => {
             },
           },
         },
+        {
+          request: {
+            query: ADD_PATIENT,
+            variables: {
+              firstName: "Alice",
+              middleName: null,
+              lastName: "Hamilton",
+              lookupId: "student-123",
+              birthDate: "1970-09-22",
+              street: "25 Shattuck St",
+              streetTwo: null,
+              city: "Boston",
+              state: "MA",
+              zipCode: "02115",
+              telephone: "617-432-1000",
+              role: "STUDENT",
+              email: null,
+              county: "",
+              race: null,
+              ethnicity: null,
+              gender: null,
+              residentCongregateSetting: false,
+              employedInHealthcare: true,
+              facilityId: mockFacilityID,
+            },
+          },
+          result: {
+            data: {
+              internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
+            },
+          },
+        },
       ];
       render(
         <Provider store={store}>
@@ -176,7 +213,7 @@ describe("AddPatient", () => {
         });
       });
       it("show the address validation modal", async () => {
-        await screen.getByText(`Address Validation`, {
+        await screen.findByText(`Address Validation`, {
           exact: false,
         });
       });
@@ -230,6 +267,61 @@ describe("AddPatient", () => {
           target: { value: mockFacilityID },
         });
         expect(facilityInput.value).toBe(mockFacilityID);
+      });
+    });
+
+    describe("With student ID", () => {
+      it("allows student ID to be entered", async () => {
+        fillOutForm(
+          {
+            "First Name": "Alice",
+            "Last Name": "Hamilton",
+            Facility: mockFacilityID,
+            "Date of birth": "1970-09-22",
+            "Phone number": "617-432-1000",
+            "Street address 1": "25 Shattuck St",
+            City: "Boston",
+            State: "MA",
+            "Zip code": "02115",
+          },
+          {
+            "Resident in congregate care": { label: "No", value: "No" },
+            "Work in Healthcare": { label: "Yes", value: "Yes" },
+          }
+        );
+
+        fireEvent.change(screen.getByLabelText("Role"), {
+          target: { value: "STUDENT" },
+        });
+        await waitFor(() => {
+          expect(screen.getByLabelText("Student ID")).toBeInTheDocument();
+        });
+        fireEvent.change(screen.getByLabelText("Student ID"), {
+          target: { value: "student-123" },
+        });
+        await waitFor(() => {
+          fireEvent.click(screen.getAllByText("Save changes")[0]);
+        });
+
+        const modal = screen.getByRole("dialog", {
+          exact: false,
+        });
+
+        fireEvent.click(
+          within(modal).getByLabelText("Use address as entered", {
+            exact: false,
+          }),
+          {
+            target: { value: "userAddress" },
+          }
+        );
+        await act(async () => {
+          fireEvent.click(
+            within(modal).getByText("Save changes", {
+              exact: false,
+            })
+          );
+        });
       });
     });
   });
