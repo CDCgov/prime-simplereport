@@ -61,6 +61,11 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   <th
                     scope="col"
                   >
+                    Symptoms
+                  </th>
+                  <th
+                    scope="col"
+                  >
                     Submitter
                   </th>
                   <th
