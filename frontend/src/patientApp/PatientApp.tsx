@@ -21,6 +21,7 @@ import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import TestResult from "./timeOfTest/TestResult";
 import Patient404 from "./timeOfTest/Patient404";
 import GuardedRoute from "./GuardedRoute";
+import ErrorPage from "../app/commonComponents/ErrorPage";
 
 interface WrapperProps {
   plid: string;
@@ -56,10 +57,7 @@ const PatientApp = () => {
     <AppInsightsContext.Provider value={reactPlugin}>
       <PrimeErrorBoundary
         onError={(error: any) => (
-          <div>
-            <h1> There was an error. Please try refreshing</h1>
-            <pre> {JSON.stringify(error, null, 2)} </pre>
-          </div>
+          <ErrorPage></ErrorPage>
         )}
       >
         <div className="App">

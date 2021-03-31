@@ -22,6 +22,7 @@ import AdminRoutes from "./admin/AdminRoutes";
 import WithFacility from "./facilitySelect/WithFacility";
 import { appPermissions } from "./permissions";
 import Settings from "./Settings/Settings";
+import ErrorPage from "./commonComponents/ErrorPage";
 
 const WHOAMI_QUERY = gql`
   query WhoAmI {
@@ -91,10 +92,7 @@ const App = () => {
     <AppInsightsContext.Provider value={reactPlugin}>
       <PrimeErrorBoundary
         onError={(error: any) => (
-          <div>
-            <h1> There was an error. Please try refreshing</h1>
-            <pre> {JSON.stringify(error, null, 2)} </pre>
-          </div>
+          <ErrorPage></ErrorPage>
         )}
       >
         <WithFacility>
