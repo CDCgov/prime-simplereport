@@ -35,6 +35,7 @@ const Modal: React.FC<Props> & SubComponents = ({
         },
       }}
       overlayClassName="prime-modal-overlay display-flex flex-align-center flex-justify-center"
+      ariaHideApp={process.env.NODE_ENV !== "test"}
     >
       <div className="modal__container">
         <button

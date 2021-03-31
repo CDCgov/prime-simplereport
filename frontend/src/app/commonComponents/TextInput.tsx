@@ -53,6 +53,7 @@ export const TextInput = ({
   errorMessage,
   className,
   required,
+  disabled,
   validationStatus,
   autoComplete,
   size,
@@ -106,6 +107,8 @@ export const TextInput = ({
             value={value || ""}
             type={type || "text"}
             aria-required={required || "false"}
+            disabled={disabled}
+            aria-disabled={disabled}
             onChange={onChange}
             autoComplete={autoComplete}
             size={size}

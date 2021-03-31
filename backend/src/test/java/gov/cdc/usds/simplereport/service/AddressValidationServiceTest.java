@@ -1,7 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
@@ -12,7 +11,6 @@ import com.smartystreets.api.us_street.Candidate;
 import com.smartystreets.api.us_street.Client;
 import com.smartystreets.api.us_street.Lookup;
 import com.smartystreets.api.us_street.Metadata;
-import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,17 +29,14 @@ class AddressValidationServiceTest {
   }
 
   @Test
-  void throwsExceptionWhenNoAddressesAreFound() {
+  void returnsEmptyCountyWhenNoAddressesAreFound() {
+    ArrayList<Candidate> results = new ArrayList<Candidate>();
     Lookup lookup = mock(Lookup.class);
-    when(lookup.getResult()).thenReturn(new ArrayList<Candidate>());
+    when(lookup.getResult()).thenReturn(results);
 
-    IllegalGraphqlArgumentException caught =
-        assertThrows(
-            IllegalGraphqlArgumentException.class,
-            () -> {
-              s.getValidatedAddress(lookup, null);
-            });
-    assertEquals("The address you entered could not be verified", caught.getMessage());
+    StreetAddress address = s.getValidatedAddress(lookup, null);
+
+    assertEquals("", address.getCounty());
   }
 
   @Test
