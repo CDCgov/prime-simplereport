@@ -32,6 +32,7 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@state", state);
   this.section.editPatient.setValue("@zip", zip);
   this.section.editPatient.setValue("@role", role);
+  this.expect.section("@editPatient").to.contain.text("Student ID");
   this.section.editPatient.setValue("@lookupId", studentId);
   this.section.editPatient.click("@resident");
   this.section.editPatient.click("@healthcareWorker");
