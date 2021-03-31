@@ -185,7 +185,6 @@ const PersonForm = (props: Props) => {
           />
         </div>
         <div className="usa-form">
-          <Input {...commonInputProps} field="lookupId" label="Lookup ID" />
           <Select
             label="Role"
             name="role"
@@ -194,6 +193,9 @@ const PersonForm = (props: Props) => {
             options={ROLE_VALUES}
             defaultSelect={true}
           />
+          {patient.role === "STUDENT" && (
+            <Input {...commonInputProps} field="lookupId" label="Student ID" />
+          )}
           <FacilitySelect
             facilityId={patient.facilityId}
             onChange={onPersonChange("facilityId")}
