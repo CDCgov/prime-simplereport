@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> {
@@ -38,12 +37,6 @@ public interface TestOrderRepository extends AuditedEntityRepository<TestOrder> 
   @Query(FACILITY_QUERY + IS_COMPLETED + RESULT_RECENT_ORDER)
   @EntityGraph(attributePaths = "patient")
   public List<TestOrder> fetchPastResults(Organization org, Facility facility);
-
-  @Query(
-      "update #{#entityName} q set q.orderStatus = 'CANCELED' "
-          + "where q.organization = :org and q.orderStatus = 'PENDING'")
-  @Modifying
-  public int cancelAllPendingOrders(Organization org);
 
   @Query(BASE_ORG_QUERY + " and q.testEventId = :testEventId")
   TestOrder findByTestEventId(Organization org, UUID testEventId);

@@ -123,20 +123,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   htmlFor="1"
                 >
                   First name
-                  <span
-                    className="usa-sr-only"
-                  >
-                    Required
-                  </span>
-                  <span
-                    className="usa-hint--required"
-                  >
-                     *
-                  </span>
                 </label>
                 <input
-                  aria-required={true}
+                  aria-disabled={true}
+                  aria-required="false"
                   className="usa-input"
+                  disabled={true}
                   id="1"
                   name="firstName"
                   onBlur={[Function]}
@@ -155,8 +147,10 @@ exports[`PatientFormContainer snapshot 1`] = `
                   Middle name
                 </label>
                 <input
+                  aria-disabled={true}
                   aria-required="false"
                   className="usa-input"
+                  disabled={true}
                   id="2"
                   name="middleName"
                   onBlur={[Function]}
@@ -173,20 +167,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   htmlFor="3"
                 >
                   Last name
-                  <span
-                    className="usa-sr-only"
-                  >
-                    Required
-                  </span>
-                  <span
-                    className="usa-hint--required"
-                  >
-                     *
-                  </span>
                 </label>
                 <input
-                  aria-required={true}
+                  aria-disabled={true}
+                  aria-required="false"
                   className="usa-input"
+                  disabled={true}
                   id="3"
                   name="lastName"
                   onBlur={[Function]}
@@ -255,19 +241,10 @@ exports[`PatientFormContainer snapshot 1`] = `
                   htmlFor="5"
                 >
                   Date of birth (mm/dd/yyyy)
-                  <span
-                    className="usa-sr-only"
-                  >
-                    Required
-                  </span>
-                  <span
-                    className="usa-hint--required"
-                  >
-                     *
-                  </span>
                 </label>
                 <input
-                  aria-required={true}
+                  aria-disabled={true}
+                  aria-required="false"
                   className="usa-input"
                   id="5"
                   name="birthDate"
