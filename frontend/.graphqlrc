@@ -1,1 +1,1 @@
-schema: ../backend/src/main/resources/schema.graphqls
+schema: ../backend/src/main/resources/graphql/*.graphqls
