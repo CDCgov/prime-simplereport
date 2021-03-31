@@ -56,13 +56,13 @@ data "azurerm_key_vault_secret" "metabase_db_uri" {
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "postgres_readonly_user" {
-  name         = "simple-report-${local.env}-postgres_readonly_user"
+data "azurerm_key_vault_secret" "postgres_nophi_user" {
+  name         = "simple-report-${local.env}-postgres_nophi_user"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 
-data "azurerm_key_vault_secret" "postgres_readonly_pass" {
-  name         = "simple-report-${local.env}-postgres_readonly_pass"
+data "azurerm_key_vault_secret" "postgres_nophi_pass" {
+  name         = "simple-report-${local.env}-postgres_nophi_pass"
   key_vault_id = data.azurerm_key_vault.sr_global.id
 }
 

@@ -22,12 +22,11 @@ module "metabase-readonly" {
   env    = local.env
 
   app_settings = {
-    "MB_DB_USER"           = data.azurerm_key_vault_secret.postgres_readonly_user.value
-    "MB_DB_PASS"           = data.azurerm_key_vault_secret.postgres_readonly_pass.value
+    "MB_DB_USER"           = data.azurerm_key_vault_secret.postgres_nophi_user.value
+    "MB_DB_PASS"           = data.azurerm_key_vault_secret.postgres_nophi_pass.value
     "MB_DB_NAME"           = "simple_report"
     "MB_DB_TYPE"           = "postgres"
     "MB_DB_HOST"           = data.terraform_remote_state.persistent_prod.outputs.postgres_server_name
-    "MB_DB_PORT"           = 5432
     "MB_DB_CONNECTION_URI" = ""
   }
 
