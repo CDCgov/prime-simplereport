@@ -209,6 +209,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Symptoms</th>
                     <th scope="col">Submitter</th>
                     <th scope="col">Actions</th>
                   </tr>
