@@ -28,6 +28,7 @@ export const GET_PATIENT = gql`
       zipCode
       telephone
       role
+      lookupId
       email
       county
       race
@@ -57,6 +58,7 @@ const UPDATE_PATIENT = gql`
     $zipCode: String!
     $telephone: String!
     $role: String
+    $lookupId: String
     $email: String
     $county: String
     $race: String
@@ -79,6 +81,7 @@ const UPDATE_PATIENT = gql`
       zipCode: $zipCode
       telephone: $telephone
       role: $role
+      lookupId: $lookupId
       email: $email
       county: $county
       race: $race
