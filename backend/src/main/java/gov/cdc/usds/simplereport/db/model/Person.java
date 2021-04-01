@@ -56,7 +56,7 @@ public class Person extends OrganizationScopedEternalEntity {
    * Tribal Affiliation maps to this data set:
    * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
    */
-  @Column private Short tribalAffiliation;
+  @Column private String tribalAffiliation;
 
   @Column private String ethnicity;
   @Column private String telephone;
@@ -102,7 +102,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
-      Short tribalAffiliation,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -142,7 +142,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
-      Short tribalAffiliation,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -220,7 +220,7 @@ public class Person extends OrganizationScopedEternalEntity {
     return ethnicity;
   }
 
-  public Short getTribalAffiliation() {
+  public String getTribalAffiliation() {
     return tribalAffiliation;
   }
 

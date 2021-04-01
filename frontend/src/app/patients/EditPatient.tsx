@@ -32,6 +32,7 @@ export const GET_PATIENT = gql`
       county
       race
       ethnicity
+      tribalAffiliation
       gender
       residentCongregateSetting
       employedInHealthcare
@@ -61,6 +62,7 @@ const UPDATE_PATIENT = gql`
     $county: String
     $race: String
     $ethnicity: String
+    $tribalAffiliation: String
     $gender: String
     $residentCongregateSetting: Boolean!
     $employedInHealthcare: Boolean!
@@ -83,6 +85,7 @@ const UPDATE_PATIENT = gql`
       county: $county
       race: $race
       ethnicity: $ethnicity
+      tribalAffiliation: $tribalAffiliation
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
