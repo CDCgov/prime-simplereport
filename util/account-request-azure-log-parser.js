@@ -1,5 +1,19 @@
 #!/usr/bin/env node
 
+/**
+ * This script transforms "New account requests" from the Azure logs into
+ * a useful CSV with just the data. To reduce the logs, run this log query:
+ * 
+ * ```
+ * AppServiceConsoleLogs 
+ * | where tolower(ResultDescription) contains "account request submitted"
+ * ```
+ * 
+ * Export that to CSV, and run that CSV through this script
+ * 
+ * Usage: `./account-request-azure-log-parser.js <filename.csv>`
+ */
+
 const csvParse = require('csv-parse/lib/sync');
 const csvStringify = require('csv-stringify/lib/sync');
 const { readFileSync } = require('fs');
