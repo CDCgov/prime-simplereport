@@ -71,7 +71,7 @@ export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "No", value: "NO" },
 ];
 
-export const TRIBAL_AFFILIATIONS: {
+export const TRIBAL_AFFILIATION_VALUES: {
   value: TribalAffiliation;
   label: string;
 }[] = [

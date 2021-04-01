@@ -8,7 +8,7 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
   ROLE_VALUES,
-  TRIBAL_AFFILIATIONS,
+  TRIBAL_AFFILIATION_VALUES,
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -295,12 +295,17 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
-        <ComboBox
-          id="tribal-affiliation"
-          name="tribal-affiliation"
-          options={TRIBAL_AFFILIATIONS}
-          onChange={onPersonChange("tribalAffiliation")}
-        />
+        <fieldset className="usa-fieldset">
+          <legend className="usa-legend">Tribal affiliation</legend>
+          <ComboBox
+            id="tribal-affiliation"
+            name="tribal-affiliation"
+            options={TRIBAL_AFFILIATION_VALUES}
+            onChange={
+              onPersonChange("tribalAffiliation") as (value?: string) => void
+            }
+          />
+        </fieldset>
         <RadioGroup
           legend="Ethnicity"
           name="ethnicity"

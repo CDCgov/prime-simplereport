@@ -118,6 +118,7 @@ const AddPatient = () => {
             gender: null,
             residentCongregateSetting: null,
             employedInHealthcare: null,
+            tribalAffiliation: null,
             birthDate: null,
             telephone: null,
             county: null,
