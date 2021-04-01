@@ -4,13 +4,11 @@ import siteLogo from "../../img/simplereport-logo-color.svg";
 const ErrorPage = () => {
   return (
     <>
+      <USAGovBanner />
       <header>
-        <USAGovBanner />
         <div className="border-bottom border-base-lighter padding-y-1">
           <div className="grid-container">
-            <div className="maxw-card-lg">
-              <img src={siteLogo} alt="{process.env.REACT_APP_TITLE}" />
-            </div>
+            <img className="maxh-4" src={siteLogo} alt="{process.env.REACT_APP_TITLE}" />
           </div>
         </div>
       </header>
