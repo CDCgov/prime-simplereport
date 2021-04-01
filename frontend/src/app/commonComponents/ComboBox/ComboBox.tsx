@@ -113,6 +113,7 @@ export const ComboBox = ({
 
   useEffect(() => {
     onChange && onChange(state.selectedOption?.value || undefined);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.selectedOption]);
 
   useEffect(() => {
