@@ -39,7 +39,7 @@ interface ComboBoxProps {
   options: ComboBoxOption[];
   defaultValue?: string;
   disabled?: boolean;
-  onChange: (val?: string) => void;
+  onChange: (value?: string) => void;
   assistiveHint?: string;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
@@ -113,7 +113,7 @@ export const ComboBox = ({
 
   useEffect(() => {
     onChange && onChange(state.selectedOption?.value || undefined);
-  }, [onChange, state.selectedOption]);
+  }, [state.selectedOption]);
 
   useEffect(() => {
     if (
