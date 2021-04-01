@@ -32,7 +32,7 @@ locals {
     GRANT SELECT ON TABLE facility_device_specimen_type TO ${data.azurerm_key_vault_secret.postgres_nophi_user.value};
     GRANT SELECT ON TABLE test_order TO ${data.azurerm_key_vault_secret.postgres_nophi_user.value};
 
-    GRANT SELECT (internal_id, created_at, updated_at, last_seen, is_deleted) ON TABLE api_user
+    GRANT SELECT (login_email, internal_id, created_at, updated_at, last_seen, is_deleted) ON TABLE api_user
     TO ${data.azurerm_key_vault_secret.postgres_nophi_user.value};
     
     GRANT SELECT (internal_id, created_at, created_by, updated_at, updated_by, is_deleted, provider_id)
