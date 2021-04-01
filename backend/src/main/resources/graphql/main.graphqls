@@ -346,7 +346,7 @@ type Mutation {
     county: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
-    tribalAffiliation: String @Size(min: 0, max: 6)
+    tribalAffiliation: String @Size(min: 0, max: 3)
     gender: String @Size(min: 0, max: 32)
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
