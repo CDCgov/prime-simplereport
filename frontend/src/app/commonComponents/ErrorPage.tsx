@@ -17,7 +17,7 @@ const ErrorPage = () => {
       <main className="usa-section">
         <div className="grid-container usa-prose">
           <h1 className="">Something went wrong :(</h1>
-          <p>Please try refreshing your browser.</p>
+          <p className="usa-intro">Please try refreshing your browser.</p>
           <p>
             If the problem continues, contact{" "}
             <a href="mailto:support@simplereport.gov">
