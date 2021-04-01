@@ -18,6 +18,10 @@ interface UpdatePatientData
       | "state"
       | "county"
       | "zipCode"
+      | "firstName"
+      | "middleName"
+      | "lastName"
+      | "birthDate"
     >
   > {
   address: {

@@ -77,10 +77,6 @@ public class QueueMutationResolver implements GraphQLMutationResolver {
     _tos.removePatientFromQueue(patientID);
   }
 
-  public int clearQueue() {
-    return _tos.cancelAll();
-  }
-
   public void updateTimeOfTestQuestions(
       UUID patientID,
       String pregnancy,
