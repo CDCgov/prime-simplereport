@@ -578,10 +578,7 @@ type TribalAffiliation =
   | "565"
   | "566";
 
-interface Person extends Address {
-  firstName: string;
-  middleName: string;
-  lastName: string;
+interface PersonUpdate extends Address {
   lookupId: string;
   role: Role;
   race: Race;
@@ -590,10 +587,20 @@ interface Person extends Address {
   tribalAffiliation: TribalAffiliation;
   residentCongregateSetting: boolean;
   employedInHealthcare: boolean;
-  birthDate: string;
   telephone: string;
   county: string;
   email: string;
+}
+
+interface Person extends PersonUpdate {
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  birthDate: string;
+}
+
+interface PersonUpdateFormData extends PersonUpdate {
+  facilityId: string | null;
 }
 
 interface PersonFormData extends Person {

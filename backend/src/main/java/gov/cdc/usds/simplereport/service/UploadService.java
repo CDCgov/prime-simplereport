@@ -112,7 +112,7 @@ public class UploadService {
                 null);
         _ps.addPatient(
             parseUUID(getRow(row, FACILITY_ID, false)),
-            null, // lookupID. this field is deprecated
+            null, // lookupID
             parseString(getRow(row, "FirstName", true)),
             parseString(getRow(row, "MiddleName", false)),
             parseString(getRow(row, "LastName", true)),

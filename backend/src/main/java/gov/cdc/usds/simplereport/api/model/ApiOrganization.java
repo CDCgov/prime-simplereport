@@ -32,6 +32,10 @@ public class ApiOrganization {
   }
 
   public List<ApiFacility> getTestingFacility() {
+    return getFacilities();
+  }
+
+  public List<ApiFacility> getFacilities() {
     return facilities.stream().map(ApiFacility::new).collect(Collectors.toList());
   }
 }
