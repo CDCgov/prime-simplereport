@@ -5,15 +5,13 @@ const ErrorPage = () => {
   return (
     <>
       <USAGovBanner />
-      <header>
-        <div className="border-bottom border-base-lighter padding-y-1">
-          <div className="grid-container">
-            <img
-              className="maxh-4"
-              src={siteLogo}
-              alt="{process.env.REACT_APP_TITLE}"
-            />
-          </div>
+      <header className="border-bottom border-base-lighter padding-y-1">
+        <div className="grid-container">
+          <img
+            className="maxh-4"
+            src={siteLogo}
+            alt="{process.env.REACT_APP_TITLE}"
+          />
         </div>
       </header>
       <main className="usa-section">
