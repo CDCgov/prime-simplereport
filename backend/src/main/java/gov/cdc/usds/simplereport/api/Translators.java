@@ -155,8 +155,11 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(e, ETHNICITIES);
   }
 
+  private static final int MAX_TRIBAL_AFFILIATION = 567;
   private static final Set<String> TRIBAL_AFFILIATIONS =
-      IntStream.range(1, 567).mapToObj(Integer::toString).collect(Collectors.toSet());
+      IntStream.range(1, MAX_TRIBAL_AFFILIATION)
+          .mapToObj(Integer::toString)
+          .collect(Collectors.toSet());
 
   public static String parseTribalAffiliation(String ta) {
     String tribalAffiliation = parseString(ta);
