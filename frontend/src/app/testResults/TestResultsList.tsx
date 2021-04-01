@@ -164,7 +164,7 @@ export const DetachedTestResultsList: any = ({
               r.patient.middleName,
               r.patient.lastName
             )}
-            <span className="display-block text-gray-30 font-ui-2xs">
+            <span className="display-block text-base font-ui-2xs">
               DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
             </span>
           </th>
