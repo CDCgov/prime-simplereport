@@ -304,6 +304,7 @@ const PersonForm = (props: Props) => {
             onChange={
               onPersonChange("tribalAffiliation") as (value?: string) => void
             }
+            defaultValue={String(patient.tribalAffiliation)}
           />
         </fieldset>
         <RadioGroup
