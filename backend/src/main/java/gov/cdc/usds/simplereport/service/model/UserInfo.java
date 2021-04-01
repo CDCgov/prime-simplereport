@@ -71,8 +71,4 @@ public class UserInfo extends WrappedEntity<ApiUser> implements DatabaseEntity, 
   public List<Facility> getFacilities() {
     return facilities;
   }
-
-  public ApiUser getWrappedUser() {
-    return wrapped;
-  }
 }

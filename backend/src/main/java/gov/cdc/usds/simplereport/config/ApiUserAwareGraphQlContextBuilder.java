@@ -62,7 +62,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
     var currentUser = apiUserService.getCurrentUserInfo();
     var principals = new HashSet<Principal>();
 
-    principals.add(new ApiUserPrincipal(currentUser.getWrappedUser()));
+    principals.add(new ApiUserPrincipal(currentUser.getWrapped()));
 
     if (currentUser.getIsAdmin()) {
       principals.add(SiteAdminPrincipal.getInstance());

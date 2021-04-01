@@ -6,5 +6,4 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 public interface LocatedEntity {
 
   StreetAddress getAddress();
-
 }

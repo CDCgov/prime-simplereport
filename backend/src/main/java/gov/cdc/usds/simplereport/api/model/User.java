@@ -6,16 +6,11 @@ import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class User extends WrappedEntity<UserInfo> implements PersonWrapper<UserInfo> {
 
   public User(UserInfo user) {
     super(user);
-  }
-
-  public UUID getId() {
-    return wrapped.getId();
   }
 
   public Optional<ApiOrganization> getOrganization() {

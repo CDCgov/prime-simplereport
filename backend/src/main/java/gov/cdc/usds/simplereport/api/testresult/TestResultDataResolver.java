@@ -16,7 +16,8 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestResultDataResolver implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
+public class TestResultDataResolver
+    implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
 
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();

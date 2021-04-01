@@ -9,5 +9,4 @@ import java.util.UUID;
 public interface DatabaseEntity {
 
   UUID getInternalId();
-
 }
