@@ -15,14 +15,14 @@ public class RaceArrayConverter extends StdConverter<JsonNode, String> {
 
   @Override
   public String convert(JsonNode value) {
-    LOG.debug("Attempting to convert a value of {}", value);
+    LOG.trace("Attempting to convert a value of {}", value);
     String converted;
     if (value.isArray()) {
       converted = value.get(0).asText();
     } else {
       converted = value.asText();
     }
-    LOG.debug("Converted to {}", value);
+    LOG.trace("Converted to {}", value);
     return converted;
   }
 }

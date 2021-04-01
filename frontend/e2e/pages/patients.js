@@ -14,6 +14,7 @@ function addPatient(dobFormat) {
   const address = "736 Jackson PI NW";
   const state = "DC";
   const zip = "20503";
+  const studentId = faker.random.uuid();
 
   this.expect.section("@navbar").to.be.visible;
   this.section.navbar.expect.element("@patientLink").to.be.visible;
@@ -29,6 +30,9 @@ function addPatient(dobFormat) {
   this.section.editPatient.setValue("@address", address);
   this.section.editPatient.setValue("@state", state);
   this.section.editPatient.setValue("@zip", zip);
+  this.section.editPatient.click("@studentRole");
+  this.expect.section("@editPatient").to.contain.text("Student ID");
+  this.section.editPatient.setValue("@lookupId", studentId);
   this.section.editPatient.click("@resident");
   this.section.editPatient.click("@healthcareWorker");
   this.section.editPatient.click("@saveButton");
@@ -83,6 +87,8 @@ module.exports = {
         address: 'input[name="street"]',
         state: 'select[name="state"]',
         zip: 'input[name="zipCode"]',
+        studentRole: 'select[name="role"] option[value=STUDENT]',
+        lookupId: 'input[name="lookupId"]',
         resident: 'input[name="residentCongregateSetting"]+label',
         healthcareWorker: 'input[name="employedInHealthcare"]+label',
         saveButton: ".prime-save-patient-changes",
@@ -94,6 +100,6 @@ module.exports = {
         save: "#save-confirmed-address",
         addressSelect: 'input[name="addressSelect"]+label',
       },
-    }
+    },
   },
 };

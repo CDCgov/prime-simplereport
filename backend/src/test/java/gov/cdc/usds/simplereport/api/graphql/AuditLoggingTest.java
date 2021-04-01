@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import gov.cdc.usds.simplereport.api.ResourceLinks;
 import gov.cdc.usds.simplereport.config.authorization.UserPermission;
 import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -29,10 +30,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 class AuditLoggingTest extends BaseGraphqlTest {
-
-  private static final String ACCOUNT_REQUEST = "/account-request/waitlist";
-
-  private static final String PXP_LINK_VERIFY = "/pxp/link/verify";
 
   @Autowired private MockMvc _mockMvc;
 
@@ -121,9 +118,11 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("patientLinkId", link.getInternalId().toString())
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
-    _mockMvc.perform(withJsonContent(put(PXP_LINK_VERIFY), requestBody)).andExpect(status().isOk());
+    _mockMvc
+        .perform(withJsonContent(put(ResourceLinks.VERIFY_LINK), requestBody))
+        .andExpect(status().isOk());
 
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, PXP_LINK_VERIFY, null);
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
@@ -160,12 +159,12 @@ class AuditLoggingTest extends BaseGraphqlTest {
             .put("dateOfBirth", TestDataFactory.DEFAULT_BDAY.toString())
             .toString();
     MockHttpServletRequestBuilder req =
-        withJsonContent(put(PXP_LINK_VERIFY), requestBody)
+        withJsonContent(put(ResourceLinks.VERIFY_LINK), requestBody)
             .header("X-forwarded-PROTO", "gopher")
             .header("x-ORIGINAL-HOST", "simplereport.simple")
             .header("x-forwarded-for", "192.168.153.128:80, 10.3.1.1:443");
     _mockMvc.perform(req).andExpect(status().isOk());
-    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, PXP_LINK_VERIFY, null);
+    ApiAuditEvent event = assertLastAuditEntry(HttpStatus.OK, ResourceLinks.VERIFY_LINK, null);
     assertEquals(link.getInternalId(), event.getPatientLink().getInternalId(), "patient link");
     assertEquals(TestDataFactory.DEFAULT_ORG_ID, event.getOrganization().getExternalId());
 
@@ -187,7 +186,7 @@ class AuditLoggingTest extends BaseGraphqlTest {
             + "\"state\":\"Exercitation odit pr\",\"organization\":\"Lane Moss LLC\","
             + "\"referral\":\"Ea error voluptate v\"}";
     _mockMvc
-        .perform(withJsonContent(post(ACCOUNT_REQUEST), requestBody))
+        .perform(withJsonContent(post(ResourceLinks.WAITLIST_REQUEST), requestBody))
         .andExpect(status().isOk());
     assertNoAuditEvent();
   }
