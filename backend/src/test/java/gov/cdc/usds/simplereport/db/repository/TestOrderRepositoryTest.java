@@ -52,6 +52,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 null,
                 "",
+                null,
                 "",
                 false,
                 false));
@@ -89,6 +90,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
                 "",
                 null,
                 "",
+                null,
                 "",
                 false,
                 false));

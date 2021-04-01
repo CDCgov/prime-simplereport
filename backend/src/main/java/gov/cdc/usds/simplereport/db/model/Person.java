@@ -52,6 +52,12 @@ public class Person extends OrganizationScopedEternalEntity {
   @JsonDeserialize(converter = RaceArrayConverter.class)
   private String race;
 
+  /**
+   * Tribal Affiliation maps to this data set:
+   * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
+   */
+  @Column private Short tribalAffiliation;
+
   @Column private String ethnicity;
   @Column private String telephone;
   @Column private String email;
@@ -96,6 +102,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -109,6 +116,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -134,6 +142,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -149,6 +158,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -208,6 +218,10 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public String getEthnicity() {
     return ethnicity;
+  }
+
+  public Short getTribalAffiliation() {
+    return tribalAffiliation;
   }
 
   public String getGender() {

@@ -123,6 +123,7 @@ public class UploadService {
             parseEmail(getRow(row, "Email", false)),
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
+            Short.parseShort(getRow(row, "tribalAffiliation", false)),
             parseGender(getRow(row, "biologicalSex", false)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
             parseYesNo(getRow(row, "employedInHealthcare", true)));

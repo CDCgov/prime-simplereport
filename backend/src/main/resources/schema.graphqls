@@ -102,6 +102,7 @@ type Patient @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS"
   birthDate: LocalDate
   gender: String  @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  tribalAffiliation: Int @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   street: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   streetTwo: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   city: String  @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -413,6 +414,7 @@ type Mutation {
     county: String
     race: String
     ethnicity: String
+    tribalAffiliation: Int
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
@@ -437,6 +439,7 @@ type Mutation {
     county: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
+    tribalAffiliation: Int
     gender: String @Size(min: 0, max: 32)
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!

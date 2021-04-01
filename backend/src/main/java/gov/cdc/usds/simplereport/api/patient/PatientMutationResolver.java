@@ -69,6 +69,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -92,6 +93,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        tribalAffiliation,
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare);
@@ -117,6 +119,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -141,6 +144,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        tribalAffiliation,
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare);

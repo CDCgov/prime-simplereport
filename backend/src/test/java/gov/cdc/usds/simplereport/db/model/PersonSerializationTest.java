@@ -119,6 +119,7 @@ class PersonSerializationTest {
             "a@b.c",
             "marathon",
             "generic",
+            123,
             "Male-ish",
             true,
             false);

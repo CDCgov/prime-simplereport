@@ -187,6 +187,7 @@ public class PersonService {
       String email,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -205,6 +206,7 @@ public class PersonService {
             email,
             race,
             ethnicity,
+            tribalAffiliation,
             gender,
             residentCongregateSetting,
             employedInHealthcare);
@@ -227,6 +229,7 @@ public class PersonService {
       String email,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -244,6 +247,7 @@ public class PersonService {
         email,
         race,
         ethnicity,
+        tribalAffiliation,
         gender,
         residentCongregateSetting,
         employedInHealthcare);
@@ -283,6 +287,7 @@ public class PersonService {
       String email,
       String race,
       String ethnicity,
+      Short tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -300,6 +305,7 @@ public class PersonService {
         email,
         race,
         ethnicity,
+        tribalAffiliation,
         gender,
         residentCongregateSetting,
         employedInHealthcare);
