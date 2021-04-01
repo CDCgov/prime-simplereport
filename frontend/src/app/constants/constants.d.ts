@@ -587,6 +587,7 @@ interface Person extends Address {
   race: Race;
   ethnicity: Ethnicity;
   gender: Gender;
+  tribalAffiliation: TribalAffiliation;
   residentCongregateSetting: boolean;
   employedInHealthcare: boolean;
   birthDate: string;

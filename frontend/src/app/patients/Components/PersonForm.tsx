@@ -8,6 +8,7 @@ import {
   ETHNICITY_VALUES,
   GENDER_VALUES,
   ROLE_VALUES,
+  TRIBAL_AFFILIATIONS,
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -20,6 +21,7 @@ import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
 import { getBestSuggestion } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
+import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -292,6 +294,12 @@ const PersonForm = (props: Props) => {
           buttons={RACE_VALUES}
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
+        />
+        <ComboBox
+          id="tribal-affiliation"
+          name="tribal-affiliation"
+          options={TRIBAL_AFFILIATIONS}
+          onChange={onPersonChange("tribalAffiliation")}
         />
         <RadioGroup
           legend="Ethnicity"
