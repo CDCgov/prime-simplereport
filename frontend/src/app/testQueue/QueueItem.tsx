@@ -298,8 +298,6 @@ const QueueItem: any = ({
 
   const [removePatientId, setRemovePatientId] = useState<string>();
 
-  let forceSubmit = false;
-
   if (mutationError) {
     throw mutationError;
   }
@@ -314,8 +312,7 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
-    if (e) e.preventDefault();
+  const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
       trackSubmitTestResult({});
       setConfirmationType("none");
@@ -601,8 +598,7 @@ const QueueItem: any = ({
                   continueHandler={
                     confirmationType === "submitResult"
                       ? () => {
-                          forceSubmit = true;
-                          onTestResultSubmit();
+                          onTestResultSubmit(true);
                         }
                       : removeFromQueue
                   }
