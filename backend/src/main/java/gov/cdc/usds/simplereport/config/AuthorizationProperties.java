@@ -11,8 +11,8 @@ public class AuthorizationProperties {
   private final String rolePrefix;
   private final String adminGroupName;
 
-  public AuthorizationProperties(String environmentName) {
-    this.roleClaim = environmentName.toLowerCase() + "_roles";
+  public AuthorizationProperties(String roleClaim, String environmentName) {
+    this.roleClaim = roleClaim;
     this.rolePrefix = "SR-" + environmentName.toUpperCase() + "-TENANT:";
     this.adminGroupName = "SR-" + environmentName.toUpperCase() + "-ADMINS";
   }

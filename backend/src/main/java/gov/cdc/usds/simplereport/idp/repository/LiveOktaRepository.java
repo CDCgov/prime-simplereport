@@ -372,21 +372,6 @@ public class LiveOktaRepository implements OktaRepository {
     return getOrganizationRoleClaimsForUser(user);
   }
 
-  public boolean isEmailInGroup(final String groupName, final String email) {
-    final GroupList oktaGroupList = _client.listGroups(groupName, null, null);
-
-    final Optional<Group> optGroup =
-        oktaGroupList.stream().filter(g -> groupName.equals(g.getProfile().getName())).findFirst();
-
-    if (optGroup.isEmpty()) {
-      return false;
-    }
-
-    final String lcEmail = email.toLowerCase();
-    return optGroup.get().listUsers().stream()
-        .anyMatch(u -> lcEmail.equals(u.getProfile().getEmail().toLowerCase()));
-  }
-
   private Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(User user) {
     List<String> groupNames =
         user.listGroups().stream()

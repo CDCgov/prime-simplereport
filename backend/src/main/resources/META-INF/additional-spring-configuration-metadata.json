@@ -21,11 +21,6 @@
       "description": "Definitions of graphql scalar types implemented by graphql-datetime"
     },
     {
-      "name": "simple-report.demo-site-admin-emails",
-      "type": "java.util.List<java.lang.String>",
-      "description": "The e-mails of admin users for the application."
-    },
-    {
       "name": "simple-report.demo-users",
       "type": "gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration",
       "description": "A description for 'simple-report.demo-users.default-user.authorization.granted-roles'"
@@ -52,13 +47,8 @@
     },
     {
       "name": "simple-report.sendgrid",
-      "type": "gov.cdc.usds.simplereport.config.SendGridProperties",
+      "type": "gov.cdc.usds.simplereport.properties.SendGridProperties",
       "description": "Properties for configuring SendGrid"
-    },
-    {
-      "name": "simple-report.authorization.environment-name",
-      "type": "java.lang.String",
-      "description": "Environment name used to derive Okta properties (role claim, admin group name, etc)."
     }
   ]
 }

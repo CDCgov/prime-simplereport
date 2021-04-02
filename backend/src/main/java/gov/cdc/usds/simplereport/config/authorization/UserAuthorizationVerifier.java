@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.config.authorization;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -18,6 +17,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -50,7 +50,7 @@ public class UserAuthorizationVerifier {
   private TestOrderRepository _testOrderRepo;
   private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
-  private AuthorizationProperties _authProperties;
+  private AuthorizationService _authService;
 
   public UserAuthorizationVerifier(
       IdentitySupplier supplier,
@@ -62,7 +62,7 @@ public class UserAuthorizationVerifier {
       TestOrderRepository testOrderRepo,
       PatientLinkRepository patientLinkRepo,
       OktaRepository oktaRepo,
-      AuthorizationProperties authProperties) {
+      AuthorizationService authService) {
     super();
     this._supplier = supplier;
     this._orgService = orgService;
@@ -73,13 +73,11 @@ public class UserAuthorizationVerifier {
     this._testOrderRepo = testOrderRepo;
     this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
-    this._authProperties = authProperties;
+    this._authService = authService;
   }
 
   public boolean userHasSiteAdminRole() {
-    IdentityAttributes id = _supplier.get();
-    return id != null
-        && _oktaRepo.isEmailInGroup(_authProperties.getAdminGroupName(), id.getUsername());
+    return _authService.isSiteAdmin();
   }
 
   public boolean userHasPermissions(Set<UserPermission> permissions) {

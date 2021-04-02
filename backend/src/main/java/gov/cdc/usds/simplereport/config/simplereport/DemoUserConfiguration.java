@@ -64,10 +64,6 @@ public class DemoUserConfiguration {
     return siteAdminEmails;
   }
 
-  public boolean isInAdminUserEmails(final String email) {
-    return siteAdminEmails.contains(email.toLowerCase());
-  }
-
   @ConstructorBinding
   public static class DemoUser {
     private DemoAuthorization authorization;

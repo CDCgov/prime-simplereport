@@ -8,7 +8,7 @@ spring:
       hibernate:
         show_sql: true
         default_schema: simple_report
-graphql.servlet:
-  cors:
-    allowed-origins:
-      - http://localhost:3000
+logging:
+  level:
+    # NOTE: look in application-dev.yaml for other things that might be worth turning on
+    gov.cdc.usds: DEBUG

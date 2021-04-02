@@ -1,12 +1,10 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
-import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
-import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
@@ -20,7 +18,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -35,30 +32,12 @@ public class DemoOktaRepository implements OktaRepository {
   Map<String, Set<String>> orgUsernamesMap;
   Map<String, Set<UUID>> orgFacilitiesMap;
   Set<String> inactiveUsernames;
-  Map<String, Set<String>> groupMemberMap;
 
   public DemoOktaRepository() {
     this.usernameOrgRolesMap = new HashMap<>();
     this.orgUsernamesMap = new HashMap<>();
     this.orgFacilitiesMap = new HashMap<>();
     this.inactiveUsernames = new HashSet<>();
-    this.groupMemberMap = new HashMap<>();
-  }
-
-  @Autowired
-  public DemoOktaRepository(
-      AuthorizationProperties authorizationProperties,
-      DemoUserConfiguration demoUserConfiguration) {
-    this.usernameOrgRolesMap = new HashMap<>();
-    this.orgUsernamesMap = new HashMap<>();
-    this.orgFacilitiesMap = new HashMap<>();
-    this.inactiveUsernames = new HashSet<>();
-
-    // groupMemberMap will not be cleared by .reset()
-    this.groupMemberMap = new HashMap<>();
-    this.groupMemberMap.put(
-        authorizationProperties.getAdminGroupName(),
-        new HashSet<>(demoUserConfiguration.getSiteAdminEmails()));
 
     LOG.info("Done initializing Demo Okta repository.");
   }
@@ -199,14 +178,6 @@ public class DemoOktaRepository implements OktaRepository {
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
     return Optional.ofNullable(usernameOrgRolesMap.get(username));
-  }
-
-  public boolean isEmailInGroup(final String groupName, final String email) {
-    Set<String> groupEmailSet = groupMemberMap.getOrDefault(groupName, null);
-    if (groupEmailSet == null) {
-      return false;
-    }
-    return groupEmailSet.contains(email.toLowerCase());
   }
 
   public void reset() {
