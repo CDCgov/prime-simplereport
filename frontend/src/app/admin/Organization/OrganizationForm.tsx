@@ -12,12 +12,18 @@ import {
 } from "../../Settings/Facility/facilitySchema";
 
 import OrganizationInformation from "./OrganizationInformation";
+import FacilityAdmin from "./FacilityAdmin";
 
 interface Props {
   organization: Organization;
   facility: Facility;
+  admin: FacilityAdmin;
   deviceOptions: DeviceType[];
-  saveOrganization: (organization: Organization, facility: Facility) => void;
+  saveOrganization: (
+    organization: Organization,
+    facility: Facility,
+    admin: FacilityAdmin
+  ) => void;
 }
 
 const OrganizationForm: React.FC<Props> = (props) => {
@@ -25,6 +31,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
     props.organization
   );
   const [facility, updateFacilityFormData] = useState<Facility>(props.facility);
+  const [admin, updateAdminFormData] = useState<FacilityAdmin>(props.admin);
   const [formChanged, updateFormChanged] = useState<boolean>(false);
   const updateOrgForm = (data: Organization) => {
     updateOrganizationFormData(data);
@@ -32,6 +39,10 @@ const OrganizationForm: React.FC<Props> = (props) => {
   };
   const updateForm = (data: Facility) => {
     updateFacilityFormData(data);
+    updateFormChanged(true);
+  };
+  const updateAdminForm = (data: FacilityAdmin) => {
+    updateAdminFormData(data);
     updateFormChanged(true);
   };
   const updateOrganization = (newOrganization: Organization) => {
@@ -44,6 +55,12 @@ const OrganizationForm: React.FC<Props> = (props) => {
     updateForm({
       ...facility,
       ...newFacility,
+    });
+  };
+  const updateAdmin = (newAdmin: FacilityAdmin) => {
+    updateAdminForm({
+      ...admin,
+      ...newAdmin,
     });
   };
   const updateProvider = (orderingProvider: Provider) => {
@@ -109,7 +126,9 @@ const OrganizationForm: React.FC<Props> = (props) => {
               >
                 <Button
                   type="button"
-                  onClick={() => props.saveOrganization(organization, facility)}
+                  onClick={() =>
+                    props.saveOrganization(organization, facility, admin)
+                  }
                   label="Save Changes"
                   disabled={!formChanged}
                 />
@@ -131,6 +150,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
               />
             </div>
           </div>
+          <FacilityAdmin admin={admin} updateAdmin={updateAdmin} />
           <OrderingProviderSettings
             provider={facility.orderingProvider}
             updateProvider={updateProvider}
