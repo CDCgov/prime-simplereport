@@ -236,7 +236,9 @@ const PersonForm = (props: Props) => {
                 label: language,
               }))}
               onChange={(value) => {
-                onPersonChange("preferredLanguage")(value || null);
+                onPersonChange("preferredLanguage")(
+                  (value as Language) || null
+                );
               }}
             />
           </fieldset>

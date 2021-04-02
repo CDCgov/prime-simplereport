@@ -65,7 +65,7 @@ export const stateCodes = [
   "WY",
 ];
 
-export const languages = [
+export const languages: Language[] = [
   "English",
   "Spanish",
   "Unknown",

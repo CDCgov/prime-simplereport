@@ -8,6 +8,7 @@ import {
   GENDER_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
+import { languages } from "../../config/constants";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -65,7 +66,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
   residentCongregateSetting: yup.bool().required(),
   employedInHealthcare: yup.bool().required(),
-  preferredLanguage: yup.string().nullable(),
+  preferredLanguage: yup.mixed().oneOf(languages).nullable(),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
