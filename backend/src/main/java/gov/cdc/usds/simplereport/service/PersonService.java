@@ -302,7 +302,7 @@ public class PersonService {
         ethnicity,
         gender,
         residentCongregateSetting,
-        employedInHealthcare, 
+        employedInHealthcare,
         preferredLanguage);
 
     updatePersonFacility(patientToUpdate, facilityId);
