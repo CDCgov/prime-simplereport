@@ -25,7 +25,8 @@ type UpdateOptionalFields =
   | "ethnicity"
   | "gender"
   | "residentCongregateSetting"
-  | "employedInHealthcare";
+  | "employedInHealthcare"
+  | "preferredLanguage";
 
 type OptionalFields = UpdateOptionalFields | "middleName";
 
@@ -66,7 +67,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
   residentCongregateSetting: yup.bool().required(),
   employedInHealthcare: yup.bool().required(),
-  preferredLanguage: yup.mixed().oneOf(languages).nullable(),
+  preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
