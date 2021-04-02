@@ -5,7 +5,6 @@ import { Component } from "react";
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
 import ErrorPage from "./commonComponents/ErrorPage";
 
-
 jest.mock("./AppInsights", () => {
   return {
     appInsights: { trackException: jest.fn() },
