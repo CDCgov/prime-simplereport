@@ -169,12 +169,20 @@
   }
 }
 
+$results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // height of search bar, padding, gov banner, bottom spacing
+
 //test queue search
 .results-dropdown {
-  position: absolute;
   height: auto;
-  z-index: 1000;
-  top: 31px;
+  max-height: calc(100vh - #{units(6)} - #{$results-dropdown-spacing}); // uses header height on small screens
+  overflow-y: scroll;
+  position: absolute;
+  top: units(4);
+  z-index: z-index(500);
+
+  @include at-media("desktop") {
+    max-height: calc(100vh - 70px - #{$results-dropdown-spacing}); // uses header height on large screens
+  }
 }
 
 // radio buttons
