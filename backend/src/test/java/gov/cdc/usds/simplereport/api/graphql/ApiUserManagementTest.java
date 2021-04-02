@@ -167,17 +167,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUser_superUser_success() {
     useSuperUser();
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode resp = runQuery("add-user", variables);
-    ObjectNode user = (ObjectNode) resp.get("addUser");
+    ObjectNode user = runBoilerplateAddUser(Role.ADMIN);
     assertEquals("Rhonda", user.get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
     assertEquals(
@@ -194,29 +184,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUser_adminUser_failure() {
     useOrgAdmin();
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
+    ObjectNode variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user", variables, ACCESS_ERROR);
   }
 
   @Test
   void addUser_orgUser_failure() {
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
+    ObjectNode variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.STANDARD_USER,
@@ -236,17 +210,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_adminUser_success() {
     useOrgAdmin();
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode resp = runQuery("add-user-to-current-org", variables);
-    ObjectNode user = (ObjectNode) resp.get("addUserToCurrentOrg");
+    ObjectNode user = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY);
     assertEquals("Rhonda", user.get("firstName").asText());
     assertEquals(USERNAMES.get(0), user.get("email").asText());
     assertEquals(
@@ -272,15 +236,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void addUserToCurrentOrg_superUser_failure() {
     useSuperUser();
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
+    ObjectNode variables = makeBoilerplateArgs(Role.USER);
     runQuery("add-user-to-current-org", variables, ACCESS_ERROR);
     assertLastAuditEntry(
         TestUserIdentities.SITE_ADMIN_USER,
@@ -291,15 +247,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   @Test
   void addUserToCurrentOrg_orgUser_failure() {
-    ObjectNode variables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
+    ObjectNode variables = makeBoilerplateArgs(Role.USER);
     runQuery(
         "add-user-to-current-org",
         variables,
@@ -310,17 +258,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void updateUser_adminUser_success() {
     useOrgAdmin();
 
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
+    ObjectNode addUser = runBoilerplateAddUserToCurrentOrg(Role.USER);
     String id = addUser.get("id").asText();
 
     ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
@@ -348,17 +286,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void updateUser_superUser_success() {
     useSuperUser();
 
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
     ObjectNode updateVariables = getUpdateUserVariables(id, "Ronda", "J", "Jones", "III");
@@ -378,17 +306,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void updateUser_orgUser_failure() {
     useSuperUser();
 
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
     useOrgUser();
@@ -429,17 +347,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void updateUserPrivileges_orgAdmin_success() {
     useOrgAdmin();
 
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
+    ObjectNode addUser = runBoilerplateAddUserToCurrentOrg(Role.USER);
     String id = addUser.get("id").asText();
 
     // Update 1: ENTRY_ONLY, All facilities
@@ -530,21 +438,36 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertUserCanAccessExactFacilities(updateUser, Set.of());
   }
 
+  private ObjectNode runBoilerplateAddUserToCurrentOrg(Role newUserRole) {
+    ObjectNode addVariables = makeBoilerplateArgs(newUserRole);
+    ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
+    ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
+    return addUser;
+  }
+
+  private ObjectNode runBoilerplateAddUser(Role newUserRole) {
+    ObjectNode addVariables = makeBoilerplateArgs(Role.ADMIN);
+    ObjectNode addResp = runQuery("add-user", addVariables);
+    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    return addUser;
+  }
+
+  private ObjectNode makeBoilerplateArgs(Role role) {
+    return getAddUserVariables(
+        "Rhonda",
+        "Janet",
+        "Jones",
+        "III",
+        USERNAMES.get(0),
+        TestUserIdentities.DEFAULT_ORGANIZATION,
+        role.name());
+  }
+
   @Test
   void updateUserPrivileges_superUser_success() {
     useSuperUser();
 
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
     ObjectNode updatePrivilegesVariables =
@@ -571,19 +494,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void updateUserPrivileges_outsideOrgAdmin_failure() {
     useSuperUser();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUser(Role.ENTRY_ONLY).get("id").asText();
 
     useOutsideOrgAdmin();
 
@@ -596,19 +507,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void updateUserPrivileges_outsideOrgUser_failure() {
     useSuperUser();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUser(Role.ENTRY_ONLY).get("id").asText();
 
     useOutsideOrgUser();
 
@@ -624,19 +523,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void updateUserPrivileges_orgUser_failure() {
     useSuperUser();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUser(Role.ENTRY_ONLY).get("id").asText();
 
     useOrgUser();
 
@@ -672,19 +559,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void setUserIsDeleted_adminUser_success() {
     useOrgAdmin();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ENTRY_ONLY.name());
-    ObjectNode addResp = runQuery("add-user-to-current-org", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUserToCurrentOrg");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUserToCurrentOrg(Role.ENTRY_ONLY).get("id").asText();
     assertTrue(fetchUserList().stream().anyMatch(o -> id.equals(o.get("id").asText())));
 
     ObjectNode deleteVariables =
@@ -699,19 +574,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void setUserIsDeleted_superUser_success() {
     useSuperUser();
-
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUser(Role.USER).get("id").asText();
 
     ObjectNode deleteVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", true);
@@ -727,18 +590,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void setUserIsDeleted_outsideOrgAdmin_failure() {
     useSuperUser();
 
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
     useOutsideOrgAdmin();
@@ -751,20 +603,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void setUserIsDeleted_outsideOrgUser_failure() {
     useSuperUser();
-
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.USER.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
-    String id = addUser.get("id").asText();
+    String id = runBoilerplateAddUser(Role.USER).get("id").asText();
 
     useOutsideOrgUser();
 
@@ -791,18 +630,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   void setUserIsDeleted_orgUser_failure() {
     useSuperUser();
 
-    // Adding a user to get a handle on the internal ID
-    ObjectNode addVariables =
-        getAddUserVariables(
-            "Rhonda",
-            "Janet",
-            "Jones",
-            "III",
-            USERNAMES.get(0),
-            TestUserIdentities.DEFAULT_ORGANIZATION,
-            Role.ADMIN.name());
-    ObjectNode addResp = runQuery("add-user", addVariables);
-    ObjectNode addUser = (ObjectNode) addResp.get("addUser");
+    ObjectNode addUser = runBoilerplateAddUser(Role.ADMIN);
     String id = addUser.get("id").asText();
 
     useOrgUser();
@@ -833,14 +661,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     List<ObjectNode> usersAdded =
         Arrays.asList(
-            getAddUserVariables(
-                "Rhonda",
-                "Janet",
-                "Jones",
-                "III",
-                USERNAMES.get(0),
-                TestUserIdentities.DEFAULT_ORGANIZATION,
-                Role.ADMIN.name()),
+            makeBoilerplateArgs(Role.ADMIN),
             getAddUserVariables(
                 "Jared",
                 "K",
