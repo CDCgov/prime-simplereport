@@ -3,7 +3,6 @@ import { MemoryRouter } from "react-router-dom";
 import { Component } from "react";
 
 import PrimeErrorBoundary from "./PrimeErrorBoundary";
-import ErrorPage from "./commonComponents/ErrorPage";
 
 jest.mock("./AppInsights", () => {
   return {
@@ -11,12 +10,7 @@ jest.mock("./AppInsights", () => {
   };
 });
 
-interface State {}
-interface Props {}
-
-class ComponentOfDeath extends Component<Props, State> {
-  public state: State = {};
-
+class ComponentOfDeath extends Component<any, any> {
   public componentDidMount() {
     throw new Error("a really terrible uncaught exception!");
   }
@@ -37,7 +31,7 @@ describe("PrimeErrorBoundary", () => {
   it("renders the error page on component error", () => {
     const { container } = render(
       <MemoryRouter>
-        <PrimeErrorBoundary onError={(error: any) => <ErrorPage></ErrorPage>}>
+        <PrimeErrorBoundary>
           <ComponentOfDeath></ComponentOfDeath>
         </PrimeErrorBoundary>
       </MemoryRouter>

@@ -10,7 +10,6 @@ import PrimeErrorBoundary from "../app/PrimeErrorBoundary";
 import USAGovBanner from "../app/commonComponents/USAGovBanner";
 import { setInitialState } from "../app/store";
 import { getPatientLinkIdFromUrl } from "../app/utils/url";
-import ErrorPage from "../app/commonComponents/ErrorPage";
 
 import PatientHeader from "./PatientHeader";
 import TermsOfService from "./timeOfTest/TermsOfService";
@@ -55,7 +54,7 @@ const PatientApp = () => {
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary onError={(error: any) => <ErrorPage></ErrorPage>}>
+      <PrimeErrorBoundary>
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
