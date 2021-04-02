@@ -11,7 +11,6 @@ locals {
   grant_command = <<EOF
   psql \
   --host ${var.postgres_server_name} \
-  --port ${var.postgres_port} \
   --username ${var.administrator_login} \
   --dbname "${var.postgres_db_name}" \
   --command "
