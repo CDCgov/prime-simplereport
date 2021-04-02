@@ -2,6 +2,8 @@
 
 https://simplereport.gov/
 
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CDCgov_prime-data-input-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client)
+
 ## Table of Contents
 
 - [Simple Report](#simple-report)
