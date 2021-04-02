@@ -169,7 +169,7 @@
   }
 }
 
-$results-dropdown-spacing: #{units(4)} - #{units(2)} - #{units(6)}; // height of search bar, padding, gov banner
+$results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // height of search bar, padding, gov banner, bottom spacing
 
 //test queue search
 .results-dropdown {
