@@ -58,5 +58,10 @@ extend type Mutation {
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
+    adminFirstName: String!
+    adminMiddleName: String
+    adminLastName: String!
+    adminSuffix: String
+    adminEmail: String!
   ): Organization
 }
