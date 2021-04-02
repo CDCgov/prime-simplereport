@@ -38,6 +38,7 @@ export const ADD_PATIENT = gql`
     $gender: String
     $residentCongregateSetting: Boolean!
     $employedInHealthcare: Boolean!
+    $preferredLanguage: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -60,6 +61,7 @@ export const ADD_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
+      preferredLanguage: $preferredLanguage
     ) {
       internalId
     }
@@ -129,6 +131,7 @@ const AddPatient = () => {
             city: null,
             state: null,
             zipCode: null,
+            preferredLanguage: null,
           }}
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}

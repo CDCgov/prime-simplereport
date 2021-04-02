@@ -124,6 +124,7 @@ type Patient
   lastTest: TestResult
     @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
   testResultDelivery: TestResultDeliveryPreference
+  preferredLanguage: String
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {

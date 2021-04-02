@@ -22,6 +22,7 @@ interface PersonUpdate extends Address {
   telephone: string;
   county: string;
   email: string;
+  preferredLanguage: string | null;
 }
 
 interface Person extends PersonUpdate {

@@ -36,6 +36,7 @@ export const GET_PATIENT = gql`
       gender
       residentCongregateSetting
       employedInHealthcare
+      preferredLanguage
       facility {
         id
       }
@@ -66,6 +67,7 @@ const UPDATE_PATIENT = gql`
     $gender: String
     $residentCongregateSetting: Boolean!
     $employedInHealthcare: Boolean!
+    $preferredLanguage: String
   ) {
     updatePatient(
       facilityId: $facilityId
@@ -89,6 +91,7 @@ const UPDATE_PATIENT = gql`
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
+      preferredLanguage: $preferredLanguage
     ) {
       internalId
     }

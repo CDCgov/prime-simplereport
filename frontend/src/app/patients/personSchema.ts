@@ -65,6 +65,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
   residentCongregateSetting: yup.bool().required(),
   employedInHealthcare: yup.bool().required(),
+  preferredLanguage: yup.string().nullable(),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
@@ -104,4 +105,5 @@ export const allPersonErrors: Required<PersonErrors> = {
   residentCongregateSetting:
     "Resident in congregate care/living setting? is required",
   employedInHealthcare: "Work in Healthcare? is required",
+  preferredLanguage: "Preferred language is incorrectly formatted",
 };
