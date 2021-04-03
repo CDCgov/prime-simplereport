@@ -21,9 +21,10 @@ extend type Mutation {
     swabType: String
   ): DeviceType
   addUser( # not actually used in the admin console (currently)
+    name: NameInput
     firstName: String
     middleName: String
-    lastName: String!
+    lastName: String
     suffix: String
     email: String!
     organizationExternalId: String!

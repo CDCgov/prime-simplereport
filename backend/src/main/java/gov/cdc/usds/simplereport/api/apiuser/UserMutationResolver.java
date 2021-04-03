@@ -1,7 +1,9 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import graphql.kickstart.tools.GraphQLMutationResolver;
@@ -21,6 +23,7 @@ public class UserMutationResolver implements GraphQLMutationResolver {
   }
 
   public User addUser(
+      PersonName name,
       String firstName,
       String middleName,
       String lastName,
@@ -28,27 +31,33 @@ public class UserMutationResolver implements GraphQLMutationResolver {
       String email,
       String organizationExternalID,
       Role role) {
-    UserInfo user =
-        _us.createUser(
-            email, firstName, middleName, lastName, suffix, organizationExternalID, role);
+    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
+    UserInfo user = _us.createUser(email, name, organizationExternalID, role);
     return new User(user);
   }
 
   public User addUserToCurrentOrg(
+      PersonName name,
       String firstName,
       String middleName,
       String lastName,
       String suffix,
       String email,
       Role role) {
-    UserInfo user =
-        _us.createUserInCurrentOrg(email, firstName, middleName, lastName, suffix, role);
+    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
+    UserInfo user = _us.createUserInCurrentOrg(email, name, role);
     return new User(user);
   }
 
   public User updateUser(
-      UUID id, String firstName, String middleName, String lastName, String suffix) {
-    UserInfo user = _us.updateUser(id, firstName, middleName, lastName, suffix);
+      UUID id,
+      PersonName name,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix) {
+    name = Translators.consolidateNameArguments(name, firstName, middleName, lastName, suffix);
+    UserInfo user = _us.updateUser(id, name);
     return new User(user);
   }
 

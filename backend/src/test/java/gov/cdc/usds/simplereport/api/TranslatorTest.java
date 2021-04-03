@@ -10,13 +10,21 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseUUID;
 import static gov.cdc.usds.simplereport.api.Translators.parseUserShortDate;
 import static gov.cdc.usds.simplereport.api.Translators.parseYesNo;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import java.time.LocalDate;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.ArgumentsProvider;
+import org.junit.jupiter.params.provider.ArgumentsSource;
 
 class TranslatorTest {
   @Test
@@ -284,5 +292,71 @@ class TranslatorTest {
         () -> {
           parseEmail("fooexample.com");
         });
+  }
+
+  @ParameterizedTest
+  @ArgumentsSource(value = GoodNameArgumentsProvider.class)
+  void consolidateNameArguments_validInputs_correctOutputs(
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      PersonName nameIn,
+      PersonName nameOut) {
+    assertEquals(
+        nameOut,
+        Translators.consolidateNameArguments(nameIn, firstName, middleName, lastName, suffix));
+  }
+
+  @ParameterizedTest
+  @ArgumentsSource(value = BadNameArgumentsProvider.class)
+  void consolidateNameArguments_invalidInputs_correctErrors(
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      PersonName nameIn,
+      String message) {
+    IllegalGraphqlArgumentException e =
+        assertThrows(
+            IllegalGraphqlArgumentException.class,
+            () ->
+                Translators.consolidateNameArguments(
+                    nameIn, firstName, middleName, lastName, suffix));
+    assertThat(e).as("thrown exception").hasMessageContaining(message);
+  }
+
+  static class GoodNameArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+      return Stream.of(
+          Arguments.of(
+              null,
+              null,
+              null,
+              null,
+              new PersonName("A", "B", "C", "D"),
+              new PersonName("A", "B", "C", "D")),
+          Arguments.of("A", "B", "C", "D", null, new PersonName("A", "B", "C", "D")));
+    }
+  }
+
+  static class BadNameArgumentsProvider implements ArgumentsProvider {
+
+    @Override
+    public Stream<? extends Arguments> provideArguments(ExtensionContext context) throws Exception {
+      return Stream.of(
+          Arguments.of(null, null, null, null, null, "cannot be empty"),
+          Arguments.of("", "", "", "", null, "cannot be empty"),
+          Arguments.of(
+              null, null, null, null, new PersonName("A", null, null, "Jr."), "cannot be empty"),
+          Arguments.of(
+              null, null, "oops", null, new PersonName("A", null, null, "Jr."), "unrolled"),
+          Arguments.of("A", null, null, null, new PersonName("A", "B", "C", "Jr."), "unrolled"),
+          Arguments.of(null, "B", null, null, new PersonName("A", "B", "C", "Jr."), "unrolled"),
+          Arguments.of(null, null, "C", null, new PersonName("A", "B", "C", "Jr."), "unrolled"),
+          Arguments.of(null, null, null, "Jr.", new PersonName("A", "B", "C", "Jr."), "unrolled"));
+    }
   }
 }
