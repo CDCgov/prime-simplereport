@@ -276,18 +276,20 @@ type Mutation {
   updateOrganization(name: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   addUserToCurrentOrg(
+    name: NameInput
     firstName: String
     middleName: String
-    lastName: String!
+    lastName: String
     suffix: String
     email: String!
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
+    name: NameInput
     firstName: String
     middleName: String
-    lastName: String!
+    lastName: String
     suffix: String
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserPrivileges(
