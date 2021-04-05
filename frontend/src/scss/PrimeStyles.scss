@@ -331,7 +331,7 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
   a {
     color: color("base-dark");
-    font-size: font-size($theme-navigation-font-family, "sm");
+    font-size: size("ui", "md");
     padding-bottom: units(1.5);
 
     &.active,

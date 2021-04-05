@@ -4,7 +4,10 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 const SettingsNav = () => {
   return (
-    <nav className="prime-secondary-nav" aria-label="Secondary navigation">
+    <nav
+      className="prime-secondary-nav padding-top-1"
+      aria-label="Secondary navigation"
+    >
       <ul className="usa-nav__secondary-links prime-nav">
         {process.env.REACT_APP_USER_SETTINGS_ENABLED === "true" ? (
           <li className="usa-nav__secondary-item">
