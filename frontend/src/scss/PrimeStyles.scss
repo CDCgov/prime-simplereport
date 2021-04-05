@@ -317,9 +317,9 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 
 .prime-nav.usa-nav__secondary-links {
   display: flex;
-  position: relative;
   float: none;
   margin-bottom: 0;
+  position: relative;
 
   .usa-nav__secondary-item:not(:first-child) {
     padding-left: units(2.5);
@@ -333,12 +333,13 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
     color: color("base-dark");
     font-size: font-size($theme-navigation-font-family, "sm");
     padding-bottom: units(1.5);
+
     &.active,
     &:hover {
-      color: color("ink");
-      text-decoration: none;
       border-bottom: units(0.5) solid color("primary");
+      color: color("ink");
       padding-bottom: units(1);
+      text-decoration: none;
     }
   }
 }
