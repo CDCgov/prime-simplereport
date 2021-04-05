@@ -140,7 +140,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             />
           </div>
         </div>
-        <div className="usa-card__body">
+        <div className="usa-card__body padding-top-2">
           <RequiredMessage />
           <FacilityInformation
             facility={facility}
