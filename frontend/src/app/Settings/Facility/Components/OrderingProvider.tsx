@@ -18,7 +18,7 @@ const OrderingProvider: React.FC<Props> = ({ provider, updateProvider }) => {
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
-        <h2>Ordering provider</h2>
+        <h2 className="font-heading-lg">Ordering provider</h2>
       </div>
       <div className="usa-form usa-form--large usa-card__body">
         <TextInput

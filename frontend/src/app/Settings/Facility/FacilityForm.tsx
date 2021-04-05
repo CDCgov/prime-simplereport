@@ -123,7 +123,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             >
               All facilities
             </LinkWithQuery>
-            <h2>{facility.name}</h2>
+            <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
           </div>
           <div
             style={{
