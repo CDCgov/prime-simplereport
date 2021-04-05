@@ -618,12 +618,8 @@ class ApiUserManagementTest extends BaseGraphqlTest {
   @Test
   void getWhoami_entryOnlyUser_facilitiesRestricted() {
     useOrgEntryOnly();
-    assertThrows(
-        AssertionError.class,
-        () -> {
-          ObjectNode user = (ObjectNode) runQuery("current-user-query").get("whoami");
-          assertUserCanAccessAllFacilities(user);
-        });
+    ObjectNode user = (ObjectNode) runQuery("current-user-query").get("whoami");
+    assertThrows(AssertionError.class, () -> assertUserCanAccessAllFacilities(user));
   }
 
   @Test
