@@ -79,6 +79,11 @@ const FacilityInformation: React.FC<Props> = ({
             name="email"
             value={facility.email || ""}
             onChange={onChange}
+            onBlur={() => {
+              validateField("email");
+            }}
+            validationStatus={errors.email ? "error" : undefined}
+            errorMessage={errors.email}
           />
         </div>
       </div>
