@@ -54,14 +54,7 @@ const PatientApp = () => {
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary
-        onError={(error: any) => (
-          <div>
-            <h1> There was an error. Please try refreshing</h1>
-            <pre> {JSON.stringify(error, null, 2)} </pre>
-          </div>
-        )}
-      >
+      <PrimeErrorBoundary>
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
