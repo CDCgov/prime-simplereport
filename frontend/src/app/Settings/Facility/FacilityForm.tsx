@@ -117,7 +117,7 @@ const FacilityForm: React.FC<Props> = (props) => {
         <div className="usa-card__header">
           <div>
             <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-            <LinkWithQuery to={`/settings/facilities`}>
+            <LinkWithQuery to={`/settings/facilities`} className="margin-left-1">
               All facilities
             </LinkWithQuery>
             <h2>{facility.name}</h2>

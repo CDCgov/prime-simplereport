@@ -8,7 +8,7 @@
   margin-bottom: 1.5rem;
   .usa-card__header {
     padding: 1.5rem;
-    border-bottom: 1px solid #f4f4f4;
+    border-bottom: 1px solid color("base-lighter");
     display: flex;
     justify-content: space-between;
     h2 {
@@ -321,15 +321,24 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   float: none;
   margin-bottom: 0px;
 
+  .usa-nav__secondary-item:not(:first-child) {
+    padding-left: units(2.5);
+
+    &:before {
+      display: none;
+    }
+  }
+
   a {
     color: #555;
     font-size: font-size($theme-navigation-font-family, "sm");
-    padding-bottom: 5px;
+    padding-bottom: 12px;
     &.active,
     &:hover {
       color: #000;
       text-decoration: none;
       border-bottom: 4px solid #0d60a0;
+      padding-bottom: 8px;
     }
   }
 }
