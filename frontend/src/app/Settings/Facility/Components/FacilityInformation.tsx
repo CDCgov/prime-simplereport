@@ -27,7 +27,9 @@ const FacilityInformation: React.FC<Props> = ({
 
   return (
     <div className="usa-form usa-form--large">
-      <h2  className="font-heading-lg" style={{ margin: 0 }}>Facility information</h2>
+      <h2 className="font-heading-lg" style={{ margin: 0 }}>
+        Facility information
+      </h2>
       <TextInput
         label="Testing facility name"
         name="name"
