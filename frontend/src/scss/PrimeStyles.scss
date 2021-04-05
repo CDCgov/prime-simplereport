@@ -312,7 +312,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .prime-secondary-nav {
-  margin: 0 8px;
+  margin-left: units(1);
+  margin-top: units(1);
 }
 
 .prime-nav.usa-nav__secondary-links {
