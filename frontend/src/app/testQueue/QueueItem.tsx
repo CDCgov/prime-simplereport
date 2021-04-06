@@ -27,6 +27,13 @@ import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
+// General plan: update the timer to accept different initial countdown lengths
+// then update the initialization of QueueItem to include test length
+// (this will require updates in QueueItem, TestQueue, and possibly schema and backend
+// probably best to go with testqueue updates first, rather than breaking queueItem and working backwards)
+// after the initialization is being correctly passed to the timer, do the same thing with timer updates
+
+
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
@@ -37,6 +44,7 @@ export const REMOVE_PATIENT_FROM_QUEUE = gql`
   }
 `;
 
+// to get timers to sync across user devices, this mutation will probably need to be changed
 const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
@@ -54,6 +62,7 @@ const EDIT_QUEUE_ITEM = gql`
       dateTested
       deviceType {
         internalId
+        testLength
       }
     }
   }
@@ -70,7 +79,7 @@ interface EditQueueItemResponse {
   editQueueItem: {
     result: TestResult;
     dateTested: string;
-    deviceType: { internalId: string };
+    deviceType: { internalId: string, testLength: number };
   };
 }
 
@@ -188,9 +197,11 @@ interface QueueItemProps {
   devices: {
     name: string;
     internalId: string;
+    testLength: number;
   }[];
   askOnEntry: string;
   selectedDeviceId: string;
+  selectedDeviceTestLength: number;
   selectedTestResult: TestResult;
   defaultDevice: {
     internalId: string;
@@ -203,6 +214,7 @@ interface QueueItemProps {
 
 interface updateQueueItemProps {
   deviceId?: string;
+  testLength?: number;
   result?: TestResult;
   dateTested?: string;
 }
@@ -213,6 +225,7 @@ const QueueItem: any = ({
   devices,
   askOnEntry,
   selectedDeviceId,
+  selectedDeviceTestLength,
   selectedTestResult,
   defaultDevice,
   refetchQueue,
@@ -220,6 +233,8 @@ const QueueItem: any = ({
   dateTestedProp,
   patientLinkId,
 }: QueueItemProps) => {
+  console.log("queue item devices: ", devices);
+  console.log("selected test length: ", selectedDeviceTestLength);
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
     appInsights,
@@ -360,12 +375,15 @@ const QueueItem: any = ({
     })
       .then((response) => {
         if (!response.data) throw Error("updateQueueItem null response");
+        console.log(response.data);
+        console.log("device type: ", response.data.editQueueItem.deviceType);
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
       })
       .catch(updateMutationError);
   };
 
+  // also need to change it here
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const deviceId = e.currentTarget.value;
     updateQueueItem({ deviceId, dateTested, result: testResultValue });
@@ -497,7 +515,7 @@ const QueueItem: any = ({
       </li>
     ) : null;
 
-  const timer = useTestTimer(internalId);
+  const timer = useTestTimer(internalId, selectedDeviceTestLength);
 
   const containerClasses = classnames(
     "grid-container",

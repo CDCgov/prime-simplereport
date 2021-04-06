@@ -17,7 +17,7 @@ type Timer = {
 };
 
 // Starting timer value in milliseconds
-const initialTimerCount = 15 * 60 * 1000;
+// const initialTimerCount = 15 * 60 * 1000;
 
 // Timer list
 const timers: Timer[] = [];
@@ -26,7 +26,7 @@ const timers: Timer[] = [];
 const initialTimerValues: Omit<Timer, "id"> = {
   alarmAt: 0,
   startedAt: 0,
-  countdown: initialTimerCount,
+  countdown: (15 * 60 * 1000),
   elapsed: 0,
   alarmed: false,
 } as const;
@@ -82,8 +82,17 @@ const saveTimers = () => {
 
 const findTimer = (id: TimerId): Timer | undefined =>
   timers.find((t) => t.id === id);
-const addTimer = (id: TimerId): Timer => {
-  const newTimer = { id, ...initialTimerValues };
+
+const addTimer = (id: TimerId, initialCountdown: number ): Timer => {
+  const newTimer = {
+    id: id,
+    alarmAt: 0,
+    startedAt: 0,
+    countdown: initialCountdown,
+    elapsed: 0,
+    alarmed: false,
+  }
+  // const newTimer = { id, ...initialTimerValues };
   timers.push(newTimer);
   saveTimers();
   return newTimer;
@@ -96,15 +105,23 @@ export const removeTimer = (id: TimerId) => {
   }
 };
 
-export const useTestTimer = (id: string) => {
+// need to add a new updateTimer method here that checks to see if the timer's been initialized,
+// takes in the new countdown, sees how much time has elapsed, and updates the count appropriately
+
+export const updateTimer = (id: string, initialCountdown: number) => {
+  useTestTimer(id, initialCountdown);
+}
+
+export const useTestTimer = (id: string, initialCountdown: number) => {
   const [, setCount] = useState(0);
-  let timer = findTimer(id) || addTimer(id);
+  let timer = findTimer(id) || addTimer(id, initialCountdown);
   useEffect(() => {
     timer.notify = setCount;
     return () => {
       timer.notify = undefined;
     };
   }, [id, timer]);
+  let initialTimerCount = initialCountdown * 60 * 1000;
   return {
     running: timer.startedAt !== 0,
     countdown: Math.round(
@@ -112,7 +129,7 @@ export const useTestTimer = (id: string) => {
     ),
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
-      const timer = findTimer(id) || addTimer(id);
+      const timer = findTimer(id) || addTimer(id, initialCountdown);
       timer.startedAt = Date.now();
       timer.alarmAt = timer.startedAt + initialTimerCount;
       saveTimers();

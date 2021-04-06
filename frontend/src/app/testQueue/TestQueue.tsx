@@ -52,6 +52,8 @@ export const queueQuery = gql`
       deviceType {
         internalId
         name
+        model
+        testLength
       }
       patient {
         internalId
@@ -75,10 +77,14 @@ export const queueQuery = gql`
         deviceTypes {
           internalId
           name
+          model
+          testLength
         }
         defaultDeviceType {
           internalId
           name
+          model
+          testLength
         }
       }
     }
@@ -101,6 +107,7 @@ interface QueueItemData {
   priorTestResult: string;
   deviceType: {
     internalId: string;
+    testLength: number;
   };
   patient: {
     internalId: string;
@@ -152,6 +159,8 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
+    // note: currently, to get the 10 minute timer to appear, we need to start a test (doesn't work to just reload the page)
+    // this might change when editing is enabled? but not sure
   const createQueueItems = (patientQueue: QueueItemData[]) => {
     const queue =
       shouldRenderQueue &&
@@ -176,6 +185,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 patient={patient}
                 askOnEntry={questions}
                 selectedDeviceId={deviceType?.internalId || null}
+                selectedDeviceTestLength={deviceType?.testLength || null}
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 defaultDevice={facility.defaultDeviceType}

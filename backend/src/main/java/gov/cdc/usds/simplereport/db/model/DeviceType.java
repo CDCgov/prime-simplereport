@@ -23,6 +23,8 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String swabType;
 
+  private Integer testLength;
+
   protected DeviceType() {
     /* no-op for hibernate */
   }
@@ -36,6 +38,7 @@ public class DeviceType extends EternalAuditedEntity {
     this.model = model;
     this.loincCode = loincCode;
     this.swabType = swabType;
+    this.testLength = determineTestLength(name);
   }
 
   public String getName() {
@@ -76,5 +79,27 @@ public class DeviceType extends EternalAuditedEntity {
 
   public void setSwabType(String swabType) {
     this.swabType = swabType;
+  }
+
+  public Integer getTestLength() {
+    if (testLength != null) {
+      return testLength;
+    }
+    else {
+      this.testLength = determineTestLength(name);
+      return testLength;
+    }
+  }
+
+  public void setTestLength(Integer testLength) {
+    this.testLength = testLength;
+  }
+
+  private Integer determineTestLength(String name) {
+    if (name.contains("CareStart")) {
+      return 10;
+    } else {
+      return 15;
+    }
   }
 }
