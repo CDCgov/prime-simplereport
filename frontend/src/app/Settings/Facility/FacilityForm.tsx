@@ -117,10 +117,13 @@ const FacilityForm: React.FC<Props> = (props) => {
         <div className="usa-card__header">
           <div>
             <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-            <LinkWithQuery to={`/settings/facilities`}>
+            <LinkWithQuery
+              to={`/settings/facilities`}
+              className="margin-left-1"
+            >
               All facilities
             </LinkWithQuery>
-            <h2>{facility.name}</h2>
+            <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
           </div>
           <div
             style={{
@@ -137,7 +140,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             />
           </div>
         </div>
-        <div className="usa-card__body">
+        <div className="usa-card__body padding-top-2">
           <RequiredMessage />
           <FacilityInformation
             facility={facility}
