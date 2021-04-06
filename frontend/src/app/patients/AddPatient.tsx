@@ -10,6 +10,7 @@ import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
 import { RootState } from "../store";
 import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
+import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -133,16 +134,8 @@ const AddPatient = () => {
             <div className="display-flex flex-justify">
               <div>
                 <div className="display-flex flex-align-center">
-                  <svg
-                    className="margin-left-neg-05"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20px"
-                    viewBox="0 0 24 24"
-                    width="20px"
-                    fill="#71767a"
-                  >
-                    <path d="M0 0h24v24H0z" fill="none" />
-                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                  <svg className="usa-icon text-base margin-left-neg-2px" aria-hidden="true" focusable="false" role="img">
+                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
                   </svg>
                   <LinkWithQuery to={`/patients`} className="margin-left-05">
                     People
