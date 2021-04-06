@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import { toast } from "react-toastify";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -10,6 +11,8 @@ import {
   FacilityErrors,
   facilitySchema,
 } from "../../Settings/Facility/facilitySchema";
+import Alert from "../../commonComponents/Alert";
+import { showNotification } from "../../utils";
 
 import OrganizationInformation from "./OrganizationInformation";
 import FacilityAdmin from "./FacilityAdmin";
@@ -51,16 +54,16 @@ const OrganizationForm: React.FC<Props> = (props) => {
       ...newOrganization,
     });
   };
-  const updateFacility = (newFacility: Facility) => {
-    updateForm({
-      ...facility,
-      ...newFacility,
-    });
-  };
   const updateAdmin = (newAdmin: FacilityAdmin) => {
     updateAdminForm({
       ...admin,
       ...newAdmin,
+    });
+  };
+  const updateFacility = (newFacility: Facility) => {
+    updateForm({
+      ...facility,
+      ...newFacility,
     });
   };
   const updateProvider = (orderingProvider: Provider) => {
@@ -108,6 +111,34 @@ const OrganizationForm: React.FC<Props> = (props) => {
     [facility, clearError]
   );
 
+  const validateAndSaveOrganization = async () => {
+    try {
+      await facilitySchema.validate(facility, { abortEarly: false });
+    } catch (e) {
+      const errors = e.inner.reduce(
+        (
+          acc: FacilityErrors,
+          el: { path: keyof FacilityErrors; message: string }
+        ) => {
+          acc[el.path] = allFacilityErrors[el.path];
+          return acc;
+        },
+        {} as FacilityErrors
+      );
+      setErrors(errors);
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Please check the form to make sure you complete all of the required fields."
+        />
+      );
+      showNotification(toast, alert);
+      return;
+    }
+    props.saveOrganization(organization, facility, admin);
+  };
+
   return (
     <main className="prime-home">
       <div className="grid-container">
@@ -126,9 +157,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
               >
                 <Button
                   type="button"
-                  onClick={() =>
-                    props.saveOrganization(organization, facility, admin)
-                  }
+                  onClick={validateAndSaveOrganization}
                   label="Save Changes"
                   disabled={!formChanged}
                 />
