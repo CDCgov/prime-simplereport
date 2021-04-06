@@ -2221,6 +2221,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-input-mask@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react-input-mask/-/react-input-mask-3.0.0.tgz#e5e3f7ab53eff3b2190f6729823c905c36a84954"
+  integrity sha512-W8I2GRt1wkFgEJJ4dleSCw1ly2lL+pW71OPkJSz6G93V77io4ulSSnZyiyCv3uljmQDOr94NMbNr5V5hfkMaUg==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-modal@^3.10.6":
   version "3.10.6"
   resolved "https://registry.yarnpkg.com/@types/react-modal/-/react-modal-3.10.6.tgz#76717220f32bc72769190692147814a540053c7e"
@@ -11077,6 +11084,15 @@ react-html-id@^0.1.5:
   version "0.1.5"
   resolved "https://registry.yarnpkg.com/react-html-id/-/react-html-id-0.1.5.tgz#a180084bd8974aac6a497ebaaedcecb03aadf2bf"
   integrity sha512-8MvS/oeD7EE9jlIM/iNc2HtyN5mzFLK9DHGThuucxJYnGVYfOR1ZVRkE5znJmKbj8PMDXnrnozjDdHcSQJO3LA==
+
+react-input-mask@^3.0.0-alpha.2:
+  version "3.0.0-alpha.2"
+  resolved "https://registry.yarnpkg.com/react-input-mask/-/react-input-mask-3.0.0-alpha.2.tgz#113102942a557edc7a192e66020b8ce1ba699a5c"
+  integrity sha512-9U7qL+mvDMOJcbOFPdt6Vj+zzmCMNnBjhhjGDrL8BGQmymgvMVKhu/oOVfAkl+5VWOsLr+G3EhZOmae5fBcAkA==
+  dependencies:
+    invariant "^2.2.4"
+    prop-types "^15.7.2"
+    warning "^4.0.3"
 
 "react-is@^16.12.0 || ^17.0.0", react-is@^17.0.1:
   version "17.0.1"

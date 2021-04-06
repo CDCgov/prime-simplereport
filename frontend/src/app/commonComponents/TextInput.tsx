@@ -1,6 +1,7 @@
 import React from "react";
 import classnames from "classnames";
 import { UIDConsumer } from "react-uid";
+import InputMask from "react-input-mask";
 
 import Required from "./Required";
 import Optional from "./Optional";
@@ -68,6 +69,8 @@ export const TextInput = ({
   labelClassName,
   ...inputProps
 }: Props & InputProps): React.ReactElement => {
+  const mask = type === "tel" ? "(999) 999-9999" : "";
+
   return (
     <UIDConsumer>
       {(id) => (
@@ -97,13 +100,14 @@ export const TextInput = ({
             </span>
           )}
           {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
-          <input
+          <InputMask
             className={classnames(
               "usa-input",
               validationStatus === "error" && "usa-input-error"
             )}
             id={id}
             name={name}
+            mask={mask}
             value={value || ""}
             type={type || "text"}
             aria-required={required || "false"}
@@ -114,14 +118,16 @@ export const TextInput = ({
             size={size}
             pattern={pattern}
             inputMode={inputMode}
-            ref={inputRef}
             data-format={format}
             data-format-message={formatMessage}
             {...inputProps}
             {...(validationStatus === "error"
               ? { "aria-describedby": `error_${id}` }
               : null)}
-          />
+            ref={undefined}
+          >
+            <input ref={inputRef} />
+          </InputMask>
         </div>
       )}
     </UIDConsumer>
