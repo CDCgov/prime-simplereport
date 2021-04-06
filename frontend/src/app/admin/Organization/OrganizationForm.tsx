@@ -1,18 +1,11 @@
-import React, { useCallback, useState } from "react";
-import { toast } from "react-toastify";
+import React, { useState } from "react";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import ManageDevices from "../../Settings/Facility/Components/ManageDevices";
 import OrderingProviderSettings from "../../Settings/Facility/Components/OrderingProvider";
 import FacilityInformation from "../../Settings/Facility/Components/FacilityInformation";
-import {
-  allFacilityErrors,
-  FacilityErrors,
-  facilitySchema,
-} from "../../Settings/Facility/facilitySchema";
-import Alert from "../../commonComponents/Alert";
-import { showNotification } from "../../utils";
+import { useFacilityValidation } from "../../Settings/Facility/FacilityForm";
 
 import OrganizationInformation from "./OrganizationInformation";
 import FacilityAdmin from "./FacilityAdmin";
@@ -54,16 +47,16 @@ const OrganizationForm: React.FC<Props> = (props) => {
       ...newOrganization,
     });
   };
-  const updateAdmin = (newAdmin: FacilityAdmin) => {
-    updateAdminForm({
-      ...admin,
-      ...newAdmin,
-    });
-  };
   const updateFacility = (newFacility: Facility) => {
     updateForm({
       ...facility,
       ...newFacility,
+    });
+  };
+  const updateAdmin = (newAdmin: FacilityAdmin) => {
+    updateAdminForm({
+      ...admin,
+      ...newAdmin,
     });
   };
   const updateProvider = (orderingProvider: Provider) => {
@@ -85,55 +78,12 @@ const OrganizationForm: React.FC<Props> = (props) => {
     });
   };
 
-  const [errors, setErrors] = useState<FacilityErrors>({});
-
-  const clearError = useCallback(
-    (field: keyof FacilityErrors) => {
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: undefined });
-      }
-    },
-    [errors]
-  );
-
-  const validateField = useCallback(
-    async (field: keyof FacilityErrors) => {
-      try {
-        clearError(field);
-        await facilitySchema.validateAt(field, facility);
-      } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
-          [field]: allFacilityErrors[field],
-        }));
-      }
-    },
-    [facility, clearError]
+  const { errors, validateField, validateFacility } = useFacilityValidation(
+    facility
   );
 
   const validateAndSaveOrganization = async () => {
-    try {
-      await facilitySchema.validate(facility, { abortEarly: false });
-    } catch (e) {
-      const errors = e.inner.reduce(
-        (
-          acc: FacilityErrors,
-          el: { path: keyof FacilityErrors; message: string }
-        ) => {
-          acc[el.path] = allFacilityErrors[el.path];
-          return acc;
-        },
-        {} as FacilityErrors
-      );
-      setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
-      );
-      showNotification(toast, alert);
+    if ((await validateFacility()) === "error") {
       return;
     }
     props.saveOrganization(organization, facility, admin);

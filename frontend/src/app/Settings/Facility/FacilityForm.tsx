@@ -19,6 +19,63 @@ import {
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
 
+export const useFacilityValidation = (facility: Facility) => {
+  const [errors, setErrors] = useState<FacilityErrors>({});
+
+  const clearError = useCallback(
+    (field: keyof FacilityErrors) => {
+      if (errors[field]) {
+        setErrors({ ...errors, [field]: undefined });
+      }
+    },
+    [errors]
+  );
+
+  const validateField = useCallback(
+    async (field: keyof FacilityErrors) => {
+      try {
+        clearError(field);
+        await facilitySchema.validateAt(field, facility);
+      } catch (e) {
+        setErrors((errors) => ({
+          ...errors,
+          [field]: allFacilityErrors[field],
+        }));
+      }
+    },
+    [facility, clearError]
+  );
+
+  const validateFacility = async () => {
+    try {
+      await facilitySchema.validate(facility, { abortEarly: false });
+    } catch (e) {
+      const errors = e.inner.reduce(
+        (
+          acc: FacilityErrors,
+          el: { path: keyof FacilityErrors; message: string }
+        ) => {
+          acc[el.path] = allFacilityErrors[el.path];
+          return acc;
+        },
+        {} as FacilityErrors
+      );
+      setErrors(errors);
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Please check the form to make sure you complete all of the required fields."
+        />
+      );
+      showNotification(toast, alert);
+      return "error";
+    }
+  };
+
+  return { errors, validateField, validateFacility };
+};
+
 interface Props {
   facility: Facility;
   deviceOptions: DeviceType[];
@@ -57,55 +114,12 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
 
-  const [errors, setErrors] = useState<FacilityErrors>({});
-
-  const clearError = useCallback(
-    (field: keyof FacilityErrors) => {
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: undefined });
-      }
-    },
-    [errors]
-  );
-
-  const validateField = useCallback(
-    async (field: keyof FacilityErrors) => {
-      try {
-        clearError(field);
-        await facilitySchema.validateAt(field, facility);
-      } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
-          [field]: allFacilityErrors[field],
-        }));
-      }
-    },
-    [facility, clearError]
+  const { errors, validateField, validateFacility } = useFacilityValidation(
+    facility
   );
 
   const validateAndSaveFacility = async () => {
-    try {
-      await facilitySchema.validate(facility, { abortEarly: false });
-    } catch (e) {
-      const errors = e.inner.reduce(
-        (
-          acc: FacilityErrors,
-          el: { path: keyof FacilityErrors; message: string }
-        ) => {
-          acc[el.path] = allFacilityErrors[el.path];
-          return acc;
-        },
-        {} as FacilityErrors
-      );
-      setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
-      );
-      showNotification(toast, alert);
+    if ((await validateFacility()) === "error") {
       return;
     }
     props.saveFacility(facility);
