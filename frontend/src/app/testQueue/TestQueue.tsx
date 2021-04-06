@@ -22,6 +22,7 @@ const onExiting = (node: HTMLElement) => {
   node.style.marginBottom = `-${node.offsetHeight}px`;
   node.style.opacity = "0";
   node.style.transition = `opacity ${transitionDuration}ms ease-out, margin ${transitionDuration}ms ease-out`;
+  node.style.pointerEvents = "none";
 };
 
 const emptyQueueMessage = (
