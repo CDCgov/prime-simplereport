@@ -116,20 +116,22 @@ const FacilityForm: React.FC<Props> = (props) => {
       <div className="prime-container usa-card__container">
         <div className="usa-card__header">
           <div>
-            <svg
-              className="usa-icon text-base margin-left-neg-2px"
-              aria-hidden="true"
-              focusable="false"
-              role="img"
-            >
-              <use xlinkHref={iconSprite + "#arrow_back"}></use>
-            </svg>
-            <LinkWithQuery
-              to={`/settings/facilities`}
-              className="margin-left-1"
-            >
-              All facilities
-            </LinkWithQuery>
+            <div className="display-flex flex-align-center">
+              <svg
+                className="usa-icon text-base margin-left-neg-2px"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use xlinkHref={iconSprite + "#arrow_back"}></use>
+              </svg>
+              <LinkWithQuery
+                to={`/settings/facilities`}
+                className="margin-left-05"
+              >
+                All facilities
+              </LinkWithQuery>
+            </div>
             <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
           </div>
           <div
@@ -140,6 +142,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             }}
           >
             <Button
+              className="margin-right-0"
               type="button"
               onClick={validateAndSaveFacility}
               label="Save changes"
