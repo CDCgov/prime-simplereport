@@ -18,7 +18,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
 @Entity
-public class Facility extends OrganizationScopedEternalEntity {
+public class Facility extends OrganizationScopedEternalEntity implements LocatedEntity {
 
   @Column(nullable = false, unique = false) // unique within an organization only
   private String facilityName;
