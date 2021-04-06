@@ -194,13 +194,15 @@ const EditPatient = (props: Props) => {
                       </h1>
                     </div>
                   </div>
-                  <button
-                    className="usa-button margin-right-0 prime-save-patient-changes"
-                    disabled={editPersonLoading || !formChanged}
-                    onClick={onSave}
-                  >
-                    {editPersonLoading ? "Saving..." : "Save changes"}
-                  </button>
+                  <div className="display-flex flex-align-center">
+                    <button
+                      className="usa-button margin-right-0 prime-save-patient-changes"
+                      disabled={editPersonLoading || !formChanged}
+                      onClick={onSave}
+                    >
+                      {editPersonLoading ? "Saving..." : "Save changes"}
+                    </button>
+                  </div>
                 </div>
               )}
               getFooter={(onSave, formChanged) => (
