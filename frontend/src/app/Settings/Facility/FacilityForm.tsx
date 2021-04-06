@@ -116,7 +116,7 @@ const FacilityForm: React.FC<Props> = (props) => {
       <div className="prime-container usa-card__container">
         <div className="usa-card__header">
           <div>
-            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
+            <FontAwesomeIcon icon={"arrow-left"} color="#71767a" />
             <LinkWithQuery
               to={`/settings/facilities`}
               className="margin-left-1"
