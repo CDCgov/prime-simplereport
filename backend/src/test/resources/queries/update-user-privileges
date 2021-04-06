@@ -23,7 +23,7 @@ mutation updateUserPrivileges(
       organization {
         name
         externalId
-        testingFacility {
+        facilities {
           name
           id
         }

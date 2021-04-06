@@ -25,7 +25,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 @DynamicUpdate
-public abstract class AuditedEntity {
+public abstract class AuditedEntity implements DatabaseEntity {
 
   @Column(updatable = false, nullable = false)
   @Id
