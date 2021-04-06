@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { toast } from "react-toastify";
 
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";

@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
-import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 
+import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
 import { PATIENT_TERM_CAP } from "../../config/constants";
 import { displayFullName, showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
