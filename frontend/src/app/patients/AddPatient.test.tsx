@@ -12,18 +12,22 @@ import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 
 import AddPatient, { ADD_PATIENT } from "./AddPatient";
+import { MemoryRouter } from "react-router";
 
 const mockStore = configureStore([]);
 
-jest.mock("react-router-dom", () => ({
-  Prompt: (props: any) => <></>,
-  Link: (props: any) => <></>,
-  Redirect: (props: any) => <>{props.to}</>,
-  useHistory: () => ({
-    listen: jest.fn(),
-    push: jest.fn(),
-  }),
-}));
+// jest.mock("react-router-dom", () => ({
+//   Prompt: (props: any) => <></>,
+//   Link: (props: any) => <></>,
+//   Redirect: (props: any) => <>{props.to}</>,
+//   useHistory: () => ({
+//     listen: jest.fn(),
+//     push: jest.fn(),
+//   }),
+//   useLocation: () => ({
+//     search: jest.fn(),
+//   }),
+// }));
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
@@ -73,11 +77,13 @@ describe("AddPatient", () => {
         },
       });
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <AddPatient />
-          </MockedProvider>
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={[]} addTypename={false}>
+              <AddPatient />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
       );
     });
     it("does not show the form title", () => {
@@ -172,11 +178,14 @@ describe("AddPatient", () => {
         },
       ];
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <AddPatient />
-          </MockedProvider>
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <AddPatient />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+
       );
     });
     it("shows the form title", async () => {

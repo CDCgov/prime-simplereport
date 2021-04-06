@@ -5,17 +5,18 @@ import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
+import { MemoryRouter } from "react-router";
 
 const mockStore = configureStore([]);
 
-jest.mock("react-router-dom", () => ({
-  Prompt: (props: any) => <></>,
-  Link: (props: any) => <></>,
-  useHistory: () => ({
-    listen: jest.fn(),
-    push: jest.fn(),
-  }),
-}));
+// jest.mock("react-router-dom", () => ({
+//   Prompt: (props: any) => <></>,
+//   Link: (props: any) => <></>,
+//   useHistory: () => ({
+//     listen: jest.fn(),
+//     push: jest.fn(),
+//   }),
+// }));
 
 describe("EditPatient", () => {
   afterEach(cleanup);
@@ -29,6 +30,7 @@ describe("EditPatient", () => {
   describe("Waiting for network response", () => {
     beforeEach(() => {
       render(
+        <MemoryRouter>
         <Provider store={store}>
           <MockedProvider mocks={[]} addTypename={false}>
             <EditPatient
@@ -37,6 +39,7 @@ describe("EditPatient", () => {
             />
           </MockedProvider>
         </Provider>
+        </MemoryRouter>
       );
     });
     it("shows loading text", async () => {
@@ -86,6 +89,7 @@ describe("EditPatient", () => {
       ];
 
       component = render(
+        <MemoryRouter>
         <Provider store={store}>
           <MockedProvider mocks={mocks} addTypename={false}>
             <EditPatient
@@ -94,6 +98,7 @@ describe("EditPatient", () => {
             />
           </MockedProvider>
         </Provider>
+        </MemoryRouter>
       );
       await act(async () => {
         await screen.findAllByText("Franecki, Eugenia", { exact: false });
