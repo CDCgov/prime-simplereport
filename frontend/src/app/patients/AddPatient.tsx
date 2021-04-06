@@ -6,13 +6,12 @@ import { useSelector } from "react-redux";
 
 import {
   PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL_CAP,
 } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import Button from "../commonComponents/Button";
 import { RootState } from "../store";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -133,32 +132,40 @@ const AddPatient = () => {
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (
-            <>
-              <Breadcrumbs
-                crumbs={[
-                  {
-                    link: personPath,
-                    text: PATIENT_TERM_PLURAL_CAP,
-                  },
-                  {
-                    link: "",
-                    text: `Add New ${PATIENT_TERM_CAP}`,
-                  },
-                ]}
-              />
-              <div className="prime-edit-patient-heading">
-                <div>
-                  <h1>Add New {PATIENT_TERM_CAP}</h1>
+            <div className="display-flex flex-justify">
+              <div>
+                <div className="display-flex flex-align-center">
+                  <svg
+                    className="margin-left-neg-05"
+                    xmlns="http://www.w3.org/2000/svg"
+                    height="20px"
+                    viewBox="0 0 24 24"
+                    width="20px"
+                    fill="#71767a"
+                  >
+                    <path d="M0 0h24v24H0z" fill="none" />
+                    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
+                  </svg>
+                  <LinkWithQuery to={`/patients`} className="margin-left-05">
+                    People
+                  </LinkWithQuery>
                 </div>
+                <div className="prime-edit-patient-heading margin-y-0">
+                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                    Add New {PATIENT_TERM_CAP}
+                  </h1>
+                </div>
+              </div>
+              <div className="display-flex flex-align-center">
                 <button
-                  className="usa-button prime-save-patient-changes"
+                  className="prime-save-patient-changes usa-button margin-right-0 "
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
                   {loading ? "Saving..." : "Save changes"}
                 </button>
               </div>
-            </>
+            </div>
           )}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">

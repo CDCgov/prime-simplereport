@@ -196,7 +196,7 @@ const EditPatient = (props: Props) => {
                   </div>
                   <div className="display-flex flex-align-center">
                     <button
-                      className="usa-button margin-right-0 prime-save-patient-changes"
+                      className="prime-save-patient-changes usa-button margin-right-0"
                       disabled={editPersonLoading || !formChanged}
                       onClick={onSave}
                     >
