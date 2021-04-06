@@ -4,9 +4,7 @@ import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import {
-  PATIENT_TERM_CAP,
-} from "../../config/constants";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
 import Button from "../commonComponents/Button";
