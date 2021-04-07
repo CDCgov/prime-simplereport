@@ -1,6 +1,6 @@
 spring:
   profiles.include: okta-dev, server-debug
-graphql.servlet.cors:
+cors:
   allowed-origins:
     - https://simplereportdevapp.z13.web.core.windows.net
     - https://simple-report-api-dev.azurewebsites.net

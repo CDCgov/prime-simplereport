@@ -1,8 +1,9 @@
 spring:
   profiles.include: okta-prod
-graphql.servlet.cors:
+cors:
   allowed-origins:
-    - https://simplereport.cdc.gov
+    - https://www.simplereport.gov
+    - https://simplereport.gov
 simple-report:
   data-hub:
     upload-enabled: true

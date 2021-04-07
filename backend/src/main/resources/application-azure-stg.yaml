@@ -1,6 +1,6 @@
 spring:
   profiles.include: okta-stg
-graphql.servlet.cors:
+cors:
   allowed-origins:
     - https://simple-report-api-stg.azurewebsites.net
     - https://simple-report-stg.azureedge.net

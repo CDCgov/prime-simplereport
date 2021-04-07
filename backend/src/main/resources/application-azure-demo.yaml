@@ -1,6 +1,6 @@
 spring:
   profiles.include: no-security, no-okta-mgmt, create-sample-data
-graphql.servlet.cors:
+cors:
   allowed-origins:
     - https://simple-report-api-demo.azurewebsites.net
     - https://simple-report-demo.azureedge.net

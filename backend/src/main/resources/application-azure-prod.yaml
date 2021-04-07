@@ -1,6 +1,6 @@
 spring:
   profiles.include: okta-prod
-graphql.servlet.cors:
+cors:
   allowed-origins:
     - https://simple-report-api-prod.azurewebsites.net
     - https://simple-report-prod.azureedge.net
