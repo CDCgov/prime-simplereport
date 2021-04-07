@@ -69,7 +69,7 @@ class ApiUserAwareGraphQlContextBuilderTest {
         userInfo.getOrganization().map(OrganizationPrincipal::new).orElse(null),
         subject.getPrincipals(OrganizationPrincipal.class).stream().findFirst().orElse(null));
     assertEquals(
-        new ApiUserPrincipal(userInfo.getWrappedUser()),
+        new ApiUserPrincipal(userInfo.getWrapped()),
         subject.getPrincipals(ApiUserPrincipal.class).stream().findFirst().orElseThrow());
     assertEquals(userInfo.getIsAdmin(), !subject.getPrincipals(SiteAdminPrincipal.class).isEmpty());
   }

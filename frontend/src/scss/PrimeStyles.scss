@@ -760,6 +760,17 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   }
 }
 
+.patient__header {
+  background-color: color("white");
+  border: units(2px) solid color("base-lighter");
+  border-bottom: units(1px) solid color("base-lighter");
+  border-top-left-radius: units(2px);
+  border-top-right-radius: units(2px);
+  margin-bottom: units(-0.5);
+  padding: units(2.5) units(3);
+  position: relative;
+}
+
 .maxw-prose {
   max-width: 68ex;
 }

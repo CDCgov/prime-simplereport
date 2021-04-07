@@ -15,58 +15,56 @@ Object {
             class="prime-edit-patient prime-home"
           >
             <div
-              class="grid-container margin-bottom-4"
+              class="margin-bottom-4"
             >
-              <nav
-                aria-label="Breadcrumbs"
-                class="usa-breadcrumb"
-              >
-                <ol
-                  class="usa-breadcrumb__list"
-                >
-                  <li
-                    class="usa-breadcrumb__list-item"
-                  />
-                  <li
-                    aria-current="page"
-                    class="usa-breadcrumb__list-item usa-current"
-                  >
-                    <span>
-                      Franecki, Eugenia
-                    </span>
-                  </li>
-                </ol>
-              </nav>
               <div
-                class="prime-edit-patient-heading"
+                class="patient__header"
               >
-                <div>
-                  <h1>
-                    Franecki, Eugenia
-                  </h1>
+                <div
+                  class="display-flex flex-justify"
+                >
+                  <div>
+                    <div
+                      class="display-flex flex-align-center"
+                    >
+                      <svg
+                        aria-hidden="true"
+                        class="usa-icon text-base margin-left-neg-2px"
+                        focusable="false"
+                        role="img"
+                      >
+                        <use
+                          xlink:href="sprite.svg#arrow_back"
+                        />
+                      </svg>
+                      <a
+                        class="margin-left-05"
+                        href="/patients"
+                      >
+                        People
+                      </a>
+                    </div>
+                    <div
+                      class="prime-edit-patient-heading margin-y-0"
+                    >
+                      <h1
+                        class="font-heading-lg margin-top-1 margin-bottom-0"
+                      >
+                        Franecki, Eugenia
+                      </h1>
+                    </div>
+                  </div>
+                  <div
+                    class="display-flex flex-align-center"
+                  >
+                    <button
+                      class="prime-save-patient-changes usa-button margin-right-0"
+                    >
+                      Save changes
+                    </button>
+                  </div>
                 </div>
-                <button
-                  class="usa-button prime-save-patient-changes"
-                >
-                  Save changes
-                </button>
               </div>
-              <p
-                class="message--required"
-              >
-                All fields marked with 
-                <span
-                  class="usa-sr-only"
-                >
-                  Required
-                </span>
-                <span
-                  class="usa-hint--required"
-                >
-                   *
-                </span>
-                 are required
-              </p>
               <div
                 class="prime-formgroup"
               >
@@ -78,6 +76,22 @@ Object {
                   >
                     General info
                   </legend>
+                  <p
+                    class="message--required"
+                  >
+                    All fields marked with 
+                    <span
+                      class="usa-sr-only"
+                    >
+                      Required
+                    </span>
+                    <span
+                      class="usa-hint--required"
+                    >
+                       *
+                    </span>
+                     are required
+                  </p>
                   <div
                     class="usa-form"
                   >
@@ -2801,58 +2815,56 @@ Object {
           class="prime-edit-patient prime-home"
         >
           <div
-            class="grid-container margin-bottom-4"
+            class="margin-bottom-4"
           >
-            <nav
-              aria-label="Breadcrumbs"
-              class="usa-breadcrumb"
-            >
-              <ol
-                class="usa-breadcrumb__list"
-              >
-                <li
-                  class="usa-breadcrumb__list-item"
-                />
-                <li
-                  aria-current="page"
-                  class="usa-breadcrumb__list-item usa-current"
-                >
-                  <span>
-                    Franecki, Eugenia
-                  </span>
-                </li>
-              </ol>
-            </nav>
             <div
-              class="prime-edit-patient-heading"
+              class="patient__header"
             >
-              <div>
-                <h1>
-                  Franecki, Eugenia
-                </h1>
+              <div
+                class="display-flex flex-justify"
+              >
+                <div>
+                  <div
+                    class="display-flex flex-align-center"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="usa-icon text-base margin-left-neg-2px"
+                      focusable="false"
+                      role="img"
+                    >
+                      <use
+                        xlink:href="sprite.svg#arrow_back"
+                      />
+                    </svg>
+                    <a
+                      class="margin-left-05"
+                      href="/patients"
+                    >
+                      People
+                    </a>
+                  </div>
+                  <div
+                    class="prime-edit-patient-heading margin-y-0"
+                  >
+                    <h1
+                      class="font-heading-lg margin-top-1 margin-bottom-0"
+                    >
+                      Franecki, Eugenia
+                    </h1>
+                  </div>
+                </div>
+                <div
+                  class="display-flex flex-align-center"
+                >
+                  <button
+                    class="prime-save-patient-changes usa-button margin-right-0"
+                  >
+                    Save changes
+                  </button>
+                </div>
               </div>
-              <button
-                class="usa-button prime-save-patient-changes"
-              >
-                Save changes
-              </button>
             </div>
-            <p
-              class="message--required"
-            >
-              All fields marked with 
-              <span
-                class="usa-sr-only"
-              >
-                Required
-              </span>
-              <span
-                class="usa-hint--required"
-              >
-                 *
-              </span>
-               are required
-            </p>
             <div
               class="prime-formgroup"
             >
@@ -2864,6 +2876,22 @@ Object {
                 >
                   General info
                 </legend>
+                <p
+                  class="message--required"
+                >
+                  All fields marked with 
+                  <span
+                    class="usa-sr-only"
+                  >
+                    Required
+                  </span>
+                  <span
+                    class="usa-hint--required"
+                  >
+                     *
+                  </span>
+                   are required
+                </p>
                 <div
                   class="usa-form"
                 >

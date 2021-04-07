@@ -12,13 +12,36 @@ query whoDat {
     roleDescription
     isAdmin
     organization {
-      testingFacility {
+      facilities {
         name
         id
-        __typename
+
+        street
+        streetTwo
+        city
+        address {
+          streetOne
+          streetTwo
+          city
+        }
+
+        orderingProvider {
+          firstName
+          lastName
+          name {
+            firstName
+            lastName
+          }
+          street
+          city
+          zipCode
+          address {
+            streetOne
+            city
+            postalCode
+          }
+        }
       }
-      __typename
     }
-    __typename
   }
 }
