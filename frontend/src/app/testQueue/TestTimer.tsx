@@ -12,6 +12,12 @@ type DateTimeStamp = ReturnType<typeof Date.now>;
 function toMillis(minutes: number) {
     return minutes * 60 * 1000;
 }
+
+// alarmed = it's gone off already
+// countdown = the number to display as countdown
+// elapsed = the inverse of countdown
+// startedAt - when the timer was started
+// alarmAt - scheduled timer end
  
 export class Timer {
     id: string;
@@ -33,15 +39,26 @@ export class Timer {
         this.alarmed = false;
     }
 
+    fromJSON(obj : any) {
+      this.id = obj.id;
+      this.startedAt = obj.startedAt;
+      this.alarmAt = obj.alarmAt;
+      this.testLength = obj.testLength;
+      this.countdown = obj.countdown;
+      this.elapsed = obj.elapsed;
+      this.alarmed = obj.alarmed;
+      this.notify = obj.notify;
+    }
+
     start(now: number) {
       this.startedAt = now;
-      this.alarmAt = this.startedAt + this.testLength;
+      this.alarmAt = this.startedAt + toMillis(this.testLength);
     }
 
     reset() {
       this.startedAt = 0;
       this.alarmAt = 0;
-      this.countdown = 0;
+      this.countdown = toMillis(this.testLength);
       this.elapsed = 0;
       this.alarmed = false;
     }
@@ -56,11 +73,22 @@ export class Timer {
         this.countdown = toMillis(testLength);
         return;
       }
-      const difference = Math.abs(this.testLength - testLength);
+      const difference = toMillis(Math.abs(this.testLength - testLength));
       this.countdown = (this.testLength > testLength) ? (this.countdown - difference) : (this.countdown + difference);
-      return;
+      // was 15 mins, now 10
+      if (this.testLength > testLength) {
+        this.countdown = this.countdown - difference;
+        this.alarmAt = this.alarmAt - (difference);
+      } else {
+        this.countdown = this.countdown + difference;
+        this.alarmAt = this.alarmAt + difference;
+      }
+      return; 
 
       // I think I'll also need to update the alarmAt value, in order for the tick to work properly
+      // next up: need to update testqueue to *actually* call the timer update function
+      // then verify that it works
+      // then work on tests!
     }
 
     tick(now: number) {
@@ -76,18 +104,24 @@ export class Timer {
         this.alarmed = true;
         alarmSound.play();
      }
+    //  console.log("timer tick:", this);
      return;
     }
 }
 
+const timerFromJSON = (obj: any) => {
+  let timer = new Timer(obj.id, obj.testLength);
+  timer.fromJSON(obj);
+  return timer;
+}
 
 // Initialize an empty list of timers.
 let timers: Timer[] = [];
 
 const tickTimers = () => {
     const now = Date.now();
-    timers.forEach((t : Timer) => {
-        t.tick(now);
+    timers.forEach((t) => {
+      t.tick(now);
     });
 }
 
@@ -103,14 +137,11 @@ const saveTimers = () => {
     try {
         const storage = localStorage.getItem("timers") || "[]";
         const cutoff = Date.now() - toMillis(60);
-        oldTimers = JSON.parse(storage).filter((t: Timer) => t.alarmAt > cutoff);
-        console.log("oldtimer ", oldTimers);
+        oldTimers = JSON.parse(storage).filter((t : any) => t.alarmAt > cutoff);
     } catch (e) {}
-    for (let t of oldTimers) {
-      timers.push(t as Timer);
-    }
-    console.log("timers after old push: ", timers);
-    // timers.push(...oldTimers);
+    oldTimers.forEach((t) => {
+      timers.push(timerFromJSON(t));
+    })
     saveTimers();
     // Tick the timers every millisecond.
     window.setInterval(tickTimers, 1000);
@@ -148,12 +179,14 @@ export const useTestTimer = (id: string, testLength: number) => {
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
       const timer: Timer = findTimer(id) || addTimer(id, testLength);
+      console.log("timer started: ", timer);
       timer.start(Date.now());
       saveTimers();
     },
     reset: () => {
-      const timer = findTimer(id);
+      let timer = findTimer(id);
       if (timer) {
+        timer = timer as Timer;
         // reset the timer
         timer.reset();
         // force final update
