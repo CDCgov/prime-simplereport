@@ -80,46 +80,6 @@ export class Timer {
     }
 }
 
-export class TimerList {
-  list: Array<Timer>;
-
-  constructor() {
-    this.list = [];
-  }
-
-  find(id: string) : Timer | undefined {
-    return this.list.find((t) => t.id === id);
-  }
-
-  push(timer: Timer) {
-    this.list.push(timer);
-    saveTimers();
-  }
-
-  add(id:string, testLength: number) : Timer {
-    const newTimer = new Timer(id, testLength);
-    this.list.push(newTimer);
-    saveTimers();
-    return newTimer;
-  }
-
-  remove(id: string) {
-    const index = this.list.findIndex((t) => t.id === id);
-    if (index >= 0) {
-      this.list.splice(index, 1);
-      saveTimers();
-    }
-  }
-
-  tickAll() {
-    const now = Date.now();
-    this.list.forEach((t: Timer) => {
-      t.tick(now);
-    });
-  }
-}
-
-// let timers: TimerList = new TimerList();
 
 // Initialize an empty list of timers.
 let timers: Timer[] = [];
@@ -127,7 +87,7 @@ let timers: Timer[] = [];
 const tickTimers = () => {
     const now = Date.now();
     timers.forEach((t : Timer) => {
-        // t.tick(now);
+        t.tick(now);
     });
 }
 
@@ -239,7 +199,3 @@ export const TestTimerWidget = ({ timer }: Props) => {
             </div>
           );
 };
-
-// lol the timer doesn't start anymore
-// gonna have to do some research into that
-// it does still belatedly update with the right time, which seems odd. Must have somethign to do with page reload
