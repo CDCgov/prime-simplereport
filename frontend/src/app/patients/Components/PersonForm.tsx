@@ -175,7 +175,7 @@ const PersonForm = (props: Props) => {
         }
       />
       {!isPatientView && (
-        <div className="person__header">
+        <div className="patient__header">
           {props.getHeader &&
             props.getHeader(patient, validateForm, formChanged)}
         </div>
