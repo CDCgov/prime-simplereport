@@ -24,7 +24,7 @@ mutation updateUser(
       organization {
         name
         externalId
-        testingFacility {
+        facilities {
           name
           id
         }
