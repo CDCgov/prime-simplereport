@@ -233,8 +233,6 @@ const QueueItem: any = ({
   dateTestedProp,
   patientLinkId,
 }: QueueItemProps) => {
-  console.log("queue item devices: ", devices);
-  console.log("selected test length: ", selectedDeviceTestLength);
   const appInsights = useAppInsightsContext();
   const trackRemovePatientFromQueue = useTrackEvent(
     appInsights,
@@ -375,8 +373,6 @@ const QueueItem: any = ({
     })
       .then((response) => {
         if (!response.data) throw Error("updateQueueItem null response");
-        console.log(response.data);
-        console.log("device type: ", response.data.editQueueItem.deviceType);
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
       })
