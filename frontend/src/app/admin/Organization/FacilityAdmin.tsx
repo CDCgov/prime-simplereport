@@ -8,7 +8,7 @@ interface Props {
 }
 
 const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
-    const onChange = <K extends keyof FacilityAdmin>(field: K) => (
+  const onChange = <K extends keyof FacilityAdmin>(field: K) => (
     value: FacilityAdmin[K]
   ) => {
     updateAdmin({ ...admin, [field]: value });
