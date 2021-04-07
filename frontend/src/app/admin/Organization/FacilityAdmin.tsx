@@ -1,6 +1,6 @@
 import React from "react";
 
-import TextInput from "../../commonComponents/TextInput";
+import Input from "../../commonComponents/Input";
 
 interface Props {
   admin: FacilityAdmin;
@@ -8,10 +8,10 @@ interface Props {
 }
 
 const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
-  const onChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    const onChange = <K extends keyof FacilityAdmin>(field: K) => (
+    value: FacilityAdmin[K]
   ) => {
-    updateAdmin({ ...admin, [e.target.name]: e.target.value });
+    updateAdmin({ ...admin, [field]: value });
   };
 
   return (
@@ -22,46 +22,47 @@ const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
       <div className="usa-card__body">
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
-            <TextInput
+            <Input
               label="First name"
-              name="firstName"
-              value={admin.firstName || ""}
+              field="firstName"
+              formObject={admin}
               onChange={onChange}
               required
             />
           </div>
           <div className="tablet:grid-col">
-            <TextInput
+            <Input
               label="Middle name"
-              name="middleName"
-              value={admin.middleName || ""}
-              onChange={onChange}
-            />
-          </div>
-          <div className="tablet:grid-col">
-            <TextInput
-              label="Last name"
-              name="lastName"
-              value={admin.lastName || ""}
+              field="middleName"
+              formObject={admin}
               onChange={onChange}
               required
             />
           </div>
           <div className="tablet:grid-col">
-            <TextInput
+            <Input
+              label="Last name"
+              field="lastName"
+              formObject={admin}
+              onChange={onChange}
+              required
+            />
+          </div>
+          <div className="tablet:grid-col">
+            <Input
               label="Suffix"
-              name="suffix"
-              value={admin.suffix || ""}
+              field="suffix"
+              formObject={admin}
               onChange={onChange}
             />
           </div>
         </div>
         <div className="grid-row grid-gap">
           <div className="tablet:grid-col">
-            <TextInput
+            <Input
               label="Email"
-              name="email"
-              value={admin.email}
+              field="email"
+              formObject={admin}
               onChange={onChange}
               required
             />
