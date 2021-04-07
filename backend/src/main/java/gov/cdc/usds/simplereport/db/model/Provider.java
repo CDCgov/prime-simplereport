@@ -10,7 +10,7 @@ import javax.persistence.Entity;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 @Entity
-public class Provider extends EternalAuditedEntity {
+public class Provider extends EternalAuditedEntity implements PersonEntity, LocatedEntity {
 
   @Embedded @JsonUnwrapped private PersonName nameInfo;
 
