@@ -18,7 +18,7 @@ Object {
               class="margin-bottom-4"
             >
               <div
-                class="person__header"
+                class="patient__header"
               >
                 <div
                   class="display-flex flex-justify"
@@ -28,19 +28,13 @@ Object {
                       class="display-flex flex-align-center"
                     >
                       <svg
-                        class="margin-left-neg-05"
-                        fill="#71767a"
-                        height="20px"
-                        viewBox="0 0 24 24"
-                        width="20px"
-                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                        class="usa-icon text-base margin-left-neg-2px"
+                        focusable="false"
+                        role="img"
                       >
-                        <path
-                          d="M0 0h24v24H0z"
-                          fill="none"
-                        />
-                        <path
-                          d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                        <use
+                          xlink:href="sprite.svg#arrow_back"
                         />
                       </svg>
                       <a
@@ -1276,7 +1270,7 @@ Object {
             class="margin-bottom-4"
           >
             <div
-              class="person__header"
+              class="patient__header"
             >
               <div
                 class="display-flex flex-justify"
@@ -1286,19 +1280,13 @@ Object {
                     class="display-flex flex-align-center"
                   >
                     <svg
-                      class="margin-left-neg-05"
-                      fill="#71767a"
-                      height="20px"
-                      viewBox="0 0 24 24"
-                      width="20px"
-                      xmlns="http://www.w3.org/2000/svg"
+                      aria-hidden="true"
+                      class="usa-icon text-base margin-left-neg-2px"
+                      focusable="false"
+                      role="img"
                     >
-                      <path
-                        d="M0 0h24v24H0z"
-                        fill="none"
-                      />
-                      <path
-                        d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"
+                      <use
+                        xlink:href="sprite.svg#arrow_back"
                       />
                     </svg>
                     <a
