@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.api.patient;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
+import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Person;
@@ -10,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PatientDataResolver implements GraphQLResolver<Person> {
+public class PatientDataResolver
+    implements GraphQLResolver<Person>, PersonNameResolver<Person>, InternalIdResolver<Person> {
 
   @Autowired private TestEventService _testEventService;
 
