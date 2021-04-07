@@ -3,20 +3,11 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
-
-import EditPatient, { GET_PATIENT } from "./EditPatient";
 import { MemoryRouter } from "react-router";
 
-const mockStore = configureStore([]);
+import EditPatient, { GET_PATIENT } from "./EditPatient";
 
-// jest.mock("react-router-dom", () => ({
-//   Prompt: (props: any) => <></>,
-//   Link: (props: any) => <></>,
-//   useHistory: () => ({
-//     listen: jest.fn(),
-//     push: jest.fn(),
-//   }),
-// }));
+const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
   afterEach(cleanup);
@@ -31,14 +22,14 @@ describe("EditPatient", () => {
     beforeEach(() => {
       render(
         <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <EditPatient
-              facilityId={mockFacilityID}
-              patientId={mockPatientID}
-            />
-          </MockedProvider>
-        </Provider>
+          <Provider store={store}>
+            <MockedProvider mocks={[]} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
         </MemoryRouter>
       );
     });
@@ -90,14 +81,14 @@ describe("EditPatient", () => {
 
       component = render(
         <MemoryRouter>
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <EditPatient
-              facilityId={mockFacilityID}
-              patientId={mockPatientID}
-            />
-          </MockedProvider>
-        </Provider>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
         </MemoryRouter>
       );
       await act(async () => {

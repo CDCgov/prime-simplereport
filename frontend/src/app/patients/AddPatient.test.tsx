@@ -10,24 +10,11 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
+import { MemoryRouter, Route } from "react-router";
 
 import AddPatient, { ADD_PATIENT } from "./AddPatient";
-import { MemoryRouter } from "react-router";
 
 const mockStore = configureStore([]);
-
-// jest.mock("react-router-dom", () => ({
-//   Prompt: (props: any) => <></>,
-//   Link: (props: any) => <></>,
-//   Redirect: (props: any) => <>{props.to}</>,
-//   useHistory: () => ({
-//     listen: jest.fn(),
-//     push: jest.fn(),
-//   }),
-//   useLocation: () => ({
-//     search: jest.fn(),
-//   }),
-// }));
 
 jest.mock("../utils/smartyStreets", () => ({
   getBestSuggestion: jest.fn(),
@@ -178,14 +165,14 @@ describe("AddPatient", () => {
         },
       ];
       render(
-        <MemoryRouter>
-          <Provider store={store}>
-            <MockedProvider mocks={mocks} addTypename={false}>
-              <AddPatient />
-            </MockedProvider>
-          </Provider>
-        </MemoryRouter>
-
+        <Provider store={store}>
+          <MockedProvider mocks={mocks} addTypename={false}>
+            <MemoryRouter initialEntries={["/add-patient/"]}>
+              <Route component={AddPatient} path={"/add-patient/"} />
+              <Route path={"/patients"} render={() => <p>Patients!</p>} />
+            </MemoryRouter>
+          </MockedProvider>
+        </Provider>
       );
     });
     it("shows the form title", async () => {
@@ -249,11 +236,7 @@ describe("AddPatient", () => {
           });
         });
         it("redirects to the person tab", () => {
-          expect(
-            screen.getByText(`/patients/?facility=${mockFacilityID}`, {
-              exact: false,
-            })
-          ).toBeInTheDocument();
+          expect(screen.getByText("Patients!")).toBeInTheDocument();
         });
       });
     });
