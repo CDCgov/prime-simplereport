@@ -104,7 +104,7 @@ type Patient
   gender: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
-  tribalAffiliation: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  tribalAffiliation: [String] @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   address: AddressInfo @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   street: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   streetTwo: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])

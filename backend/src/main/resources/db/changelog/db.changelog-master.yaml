@@ -1660,5 +1660,5 @@ databaseChangeLog:
             columns:
               - column:
                   name: tribal_affiliation
-                  type: *string
-                  remarks: A numeric value mapping to PRIME Data Hub's Tribal Affiliation valueset
+                  type: jsonb
+                  remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)

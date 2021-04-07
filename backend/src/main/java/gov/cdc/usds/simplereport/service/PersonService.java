@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -206,7 +207,7 @@ public class PersonService {
             email,
             race,
             ethnicity,
-            tribalAffiliation,
+            Arrays.asList(tribalAffiliation),
             gender,
             residentCongregateSetting,
             employedInHealthcare);
@@ -242,7 +243,7 @@ public class PersonService {
         email,
         race,
         ethnicity,
-        tribalAffiliation,
+        Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
         employedInHealthcare);
@@ -300,7 +301,7 @@ public class PersonService {
         email,
         race,
         ethnicity,
-        tribalAffiliation,
+        Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
         employedInHealthcare);

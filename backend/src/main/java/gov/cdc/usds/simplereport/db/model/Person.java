@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -56,7 +57,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    * Tribal Affiliation maps to this data set:
    * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
    */
-  @Column private String tribalAffiliation;
+  @Type(type = "jsonb")
+  @Column
+  private List<String> tribalAffiliation;
 
   @Column private String ethnicity;
   @Column private String telephone;
@@ -102,7 +105,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String email,
       String race,
       String ethnicity,
-      String tribalAffiliation,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -142,7 +145,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String email,
       String race,
       String ethnicity,
-      String tribalAffiliation,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -220,7 +223,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     return ethnicity;
   }
 
-  public String getTribalAffiliation() {
+  public List<String> getTribalAffiliation() {
     return tribalAffiliation;
   }
 
