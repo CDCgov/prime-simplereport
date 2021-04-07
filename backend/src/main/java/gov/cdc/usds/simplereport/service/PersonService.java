@@ -6,11 +6,13 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -31,6 +33,7 @@ public class PersonService {
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
+  private final PatientPreferencesRepository _prefRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -40,10 +43,14 @@ public class PersonService {
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
 
   public PersonService(
-      OrganizationService os, PersonRepository repo, CurrentPatientContextHolder patientContext) {
+      OrganizationService os,
+      PersonRepository repo,
+      PatientPreferencesRepository prefRepo,
+      CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
+    _prefRepo = prefRepo;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -249,21 +256,35 @@ public class PersonService {
     return _repo.save(toUpdate);
   }
 
+  public PatientPreferences getPatientPreferences(Person person) {
+    return _prefRepo
+        .findByPersonInternalId(person.getInternalId())
+        .orElseGet(() -> new PatientPreferences(person));
+  }
+
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
-  public Person updateTestResultDeliveryPreference(
-      UUID patientId, TestResultDeliveryPreference testResultDelivery) {
-    Person toUpdate = _repo.findById(patientId).orElseThrow();
-    toUpdate.setTestResultDelivery(testResultDelivery);
-    return _repo.save(toUpdate);
+  public PatientPreferences updateTestResultDeliveryPreference(
+      UUID personId, TestResultDeliveryPreference testResultDelivery) {
+    Person person = _repo.findById(personId).orElseThrow();
+    return upsertTestResultDeliveryPreference(person, testResultDelivery);
   }
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
-  public Person updateMyTestResultDeliveryPreference(
+  public PatientPreferences updateMyTestResultDeliveryPreference(
       TestResultDeliveryPreference testResultDelivery) {
-    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
+    Person patient = _patientContext.getLinkedOrder().getPatient();
+    return upsertTestResultDeliveryPreference(patient, testResultDelivery);
+  }
+
+  private PatientPreferences upsertTestResultDeliveryPreference(
+      Person person, TestResultDeliveryPreference testResultDelivery) {
+    PatientPreferences toUpdate =
+        _prefRepo
+            .findByPersonInternalId(person.getInternalId())
+            .orElseGet(() -> new PatientPreferences(person));
     toUpdate.setTestResultDelivery(testResultDelivery);
-    return _repo.save(toUpdate);
+    return _prefRepo.save(toUpdate);
   }
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility

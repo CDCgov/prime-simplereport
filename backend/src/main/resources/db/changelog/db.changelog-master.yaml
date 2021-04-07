@@ -1651,14 +1651,88 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
-      id: add-person-preferred-language
-      author: nicholas.a.scialli@omb.eop.gov
-      comment: Add column to Person for preferred language
+      id: add-patient-preferences
+      author: adam@skylight.digital
+      comment: Add table for non-demographic preferences relating to a Person
       changes:
-        - addColumn:
-            tableName: person
+        - createTable:
+            tableName: patient_preferences
             columns:
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: person_internal_id
+                  type: *idtype
+                  remarks: The internal database identifier for this entity.
+                  constraints:
+                    foreignKeyName: fk__patient_preferences__person
+                    references: person
+                    unique: true
+                    nullable: false
               - column:
                   name: preferred_language
                   type: *string
                   remarks: Tracks the individual's preferred language
+              - column:
+                  name: test_result_delivery
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
+                  remarks: Tracks the individual's preference for receiving test results
+              - column:
+                  name: created_at
+                  type: DATETIME
+                  remarks: The creation timestamp for this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: *idtype
+                  remarks: The user who created this entity.
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk__anyentity__created_by
+                    references: api_user
+              - column:
+                  name: updated_at
+                  type: DATETIME
+                  remarks: The timestamp for the most recent update of this entity.
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_by
+                  type: *idtype
+                  remarks: The user who most recently updated this entity.
+                  constraints:
+                    nullable: false
+                    references: api_user
+                    foreignKeyName: fk__anyentity__updated_by
+        - sql:
+          remarks: Migrate person.test_result_delivery to patient_preferences
+          sql: |
+            WITH migration_user as (
+              SELECT internal_id as migrations_user_id
+              FROM ${database.defaultSchemaName}.api_user
+              WHERE login_email = '${migrations_user_email}'
+            )
+            INSERT INTO ${database.defaultSchemaName}.patient_preferences (
+                internal_id, person_internal_id, preferred_language, test_result_delivery,
+                created_at, created_by, updated_at, updated_by
+            ) SELECT
+              gen_random_uuid() internal_id,
+              person.internal_id person_internal_id,
+              NULL preferred_language,
+              test_result_delivery,
+              now() created_at,
+              migrations_user_id created_by,
+              now() updated_at,
+              migrations_user_id updated_by
+            FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user;
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery

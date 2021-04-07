@@ -258,12 +258,11 @@ class TestOrderServiceTest extends BaseServiceTest<TestOrderService> {
             false,
             false,
             "French");
-    Person pWithSmsDelivery =
-        _personService.updateTestResultDeliveryPreference(
-            p.getInternalId(), TestResultDeliveryPreference.SMS);
+    _personService.updateTestResultDeliveryPreference(
+        p.getInternalId(), TestResultDeliveryPreference.SMS);
     _service.addPatientToQueue(
         facility.getInternalId(),
-        pWithSmsDelivery,
+        p,
         "",
         Collections.<String, Boolean>emptyMap(),
         false,
