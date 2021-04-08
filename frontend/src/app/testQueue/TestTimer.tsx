@@ -74,21 +74,17 @@ export class Timer {
         return;
       }
       const difference = toMillis(Math.abs(this.testLength - testLength));
-      this.countdown = (this.testLength > testLength) ? (this.countdown - difference) : (this.countdown + difference);
       // was 15 mins, now 10
       if (this.testLength > testLength) {
         this.countdown = this.countdown - difference;
         this.alarmAt = this.alarmAt - (difference);
       } else {
+        console.log("test length increased");
         this.countdown = this.countdown + difference;
         this.alarmAt = this.alarmAt + difference;
       }
+      this.testLength = testLength;
       return; 
-
-      // I think I'll also need to update the alarmAt value, in order for the tick to work properly
-      // next up: need to update testqueue to *actually* call the timer update function
-      // then verify that it works
-      // then work on tests!
     }
 
     tick(now: number) {
@@ -104,7 +100,6 @@ export class Timer {
         this.alarmed = true;
         alarmSound.play();
      }
-    //  console.log("timer tick:", this);
      return;
     }
 }
@@ -156,6 +151,15 @@ const addTimer = (id: string, testLength: number) : Timer => {
   return newTimer;
 }
 
+export const updateTimer = (id: string, testLength: number) : Timer => {
+  console.log("updating the timer!");
+  let timer: Timer = findTimer(id) || addTimer(id, testLength);
+  timer.update(testLength);
+  console.log(timer);
+  saveTimers();
+  return timer;
+}
+
 export const removeTimer = (id: string) => {
   const index = timers.findIndex((t) => t.id === id);
   if (index >= 0) {
@@ -163,6 +167,11 @@ export const removeTimer = (id: string) => {
     saveTimers();
   }
 }
+
+// need to work on:
+// making sure the timer updates before it's running if device is changed
+// cleaning up this file
+// writing new tests for timer (and probably for backend as well)
 
 export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
@@ -179,7 +188,6 @@ export const useTestTimer = (id: string, testLength: number) => {
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
       const timer: Timer = findTimer(id) || addTimer(id, testLength);
-      console.log("timer started: ", timer);
       timer.start(Date.now());
       saveTimers();
     },

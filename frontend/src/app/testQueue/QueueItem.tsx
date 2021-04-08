@@ -23,7 +23,7 @@ import Checkboxes from "../commonComponents/Checkboxes";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { removeTimer, TestTimerWidget, useTestTimer } from "./TestTimer";
+import { removeTimer, TestTimerWidget, Timer, updateTimer, useTestTimer } from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
@@ -44,7 +44,6 @@ export const REMOVE_PATIENT_FROM_QUEUE = gql`
   }
 `;
 
-// to get timers to sync across user devices, this mutation will probably need to be changed
 const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
@@ -375,11 +374,16 @@ const QueueItem: any = ({
         if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
+        updateTimer(internalId, response.data.editQueueItem.deviceType.testLength);
+        // updateQueueTimer(internalId, response.data.editQueueItem.deviceType.testLength);
+        // Force the timer update here - document.getelementbyclass(timer-button).forceUpdate();
+        // document doesn't seem to be possible - is there another way to force an update of an item here?
+        // I don't think it's quite possible to do it within Timer, since we want the change to happen silently (i.e., without the user clicking on the timer)
+        // question for the channel tomorrow
       })
       .catch(updateMutationError);
   };
 
-  // also need to change it here
   const onDeviceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const deviceId = e.currentTarget.value;
     updateQueueItem({ deviceId, dateTested, result: testResultValue });
