@@ -79,9 +79,7 @@ const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
     updateAdmin({ ...admin, [field]: value });
   };
 
-  const { errors, validateField, validateAdmin } = useFacilityAdminValidation(
-    admin
-  );
+  const { errors, validateField } = useFacilityAdminValidation(admin);
 
   const getValidationStatus = (field: keyof FacilityAdmin) =>
     errors[field] ? "error" : undefined;
