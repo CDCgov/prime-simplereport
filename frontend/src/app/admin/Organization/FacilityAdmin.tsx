@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import Alert from "../../commonComponents/Alert";
 import Input from "../../commonComponents/Input";
 import { showNotification } from "../../utils";
+import { camelToSentenceCase } from "../../utils/text";
 
 import {
   allFacilityAdminErrors,
@@ -84,60 +85,37 @@ const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
   const getValidationStatus = (field: keyof FacilityAdmin) =>
     errors[field] ? "error" : undefined;
 
+  const fields = {
+    ["firstName" as keyof FacilityAdmin]: true,
+    ["middleName" as keyof FacilityAdmin]: false,
+    ["lastName" as keyof FacilityAdmin]: true,
+    ["suffix" as keyof FacilityAdmin]: false,
+    ["email" as keyof FacilityAdmin]: true,
+  };
+
   return (
     <div className="prime-container usa-card__container">
       <div className="usa-card__header">
         <h2 style={{ margin: 0 }}>Facility Administrator</h2>
       </div>
       <div className="usa-card__body usa-form usa-form--large">
-        <Input
-          label="First name"
-          field="firstName"
-          formObject={admin}
-          onChange={onChange}
-          errors={errors}
-          validate={validateField}
-          getValidationStatus={getValidationStatus}
-          required
-        />
-        <Input
-          label="Middle name"
-          field="middleName"
-          formObject={admin}
-          onChange={onChange}
-          errors={errors}
-          validate={validateField}
-          getValidationStatus={getValidationStatus}
-        />
-        <Input
-          label="Last name"
-          field="lastName"
-          formObject={admin}
-          onChange={onChange}
-          errors={errors}
-          validate={validateField}
-          getValidationStatus={getValidationStatus}
-          required
-        />
-        <Input
-          label="Suffix"
-          field="suffix"
-          formObject={admin}
-          onChange={onChange}
-          errors={errors}
-          validate={validateField}
-          getValidationStatus={getValidationStatus}
-        />
-        <Input
-          label="Email"
-          field="email"
-          formObject={admin}
-          onChange={onChange}
-          errors={errors}
-          validate={validateField}
-          getValidationStatus={getValidationStatus}
-          required
-        />
+        {Object.entries(fields).map(([key, value]) => {
+          const field = key as keyof FacilityAdmin;
+          const required = value as boolean;
+          return (
+            <Input
+              label={camelToSentenceCase(field)}
+              field={field}
+              key={field}
+              formObject={admin}
+              onChange={onChange}
+              errors={errors}
+              validate={validateField}
+              getValidationStatus={getValidationStatus}
+              required={required}
+            />
+          );
+        })}
       </div>
     </div>
   );
