@@ -14,9 +14,11 @@ module "simple_report_api" {
   https_only       = true
 
   app_settings = {
-    SPRING_PROFILES_ACTIVE                         = "azure-training,no-security,no-okta-mgmt"
-    SPRING_LIQUIBASE_ENABLED                       = "true"
-    SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
+    SPRING_PROFILES_ACTIVE                         = "azure-training"
+    # true by default: can be disabled quickly here
+    # SPRING_LIQUIBASE_ENABLED                       = "true"
+    # this shadows (and overrides) an identical declaration in application.yaml
+    # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
     SPRING_DATASOURCE_URL                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
     APPLICATIONINSIGHTS_CONNECTION_STRING          = "InstrumentationKey=${data.azurerm_application_insights.app_insights.instrumentation_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
     DATAHUB_API_KEY                                = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.datahub_api_key.id})"
