@@ -837,6 +837,14 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode updateRoleVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
     runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
+
+    ObjectNode restoreVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", false);
+    ObjectNode restoreResp = runQuery("set-user-is-deleted", restoreVariables);
+    assertEquals(USERNAMES.get(0), restoreResp.get("setUserIsDeleted").get("email").asText());
+
+    ObjectNode roleUpdateResp = runQuery("update-user-role", updateRoleVariables);
+    assertEquals(Role.ADMIN.name(), roleUpdateResp.get("updateUserRole").asText());
   }
 
   @Test
