@@ -41,9 +41,9 @@ interface Organization {
 
 interface FacilityAdmin {
   firstName: string;
-  middleName: string;
+  middleName: string | null;
   lastName: string;
-  suffix: string;
+  suffix: string | null;
   email: string;
 }
 
