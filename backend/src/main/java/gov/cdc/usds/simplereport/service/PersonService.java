@@ -257,9 +257,13 @@ public class PersonService {
   }
 
   public PatientPreferences getPatientPreferences(Person person) {
-    return _prefRepo
-        .findByPersonInternalId(person.getInternalId())
-        .orElseGet(() -> new PatientPreferences(person));
+    return _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
+  }
+
+  @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
+  public PatientPreferences updateTestResultDeliveryPreference(
+      Person person, TestResultDeliveryPreference testResultDelivery) {
+    return upsertTestResultDeliveryPreference(person, testResultDelivery);
   }
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
@@ -280,9 +284,7 @@ public class PersonService {
   private PatientPreferences upsertTestResultDeliveryPreference(
       Person person, TestResultDeliveryPreference testResultDelivery) {
     PatientPreferences toUpdate =
-        _prefRepo
-            .findByPersonInternalId(person.getInternalId())
-            .orElseGet(() -> new PatientPreferences(person));
+        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
     toUpdate.setTestResultDelivery(testResultDelivery);
     return _prefRepo.save(toUpdate);
   }
