@@ -128,6 +128,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
                 updateFacility={updateFacility}
                 errors={errors}
                 validateField={validateField}
+                formChanged={formChanged}
               />
             </div>
           </div>
