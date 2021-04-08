@@ -1,9 +1,9 @@
 spring:
   profiles.include: okta-stg
-cors:
-  allowed-origins:
-    - https://simple-report-api-stg.azurewebsites.net
-    - https://simple-report-stg.azureedge.net
-    - https://stg.simplereport.gov
 simple-report:
   patient-link-url: https://stg.simplereport.gov/app/pxp?plid=
+  cors:
+    allowed-origins:
+      - https://simple-report-api-stg.azurewebsites.net
+      - https://simple-report-stg.azureedge.net
+      - https://stg.simplereport.gov

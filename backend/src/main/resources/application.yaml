@@ -19,11 +19,6 @@ spring:
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-cors:
-  allowed-methods:
-    - GET
-    - HEAD
-    - POST
 graphql:
   servlet:
     mapping: /graphql
@@ -73,6 +68,11 @@ simple-report:
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
+  cors:
+    allowed-methods:
+      - GET
+      - HEAD
+      - POST
 twilio:
   from-number: "+12023014570"
 logging:
