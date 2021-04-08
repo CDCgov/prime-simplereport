@@ -174,9 +174,14 @@ const PersonForm = (props: Props) => {
           "\nYour changes are not yet saved!\n\nClick OK discard changes, Cancel to continue editing."
         }
       />
-      {props.getHeader && props.getHeader(patient, validateForm, formChanged)}
-      <RequiredMessage />
+      {!isPatientView && (
+        <div className="patient__header">
+          {props.getHeader &&
+            props.getHeader(patient, validateForm, formChanged)}
+        </div>
+      )}
       <FormGroup title="General info">
+        <RequiredMessage />
         <div className="usa-form">
           <Input
             {...commonInputProps}

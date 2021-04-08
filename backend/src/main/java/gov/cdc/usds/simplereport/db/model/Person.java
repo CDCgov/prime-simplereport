@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
  * this object, you will likely break many things, so do not do that.
  */
 @Entity
-public class Person extends OrganizationScopedEternalEntity {
+public class Person extends OrganizationScopedEternalEntity implements PersonEntity, LocatedEntity {
 
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.

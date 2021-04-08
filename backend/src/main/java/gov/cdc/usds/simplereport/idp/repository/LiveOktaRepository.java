@@ -455,10 +455,6 @@ public class LiveOktaRepository implements OktaRepository {
       throw new IllegalGraphqlArgumentException("Cannot get org external ID for nonexistent user");
     }
     User user = users.single();
-    if (user.getStatus() == UserStatus.SUSPENDED) {
-      throw new IllegalGraphqlArgumentException("Cannot get org external ID for suspended user");
-    }
-
     return getOrganizationRoleClaimsForUser(user);
   }
 

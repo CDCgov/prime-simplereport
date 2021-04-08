@@ -19,7 +19,7 @@ import org.hibernate.annotations.UpdateTimestamp;
  * UpdateTimestamp}, and feel kind of weird about it.
  */
 @MappedSuperclass
-public abstract class SystemManagedEntity {
+public abstract class SystemManagedEntity implements DatabaseEntity {
 
   @Column(updatable = false, nullable = false)
   @Id

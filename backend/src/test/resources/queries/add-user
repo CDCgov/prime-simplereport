@@ -28,7 +28,7 @@ mutation addUserOp(
       organization {
         name
         externalId
-        testingFacility {
+        facilities {
           name
           id
         }

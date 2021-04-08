@@ -66,6 +66,21 @@ class ApiUserManagementTest extends BaseGraphqlTest {
             UserPermission.UPDATE_TEST,
             UserPermission.SUBMIT_TEST),
         null);
+
+    JsonNode facilityNode = who.path("organization").path("facilities").get(0);
+    assertEquals("Injection Site", facilityNode.get("name").asText());
+    assertEquals("2797 N Cerrada de Beto", facilityNode.get("street").asText());
+    assertEquals("2797 N Cerrada de Beto", facilityNode.path("address").get("streetOne").asText());
+
+    JsonNode providerNode = facilityNode.get("orderingProvider");
+    assertEquals("Flintstone", providerNode.get("lastName").asText());
+    assertEquals("Flintstone", providerNode.path("name").get("lastName").asText());
+    assertEquals("123 Main Street", providerNode.get("street").asText());
+    assertEquals("123 Main Street", providerNode.path("address").get("streetOne").asText());
+    assertEquals("Oz", providerNode.get("city").asText());
+    assertEquals("Oz", providerNode.path("address").get("city").asText());
+    assertEquals("12345", providerNode.get("zipCode").asText());
+    assertEquals("12345", providerNode.path("address").get("postalCode").asText());
   }
 
   @Test
@@ -822,6 +837,14 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     ObjectNode updateRoleVariables =
         JsonNodeFactory.instance.objectNode().put("id", id).put("role", Role.ADMIN.name());
     runQuery("update-user-role", updateRoleVariables, NO_USER_ERROR);
+
+    ObjectNode restoreVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", false);
+    ObjectNode restoreResp = runQuery("set-user-is-deleted", restoreVariables);
+    assertEquals(USERNAMES.get(0), restoreResp.get("setUserIsDeleted").get("email").asText());
+
+    ObjectNode roleUpdateResp = runQuery("update-user-role", updateRoleVariables);
+    assertEquals(Role.ADMIN.name(), roleUpdateResp.get("updateUserRole").asText());
   }
 
   @Test
@@ -1069,7 +1092,7 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
   // map from each facility's name to its UUID; includes all facilities user can access
   private Map<String, UUID> extractFacilitiesFromUser(ObjectNode user) {
-    Iterator<JsonNode> facilitiesIter = user.get("organization").get("testingFacility").elements();
+    Iterator<JsonNode> facilitiesIter = user.get("organization").get("facilities").elements();
     Map<String, UUID> facilities = new HashMap<>();
     while (facilitiesIter.hasNext()) {
       JsonNode facility = facilitiesIter.next();

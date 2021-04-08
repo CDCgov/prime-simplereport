@@ -8,7 +8,7 @@
   margin-bottom: 1.5rem;
   .usa-card__header {
     padding: 1.5rem;
-    border-bottom: 1px solid #f4f4f4;
+    border-bottom: 1px solid color("base-lighter");
     display: flex;
     justify-content: space-between;
     h2 {
@@ -312,24 +312,35 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .prime-secondary-nav {
-  margin: 0 8px;
+  margin-left: units(1);
+  margin-top: units(1);
 }
 
 .prime-nav.usa-nav__secondary-links {
   display: flex;
-  position: relative;
   float: none;
-  margin-bottom: 0px;
+  margin-bottom: 0;
+  position: relative;
+
+  .usa-nav__secondary-item:not(:first-child) {
+    padding-left: units(2.5);
+
+    &:before {
+      display: none;
+    }
+  }
 
   a {
-    color: #555;
-    font-size: font-size($theme-navigation-font-family, "sm");
-    padding-bottom: 5px;
+    color: color("base-dark");
+    font-size: size("ui", "md");
+    padding-bottom: units(1.5);
+
     &.active,
     &:hover {
-      color: #000;
+      border-bottom: units(0.5) solid color("primary");
+      color: color("ink");
+      padding-bottom: units(1);
       text-decoration: none;
-      border-bottom: 4px solid #0d60a0;
     }
   }
 }
@@ -747,6 +758,17 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   h3 {
     font-size: size("body", "sm");
   }
+}
+
+.patient__header {
+  background-color: color("white");
+  border: units(2px) solid color("base-lighter");
+  border-bottom: units(1px) solid color("base-lighter");
+  border-top-left-radius: units(2px);
+  border-top-right-radius: units(2px);
+  margin-bottom: units(-0.5);
+  padding: units(2.5) units(3);
+  position: relative;
 }
 
 .maxw-prose {

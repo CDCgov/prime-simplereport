@@ -16,6 +16,9 @@ public interface ApiUserRepository extends EternalSystemManagedEntityRepository<
   @Query(BASE_QUERY + " and internalId = :id")
   public Optional<ApiUser> findById(UUID id);
 
+  @Query("FROM #{#entityName} e WHERE internalId = :id")
+  public Optional<ApiUser> findByIdIncludeArchived(UUID id);
+
   @Query(BASE_QUERY + " and loginEmail = :email")
   public Optional<ApiUser> findByLoginEmail(String email);
 

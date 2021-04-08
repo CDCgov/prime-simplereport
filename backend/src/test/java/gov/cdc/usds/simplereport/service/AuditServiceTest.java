@@ -38,7 +38,7 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
     _service.logGraphQlEvent(
         state,
         List.of(),
-        userInfo.getWrappedUser(),
+        userInfo.getWrapped(),
         userInfo.getPermissions(),
         userInfo.getIsAdmin(),
         userInfo.getOrganization().orElse(null));
