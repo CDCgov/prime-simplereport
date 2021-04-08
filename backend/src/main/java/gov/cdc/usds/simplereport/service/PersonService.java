@@ -262,12 +262,6 @@ public class PersonService {
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
   public PatientPreferences updateTestResultDeliveryPreference(
-      Person person, TestResultDeliveryPreference testResultDelivery) {
-    return upsertTestResultDeliveryPreference(person, testResultDelivery);
-  }
-
-  @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
-  public PatientPreferences updateTestResultDeliveryPreference(
       UUID personId, TestResultDeliveryPreference testResultDelivery) {
     Person person = _repo.findById(personId).orElseThrow();
     return upsertTestResultDeliveryPreference(person, testResultDelivery);
