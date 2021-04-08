@@ -27,13 +27,6 @@ import { removeTimer, TestTimerWidget, Timer, updateTimer, useTestTimer } from "
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
-// General plan: update the timer to accept different initial countdown lengths
-// then update the initialization of QueueItem to include test length
-// (this will require updates in QueueItem, TestQueue, and possibly schema and backend
-// probably best to go with testqueue updates first, rather than breaking queueItem and working backwards)
-// after the initialization is being correctly passed to the timer, do the same thing with timer updates
-
-
 export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
@@ -270,6 +263,8 @@ const QueueItem: any = ({
     selectedDeviceId || defaultDevice.internalId
   );
 
+  const [deviceTestLength, updateDeviceTestLength] = useState(selectedDeviceTestLength);
+
   const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
     dateTestedProp ? "false" : "true"
   );
@@ -375,11 +370,7 @@ const QueueItem: any = ({
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
         updateTimer(internalId, response.data.editQueueItem.deviceType.testLength);
-        // updateQueueTimer(internalId, response.data.editQueueItem.deviceType.testLength);
-        // Force the timer update here - document.getelementbyclass(timer-button).forceUpdate();
-        // document doesn't seem to be possible - is there another way to force an update of an item here?
-        // I don't think it's quite possible to do it within Timer, since we want the change to happen silently (i.e., without the user clicking on the timer)
-        // question for the channel tomorrow
+        updateDeviceTestLength(response.data.editQueueItem.deviceType.testLength);
       })
       .catch(updateMutationError);
   };
@@ -515,7 +506,7 @@ const QueueItem: any = ({
       </li>
     ) : null;
 
-  const timer = useTestTimer(internalId, selectedDeviceTestLength);
+  const timer = useTestTimer(internalId, deviceTestLength);
 
   const containerClasses = classnames(
     "grid-container",

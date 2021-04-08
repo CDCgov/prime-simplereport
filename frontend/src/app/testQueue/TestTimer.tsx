@@ -12,12 +12,6 @@ type DateTimeStamp = ReturnType<typeof Date.now>;
 function toMillis(minutes: number) {
     return minutes * 60 * 1000;
 }
-
-// alarmed = it's gone off already
-// countdown = the number to display as countdown
-// elapsed = the inverse of countdown
-// startedAt - when the timer was started
-// alarmAt - scheduled timer end
  
 export class Timer {
     id: string;
@@ -63,9 +57,9 @@ export class Timer {
       this.alarmed = false;
     }
 
+    // Updates the timer when the length of test changes (used for device changes.)
     update(testLength: number) {
       if (testLength === this.testLength) {
-        // nothing to update
         return;
       }
       if (!this.startedAt) {
@@ -74,12 +68,10 @@ export class Timer {
         return;
       }
       const difference = toMillis(Math.abs(this.testLength - testLength));
-      // was 15 mins, now 10
       if (this.testLength > testLength) {
         this.countdown = this.countdown - difference;
-        this.alarmAt = this.alarmAt - (difference);
+        this.alarmAt = this.alarmAt - difference;
       } else {
-        console.log("test length increased");
         this.countdown = this.countdown + difference;
         this.alarmAt = this.alarmAt + difference;
       }
@@ -152,10 +144,8 @@ const addTimer = (id: string, testLength: number) : Timer => {
 }
 
 export const updateTimer = (id: string, testLength: number) : Timer => {
-  console.log("updating the timer!");
   let timer: Timer = findTimer(id) || addTimer(id, testLength);
   timer.update(testLength);
-  console.log(timer);
   saveTimers();
   return timer;
 }
@@ -167,11 +157,6 @@ export const removeTimer = (id: string) => {
     saveTimers();
   }
 }
-
-// need to work on:
-// making sure the timer updates before it's running if device is changed
-// cleaning up this file
-// writing new tests for timer (and probably for backend as well)
 
 export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
