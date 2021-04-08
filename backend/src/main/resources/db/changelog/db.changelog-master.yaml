@@ -1732,7 +1732,7 @@ databaseChangeLog:
               now() created_at,
               migrations_user_id created_by,
               now() updated_at,
-              migrations_user_id updated_by
+              updated_by
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
   - changeSet:
