@@ -84,8 +84,7 @@ public class DeviceType extends EternalAuditedEntity {
   public Integer getTestLength() {
     if (testLength != null) {
       return testLength;
-    }
-    else {
+    } else {
       this.testLength = determineTestLength(name);
       return testLength;
     }

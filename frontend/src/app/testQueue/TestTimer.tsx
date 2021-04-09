@@ -10,145 +10,145 @@ const alarmSound = new Audio(alarmModule.default || alarmModule);
 type DateTimeStamp = ReturnType<typeof Date.now>;
 
 function toMillis(minutes: number) {
-    return minutes * 60 * 1000;
+  return minutes * 60 * 1000;
 }
- 
+
 export class Timer {
-    id: string;
-    startedAt: DateTimeStamp;
-    alarmAt: DateTimeStamp;
-    testLength: number;
-    countdown: number;
-    elapsed: number;
-    alarmed: boolean;
-    notify?: (value: number) => any;
+  id: string;
+  startedAt: DateTimeStamp;
+  alarmAt: DateTimeStamp;
+  testLength: number;
+  countdown: number;
+  elapsed: number;
+  alarmed: boolean;
+  notify?: (value: number) => any;
 
-    constructor(id: string, testLength: number) {
-        this.id = id;
-        this.startedAt = 0;
-        this.alarmAt = 0;
-        this.testLength = testLength;
-        this.countdown = toMillis(testLength);
-        this.elapsed = 0;
-        this.alarmed = false;
+  constructor(id: string, testLength: number) {
+    this.id = id;
+    this.startedAt = 0;
+    this.alarmAt = 0;
+    this.testLength = testLength;
+    this.countdown = toMillis(testLength);
+    this.elapsed = 0;
+    this.alarmed = false;
+  }
+
+  fromJSON(obj: any) {
+    this.id = obj.id;
+    this.startedAt = obj.startedAt;
+    this.alarmAt = obj.alarmAt;
+    this.testLength = obj.testLength;
+    this.countdown = obj.countdown;
+    this.elapsed = obj.elapsed;
+    this.alarmed = obj.alarmed;
+    this.notify = obj.notify;
+  }
+
+  start(now: number) {
+    this.startedAt = now;
+    this.alarmAt = this.startedAt + toMillis(this.testLength);
+  }
+
+  reset() {
+    this.startedAt = 0;
+    this.alarmAt = 0;
+    this.countdown = toMillis(this.testLength);
+    this.elapsed = 0;
+    this.alarmed = false;
+  }
+
+  // Updates the timer when the length of test changes (used for device changes.)
+  update(testLength: number) {
+    if (testLength === this.testLength) {
+      return;
     }
-
-    fromJSON(obj : any) {
-      this.id = obj.id;
-      this.startedAt = obj.startedAt;
-      this.alarmAt = obj.alarmAt;
-      this.testLength = obj.testLength;
-      this.countdown = obj.countdown;
-      this.elapsed = obj.elapsed;
-      this.alarmed = obj.alarmed;
-      this.notify = obj.notify;
-    }
-
-    start(now: number) {
-      this.startedAt = now;
-      this.alarmAt = this.startedAt + toMillis(this.testLength);
-    }
-
-    reset() {
-      this.startedAt = 0;
-      this.alarmAt = 0;
-      this.countdown = toMillis(this.testLength);
-      this.elapsed = 0;
-      this.alarmed = false;
-    }
-
-    // Updates the timer when the length of test changes (used for device changes.)
-    update(testLength: number) {
-      if (testLength === this.testLength) {
-        return;
-      }
-      if (!this.startedAt) {
-        this.testLength = testLength;
-        this.countdown = toMillis(testLength);
-        return;
-      }
-      const difference = toMillis(Math.abs(this.testLength - testLength));
-      if (this.testLength > testLength) {
-        this.countdown = this.countdown - difference;
-        this.alarmAt = this.alarmAt - difference;
-      } else {
-        this.countdown = this.countdown + difference;
-        this.alarmAt = this.alarmAt + difference;
-      }
+    if (!this.startedAt) {
       this.testLength = testLength;
-      return; 
+      this.countdown = toMillis(testLength);
+      return;
     }
+    const difference = toMillis(Math.abs(this.testLength - testLength));
+    if (this.testLength > testLength) {
+      this.countdown = this.countdown - difference;
+      this.alarmAt = this.alarmAt - difference;
+    } else {
+      this.countdown = this.countdown + difference;
+      this.alarmAt = this.alarmAt + difference;
+    }
+    this.testLength = testLength;
+    return;
+  }
 
-    tick(now: number) {
-      if (!this.startedAt) {
-        return;
-      }
-      this.countdown = Math.round(this.alarmAt - now);
-      this.elapsed = now - this.startedAt;
-      if (this.notify) {
-        this.notify(this.countdown);
-      }
-      if (!this.alarmed && this.alarmAt <= now) {
-        this.alarmed = true;
-        alarmSound.play();
-     }
-     return;
+  tick(now: number) {
+    if (!this.startedAt) {
+      return;
     }
+    this.countdown = Math.round(this.alarmAt - now);
+    this.elapsed = now - this.startedAt;
+    if (this.notify) {
+      this.notify(this.countdown);
+    }
+    if (!this.alarmed && this.alarmAt <= now) {
+      this.alarmed = true;
+      alarmSound.play();
+    }
+    return;
+  }
 }
 
 const timerFromJSON = (obj: any) => {
   let timer = new Timer(obj.id, obj.testLength);
   timer.fromJSON(obj);
   return timer;
-}
+};
 
 // Initialize an empty list of timers.
 let timers: Timer[] = [];
 
 const tickTimers = () => {
-    const now = Date.now();
-    timers.forEach((t) => {
-      t.tick(now);
-    });
-}
-
-const saveTimers = () => {
-    localStorage.setItem("timers", JSON.stringify(timers));
+  const now = Date.now();
+  timers.forEach((t) => {
+    t.tick(now);
+  });
 };
 
-// On load, retrieve timers from localStorage and prune them; 
+const saveTimers = () => {
+  localStorage.setItem("timers", JSON.stringify(timers));
+};
+
+// On load, retrieve timers from localStorage and prune them;
 // only keep running timers that aren't super stale.
 // Then start the timer tick.
 {
-    let oldTimers: Timer[] = [];
-    try {
-        const storage = localStorage.getItem("timers") || "[]";
-        const cutoff = Date.now() - toMillis(60);
-        oldTimers = JSON.parse(storage).filter((t : any) => t.alarmAt > cutoff);
-    } catch (e) {}
-    oldTimers.forEach((t) => {
-      timers.push(timerFromJSON(t));
-    })
-    saveTimers();
-    // Tick the timers every millisecond.
-    window.setInterval(tickTimers, 1000);
+  let oldTimers: Timer[] = [];
+  try {
+    const storage = localStorage.getItem("timers") || "[]";
+    const cutoff = Date.now() - toMillis(60);
+    oldTimers = JSON.parse(storage).filter((t: any) => t.alarmAt > cutoff);
+  } catch (e) {}
+  oldTimers.forEach((t) => {
+    timers.push(timerFromJSON(t));
+  });
+  saveTimers();
+  window.setInterval(tickTimers, 1000);
 }
 
-const findTimer = (id: string): Timer | undefined => timers.find((t) => t.id === id);
+const findTimer = (id: string): Timer | undefined =>
+  timers.find((t) => t.id === id);
 
-const addTimer = (id: string, testLength: number) : Timer => {
+const addTimer = (id: string, testLength: number): Timer => {
   const newTimer = new Timer(id, testLength);
   timers.push(newTimer);
   saveTimers();
   return newTimer;
-}
+};
 
-export const updateTimer = (id: string, testLength: number) : Timer => {
+export const updateTimer = (id: string, testLength: number): Timer => {
   let timer: Timer = findTimer(id) || addTimer(id, testLength);
   timer.update(testLength);
   saveTimers();
   return timer;
-}
+};
 
 export const removeTimer = (id: string) => {
   const index = timers.findIndex((t) => t.id === id);
@@ -156,7 +156,7 @@ export const removeTimer = (id: string) => {
     timers.splice(index, 1);
     saveTimers();
   }
-}
+};
 
 export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
@@ -169,7 +169,9 @@ export const useTestTimer = (id: string, testLength: number) => {
   }, [id, timer]);
   return {
     running: timer.startedAt !== 0,
-    countdown: Math.round((timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000),
+    countdown: Math.round(
+      (timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000
+    ),
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
       const timer: Timer = findTimer(id) || addTimer(id, testLength);
@@ -192,7 +194,7 @@ export const useTestTimer = (id: string, testLength: number) => {
 
 type Props = {
   timer: ReturnType<typeof useTestTimer>;
-}
+};
 
 export const TestTimerWidget = ({ timer }: Props) => {
   const { running, countdown, elapsed, start, reset } = timer;
@@ -203,25 +205,25 @@ export const TestTimerWidget = ({ timer }: Props) => {
   };
   if (!running) {
     return (
-            <button className="timer-button timer-reset" onClick={start}>
-              <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
-            </button>
-          );
+      <button className="timer-button timer-reset" onClick={start}>
+        <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
+      </button>
+    );
   }
   if (countdown >= 0) {
-        return (
-          <button className="timer-button timer-running" onClick={reset}>
-            <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
-          </button>
-        );
-      }
-      return (
-            <div>
-              <button className="timer-button timer-ready" onClick={reset}>
-                <span className="result-ready">RESULT READY</span>{" "}
-                <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
-                <FontAwesomeIcon icon={faRedo} />
-              </button>
-            </div>
-          );
+    return (
+      <button className="timer-button timer-running" onClick={reset}>
+        <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
+      </button>
+    );
+  }
+  return (
+    <div>
+      <button className="timer-button timer-ready" onClick={reset}>
+        <span className="result-ready">RESULT READY</span>{" "}
+        <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
+        <FontAwesomeIcon icon={faRedo} />
+      </button>
+    </div>
+  );
 };

@@ -159,8 +159,6 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
   let shouldRenderQueue =
     data.queue.length > 0 && facility.deviceTypes.length > 0;
 
-    // note: currently, to get the 10 minute timer to appear, we need to start a test (doesn't work to just reload the page)
-    // this might change when editing is enabled? but not sure
   const createQueueItems = (patientQueue: QueueItemData[]) => {
     const queue =
       shouldRenderQueue &&

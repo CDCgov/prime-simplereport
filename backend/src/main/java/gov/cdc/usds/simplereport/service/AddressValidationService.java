@@ -51,17 +51,17 @@ public class AddressValidationService {
   }
 
   public StreetAddress getValidatedAddress(Lookup lookup, String fieldName) {
-    // try {
-    //   _client.send(lookup);
-    // } catch (SmartyException | IOException ex) {
-    //   LOG.error("SmartyStreets address lookup failed", ex);
-    //   throw new IllegalGraphqlArgumentException(
-    //       "The server is unable to verify the address you entered. Please try again later");
-    // }
+    try {
+      _client.send(lookup);
+    } catch (SmartyException | IOException ex) {
+      LOG.error("SmartyStreets address lookup failed", ex);
+      throw new IllegalGraphqlArgumentException(
+          "The server is unable to verify the address you entered. Please try again later");
+    }
 
-    // ArrayList<Candidate> results = lookup.getResult();
+    ArrayList<Candidate> results = lookup.getResult();
 
-    // if (results.isEmpty()) {
+    if (results.isEmpty()) {
       return new StreetAddress(
           lookup.getStreet(),
           lookup.getSecondary(),
@@ -69,19 +69,19 @@ public class AddressValidationService {
           lookup.getState(),
           lookup.getZipCode(),
           "");
-    // }
+    }
 
     // If the address is invalid then Smarty street returns 0 results.
     // If the address is valid the results are returned and the first result is the best match
     // and is the one we should be using to get the County metadata
-    // Candidate addressMatch = results.get(0);
-    // return new StreetAddress(
-    //     lookup.getStreet(),
-    //     lookup.getSecondary(),
-    //     lookup.getCity(),
-    //     lookup.getState(),
-    //     lookup.getZipCode(),
-    //     addressMatch.getMetadata().getCountyName());
+    Candidate addressMatch = results.get(0);
+    return new StreetAddress(
+        lookup.getStreet(),
+        lookup.getSecondary(),
+        lookup.getCity(),
+        lookup.getState(),
+        lookup.getZipCode(),
+        addressMatch.getMetadata().getCountyName());
   }
 
   /** Returns a StreetAddress if the address is valid and throws an exception if it is not */
@@ -93,7 +93,6 @@ public class AddressValidationService {
       String postalCode,
       String fieldName) {
     Lookup lookup = getStrictLookup(street1, street2, city, state, postalCode);
-    System.out.println("Lookup results: " + lookup.toString());
     return getValidatedAddress(lookup, fieldName);
   }
 }

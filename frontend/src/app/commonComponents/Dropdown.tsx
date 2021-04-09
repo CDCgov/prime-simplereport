@@ -81,7 +81,7 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           >
             {defaultSelect && <option value="">- Select -</option>}
             {options.map(({ value, label, disabled }) => (
-              <option key={value} value={value} disabled={disabled}>
+              <option key={value} value={value} disabled={disabled} data-testid={`dropdown-option`}>
                 {label}
               </option>
             ))}

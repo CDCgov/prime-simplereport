@@ -558,11 +558,13 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
                       - Select -
                     </option>
                     <option
+                      data-testid="dropdown-option"
                       value="a2"
                     >
                       Bar Org
                     </option>
                     <option
+                      data-testid="dropdown-option"
                       value="a1"
                     >
                       Foo Org

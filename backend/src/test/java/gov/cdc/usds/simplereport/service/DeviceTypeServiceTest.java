@@ -27,6 +27,16 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals(deviceType.getModel(), "C");
     assertEquals(deviceType.getLoincCode(), "D");
     assertEquals(deviceType.getSwabType(), FAKE_SWAB_TYPE);
+    assertEquals(deviceType.getTestLength(), 15);
+  }
+
+  @Test
+  void fetchDeviceType_carestartTestLength() {
+    _deviceTypeRepo.save(new DeviceType("CareStart", "B", "C", "D", FAKE_SWAB_TYPE));
+    
+    DeviceType deviceType = _service.fetchDeviceTypes().get(0);
+
+    assertEquals(deviceType.getTestLength(), 10);
   }
 
   @Test

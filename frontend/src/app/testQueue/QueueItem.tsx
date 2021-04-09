@@ -23,7 +23,12 @@ import Checkboxes from "../commonComponents/Checkboxes";
 
 import { ALERT_CONTENT, QUEUE_NOTIFICATION_TYPES } from "./constants";
 import AskOnEntryTag, { areAnswersComplete } from "./AskOnEntryTag";
-import { removeTimer, TestTimerWidget, Timer, updateTimer, useTestTimer } from "./TestTimer";
+import {
+  removeTimer,
+  TestTimerWidget,
+  updateTimer,
+  useTestTimer,
+} from "./TestTimer";
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
@@ -37,7 +42,7 @@ export const REMOVE_PATIENT_FROM_QUEUE = gql`
   }
 `;
 
-const EDIT_QUEUE_ITEM = gql`
+export const EDIT_QUEUE_ITEM = gql`
   mutation EditQueueItem(
     $id: ID!
     $deviceId: String
@@ -71,7 +76,7 @@ interface EditQueueItemResponse {
   editQueueItem: {
     result: TestResult;
     dateTested: string;
-    deviceType: { internalId: string, testLength: number };
+    deviceType: { internalId: string; testLength: number };
   };
 }
 
@@ -263,7 +268,9 @@ const QueueItem: any = ({
     selectedDeviceId || defaultDevice.internalId
   );
 
-  const [deviceTestLength, updateDeviceTestLength] = useState(selectedDeviceTestLength);
+  const [deviceTestLength, updateDeviceTestLength] = useState(
+    selectedDeviceTestLength
+  );
 
   const [useCurrentDateTime, updateUseCurrentDateTime] = useState<string>(
     dateTestedProp ? "false" : "true"
@@ -369,8 +376,13 @@ const QueueItem: any = ({
         if (!response.data) throw Error("updateQueueItem null response");
         updateDeviceId(response.data.editQueueItem.deviceType.internalId);
         updateTestResultValue(response.data.editQueueItem.result || undefined);
-        updateTimer(internalId, response.data.editQueueItem.deviceType.testLength);
-        updateDeviceTestLength(response.data.editQueueItem.deviceType.testLength);
+        updateTimer(
+          internalId,
+          response.data.editQueueItem.deviceType.testLength
+        );
+        updateDeviceTestLength(
+          response.data.editQueueItem.deviceType.testLength
+        );
       })
       .catch(updateMutationError);
   };
@@ -576,6 +588,7 @@ const QueueItem: any = ({
                         name="testDevice"
                         selectedValue={deviceId}
                         onChange={onDeviceChange}
+                        data-testid={`selected-device`}
                       />
                     </li>
                     {testDateFields}
