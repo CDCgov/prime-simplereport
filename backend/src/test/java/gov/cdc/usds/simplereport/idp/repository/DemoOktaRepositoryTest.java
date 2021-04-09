@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.idp.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -282,7 +281,6 @@ class DemoOktaRepositoryTest {
         Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
     _repo.setUserIsActive(AMOS.getUsername(), false);
 
-    assertEquals(_repo.getOrganizationRoleClaimsForUser(AMOS.getUsername()), Optional.empty());
     assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
     assertFalse(_repo.getAllUsersForOrganization(ABC).containsKey(AMOS.getUsername()));
   }

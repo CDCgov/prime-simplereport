@@ -163,7 +163,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
-    ApiUser apiUser = getApiUser(userId);
+    ApiUser apiUser = getApiUser(userId, !deleted);
     apiUser.setIsDeleted(deleted);
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
@@ -171,7 +171,12 @@ public class ApiUserService {
   }
 
   private ApiUser getApiUser(UUID id) {
-    Optional<ApiUser> found = _apiUserRepo.findById(id);
+    return getApiUser(id, false);
+  }
+
+  private ApiUser getApiUser(UUID id, Boolean includeArchived) {
+    Optional<ApiUser> found =
+        includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
     if (!found.isPresent()) {
       throw new NonexistentUserException();
     }

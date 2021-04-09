@@ -569,6 +569,13 @@ class ApiUserManagementTest extends BaseGraphqlTest {
     assertEquals(USERNAMES.get(0), resp.get("setUserIsDeleted").get("email").asText());
 
     assertTrue(fetchUserList().stream().noneMatch(o -> id.equals(o.get("id").asText())));
+
+    ObjectNode restoreVariables =
+        JsonNodeFactory.instance.objectNode().put("id", id).put("deleted", false);
+    ObjectNode restoreResp = runQuery("set-user-is-deleted", restoreVariables);
+    assertEquals(USERNAMES.get(0), restoreResp.get("setUserIsDeleted").get("email").asText());
+
+    assertTrue(fetchUserList().stream().anyMatch(o -> id.equals(o.get("id").asText())));
   }
 
   @Test
