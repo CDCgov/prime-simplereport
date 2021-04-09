@@ -1,8 +1,14 @@
 import React from "react";
 
-import { stateCodes } from "../../../../config/constants";
+import {
+  stateCodes,
+  liveJurisdictions,
+  urls,
+} from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
+import Alert from "../../../commonComponents/Alert";
+import { getStateNameFromCode } from "../../../utils/state";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
 
@@ -149,6 +155,28 @@ const FacilityInformation: React.FC<Props> = ({
           />
         </div>
       </div>
+      {errors.state &&
+        stateCodes.includes(facility.state) &&
+        !liveJurisdictions.includes(facility.state) && (
+          <div className="grid-row">
+            <div className="grid-col-12">
+              <Alert
+                type="error"
+                title={`SimpleReport is not currently supported in ${getStateNameFromCode(
+                  facility.state
+                )}`}
+                body={
+                  <div>
+                    See a{" "}
+                    <a href={urls.FACILITY_INFO}>
+                      list of states where SimpleReport is supported
+                    </a>
+                  </div>
+                }
+              />
+            </div>
+          </div>
+        )}
     </div>
   );
 };

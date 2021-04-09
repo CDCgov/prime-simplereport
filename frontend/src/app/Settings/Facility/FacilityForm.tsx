@@ -7,6 +7,7 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { stateCodes } from "../../../config/constants";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -74,9 +75,17 @@ const FacilityForm: React.FC<Props> = (props) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
+        // The `state` field may produce two different errors: one indicating
+        // that no option has been selected and the other indicating that
+        // SimpleReport has not gone live in that particular state
+        const error =
+          field === "state" && stateCodes.includes(facility[field])
+            ? allFacilityErrors["inactiveState"]
+            : allFacilityErrors[field];
+
         setErrors((errors) => ({
           ...errors,
-          [field]: allFacilityErrors[field],
+          [field]: error,
         }));
       }
     },

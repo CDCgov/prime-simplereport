@@ -1,6 +1,8 @@
 import * as yup from "yup";
 import { PhoneNumberUtil } from "google-libphonenumber";
 
+import { liveJurisdictions } from "../../../config/constants";
+
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -44,7 +46,16 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
       return phoneUtil.isValidNumber(number);
     })
     .required(),
-  state: yup.string().required(),
+  state: yup
+    .string()
+    .test(function (input) {
+      if (!input) {
+        return false;
+      }
+
+      return liveJurisdictions.includes(input);
+    })
+    .required(),
   id: yup.string(),
   email: yup.string().email().nullable(),
   streetTwo: yup.string().nullable(),
@@ -53,6 +64,7 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
 
 type FacilityErrorKeys =
   | keyof Facility
+  | "inactiveState"
   | "orderingProvider.firstName"
   | "orderingProvider.middleName"
   | "orderingProvider.lastName"
@@ -83,6 +95,7 @@ export const allFacilityErrors: Required<FacilityErrors> = {
   streetTwo: "Facility street is incorrectly formatted",
   zipCode: "Facility zip code is missing",
   state: "Facility state is missing",
+  inactiveState: "Not available",
   orderingProvider: "Ordering provider is incorrectly formatted",
   "orderingProvider.NPI": orderingProviderFormatError("NPI"),
   "orderingProvider.city": orderingProviderFormatError("city"),
