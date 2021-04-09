@@ -52,7 +52,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.findByText("Save changes");
+    const saveButton = await screen.getAllByText("Save changes")[0];
     fireEvent.change(
       screen.getByLabelText("Testing facility name", { exact: false }),
       { target: { value: "Bar Facility" } }
@@ -90,7 +90,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.findByText("Save changes");
+    const saveButton = await screen.getAllByText("Save changes")[0];
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
@@ -112,7 +112,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.findByText("Save changes");
+    const saveButton = await screen.getAllByText("Save changes")[0];
     const emailInput = screen.getByLabelText("Email", {
       exact: false,
     });
