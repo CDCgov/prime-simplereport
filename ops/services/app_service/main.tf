@@ -52,6 +52,41 @@ resource "azurerm_app_service" "service" {
 
 }
 
+resource "azurerm_app_service_slot" "staging" {
+  name                = "staging"
+  app_service_name    = azurerm_app_service.service.name
+  app_service_plan_id = azurerm_app_service_plan.service_plan.id
+  resource_group_name = var.resource_group_name
+  location            = var.resource_group_location
+
+  app_settings = merge(var.app_settings, {
+    "DOCKER_REGISTRY_SERVER_PASSWORD"                = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
+    "DOCKER_REGISTRY_SERVER_URL"                     = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
+    "DOCKER_REGISTRY_SERVER_USERNAME"                = data.terraform_remote_state.global.outputs.acr_simeplereport_name
+    "WEBSITES_PORT"                                  = "8080"
+    "WEBSITE_DNS_SERVER"                             = "168.63.129.16"
+    "WEBSITE_VNET_ROUTE_ALL"                         = "1"
+  })
+
+  site_config {
+    linux_fx_version = var.docker_image_uri
+    always_on        = "true"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  logs {
+    http_logs {
+      file_system {
+        retention_in_days = 7
+        retention_in_mb   = 30
+      }
+    }
+  }
+}
+
 resource "azurerm_key_vault_access_policy" "app_secret_access" {
   key_vault_id = var.key_vault_id
   object_id    = azurerm_app_service.service.identity[0].principal_id
@@ -65,4 +100,25 @@ resource "azurerm_key_vault_access_policy" "app_secret_access" {
     "get",
     "list",
   ]
+}
+
+resource "azurerm_key_vault_access_policy" "staging_slot_secret_access" {
+  key_vault_id = var.key_vault_id
+  object_id    = azurerm_app_service_slot.staging.identity[0].principal_id
+  tenant_id    = var.tenant_id
+
+  key_permissions = [
+    "get",
+    "list",
+  ]
+  secret_permissions = [
+    "get",
+    "list",
+  ]
+}
+
+resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
+  slot_name      = azurerm_app_service_slot.staging.name
+  app_service_id = azurerm_app_service.service.id
+  subnet_id      = var.webapp_subnet_id
 }

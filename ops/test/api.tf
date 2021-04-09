@@ -7,6 +7,9 @@ module "simple_report_api" {
   resource_group_name     = data.azurerm_resource_group.rg.name
 
   docker_image_uri = "DOCKER|simplereportacr.azurecr.io/api/simple-report-api-build:${var.acr_image_tag}"
+
+  webapp_subnet_id = data.terraform_remote_state.persistent_test.outputs.subnet_webapp_id
+
   key_vault_id     = data.azurerm_key_vault.sr_global.id
   tenant_id        = data.azurerm_client_config.current.tenant_id
   https_only       = true
