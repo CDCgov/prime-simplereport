@@ -2,30 +2,42 @@ package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.sendgrid.helpers.mail.Mail;
 import gov.cdc.usds.simplereport.api.accountrequest.AccountRequestController;
+import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import gov.cdc.usds.simplereport.config.TemplateConfiguration;
 import gov.cdc.usds.simplereport.config.WebConfiguration;
 import gov.cdc.usds.simplereport.logging.AuditLoggingAdvice;
+import gov.cdc.usds.simplereport.service.email.EmailProvider;
 import gov.cdc.usds.simplereport.service.email.EmailService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 @WebMvcTest(
     controllers = AccountRequestController.class,
+    includeFilters =
+        @Filter(
+            classes = {TemplateConfiguration.class},
+            type = FilterType.ASSIGNABLE_TYPE),
     excludeFilters =
         @Filter(
             classes = {AuditLoggingAdvice.class, WebConfiguration.class},
@@ -34,8 +46,15 @@ class AccountRequestControllerTest {
 
   @Autowired private MockMvc _mockMvc;
 
-  @MockBean private EmailService emailService;
-  @Captor private ArgumentCaptor<String> contentCaptor;
+  @Autowired
+  @Qualifier("simpleReportTemplateEngine")
+  SpringTemplateEngine _templateEngine;
+
+  @MockBean private EmailProvider mockSendGrid;
+  @SpyBean private EmailService emailService;
+
+  @Captor private ArgumentCaptor<TemplateVariablesProvider> contentCaptor;
+  @Captor private ArgumentCaptor<Mail> mail;
 
   @Test
   void waitlistIsOk() throws Exception {
@@ -50,13 +69,17 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+
     verify(emailService)
         .send(
             eq(List.of("support@simplereport.gov")),
             eq("New waitlist request"),
             contentCaptor.capture());
-    String content = contentCaptor.getValue();
-    assertThat(content)
+    assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("waitlist-request");
+    assertThat(contentCaptor.getValue().toTemplateVariables()).containsEntry("name", "Angela Chan");
+
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    assertThat(mail.getValue().getContent().get(0).getValue())
         .contains(
             "new SimpleReport waitlist request",
             "Angela Chan",
@@ -93,13 +116,17 @@ class AccountRequestControllerTest {
             .content(requestBody);
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
+
     verify(emailService)
         .send(
             eq(List.of("support@simplereport.gov", "Protect-ServiceDesk@hhs.gov")),
             eq("New account request"),
             contentCaptor.capture());
-    String content = contentCaptor.getValue();
-    assertThat(content)
+    assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");
+    assertThat(contentCaptor.getValue().toTemplateVariables()).containsEntry("firstName", "Mary");
+
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    assertThat(mail.getValue().getContent().get(0).getValue())
         .contains(
             "new SimpleReport account request",
             "Mary",

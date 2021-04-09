@@ -1,5 +1,8 @@
 query GetPatients($facilityId: ID = null) {
   patients(facilityId: $facilityId) {
+    id
+    internalId
+
     firstName
     lastName
     name {
