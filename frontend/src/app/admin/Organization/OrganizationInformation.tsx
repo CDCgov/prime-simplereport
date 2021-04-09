@@ -19,7 +19,9 @@ const OrganizationInformation: React.FC<Props> = ({
 
   return (
     <div>
-      <h2 className="font-heading-lg" style={{ margin: 0 }}>Organization Information</h2>
+      <h2 className="font-heading-lg" style={{ margin: 0 }}>
+        Organization Information
+      </h2>
       <div className="usa-form usa-form--large">
         <TextInput
           label="Testing Organization Name"
