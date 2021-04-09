@@ -1650,3 +1650,48 @@ databaseChangeLog:
                   defaultValueNumeric: 200
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-phone-number-table
+      author: nathan@skylight.digital
+      comment: Add table to track user phone numbers
+      changes:
+          - sql:
+            remarks: Create the enumerations needed for tracking a phone number's type
+            sql: |
+              CREATE TYPE ${database.defaultSchemaName}.PHONE_TYPES as ENUM('MOBILE', 'LANDLINE');
+            rollback:
+              sql: |
+                DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
+
+          - createTable:
+              tableName: phone_number
+              remarks: A non-audited join table to Person that stores phone numbers with phone type
+              columns:
+                 - column:
+                     name: id
+                     type: *idtype
+                     remarks: The internal database identifier for this entity
+                     constraints:
+                       primaryKey: true
+                       nullable: false
+                 - column:
+                     name: person_internal_id
+                     type: *idtype
+                     remarks: A foreign key to a person
+                     constraints:
+                       nullable: false
+                       foreignKeyName: fk__internal_id__person
+                       references: person
+                 - column:
+                     name: type
+                     type: ${database.defaultSchemaName}.PHONE_TYPES
+                     remarks: Enumeration of phone type, or null
+                     defaultValue: null
+                     constraints:
+                       nullable: true
+                 - column:
+                     name: number
+                     type: *string
+                     remarks: A person's contact telephone number
+                     constraints:
+                       nullable: false

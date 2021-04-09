@@ -2,13 +2,16 @@ package gov.cdc.usds.simplereport.api.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import java.util.List;
 import java.util.Objects;
 
 public class PersonUpdate {
   private final StreetAddress address;
   private final String telephone;
+  private final List<PhoneNumber> phoneNumbers;
   private final PersonRole role;
   private final String email;
   private final String race;
@@ -21,6 +24,7 @@ public class PersonUpdate {
   public PersonUpdate(
       @JsonProperty("address") StreetAddress address,
       @JsonProperty("telephone") String telephone,
+      @JsonProperty("phoneNumbers") List phoneNumbers,
       @JsonProperty("role") PersonRole role,
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
@@ -30,6 +34,7 @@ public class PersonUpdate {
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare) {
     this.address = address;
     this.telephone = telephone;
+    this.phoneNumbers = phoneNumbers;
     this.role = role;
     this.email = email;
     this.race = race;
@@ -73,6 +78,10 @@ public class PersonUpdate {
 
   public String getTelephone() {
     return telephone;
+  }
+
+  public List<PhoneNumber> getPhoneNumbers() {
+    return phoneNumbers;
   }
 
   @Override

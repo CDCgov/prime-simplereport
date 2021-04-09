@@ -3,12 +3,14 @@ package gov.cdc.usds.simplereport.api;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -51,6 +53,23 @@ public class Translators {
     } catch (NumberParseException parseException) {
       throw IllegalGraphqlArgumentException.invalidInput(userSuppliedPhoneNumber, "phone number");
     }
+  }
+
+  public static List<PhoneNumber> parsePhoneNumbers(List<PhoneNumber> phoneNumbers) {
+    if (phoneNumbers == null) {
+      return null;
+    }
+
+    var phoneUtil = PhoneNumberUtil.getInstance();
+
+    return phoneNumbers.stream()
+        .map(
+            phoneNumber -> {
+              phoneNumber.setNumber(parsePhoneNumber(phoneNumber.getNumber()));
+
+              return phoneNumber;
+            })
+        .collect(Collectors.toList());
   }
 
   public static String parseString(String value) {

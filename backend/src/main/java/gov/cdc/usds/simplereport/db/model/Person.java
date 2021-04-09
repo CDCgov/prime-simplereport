@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import org.hibernate.annotations.Type;
 
 /**
@@ -54,6 +56,11 @@ public class Person extends OrganizationScopedEternalEntity {
 
   @Column private String ethnicity;
   @Column private String telephone;
+
+  @OneToMany(mappedBy = "person")
+  @JsonIgnore
+  private List<PhoneNumber> phoneNumbers;
+
   @Column private String email;
 
   @Column(nullable = false)
@@ -196,6 +203,11 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public String getTelephone() {
     return telephone;
+  }
+
+  @JsonIgnore
+  public List<PhoneNumber> getPhoneNumbers() {
+    return phoneNumbers;
   }
 
   public String getEmail() {

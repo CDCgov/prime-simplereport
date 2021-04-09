@@ -10,6 +10,7 @@ type Ethnicity = "hispanic" | "not_hispanic";
 type Gender = "male" | "female" | "other";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
+type PhoneType = "mobile" | "landline" | "unknown";
 
 interface PersonUpdate extends Address {
   lookupId: string;

@@ -70,3 +70,8 @@ export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "Yes", value: "YES" },
   { label: "No", value: "NO" },
 ];
+
+export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
+  { label: "Mobile", value: "mobile" },
+  { label: "Landline", value: "landline" },
+];

@@ -67,6 +67,15 @@ interface DeviceTypes {
   deviceType: [DeviceType];
 }
 
+interface PhoneNumber {
+  phoneType: string;
+  phoneNumber: string;
+}
+
+interface PhoneNumbers {
+  phoneNumber: [PhoneNumber];
+}
+
 interface SettingsData {
   organization: {
     internalId: string;

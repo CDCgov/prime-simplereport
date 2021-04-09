@@ -57,6 +57,12 @@ type TestDescription {
   loincCode: String!
 }
 
+type PhoneNumber {
+  id: ID,
+  type: String,
+  number: String
+}
+
 # User-management types
 
 # Note: the login username is the user's email
@@ -112,6 +118,8 @@ type Patient
   state: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  phoneNumbers: [PhoneNumber]
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
