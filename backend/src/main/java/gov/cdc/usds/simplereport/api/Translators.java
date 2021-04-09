@@ -14,8 +14,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.json.JSONObject;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
 
 /**
  * Static package for utilities to translate things to or from wireline format in non copy-paste
@@ -213,9 +211,5 @@ public class Translators {
       symptomsMap.put(key, value);
     }
     return symptomsMap;
-  }
-
-  public static String sanitize(String input) {
-    return input == null ? "" : Jsoup.clean(input, Whitelist.basic());
   }
 }
