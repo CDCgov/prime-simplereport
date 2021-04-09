@@ -37,8 +37,8 @@ export const useFacilityValidation = (facility: Facility) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
+        setErrors((existingErrors) => ({
+          ...existingErrors,
           [field]: allFacilityErrors[field],
         }));
       }
@@ -49,6 +49,7 @@ export const useFacilityValidation = (facility: Facility) => {
   const validateFacility = async () => {
     try {
       await facilitySchema.validate(facility, { abortEarly: false });
+      return;
     } catch (e) {
       const errors = e.inner.reduce(
         (

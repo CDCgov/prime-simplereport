@@ -30,8 +30,8 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
         clearError(field);
         await facilityAdminSchema.validateAt(field, admin);
       } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
+        setErrors((existingErrors) => ({
+          ...existingErrors,
           [field]: allFacilityAdminErrors[field],
         }));
       }
@@ -42,8 +42,9 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
   const validateAdmin = async () => {
     try {
       await facilityAdminSchema.validate(admin, { abortEarly: false });
+      return;
     } catch (e) {
-      const errors = e.inner.reduce(
+      const newErrors = e.inner.reduce(
         (
           acc: FacilityAdminErrors,
           el: { path: keyof FacilityAdminErrors; message: string }
@@ -53,7 +54,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
         },
         {} as FacilityAdminErrors
       );
-      setErrors(errors);
+      setErrors(newErrors);
       const alert = (
         <Alert
           type="error"
@@ -99,9 +100,8 @@ const FacilityAdmin: React.FC<Props> = ({ admin, updateAdmin }) => {
         <h2 style={{ margin: 0 }}>Facility Administrator</h2>
       </div>
       <div className="usa-card__body usa-form usa-form--large">
-        {Object.entries(fields).map(([key, value]) => {
+        {Object.entries(fields).map(([key, required]) => {
           const field = key as keyof FacilityAdmin;
-          const required = value as boolean;
           return (
             <Input
               label={camelToSentenceCase(field)}
