@@ -275,7 +275,7 @@ public class UserAuthorizationVerifier {
   // method-level security that invokes an above method which creates a circular loop with this
   // method.
   private ApiUser getUser(UUID id) {
-    Optional<ApiUser> found = _userRepo.findById(id);
+    Optional<ApiUser> found = _userRepo.findByIdIncludeArchived(id);
     return found.orElseThrow(NonexistentUserException::new);
   }
 }
