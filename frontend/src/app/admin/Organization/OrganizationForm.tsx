@@ -96,7 +96,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
           <div className="prime-container usa-card__container">
             <div className="usa-card__header">
               <div>
-                <h2>Create Organization</h2>
+                <h2 className="font-heading-lg">Create Organization</h2>
               </div>
               <div
                 style={{
@@ -113,14 +113,14 @@ const OrganizationForm: React.FC<Props> = (props) => {
                 />
               </div>
             </div>
-            <div className="usa-card__body">
+            <div className="usa-card__body margin-top-1">
               <RequiredMessage />
               <OrganizationInformation
                 organization={organization}
                 updateOrganization={updateOrganization}
               />
             </div>
-            <div className="usa-card__body">
+            <div className="usa-card__body margin-top-2">
               <FacilityInformation
                 facility={facility}
                 updateFacility={updateFacility}
