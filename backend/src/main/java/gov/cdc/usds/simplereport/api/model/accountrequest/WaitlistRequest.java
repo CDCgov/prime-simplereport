@@ -1,13 +1,16 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
-import static gov.cdc.usds.simplereport.api.Translators.sanitize;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
-public class WaitlistRequest {
+public class WaitlistRequest implements TemplateVariablesProvider {
+  private static final String TEMPLATE_NAME = "waitlist-request";
+
   @NotNull private String name;
   @NotNull private String email;
   @NotNull private String phone;
@@ -15,18 +18,23 @@ public class WaitlistRequest {
   @NotNull private String organization;
   private String referral;
 
-  public String generateEmailBody() {
-    String newLine = "<br>";
-    return String.join(
-        newLine,
-        "A new SimpleReport waitlist request has been submitted with the following details:",
-        "",
-        "<b>Name: </b>" + sanitize(name),
-        "<b>Email address: </b>" + sanitize(email),
-        "<b>Phone number: </b>" + sanitize(phone),
-        "<b>State: </b>" + sanitize(state),
-        "<b>Organization: </b>" + sanitize(organization),
-        "<b>Referral: </b>" + sanitize(referral));
+  @Override
+  public String getTemplateName() {
+    return TEMPLATE_NAME;
+  }
+
+  @Override
+  public Map<String, Object> toTemplateVariables() {
+    Map<String, Object> variableMap = new HashMap<>();
+
+    variableMap.put("name", name);
+    variableMap.put("email", email);
+    variableMap.put("phone", phone);
+    variableMap.put("state", state);
+    variableMap.put("organization", organization);
+    variableMap.put("referral", referral);
+
+    return variableMap;
   }
 
   public String getName() {
