@@ -215,11 +215,12 @@ public class PersonService {
             ethnicity,
             gender,
             residentCongregateSetting,
-            employedInHealthcare,
-            preferredLanguage);
+            employedInHealthcare);
 
     updatePersonFacility(newPatient, facilityId);
-    return _repo.save(newPatient);
+    Person savedPerson = _repo.save(newPatient);
+    upsertPreferredLanguage(savedPerson, preferredLanguage);
+    return savedPerson;
   }
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link

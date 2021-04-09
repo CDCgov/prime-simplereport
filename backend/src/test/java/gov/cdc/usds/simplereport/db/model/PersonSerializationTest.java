@@ -121,8 +121,7 @@ class PersonSerializationTest {
             "generic",
             "Male-ish",
             true,
-            false,
-            "English");
+            false);
     return p;
   }
 
