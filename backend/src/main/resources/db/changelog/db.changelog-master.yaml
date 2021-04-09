@@ -1682,34 +1682,10 @@ databaseChangeLog:
                   name: test_result_delivery
                   type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
                   remarks: Tracks the individual's preference for receiving test results
-              - column:
-                  name: created_at
-                  type: DATETIME
-                  remarks: The creation timestamp for this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: created_by
-                  type: *idtype
-                  remarks: The user who created this entity.
-                  constraints:
-                    nullable: false
-                    foreignKeyName: fk__anyentity__created_by
-                    references: api_user
-              - column:
-                  name: updated_at
-                  type: DATETIME
-                  remarks: The timestamp for the most recent update of this entity.
-                  constraints:
-                    nullable: false
-              - column:
-                  name: updated_by
-                  type: *idtype
-                  remarks: The user who most recently updated this entity.
-                  constraints:
-                    nullable: false
-                    references: api_user
-                    foreignKeyName: fk__anyentity__updated_by
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
   - changeSet:
       id: populate-patient-preferences
       author: adam@skylight.digital
