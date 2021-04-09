@@ -175,7 +175,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
               class="margin-bottom-0"
             >
               Facility access
-              
+               
             </h3>
             <p
               class="text-base"
