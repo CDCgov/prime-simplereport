@@ -42,7 +42,7 @@ export const useFacilityAdminValidation = (admin: FacilityAdmin) => {
   const validateAdmin = async () => {
     try {
       await facilityAdminSchema.validate(admin, { abortEarly: false });
-      return;
+      return "";
     } catch (e) {
       const newErrors = e.inner.reduce(
         (

@@ -49,7 +49,7 @@ export const useFacilityValidation = (facility: Facility) => {
   const validateFacility = async () => {
     try {
       await facilitySchema.validate(facility, { abortEarly: false });
-      return;
+      return "";
     } catch (e) {
       const errors = e.inner.reduce(
         (
