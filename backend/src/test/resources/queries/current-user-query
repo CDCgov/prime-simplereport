@@ -11,7 +11,11 @@ query whoDat {
     permissions
     roleDescription
     isAdmin
+
     organization {
+      id
+      internalId
+
       facilities {
         name
         id

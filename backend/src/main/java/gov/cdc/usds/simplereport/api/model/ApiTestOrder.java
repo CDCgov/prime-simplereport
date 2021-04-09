@@ -6,28 +6,23 @@ import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestCorrectionStatus;
+import gov.cdc.usds.simplereport.service.model.WrappedEntity;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
 import org.json.JSONObject;
 
-public class ApiTestOrder {
+public class ApiTestOrder extends WrappedEntity<TestOrder> {
 
-  private TestOrder order;
   private AskOnEntrySurvey survey;
 
   public ApiTestOrder(TestOrder order) {
-    super();
-    this.order = order;
+    super(order);
     this.survey = order.getAskOnEntrySurvey().getSurvey();
   }
 
-  public String getInternalId() {
-    return order.getInternalId().toString();
-  }
-
   public Date getDateAdded() {
-    return order.getCreatedAt();
+    return wrapped.getCreatedAt();
   }
 
   public String getPregnancy() {
@@ -68,36 +63,33 @@ public class ApiTestOrder {
   }
 
   public DeviceType getDeviceType() {
-    return order.getDeviceType();
+    return wrapped.getDeviceType();
   }
 
   public Person getPatient() {
-    return order.getPatient();
+    return wrapped.getPatient();
   }
 
   public String getResult() {
-    if (order.getTestResult() == null) {
+    if (wrapped.getTestResult() == null) {
       return "";
     }
-    return order.getTestResult().toString();
+    return wrapped.getTestResult().toString();
   }
 
   public Date getDateTested() {
-    if (order.getDateTestedBackdate() != null) {
-      return order.getDateTestedBackdate();
-    }
-    return null; // only TestEvents have a DateTested
+    return wrapped.getDateTestedBackdate();
   }
 
   public TestCorrectionStatus getCorrectionStatus() {
-    return order.getCorrectionStatus();
+    return wrapped.getCorrectionStatus();
   }
 
   public String getReasonForCorrection() {
-    return order.getReasonForCorrection();
+    return wrapped.getReasonForCorrection();
   }
 
   public PatientLink getPatientLink() {
-    return order.getPatientLink();
+    return wrapped.getPatientLink();
   }
 }
