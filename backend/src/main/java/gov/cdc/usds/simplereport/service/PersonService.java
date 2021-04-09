@@ -251,8 +251,8 @@ public class PersonService {
         ethnicity,
         gender,
         residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage);
+        employedInHealthcare);
+    upsertPreferredLanguage(toUpdate, preferredLanguage);
     return _repo.save(toUpdate);
   }
 
@@ -280,6 +280,13 @@ public class PersonService {
     PatientPreferences toUpdate =
         _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
     toUpdate.setTestResultDelivery(testResultDelivery);
+    return _prefRepo.save(toUpdate);
+  }
+
+  private PatientPreferences upsertPreferredLanguage(Person person, String preferredLanguage) {
+    PatientPreferences toUpdate =
+        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
+    toUpdate.setPreferredLanguage(preferredLanguage);
     return _prefRepo.save(toUpdate);
   }
 
@@ -319,9 +326,9 @@ public class PersonService {
         ethnicity,
         gender,
         residentCongregateSetting,
-        employedInHealthcare,
-        preferredLanguage);
+        employedInHealthcare);
 
+    upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);
   }

@@ -130,8 +130,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String ethnicity,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare,
-      String preferredLanguage) {
+      Boolean employedInHealthcare) {
     this.lookupId = lookupId;
     this.nameInfo.setFirstName(firstName);
     this.nameInfo.setMiddleName(middleName);
