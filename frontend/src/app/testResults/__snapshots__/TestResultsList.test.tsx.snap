@@ -12,7 +12,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
         class="grid-row"
       >
         <div
-          class="prime-container usa-card__container sr-test-results-list"
+          class="prime-container card-container sr-test-results-list"
         >
           <div
             class="usa-card__header"
@@ -22,10 +22,10 @@ exports[`TestResultsList should render a list of tests 1`] = `
               <span
                 class="sr-showing-results-on-page"
               >
-                Showing 
+                Showing
                 3
                  of
-                 
+
                 3
               </span>
             </h2>
@@ -88,7 +88,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
-                      DOB: 
+                      DOB:
                       11/07/1960
                     </span>
                   </th>
@@ -152,7 +152,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
-                      DOB: 
+                      DOB:
                       11/07/1960
                     </span>
                   </th>
@@ -216,7 +216,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                     <span
                       class="display-block text-base font-ui-2xs"
                     >
-                      DOB: 
+                      DOB:
                       11/07/1960
                     </span>
                   </th>

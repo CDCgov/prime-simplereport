@@ -95,7 +95,7 @@ const OrganizationForm: React.FC<Props> = (props) => {
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container">
+          <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
                 <h2>Create Organization</h2>

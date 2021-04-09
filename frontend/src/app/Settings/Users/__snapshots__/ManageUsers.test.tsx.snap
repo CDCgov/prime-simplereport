@@ -3,7 +3,7 @@
 exports[`ManageUsers disables logged-in user's settings 1`] = `
 <div>
   <div
-    class="prime-container usa-card__container"
+    class="prime-container card-container"
   >
     <div
       class="usa-card__header"
@@ -175,7 +175,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
               class="margin-bottom-0"
             >
               Facility access
-               
+
             </h3>
             <p
               class="text-base"
@@ -319,7 +319,7 @@ exports[`ManageUsers disables logged-in user's settings 1`] = `
 exports[`ManageUsers displays the list of users and defaults to the first user 1`] = `
 <div>
   <div
-    class="prime-container usa-card__container"
+    class="prime-container card-container"
   >
     <div
       class="usa-card__header"
@@ -483,7 +483,7 @@ exports[`ManageUsers displays the list of users and defaults to the first user 1
               class="margin-bottom-0"
             >
               Facility access
-               
+
             </h3>
             <p
               class="text-base"
