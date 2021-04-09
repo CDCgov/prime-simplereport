@@ -19,7 +19,7 @@ const ManageOrganization: React.FC<Props> = (props) => {
 
   return (
     <div className="grid-row position-relative">
-      <div className="prime-container usa-card__container">
+      <div className="prime-container card-container">
         <div className="usa-card__header">
           <h2>Manage Organization</h2>
           <Button

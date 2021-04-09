@@ -251,7 +251,7 @@ const ManageUsers: React.FC<Props> = ({
   }, [addedUserId, usersState]);
 
   return (
-    <div className="prime-container usa-card__container">
+    <div className="prime-container card-container">
       <div className="usa-card__header">
         <h2>Manage Users</h2>
         {process.env.REACT_APP_ADD_NEW_USER_ENABLED === "true" ? (

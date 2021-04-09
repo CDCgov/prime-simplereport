@@ -127,7 +127,7 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   return (
-    <div className="prime-container usa-card__container">
+    <div className="prime-container card-container">
       <div className="usa-card__header">
         <h2 className="font-heading-lg">Manage devices</h2>
       </div>
