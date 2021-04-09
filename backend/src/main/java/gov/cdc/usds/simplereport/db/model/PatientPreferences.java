@@ -5,12 +5,17 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
 @Entity
 public class PatientPreferences extends AuditedEntity {
-  @OneToOne private Person person;
+  @MapsId
+  @OneToOne
+  @JoinColumn(name = "internal_id")
+  private Person person;
 
   @Column private String preferredLanguage;
 

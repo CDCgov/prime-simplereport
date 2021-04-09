@@ -1661,18 +1661,11 @@ databaseChangeLog:
               - column:
                   name: internal_id
                   type: *idtype
-                  remarks: The internal database identifier for this entity.
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: person_internal_id
-                  type: *idtype
-                  remarks: The internal database identifier for this entity.
+                  remarks: The internal database identifier of the Person to whom these preferences belong
                   constraints:
                     foreignKeyName: fk__patient_preferences__person
                     references: person
-                    unique: true
+                    primaryKey: true
                     nullable: false
               - column:
                   name: preferred_language
@@ -1698,11 +1691,10 @@ databaseChangeLog:
               FROM ${database.defaultSchemaName}.api_user
               WHERE login_email = '${migrations_user_email}')
             INSERT INTO ${database.defaultSchemaName}.patient_preferences (
-                internal_id, person_internal_id, preferred_language, test_result_delivery,
+                internal_id, preferred_language, test_result_delivery,
                 created_at, created_by, updated_at, updated_by)
             SELECT
-              gen_random_uuid() internal_id,
-              person.internal_id person_internal_id,
+              person.internal_id internal_id,
               NULL preferred_language,
               test_result_delivery,
               now() created_at,
