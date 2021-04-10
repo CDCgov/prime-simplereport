@@ -127,9 +127,3 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
   app_service_id = azurerm_app_service.service.id
   subnet_id      = var.webapp_subnet_id
 }
-
-resource "azurerm_app_service_active_slot" "promote_staging" {
-  resource_group_name   = var.resource_group_name
-  app_service_name      = azurerm_app_service.service.name
-  app_service_slot_name = azurerm_app_service_slot.staging.name
-}
