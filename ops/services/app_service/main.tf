@@ -50,6 +50,11 @@ resource "azurerm_app_service" "service" {
     }
   }
 
+  lifecycle {
+    ignore_changes = [
+      site_config[0].linux_fx_version
+    ]
+  }
 }
 
 resource "azurerm_app_service_slot" "staging" {
@@ -121,4 +126,10 @@ resource "azurerm_app_service_slot_virtual_network_swift_connection" "staging" {
   slot_name      = azurerm_app_service_slot.staging.name
   app_service_id = azurerm_app_service.service.id
   subnet_id      = var.webapp_subnet_id
+}
+
+resource "azurerm_app_service_active_slot" "promote_staging" {
+  resource_group_name   = var.resource_group_name
+  app_service_name      = azurerm_app_service.service.name
+  app_service_slot_name = azurerm_app_service_slot.staging.name
 }
