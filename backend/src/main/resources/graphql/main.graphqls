@@ -125,8 +125,8 @@ type Patient
     @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
     @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
-  testResultDelivery: TestResultDeliveryPreference
-  preferredLanguage: String
+  testResultDelivery: TestResultDeliveryPreference @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  preferredLanguage: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
