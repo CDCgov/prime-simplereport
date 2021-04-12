@@ -2,6 +2,8 @@
 
 https://simplereport.gov/
 
+[![Latest release](https://shields.io/github/v/release/cdcgov/prime-simplereport)](https://github.com/CDCgov/prime-simplereport/releases/latest) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=CDCgov_prime-data-input-client&metric=alert_status)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client) [![Sonar coverage](https://shields.io/sonar/coverage/CDCgov_prime-data-input-client?server=https://sonarcloud.io)](https://sonarcloud.io/dashboard?id=CDCgov_prime-data-input-client)
+
 ## Table of Contents
 
 - [Simple Report](#simple-report)
@@ -110,7 +112,8 @@ Then run this to start the app:
 ./start.sh
 ```
 
-This will also start up both servers in "watch" mode. Press CTRL-C to exit and cleanup the servers cleanly.
+This will also start up both servers in "watch" mode.  When using `start.sh`, any environment variables put
+in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
 
 ### Updating user role
 

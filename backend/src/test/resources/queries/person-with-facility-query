@@ -1,5 +1,7 @@
 { 
   patients {
+    internalId
+    id
     firstName
     lastName
     name {

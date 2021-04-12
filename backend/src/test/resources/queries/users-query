@@ -1,5 +1,6 @@
-{
+query listUsers {
   users {
+    id
     firstName
     middleName
     lastName

@@ -7,13 +7,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
-/** Created by jeremyzitomer-usds on 1/7/21 */
+/** Resolver for the graphql User type */
 @Component
-public class ApiUserResolver implements GraphQLQueryResolver {
+public class UserResolver implements GraphQLQueryResolver {
 
   private ApiUserService _userService;
 
-  public ApiUserResolver(ApiUserService userService) {
+  public UserResolver(ApiUserService userService) {
     _userService = userService;
   }
 

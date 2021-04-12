@@ -180,11 +180,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
-    if (inactiveUsernames.contains(username)) {
-      return Optional.empty();
-    } else {
-      return Optional.ofNullable(usernameOrgRolesMap.get(username));
-    }
+    return Optional.ofNullable(usernameOrgRolesMap.get(username));
   }
 
   public void reset() {
