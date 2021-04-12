@@ -1,40 +1,12 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { fireEvent, getByRole, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 import QueueItem, { EDIT_QUEUE_ITEM } from "./QueueItem";
 
 describe("QueueItem", () => {
   it("correctly renders the test queue", () => {
-    const {container, getByTestId} = render(
-          <MockedProvider mocks={[]}>
-            <QueueItem
-              internalId={testProps.internalId}
-              patient={testProps.patient}
-              askOnEntry={testProps.askOnEntry}
-              selectedDeviceId={testProps.selectedDeviceId}
-              selectedDeviceTestLength={testProps.selectedDeviceTestLength}
-              selectedTestResult={testProps.selectedTestResult}
-              devices={testProps.devices}
-              defaultDevice={testProps.defaultDevice}
-              refetchQueue={testProps.refetchQueue}
-              facilityId={testProps.facilityId}
-              dateTestedProp={testProps.dateTestedProp}
-              patientLinkId={testProps.patientLinkId}
-            ></QueueItem>
-          </MockedProvider>
-    );
-    expect(
-        screen.getByText("Potter, Harry James")
-      ).toBeInTheDocument();
-      expect(getByTestId("timer")).toHaveTextContent("10:00");
-    expect(container).toMatchSnapshot();
-  });
-});
-
-describe("EditQueueItem", () => {
-  it("updates the timer when a device is changed", async () => {
-      const { getByTestId, getByLabelText, getAllByTestId } = render(
-        <MockedProvider mocks={mocks} addTypename={false}>
+    const { container, getByTestId } = render(
+      <MockedProvider mocks={[]}>
         <QueueItem
           internalId={testProps.internalId}
           patient={testProps.patient}
@@ -50,9 +22,37 @@ describe("EditQueueItem", () => {
           patientLinkId={testProps.patientLinkId}
         ></QueueItem>
       </MockedProvider>
-      )
-    fireEvent.change(getByLabelText("Device", {exact:false}), { target: { value: 'lumira' } });
-    await new Promise(resolve => setTimeout(resolve, 0));
+    );
+    expect(screen.getByText("Potter, Harry James")).toBeInTheDocument();
+    expect(getByTestId("timer")).toHaveTextContent("10:00");
+    expect(container).toMatchSnapshot();
+  });
+});
+
+describe("EditQueueItem", () => {
+  it("updates the timer when a device is changed", async () => {
+    const { getByTestId, getByLabelText } = render(
+      <MockedProvider mocks={mocks} addTypename={false}>
+        <QueueItem
+          internalId={testProps.internalId}
+          patient={testProps.patient}
+          askOnEntry={testProps.askOnEntry}
+          selectedDeviceId={testProps.selectedDeviceId}
+          selectedDeviceTestLength={testProps.selectedDeviceTestLength}
+          selectedTestResult={testProps.selectedTestResult}
+          devices={testProps.devices}
+          defaultDevice={testProps.defaultDevice}
+          refetchQueue={testProps.refetchQueue}
+          facilityId={testProps.facilityId}
+          dateTestedProp={testProps.dateTestedProp}
+          patientLinkId={testProps.patientLinkId}
+        ></QueueItem>
+      </MockedProvider>
+    );
+    fireEvent.change(getByLabelText("Device", { exact: false }), {
+      target: { value: "lumira" },
+    });
+    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(getByTestId("timer")).toHaveTextContent("15:00");
   });
 });
@@ -82,7 +82,7 @@ const testProps = {
     },
   ],
   askOnEntry: {
-      symptoms: "{}",
+    symptoms: "{}",
   },
   selectedDeviceId: internalId,
   selectedDeviceTestLength: 10,
@@ -97,26 +97,26 @@ const testProps = {
 };
 
 const mocks = [
-    {
-      request: {
-        query: EDIT_QUEUE_ITEM,
-        variables: {
-          id: internalId,
-          deviceId: "lumira",
-          result: {},
-        },
+  {
+    request: {
+      query: EDIT_QUEUE_ITEM,
+      variables: {
+        id: internalId,
+        deviceId: "lumira",
+        result: {},
       },
-      result: {
-        data: {
-            editQueueItem: {
+    },
+    result: {
+      data: {
+        editQueueItem: {
           result: {},
           dateTested: null,
           deviceType: {
-              internalId: internalId,
-              testLength: 15,
-          }
+            internalId: internalId,
+            testLength: 15,
+          },
         },
-    },
       },
     },
-  ];
+  },
+];

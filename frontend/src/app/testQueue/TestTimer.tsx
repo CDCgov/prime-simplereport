@@ -205,21 +205,33 @@ export const TestTimerWidget = ({ timer }: Props) => {
   };
   if (!running) {
     return (
-      <button className="timer-button timer-reset" onClick={start} data-testid="timer">
+      <button
+        className="timer-button timer-reset"
+        onClick={start}
+        data-testid="timer"
+      >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
       </button>
     );
   }
   if (countdown >= 0) {
     return (
-      <button className="timer-button timer-running" onClick={reset}  data-testid="timer">
+      <button
+        className="timer-button timer-running"
+        onClick={reset}
+        data-testid="timer"
+      >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
       </button>
     );
   }
   return (
     <div>
-      <button className="timer-button timer-ready" onClick={reset} data-testid="timer">
+      <button
+        className="timer-button timer-ready"
+        onClick={reset}
+        data-testid="timer"
+      >
         <span className="result-ready">RESULT READY</span>{" "}
         <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
         <FontAwesomeIcon icon={faRedo} />

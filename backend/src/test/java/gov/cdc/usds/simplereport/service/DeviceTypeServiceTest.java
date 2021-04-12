@@ -33,7 +33,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   void fetchDeviceType_carestartTestLength() {
     _deviceTypeRepo.save(new DeviceType("CareStart", "B", "C", "D", FAKE_SWAB_TYPE));
-    
+
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
 
     assertEquals(deviceType.getTestLength(), 10);
