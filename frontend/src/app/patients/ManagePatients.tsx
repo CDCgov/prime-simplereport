@@ -212,7 +212,7 @@ export const DetachedManagePatients = ({
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container">
+          <div className="prime-container card-container">
             <div className="usa-card__header">
               <h2>
                 {PATIENT_TERM_PLURAL_CAP}
