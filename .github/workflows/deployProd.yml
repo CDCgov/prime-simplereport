@@ -10,6 +10,19 @@ env:
 jobs:
   docker-build:
     runs-on: ubuntu-latest
+    services:
+      postgres-db:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
     defaults:
       run:
         working-directory: ./backend
@@ -41,7 +54,16 @@ jobs:
         with:
           terraform_version: 0.15.1
       - name: Terraform Init
+<<<<<<< HEAD
         run: make init-${{ env.DEPLOY_ENV }}
+=======
+        working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
+        run: terraform init
+        env:
+          PGHOST: localhost
+          POSTGRES_USER: postgres
+          POSTGRES_DB: postgres
+>>>>>>> add postgres env information to github workflow
       - name: Azure deploy Api
         run: make deploy-${{ env.DEPLOY_ENV }}-api
       - name: Wait for staging deploy to complete
