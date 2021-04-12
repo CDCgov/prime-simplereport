@@ -19,26 +19,24 @@ const OrganizationInformation: React.FC<Props> = ({
 
   return (
     <div>
-      <h2 style={{ margin: 0 }}>Organization Information</h2>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Testing Organization Name"
-            name="name"
-            value={organization.name}
-            onChange={onChange}
-            required
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
-            label="External ID"
-            name="externalId"
-            value={organization.externalId}
-            onChange={onChange}
-            required
-          />
-        </div>
+      <h2 className="font-heading-lg" style={{ margin: 0 }}>
+        Organization Information
+      </h2>
+      <div className="usa-form usa-form--large">
+        <TextInput
+          label="Testing Organization Name"
+          name="name"
+          value={organization.name}
+          onChange={onChange}
+          required
+        />
+        <TextInput
+          label="External ID"
+          name="externalId"
+          value={organization.externalId}
+          onChange={onChange}
+          required
+        />
       </div>
     </div>
   );
