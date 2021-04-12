@@ -71,7 +71,7 @@ export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "No", value: "NO" },
 ];
 
-export const TRIBAL_AFFILIATION_VALUES: {
+const fullTribalAffiliationValueSet: {
   value: TribalAffiliation;
   label: string;
 }[] = [
@@ -2340,3 +2340,9 @@ export const TRIBAL_AFFILIATION_VALUES: {
     label: "Hannahville Indian Community of Wisconsin Potawato",
   },
 ];
+export const TRIBAL_AFFILIATION_VALUES: {
+  value: TribalAffiliation;
+  label: string;
+}[] = process.env.E2E_TRIBAL_AFFILIATION_BYPASS
+  ? fullTribalAffiliationValueSet.slice(0, 10)
+  : fullTribalAffiliationValueSet;
