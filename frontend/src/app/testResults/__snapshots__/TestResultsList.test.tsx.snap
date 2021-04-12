@@ -12,7 +12,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
         class="grid-row"
       >
         <div
-          class="prime-container usa-card__container sr-test-results-list"
+          class="prime-container card-container sr-test-results-list"
         >
           <div
             class="usa-card__header"

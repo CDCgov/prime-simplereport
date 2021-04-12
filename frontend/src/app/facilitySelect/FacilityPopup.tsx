@@ -15,7 +15,7 @@ const FacilityPopup: React.FC = ({ children }) => {
     <main className="prime-home" id="facility-select">
       <div className="grid-container">
         <div className="grid-row position-relative">
-          <div className="prime-container usa-card__container">
+          <div className="prime-container card-container">
             <div className="usa-card__header">
               <div>
                 <h2>SimpleReport</h2>

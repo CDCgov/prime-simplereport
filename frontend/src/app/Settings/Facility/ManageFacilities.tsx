@@ -9,7 +9,7 @@ interface Props {
 const ManageFacilities: React.FC<Props> = ({ facilities }) => {
   return (
     <div className="grid-row">
-      <div className="prime-container usa-card__container">
+      <div className="prime-container card-container">
         <div className="usa-card__header">
           <h2>Manage Facilities</h2>
           <LinkWithQuery
