@@ -47,6 +47,11 @@ const CREATE_ORGANIZATION_MUTATION = gql`
     $orderingProviderPhone: String
     $deviceTypes: [String]!
     $defaultDevice: String!
+    $adminFirstName: String!
+    $adminMiddleName: String
+    $adminLastName: String!
+    $adminSuffix: String
+    $adminEmail: String!
   ) {
     createOrganization(
       name: $name
@@ -75,6 +80,11 @@ const CREATE_ORGANIZATION_MUTATION = gql`
       orderingProviderPhone: $orderingProviderPhone
       deviceTypes: $deviceTypes
       defaultDevice: $defaultDevice
+      adminFirstName: $adminFirstName
+      adminMiddleName: $adminMiddleName
+      adminLastName: $adminLastName
+      adminSuffix: $adminSuffix
+      adminEmail: $adminEmail
     ) {
       internalId
     }
@@ -113,7 +123,11 @@ const OrganizationFormContainer: any = (props: Props) => {
     return <p>Error: device types not found</p>;
   }
 
-  const saveOrganization = (organization: Organization, facility: Facility) => {
+  const saveOrganization = (
+    organization: Organization,
+    facility: Facility,
+    admin: FacilityAdmin
+  ) => {
     trackSaveSettings(null);
     const provider = facility.orderingProvider;
     createOrganization({
@@ -142,6 +156,11 @@ const OrganizationFormContainer: any = (props: Props) => {
         orderingProviderPhone: provider.phone || null,
         deviceTypes: facility.deviceTypes,
         defaultDevice: facility.defaultDevice,
+        adminFirstName: admin.firstName,
+        adminMiddleName: admin.middleName,
+        adminLastName: admin.lastName,
+        adminSuffix: admin.suffix,
+        adminEmail: admin.email,
       },
     }).then(() => {
       let alert = (
@@ -200,6 +219,13 @@ const OrganizationFormContainer: any = (props: Props) => {
         testingFacility: [getFacilityData()],
       }}
       facility={getFacilityData()}
+      admin={{
+        firstName: "",
+        middleName: "",
+        lastName: "",
+        suffix: "",
+        email: "",
+      }}
       deviceOptions={data.deviceType}
       saveOrganization={saveOrganization}
     />

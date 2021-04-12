@@ -69,6 +69,7 @@ const FacilityInformation: React.FC<Props> = ({
       <TextInput
         label="Email"
         name="email"
+        data-testid="facility-email"
         value={facility.email || ""}
         onChange={onChange}
         onBlur={() => {

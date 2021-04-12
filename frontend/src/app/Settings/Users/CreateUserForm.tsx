@@ -66,7 +66,7 @@ const CreateUserForm: React.FC<Props> = ({ onClose, onSubmit, isUpdating }) => {
     newUser.organization.testingFacility.length === 0;
 
   return (
-    <div className="border-0 usa-card__container">
+    <div className="border-0 card-container">
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
           Invite new user
