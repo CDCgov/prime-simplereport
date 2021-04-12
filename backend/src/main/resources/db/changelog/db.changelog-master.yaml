@@ -1662,5 +1662,5 @@ databaseChangeLog:
                   name: test_length
                   type: int
                   remarks: The length (in minutes) that the test will take.
-                  valueNumeric: 15 # backdate
+                  valueNumeric: 15 # backfill the default test length to 15 minutes, since almost all devices have a 15 min test.
                   defaultValueNumeric: 15

@@ -107,6 +107,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </h2>
                 <button
                   class="timer-button timer-reset"
+                  data-testid="timer"
                 >
                   <span>
                     15:00
@@ -198,18 +199,15 @@ exports[`TestQueue should render the test queue 1`] = `
                         <select
                           aria-required="false"
                           class="usa-select"
-                          data-testid="selected-device"
                           id="1"
                           name="testDevice"
                         >
                           <option
-                            data-testid="dropdown-option"
                             value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                           >
                             LumiraDX
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="0f3d7426-3476-4800-97e7-3de8a93b090c"
                           >
                             Quidel Sofia 2
@@ -410,6 +408,7 @@ exports[`TestQueue should render the test queue 1`] = `
                 </h2>
                 <button
                   class="timer-button timer-reset"
+                  data-testid="timer"
                 >
                   <span>
                     15:00
@@ -501,18 +500,15 @@ exports[`TestQueue should render the test queue 1`] = `
                         <select
                           aria-required="false"
                           class="usa-select"
-                          data-testid="selected-device"
                           id="4"
                           name="testDevice"
                         >
                           <option
-                            data-testid="dropdown-option"
                             value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                           >
                             LumiraDX
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="0f3d7426-3476-4800-97e7-3de8a93b090c"
                           >
                             Quidel Sofia 2

@@ -588,7 +588,6 @@ const QueueItem: any = ({
                         name="testDevice"
                         selectedValue={deviceId}
                         onChange={onDeviceChange}
-                        data-testid={`selected-device`}
                       />
                     </li>
                     {testDateFields}

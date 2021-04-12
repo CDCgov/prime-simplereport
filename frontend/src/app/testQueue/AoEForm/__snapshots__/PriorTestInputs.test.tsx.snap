@@ -135,19 +135,16 @@ Array [
         - Select -
       </option>
       <option
-        data-testid="dropdown-option"
         value="POSITIVE"
       >
         Positive
       </option>
       <option
-        data-testid="dropdown-option"
         value="NEGATIVE"
       >
         Negative
       </option>
       <option
-        data-testid="dropdown-option"
         value="UNDETERMINED"
       >
         Inconclusive

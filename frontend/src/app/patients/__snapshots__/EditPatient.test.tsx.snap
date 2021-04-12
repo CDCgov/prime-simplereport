@@ -184,25 +184,21 @@ Object {
                           - Select -
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="STAFF"
                         >
                           Staff
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="RESIDENT"
                         >
                           Resident
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="STUDENT"
                         >
                           Student
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="VISITOR"
                         >
                           Visitor
@@ -240,13 +236,11 @@ Object {
                           - Select -
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="~~ALL-FACILITIES~~"
                         >
                           All facilities
                         </option>
                         <option
-                          data-testid="dropdown-option"
                           value="b0d2041f-93c9-4192-b19a-dd99c0044a7e"
                         >
                           123
@@ -488,355 +482,296 @@ Object {
                               - Select -
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="AK"
                             >
                               AK
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="AL"
                             >
                               AL
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="AR"
                             >
                               AR
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="AS"
                             >
                               AS
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="AZ"
                             >
                               AZ
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="CA"
                             >
                               CA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="CO"
                             >
                               CO
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="CT"
                             >
                               CT
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="DC"
                             >
                               DC
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="DE"
                             >
                               DE
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="FL"
                             >
                               FL
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="FM"
                             >
                               FM
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="GA"
                             >
                               GA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="GU"
                             >
                               GU
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="HI"
                             >
                               HI
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="IA"
                             >
                               IA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="ID"
                             >
                               ID
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="IL"
                             >
                               IL
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="IN"
                             >
                               IN
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="KS"
                             >
                               KS
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="KY"
                             >
                               KY
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="LA"
                             >
                               LA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MA"
                             >
                               MA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MD"
                             >
                               MD
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="ME"
                             >
                               ME
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MH"
                             >
                               MH
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MI"
                             >
                               MI
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MN"
                             >
                               MN
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MO"
                             >
                               MO
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MP"
                             >
                               MP
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MS"
                             >
                               MS
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="MT"
                             >
                               MT
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NC"
                             >
                               NC
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="ND"
                             >
                               ND
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NE"
                             >
                               NE
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NH"
                             >
                               NH
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NJ"
                             >
                               NJ
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NM"
                             >
                               NM
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NV"
                             >
                               NV
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="NY"
                             >
                               NY
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="OH"
                             >
                               OH
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="OK"
                             >
                               OK
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="OR"
                             >
                               OR
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="PA"
                             >
                               PA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="PR"
                             >
                               PR
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="PW"
                             >
                               PW
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="RI"
                             >
                               RI
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="SC"
                             >
                               SC
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="SD"
                             >
                               SD
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="TN"
                             >
                               TN
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="TX"
                             >
                               TX
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="UT"
                             >
                               UT
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="VA"
                             >
                               VA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="VI"
                             >
                               VI
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="VT"
                             >
                               VT
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="WA"
                             >
                               WA
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="WI"
                             >
                               WI
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="WV"
                             >
                               WV
                             </option>
                             <option
-                              data-testid="dropdown-option"
                               value="WY"
                             >
                               WY
@@ -1487,25 +1422,21 @@ Object {
                         - Select -
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="STAFF"
                       >
                         Staff
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="RESIDENT"
                       >
                         Resident
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="STUDENT"
                       >
                         Student
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="VISITOR"
                       >
                         Visitor
@@ -1543,13 +1474,11 @@ Object {
                         - Select -
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="~~ALL-FACILITIES~~"
                       >
                         All facilities
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="b0d2041f-93c9-4192-b19a-dd99c0044a7e"
                       >
                         123
@@ -1791,355 +1720,296 @@ Object {
                             - Select -
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="AK"
                           >
                             AK
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="AL"
                           >
                             AL
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="AR"
                           >
                             AR
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="AS"
                           >
                             AS
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="AZ"
                           >
                             AZ
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="CA"
                           >
                             CA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="CO"
                           >
                             CO
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="CT"
                           >
                             CT
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="DC"
                           >
                             DC
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="DE"
                           >
                             DE
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="FL"
                           >
                             FL
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="FM"
                           >
                             FM
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="GA"
                           >
                             GA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="GU"
                           >
                             GU
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="HI"
                           >
                             HI
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="IA"
                           >
                             IA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="ID"
                           >
                             ID
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="IL"
                           >
                             IL
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="IN"
                           >
                             IN
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="KS"
                           >
                             KS
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="KY"
                           >
                             KY
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="LA"
                           >
                             LA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MA"
                           >
                             MA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MD"
                           >
                             MD
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="ME"
                           >
                             ME
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MH"
                           >
                             MH
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MI"
                           >
                             MI
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MN"
                           >
                             MN
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MO"
                           >
                             MO
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MP"
                           >
                             MP
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MS"
                           >
                             MS
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="MT"
                           >
                             MT
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NC"
                           >
                             NC
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="ND"
                           >
                             ND
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NE"
                           >
                             NE
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NH"
                           >
                             NH
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NJ"
                           >
                             NJ
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NM"
                           >
                             NM
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NV"
                           >
                             NV
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="NY"
                           >
                             NY
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="OH"
                           >
                             OH
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="OK"
                           >
                             OK
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="OR"
                           >
                             OR
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="PA"
                           >
                             PA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="PR"
                           >
                             PR
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="PW"
                           >
                             PW
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="RI"
                           >
                             RI
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="SC"
                           >
                             SC
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="SD"
                           >
                             SD
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="TN"
                           >
                             TN
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="TX"
                           >
                             TX
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="UT"
                           >
                             UT
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="VA"
                           >
                             VA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="VI"
                           >
                             VI
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="VT"
                           >
                             VT
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="WA"
                           >
                             WA
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="WI"
                           >
                             WI
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="WV"
                           >
                             WV
                           </option>
                           <option
-                            data-testid="dropdown-option"
                             value="WY"
                           >
                             WY

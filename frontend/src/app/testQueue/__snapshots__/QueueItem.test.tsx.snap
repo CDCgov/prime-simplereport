@@ -62,6 +62,7 @@ exports[`QueueItem correctly renders the test queue 1`] = `
             </h2>
             <button
               class="timer-button timer-reset"
+              data-testid="timer"
             >
               <span>
                 10:00
@@ -153,18 +154,15 @@ exports[`QueueItem correctly renders the test queue 1`] = `
                     <select
                       aria-required="false"
                       class="usa-select"
-                      data-testid="selected-device"
                       id="1"
                       name="testDevice"
                     >
                       <option
-                        data-testid="dropdown-option"
                         value="f5c7658d-a0d5-4ec5-a1c9-eafc85fe7554"
                       >
                         Access Bio CareStart
                       </option>
                       <option
-                        data-testid="dropdown-option"
                         value="lumira"
                       >
                         LumiraDX
