@@ -1703,16 +1703,3 @@ databaseChangeLog:
               updated_by
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
-  # # NOTE: The changeset below should be added to a future release, to clean
-  # # Up from the migration above. This allows backwards-compatibility with the
-  # # Software to the DB in the event of a rollback.
-  # - changeSet:
-  #     id: remove-person-test_result_delivery
-  #     author: adam@skylight.digital
-  #     comment: Remove the orphaned person.test_result_delivery column
-  #     changes:
-  #       - dropColumn:
-  #           tableName: person
-  #           columns:
-  #             - column:
-  #                 name: test_result_delivery
