@@ -68,6 +68,9 @@ simple-report:
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
+  azure-reporting-queue:
+    connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
+    queue-name: ${AZURE_SERVICE_BUS_REPORTING_QUEUE_NAME}
 twilio:
   from-number: "+12023014570"
 logging:

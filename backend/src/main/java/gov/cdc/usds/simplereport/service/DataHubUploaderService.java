@@ -20,6 +20,7 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.TimeZone;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class DataHubUploaderService {
   private final DataHubUploadRespository _dataHubUploadRepo;
   private final UploadTrackingService _trackingService;
   private final SlackMessageService _slack;
+  private final TestEventReportingService _testEventReportingService;
 
   private String _fileContents;
   private Date _nextTimestamp;
@@ -57,12 +59,14 @@ public class DataHubUploaderService {
       TestEventRepository testReportEventsRepo,
       DataHubUploadRespository dataHubUploadRepo,
       UploadTrackingService trackingService,
-      SlackMessageService slack) {
+      SlackMessageService slack,
+      TestEventReportingService testEventReportingService) {
     _config = config;
     _testReportEventsRepo = testReportEventsRepo;
     _trackingService = trackingService;
     _dataHubUploadRepo = dataHubUploadRepo;
     _slack = slack;
+    _testEventReportingService = testEventReportingService;
 
     LOG.info("Datahub scheduling uploader enable state: {}", config.getUploadEnabled());
 
@@ -115,7 +119,7 @@ public class DataHubUploaderService {
     }
   }
 
-  private void createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
+  private List<TestEvent> createTestEventCSV(Date earlistCreatedAt, Date latestCreateOn)
       throws IOException, DateTimeParseException {
     List<TestEvent> events =
         _testReportEventsRepo.queryMatchAllBetweenDates(
@@ -124,7 +128,7 @@ public class DataHubUploaderService {
       // next end timerange stays the same as the last. NOTE: This will not change until there are
       // new events
       this._nextTimestamp = earlistCreatedAt;
-      return;
+      return events;
     } else if (events.size() == _config.getMaxCsvRows()) {
       this._warnMessage += "More rows were found than can be uploaded in a single batch.";
     }
@@ -134,6 +138,8 @@ public class DataHubUploaderService {
     this._nextTimestamp = events.get(_rowCount - 1).getCreatedAt();
 
     this.setFileContents(events);
+
+    return events;
   }
 
   private void setFileContents(List<TestEvent> events) throws IOException {
@@ -220,7 +226,7 @@ public class DataHubUploaderService {
       // transactions
       Timestamp dateOneMinAgo = Timestamp.from(Instant.now().minus(1, ChronoUnit.MINUTES));
 
-      this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
+      var eventsReported = this.createTestEventCSV(lastTimestamp, dateOneMinAgo);
       _trackingService.markRowCount(newUpload, _rowCount, _nextTimestamp);
 
       if (_rowCount > 0) {
@@ -231,6 +237,9 @@ public class DataHubUploaderService {
 
       // todo: parse json run sanity checks like total records processed matches what we sent.
       _trackingService.markSucceeded(newUpload, _resultJson, _warnMessage);
+
+      // Clear the reported items from the testing queue
+      _testEventReportingService.markTestEventsAsReported(new HashSet<>(eventsReported));
     } catch (RestClientException | IOException err) {
       _trackingService.markFailed(newUpload, _resultJson, err);
     }

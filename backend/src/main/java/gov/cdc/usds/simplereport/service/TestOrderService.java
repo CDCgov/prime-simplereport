@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
@@ -47,6 +48,8 @@ public class TestOrderService {
   private PatientLinkService _pls;
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
+  private final TestEventReportingService _testEventReportingService;
+  private final ObjectMapper mapper = new ObjectMapper();
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;
@@ -63,7 +66,8 @@ public class TestOrderService {
       PersonService ps,
       PatientLinkService pls,
       SmsService smss,
-      CurrentPatientContextHolder patientContext) {
+      CurrentPatientContextHolder patientContext,
+      TestEventReportingService testEventReportingService) {
     _patientContext = patientContext;
     _os = os;
     _ps = ps;
@@ -73,6 +77,7 @@ public class TestOrderService {
     _terepo = terepo;
     _pls = pls;
     _smss = smss;
+    _testEventReportingService = testEventReportingService;
   }
 
   @AuthorizationConfiguration.RequirePermissionStartTestAtFacility
@@ -151,6 +156,8 @@ public class TestOrderService {
 
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
+
+    _testEventReportingService.report(testEvent);
 
     if (TestResultDeliveryPreference.SMS == person.getTestResultDelivery()) {
       // After adding test result, create a new patient link and text it to the patient
