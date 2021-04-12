@@ -127,8 +127,8 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className="grid-row">
-      <div className="prime-container usa-card__container">
+    <div className="">
+      <div className="prime-container card-container">
         <div className="usa-card__header">
           <div>
             <div className="display-flex flex-align-center">
@@ -188,6 +188,15 @@ const FacilityForm: React.FC<Props> = (props) => {
         errors={errors}
         validateField={validateField}
       />
+      <div className="float-right margin-bottom-4">
+        <Button
+          className="margin-right-0"
+          type="button"
+          onClick={validateAndSaveFacility}
+          label="Save changes"
+          disabled={!formChanged}
+        />
+      </div>
     </div>
   );
 };

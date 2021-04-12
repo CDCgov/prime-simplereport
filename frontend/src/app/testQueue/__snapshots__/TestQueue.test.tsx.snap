@@ -48,7 +48,7 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
       <div
-        class="grid-container prime-container prime-queue-item usa-card__container"
+        class="grid-container prime-container prime-queue-item card-container"
       >
         <div
           class="prime-card-container"
@@ -348,7 +348,7 @@ exports[`TestQueue should render the test queue 1`] = `
         </div>
       </div>
       <div
-        class="grid-container prime-container prime-queue-item usa-card__container"
+        class="grid-container prime-container prime-queue-item card-container"
       >
         <div
           class="prime-card-container"
