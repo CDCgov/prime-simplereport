@@ -31,6 +31,10 @@ cleanup() {
     echo "Cleanup complete!"
 }
 
+# Get environment variables
+set -o allexport
+source .env
+
 # Get dir paths
 ROOT_DIR=$(pwd)
 FRONTEND_DIR=${ROOT_DIR}/frontend
