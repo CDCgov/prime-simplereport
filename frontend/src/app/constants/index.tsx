@@ -2343,6 +2343,6 @@ const fullTribalAffiliationValueSet: {
 export const TRIBAL_AFFILIATION_VALUES: {
   value: TribalAffiliation;
   label: string;
-}[] = process.env.E2E_TRIBAL_AFFILIATION_BYPASS
+}[] = process.env.REACT_APP_E2E_TRIBAL_AFFILIATION_BYPASS
   ? fullTribalAffiliationValueSet.slice(0, 10)
   : fullTribalAffiliationValueSet;
