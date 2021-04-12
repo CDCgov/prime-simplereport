@@ -5,6 +5,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePersonRole;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
@@ -12,6 +13,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
@@ -19,6 +21,7 @@ import graphql.kickstart.tools.GraphQLMutationResolver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.Part;
 import org.slf4j.Logger;
@@ -64,6 +67,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String state,
       String zipCode,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       String role,
       String email,
       String county,
@@ -88,6 +92,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(zipCode),
             parseString(county)),
         parsePhoneNumber(telephone),
+        parsePhoneNumbers(phoneNumbers),
         parsePersonRole(role),
         parseEmail(email),
         parseRace(race),
@@ -112,6 +117,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String state,
       String zipCode,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       String role,
       String email,
       String county,
@@ -137,6 +143,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
             parseString(zipCode),
             parseString(county)),
         parsePhoneNumber(telephone),
+        parsePhoneNumbers(phoneNumbers),
         parsePersonRole(role),
         parseEmail(email),
         parseRace(race),

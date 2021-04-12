@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
@@ -183,6 +184,7 @@ public class PersonService {
       LocalDate birthDate,
       StreetAddress address,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -201,6 +203,7 @@ public class PersonService {
             birthDate,
             address,
             telephone,
+            phoneNumbers,
             role,
             email,
             race,
@@ -218,6 +221,7 @@ public class PersonService {
   public Person updateMe(
       StreetAddress address,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -235,6 +239,7 @@ public class PersonService {
         toUpdate.getBirthDate(),
         address,
         telephone,
+        phoneNumbers,
         role,
         email,
         race,
@@ -274,6 +279,7 @@ public class PersonService {
       LocalDate birthDate,
       StreetAddress address,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -291,6 +297,7 @@ public class PersonService {
         birthDate,
         address,
         telephone,
+        phoneNumbers,
         role,
         email,
         race,

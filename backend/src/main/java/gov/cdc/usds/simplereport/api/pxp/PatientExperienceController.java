@@ -4,6 +4,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEmail;
 import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
+import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
@@ -94,6 +95,7 @@ public class PatientExperienceController {
     return ps.updateMe(
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
         parsePhoneNumber(person.getTelephone()),
+        parsePhoneNumbers(person.getPhoneNumbers()),
         person.getRole(),
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),

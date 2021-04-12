@@ -109,6 +109,7 @@ public class PersonUpdate {
     return Objects.hash(
         address,
         telephone,
+        phoneNumbers,
         role,
         email,
         race,

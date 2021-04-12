@@ -99,6 +99,7 @@ public class Person extends OrganizationScopedEternalEntity {
       LocalDate birthDate,
       StreetAddress address,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -111,6 +112,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
     this.telephone = telephone;
+    this.phoneNumbers = phoneNumbers;
     this.address = address;
     this.role = role;
     this.email = email;
@@ -137,6 +139,7 @@ public class Person extends OrganizationScopedEternalEntity {
       LocalDate birthDate,
       StreetAddress address,
       String telephone,
+      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -151,6 +154,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
     this.telephone = telephone;
+    this.phoneNumbers = phoneNumbers;
     this.address = address;
     this.role = role;
     this.email = email;

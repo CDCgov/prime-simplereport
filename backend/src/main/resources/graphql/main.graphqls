@@ -63,6 +63,11 @@ type PhoneNumber {
   number: String
 }
 
+input PhoneNumberInput {
+  type: String,
+  number: String
+}
+
 # User-management types
 
 # Note: the login username is the user's email
@@ -318,6 +323,7 @@ type Mutation {
     state: String!
     zipCode: String!
     telephone: String!
+    phoneNumbers: [PhoneNumberInput]
     role: String
     email: String
     county: String
@@ -347,6 +353,7 @@ type Mutation {
         message: "Use ZIP or ZIP+4 format"
       )
     telephone: String!
+    phoneNumbers: [PhoneNumberInput]
     role: String @Size(min: 0, max: 32)
     email: String @Size(min: 3, max: 254)
     county: String
