@@ -28,9 +28,7 @@ describe("QueueItem", () => {
     expect(getByTestId("timer")).toHaveTextContent("10:00");
     expect(container).toMatchSnapshot();
   });
-});
 
-describe("EditQueueItem", () => {
   it("updates the timer when a device is changed", async () => {
     const { getByTestId, getByLabelText } = render(
       <MockedProvider mocks={mocks} addTypename={false}>
