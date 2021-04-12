@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
+import { Prompt } from "react-router-dom";
 
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -112,59 +113,64 @@ const FacilityForm: React.FC<Props> = (props) => {
   };
 
   return (
-    <div className="grid-row">
-      <div className="prime-container usa-card__container">
-        <div className="usa-card__header">
-          <div>
-            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-            <LinkWithQuery
-              to={`/settings/facilities`}
-              className="margin-left-1"
+    <>
+      <Prompt
+        when={formChanged}
+        message="\nYour changes are not saved yet!\n\nClick OK to delete your answers and leave, or Cancel to return and save your progress."
+      />
+      <div className="grid-row">
+        <div className="prime-container usa-card__container">
+          <div className="usa-card__header">
+            <div>
+              <FontAwesomeIcon icon={"arrow-left"} color="#888" />
+              <LinkWithQuery
+                to={`/settings/facilities`}
+                className="margin-left-1"
+              >
+                All facilities
+              </LinkWithQuery>
+              <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
             >
-              All facilities
-            </LinkWithQuery>
-            <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
+              <Button
+                type="button"
+                onClick={validateAndSaveFacility}
+                label="Save changes"
+                disabled={!formChanged}
+              />
+            </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Button
-              type="button"
-              onClick={validateAndSaveFacility}
-              label="Save changes"
-              disabled={!formChanged}
+          <div className="usa-card__body padding-top-2">
+            <RequiredMessage />
+            <FacilityInformation
+              facility={facility}
+              updateFacility={updateFacility}
+              errors={errors}
+              validateField={validateField}
             />
           </div>
         </div>
-        <div className="usa-card__body padding-top-2">
-          <RequiredMessage />
-          <FacilityInformation
-            facility={facility}
-            updateFacility={updateFacility}
-            errors={errors}
-            validateField={validateField}
-            formChanged={formChanged}
-          />
-        </div>
+        <OrderingProviderSettings
+          provider={facility.orderingProvider}
+          updateProvider={updateProvider}
+        />
+        <ManageDevices
+          deviceTypes={facility.deviceTypes}
+          defaultDevice={facility.defaultDevice}
+          updateDeviceTypes={updateDeviceTypes}
+          updateDefaultDevice={updateDefaultDevice}
+          deviceOptions={props.deviceOptions}
+          errors={errors}
+          validateField={validateField}
+        />
       </div>
-      <OrderingProviderSettings
-        provider={facility.orderingProvider}
-        updateProvider={updateProvider}
-      />
-      <ManageDevices
-        deviceTypes={facility.deviceTypes}
-        defaultDevice={facility.defaultDevice}
-        updateDeviceTypes={updateDeviceTypes}
-        updateDefaultDevice={updateDefaultDevice}
-        deviceOptions={props.deviceOptions}
-        errors={errors}
-        validateField={validateField}
-      />
-    </div>
+    </>
   );
 };
 
