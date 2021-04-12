@@ -31,8 +31,7 @@ public class PatientDataResolver
 
   /**
    * <em>Warning:</em> In the event that this field is requested in a bulk GQL query, a separate db
-   * query will be performed for every single patient. This is dangerous. In the event that this
-   * occurs, PatientPreferences should be factored off of Patient in the GQL schema.
+   * query will be performed for every single patient.
    */
   public TestResultDeliveryPreference getTestResultDelivery(Person p) {
     return _ps.getPatientPreferences(p).getTestResultDelivery();
