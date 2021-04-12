@@ -1,5 +1,6 @@
 import { MockedProvider } from "@apollo/client/testing";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react-dom/test-utils";
 
 import QueueItem, { EDIT_QUEUE_ITEM } from "./QueueItem";
 
@@ -49,10 +50,12 @@ describe("EditQueueItem", () => {
         ></QueueItem>
       </MockedProvider>
     );
-    fireEvent.change(getByLabelText("Device", { exact: false }), {
-      target: { value: "lumira" },
+    await act(async () => {
+      fireEvent.change(getByLabelText("Device", { exact: false }), {
+        target: { value: "lumira" },
+      });
+      await new Promise((resolve) => setTimeout(resolve, 0));
     });
-    await new Promise((resolve) => setTimeout(resolve, 0));
     expect(getByTestId("timer")).toHaveTextContent("15:00");
   });
 });
