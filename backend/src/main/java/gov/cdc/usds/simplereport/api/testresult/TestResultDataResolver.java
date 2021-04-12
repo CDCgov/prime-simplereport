@@ -68,20 +68,8 @@ public class TestResultDataResolver
     return getSurvey(testEvent).getPriorTestResult();
   }
 
-  public Date getDateTested(TestEvent testEvent) {
-    return testEvent.getDateTested();
-  }
-
   public TestDescription getTestPerformed(TestEvent event) {
     return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
-  }
-
-  public String getCorrectionStatus(TestEvent testEvent) {
-    return testEvent.getCorrectionStatus().toString();
-  }
-
-  public String getReasonForCorrection(TestEvent testEvent) {
-    return testEvent.getReasonForCorrection();
   }
 
   public ApiFacility getFacility(TestEvent testEvent) {
@@ -89,6 +77,6 @@ public class TestResultDataResolver
   }
 
   public PatientLink getPatientLink(TestEvent testEvent) {
-    return testEvent.getPatientLink();
+    return testEvent.getTestOrder().getPatientLink();
   }
 }

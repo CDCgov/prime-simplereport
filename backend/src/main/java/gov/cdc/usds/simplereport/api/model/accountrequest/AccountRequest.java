@@ -1,13 +1,16 @@
 package gov.cdc.usds.simplereport.api.model.accountrequest;
 
-import static gov.cdc.usds.simplereport.api.Translators.sanitize;
-
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import gov.cdc.usds.simplereport.api.model.TemplateVariablesProvider;
+import java.util.HashMap;
+import java.util.Map;
 import javax.validation.constraints.NotNull;
 
 @JsonNaming(PropertyNamingStrategy.KebabCaseStrategy.class)
-public class AccountRequest {
+public class AccountRequest implements TemplateVariablesProvider {
+  private static final String TEMPLATE_NAME = "account-request";
+
   @NotNull private String firstName;
   @NotNull private String lastName;
   @NotNull private String email;
@@ -43,52 +46,51 @@ public class AccountRequest {
   private String opZip;
   private String opCounty;
 
-  public String generateEmailBody() {
-    String newLine = "<br>";
-    return String.join(
-        newLine,
-        "A new SimpleReport account request has been submitted with the following details:",
-        "",
-        "<h1>Facility administrator</h1>",
-        "<b>First Name: </b>" + sanitize(firstName),
-        "<b>Last Name: </b>" + sanitize(lastName),
-        "<b>Email address: </b>" + sanitize(email),
-        "<b>Work Phone Number: </b>" + sanitize(workPhoneNumber),
-        "<b>Cell Phone Number: </b>" + sanitize(cellPhoneNumber),
-        "",
-        "<h1>Testing facility information</h1>",
-        "<b>Street Adress: </b>" + sanitize(mailingAddress1),
-        "<b>Unit Type: </b>" + sanitize(aptSuiteOther),
-        "<b>Unit number: </b>" + sanitize(aptFloorSuiteNo),
-        "<b>City: </b>" + sanitize(city),
-        "<b>State: </b>" + sanitize(state),
-        "<b>ZIP code: </b>" + sanitize(zip),
-        "<b>County: </b>" + sanitize(county),
-        "<b>Facility Type: </b>" + sanitize(facilityType),
-        "<b>Organization name: </b>" + sanitize(organizationName),
-        "<b>Testing facility name: </b>" + sanitize(facilityName),
-        "<b>Clinical Laboratory Improvement Amendments (CLIA) number: </b>" + sanitize(cliaNumber),
-        "<b>Testing devices: </b>" + sanitize(testingDevices),
-        "<b>Devices accessing SimpleReport: </b>" + sanitize(accessDevices),
-        "<b>Web browsers: </b>" + sanitize(browsers),
-        "<b>Workflow description: </b>" + sanitize(workflow),
-        "<b>Does the person who checks people in also record test results: </b>"
-            + sanitize(recordsTestResults),
-        "<b>Single person registration and testing process time: </b>" + sanitize(processTime),
-        "<b>Time spent submitting results daily: </b>" + sanitize(submittingResultsTime),
-        "",
-        "<h1>Ordering provider</h1>",
-        "<b>First name: </b>" + sanitize(opFirstName),
-        "<b>Last name: </b>" + sanitize(opLastName),
-        "<b>National Provider Identifier (NPI): </b>" + sanitize(npi),
-        "<b>Phone number: </b>" + sanitize(opPhoneNumber),
-        "<b>Street address: </b>" + sanitize(opMailingAddress1),
-        "<b>Unit type: </b>" + sanitize(opAptSuiteOther),
-        "<b>Unit number: </b>" + sanitize(opAptFloorSuiteNo),
-        "<b>City: </b>" + sanitize(opCity),
-        "<b>State: </b>" + sanitize(opState),
-        "<b>Zip Code: </b>" + sanitize(opZip),
-        "<b>County: </b>" + sanitize(opCounty));
+  @Override
+  public String getTemplateName() {
+    return TEMPLATE_NAME;
+  }
+
+  @Override
+  public Map<String, Object> toTemplateVariables() {
+    Map<String, Object> variableMap = new HashMap<>();
+
+    variableMap.put("firstName", firstName);
+    variableMap.put("lastName", lastName);
+    variableMap.put("email", email);
+    variableMap.put("workPhoneNumber", workPhoneNumber);
+    variableMap.put("cellPhoneNumber", cellPhoneNumber);
+    variableMap.put("mailingAddress1", mailingAddress1);
+    variableMap.put("aptSuiteOther", aptSuiteOther);
+    variableMap.put("aptFloorSuiteNo", aptFloorSuiteNo);
+    variableMap.put("city", city);
+    variableMap.put("state", state);
+    variableMap.put("zip", zip);
+    variableMap.put("county", county);
+    variableMap.put("facilityType", facilityType);
+    variableMap.put("organizationName", organizationName);
+    variableMap.put("facilityName", facilityName);
+    variableMap.put("cliaNumber", cliaNumber);
+    variableMap.put("testingDevices", testingDevices);
+    variableMap.put("accessDevices", accessDevices);
+    variableMap.put("browsers", browsers);
+    variableMap.put("workflow", workflow);
+    variableMap.put("recordsTestResults", recordsTestResults);
+    variableMap.put("processTime", processTime);
+    variableMap.put("submittingResultsTime", submittingResultsTime);
+    variableMap.put("opFirstName", opFirstName);
+    variableMap.put("opLastName", opLastName);
+    variableMap.put("npi", npi);
+    variableMap.put("opPhoneNumber", opPhoneNumber);
+    variableMap.put("opMailingAddress1", opMailingAddress1);
+    variableMap.put("opAptSuiteOther", opAptSuiteOther);
+    variableMap.put("opAptFloorSuiteNo", opAptFloorSuiteNo);
+    variableMap.put("opCity", opCity);
+    variableMap.put("opState", opState);
+    variableMap.put("opZip", opZip);
+    variableMap.put("opCounty", opCounty);
+
+    return variableMap;
   }
 
   public String getFirstName() {

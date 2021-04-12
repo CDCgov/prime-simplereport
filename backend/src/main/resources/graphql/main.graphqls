@@ -4,7 +4,8 @@
 # Infrastructure types
 
 type Organization {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   name: String
   externalId: String
   testingFacility: [Facility] @deprecated(reason: "Use the one that makes sense")
@@ -91,7 +92,8 @@ type Patient
   @requiredPermissions(
     anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]
   ) {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   facility: Facility
   lookupId: String
   name: NameInfo
@@ -127,7 +129,8 @@ type Patient
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   patient: Patient
   dateAdded: String
   pregnancy: String
@@ -286,8 +289,6 @@ type Mutation {
     lastName: String!
     suffix: String
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
-  updateUserRole(id: ID!, role: Role!): Role
-    @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
