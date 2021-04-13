@@ -112,7 +112,8 @@ Then run this to start the app:
 ./start.sh
 ```
 
-This will also start up both servers in "watch" mode. Press CTRL-C to exit and cleanup the servers cleanly.
+This will also start up both servers in "watch" mode.  When using `start.sh`, any environment variables put
+in `.env` in the root directory will be available to the app. Press CTRL-C to exit and cleanup the servers cleanly.
 
 ### Updating user role
 

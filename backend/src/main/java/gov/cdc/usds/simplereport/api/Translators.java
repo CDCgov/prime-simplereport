@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.json.JSONObject;
 
 /**
@@ -151,6 +152,23 @@ public class Translators {
       return ethnicity;
     }
     throw IllegalGraphqlArgumentException.mustBeEnumerated(e, ETHNICITIES);
+  }
+
+  private static final int MAX_TRIBAL_AFFILIATION = 567;
+  private static final Set<String> TRIBAL_AFFILIATIONS =
+      IntStream.range(1, MAX_TRIBAL_AFFILIATION)
+          .mapToObj(Integer::toString)
+          .collect(Collectors.toSet());
+
+  public static String parseTribalAffiliation(String ta) {
+    String tribalAffiliation = parseString(ta);
+    if (tribalAffiliation == null) {
+      return null;
+    }
+    if (TRIBAL_AFFILIATIONS.contains(tribalAffiliation)) {
+      return tribalAffiliation;
+    }
+    throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
   private static final Set<String> GENDERS = Set.of("male", "female", "other", "refused");

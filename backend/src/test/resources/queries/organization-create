@@ -21,6 +21,11 @@ mutation addOrg($deviceId: String!) {
     orderingProviderState: "NY"
     orderingProviderZipCode: "11801"
     orderingProviderPhone: "(646) 5432123"
+    adminFirstName: "Bob"
+    adminMiddleName: "Bill"
+    adminLastName: "Barker"
+    adminSuffix: "Sr"
+    adminEmail: "bob@barker.com"
     deviceTypes: [$deviceId]
     defaultDevice: $deviceId
   ) {

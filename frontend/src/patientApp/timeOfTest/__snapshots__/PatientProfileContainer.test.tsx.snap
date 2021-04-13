@@ -164,6 +164,14 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
+        Tribal Affiliation
+      </h3>
+      <p>
+        Not provided
+      </p>
+      <h3
+        className="font-heading-sm"
+      >
         Biological sex
       </h3>
       <p>
