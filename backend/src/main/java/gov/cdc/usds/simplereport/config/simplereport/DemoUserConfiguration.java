@@ -27,7 +27,7 @@ public class DemoUserConfiguration {
   private Set<String> siteAdminEmails;
 
   public DemoUserConfiguration(List<DemoUser> allUsers) {
-    this(null, allUsers, new ArrayList<>());
+    this(null, allUsers, null);
   }
 
   @ConstructorBinding

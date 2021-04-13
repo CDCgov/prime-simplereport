@@ -171,7 +171,7 @@ public class ApiUserService {
   }
 
   // current user is checked using their token
-  private boolean isCurrentUserAdmin() {
+  private boolean isCurrentUserSiteAdmin() {
     return _authService.isSiteAdmin();
   }
 
@@ -255,7 +255,7 @@ public class ApiUserService {
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    boolean isAdmin = isCurrentUserAdmin();
+    boolean isAdmin = isCurrentUserSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 
