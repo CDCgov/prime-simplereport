@@ -62,8 +62,8 @@ const UPDATE_PATIENT = gql`
     $race: String
     $ethnicity: String
     $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
   ) {
     updatePatient(
       facilityId: $facilityId

@@ -63,8 +63,8 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   race: yup.mixed().oneOf([...getValues(RACE_VALUES), "", null]),
   ethnicity: yup.mixed().oneOf([...getValues(ETHNICITY_VALUES), "", null]),
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
-  residentCongregateSetting: yup.bool().required(),
-  employedInHealthcare: yup.bool().required(),
+  residentCongregateSetting: yup.boolean().nullable(),
+  employedInHealthcare: yup.boolean().nullable(),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(

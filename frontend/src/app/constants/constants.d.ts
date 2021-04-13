@@ -4,12 +4,13 @@ type Race =
   | "black"
   | "pacific"
   | "white"
-  | "unknown"
+  | "other"
   | "refused";
-type Ethnicity = "hispanic" | "not_hispanic";
-type Gender = "male" | "female" | "other";
+type Ethnicity = "hispanic" | "not_hispanic" | "refused";
+type Gender = "male" | "female" | "other" | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
+type YesNoUnknown = YesNo | "UNKNOWN";
 
 interface PersonUpdate extends Address {
   lookupId: string;
@@ -17,8 +18,8 @@ interface PersonUpdate extends Address {
   race: Race;
   ethnicity: Ethnicity;
   gender: Gender;
-  residentCongregateSetting: boolean;
-  employedInHealthcare: boolean;
+  residentCongregateSetting: boolean | null | undefined;
+  employedInHealthcare: boolean | null | undefined;
   telephone: string;
   county: string;
   email: string;
