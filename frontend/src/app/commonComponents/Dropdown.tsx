@@ -57,12 +57,13 @@ const Dropdown: React.FC<Props & SelectProps> = ({
           )}
         >
           {label && (
-            <label 
+            <label
               className={classnames(
                 "usa-label",
                 validationStatus === "error" && "usa-label--error"
               )}
-              htmlFor={id}>
+              htmlFor={id}
+            >
               {required ? (
                 <Required label={label} />
               ) : (
