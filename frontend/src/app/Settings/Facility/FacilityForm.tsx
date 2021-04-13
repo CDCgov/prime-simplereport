@@ -87,14 +87,20 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
   let error: any;
   if (field === "state" && stateCodes.includes(facility[field])) {
     error = (
-      <div>
-        SimpleReport isn’t currently supported in{" "}
-        {getStateNameFromCode(facility.state)}. See a{" "}
-        <a href={urls.FACILITY_INFO}>
-          {" "}
-          list of states where SimpleReport is supported.
-        </a>
-      </div>
+      <>
+        <span>
+          SimpleReport isn’t currently supported in{" "}
+          {getStateNameFromCode(facility.state)}.
+        </span>
+        <span className="display-block margin-top-05">
+          See a{" "}
+          <a href={urls.FACILITY_INFO}>
+            {" "}
+            list of states where SimpleReport is supported
+          </a>
+          .
+        </span>
+      </>
     );
   } else {
     error = allFacilityErrors[field];

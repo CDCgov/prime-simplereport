@@ -121,7 +121,6 @@ const FacilityInformation: React.FC<Props> = ({
         selectedValue={facility.state}
         options={stateCodes.map((c) => ({ label: c, value: c }))}
         defaultSelect
-        className="sr-width-sm"
         required
         onChange={onChange}
         onBlur={() => {
@@ -129,6 +128,7 @@ const FacilityInformation: React.FC<Props> = ({
         }}
         validationStatus={errors.state ? "error" : undefined}
         errorMessage={errors.state}
+        selectClassName="usa-input--medium"
       />
     </div>
   );
