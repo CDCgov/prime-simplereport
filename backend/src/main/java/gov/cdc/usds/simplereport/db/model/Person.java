@@ -8,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -50,6 +51,14 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @JsonDeserialize(converter = RaceArrayConverter.class)
   private String race;
 
+  /**
+   * Tribal Affiliation maps to this data set:
+   * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
+   */
+  @Type(type = "jsonb")
+  @Column
+  private List<String> tribalAffiliation;
+
   @Column private String ethnicity;
   @Column private String telephone;
   @Column private String email;
@@ -89,6 +98,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String email,
       String race,
       String ethnicity,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -102,6 +112,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -127,6 +138,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String email,
       String race,
       String ethnicity,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -142,6 +154,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -201,6 +214,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public String getEthnicity() {
     return ethnicity;
+  }
+
+  public List<String> getTribalAffiliation() {
+    return tribalAffiliation;
   }
 
   public String getGender() {

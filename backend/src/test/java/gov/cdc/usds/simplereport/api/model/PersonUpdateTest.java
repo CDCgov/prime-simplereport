@@ -17,6 +17,7 @@ class PersonUpdateTest {
             + "\"email\":\"user@domain.tld\","
             + "\"race\":\"refused\","
             + "\"ethnicity\":\"not_hispanic\","
+            + "\"tribalAffiliation\":\"432\","
             + "\"gender\":\"female\","
             + "\"residentCongregateSetting\":false,"
             + "\"employedInHealthcare\":true,"

@@ -1651,6 +1651,18 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
+      id: add-tribal-affiliation
+      author: adam@skylight.digital
+      comment: Add Tribal Affiliation to Person
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: tribal_affiliation
+                  type: jsonb
+                  remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)
+  - changeSet:
       id: add-patient-preferences
       author: adam@skylight.digital
       comment: Add table for non-demographic preferences relating to a Person
