@@ -984,6 +984,15 @@ exports[`PatientFormContainer snapshot 1`] = `
               </div>
             </fieldset>
             <fieldset
+              className="usa-fieldset"
+            >
+              <legend
+                className="usa-legend"
+              >
+                Tribal affiliation
+              </legend>
+            </fieldset>
+            <fieldset
               className="usa-fieldset prime-radios"
             >
               <legend

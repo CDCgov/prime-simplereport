@@ -13,6 +13,7 @@ public class PersonUpdate {
   private final String email;
   private final String race;
   private final String ethnicity;
+  private final String tribalAffiliation;
   private final String gender;
   private final Boolean residentCongregateSetting;
   private final Boolean employedInHealthcare;
@@ -25,6 +26,7 @@ public class PersonUpdate {
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
       @JsonProperty("ethnicity") String ethnicity,
+      @JsonProperty("tribalAffiliation") String tribalAffiliation,
       @JsonProperty("gender") String gender,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
       @JsonProperty("employedInHealthcare") Boolean employedInHealthcare) {
@@ -34,6 +36,7 @@ public class PersonUpdate {
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -53,6 +56,10 @@ public class PersonUpdate {
 
   public String getEthnicity() {
     return ethnicity;
+  }
+
+  public String getTribalAffiliation() {
+    return tribalAffiliation;
   }
 
   public String getGender() {
@@ -90,6 +97,7 @@ public class PersonUpdate {
         && Objects.equals(email, that.email)
         && Objects.equals(race, that.race)
         && Objects.equals(ethnicity, that.ethnicity)
+        && Objects.equals(tribalAffiliation, that.tribalAffiliation)
         && Objects.equals(gender, that.gender)
         && Objects.equals(residentCongregateSetting, that.residentCongregateSetting)
         && Objects.equals(employedInHealthcare, that.employedInHealthcare);
@@ -104,6 +112,7 @@ public class PersonUpdate {
         email,
         race,
         ethnicity,
+        tribalAffiliation,
         gender,
         residentCongregateSetting,
         employedInHealthcare);

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -119,6 +120,7 @@ class PersonSerializationTest {
             "a@b.c",
             "marathon",
             "generic",
+            Arrays.asList("123"),
             "Male-ish",
             true,
             false);

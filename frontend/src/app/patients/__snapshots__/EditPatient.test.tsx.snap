@@ -985,6 +985,15 @@ Object {
                     </div>
                   </fieldset>
                   <fieldset
+                    class="usa-fieldset"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Tribal affiliation
+                    </legend>
+                  </fieldset>
+                  <fieldset
                     class="usa-fieldset prime-radios"
                   >
                     <legend
@@ -2235,6 +2244,15 @@ Object {
                       </label>
                     </div>
                   </div>
+                </fieldset>
+                <fieldset
+                  class="usa-fieldset"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Tribal affiliation
+                  </legend>
                 </fieldset>
                 <fieldset
                   class="usa-fieldset prime-radios"
