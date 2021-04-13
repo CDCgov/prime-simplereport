@@ -3,9 +3,9 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, Route } from "react-router";
 
-import EditPatient, { GET_PATIENT } from "./EditPatient";
+import EditPatient, { GET_PATIENT, UPDATE_PATIENT } from "./EditPatient";
 
 jest.mock("../commonComponents/ComboBox", () => () => <></>);
 
@@ -134,6 +134,8 @@ describe("EditPatient", () => {
   describe("Form Submit", () => {
     describe("Only required fields", () => {
       let component: any;
+      let testLocation: any;
+
       beforeEach(async () => {
         const mocks = [
           {
@@ -155,7 +157,7 @@ describe("EditPatient", () => {
                   city: "",
                   state: "DC",
                   zipCode: "20503",
-                  telephone: "(634) 397-4114",
+                  telephone: "(301) 458-4775",
                   role: "",
                   email: "",
                   county: "",
@@ -167,6 +169,39 @@ describe("EditPatient", () => {
                   employedInHealthcare: true,
                   facility: null,
                 },
+              },
+            },
+          },
+          {
+            request: {
+              query: UPDATE_PATIENT,
+              variables: {
+                patientId: mockPatientID,
+                firstName: "Gina",
+                middleName: null,
+                lastName: "Franecki",
+                birthDate: "1939-10-11",
+                street: "736 Jackson PI NW",
+                streetTwo: null,
+                city: null,
+                state: "DC",
+                zipCode: "20503",
+                telephone: "(301) 458-4775",
+                role: null,
+                email: null,
+                county: null,
+                race: null,
+                ethnicity: null,
+                gender: null,
+                tribalAffiliation: null,
+                residentCongregateSetting: true,
+                employedInHealthcare: true,
+                facilityId: null,
+              },
+            },
+            result: {
+              data: {
+                internalId: "153f661f-b6ea-4711-b9ab-487b95198cce",
               },
             },
           },
@@ -182,6 +217,13 @@ describe("EditPatient", () => {
                 />
               </MockedProvider>
             </Provider>
+            <Route
+              path="*"
+              render={({ location }) => {
+                testLocation = location;
+                return <div>Redirect</div>;
+              }}
+            />
           </MemoryRouter>
         );
         await act(async () => {
@@ -204,6 +246,23 @@ describe("EditPatient", () => {
         });
         it("save is enabled", () => {
           expect(screen.getAllByText("Save changes")[0]).not.toBeDisabled();
+        });
+        describe("On save", () => {
+          beforeEach(async () => {
+            await act(async () => {
+              fireEvent.click(
+                screen.queryAllByText("Save", {
+                  exact: false,
+                })[0]
+              );
+              // for some reason the 1 second time out works but this does not
+              // await screen.getAllByText("Redirect")
+              await new Promise((resolve) => setTimeout(resolve, 1000));
+            });
+          });
+          it("redirects to the person tab", () => {
+            expect(testLocation.pathname).toBe("/patients/");
+          });
         });
       });
     });

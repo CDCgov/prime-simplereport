@@ -160,7 +160,11 @@ const PersonForm = (props: Props) => {
     setPatient(person);
     setAddressModalOpen(false);
     setFormChanged(false);
-    props.savePerson(person);
+    props.savePerson(
+      Object.fromEntries(
+        Object.entries(person).map(([key, value]) => [key, value || null])
+      ) as any
+    );
   };
 
   const commonInputProps = {

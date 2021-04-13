@@ -70,7 +70,7 @@ export const GET_PATIENT = gql`
   }
 `;
 
-const UPDATE_PATIENT = gql`
+export const UPDATE_PATIENT = gql`
   mutation UpdatePatient(
     $facilityId: ID
     $patientId: ID!
@@ -186,6 +186,8 @@ const EditPatient = (props: Props) => {
   const getTitle = (person: Nullable<PersonFormData>) =>
     displayFullName(person.firstName, person.middleName, person.lastName);
 
+  const { facility, ...personFormData } = data.patient;
+
   return (
     <div className="bg-base-lightest">
       <div className="grid-container">
@@ -193,7 +195,7 @@ const EditPatient = (props: Props) => {
           <div className={"margin-bottom-4"}>
             <PersonForm
               patient={{
-                ...data.patient,
+                ...personFormData,
                 tribalAffiliation: data.patient.tribalAffiliation[0],
                 facilityId:
                   data.patient.facility === null
