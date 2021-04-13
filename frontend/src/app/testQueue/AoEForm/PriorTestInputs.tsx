@@ -16,7 +16,7 @@ interface Props {
   testTypeConfig: Option[];
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
-  priorTestDate: string | undefined;
+  priorTestDate: string | undefined | null;
   setPriorTestDate: (priorTestDate: string | undefined) => void;
   priorTestResult: string | undefined | null;
   setPriorTestResult: (priorTestResult: string | undefined | null) => void;
@@ -42,6 +42,7 @@ const PriorTestInputs: React.FC<Props> = ({
   setPriorTestType,
   lastTest,
 }) => {
+  console.log(priorTestResult);
   const recentDate = (lastTest?.dateTested || "").split("T")[0];
   const filledPriorTest =
     priorTestDate &&
@@ -51,14 +52,16 @@ const PriorTestInputs: React.FC<Props> = ({
   const [lastTestAnswer, setlastTestAnswer] = useState(
     isFirstTest === undefined ? undefined : filledPriorTest ? "yes" : "no"
   );
-  const [lastTestDateKnown, setLastTestDateKnown] = useState(true);
+  const [lastTestDateKnown, setLastTestDateKnown] = useState(
+    !!priorTestDate || priorTestDate === undefined
+  );
   const previousTestEntry = (
     <>
       <TextInput
         type="date"
-        label="Date of Most Recent Test"
+        label="Date of most recent test"
         name="prior_test_date"
-        value={priorTestDate}
+        value={priorTestDate || undefined}
         onChange={(e) => setPriorTestDate(e.target.value)}
         max={new Date().toISOString().split("T")[0]}
         min="2020-02-01"
@@ -79,7 +82,7 @@ const PriorTestInputs: React.FC<Props> = ({
       />
       <Dropdown
         options={testTypeConfig}
-        label="Type of Prior Test"
+        label="Type of prior test"
         name="prior_test_type"
         selectedValue={priorTestType || ""}
         onChange={(e) => setPriorTestType(e.target.value)}
@@ -104,7 +107,7 @@ const PriorTestInputs: React.FC<Props> = ({
             label: TEST_RESULT_DESCRIPTIONS.UNKNOWN,
           },
         ]}
-        label="Result of Prior Test"
+        label="Result of prior test"
         name="prior_test_result"
         selectedValue={
           priorTestResult === null

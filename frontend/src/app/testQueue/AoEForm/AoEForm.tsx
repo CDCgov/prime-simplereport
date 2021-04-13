@@ -109,7 +109,11 @@ const AoEForm: React.FC<Props> = ({
   const [priorTestType, setPriorTestType] = useState(loadState.priorTestType);
   const [priorTestResult, setPriorTestResult] = useState<
     string | null | undefined
-  >(loadState.priorTestResult || null);
+  >(
+    loadState.priorTestResult === undefined
+      ? undefined
+      : loadState.priorTestResult || null
+  );
   const [pregnancyResponse, setPregnancyResponse] = useState(
     loadState.pregnancy
   );
