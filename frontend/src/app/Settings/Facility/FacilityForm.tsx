@@ -80,25 +80,27 @@ export const useFacilityValidation = (facility: Facility) => {
   return { errors, validateField, validateFacility };
 };
 
-const createFieldError = (field:keyof FacilityErrors, facility:Facility) => {
-   // The `state` field may produce two different errors: one indicating
-   // that no option has been selected and the other indicating that
-   // SimpleReport has not gone live in that particular state.
-  let error:any;
+const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
+  // The `state` field may produce two different errors: one indicating
+  // that no option has been selected and the other indicating that
+  // SimpleReport has not gone live in that particular state.
+  let error: any;
   if (field === "state" && stateCodes.includes(facility[field])) {
-    error = <div>
-    SimpleReport is not currently supported in{" "}
-    {getStateNameFromCode(facility.state)}. See a{" "}
-    <a href={urls.FACILITY_INFO}>
-      {" "}
-      list of states where SimpleReport is supported.
-    </a>
-  </div>;
+    error = (
+      <div>
+        SimpleReport is not currently supported in{" "}
+        {getStateNameFromCode(facility.state)}. See a{" "}
+        <a href={urls.FACILITY_INFO}>
+          {" "}
+          list of states where SimpleReport is supported.
+        </a>
+      </div>
+    );
   } else {
     error = allFacilityErrors[field];
   }
   return error;
-}
+};
 
 interface Props {
   facility: Facility;

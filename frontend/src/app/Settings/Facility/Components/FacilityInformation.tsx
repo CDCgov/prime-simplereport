@@ -1,15 +1,8 @@
 import React from "react";
-import { validate } from "graphql";
 
-import {
-  stateCodes,
-  liveJurisdictions,
-  urls,
-} from "../../../../config/constants";
+import { stateCodes } from "../../../../config/constants";
 import Dropdown from "../../../commonComponents/Dropdown";
 import TextInput from "../../../commonComponents/TextInput";
-import Alert from "../../../commonComponents/Alert";
-import { getStateNameFromCode } from "../../../utils/state";
 import { FacilityErrors } from "../facilitySchema";
 import { ValidateField } from "../FacilityForm";
 
@@ -123,20 +116,20 @@ const FacilityInformation: React.FC<Props> = ({
         className="usa-input--medium"
       />
       <Dropdown
-            label="State"
-            name="state"
-            selectedValue={facility.state}
-            options={stateCodes.map((c) => ({ label: c, value: c }))}
-            defaultSelect
-            className="sr-width-sm"
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("state");
-            }}
-            validationStatus={errors.state ? "error" : undefined}
-            errorMessage={errors.state}
-          />
+        label="State"
+        name="state"
+        selectedValue={facility.state}
+        options={stateCodes.map((c) => ({ label: c, value: c }))}
+        defaultSelect
+        className="sr-width-sm"
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("state");
+        }}
+        validationStatus={errors.state ? "error" : undefined}
+        errorMessage={errors.state}
+      />
     </div>
   );
 };
