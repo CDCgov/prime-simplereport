@@ -1,6 +1,8 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -117,7 +119,8 @@ class AccountRequestControllerTest {
 
     this._mockMvc.perform(builder).andExpect(status().isOk());
 
-    verify(emailService)
+    // mail 1: to us (contains formatted request data)
+    verify(emailService, times(1))
         .send(
             eq(List.of("support@simplereport.gov", "Protect-ServiceDesk@hhs.gov")),
             eq("New account request"),
@@ -125,14 +128,36 @@ class AccountRequestControllerTest {
     assertThat(contentCaptor.getValue().getTemplateName()).isEqualTo("account-request");
     assertThat(contentCaptor.getValue().toTemplateVariables()).containsEntry("firstName", "Mary");
 
-    verify(mockSendGrid, times(1)).send(mail.capture());
-    assertThat(mail.getValue().getContent().get(0).getValue())
+    // mail 2: to requester (simplereport new user email)
+    verify(emailService, times(1))
+        .send(
+            "kyvuzoxy@mailinator.com",
+            "Next Steps for SimpleReport",
+            "account-next-steps",
+            "simplereport-site-onboarding-guide.pdf");
+
+    verify(mockSendGrid, times(2)).send(mail.capture());
+    List<Mail> sentMails = mail.getAllValues();
+
+    // mail 1: to us (contains formatted request data)
+    assertThat(sentMails.get(0).getContent().get(0).getValue())
         .contains(
             "new SimpleReport account request",
             "Mary",
             "Lopez",
             "kyvuzoxy@mailinator.com",
             "Reprehenderit nostr");
+    assertNull(sentMails.get(0).getAttachments());
+
+    // mail 2: to requester (simplereport new user email)
+    assertThat(sentMails.get(1).getContent().get(0).getValue())
+        .contains(
+            "Administrator Identity Verification", "SimpleReport Training", "Terms of Service");
+    assertEquals(1, sentMails.get(1).getAttachments().size());
+    assertEquals("application/pdf", sentMails.get(1).getAttachments().get(0).getType());
+    assertEquals(
+        "simplereport-site-onboarding-guide.pdf",
+        sentMails.get(1).getAttachments().get(0).getFilename());
   }
 
   @Test
