@@ -44,7 +44,7 @@ public class PatientDataResolver
     if (patientPreferencesLoader != null) {
       return patientPreferencesLoader
           .load(person.getInternalId())
-          .thenApply(p -> p.getTestResultDelivery());
+          .thenApply(PatientPreferences::getTestResultDelivery);
     }
     throw new IllegalStateException("No patient preferences data loader found");
   }
@@ -57,7 +57,7 @@ public class PatientDataResolver
     if (patientPreferencesLoader != null) {
       return patientPreferencesLoader
           .load(person.getInternalId())
-          .thenApply(p -> p.getPreferredLanguage());
+          .thenApply(PatientPreferences::getPreferredLanguage);
     }
     throw new IllegalStateException("No patient preferences data loader found");
   }
