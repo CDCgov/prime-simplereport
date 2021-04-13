@@ -26,7 +26,7 @@ const onExiting = (node: HTMLElement) => {
 };
 
 const emptyQueueMessage = (
-  <div className="grid-container prime-center usa-card__container">
+  <div className="grid-container prime-center card-container">
     <div className="grid-row">
       <div className="usa-card__body">
         <p>

@@ -18,7 +18,7 @@ exports[`WithFacility With two facilities should render with a value 1`] = `
       className="grid-row position-relative"
     >
       <div
-        className="prime-container usa-card__container"
+        className="prime-container card-container"
       >
         <div
           className="usa-card__header"
@@ -81,7 +81,7 @@ exports[`WithFacility With zero facilities should notify user to contact an admi
       className="grid-row position-relative"
     >
       <div
-        className="prime-container usa-card__container"
+        className="prime-container card-container"
       >
         <div
           className="usa-card__header"
