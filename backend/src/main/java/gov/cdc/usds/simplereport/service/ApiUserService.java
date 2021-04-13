@@ -281,4 +281,42 @@ public class ApiUserService {
             })
         .collect(Collectors.toList());
   }
+
+  @AuthorizationConfiguration.RequirePermissionManageUsers
+  public UserInfo getUserInCurrentOrg(final UUID userId) {
+    final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
+    if (optApiUser.isEmpty()) {
+      throw new UnidentifiedUserException();
+    }
+    final ApiUser apiUser = optApiUser.get();
+
+    Optional<OrganizationRoleClaims> optClaims =
+        _oktaRepo.getOrganizationRoleClaimsForUser(apiUser.getLoginEmail());
+    if (optClaims.isEmpty()) {
+      throw new UnidentifiedUserException();
+    }
+    final OrganizationRoleClaims claims = optClaims.get();
+
+    // ensure the user is in this organization
+    Organization org = _orgService.getCurrentOrganization();
+    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
+      throw new UnidentifiedUserException();
+    }
+
+    List<Facility> facilities = _orgService.getFacilities(org);
+    Set<Facility> facilitiesSet = new HashSet<>(facilities);
+    Map<UUID, Facility> facilitiesByUUID =
+        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
+
+    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+    Set<Facility> accessibleFacilities =
+        allFacilityAccess
+            ? facilitiesSet
+            : claims.getFacilities().stream()
+                .map(facilitiesByUUID::get)
+                .collect(Collectors.toSet());
+    OrganizationRoles orgRoles =
+        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
+  }
 }
