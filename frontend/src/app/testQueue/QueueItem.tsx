@@ -103,6 +103,7 @@ const UPDATE_AOE = gql`
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     updateTimeOfTestQuestions(
       patientId: $patientId
@@ -114,6 +115,7 @@ const UPDATE_AOE = gql`
       priorTestType: $priorTestType
       priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
+      testResultDelivery: $testResultDelivery
     )
   }
 `;

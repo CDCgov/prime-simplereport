@@ -4,12 +4,19 @@ import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.db.model.Facility;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.TestEventService;
+import graphql.kickstart.execution.context.GraphQLContext;
 import graphql.kickstart.tools.GraphQLResolver;
+import graphql.schema.DataFetchingEnvironment;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import org.dataloader.DataLoader;
+import org.dataloader.DataLoaderRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +36,29 @@ public class PatientDataResolver
     return f == null ? null : new ApiFacility(f);
   }
 
-  /**
-   * <em>Warning:</em> In the event that this field is requested in a bulk GQL query, a separate db
-   * query will be performed for every single patient.
-   */
-  public TestResultDeliveryPreference getTestResultDelivery(Person p) {
-    return _ps.getPatientPreferences(p).getTestResultDelivery();
+  public CompletableFuture<TestResultDeliveryPreference> getTestResultDelivery(
+      Person person, DataFetchingEnvironment dfe) {
+    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
+        registry.getDataLoader(PatientPreferences.DATA_LOADER);
+    if (patientPreferencesLoader != null) {
+      return patientPreferencesLoader
+          .load(person.getInternalId())
+          .thenApply(p -> p.getTestResultDelivery());
+    }
+    throw new IllegalStateException("No patient preferences data loader found");
   }
 
-  /**
-   * <em>Warning:</em> In the event that this field is requested in a bulk GQL query, a separate db
-   * query will be performed for every single patient.
-   *
-   * @see getTestResultDelivery
-   */
-  public String getPreferredLanguage(Person p) {
-    return _ps.getPatientPreferences(p).getPreferredLanguage();
+  public CompletableFuture<String> getPreferredLanguage(
+      Person person, DataFetchingEnvironment dfe) {
+    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
+    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
+        registry.getDataLoader(PatientPreferences.DATA_LOADER);
+    if (patientPreferencesLoader != null) {
+      return patientPreferencesLoader
+          .load(person.getInternalId())
+          .thenApply(p -> p.getPreferredLanguage());
+    }
+    throw new IllegalStateException("No patient preferences data loader found");
   }
 }

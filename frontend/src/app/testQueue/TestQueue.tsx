@@ -63,6 +63,7 @@ export const queueQuery = gql`
         lastName
         gender
         testResultDelivery
+        preferredLanguage
       }
       result
       dateTested
