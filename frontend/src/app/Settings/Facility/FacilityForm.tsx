@@ -88,7 +88,7 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
   if (field === "state" && stateCodes.includes(facility[field])) {
     error = (
       <div>
-        SimpleReport is not currently supported in{" "}
+        SimpleReport isn't currently supported in{" "}
         {getStateNameFromCode(facility.state)}. See a{" "}
         <a href={urls.FACILITY_INFO}>
           {" "}
