@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 @Configuration
-class AzureServiceBusConfiguration {
+class AzureTestEventReportingQueueConfiguration {
   @Bean
   @Primary
   @ConditionalOnBean

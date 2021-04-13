@@ -69,8 +69,9 @@ simple-report:
     waitlist-recipient: 
       - support@simplereport.gov
   azure-reporting-queue:
-    connection-string: ${AZURE_SERVICE_BUS_CONNECTION_STRING}
-    queue-name: ${AZURE_SERVICE_BUS_REPORTING_QUEUE_NAME}
+    account-name: ${AZURE_REPORTING_QUEUE_ACCOUNT_NAME}
+    sas-token: ${AZURE_REPORTING_QUEUE_SAS_TOKEN}
+    queue-name: ${AZURE_REPORTING_QUEUE_QUEUE_NAME}
 twilio:
   from-number: "+12023014570"
 logging:
