@@ -1,4 +1,5 @@
 import React from "react";
+import { validate } from "graphql";
 
 import {
   stateCodes,
@@ -137,28 +138,6 @@ const FacilityInformation: React.FC<Props> = ({
             errorMessage={errors.state}
           />
     </div>
-    // {errors.state &&
-    //     stateCodes.includes(facility.state) &&
-    //     !liveJurisdictions.includes(facility.state) && (
-    //       <div className="grid-row">
-    //         <div className="grid-col-12">
-    //           <Alert
-    //             type="error"
-    //             title={`SimpleReport is not currently supported in ${getStateNameFromCode(
-    //               facility.state
-    //             )}`}
-    //             body={
-    //               <div>
-    //                 See a{" "}
-    //                 <a href={urls.FACILITY_INFO}>
-    //                   list of states where SimpleReport is supported
-    //                 </a>
-    //               </div>
-    //             }
-    //           />
-    //         </div>
-    //       </div>
-    //     )}
   );
 };
 

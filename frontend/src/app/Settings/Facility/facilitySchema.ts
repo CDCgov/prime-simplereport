@@ -64,7 +64,6 @@ export const facilitySchema: yup.SchemaOf<RequiredFacilityFields> = yup.object({
 
 type FacilityErrorKeys =
   | keyof Facility
-  | "inactiveState"
   | "orderingProvider.firstName"
   | "orderingProvider.middleName"
   | "orderingProvider.lastName"
@@ -95,7 +94,6 @@ export const allFacilityErrors: Required<FacilityErrors> = {
   streetTwo: "Facility street is incorrectly formatted",
   zipCode: "Facility zip code is missing",
   state: "Facility state is missing",
-  inactiveState: "Not available",
   orderingProvider: "Ordering provider is incorrectly formatted",
   "orderingProvider.NPI": orderingProviderFormatError("NPI"),
   "orderingProvider.city": orderingProviderFormatError("city"),
