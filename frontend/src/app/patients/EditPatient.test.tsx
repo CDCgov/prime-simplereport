@@ -7,6 +7,8 @@ import { MemoryRouter } from "react-router";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
 
+jest.mock("../commonComponents/ComboBox", () => () => <></>);
+
 const mockStore = configureStore([]);
 
 describe("EditPatient", () => {

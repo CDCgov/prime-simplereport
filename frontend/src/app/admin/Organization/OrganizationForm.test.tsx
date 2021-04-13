@@ -1,9 +1,9 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router";
 
-import FacilityForm from "./Facility/FacilityForm";
+import OrganizationForm from "./OrganizationForm";
 
-let saveFacility: jest.Mock;
+let saveOrganization: jest.Mock;
 
 const devices: DeviceType[] = [
   { internalId: "device-1", name: "Device 1" },
@@ -38,37 +38,56 @@ const validFacility: Facility = {
   defaultDevice: devices[0].internalId,
 };
 
-describe("FacilityForm", () => {
+const validOrganization: Organization = {
+  name: "Dis Org",
+  internalId: "12345",
+  externalId: "678910",
+  testingFacility: [validFacility],
+};
+
+const validAdmin: FacilityAdmin = {
+  firstName: "Bob",
+  middleName: "Bill",
+  lastName: "Barker",
+  suffix: "Sr",
+  email: "bob@barker.com",
+};
+
+describe("OrganizationForm", () => {
   beforeEach(() => {
-    saveFacility = jest.fn();
+    saveOrganization = jest.fn();
   });
   it("submits a valid form", async () => {
     render(
       <MemoryRouter>
-        <FacilityForm
+        <OrganizationForm
+          organization={validOrganization}
           facility={validFacility}
+          admin={validAdmin}
           deviceOptions={devices}
-          saveFacility={saveFacility}
+          saveOrganization={saveOrganization}
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.getAllByText("Save changes")[0];
+    const saveButton = await screen.findByText("Save Changes");
     fireEvent.change(
       screen.getByLabelText("Testing facility name", { exact: false }),
-      { target: { value: "Bar Facility" } }
+      { target: { value: "Dat Facility" } }
     );
     await waitFor(() => {
       fireEvent.click(saveButton);
-      expect(saveFacility).toBeCalled();
+      expect(saveOrganization).toBeCalled();
     });
   });
   it("provides validation feedback during form completion", async () => {
     render(
       <MemoryRouter>
-        <FacilityForm
+        <OrganizationForm
+          organization={validOrganization}
           facility={validFacility}
+          admin={validAdmin}
           deviceOptions={devices}
-          saveFacility={saveFacility}
+          saveOrganization={saveOrganization}
         />
       </MemoryRouter>
     );
@@ -83,14 +102,16 @@ describe("FacilityForm", () => {
   it("prevents submit for invalid form", async () => {
     render(
       <MemoryRouter>
-        <FacilityForm
+        <OrganizationForm
+          organization={validOrganization}
           facility={validFacility}
+          admin={validAdmin}
           deviceOptions={devices}
-          saveFacility={saveFacility}
+          saveOrganization={saveOrganization}
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.getAllByText("Save changes")[0];
+    const saveButton = await screen.findByText("Save Changes");
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
@@ -100,22 +121,22 @@ describe("FacilityForm", () => {
     await waitFor(async () => {
       fireEvent.click(saveButton);
     });
-    expect(saveFacility).toBeCalledTimes(0);
+    expect(saveOrganization).toBeCalledTimes(0);
   });
   it("validates optional email field", async () => {
     render(
       <MemoryRouter>
-        <FacilityForm
+        <OrganizationForm
+          organization={validOrganization}
           facility={validFacility}
+          admin={validAdmin}
           deviceOptions={devices}
-          saveFacility={saveFacility}
+          saveOrganization={saveOrganization}
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.getAllByText("Save changes")[0];
-    const emailInput = screen.getByLabelText("Email", {
-      exact: false,
-    });
+    const saveButton = await screen.findByText("Save Changes");
+    const emailInput = screen.getByTestId("facility-email");
     fireEvent.change(emailInput, { target: { value: "123-456-7890" } });
     fireEvent.blur(emailInput);
 
@@ -128,7 +149,7 @@ describe("FacilityForm", () => {
     await waitFor(async () => {
       fireEvent.click(saveButton);
     });
-    expect(saveFacility).toBeCalledTimes(0);
+    expect(saveOrganization).toBeCalledTimes(0);
 
     fireEvent.change(emailInput, {
       target: { value: "foofacility@example.com" },
@@ -136,6 +157,6 @@ describe("FacilityForm", () => {
     await waitFor(async () => {
       fireEvent.click(saveButton);
     });
-    expect(saveFacility).toBeCalledTimes(1);
+    expect(saveOrganization).toBeCalledTimes(1);
   });
 });

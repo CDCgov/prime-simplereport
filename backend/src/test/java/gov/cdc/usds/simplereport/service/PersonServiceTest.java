@@ -79,6 +79,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
+        null,
         false,
         false);
     _service.addPatient(
@@ -96,6 +97,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
+        null,
         false,
         false);
     _service.addPatient(
@@ -109,6 +111,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _dataFactory.getAddress(),
         "5555555555",
         PersonRole.STAFF,
+        null,
         null,
         null,
         null,
@@ -147,6 +150,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         null,
         null,
         null,
+        null,
         false,
         false);
 
@@ -168,6 +172,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
+                null,
                 false,
                 false));
 
@@ -183,6 +188,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
         _dataFactory.getAddress(),
         null,
         PersonRole.RESIDENT,
+        null,
         null,
         null,
         null,
@@ -211,6 +217,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
                 null,
                 null,
                 null,
+                null,
                 false,
                 false));
   }
@@ -234,6 +241,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
+            null,
             null,
             null,
             null,
@@ -268,6 +276,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
+            null,
             null,
             null,
             null,
@@ -311,6 +320,7 @@ class PersonServiceTest extends BaseServiceTest<PersonService> {
             _dataFactory.getAddress(),
             "5555555555",
             PersonRole.STAFF,
+            null,
             null,
             null,
             null,
