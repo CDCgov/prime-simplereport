@@ -1,11 +1,14 @@
 package gov.cdc.usds.simplereport.config;
 
+import gov.cdc.usds.simplereport.logging.PatientExperienceLoggingInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.orm.jpa.support.OpenEntityManagerInViewFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -17,9 +20,16 @@ public class WebConfiguration implements WebMvcConfigurer {
   public static final String PATIENT_EXPERIENCE = "/pxp/**";
   public static final String ACCOUNT_REQUEST = "/account-request";
 
+  @Autowired private PatientExperienceLoggingInterceptor _loggingInterceptor;
+
   @Override
   public void addViewControllers(ViewControllerRegistry registry) {
     registry.addStatusController(HEALTH_CHECK, HttpStatus.OK);
+  }
+
+  @Override
+  public void addInterceptors(InterceptorRegistry registry) {
+    registry.addInterceptor(_loggingInterceptor);
   }
 
   /**

@@ -8,6 +8,10 @@ interface Address {
   zipCode: string;
 }
 
+interface AddressWithMetaData extends Address {
+  county: string;
+}
+
 interface Facility extends Address {
   id: string;
   cliaNumber: string;
@@ -33,6 +37,14 @@ interface Organization {
   externalId?: string;
   internalId: string;
   testingFacility: Facility[];
+}
+
+interface FacilityAdmin {
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  suffix: string | null;
+  email: string;
 }
 
 interface FlatOrganization {

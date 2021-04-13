@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.config.authorization;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
@@ -13,7 +14,7 @@ import java.util.Set;
  * <p>Specifically, the {@link EffectiveRoleComparator} can order a list of roles such that the
  * first role in the list is the "effective" role for the applicable user.
  */
-public enum OrganizationRole {
+public enum OrganizationRole implements Principal {
   /**
    * This is the base role that we expect every user to have. Any other role that has more specific
    * permissions takes precedence over this role. NOTE: this role does not give you any meaningful
@@ -74,6 +75,11 @@ public enum OrganizationRole {
 
   public Set<UserPermission> getGrantedPermissions() {
     return this.grantedPermissions;
+  }
+
+  @Override
+  public String getName() {
+    return name();
   }
 
   // Allows us to sort OrganizationRole's based on the number of permissions they grant,

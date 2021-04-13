@@ -1,0 +1,51 @@
+query whoDat {
+  whoami {
+    id
+    firstName
+    middleName
+    lastName
+    suffix
+    email
+    role
+    roles
+    permissions
+    roleDescription
+    isAdmin
+
+    organization {
+      id
+      internalId
+
+      facilities {
+        name
+        id
+
+        street
+        streetTwo
+        city
+        address {
+          streetOne
+          streetTwo
+          city
+        }
+
+        orderingProvider {
+          firstName
+          lastName
+          name {
+            firstName
+            lastName
+          }
+          street
+          city
+          zipCode
+          address {
+            streetOne
+            city
+            postalCode
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -187,6 +188,7 @@ public class PersonService {
       String email,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -205,6 +207,7 @@ public class PersonService {
             email,
             race,
             ethnicity,
+            Arrays.asList(tribalAffiliation),
             gender,
             residentCongregateSetting,
             employedInHealthcare);
@@ -216,34 +219,31 @@ public class PersonService {
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
   public Person updateMe(
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      LocalDate birthDate,
       StreetAddress address,
       String telephone,
       PersonRole role,
       String email,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
     Person toUpdate = _patientContext.getLinkedOrder().getPatient();
     toUpdate.updatePatient(
         toUpdate.getLookupId(),
-        firstName,
-        middleName,
-        lastName,
-        suffix,
-        birthDate,
+        toUpdate.getFirstName(),
+        toUpdate.getMiddleName(),
+        toUpdate.getLastName(),
+        toUpdate.getSuffix(),
+        toUpdate.getBirthDate(),
         address,
         telephone,
         role,
         email,
         race,
         ethnicity,
+        Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
         employedInHealthcare);
@@ -283,6 +283,7 @@ public class PersonService {
       String email,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -300,6 +301,7 @@ public class PersonService {
         email,
         race,
         ethnicity,
+        Arrays.asList(tribalAffiliation),
         gender,
         residentCongregateSetting,
         employedInHealthcare);

@@ -52,7 +52,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.findByText("Save changes");
+    const saveButton = await screen.getAllByText("Save changes")[0];
     fireEvent.change(
       screen.getByLabelText("Testing facility name", { exact: false }),
       { target: { value: "Bar Facility" } }
@@ -90,7 +90,7 @@ describe("FacilityForm", () => {
         />
       </MemoryRouter>
     );
-    const saveButton = await screen.findByText("Save changes");
+    const saveButton = await screen.getAllByText("Save changes")[0];
     const facilityNameInput = screen.getByLabelText("Testing facility name", {
       exact: false,
     });
@@ -101,5 +101,41 @@ describe("FacilityForm", () => {
       fireEvent.click(saveButton);
     });
     expect(saveFacility).toBeCalledTimes(0);
+  });
+  it("validates optional email field", async () => {
+    render(
+      <MemoryRouter>
+        <FacilityForm
+          facility={validFacility}
+          deviceOptions={devices}
+          saveFacility={saveFacility}
+        />
+      </MemoryRouter>
+    );
+    const saveButton = await screen.getAllByText("Save changes")[0];
+    const emailInput = screen.getByLabelText("Email", {
+      exact: false,
+    });
+    fireEvent.change(emailInput, { target: { value: "123-456-7890" } });
+    fireEvent.blur(emailInput);
+
+    expect(
+      await screen.findByText("Email is incorrectly formatted", {
+        exact: false,
+      })
+    ).toBeInTheDocument();
+
+    await waitFor(async () => {
+      fireEvent.click(saveButton);
+    });
+    expect(saveFacility).toBeCalledTimes(0);
+
+    fireEvent.change(emailInput, {
+      target: { value: "foofacility@example.com" },
+    });
+    await waitFor(async () => {
+      fireEvent.click(saveButton);
+    });
+    expect(saveFacility).toBeCalledTimes(1);
   });
 });

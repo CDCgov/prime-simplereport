@@ -84,7 +84,7 @@ const orderingProviderFormatError = (field: string) =>
 
 export const allFacilityErrors: Required<FacilityErrors> = {
   id: "ID is missing",
-  email: "Email is missing or incorrectly formatted",
+  email: "Email is incorrectly formatted",
   city: "City is incorrectly formatted",
   cliaNumber: "CLIA number is missing",
   defaultDevice: "A default device must be selected",

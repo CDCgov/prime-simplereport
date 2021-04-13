@@ -1,0 +1,96 @@
+# Directives, enumerations, and utility types (e.g. structured name/address information, input types, etc.)
+# go here, so that they can be easily referred to side by side with the more complex types
+
+# Requires that the requester have a certain permission level.
+#
+# If applied to a field, the requester must meet the required permission level in order to request
+# or traverse the targeted field. If the requirement is not met, `null` will be supplied for the
+# targeted field and an error returned.
+#
+# If applied to an object, the request must meet the required permission level in order to request
+# any fields of the object. If any child fields are themselves targeted with this directive, the
+# requester must satisfy both object- and field-level directives to request or traverse said fields.
+#
+# If applied to an argument, the requester must meet the required permission level in order to
+# supply a non-default value for the targeted argument; otherwise, an error will be returned and the
+# query or mutation housing the argument will not be executed.
+directive @requiredPermissions(
+  anyOf: [String!] # if the requester lacks any of these permissions, deny
+  allOf: [String!] # if the requester lacks all of these permissions, deny
+) on FIELD_DEFINITION | OBJECT | ARGUMENT_DEFINITION
+
+# These directives come from the graphql-java-extended-validation package. This package offers a
+# number of additional directives (@Range, @Digits, etc.) that can be pulled in and enforced
+# automatically by graphql-java-extended-validation once they are defined in this file.
+# Cf. https://github.com/graphql-java/graphql-java-extended-validation for a complete list of
+# directives that can be used.
+directive @Size(
+  min: Int!
+  max: Int!
+  message: String = "graphql.validation.Size.message"
+) on ARGUMENT_DEFINITION
+directive @Pattern(
+  regexp: String!
+  message: String = "graphql.validation.Pattern.message"
+) on ARGUMENT_DEFINITION
+
+# java.util.Date implementation
+scalar DateTime
+# java.time.LocalDate
+scalar LocalDate
+scalar Upload
+
+enum ResultValue {
+  POSITIVE
+  NEGATIVE
+  UNDETERMINED
+}
+
+enum UserPermission {
+  READ_PATIENT_LIST
+  READ_ARCHIVED_PATIENT_LIST
+  SEARCH_PATIENTS
+  READ_RESULT_LIST
+  EDIT_PATIENT
+  ARCHIVE_PATIENT
+  EDIT_FACILITY
+  EDIT_ORGANIZATION
+  MANAGE_USERS
+  START_TEST
+  UPDATE_TEST
+  SUBMIT_TEST
+  ACCESS_ALL_FACILITIES
+}
+
+enum Role {
+  ENTRY_ONLY
+  USER
+  ADMIN
+}
+
+enum TestCorrectionStatus {
+  ORIGINAL
+  CORRECTED
+  REMOVED
+}
+
+enum TestResultDeliveryPreference {
+  SMS
+  NONE
+}
+
+type NameInfo {
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
+}
+
+type AddressInfo {
+  streetOne: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  postalCode: String
+}

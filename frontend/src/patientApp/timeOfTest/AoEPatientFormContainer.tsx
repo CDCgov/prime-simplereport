@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useHistory, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import { connect, useSelector } from "react-redux";
 
 import AoEForm from "../../app/testQueue/AoEForm/AoEForm";
@@ -13,12 +13,10 @@ interface Props {
 }
 
 const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
-  const [prevPage, setPrevPage] = useState(false);
   const [nextPage, setNextPage] = useState(false);
   const patient = useSelector((state) => (state as any).patient as any);
   const plid =
     useSelector((state) => (state as any).plid) || getPatientLinkIdFromUrl();
-  const history = useHistory();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -34,28 +32,12 @@ const AoEPatientFormContainer: React.FC<Props> = ({ page }: Props) => {
     }
   };
 
-  history.listen((loc, action) => {
-    if (action === "POP") {
-      setPrevPage(true);
-    }
-  });
-
   if (nextPage) {
     return (
       <Redirect
         to={{
           pathname: "/success",
-        }}
-      />
-    );
-  }
-
-  if (prevPage) {
-    return (
-      <Redirect
-        push
-        to={{
-          pathname: "/patient-info-confirm",
+          search: `?plid=${plid}`,
         }}
       />
     );

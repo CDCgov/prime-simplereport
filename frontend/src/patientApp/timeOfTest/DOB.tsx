@@ -39,22 +39,12 @@ const DOB = () => {
         plid,
         date.format("YYYY-MM-DD")
       );
-      const residentCongregateSetting = response.residentCongregateSetting
-        ? "YES"
-        : "NO";
-      const employedInHealthcare = response.employedInHealthcare ? "YES" : "NO";
       dispatch(
         updateOrganization({
           name: response.organizationName,
         })
       );
-      dispatch(
-        setPatient({
-          ...response,
-          residentCongregateSetting,
-          employedInHealthcare,
-        })
-      );
+      dispatch(setPatient(response));
     } catch (error) {
       if (error?.status === 410) {
         setLinkExpiredError(true);
@@ -80,7 +70,6 @@ const DOB = () => {
   if (patient?.orderStatus === "COMPLETED") {
     return (
       <Redirect
-        push
         to={{
           pathname: "/test-result",
           search: `?plid=${plid}`,
@@ -90,9 +79,9 @@ const DOB = () => {
   } else if (patient?.firstName) {
     return (
       <Redirect
-        push
         to={{
           pathname: "/patient-info-confirm",
+          search: `?plid=${plid}`,
         }}
       />
     );
@@ -111,8 +100,8 @@ const DOB = () => {
                 <TextInput
                   label={"Date of birth"}
                   name={"birthDate"}
-                  type={"bday"}
-                  autoComplete={"bday"}
+                  type={"password"}
+                  autoComplete={"on"}
                   value={birthDate}
                   size={8}
                   pattern={"([0-9]{1,2}/[0-9]{1,2}/[0-9]{4})|([0-9]{8})"}

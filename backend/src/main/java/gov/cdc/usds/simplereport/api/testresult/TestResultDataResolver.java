@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.api.testresult;
 
+import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.TestDescription;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -11,19 +12,15 @@ import graphql.kickstart.tools.GraphQLResolver;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.Map;
-import java.util.UUID;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
 
 @Component
-public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
+public class TestResultDataResolver
+    implements GraphQLResolver<TestEvent>, InternalIdResolver<TestEvent> {
 
   private AskOnEntrySurvey getSurvey(TestEvent testEvent) {
     return testEvent.getSurveyData();
-  }
-
-  public UUID getId(TestEvent testEvent) {
-    return testEvent.getInternalId();
   }
 
   public Person getPatient(TestEvent testEvent) {
@@ -71,20 +68,8 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
     return getSurvey(testEvent).getPriorTestResult();
   }
 
-  public Date getDateTested(TestEvent testEvent) {
-    return testEvent.getDateTested();
-  }
-
   public TestDescription getTestPerformed(TestEvent event) {
     return TestDescription.findTestDescription(event.getDeviceType().getLoincCode());
-  }
-
-  public String getCorrectionStatus(TestEvent testEvent) {
-    return testEvent.getCorrectionStatus().toString();
-  }
-
-  public String getReasonForCorrection(TestEvent testEvent) {
-    return testEvent.getReasonForCorrection();
   }
 
   public ApiFacility getFacility(TestEvent testEvent) {
@@ -92,6 +77,6 @@ public class TestResultDataResolver implements GraphQLResolver<TestEvent> {
   }
 
   public PatientLink getPatientLink(TestEvent testEvent) {
-    return testEvent.getPatientLink();
+    return testEvent.getTestOrder().getPatientLink();
   }
 }

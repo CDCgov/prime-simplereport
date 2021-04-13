@@ -135,37 +135,6 @@ public class ApiUserService {
     return user;
   }
 
-  /**
-   * this exists only for backward compatibility -- going forward, we should allow for a user to be
-   * updated with multiple roles at once, as in {@code updateUserPrivileges()}
-   */
-  @Deprecated
-  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
-  public Role updateUserRole(UUID userId, Role role) {
-    ApiUser user = getApiUser(userId);
-    String username = user.getLoginEmail();
-    OrganizationRoleClaims orgClaims =
-        _oktaRepo
-            .getOrganizationRoleClaimsForUser(username)
-            .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
-    // ensure every user altered by this method maintains all-facility access for now
-    Set<OrganizationRole> roles =
-        EnumSet.of(
-            role.toOrganizationRole(),
-            OrganizationRole.ALL_FACILITIES,
-            OrganizationRole.getDefault());
-    _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
-
-    LOG.info(
-        "User with id={} updated by user with id={}",
-        user.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
-
-    return role;
-  }
-
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo updateUserPrivileges(
       UUID userId, boolean accessAllFacilities, Set<UUID> facilities, Role role) {
@@ -194,7 +163,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
-    ApiUser apiUser = getApiUser(userId);
+    ApiUser apiUser = getApiUser(userId, !deleted);
     apiUser.setIsDeleted(deleted);
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
@@ -202,7 +171,12 @@ public class ApiUserService {
   }
 
   private ApiUser getApiUser(UUID id) {
-    Optional<ApiUser> found = _apiUserRepo.findById(id);
+    return getApiUser(id, false);
+  }
+
+  private ApiUser getApiUser(UUID id, Boolean includeArchived) {
+    Optional<ApiUser> found =
+        includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
     if (!found.isPresent()) {
       throw new NonexistentUserException();
     }

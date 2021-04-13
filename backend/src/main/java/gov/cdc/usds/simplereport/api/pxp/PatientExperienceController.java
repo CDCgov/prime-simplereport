@@ -5,10 +5,10 @@ import static gov.cdc.usds.simplereport.api.Translators.parseEthnicity;
 import static gov.cdc.usds.simplereport.api.Translators.parseGender;
 import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
-import static gov.cdc.usds.simplereport.api.Translators.parseString;
 import static gov.cdc.usds.simplereport.api.Translators.parseSymptoms;
 
 import gov.cdc.usds.simplereport.api.model.AoEQuestions;
+import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
@@ -25,9 +25,11 @@ import gov.cdc.usds.simplereport.service.TimeOfConsentService;
 import java.util.Map;
 import java.util.UUID;
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,12 +38,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Note that this controller self-authorizes by means of this @PreAuthorize annotation and its
- * routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
- * documentation on both sides
+ * Note that this controller self-authorizes by means of this {@link PreAuthorize} annotation and
+ * its routes are set to permitAll() in SecurityConfiguration. If this changes, please update the
+ * documentation on both sides.
+ *
+ * <p>Similarly, this controller sends information to the audit log via a {@link PostAuthorize}.
+ * Because of this, every handler method of this controller is required to have an {@link
+ * HttpServletRequest} argument named {@code request}.
  */
 @PreAuthorize(
     "@patientLinkService.verifyPatientLink(#body.getPatientLinkId(), #body.getDateOfBirth())")
+@PostAuthorize("@restAuditLogManager.logRestSuccess(#request, returnObject)")
 @RestController
 @RequestMapping("/pxp")
 @Validated
@@ -68,7 +75,8 @@ public class PatientExperienceController {
    * returns the full patient object if so, otherwise it throws an exception
    */
   @PutMapping("/link/verify")
-  public PxpVerifyResponse getPatientLinkVerify(@RequestBody PxpRequestWrapper<Void> body) {
+  public PxpVerifyResponse getPatientLinkVerify(
+      @RequestBody PxpRequestWrapper<Void> body, HttpServletRequest request) {
     UUID plid = UUID.fromString(body.getPatientLinkId());
     PatientLink pl = pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
@@ -80,27 +88,25 @@ public class PatientExperienceController {
   }
 
   @PutMapping("/patient")
-  public Person updatePatient(@RequestBody PxpRequestWrapper<Person> body) {
-    Person person = body.getData();
+  public Person updatePatient(
+      @RequestBody PxpRequestWrapper<PersonUpdate> body, HttpServletRequest request) {
+    PersonUpdate person = body.getData();
     return ps.updateMe(
-        parseString(person.getFirstName()),
-        parseString(person.getMiddleName()),
-        parseString(person.getLastName()),
-        parseString(person.getSuffix()),
-        person.getBirthDate(),
         StreetAddress.deAndReSerializeForSafety(person.getAddress()),
         parsePhoneNumber(person.getTelephone()),
         person.getRole(),
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),
         parseEthnicity(person.getEthnicity()),
+        person.getTribalAffiliation(),
         parseGender(person.getGender()),
         person.getResidentCongregateSetting(),
         person.getEmployedInHealthcare());
   }
 
   @PutMapping("/questions")
-  public void patientLinkSubmit(@RequestBody PxpRequestWrapper<AoEQuestions> body) {
+  public void patientLinkSubmit(
+      @RequestBody PxpRequestWrapper<AoEQuestions> body, HttpServletRequest request) {
     AoEQuestions data = body.getData();
     Map<String, Boolean> symptomsMap = parseSymptoms(data.getSymptoms());
 

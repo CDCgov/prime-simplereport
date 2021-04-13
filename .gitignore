@@ -1,6 +1,10 @@
 .vscode
 .DS_Store
 .idea/
+*.iml
 *.tfvars
 .terraform.lock.hcl
 node_modules
+*.swp
+*.swo
+/.env

@@ -32,113 +32,96 @@ const FacilityInformation: React.FC<Props> = ({
   };
 
   return (
-    <div>
-      <h2 style={{ margin: 0 }}>Facility information</h2>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Testing facility name"
-            name="name"
-            value={facility.name}
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("name");
-            }}
-            validationStatus={errors.name ? "error" : undefined}
-            errorMessage={errors.name}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
-            label="CLIA number"
-            name="cliaNumber"
-            value={facility.cliaNumber}
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("cliaNumber");
-            }}
-            validationStatus={errors.cliaNumber ? "error" : undefined}
-            errorMessage={errors.cliaNumber}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Phone number"
-            name="phone"
-            value={facility.phone}
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("phone");
-            }}
-            validationStatus={errors.phone ? "error" : undefined}
-            errorMessage={errors.phone}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Email"
-            name="email"
-            value={facility.email || ""}
-            onChange={onChange}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Street address 1"
-            name="street"
-            value={facility.street}
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("street");
-            }}
-            validationStatus={errors.street ? "error" : undefined}
-            errorMessage={errors.street}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Street address 2"
-            name="streetTwo"
-            value={facility.streetTwo || ""}
-            onChange={onChange}
-          />
-        </div>
-      </div>
-      <div className="grid-row grid-gap">
-        <div className="tablet:grid-col">
-          <TextInput
-            label="City"
-            name="city"
-            value={facility.city || ""}
-            onChange={onChange}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <TextInput
-            label="Zip code"
-            name="zipCode"
-            value={facility.zipCode}
-            required
-            onChange={onChange}
-            onBlur={() => {
-              validateField("zipCode");
-            }}
-            validationStatus={errors.zipCode ? "error" : undefined}
-            errorMessage={errors.zipCode}
-          />
-        </div>
-        <div className="tablet:grid-col">
-          <Dropdown
+    <div className="usa-form usa-form--large">
+      <h2 className="font-heading-lg" style={{ margin: 0 }}>
+        Facility information
+      </h2>
+      <TextInput
+        label="Testing facility name"
+        name="name"
+        value={facility.name}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("name");
+        }}
+        validationStatus={errors.name ? "error" : undefined}
+        errorMessage={errors.name}
+      />
+      <TextInput
+        label="CLIA number"
+        name="cliaNumber"
+        value={facility.cliaNumber}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("cliaNumber");
+        }}
+        validationStatus={errors.cliaNumber ? "error" : undefined}
+        errorMessage={errors.cliaNumber}
+      />
+      <TextInput
+        label="Phone number"
+        name="phone"
+        value={facility.phone}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("phone");
+        }}
+        validationStatus={errors.phone ? "error" : undefined}
+        errorMessage={errors.phone}
+      />
+      <TextInput
+        label="Email"
+        name="email"
+        data-testid="facility-email"
+        value={facility.email || ""}
+        onChange={onChange}
+        onBlur={() => {
+          validateField("email");
+        }}
+        validationStatus={errors.email ? "error" : undefined}
+        errorMessage={errors.email}
+      />
+      <TextInput
+        label="Street address 1"
+        name="street"
+        value={facility.street}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("street");
+        }}
+        validationStatus={errors.street ? "error" : undefined}
+        errorMessage={errors.street}
+      />
+      <TextInput
+        label="Street address 2"
+        name="streetTwo"
+        value={facility.streetTwo || ""}
+        onChange={onChange}
+      />
+      <TextInput
+        label="City"
+        name="city"
+        value={facility.city || ""}
+        onChange={onChange}
+      />
+      <TextInput
+        label="Zip code"
+        name="zipCode"
+        value={facility.zipCode}
+        required
+        onChange={onChange}
+        onBlur={() => {
+          validateField("zipCode");
+        }}
+        validationStatus={errors.zipCode ? "error" : undefined}
+        errorMessage={errors.zipCode}
+        className="usa-input--medium"
+      />
+      <Dropdown
             label="State"
             name="state"
             selectedValue={facility.state}
@@ -153,31 +136,29 @@ const FacilityInformation: React.FC<Props> = ({
             validationStatus={errors.state ? "error" : undefined}
             errorMessage={errors.state}
           />
-        </div>
-      </div>
-      {errors.state &&
-        stateCodes.includes(facility.state) &&
-        !liveJurisdictions.includes(facility.state) && (
-          <div className="grid-row">
-            <div className="grid-col-12">
-              <Alert
-                type="error"
-                title={`SimpleReport is not currently supported in ${getStateNameFromCode(
-                  facility.state
-                )}`}
-                body={
-                  <div>
-                    See a{" "}
-                    <a href={urls.FACILITY_INFO}>
-                      list of states where SimpleReport is supported
-                    </a>
-                  </div>
-                }
-              />
-            </div>
-          </div>
-        )}
     </div>
+    // {errors.state &&
+    //     stateCodes.includes(facility.state) &&
+    //     !liveJurisdictions.includes(facility.state) && (
+    //       <div className="grid-row">
+    //         <div className="grid-col-12">
+    //           <Alert
+    //             type="error"
+    //             title={`SimpleReport is not currently supported in ${getStateNameFromCode(
+    //               facility.state
+    //             )}`}
+    //             body={
+    //               <div>
+    //                 See a{" "}
+    //                 <a href={urls.FACILITY_INFO}>
+    //                   list of states where SimpleReport is supported
+    //                 </a>
+    //               </div>
+    //             }
+    //           />
+    //         </div>
+    //       </div>
+    //     )}
   );
 };
 

@@ -1634,3 +1634,31 @@ databaseChangeLog:
             remarks: Drop enum for test result delivery
             sql: |
               DROP TYPE ${database.defaultSchemaName}.TEST_RESULT_DELIVERY;
+  - changeSet:
+      id: audit-http-response-codes
+      author: bwarfield@cdc.gov
+      comment: Add HTTP response code column to api_audit_event.
+      changes:
+        - addColumn:
+            tableName: api_audit_event
+            columns:
+              - column:
+                  name: response_code
+                  type: int
+                  remarks: The HTTP response code for this request (generally only interesting for REST requests).
+                  valueNumeric: 200 # backdate
+                  defaultValueNumeric: 200
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-tribal-affiliation
+      author: adam@skylight.digital
+      comment: Add Tribal Affiliation to Person
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: tribal_affiliation
+                  type: jsonb
+                  remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)

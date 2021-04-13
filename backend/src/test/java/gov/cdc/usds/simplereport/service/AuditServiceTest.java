@@ -7,18 +7,23 @@ import gov.cdc.usds.simplereport.db.model.ApiAuditEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.GraphQlInputs;
 import gov.cdc.usds.simplereport.db.model.auxiliary.HttpRequestDetails;
 import gov.cdc.usds.simplereport.logging.GraphqlQueryState;
+import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportEntryOnlyUser;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class AuditServiceTest extends BaseServiceTest<AuditService> {
+
+  @Autowired private ApiUserService _userService;
 
   @Test
   @WithSimpleReportEntryOnlyUser
   void smokeTestGraphqlAudit() {
     initSampleData(); // need to have the org exist
+    UserInfo userInfo = _userService.getCurrentUserInfo();
     GraphqlQueryState state = new GraphqlQueryState();
     state.setRequestId("ABCDE");
     state.setGraphqlDetails(new GraphQlInputs("A", "B", Map.of()));
@@ -30,7 +35,13 @@ class AuditServiceTest extends BaseServiceTest<AuditService> {
             "ftp",
             "simplereport.name",
             "/fuzz"));
-    _service.logGraphQlEvent(state, List.of());
+    _service.logGraphQlEvent(
+        state,
+        List.of(),
+        userInfo.getWrapped(),
+        userInfo.getPermissions(),
+        userInfo.getIsAdmin(),
+        userInfo.getOrganization().orElse(null));
     assertEquals(1L, _service.countAuditEvents());
     ApiAuditEvent saved = _service.getLastEvents(1).get(0);
     assertEquals("ABCDE", saved.getRequestId());

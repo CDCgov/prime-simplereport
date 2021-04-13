@@ -1,0 +1,67 @@
+# Queries and mutations that are used only by site admins
+# All queries and mutations in this file implicitly require site admin access,
+# which is enforced in the API not in the schema validator.
+extend type Query {
+  organizations: [Organization!]! # not actually used in the admin console (yet)
+}
+extend type Mutation {
+  createDeviceType(
+    name: String!
+    manufacturer: String!
+    model: String!
+    loincCode: String!
+    swabType: String!
+  ): DeviceType
+  updateDeviceType(
+    id: String!
+    name: String
+    manufacturer: String
+    model: String
+    loincCode: String
+    swabType: String
+  ): DeviceType
+  addUser( # not actually used in the admin console (currently)
+    firstName: String
+    middleName: String
+    lastName: String!
+    suffix: String
+    email: String!
+    organizationExternalId: String!
+    role: Role!
+  ): User
+  createOrganization(
+    name: String!
+    externalId: String!
+    testingFacilityName: String!
+    cliaNumber: String
+    street: String!
+    streetTwo: String
+    city: String
+    county: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    state: String!
+    zipCode: String!
+    phone: String
+    email: String
+    orderingProviderFirstName: String
+    orderingProviderMiddleName: String
+    orderingProviderLastName: String
+    orderingProviderSuffix: String
+    orderingProviderNPI: String
+    orderingProviderStreet: String
+    orderingProviderStreetTwo: String
+    orderingProviderCity: String
+    orderingProviderCounty: String
+      @deprecated(reason: "county is derived from smarty streets lookup")
+    orderingProviderState: String
+    orderingProviderZipCode: String
+    orderingProviderPhone: String
+    deviceTypes: [String]!
+    defaultDevice: String!
+    adminFirstName: String!
+    adminMiddleName: String
+    adminLastName: String!
+    adminSuffix: String
+    adminEmail: String!
+  ): Organization
+}

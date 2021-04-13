@@ -42,7 +42,7 @@ exports[`PatientProfile snapshot 1`] = `
     <span
       className="display-block"
     >
-      24 Dreary Lnundefined
+      24 Dreary Ln
     </span>
     <span
       className="display-block"
@@ -77,6 +77,14 @@ exports[`PatientProfile snapshot 1`] = `
     className="font-heading-sm"
   >
     Ethnicity
+  </h3>
+  <p>
+    Not provided
+  </p>
+  <h3
+    className="font-heading-sm"
+  >
+    Tribal Affiliation
   </h3>
   <p>
     Not provided

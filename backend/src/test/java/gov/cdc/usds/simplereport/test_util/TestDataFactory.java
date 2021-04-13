@@ -39,6 +39,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class TestDataFactory {
 
+  // actually Fred Astaire's birthday! Not random, just a little arbitrary.
+  public static final LocalDate DEFAULT_BDAY = LocalDate.of(1899, 5, 10);
+
+  public static final String DEFAULT_ORG_ID = "MALLRAT";
+
   private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
   private static final String DEFAULT_SPECIMEN_TYPE = "Nasal swab";
 
@@ -59,7 +64,7 @@ public class TestDataFactory {
   }
 
   public Organization createValidOrg() {
-    return createValidOrg("The Mall", "MALLRAT");
+    return createValidOrg("The Mall", DEFAULT_ORG_ID);
   }
 
   public Facility createValidFacility(Organization org) {
@@ -119,9 +124,6 @@ public class TestDataFactory {
   public Person createFullPersonWithTelephone(Organization org, String telephone) {
     // consts are to keep style check happy othewise it complains about
     // "magic numbers"
-    final int BIRTH_YEAR = 1899;
-    final int BIRTH_MONTH = 5;
-    final int BIRTH_DAY = 10;
     Person p =
         new Person(
             org,
@@ -130,12 +132,13 @@ public class TestDataFactory {
             null,
             "Astaire",
             null,
-            LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
+            DEFAULT_BDAY,
             getAddress(),
             telephone,
             PersonRole.RESIDENT,
             null,
             "W",
+            null,
             null,
             "M",
             false,

@@ -61,6 +61,11 @@
 @import "uswds";
 
 // -------------------------------------
+// Import custom components
+
+@import "components/card.scss";
+
+// -------------------------------------
 // Import theme custom styles
 
 @import "uswds-theme-custom-styles";

@@ -6,8 +6,10 @@ variable "action_group_id" {}
 variable "severity" {
   default = 3
 }
-variable "enabled" {
-  default = true
+variable "disabled_alerts" {
+  default     = []
+  description = "All alerts are enabled for an environment by default. You can disable alert(s) for an environment by including their resource name in this list. Example: [\"cpu_util\"] would disable the CPU utilization alert, since it matches the azurerm_monitor_metric_alert.cpu_util resource."
+  type        = list(string)
 }
 variable "rg_name" {
   description = "Name of resource group to deploy into"

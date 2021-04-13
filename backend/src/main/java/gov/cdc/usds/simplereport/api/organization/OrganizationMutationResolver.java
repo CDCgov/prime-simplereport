@@ -3,11 +3,13 @@ package gov.cdc.usds.simplereport.api.organization;
 import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
 import gov.cdc.usds.simplereport.api.model.ApiOrganization;
+import gov.cdc.usds.simplereport.api.model.Role;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.AddressValidationService;
+import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.DeviceSpecimenTypeHolder;
@@ -23,12 +25,17 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
   private final OrganizationService _os;
   private final DeviceTypeService _dts;
   private final AddressValidationService _avs;
+  private final ApiUserService _aus;
 
   public OrganizationMutationResolver(
-      OrganizationService os, DeviceTypeService dts, AddressValidationService avs) {
+      OrganizationService os,
+      DeviceTypeService dts,
+      AddressValidationService avs,
+      ApiUserService aus) {
     _os = os;
     _dts = dts;
     _avs = avs;
+    _aus = aus;
   }
 
   public ApiFacility addFacility(
@@ -175,7 +182,12 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderZipCode,
       String orderingProviderTelephone,
       List<String> deviceIds,
-      String defaultDeviceId) {
+      String defaultDeviceId,
+      String adminFirstName,
+      String adminMiddleName,
+      String adminLastName,
+      String adminSuffix,
+      String adminEmail) {
     DeviceSpecimenTypeHolder deviceSpecimenTypes =
         _dts.getTypesForFacility(defaultDeviceId, deviceIds);
     StreetAddress facilityAddress =
@@ -209,6 +221,14 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
+    _aus.createUser(
+        adminEmail,
+        adminFirstName,
+        adminMiddleName,
+        adminLastName,
+        adminSuffix,
+        externalId,
+        Role.ADMIN);
     List<Facility> facilities = _os.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }

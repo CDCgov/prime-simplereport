@@ -41,6 +41,7 @@ dependencies {
     implementation "com.zhokhov.graphql:graphql-datetime-spring-boot-starter:3.0.0"
     implementation 'org.json:json:20201115'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 
     // Okta dependencies
     implementation 'com.okta.spring:okta-spring-boot-starter:2.0.0'
@@ -57,8 +58,8 @@ dependencies {
     // SendGrid for Email
     implementation 'com.sendgrid:sendgrid-java:4.7.2'
 
-    // Jsoup for input sanitization
-    implementation 'org.jsoup:jsoup:1.13.1'
+    // graphql-java-extended-validation schema directives
+    compile 'com.graphql-java:graphql-java-extended-validation:16.0.0'
 
     // test/check dependencies
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

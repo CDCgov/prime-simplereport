@@ -1,0 +1,27 @@
+{ 
+  patients {
+    internalId
+    id
+    firstName
+    lastName
+    name {
+      firstName
+      lastName
+    }
+
+    street
+    city
+    state
+    address {
+      streetOne
+      city
+      state
+    }
+
+    birthDate
+    telephone
+    facility {
+      id
+    }
+  }
+}

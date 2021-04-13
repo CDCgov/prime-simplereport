@@ -1,0 +1,37 @@
+mutation addUserOp(
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    $email: String!,
+    $organizationExternalId: String!,
+    $role: Role!,
+    ){
+  addUser(
+    firstName: $firstName
+    middleName: $middleName
+    lastName: $lastName
+    suffix: $suffix
+    email: $email
+    organizationExternalId: $organizationExternalId
+    role: $role
+  ) {
+      id,
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      role,
+      roles,
+      organization {
+        name
+        externalId
+        facilities {
+          name
+          id
+        }
+      }
+    }
+}

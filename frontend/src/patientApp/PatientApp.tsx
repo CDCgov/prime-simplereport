@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch, connect, useSelector } from "react-redux";
 import "react-toastify/dist/ReactToastify.css";
@@ -20,6 +20,7 @@ import PatientProfileContainer from "./timeOfTest/PatientProfileContainer";
 import PatientFormContainer from "./timeOfTest/PatientFormContainer";
 import TestResult from "./timeOfTest/TestResult";
 import Patient404 from "./timeOfTest/Patient404";
+import GuardedRoute from "./GuardedRoute";
 
 interface WrapperProps {
   plid: string;
@@ -40,6 +41,8 @@ const PatientLinkURL404Wrapper: FunctionComponent<WrapperProps> = ({
 const PatientApp = () => {
   const dispatch = useDispatch();
   const plid = useSelector((state: any) => state.plid);
+  const patient = useSelector((state: any) => state.patient);
+  const auth = patient.internalId !== "";
 
   useEffect(() => {
     dispatch(
@@ -47,18 +50,11 @@ const PatientApp = () => {
         plid: getPatientLinkIdFromUrl(),
       })
     );
-  }, [dispatch]);
+  });
 
   return (
     <AppInsightsContext.Provider value={reactPlugin}>
-      <PrimeErrorBoundary
-        onError={(error: any) => (
-          <div>
-            <h1> There was an error. Please try refreshing</h1>
-            <pre> {JSON.stringify(error, null, 2)} </pre>
-          </div>
-        )}
-      >
+      <PrimeErrorBoundary>
         <div className="App">
           <div id="main-wrapper">
             <USAGovBanner />
@@ -66,46 +62,34 @@ const PatientApp = () => {
             <PatientLinkURL404Wrapper plid={plid}>
               <Router basename={`${process.env.PUBLIC_URL}/pxp`}>
                 <Switch>
-                  <Route
-                    path="/"
-                    exact
-                    render={(props) => (
-                      <TermsOfService {...(props.location.state as any)} />
-                    )}
-                  />
+                  <Route path="/" exact component={TermsOfService} />
                   <Route path="/terms-of-service" component={TermsOfService} />
-                  <Route
-                    path="/birth-date-confirmation"
-                    render={(props) => (
-                      <DOB {...(props.location.state as any)} />
-                    )}
-                  />
-                  <Route
+                  <Route path="/birth-date-confirmation" component={DOB} />
+                  <GuardedRoute
+                    auth={auth}
                     path="/patient-info-confirm"
-                    render={(props) => (
-                      <PatientProfileContainer
-                        {...(props.location.state as any)}
-                      />
-                    )}
+                    component={PatientProfileContainer}
                   />
-                  <Route
+                  <GuardedRoute
+                    auth={auth}
                     path="/patient-info-edit"
-                    render={(props) => (
-                      <PatientFormContainer
-                        {...(props.location.state as any)}
-                      />
-                    )}
+                    component={PatientFormContainer}
                   />
-                  <Route
+                  <GuardedRoute
+                    auth={auth}
                     path="/patient-info-symptoms"
-                    render={(props) => (
-                      <AoEPatientFormContainer
-                        {...(props.location.state as any)}
-                      />
-                    )}
+                    component={AoEPatientFormContainer}
                   />
-                  <Route path="/success" component={PatientLanding} />
-                  <Route path="/test-result" component={TestResult} />
+                  <GuardedRoute
+                    auth={auth}
+                    path="/success"
+                    component={PatientLanding}
+                  />
+                  <GuardedRoute
+                    auth={auth}
+                    path="/test-result"
+                    component={TestResult}
+                  />
                 </Switch>
               </Router>
               <ToastContainer

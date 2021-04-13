@@ -5,7 +5,7 @@ import moment from "moment";
 import classnames from "classnames";
 
 import { PATIENT_TERM_CAP } from "../../config/constants";
-import { displayFullName } from "../utils";
+import { displayFullName, displayFullNameInOrder } from "../utils";
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
@@ -13,11 +13,14 @@ import {
 import { ActionsMenu } from "../commonComponents/ActionsMenu";
 import { getUrl } from "../utils/url";
 import Pagination from "../commonComponents/Pagination";
+import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
 
 import "./TestResultsList.scss";
+
+type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
 export const testResultQuery = gql`
   query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
@@ -43,9 +46,18 @@ export const testResultQuery = gql`
         gender
         lookupId
       }
+      createdBy {
+        nameInfo {
+          firstName
+          middleName
+          lastName
+        }
+      }
       patientLink {
         internalId
       }
+      symptoms
+      noSymptoms
     }
   }
 `;
@@ -57,6 +69,19 @@ interface Props {
   page: number;
   entriesPerPage: number;
   totalEntries: number;
+}
+
+function hasSymptoms(noSymptoms: boolean, symptoms: string) {
+  if (noSymptoms) {
+    return "No";
+  }
+  const symptomsList: Record<string, string> = JSON.parse(symptoms);
+  for (let key in symptomsList) {
+    if (symptomsList[key] === "true") {
+      return "Yes";
+    }
+  }
+  return "Unknown";
 }
 
 export const DetachedTestResultsList: any = ({
@@ -139,10 +164,21 @@ export const DetachedTestResultsList: any = ({
               r.patient.middleName,
               r.patient.lastName
             )}
+            <span className="display-block text-base font-ui-2xs">
+              DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
+            </span>
           </th>
-          <td>{moment(r.dateTested).format("lll")}</td>
-          <td>{r.result}</td>
+          <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
+          <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
           <td>{r.deviceType.name}</td>
+          <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
+          <td>
+            {displayFullNameInOrder(
+              r.createdBy.nameInfo.firstName,
+              r.createdBy.nameInfo.middleName,
+              r.createdBy.nameInfo.lastName
+            )}
+          </td>
           <td>
             <ActionsMenu items={actionItems} />
           </td>
@@ -155,7 +191,7 @@ export const DetachedTestResultsList: any = ({
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container sr-test-results-list">
+          <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
                 Test Results
@@ -169,10 +205,12 @@ export const DetachedTestResultsList: any = ({
               <table className="usa-table usa-table--borderless width-full">
                 <thead>
                   <tr>
-                    <th scope="col">{PATIENT_TERM_CAP} Name</th>
-                    <th scope="col">Date of Test</th>
+                    <th scope="col">{PATIENT_TERM_CAP}</th>
+                    <th scope="col">Test date</th>
                     <th scope="col">Result</th>
                     <th scope="col">Device</th>
+                    <th scope="col">Symptoms</th>
+                    <th scope="col">Submitter</th>
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>

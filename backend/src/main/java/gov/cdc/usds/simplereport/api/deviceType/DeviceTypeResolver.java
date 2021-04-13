@@ -13,7 +13,11 @@ public class DeviceTypeResolver implements GraphQLQueryResolver {
 
   @Autowired private DeviceTypeService dts;
 
-  public List<DeviceType> getDeviceType() {
+  public List<DeviceType> getDeviceTypes() {
     return dts.fetchDeviceTypes();
+  }
+
+  public List<DeviceType> getDeviceType() {
+    return getDeviceTypes();
   }
 }
