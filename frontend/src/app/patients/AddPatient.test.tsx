@@ -22,7 +22,9 @@ jest.mock("../utils/smartyStreets", () => ({
 
 const fillOutForm = (
   inputs: { [label: string]: string },
-  inputGroups: { [legend: string]: { label: string; value: string } }
+  inputGroups: {
+    [legend: string]: { label: string; value: string; exact?: boolean };
+  }
 ) => {
   Object.entries(inputs).forEach(([label, value]) => {
     fireEvent.change(
@@ -34,7 +36,7 @@ const fillOutForm = (
       }
     );
   });
-  Object.entries(inputGroups).forEach(([legend, { label, value }]) => {
+  Object.entries(inputGroups).forEach(([legend, { label, value, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
         exact: false,
@@ -45,7 +47,7 @@ const fillOutForm = (
     }
     fireEvent.click(
       within(fieldset).getByLabelText(label, {
-        exact: false,
+        exact: exact || false,
       }),
       {
         target: { value },
@@ -196,8 +198,12 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Resident in congregate care": {
+              label: "No",
+              value: "No",
+              exact: true,
+            },
+            "Work in Healthcare": { label: "Yes", value: "Yes", exact: true },
           }
         );
         await act(async () => {
@@ -277,8 +283,12 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Resident in congregate care": {
+              label: "No",
+              value: "No",
+              exact: true,
+            },
+            "Work in Healthcare": { label: "Yes", value: "Yes", exact: true },
           }
         );
 

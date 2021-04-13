@@ -42,7 +42,6 @@ const PriorTestInputs: React.FC<Props> = ({
   setPriorTestType,
   lastTest,
 }) => {
-  console.log(priorTestResult);
   const recentDate = (lastTest?.dateTested || "").split("T")[0];
   const filledPriorTest =
     priorTestDate &&
