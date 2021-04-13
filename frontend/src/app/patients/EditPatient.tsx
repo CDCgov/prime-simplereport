@@ -12,6 +12,34 @@ import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 import PersonForm from "./Components/PersonForm";
 
+interface PatientDetails {
+  patient: {
+    firstName: string;
+    middleName: string | null;
+    lastName: string;
+    birthDate: string;
+    street: string;
+    streetTwo: string | null;
+    city: string | null;
+    state: string;
+    zipCode: string;
+    telephone: string;
+    role: Role;
+    lookupId: string | null;
+    email: string | null;
+    county: string | null;
+    race: Race | null;
+    ethnicity: Ethnicity | null;
+    tribalAffiliation: [TribalAffiliation | null];
+    gender: Gender | null;
+    residentCongregateSetting: boolean;
+    employedInHealthcare: boolean;
+    facility: {
+      id: string;
+    } | null;
+  };
+}
+
 export const GET_PATIENT = gql`
   query GetPatientDetails($id: ID!) {
     patient(id: $id) {
@@ -110,7 +138,7 @@ interface EditPatientResponse {
 }
 
 const EditPatient = (props: Props) => {
-  const { data, loading, error } = useQuery(GET_PATIENT, {
+  const { data, loading, error } = useQuery<PatientDetails>(GET_PATIENT, {
     variables: { id: props.patientId || "" },
     fetchPolicy: "no-cache",
   });
@@ -130,6 +158,10 @@ const EditPatient = (props: Props) => {
   }
   if (error) {
     return <p>error loading patient with id {props.patientId}...</p>;
+  }
+
+  if (data === undefined) {
+    return <p>Patient with id {props.patientId} not found</p>;
   }
 
   const savePerson = async (person: Nullable<PersonFormData>) => {
@@ -162,6 +194,7 @@ const EditPatient = (props: Props) => {
             <PersonForm
               patient={{
                 ...data.patient,
+                tribalAffiliation: data.patient.tribalAffiliation[0],
                 facilityId:
                   data.patient.facility === null
                     ? null

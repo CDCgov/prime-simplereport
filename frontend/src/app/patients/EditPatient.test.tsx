@@ -72,6 +72,7 @@ describe("EditPatient", () => {
                 race: null,
                 ethnicity: null,
                 gender: null,
+                tribalAffiliation: [null],
                 residentCongregateSetting: true,
                 employedInHealthcare: true,
                 facility: null,
@@ -126,6 +127,84 @@ describe("EditPatient", () => {
           target: { value: mockFacilityID },
         });
         expect(facilityInput.value).toBe(mockFacilityID);
+      });
+    });
+  });
+
+  describe("Form Submit", () => {
+    describe("Only required fields", () => {
+      let component: any;
+      beforeEach(async () => {
+        const mocks = [
+          {
+            request: {
+              query: GET_PATIENT,
+              variables: {
+                id: mockPatientID,
+              },
+            },
+            result: {
+              data: {
+                patient: {
+                  firstName: "Eugenia",
+                  middleName: "",
+                  lastName: "Franecki",
+                  birthDate: "1939-10-11",
+                  street: "736 Jackson PI NW",
+                  streetTwo: "",
+                  city: "",
+                  state: "DC",
+                  zipCode: "20503",
+                  telephone: "(634) 397-4114",
+                  role: "",
+                  email: "",
+                  county: "",
+                  race: "",
+                  ethnicity: "",
+                  gender: "",
+                  tribalAffiliation: [null],
+                  residentCongregateSetting: true,
+                  employedInHealthcare: true,
+                  facility: null,
+                },
+              },
+            },
+          },
+        ];
+
+        component = render(
+          <MemoryRouter>
+            <Provider store={store}>
+              <MockedProvider mocks={mocks} addTypename={false}>
+                <EditPatient
+                  facilityId={mockFacilityID}
+                  patientId={mockPatientID}
+                />
+              </MockedProvider>
+            </Provider>
+          </MemoryRouter>
+        );
+        await act(async () => {
+          await screen.findAllByText("Franecki, Eugenia", { exact: false });
+        });
+      });
+      it("can't be saved", () => {
+        expect(screen.getAllByText("Save changes")[0]).toBeDisabled();
+      });
+      describe("After field update", () => {
+        beforeEach(() => {
+          fireEvent.change(
+            screen.getByLabelText("First Name", {
+              exact: false,
+            }),
+            {
+              target: { value: "Gina" },
+            }
+          );
+        });
+        it("save is enabled", () => {
+          expect(screen.getAllByText("Save changes")[0]).not.toBeDisabled();
+        });
       });
     });
   });

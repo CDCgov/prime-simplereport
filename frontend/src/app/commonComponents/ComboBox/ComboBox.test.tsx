@@ -389,7 +389,7 @@ describe("ComboBox component", () => {
       );
     });
 
-    it("calls onChange prop with undefined on click", () => {
+    it("calls onChange prop with null on click", () => {
       const onChange = jest.fn();
       const { getByTestId } = render(
         <ComboBox
@@ -402,7 +402,7 @@ describe("ComboBox component", () => {
 
       fireEvent.click(getByTestId("combo-box-clear-button"));
 
-      expect(onChange).toHaveBeenCalledWith(undefined);
+      expect(onChange).toHaveBeenCalledWith(null);
     });
 
     it("clears the input on click", () => {
@@ -439,7 +439,7 @@ describe("ComboBox component", () => {
 
       expect(getByTestId("combo-box-clear-button")).not.toBeVisible();
       expect(getByTestId("combo-box-input")).toHaveValue("");
-      expect(onChange).toHaveBeenNthCalledWith(2, undefined);
+      expect(onChange).toHaveBeenNthCalledWith(2, null);
       expect(getByTestId("combo-box-option-list")).not.toBeVisible();
       expect(getByTestId("combo-box-option-list").children.length).toBe(
         fruitOptions.length

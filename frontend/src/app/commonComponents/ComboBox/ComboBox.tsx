@@ -37,9 +37,9 @@ interface ComboBoxProps {
   name: string;
   className?: string;
   options: ComboBoxOption[];
-  defaultValue?: string;
+  defaultValue?: string | null;
   disabled?: boolean;
-  onChange: (value?: string) => void;
+  onChange: (value?: string | null) => void;
   assistiveHint?: string;
   noResults?: string;
   inputProps?: JSX.IntrinsicElements["input"];
@@ -98,7 +98,7 @@ export const ComboBox = ({
 
   const initialState: State = {
     isOpen: false,
-    selectedOption: defaultOption ? defaultOption : undefined,
+    selectedOption: defaultOption ? defaultOption : null,
     focusedOption: undefined,
     focusMode: FocusMode.None,
     filteredOptions: options,
@@ -112,7 +112,7 @@ export const ComboBox = ({
   const itemRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
-    onChange && onChange(state.selectedOption?.value || undefined);
+    onChange && onChange(state.selectedOption?.value || null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.selectedOption]);
 

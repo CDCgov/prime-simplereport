@@ -40,8 +40,8 @@ export type Action =
     };
 export interface State {
   isOpen: boolean;
-  selectedOption?: ComboBoxOption;
-  focusedOption?: ComboBoxOption;
+  selectedOption?: ComboBoxOption | null;
+  focusedOption?: ComboBoxOption | null;
   focusMode: FocusMode;
   filter?: string;
   filteredOptions: ComboBoxOption[];
@@ -129,7 +129,7 @@ export const useCombobox = (
           inputValue: "",
           isOpen: false,
           focusMode: FocusMode.Input,
-          selectedOption: undefined,
+          selectedOption: null,
           filter: undefined,
           filteredOptions: optionsList.filter(isPartialMatch("")),
         };
