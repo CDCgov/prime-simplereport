@@ -79,11 +79,11 @@ public class DeviceTypeService {
       String model,
       String manufacturer,
       String loincCode,
-      String swabType,
-      Integer testLength) {
+      String swabType) {
     DeviceType d = getDeviceType(id.toString());
     if (name != null) {
       d.setName(name);
+      d.setTestLength((determineTestLength(name)));
     }
     if (manufacturer != null) {
       d.setManufacturer(manufacturer);
@@ -96,9 +96,6 @@ public class DeviceTypeService {
     }
     if (swabType != null) {
       throw new IllegalGraphqlArgumentException("swab type editing is temporarily unavailable");
-    }
-    if (testLength != null) {
-      d.setTestLength(testLength);
     }
     return _repo.save(d);
   }

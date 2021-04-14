@@ -1,7 +1,5 @@
 package gov.cdc.usds.simplereport.api.deviceType;
 
-import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
-
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.service.DeviceTypeService;
@@ -28,6 +26,6 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
       UUID id, String name, String manufacturer, String model, String loincCode, String swabType)
       throws IllegalGraphqlArgumentException {
     return _dts.updateDeviceType(
-        id, name, model, manufacturer, loincCode, swabType, determineTestLength(name));
+        id, name, model, manufacturer, loincCode, swabType);
   }
 }

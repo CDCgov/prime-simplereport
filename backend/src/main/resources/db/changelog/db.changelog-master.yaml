@@ -1651,22 +1651,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
-      id: add-test-length
-      author: emma@skylight.digital
-      comment: Add test length column to the device type table. Test length will be based on the model used.
-      changes:
-        - addColumn:
-            tableName: device_type
-            columns:
-              - column:
-                  name: test_length
-                  type: int
-                  remarks: The length (in minutes) that the test will take.
-                  valueNumeric: 15 # backfill the default test length to 15 minutes, since almost all devices have a 15 min test.
-                  defaultValueNumeric: 15
-                  constraints:
-                    nullable: false
-  - changeSet:
       id: add-tribal-affiliation
       author: adam@skylight.digital
       comment: Add Tribal Affiliation to Person
@@ -1731,3 +1715,22 @@ databaseChangeLog:
               migrations_user_id updated_by
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
+  - changeSet:
+      id: add-test-length
+      author: emma@skylight.digital
+      comment: Add test length column to the device type table. Test length will be based on the model used.
+      validCheckSum: # hopefully this is temporary because I have no idea why the checksum changed. Putting it in so I can test changes
+        - "8:00df5fb7fe6be24e1ad6e6d469ca0d71"
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: test_length
+                  type: int
+                  remarks: The length (in minutes) that the test will take.
+                  valueNumeric: 15 # backfill the default test length to 15 minutes, since almost all devices have a 15 min test.
+                  defaultValueNumeric: 15
+                  # valueComputed: (SELECT name, CASE WHEN name = 'Access Bio CareStart' THEN 10 else 15 END FROM ${database.defaultSchemaName}.device_type)
+                  constraints:
+                    nullable: false
