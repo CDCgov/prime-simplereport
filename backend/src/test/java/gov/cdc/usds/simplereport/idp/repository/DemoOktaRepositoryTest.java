@@ -31,7 +31,7 @@ class DemoOktaRepositoryTest {
   private static final IdentityAttributes DIANE =
       new IdentityAttributes("dianek@gmail.com", "Diane", "M", "Kohl", null);
 
-  private static final Organization ABC = new Organization("ABC General", "ABC");
+  private static final Organization ABC = new Organization("ABC General", "ABC", true);
   private static final Facility ABC_1 = getFacility(UUID.randomUUID(), ABC);
   private static final Facility ABC_2 = getFacility(UUID.randomUUID(), ABC);
 
