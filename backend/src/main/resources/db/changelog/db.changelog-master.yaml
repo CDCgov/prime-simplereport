@@ -1728,7 +1728,8 @@ databaseChangeLog:
                   type: boolean
                   remarks: Whether this organization's identity has been verified.
                   valueBoolean: true
-                  defaultValueBoolean: false
+                  # in the next commit, will change this default value to false
+                  defaultValueBoolean: true
         - addNotNullConstraint:
             tableName: organization
             columnName: identity_verified
