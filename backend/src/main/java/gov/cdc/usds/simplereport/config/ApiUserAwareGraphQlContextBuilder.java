@@ -99,7 +99,9 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         new DataLoader<>(
             personIds ->
                 supplyAsync(
-                    () -> patientPreferencesRepository.findAllByPersonInternalIdIn(personIds)));
+                    () ->
+                        patientPreferencesRepository.findAllAndCoalesceEmptyByPersonInternalIdIn(
+                            personIds)));
     dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesLoader);
     return dataLoaderRegistry;
   }
