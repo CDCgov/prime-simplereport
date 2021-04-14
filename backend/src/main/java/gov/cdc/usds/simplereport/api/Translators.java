@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -14,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**
@@ -229,5 +231,30 @@ public class Translators {
       symptomsMap.put(key, value);
     }
     return symptomsMap;
+  }
+
+  public static PersonName consolidateNameArguments(
+      PersonName name, String firstName, String middleName, String lastName, String suffix) {
+    return consolidateNameArguments(name, firstName, middleName, lastName, suffix, false);
+  }
+
+  public static PersonName consolidateNameArguments(
+      PersonName name,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      boolean allowEmpty) {
+    if (name != null && !StringUtils.isAllBlank(firstName, middleName, lastName, suffix)) {
+      throw new IllegalGraphqlArgumentException(
+          "Do not specify both unrolled and structured name arguments");
+    }
+    if (name == null) {
+      name = new PersonName(firstName, middleName, lastName, suffix);
+    }
+    if (!allowEmpty && StringUtils.isBlank(name.getLastName())) {
+      throw new IllegalGraphqlArgumentException("lastName cannot be empty");
+    }
+    return name;
   }
 }
