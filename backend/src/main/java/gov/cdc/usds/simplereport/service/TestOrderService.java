@@ -152,7 +152,8 @@ public class TestOrderService {
     order.setTestEventRef(testEvent);
     TestOrder savedOrder = _repo.save(order);
 
-    if (TestResultDeliveryPreference.SMS == person.getTestResultDelivery()) {
+    if (TestResultDeliveryPreference.SMS
+        == _ps.getPatientPreferences(person).getTestResultDelivery()) {
       // After adding test result, create a new patient link and text it to the patient
       PatientLink patientLink = _pls.createPatientLink(savedOrder.getInternalId());
       UUID internalId = patientLink.getInternalId();
