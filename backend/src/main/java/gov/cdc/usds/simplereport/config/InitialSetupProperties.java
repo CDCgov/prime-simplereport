@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.config;
 
+import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
+
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -86,7 +88,8 @@ public class InitialSetupProperties {
                     d.getManufacturer(),
                     d.getModel(),
                     d.getLoincCode(),
-                    d.getSwabType()))
+                    d.getSwabType(),
+                    determineTestLength(d.getName())))
         .collect(Collectors.toList());
   }
 

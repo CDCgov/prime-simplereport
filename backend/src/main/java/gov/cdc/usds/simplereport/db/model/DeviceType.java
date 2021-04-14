@@ -8,9 +8,6 @@ import org.springframework.boot.context.properties.ConstructorBinding;
 @Entity
 public class DeviceType extends EternalAuditedEntity {
 
-  private static final Integer STANDARD_TEST_LENGTH = 15;
-  private static final Integer SHORTENED_TEST_LENGTH = 10;
-
   @Column(nullable = false)
   private String name;
 
@@ -35,7 +32,12 @@ public class DeviceType extends EternalAuditedEntity {
 
   @ConstructorBinding
   public DeviceType(
-      String name, String manufacturer, String model, String loincCode, String swabType, int testLength) {
+      String name,
+      String manufacturer,
+      String model,
+      String loincCode,
+      String swabType,
+      int testLength) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
@@ -92,25 +94,4 @@ public class DeviceType extends EternalAuditedEntity {
   public void setTestLength(int testLength) {
     this.testLength = testLength;
   }
-
-  // public Integer getTestLength() {
-  //   if (testLength != null) {
-  //     return testLength;
-  //   } else {
-  //     this.testLength = determineTestLength(name);
-  //     return testLength;
-  //   }
-  // }
-
-  // public void setTestLength(Integer testLength) {
-  //   this.testLength = testLength;
-  // }
-
-  // private Integer determineTestLength(String name) {
-  //   if (name.contains("CareStart")) {
-  //     return SHORTENED_TEST_LENGTH;
-  //   } else {
-  //     return STANDARD_TEST_LENGTH;
-  //   }
-  // }
 }

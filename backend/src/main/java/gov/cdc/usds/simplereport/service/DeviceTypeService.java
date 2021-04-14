@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
+
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
@@ -72,7 +74,13 @@ public class DeviceTypeService {
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(
-      UUID id, String name, String model, String manufacturer, String loincCode, String swabType) {
+      UUID id,
+      String name,
+      String model,
+      String manufacturer,
+      String loincCode,
+      String swabType,
+      Integer testLength) {
     DeviceType d = getDeviceType(id.toString());
     if (name != null) {
       d.setName(name);
@@ -88,6 +96,9 @@ public class DeviceTypeService {
     }
     if (swabType != null) {
       throw new IllegalGraphqlArgumentException("swab type editing is temporarily unavailable");
+    }
+    if (testLength != null) {
+      d.setTestLength(testLength);
     }
     return _repo.save(d);
   }
@@ -107,7 +118,10 @@ public class DeviceTypeService {
     if (st.isDeleted()) {
       throw new IllegalGraphqlArgumentException("swab type has been deleted and cannot be used");
     }
-    DeviceType dt = _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
+    DeviceType dt =
+        _repo.save(
+            new DeviceType(
+                name, manufacturer, model, loincCode, swabType, determineTestLength(name)));
     _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, st));
     return dt;
   }
