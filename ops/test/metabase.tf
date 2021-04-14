@@ -21,7 +21,7 @@ module "metabase-readonly" {
   name   = "${local.project}-${local.name}-${local.env}-metabase-readonly"
   env    = local.env
 
-  app_settings = {
+  app_settings_overrides = {
     "MB_DB_USER"           = data.azurerm_key_vault_secret.postgres_nophi_user.value
     "MB_DB_PASS"           = data.azurerm_key_vault_secret.postgres_nophi_pass.value
     "MB_DB_NAME"           = "simple_report"

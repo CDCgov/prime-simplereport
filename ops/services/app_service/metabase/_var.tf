@@ -45,6 +45,11 @@ variable "ai_instrumentation_key" {
   sensitive   = true
 }
 
+variable "app_settings_overrides" {
+  description = "override values for app_settings"
+  default     = {}
+}
+
 # Secret Access
 variable "key_vault_id" {}
 variable "tenant_id" {}

@@ -61,7 +61,7 @@ resource "null_resource" "add_nophi_db_user" {
 
   provisioner "local-exec" {
     command    = var.run_nophi_user_create == false ? "echo" : local.grant_command
-    on_failure = continue
+    on_failure = fail
   }
 
   depends_on = [

@@ -10,19 +10,6 @@ env:
 jobs:
   docker-build:
     runs-on: ubuntu-latest
-    services:
-      postgres-db:
-        image: postgres:12-alpine
-        env:
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
     defaults:
       run:
         working-directory: ./backend
