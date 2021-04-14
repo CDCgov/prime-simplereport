@@ -1662,3 +1662,20 @@ databaseChangeLog:
                   name: tribal_affiliation
                   type: jsonb
                   remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)
+  - changeSet:
+      id: add-org-verified
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Add a required boolean column to the organization table named identity_verified, existing records set to true.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: identity_verified
+                  type: boolean
+                  remarks: Whether this organization's identity has been verified.
+                  valueBoolean: true
+                  defaultValueBoolean: false
+        - addNotNullConstraint:
+            tableName: organization
+            columnName: identity_verified
