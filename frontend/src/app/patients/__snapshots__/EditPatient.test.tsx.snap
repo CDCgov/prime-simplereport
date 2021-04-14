@@ -1150,6 +1150,11 @@ Object {
                          *
                       </span>
                     </legend>
+                    <span
+                      class="usa-hint text-ls-1"
+                    >
+                      For example: nursing home, group home, penal institution, military
+                    </span>
                     <div
                       class="usa-form-group"
                     >
@@ -1198,7 +1203,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Work in Healthcare?
+                      Work in healthcare?
                       <span
                         class="usa-sr-only"
                       >
@@ -2421,6 +2426,11 @@ Object {
                        *
                     </span>
                   </legend>
+                  <span
+                    class="usa-hint text-ls-1"
+                  >
+                    For example: nursing home, group home, penal institution, military
+                  </span>
                   <div
                     class="usa-form-group"
                   >
@@ -2469,7 +2479,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Work in Healthcare?
+                    Work in healthcare?
                     <span
                       class="usa-sr-only"
                     >
