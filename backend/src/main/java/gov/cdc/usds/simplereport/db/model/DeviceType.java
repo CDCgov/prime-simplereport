@@ -26,7 +26,8 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String swabType;
 
-  @Column private Integer testLength;
+  @Column(nullable = false)
+  private int testLength;
 
   protected DeviceType() {
     /* no-op for hibernate */
@@ -34,14 +35,14 @@ public class DeviceType extends EternalAuditedEntity {
 
   @ConstructorBinding
   public DeviceType(
-      String name, String manufacturer, String model, String loincCode, String swabType) {
+      String name, String manufacturer, String model, String loincCode, String swabType, int testLength) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
     this.model = model;
     this.loincCode = loincCode;
     this.swabType = swabType;
-    this.testLength = determineTestLength(name);
+    this.testLength = testLength;
   }
 
   public String getName() {
@@ -84,24 +85,32 @@ public class DeviceType extends EternalAuditedEntity {
     this.swabType = swabType;
   }
 
-  public Integer getTestLength() {
-    if (testLength != null) {
-      return testLength;
-    } else {
-      this.testLength = determineTestLength(name);
-      return testLength;
-    }
+  public int getTestLength() {
+    return this.testLength;
   }
 
-  public void setTestLength(Integer testLength) {
+  public void setTestLength(int testLength) {
     this.testLength = testLength;
   }
 
-  private Integer determineTestLength(String name) {
-    if (name.contains("CareStart")) {
-      return SHORTENED_TEST_LENGTH;
-    } else {
-      return STANDARD_TEST_LENGTH;
-    }
-  }
+  // public Integer getTestLength() {
+  //   if (testLength != null) {
+  //     return testLength;
+  //   } else {
+  //     this.testLength = determineTestLength(name);
+  //     return testLength;
+  //   }
+  // }
+
+  // public void setTestLength(Integer testLength) {
+  //   this.testLength = testLength;
+  // }
+
+  // private Integer determineTestLength(String name) {
+  //   if (name.contains("CareStart")) {
+  //     return SHORTENED_TEST_LENGTH;
+  //   } else {
+  //     return STANDARD_TEST_LENGTH;
+  //   }
+  // }
 }
