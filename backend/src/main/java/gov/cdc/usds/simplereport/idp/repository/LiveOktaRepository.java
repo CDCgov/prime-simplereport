@@ -325,8 +325,7 @@ public class LiveOktaRepository implements OktaRepository {
     String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
     GroupList groups = _client.listGroups(roleGroupName, null, null);
     if (groups.stream().count() == 0) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot activate nonexistent Okta organization");
+      throw new IllegalGraphqlArgumentException("Cannot activate nonexistent Okta organization");
     }
     Group group = groups.single();
     UserList users = group.listUsers();
@@ -337,7 +336,7 @@ public class LiveOktaRepository implements OktaRepository {
         u.activate(true);
       } else {
         throw new IllegalGraphqlArgumentException(
-            "Cannot activate Okta organization whose users have status="+u.getStatus().name());
+            "Cannot activate Okta organization whose users have status=" + u.getStatus().name());
       }
     }
   }
