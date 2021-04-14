@@ -14,11 +14,7 @@ module "simple_report_api" {
   https_only       = true
 
   app_settings = {
-    SPRING_PROFILES_ACTIVE = "azure-prod"
-    # true by default: can be disabled quickly here
-    # SPRING_LIQUIBASE_ENABLED                       = "true"
-    # this shadows (and overrides) an identical declaration in application.yaml
-    # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
+    SPRING_PROFILES_ACTIVE                = "azure-prod"
     SPRING_DATASOURCE_URL                 = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sr_db_jdbc.id})"
     OKTA_OAUTH2_CLIENT_SECRET             = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_client_secret.id})"
     OKTA_API_KEY                          = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.okta_api_key.id})"
@@ -33,5 +29,9 @@ module "simple_report_api" {
     SIMPLE_REPORT_SENDGRID_API_KEY        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.sendgrid_api_key.id})"
     SMARTY_AUTH_ID                        = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_id.id})"
     SMARTY_AUTH_TOKEN                     = "@Microsoft.KeyVault(SecretUri=${data.azurerm_key_vault_secret.smarty_auth_token.id})"
+    # true by default: can be disabled quickly here
+    # SPRING_LIQUIBASE_ENABLED                       = "true"
+    # this shadows (and overrides) an identical declaration in application.yaml
+    # SPRING_JPA_PROPERTIES_HIBERNATE_DEFAULT_SCHEMA = "public"
   }
 }
