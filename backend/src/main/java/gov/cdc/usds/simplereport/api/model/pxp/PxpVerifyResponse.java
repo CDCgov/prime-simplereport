@@ -1,10 +1,12 @@
 package gov.cdc.usds.simplereport.api.model.pxp;
 
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
+import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -19,11 +21,13 @@ public class PxpVerifyResponse {
   private Person p;
   private OrderStatus os;
   private PxpTestEventWrapper te;
+  private PatientPreferences patientPreferences;
 
-  public PxpVerifyResponse(Person p, OrderStatus os, TestEvent te) {
+  public PxpVerifyResponse(Person p, OrderStatus os, TestEvent te, PatientPreferences pp) {
     this.p = p;
     this.os = os;
     this.te = te != null ? new PxpTestEventWrapper(te) : null;
+    this.patientPreferences = pp;
   }
 
   public String getLookupId() {
@@ -48,6 +52,14 @@ public class PxpVerifyResponse {
 
   public LocalDate getBirthDate() {
     return p.getBirthDate();
+  }
+
+  public String getPreferredLanguage() {
+    return patientPreferences.getPreferredLanguage();
+  }
+
+  public TestResultDeliveryPreference getTestResultDelivery() {
+    return patientPreferences.getTestResultDelivery();
   }
 
   public String getTelephone() {
