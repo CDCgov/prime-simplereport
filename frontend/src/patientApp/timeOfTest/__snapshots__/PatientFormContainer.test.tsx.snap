@@ -1167,7 +1167,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <span
                 className="usa-hint text-ls-1"
               >
-                For example: nursing home, group home, penal institution, military
+                For example: Nursing home, group home, penal institution, or military
               </span>
               <div
                 className="usa-form-group"
@@ -1224,7 +1224,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Work in healthcare?
+                Work in health care?
                 <span
                   className="usa-sr-only"
                 >

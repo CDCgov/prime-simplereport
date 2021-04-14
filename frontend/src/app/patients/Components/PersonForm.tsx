@@ -368,7 +368,7 @@ const PersonForm = (props: Props) => {
       <FormGroup title="Other">
         <YesNoRadioGroup
           legend="Resident in congregate care/living setting?"
-          hintText="For example: nursing home, group home, penal institution, military"
+          hintText="For example: Nursing home, group home, penal institution, or military"
           name="residentCongregateSetting"
           value={patient.residentCongregateSetting}
           onChange={onPersonChange("residentCongregateSetting")}
@@ -380,7 +380,7 @@ const PersonForm = (props: Props) => {
           required
         />
         <YesNoRadioGroup
-          legend="Work in healthcare?"
+          legend="Work in health care?"
           name="employedInHealthcare"
           value={patient.employedInHealthcare}
           onChange={onPersonChange("employedInHealthcare")}
