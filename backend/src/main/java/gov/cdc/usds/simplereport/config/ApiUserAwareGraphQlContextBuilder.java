@@ -1,9 +1,13 @@
 package gov.cdc.usds.simplereport.config;
 
+import static java.util.concurrent.CompletableFuture.supplyAsync;
+
 import gov.cdc.usds.simplereport.config.authorization.ApiUserPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.FacilityPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationPrincipal;
 import gov.cdc.usds.simplereport.config.authorization.SiteAdminPrincipal;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
+import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.execution.context.DefaultGraphQLContext;
 import graphql.kickstart.execution.context.GraphQLContext;
@@ -13,11 +17,13 @@ import graphql.kickstart.servlet.context.GraphQLServletContextBuilder;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.UUID;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
+import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderRegistry;
 import org.springframework.stereotype.Component;
 
@@ -29,9 +35,12 @@ import org.springframework.stereotype.Component;
 @Component
 class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder {
   private final ApiUserService apiUserService;
+  private final PatientPreferencesRepository patientPreferencesRepository;
 
-  ApiUserAwareGraphQlContextBuilder(ApiUserService apiUserService) {
+  ApiUserAwareGraphQlContextBuilder(
+      ApiUserService apiUserService, PatientPreferencesRepository patientPreferencesRepository) {
     this.apiUserService = apiUserService;
+    this.patientPreferencesRepository = patientPreferencesRepository;
   }
 
   @Override
@@ -41,6 +50,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         .with(httpServletRequest)
         .with(httpServletResponse)
         .with(subjectFromCurrentUser())
+        .with(buildDataLoaderRegistry())
         .build();
   }
 
@@ -50,19 +60,20 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         .with(session)
         .with(handshakeRequest)
         .with(subjectFromCurrentUser())
+        .with(buildDataLoaderRegistry())
         .build();
   }
 
   @Override
   public GraphQLContext build() {
-    return new DefaultGraphQLContext(new DataLoaderRegistry(), subjectFromCurrentUser());
+    return new DefaultGraphQLContext(buildDataLoaderRegistry(), subjectFromCurrentUser());
   }
 
   private Subject subjectFromCurrentUser() {
     var currentUser = apiUserService.getCurrentUserInfo();
     var principals = new HashSet<Principal>();
 
-    principals.add(new ApiUserPrincipal(currentUser.getWrappedUser()));
+    principals.add(new ApiUserPrincipal(currentUser.getWrapped()));
 
     if (currentUser.getIsAdmin()) {
       principals.add(SiteAdminPrincipal.getInstance());
@@ -76,5 +87,22 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
     currentUser.getFacilities().stream().map(FacilityPrincipal::new).forEach(principals::add);
 
     return new Subject(true, principals, Collections.emptySet(), Collections.emptySet());
+  }
+
+  /**
+   * This method does not belong in this class, but this changeset has sprawled too far already and
+   * there is <em>already</em> a cleanup/refactor ticket associated with this work.
+   */
+  private DataLoaderRegistry buildDataLoaderRegistry() {
+    DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
+    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
+        new DataLoader<>(
+            personIds ->
+                supplyAsync(
+                    () ->
+                        patientPreferencesRepository.findAllAndCoalesceEmptyByPersonInternalIdIn(
+                            personIds)));
+    dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesLoader);
+    return dataLoaderRegistry;
   }
 }

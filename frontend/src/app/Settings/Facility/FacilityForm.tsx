@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast } from "react-toastify";
 
+import iconSprite from "../../../../node_modules/uswds/dist/img/sprite.svg";
 import Button from "../../commonComponents/Button";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
@@ -18,6 +18,64 @@ import {
 } from "./facilitySchema";
 
 export type ValidateField = (field: keyof FacilityErrors) => Promise<void>;
+
+export const useFacilityValidation = (facility: Facility) => {
+  const [errors, setErrors] = useState<FacilityErrors>({});
+
+  const clearError = useCallback(
+    (field: keyof FacilityErrors) => {
+      if (errors[field]) {
+        setErrors({ ...errors, [field]: undefined });
+      }
+    },
+    [errors]
+  );
+
+  const validateField = useCallback(
+    async (field: keyof FacilityErrors) => {
+      try {
+        clearError(field);
+        await facilitySchema.validateAt(field, facility);
+      } catch (e) {
+        setErrors((existingErrors) => ({
+          ...existingErrors,
+          [field]: allFacilityErrors[field],
+        }));
+      }
+    },
+    [facility, clearError]
+  );
+
+  const validateFacility = async () => {
+    try {
+      await facilitySchema.validate(facility, { abortEarly: false });
+      return "";
+    } catch (e) {
+      const errors = e.inner.reduce(
+        (
+          acc: FacilityErrors,
+          el: { path: keyof FacilityErrors; message: string }
+        ) => {
+          acc[el.path] = allFacilityErrors[el.path];
+          return acc;
+        },
+        {} as FacilityErrors
+      );
+      setErrors(errors);
+      const alert = (
+        <Alert
+          type="error"
+          title="Form Errors"
+          body="Please check the form to make sure you complete all of the required fields."
+        />
+      );
+      showNotification(toast, alert);
+      return "error";
+    }
+  };
+
+  return { errors, validateField, validateFacility };
+};
 
 interface Props {
   facility: Facility;
@@ -57,70 +115,39 @@ const FacilityForm: React.FC<Props> = (props) => {
     });
   };
 
-  const [errors, setErrors] = useState<FacilityErrors>({});
-
-  const clearError = useCallback(
-    (field: keyof FacilityErrors) => {
-      if (errors[field]) {
-        setErrors({ ...errors, [field]: undefined });
-      }
-    },
-    [errors]
-  );
-
-  const validateField = useCallback(
-    async (field: keyof FacilityErrors) => {
-      try {
-        clearError(field);
-        await facilitySchema.validateAt(field, facility);
-      } catch (e) {
-        setErrors((errors) => ({
-          ...errors,
-          [field]: allFacilityErrors[field],
-        }));
-      }
-    },
-    [facility, clearError]
+  const { errors, validateField, validateFacility } = useFacilityValidation(
+    facility
   );
 
   const validateAndSaveFacility = async () => {
-    try {
-      await facilitySchema.validate(facility, { abortEarly: false });
-    } catch (e) {
-      const errors = e.inner.reduce(
-        (
-          acc: FacilityErrors,
-          el: { path: keyof FacilityErrors; message: string }
-        ) => {
-          acc[el.path] = allFacilityErrors[el.path];
-          return acc;
-        },
-        {} as FacilityErrors
-      );
-      setErrors(errors);
-      const alert = (
-        <Alert
-          type="error"
-          title="Form Errors"
-          body="Please check the form to make sure you complete all of the required fields."
-        />
-      );
-      showNotification(toast, alert);
+    if ((await validateFacility()) === "error") {
       return;
     }
     props.saveFacility(facility);
   };
 
   return (
-    <div className="grid-row">
-      <div className="prime-container usa-card__container">
+    <div className="">
+      <div className="prime-container card-container">
         <div className="usa-card__header">
           <div>
-            <FontAwesomeIcon icon={"arrow-left"} color="#888" />
-            <LinkWithQuery to={`/settings/facilities`}>
-              All facilities
-            </LinkWithQuery>
-            <h2>{facility.name}</h2>
+            <div className="display-flex flex-align-center">
+              <svg
+                className="usa-icon text-base margin-left-neg-2px"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <use xlinkHref={iconSprite + "#arrow_back"}></use>
+              </svg>
+              <LinkWithQuery
+                to={`/settings/facilities`}
+                className="margin-left-05"
+              >
+                All facilities
+              </LinkWithQuery>
+            </div>
+            <h1 className="font-heading-lg margin-y-0">{facility.name}</h1>
           </div>
           <div
             style={{
@@ -130,6 +157,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             }}
           >
             <Button
+              className="margin-right-0"
               type="button"
               onClick={validateAndSaveFacility}
               label="Save changes"
@@ -137,7 +165,7 @@ const FacilityForm: React.FC<Props> = (props) => {
             />
           </div>
         </div>
-        <div className="usa-card__body">
+        <div className="usa-card__body padding-top-2">
           <RequiredMessage />
           <FacilityInformation
             facility={facility}
@@ -160,6 +188,15 @@ const FacilityForm: React.FC<Props> = (props) => {
         errors={errors}
         validateField={validateField}
       />
+      <div className="float-right margin-bottom-4">
+        <Button
+          className="margin-right-0"
+          type="button"
+          onClick={validateAndSaveFacility}
+          label="Save changes"
+          disabled={!formChanged}
+        />
+      </div>
     </div>
   );
 };

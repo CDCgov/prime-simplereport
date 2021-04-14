@@ -127,9 +127,9 @@ const ManageDevices: React.FC<Props> = ({
   };
 
   return (
-    <div className="prime-container usa-card__container">
+    <div className="prime-container card-container">
       <div className="usa-card__header">
-        <h3>Manage devices</h3>
+        <h2 className="font-heading-lg">Manage devices</h2>
       </div>
       {deviceErrors.length > 0 && (
         <ul className="text-bold text-secondary-vivid">

@@ -4,7 +4,8 @@
 # Infrastructure types
 
 type Organization {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   name: String
   externalId: String
   testingFacility: [Facility] @deprecated(reason: "Use the one that makes sense")
@@ -15,6 +16,7 @@ type Facility {
   id: ID
   name: String
   cliaNumber: String
+  address: AddressInfo
   street: String
   streetTwo: String
   city: String
@@ -29,11 +31,13 @@ type Facility {
 }
 
 type Provider {
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String
   suffix: String
   NPI: String
+  address: AddressInfo
   street: String
   streetTwo: String
   city: String
@@ -63,6 +67,7 @@ type TestDescription {
 # Note: the login username is the user's email
 type User {
   id: ID
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String!
@@ -74,18 +79,12 @@ type User {
   organization: Organization
   # for backward compatibility, currently maintaining both `role` and `roles`
   role: Role
-  roles: [Role!]!
+  roles: [Role!]! @deprecated(reason: "Users have only one role now")
 }
 
 type ApiUser {
-  nameInfo: NameInfo
-}
-
-type NameInfo {
-  firstName: String
-  middleName: String
-  lastName: String
-  suffix: String
+  name: NameInfo
+  nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
 }
 
 # Patient and test types
@@ -94,9 +93,11 @@ type Patient
   @requiredPermissions(
     anyOf: ["READ_PATIENT_LIST", "SEARCH_PATIENTS", "UPDATE_TEST"]
   ) {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   facility: Facility
   lookupId: String
+  name: NameInfo
   firstName: String
   middleName: String
   lastName: String
@@ -106,6 +107,8 @@ type Patient
   gender: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   ethnicity: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  tribalAffiliation: [String] @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
+  address: AddressInfo @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   street: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   streetTwo: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   city: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
@@ -124,11 +127,13 @@ type Patient
     @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   lastTest: TestResult
     @requiredPermissions(anyOf: ["READ_RESULT_LIST", "UPDATE_TEST"])
-  testResultDelivery: TestResultDeliveryPreference
+  testResultDelivery: TestResultDeliveryPreference @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  preferredLanguage: String @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
 }
 # TestResult and TestOrder should have the same properties
 type TestOrder {
-  internalId: ID
+  id: ID
+  internalId: ID @deprecated(reason: "alias for 'id'")
   patient: Patient
   dateAdded: String
   pregnancy: String
@@ -273,22 +278,22 @@ type Mutation {
   updateOrganization(name: String!): String
     @requiredPermissions(allOf: ["EDIT_ORGANIZATION"])
   addUserToCurrentOrg(
+    name: NameInput
     firstName: String
     middleName: String
-    lastName: String!
+    lastName: String
     suffix: String
     email: String!
     role: Role!
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUser(
     id: ID!
+    name: NameInput
     firstName: String
     middleName: String
-    lastName: String!
+    lastName: String
     suffix: String
   ): User @requiredPermissions(allOf: ["MANAGE_USERS"])
-  updateUserRole(id: ID!, role: Role!): Role
-    @requiredPermissions(allOf: ["MANAGE_USERS"])
   updateUserPrivileges(
     id: ID!
     accessAllFacilities: Boolean!
@@ -316,9 +321,11 @@ type Mutation {
     county: String
     race: String
     ethnicity: String
+    tribalAffiliation: String
     gender: String
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
+    preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   updatePatient(
     facilityId: ID @Size(min: 36, max: 36)
@@ -345,9 +352,11 @@ type Mutation {
     county: String
     race: String @Size(min: 0, max: 32)
     ethnicity: String @Size(min: 0, max: 32)
+    tribalAffiliation: String @Size(min: 0, max: 3)
     gender: String @Size(min: 0, max: 32)
     residentCongregateSetting: Boolean!
     employedInHealthcare: Boolean!
+    preferredLanguage: String
   ): Patient @requiredPermissions(allOf: ["EDIT_PATIENT"])
   setPatientIsDeleted(id: ID!, deleted: Boolean!): Patient
     @requiredPermissions(allOf: ["ARCHIVE_PATIENT"])

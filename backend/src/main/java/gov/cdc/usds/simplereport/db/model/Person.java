@@ -7,8 +7,8 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -28,7 +28,7 @@ import org.hibernate.annotations.Type;
  * this object, you will likely break many things, so do not do that.
  */
 @Entity
-public class Person extends OrganizationScopedEternalEntity {
+public class Person extends OrganizationScopedEternalEntity implements PersonEntity, LocatedEntity {
 
   // NOTE: facility==NULL means this person appears in ALL facilities for a given Organization.
   // this is common for imported patients.
@@ -52,6 +52,14 @@ public class Person extends OrganizationScopedEternalEntity {
   @JsonDeserialize(converter = RaceArrayConverter.class)
   private String race;
 
+  /**
+   * Tribal Affiliation maps to this data set:
+   * https://github.com/CDCgov/prime-data-hub/blob/master/prime-router/metadata/valuesets/tribal.valuesets
+   */
+  @Type(type = "jsonb")
+  @Column
+  private List<String> tribalAffiliation;
+
   @Column private String ethnicity;
   @Column private String telephone;
   @Column private String email;
@@ -65,11 +73,6 @@ public class Person extends OrganizationScopedEternalEntity {
 
   @Column(nullable = false)
   private boolean residentCongregateSetting;
-
-  @Column
-  @Type(type = "pg_enum")
-  @Enumerated(EnumType.STRING)
-  private TestResultDeliveryPreference testResultDelivery;
 
   protected Person() {
     /* for hibernate */
@@ -96,6 +99,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -109,6 +113,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -134,6 +139,7 @@ public class Person extends OrganizationScopedEternalEntity {
       String email,
       String race,
       String ethnicity,
+      List<String> tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -149,6 +155,7 @@ public class Person extends OrganizationScopedEternalEntity {
     this.email = email;
     this.race = race;
     this.ethnicity = ethnicity;
+    this.tribalAffiliation = tribalAffiliation;
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
@@ -208,6 +215,10 @@ public class Person extends OrganizationScopedEternalEntity {
 
   public String getEthnicity() {
     return ethnicity;
+  }
+
+  public List<String> getTribalAffiliation() {
+    return tribalAffiliation;
   }
 
   public String getGender() {
@@ -280,13 +291,5 @@ public class Person extends OrganizationScopedEternalEntity {
     public static final String LAST_NAME = "lastName";
 
     private SpecField() {} // sonarcloud codesmell
-  }
-
-  public TestResultDeliveryPreference getTestResultDelivery() {
-    return testResultDelivery;
-  }
-
-  public void setTestResultDelivery(TestResultDeliveryPreference testResultDelivery) {
-    this.testResultDelivery = testResultDelivery;
   }
 }

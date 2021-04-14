@@ -1,5 +1,5 @@
-# Directives and enumerated types go here, so that they can be easily referred to
-# side by side with the more complex types
+# Directives, enumerations, and utility types (e.g. structured name/address information, input types, etc.)
+# go here, so that they can be easily referred to side by side with the more complex types
 
 # Requires that the requester have a certain permission level.
 #
@@ -77,4 +77,27 @@ enum TestCorrectionStatus {
 enum TestResultDeliveryPreference {
   SMS
   NONE
+}
+
+type NameInfo {
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+}
+
+type AddressInfo {
+  streetOne: String
+  streetTwo: String
+  city: String
+  county: String
+  state: String
+  postalCode: String
+}
+
+input NameInput {
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
 }

@@ -51,7 +51,7 @@ class PatientManagementTest extends BaseGraphqlTest {
   }
 
   @Test
-  void createAndFetchOnePatientIsoDate() throws Exception {
+  void createAndFetchOnePatient() throws Exception {
     useOrgAdmin();
     String firstName = "Sansa";
     JsonNode patients =
@@ -59,7 +59,20 @@ class PatientManagementTest extends BaseGraphqlTest {
             firstName, "Stark", "1100-12-25", "1-800-BIZ-NAME", "notbitter", Optional.empty());
     assertTrue(patients.has(0), "At least one patient found");
     JsonNode sansa = patients.get(0);
+    // check that both ID fields exist and are equal
+    assertTrue(sansa.has("id"), "'id' field present");
+    assertTrue(sansa.has("internalId"), "'internalId' field present");
+    assertEquals(sansa.get("id").asText(), sansa.get("internalId").asText());
+    // check name through both flat and structured graph nodes
     assertEquals(firstName, sansa.get("firstName").asText());
+    assertEquals(firstName, sansa.path("name").get("firstName").asText());
+    // check address through both flat and structured graph nodes
+    assertEquals("Top Floor", sansa.get("street").asText());
+    assertEquals("Top Floor", sansa.path("address").get("streetOne").asText());
+    assertEquals("Winterfell", sansa.get("city").asText());
+    assertEquals("Winterfell", sansa.path("address").get("city").asText());
+    assertEquals("NY", sansa.get("state").asText());
+    assertEquals("NY", sansa.path("address").get("state").asText());
     assertEquals("1100-12-25", sansa.get("birthDate").asText());
     assertEquals("(800) 249-6263", sansa.get("telephone").asText());
   }

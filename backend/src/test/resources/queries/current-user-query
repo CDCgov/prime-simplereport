@@ -5,20 +5,53 @@ query whoDat {
     middleName
     lastName
     suffix
+    name {
+      firstName
+      middleName
+      lastName
+      suffix
+    }
     email
     role
     roles
     permissions
     roleDescription
     isAdmin
+
     organization {
-      testingFacility {
+      id
+      internalId
+
+      facilities {
         name
         id
-        __typename
+
+        street
+        streetTwo
+        city
+        address {
+          streetOne
+          streetTwo
+          city
+        }
+
+        orderingProvider {
+          firstName
+          lastName
+          name {
+            firstName
+            lastName
+          }
+          street
+          city
+          zipCode
+          address {
+            streetOne
+            city
+            postalCode
+          }
+        }
       }
-      __typename
     }
-    __typename
   }
 }

@@ -6,6 +6,42 @@ mutation updateUser(
     $suffix: String,
     ){
   updateUser(
+    id: $id
+    name: {
+      firstName: $firstName
+      middleName: $middleName
+      lastName: $lastName
+      suffix: $suffix
+    }
+  ) {
+      id
+      firstName,
+      middleName,
+      lastName,
+      suffix,
+      email,
+      permissions,
+      role,
+      roles,
+      organization {
+        name
+        externalId
+        facilities {
+          name
+          id
+        }
+      }
+    }
+}
+
+mutation updateUserLegacy(
+    $id: ID!,
+    $firstName: String,
+    $middleName: String,
+    $lastName: String!,
+    $suffix: String,
+    ){
+  updateUser(
     id: $id,
     firstName: $firstName
     middleName: $middleName
@@ -24,7 +60,7 @@ mutation updateUser(
       organization {
         name
         externalId
-        testingFacility {
+        facilities {
           name
           id
         }

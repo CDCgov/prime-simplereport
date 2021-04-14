@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.service.model;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
+import javax.validation.constraints.NotNull;
 import org.springframework.boot.context.properties.ConstructorBinding;
 
 /**
@@ -15,6 +16,10 @@ public class IdentityAttributes extends PersonName {
       String username, String firstName, String middleName, String lastName, String suffix) {
     super(firstName, middleName, lastName, suffix);
     this.username = username;
+  }
+
+  public IdentityAttributes(String username, @NotNull PersonName name) {
+    this(username, name.getFirstName(), name.getMiddleName(), name.getLastName(), name.getSuffix());
   }
 
   public String getUsername() {

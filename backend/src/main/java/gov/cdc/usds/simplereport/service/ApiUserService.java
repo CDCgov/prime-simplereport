@@ -56,39 +56,19 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
-      String username,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      String organizationExternalId,
-      Role role) {
+      String username, PersonName name, String organizationExternalId, Role role) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
+    return createUserHelper(username, name, org, role);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(
-      String username,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      Role role) {
+  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
     Organization org = _orgService.getCurrentOrganization();
-    return createUserHelper(username, firstName, middleName, lastName, suffix, org, role);
+    return createUserHelper(username, name, org, role);
   }
 
-  private UserInfo createUserHelper(
-      String username,
-      String firstName,
-      String middleName,
-      String lastName,
-      String suffix,
-      Organization org,
-      Role role) {
-    IdentityAttributes userIdentity =
-        new IdentityAttributes(username, firstName, middleName, lastName, suffix);
+  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
+    IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
@@ -108,20 +88,18 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
-  public UserInfo updateUser(
-      UUID userId, String firstName, String middleName, String lastName, String suffix) {
+  public UserInfo updateUser(UUID userId, PersonName name) {
     ApiUser apiUser = getApiUser(userId);
     String username = apiUser.getLoginEmail();
 
     PersonName nameInfo = apiUser.getNameInfo();
-    nameInfo.setFirstName(firstName);
-    nameInfo.setMiddleName(middleName);
-    nameInfo.setLastName(lastName);
-    nameInfo.setSuffix(suffix);
+    nameInfo.setFirstName(name.getFirstName());
+    nameInfo.setMiddleName(name.getMiddleName());
+    nameInfo.setLastName(name.getLastName());
+    nameInfo.setSuffix(name.getSuffix());
     apiUser = _apiUserRepo.save(apiUser);
 
-    IdentityAttributes userIdentity =
-        new IdentityAttributes(username, firstName, middleName, lastName, suffix);
+    IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     Optional<OrganizationRoleClaims> roleClaims = _oktaRepo.updateUser(userIdentity);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(_orgService::getOrganizationRoles);
     boolean isAdmin = isAdmin(apiUser);
@@ -133,37 +111,6 @@ public class ApiUserService {
         getCurrentApiUser().getInternalId().toString());
 
     return user;
-  }
-
-  /**
-   * this exists only for backward compatibility -- going forward, we should allow for a user to be
-   * updated with multiple roles at once, as in {@code updateUserPrivileges()}
-   */
-  @Deprecated
-  @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
-  public Role updateUserRole(UUID userId, Role role) {
-    ApiUser user = getApiUser(userId);
-    String username = user.getLoginEmail();
-    OrganizationRoleClaims orgClaims =
-        _oktaRepo
-            .getOrganizationRoleClaimsForUser(username)
-            .orElseThrow(MisconfiguredUserException::new);
-    Organization org = _orgService.getOrganization(orgClaims.getOrganizationExternalId());
-    Set<Facility> facilities = _orgService.getAccessibleFacilities(org, orgClaims);
-    // ensure every user altered by this method maintains all-facility access for now
-    Set<OrganizationRole> roles =
-        EnumSet.of(
-            role.toOrganizationRole(),
-            OrganizationRole.ALL_FACILITIES,
-            OrganizationRole.getDefault());
-    _oktaRepo.updateUserPrivileges(username, org, facilities, roles);
-
-    LOG.info(
-        "User with id={} updated by user with id={}",
-        user.getInternalId(),
-        getCurrentApiUser().getInternalId().toString());
-
-    return role;
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
@@ -194,7 +141,7 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUserNotSelf
   public UserInfo setIsDeleted(UUID userId, boolean deleted) {
-    ApiUser apiUser = getApiUser(userId);
+    ApiUser apiUser = getApiUser(userId, !deleted);
     apiUser.setIsDeleted(deleted);
     apiUser = _apiUserRepo.save(apiUser);
     _oktaRepo.setUserIsActive(apiUser.getLoginEmail(), !deleted);
@@ -202,7 +149,12 @@ public class ApiUserService {
   }
 
   private ApiUser getApiUser(UUID id) {
-    Optional<ApiUser> found = _apiUserRepo.findById(id);
+    return getApiUser(id, false);
+  }
+
+  private ApiUser getApiUser(UUID id, Boolean includeArchived) {
+    Optional<ApiUser> found =
+        includeArchived ? _apiUserRepo.findByIdIncludeArchived(id) : _apiUserRepo.findById(id);
     if (!found.isPresent()) {
       throw new NonexistentUserException();
     }

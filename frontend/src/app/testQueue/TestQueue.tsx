@@ -22,10 +22,11 @@ const onExiting = (node: HTMLElement) => {
   node.style.marginBottom = `-${node.offsetHeight}px`;
   node.style.opacity = "0";
   node.style.transition = `opacity ${transitionDuration}ms ease-out, margin ${transitionDuration}ms ease-out`;
+  node.style.pointerEvents = "none";
 };
 
 const emptyQueueMessage = (
-  <div className="grid-container prime-center usa-card__container">
+  <div className="grid-container prime-center card-container">
     <div className="grid-row">
       <div className="usa-card__body">
         <p>
@@ -64,6 +65,7 @@ export const queueQuery = gql`
         lastName
         gender
         testResultDelivery
+        preferredLanguage
       }
       result
       dateTested

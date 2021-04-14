@@ -20,7 +20,7 @@ const Settings: React.FC<RouteComponentProps<{}>> = ({ match }) => {
         <PrimeErrorBoundary
           onError={(error: any) => (
             <div className="grid-row">
-              <div className="prime-container usa-card__container">
+              <div className="prime-container card-container">
                 <div className="usa-card__header">
                   <h1>There was an error. Please try refreshing.</h1>
                 </div>
