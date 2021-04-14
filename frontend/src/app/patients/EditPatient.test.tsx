@@ -3,19 +3,13 @@ import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { act } from "react-dom/test-utils";
+import { MemoryRouter } from "react-router";
 
 import EditPatient, { GET_PATIENT } from "./EditPatient";
 
-const mockStore = configureStore([]);
+jest.mock("../commonComponents/ComboBox", () => () => <></>);
 
-jest.mock("react-router-dom", () => ({
-  Prompt: (props: any) => <></>,
-  Link: (props: any) => <></>,
-  useHistory: () => ({
-    listen: jest.fn(),
-    push: jest.fn(),
-  }),
-}));
+const mockStore = configureStore([]);
 
 describe("EditPatient", () => {
   afterEach(cleanup);
@@ -29,14 +23,16 @@ describe("EditPatient", () => {
   describe("Waiting for network response", () => {
     beforeEach(() => {
       render(
-        <Provider store={store}>
-          <MockedProvider mocks={[]} addTypename={false}>
-            <EditPatient
-              facilityId={mockFacilityID}
-              patientId={mockPatientID}
-            />
-          </MockedProvider>
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={[]} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
       );
     });
     it("shows loading text", async () => {
@@ -86,14 +82,16 @@ describe("EditPatient", () => {
       ];
 
       component = render(
-        <Provider store={store}>
-          <MockedProvider mocks={mocks} addTypename={false}>
-            <EditPatient
-              facilityId={mockFacilityID}
-              patientId={mockPatientID}
-            />
-          </MockedProvider>
-        </Provider>
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
       );
       await act(async () => {
         await screen.findAllByText("Franecki, Eugenia", { exact: false });

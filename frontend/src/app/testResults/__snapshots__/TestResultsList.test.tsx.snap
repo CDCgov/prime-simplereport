@@ -12,7 +12,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
         class="grid-row"
       >
         <div
-          class="prime-container usa-card__container sr-test-results-list"
+          class="prime-container card-container sr-test-results-list"
         >
           <div
             class="usa-card__header"
@@ -86,7 +86,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Cragell, Barb Whitaker
                     <span
-                      class="display-block text-gray-30 font-ui-2xs"
+                      class="display-block text-base font-ui-2xs"
                     >
                       DOB: 
                       11/07/1960
@@ -150,7 +150,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Colleer, Barde X
                     <span
-                      class="display-block text-gray-30 font-ui-2xs"
+                      class="display-block text-base font-ui-2xs"
                     >
                       DOB: 
                       11/07/1960
@@ -214,7 +214,7 @@ exports[`TestResultsList should render a list of tests 1`] = `
                   >
                     Gerard, Sam G
                     <span
-                      class="display-block text-gray-30 font-ui-2xs"
+                      class="display-block text-base font-ui-2xs"
                     >
                       DOB: 
                       11/07/1960

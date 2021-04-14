@@ -100,6 +100,7 @@ public class PatientExperienceController {
         parseEmail(person.getEmail()),
         parseRace(person.getRace()),
         parseEthnicity(person.getEthnicity()),
+        person.getTribalAffiliation(),
         parseGender(person.getGender()),
         person.getResidentCongregateSetting(),
         person.getEmployedInHealthcare());

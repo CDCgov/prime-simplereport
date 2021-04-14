@@ -9,6 +9,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumbers;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -73,6 +74,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -97,6 +99,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare);
@@ -123,6 +126,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
       Boolean employedInHealthcare) {
@@ -148,6 +152,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
         employedInHealthcare);

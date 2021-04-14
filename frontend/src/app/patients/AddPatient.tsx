@@ -4,15 +4,13 @@ import { toast } from "react-toastify";
 import { Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import {
-  PATIENT_TERM_CAP,
-  PATIENT_TERM_PLURAL_CAP,
-} from "../../config/constants";
+import iconSprite from "../../../node_modules/uswds/dist/img/sprite.svg";
+import { PATIENT_TERM_CAP } from "../../config/constants";
 import { showNotification } from "../utils";
 import Alert from "../commonComponents/Alert";
-import Breadcrumbs from "../commonComponents/Breadcrumbs";
 import Button from "../commonComponents/Button";
 import { RootState } from "../store";
+import { LinkWithQuery } from "../commonComponents/LinkWithQuery";
 
 import PersonForm from "./Components/PersonForm";
 
@@ -35,6 +33,7 @@ export const ADD_PATIENT = gql`
     $county: String
     $race: String
     $ethnicity: String
+    $tribalAffiliation: String
     $gender: String
     $residentCongregateSetting: Boolean!
     $employedInHealthcare: Boolean!
@@ -57,6 +56,7 @@ export const ADD_PATIENT = gql`
       county: $county
       race: $race
       ethnicity: $ethnicity
+      tribalAffiliation: $tribalAffiliation
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
@@ -120,6 +120,7 @@ const AddPatient = () => {
             gender: null,
             residentCongregateSetting: null,
             employedInHealthcare: null,
+            tribalAffiliation: null,
             birthDate: null,
             telephone: null,
             county: null,
@@ -133,32 +134,37 @@ const AddPatient = () => {
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}
           getHeader={(_, onSave, formChanged) => (
-            <>
-              <Breadcrumbs
-                crumbs={[
-                  {
-                    link: personPath,
-                    text: PATIENT_TERM_PLURAL_CAP,
-                  },
-                  {
-                    link: "",
-                    text: `Add New ${PATIENT_TERM_CAP}`,
-                  },
-                ]}
-              />
-              <div className="prime-edit-patient-heading">
-                <div>
-                  <h1>Add New {PATIENT_TERM_CAP}</h1>
+            <div className="display-flex flex-justify">
+              <div>
+                <div className="display-flex flex-align-center">
+                  <svg
+                    className="usa-icon text-base margin-left-neg-2px"
+                    aria-hidden="true"
+                    focusable="false"
+                    role="img"
+                  >
+                    <use xlinkHref={iconSprite + "#arrow_back"}></use>
+                  </svg>
+                  <LinkWithQuery to={`/patients`} className="margin-left-05">
+                    People
+                  </LinkWithQuery>
                 </div>
+                <div className="prime-edit-patient-heading margin-y-0">
+                  <h1 className="font-heading-lg margin-top-1 margin-bottom-0">
+                    Add New {PATIENT_TERM_CAP}
+                  </h1>
+                </div>
+              </div>
+              <div className="display-flex flex-align-center">
                 <button
-                  className="usa-button prime-save-patient-changes"
+                  className="prime-save-patient-changes usa-button margin-right-0 "
                   disabled={loading || !formChanged}
                   onClick={onSave}
                 >
                   {loading ? "Saving..." : "Save changes"}
                 </button>
               </div>
-            </>
+            </div>
           )}
           getFooter={(onSave, formChanged) => (
             <div className="prime-edit-patient-heading">

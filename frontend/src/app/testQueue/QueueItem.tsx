@@ -239,7 +239,7 @@ const QueueItem: any = ({
 
   const [mutationError, updateMutationError] = useState(null);
   const [removePatientFromQueue] = useMutation(REMOVE_PATIENT_FROM_QUEUE);
-  const [submitTestResult] = useMutation(SUBMIT_TEST_RESULT);
+  const [submitTestResult, { loading }] = useMutation(SUBMIT_TEST_RESULT);
   const [updateAoe] = useMutation(UPDATE_AOE);
   const [editQueueItem] = useMutation<
     EditQueueItemResponse,
@@ -251,8 +251,6 @@ const QueueItem: any = ({
   useEffect(() => {
     setAoeAnswers(askOnEntry);
   }, [askOnEntry]);
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [deviceId, updateDeviceId] = useState(
     selectedDeviceId || defaultDevice.internalId
@@ -300,8 +298,6 @@ const QueueItem: any = ({
 
   const [removePatientId, setRemovePatientId] = useState<string>();
 
-  let forceSubmit = false;
-
   if (mutationError) {
     throw mutationError;
   }
@@ -316,11 +312,8 @@ const QueueItem: any = ({
     showNotification(toast, alert);
   };
 
-  const onTestResultSubmit = (e?: React.MouseEvent<HTMLButtonElement>) => {
-    setIsSubmitting(true);
-    if (e) e.preventDefault();
+  const onTestResultSubmit = (forceSubmit: boolean = false) => {
     if (forceSubmit || areAnswersComplete(aoeAnswers)) {
-      if (e) e.currentTarget.disabled = true;
       trackSubmitTestResult({});
       setConfirmationType("none");
       submitTestResult({
@@ -336,9 +329,6 @@ const QueueItem: any = ({
         .then(() => removeTimer(internalId))
         .catch((error) => {
           updateMutationError(error);
-          // Re-enable Submit in the hopes it will work
-          setIsSubmitting(false);
-          if (e) e.currentTarget.disabled = false;
         });
     } else {
       setConfirmationType("submitResult");
@@ -502,7 +492,7 @@ const QueueItem: any = ({
   const containerClasses = classnames(
     "grid-container",
     "prime-container",
-    "prime-queue-item usa-card__container",
+    "prime-queue-item card-container",
     timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
     timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
   );
@@ -608,8 +598,7 @@ const QueueItem: any = ({
                   continueHandler={
                     confirmationType === "submitResult"
                       ? () => {
-                          forceSubmit = true;
-                          onTestResultSubmit();
+                          onTestResultSubmit(true);
                         }
                       : removeFromQueue
                   }
@@ -638,7 +627,7 @@ const QueueItem: any = ({
                 queueItemId={internalId}
                 testResultValue={testResultValue}
                 isSubmitDisabled={
-                  isSubmitting ||
+                  loading ||
                   (!shouldUseCurrentDateTime() &&
                     !isValidCustomDateTested(dateTested))
                 }

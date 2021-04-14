@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.config.authorization.PermissionHolder;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
-import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -127,12 +126,10 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   // this method doesn't mean much in a demo env
-  public void createOrganization(
-      Organization org, Collection<Facility> facilities, boolean migration) {
+  public void createOrganization(Organization org) {
     String externalId = org.getExternalId();
     orgUsernamesMap.putIfAbsent(externalId, new HashSet<>());
     orgFacilitiesMap.putIfAbsent(externalId, new HashSet<>());
-    facilities.forEach(this::createFacility);
   }
 
   public void createFacility(Facility facility) {
@@ -180,11 +177,7 @@ public class DemoOktaRepository implements OktaRepository {
   }
 
   public Optional<OrganizationRoleClaims> getOrganizationRoleClaimsForUser(String username) {
-    if (inactiveUsernames.contains(username)) {
-      return Optional.empty();
-    } else {
-      return Optional.ofNullable(usernameOrgRolesMap.get(username));
-    }
+    return Optional.ofNullable(usernameOrgRolesMap.get(username));
   }
 
   public void reset() {

@@ -6,6 +6,7 @@ import {
   ROLE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
+  TRIBAL_AFFILIATION_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
 
@@ -23,6 +24,7 @@ type UpdateOptionalFields =
   | "race"
   | "ethnicity"
   | "gender"
+  | "tribalAffiliation"
   | "residentCongregateSetting"
   | "employedInHealthcare";
 
@@ -63,6 +65,9 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   race: yup.mixed().oneOf([...getValues(RACE_VALUES), "", null]),
   ethnicity: yup.mixed().oneOf([...getValues(ETHNICITY_VALUES), "", null]),
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
+  tribalAffiliation: yup
+    .mixed()
+    .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
   residentCongregateSetting: yup.bool().required(),
   employedInHealthcare: yup.bool().required(),
 };
@@ -99,6 +104,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   city: "City is incorrectly formatted",
   county: "County is incorrectly formatted",
   race: "Race is incorrectly formatted",
+  tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
   ethnicity: "Ethnicity is incorrectly formatted",
   gender: "Biological Sex is incorrectly formatted",
   residentCongregateSetting:

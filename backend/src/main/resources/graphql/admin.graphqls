@@ -2,7 +2,7 @@
 # All queries and mutations in this file implicitly require site admin access,
 # which is enforced in the API not in the schema validator.
 extend type Query {
-  organizations: [Organization!]!
+  organizations: [Organization!]! # not actually used in the admin console (yet)
 }
 extend type Mutation {
   createDeviceType(
@@ -20,7 +20,7 @@ extend type Mutation {
     loincCode: String
     swabType: String
   ): DeviceType
-  addUser(
+  addUser( # not actually used in the admin console (currently)
     firstName: String
     middleName: String
     lastName: String!
@@ -58,5 +58,10 @@ extend type Mutation {
     orderingProviderPhone: String
     deviceTypes: [String]!
     defaultDevice: String!
+    adminFirstName: String!
+    adminMiddleName: String
+    adminLastName: String!
+    adminSuffix: String
+    adminEmail: String!
   ): Organization
 }

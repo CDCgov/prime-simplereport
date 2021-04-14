@@ -1651,6 +1651,18 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
+      id: add-tribal-affiliation
+      author: adam@skylight.digital
+      comment: Add Tribal Affiliation to Person
+      changes:
+        - addColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: tribal_affiliation
+                  type: jsonb
+                  remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)
+  - changeSet:
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
@@ -1662,7 +1674,6 @@ databaseChangeLog:
             rollback:
               sql: |
                 DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
-
           - createTable:
               tableName: phone_number
               remarks: A non-audited join table to Person that stores phone numbers with phone type
@@ -1694,4 +1705,4 @@ databaseChangeLog:
                      type: *string
                      remarks: A person's contact telephone number
                      constraints:
-                       nullable: false
+                       nullable: fals

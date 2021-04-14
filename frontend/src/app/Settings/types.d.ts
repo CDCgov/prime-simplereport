@@ -39,6 +39,14 @@ interface Organization {
   testingFacility: Facility[];
 }
 
+interface FacilityAdmin {
+  firstName: string;
+  middleName: string | null;
+  lastName: string;
+  suffix: string | null;
+  email: string;
+}
+
 interface FlatOrganization {
   testingFacilityName: string;
   cliaNumber: string;

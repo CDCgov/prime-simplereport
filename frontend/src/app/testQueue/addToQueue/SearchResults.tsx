@@ -33,7 +33,7 @@ const SearchResults = ({
     results = null;
   } else {
     results = (
-      <div className="usa-card__container shadow-3 results-dropdown">
+      <div className="card-container shadow-3 results-dropdown">
         <div className="usa-card__body">
           {loading ? (
             <p>Searching...</p>

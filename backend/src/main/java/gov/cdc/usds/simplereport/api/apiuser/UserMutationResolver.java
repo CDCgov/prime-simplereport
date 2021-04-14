@@ -11,13 +11,12 @@ import java.util.Set;
 import java.util.UUID;
 import org.springframework.stereotype.Component;
 
-/** Created by jeremyzitomer-usds on 1/7/21 */
 @Component
-public class ApiUserMutationResolver implements GraphQLMutationResolver {
+public class UserMutationResolver implements GraphQLMutationResolver {
 
   private final ApiUserService _us;
 
-  public ApiUserMutationResolver(ApiUserService us) {
+  public UserMutationResolver(ApiUserService us) {
     _us = us;
   }
 
@@ -51,10 +50,6 @@ public class ApiUserMutationResolver implements GraphQLMutationResolver {
       UUID id, String firstName, String middleName, String lastName, String suffix) {
     UserInfo user = _us.updateUser(id, firstName, middleName, lastName, suffix);
     return new User(user);
-  }
-
-  public Role updateUserRole(UUID id, Role role) {
-    return _us.updateUserRole(id, role);
   }
 
   // Making `facilities` an array instead of a Collection to avoid type erasure

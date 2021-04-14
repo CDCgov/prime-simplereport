@@ -164,7 +164,7 @@ export const DetachedTestResultsList: any = ({
               r.patient.middleName,
               r.patient.lastName
             )}
-            <span className="display-block text-gray-30 font-ui-2xs">
+            <span className="display-block text-base font-ui-2xs">
               DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
             </span>
           </th>
@@ -191,7 +191,7 @@ export const DetachedTestResultsList: any = ({
     <main className="prime-home">
       <div className="grid-container">
         <div className="grid-row">
-          <div className="prime-container usa-card__container sr-test-results-list">
+          <div className="prime-container card-container sr-test-results-list">
             <div className="usa-card__header">
               <h2>
                 Test Results
