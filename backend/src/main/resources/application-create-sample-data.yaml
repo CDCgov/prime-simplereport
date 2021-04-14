@@ -3,8 +3,10 @@ simple-report-initialization:
   organizations:
     - org-name: Dis Organization
       external-id: DIS_ORG
+      identity-verified: true
     - org-name: Dat Organization
       external-id: DAT_ORG
+      identity-verified: true
   facilities:
     # TODO: uncomment once e2e tests can accommodate 2+ facilities
     # - facility-name: Injection Site
