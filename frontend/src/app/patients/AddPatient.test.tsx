@@ -295,35 +295,7 @@ describe("AddPatient", () => {
         fireEvent.change(screen.getByLabelText("Role"), {
           target: { value: "STUDENT" },
         });
-        await waitFor(() => {
-          expect(screen.getByLabelText("Student ID")).toBeInTheDocument();
-        });
-        fireEvent.change(screen.getByLabelText("Student ID"), {
-          target: { value: "student-123" },
-        });
-        await waitFor(() => {
-          fireEvent.click(screen.getAllByText("Save changes")[0]);
-        });
-
-        const modal = screen.getByRole("dialog", {
-          exact: false,
-        });
-
-        fireEvent.click(
-          within(modal).getByLabelText("Use address as entered", {
-            exact: false,
-          }),
-          {
-            target: { value: "userAddress" },
-          }
-        );
-        await act(async () => {
-          fireEvent.click(
-            within(modal).getByText("Save changes", {
-              exact: false,
-            })
-          );
-        });
+        expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
     });
   });
