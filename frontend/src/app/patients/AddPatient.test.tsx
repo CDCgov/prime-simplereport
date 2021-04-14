@@ -4,7 +4,6 @@ import {
   fireEvent,
   cleanup,
   within,
-  waitFor,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
