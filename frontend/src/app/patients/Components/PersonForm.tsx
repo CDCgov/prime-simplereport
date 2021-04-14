@@ -367,7 +367,7 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Other">
         <YesNoRadioGroup
-          legend="Resident in congregate care/living setting?"
+          legend="Resident in a congregate care setting?"
           hintText="For example: nursing home, group home, penal institution, or military"
           name="residentCongregateSetting"
           value={patient.residentCongregateSetting}

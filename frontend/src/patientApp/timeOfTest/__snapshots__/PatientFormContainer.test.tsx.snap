@@ -1152,7 +1152,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Resident in congregate care/living setting?
+                Resident in a congregate care setting?
                 <span
                   className="usa-sr-only"
                 >

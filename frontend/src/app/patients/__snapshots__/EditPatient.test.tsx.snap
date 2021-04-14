@@ -1138,7 +1138,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Resident in congregate care/living setting?
+                      Resident in a congregate care setting?
                       <span
                         class="usa-sr-only"
                       >
@@ -2414,7 +2414,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Resident in congregate care/living setting?
+                    Resident in a congregate care setting?
                     <span
                       class="usa-sr-only"
                     >
