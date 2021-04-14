@@ -1732,3 +1732,15 @@ databaseChangeLog:
         - addNotNullConstraint:
             tableName: organization
             columnName: identity_verified
+  - changeSet:
+      id: change-org-verified-default-value
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Change organization.identity_verified default from true to false, since it will be enforced at service-level.
+      changes:
+        - dropDefaultValue:
+            tableName: organization
+            columnName: identity_verified
+        - addDefaultValue:
+            tableName: organization
+            columnName: identity_verified
+            defaultValueBoolean: false
