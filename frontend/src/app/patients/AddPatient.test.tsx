@@ -198,7 +198,10 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in a congregate care setting": { label: "No", value: "No" },
+            "Resident in a congregate care setting": {
+              label: "No",
+              value: "No",
+            },
             "Work in health care": { label: "Yes", value: "Yes" },
           }
         );
@@ -279,7 +282,10 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in a congregate care setting": { label: "No", value: "No" },
+            "Resident in a congregate care setting": {
+              label: "No",
+              value: "No",
+            },
             "Work in health care": { label: "Yes", value: "Yes" },
           }
         );
