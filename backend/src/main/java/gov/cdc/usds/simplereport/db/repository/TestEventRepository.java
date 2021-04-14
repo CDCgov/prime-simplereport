@@ -33,7 +33,9 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
               + " SELECT * FROM {h-schema}test_event"
               + " JOIN most_recent ON"
               + " test_event.patient_id = most_recent.patient_id AND"
-              + " test_event.created_at = most_recent.created_at",
+              + " test_event.created_at = most_recent.created_at"
+              + " RIGHT JOIN {h-schema}person ON"
+              + " test_event.patient_id = person.internal_id",
       nativeQuery = true)
   public List<TestEvent> findFirstTestsByPatient(Collection<UUID> patientIds);
 
