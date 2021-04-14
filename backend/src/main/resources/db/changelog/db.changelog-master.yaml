@@ -1730,4 +1730,4 @@ databaseChangeLog:
                   valueBoolean: true
                   defaultValueBoolean: true
                   constraints:
-                    nullable: false 
+                    nullable: false
