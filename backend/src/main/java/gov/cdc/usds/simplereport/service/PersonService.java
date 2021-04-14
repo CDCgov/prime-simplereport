@@ -6,12 +6,14 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.Person.SpecField;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
+import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,6 +35,7 @@ public class PersonService {
   private final CurrentPatientContextHolder _patientContext;
   private final OrganizationService _os;
   private final PersonRepository _repo;
+  private final PatientPreferencesRepository _prefRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -42,10 +45,14 @@ public class PersonService {
       Sort.by("nameInfo.lastName", "nameInfo.firstName", "nameInfo.middleName", "nameInfo.suffix");
 
   public PersonService(
-      OrganizationService os, PersonRepository repo, CurrentPatientContextHolder patientContext) {
+      OrganizationService os,
+      PersonRepository repo,
+      PatientPreferencesRepository prefRepo,
+      CurrentPatientContextHolder patientContext) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
+    _prefRepo = prefRepo;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -193,7 +200,8 @@ public class PersonService {
       String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person newPatient =
         new Person(
             _os.getCurrentOrganization(),
@@ -216,7 +224,9 @@ public class PersonService {
             employedInHealthcare);
 
     updatePersonFacility(newPatient, facilityId);
-    return _repo.save(newPatient);
+    Person savedPerson = _repo.save(newPatient);
+    upsertPreferredLanguage(savedPerson, preferredLanguage);
+    return savedPerson;
   }
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
@@ -232,7 +242,8 @@ public class PersonService {
       String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person toUpdate = _patientContext.getLinkedOrder().getPatient();
     toUpdate.updatePatient(
         toUpdate.getLookupId(),
@@ -252,24 +263,42 @@ public class PersonService {
         gender,
         residentCongregateSetting,
         employedInHealthcare);
+    upsertPreferredLanguage(toUpdate, preferredLanguage);
     return _repo.save(toUpdate);
   }
 
+  public PatientPreferences getPatientPreferences(Person person) {
+    return _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
+  }
+
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
-  public Person updateTestResultDeliveryPreference(
-      UUID patientId, TestResultDeliveryPreference testResultDelivery) {
-    Person toUpdate = _repo.findById(patientId).orElseThrow();
-    toUpdate.setTestResultDelivery(testResultDelivery);
-    return _repo.save(toUpdate);
+  public PatientPreferences updateTestResultDeliveryPreference(
+      UUID personId, TestResultDeliveryPreference testResultDelivery) {
+    Person person = _repo.findById(personId).orElseThrow();
+    return upsertTestResultDeliveryPreference(person, testResultDelivery);
   }
 
   // IMPLICIT AUTHORIZATION: this fetches the current patient after a patient link
   // is verified, so there is no authorization check
-  public Person updateMyTestResultDeliveryPreference(
+  public PatientPreferences updateMyTestResultDeliveryPreference(
       TestResultDeliveryPreference testResultDelivery) {
-    Person toUpdate = _patientContext.getLinkedOrder().getPatient();
+    Person patient = _patientContext.getLinkedOrder().getPatient();
+    return upsertTestResultDeliveryPreference(patient, testResultDelivery);
+  }
+
+  private PatientPreferences upsertTestResultDeliveryPreference(
+      Person person, TestResultDeliveryPreference testResultDelivery) {
+    PatientPreferences toUpdate =
+        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
     toUpdate.setTestResultDelivery(testResultDelivery);
-    return _repo.save(toUpdate);
+    return _prefRepo.save(toUpdate);
+  }
+
+  private PatientPreferences upsertPreferredLanguage(Person person, String preferredLanguage) {
+    PatientPreferences toUpdate =
+        _prefRepo.findByPerson(person).orElseGet(() -> new PatientPreferences(person));
+    toUpdate.setPreferredLanguage(preferredLanguage);
+    return _prefRepo.save(toUpdate);
   }
 
   @AuthorizationConfiguration.RequirePermissionEditPatientAtFacility
@@ -292,7 +321,8 @@ public class PersonService {
       String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     Person patientToUpdate = this.getPatientNoPermissionsCheck(patientId);
     patientToUpdate.updatePatient(
         lookupId,
@@ -313,6 +343,7 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
 
+    upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);
   }

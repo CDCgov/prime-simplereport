@@ -77,7 +77,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     return _ps.addPatient(
         facilityId,
         parseString(lookupId),
@@ -102,7 +103,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage);
   }
 
   public Person updatePatient(
@@ -129,7 +131,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     return _ps.updatePatient(
         facilityId,
         patientId,
@@ -155,7 +158,8 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage);
   }
 
   public Person setPatientIsDeleted(UUID id, Boolean deleted) {
