@@ -82,7 +82,7 @@ enum TestResultDeliveryPreference {
 type NameInfo {
   firstName: String
   middleName: String
-  lastName: String
+  lastName: String!
   suffix: String
 }
 
@@ -93,4 +93,11 @@ type AddressInfo {
   county: String
   state: String
   postalCode: String
+}
+
+input NameInput {
+  firstName: String
+  middleName: String
+  lastName: String
+  suffix: String
 }
