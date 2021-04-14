@@ -18,40 +18,44 @@ import java.util.List;
  * GraphQL endpoints
  */
 public class PxpVerifyResponse {
-  private Person p;
-  private OrderStatus os;
-  private PxpTestEventWrapper te;
+  private Person person;
+  private OrderStatus orderStatus;
+  private PxpTestEventWrapper testEventWrapper;
   private PatientPreferences patientPreferences;
 
-  public PxpVerifyResponse(Person p, OrderStatus os, TestEvent te, PatientPreferences pp) {
-    this.p = p;
-    this.os = os;
-    this.te = te != null ? new PxpTestEventWrapper(te) : null;
-    this.patientPreferences = pp;
+  public PxpVerifyResponse(
+      Person person,
+      OrderStatus orderStatus,
+      TestEvent testEvent,
+      PatientPreferences patientPreferences) {
+    this.person = person;
+    this.orderStatus = orderStatus;
+    this.testEventWrapper = testEvent != null ? new PxpTestEventWrapper(testEvent) : null;
+    this.patientPreferences = patientPreferences;
   }
 
   public String getLookupId() {
-    return p.getLookupId();
+    return person.getLookupId();
   }
 
   public String getFirstName() {
-    return p.getFirstName();
+    return person.getFirstName();
   }
 
   public String getMiddleName() {
-    return p.getMiddleName();
+    return person.getMiddleName();
   }
 
   public String getLastName() {
-    return p.getLastName();
+    return person.getLastName();
   }
 
   public String getSuffix() {
-    return p.getSuffix();
+    return person.getSuffix();
   }
 
   public LocalDate getBirthDate() {
-    return p.getBirthDate();
+    return person.getBirthDate();
   }
 
   public String getPreferredLanguage() {
@@ -63,97 +67,97 @@ public class PxpVerifyResponse {
   }
 
   public String getTelephone() {
-    return p.getTelephone();
+    return person.getTelephone();
   }
 
   public String getEmail() {
-    return p.getEmail();
+    return person.getEmail();
   }
 
   public String getRace() {
-    return p.getRace();
+    return person.getRace();
   }
 
   public String getEthnicity() {
-    return p.getEthnicity();
+    return person.getEthnicity();
   }
 
   public List<String> getTribalAffiliation() {
-    return p.getTribalAffiliation();
+    return person.getTribalAffiliation();
   }
 
   public String getGender() {
-    return p.getGender();
+    return person.getGender();
   }
 
   public Boolean getResidentCongregateSetting() {
-    return p.getResidentCongregateSetting();
+    return person.getResidentCongregateSetting();
   }
 
   public Boolean getEmployedInHealthcare() {
-    return p.getEmployedInHealthcare();
+    return person.getEmployedInHealthcare();
   }
 
   public String getStreet() {
-    return p.getStreet();
+    return person.getStreet();
   }
 
   public String getStreetTwo() {
-    return p.getState();
+    return person.getState();
   }
 
   public String getCity() {
-    return p.getCity();
+    return person.getCity();
   }
 
   public String getState() {
-    return p.getState();
+    return person.getState();
   }
 
   public String getZipCode() {
-    return p.getZipCode();
+    return person.getZipCode();
   }
 
   public String getCounty() {
-    return p.getCounty();
+    return person.getCounty();
   }
 
   public PersonRole getRole() {
-    return p.getRole();
+    return person.getRole();
   }
 
   public PxpTestEventWrapper getLastTest() {
-    return te;
+    return testEventWrapper;
   }
 
   public String getOrganizationName() {
-    if (p.getOrganization() == null) {
+    if (person.getOrganization() == null) {
       return null;
     }
-    return p.getOrganization().getOrganizationName();
+    return person.getOrganization().getOrganizationName();
   }
 
   public OrderStatus getOrderStatus() {
-    return os;
+    return orderStatus;
   }
 }
 
 class PxpTestEventWrapper {
-  TestEvent te;
+  TestEvent testEvent;
 
-  public PxpTestEventWrapper(TestEvent te) {
-    this.te = te;
+  public PxpTestEventWrapper(TestEvent testEvent) {
+    this.testEvent = testEvent;
   }
 
   public Date getDateTested() {
-    return te.getDateTested();
+    return testEvent.getDateTested();
   }
 
   public TestResult getResult() {
-    return te.getResult();
+    return testEvent.getResult();
   }
 
   public String getDeviceTypeModel() {
-    return te.getTestOrder().getDeviceSpecimen().getDeviceType().getModel();
+    return testEvent.getTestOrder().getDeviceSpecimen().getDeviceType().getModel();
   }
 }
