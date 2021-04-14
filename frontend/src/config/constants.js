@@ -3,10 +3,13 @@ export const PATIENT_TERM_CAP = "Person";
 export const PATIENT_TERM_PLURAL = "people";
 export const PATIENT_TERM_PLURAL_CAP = "People";
 
+// NOTE: Any time SimpleReport goes live in a new state, this file must be updated.
+// Otherwise, organizations will not be able to create facilities in the new state.
 export const liveJurisdictions = [
   "AZ",
   "CO",
   "FL",
+  "GU",
   "LA",
   "ND",
   "OH",
