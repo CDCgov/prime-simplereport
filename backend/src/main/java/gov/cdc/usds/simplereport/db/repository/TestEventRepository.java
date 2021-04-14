@@ -59,6 +59,30 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
       nativeQuery = true)
   public int getTestResultsCount(UUID facilityId);
 
+  @Query(
+      value =
+          "WITH FILTEREDEVENTS AS ("
+              + " SELECT DISTINCT ON (test_order_id) * "
+              + " FROM {h-schema}test_event te "
+              + " WHERE te.patient_id = :patientId "
+              + " ORDER BY test_order_id, te.created_at desc"
+              + ") "
+              + " SELECT * FROM FILTEREDEVENTS "
+              + " ORDER BY created_at DESC ",
+      countQuery = "SELECT count(*) FROM FILTEREDEVENTS",
+      nativeQuery = true)
+  public List<TestEvent> getTestEventResultsByPatient(UUID patientId, Pageable pageable);
+
+  @Query(
+      value =
+          "WITH FILTEREDEVENTS AS ("
+              + " SELECT DISTINCT ON (test_order_id) * "
+              + " FROM {h-schema}test_event te "
+              + " WHERE te.patient_id = :patientId) "
+              + " SELECT count(*) FROM FILTEREDEVENTS ",
+      nativeQuery = true)
+  public int getTestResultsCountByPatient(UUID patientId);
+
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate
   // ORDER BY q.createdAt DESC")

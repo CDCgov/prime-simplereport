@@ -208,6 +208,10 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResultsCount(facilityId: ID!): Int
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsByPatient(patientId: ID!, pageNumber: Int, pageSize: Int): [TestResult]
+    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
+  testResultsCountByPatient(patientId: ID!): Int
+    @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
