@@ -207,7 +207,7 @@ export const DetachedTestResultsList: any = ({
     );
   }
 
-  const testResults = data?.testResults || [];
+  const testResults = data?.testResults || data?.testResultsByPatient || [];
 
   const testResultRows = () => {
     const byDateTested = (a: any, b: any) => {
@@ -435,7 +435,8 @@ const TestResultsList = (
     throw error;
   }
 
-  const totalEntries = totalResults.testResultsCount;
+  const totalEntries =
+    totalResults.testResultsCount || totalResults.testResultsCountByPatient;
 
   return (
     <QueryWrapper<Props>
