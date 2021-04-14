@@ -312,7 +312,6 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 }
 
 .prime-secondary-nav {
-  margin-left: units(1);
   margin-top: units(1);
 }
 
@@ -553,21 +552,8 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
   background-color: color("base-lightest");
 }
 
-@mixin card {
-  @include u-padding($theme-card-padding-perimeter);
-  background: color("white");
-  border-width: units("2px");
-  border-color: color("base-lighter");
-  border-style: solid;
-  border-radius: units(0.5);
-}
-
-.card {
-  @include card;
-}
-
 .prime-formgroup {
-  @include card;
+  @include card($border-radius: 0.5, $padding: $theme-card-padding-perimeter);
 
   + .prime-formgroup {
     margin-top: units(1.5);

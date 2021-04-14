@@ -23,7 +23,7 @@ const InProgressModal: React.FC<Props> = ({ onClose, onContinue }) => {
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <div className="border-0 usa-card__container">
+      <div className="border-0 card-container">
         <div className="grid-row grid-gap">
           <p>You have unsaved changes, are you sure you want to proceed?</p>
         </div>

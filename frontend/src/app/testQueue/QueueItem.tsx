@@ -103,6 +103,7 @@ const UPDATE_AOE = gql`
     $priorTestType: String
     $priorTestResult: String
     $noSymptoms: Boolean
+    $testResultDelivery: TestResultDeliveryPreference
   ) {
     updateTimeOfTestQuestions(
       patientId: $patientId
@@ -114,6 +115,7 @@ const UPDATE_AOE = gql`
       priorTestType: $priorTestType
       priorTestResult: $priorTestResult
       symptomOnset: $symptomOnset
+      testResultDelivery: $testResultDelivery
     )
   }
 `;
@@ -492,7 +494,7 @@ const QueueItem: any = ({
   const containerClasses = classnames(
     "grid-container",
     "prime-container",
-    "prime-queue-item usa-card__container",
+    "prime-queue-item card-container",
     timer.countdown < 0 && !testResultValue && "prime-queue-item__ready",
     timer.countdown < 0 && testResultValue && "prime-queue-item__completed"
   );

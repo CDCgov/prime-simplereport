@@ -1,0 +1,16 @@
+@mixin card($border-radius, $padding: 0) {
+  @include u-padding($padding);
+  background: color("white");
+  border-width: units("2px");
+  border-color: color("base-lighter");
+  border-style: solid;
+  border-radius: units($border-radius);
+}
+
+.card {
+  @include card($border-radius: 0.5, $padding: $theme-card-padding-perimeter);
+}
+
+.card-container {
+  @include card($border-radius: 1);
+}

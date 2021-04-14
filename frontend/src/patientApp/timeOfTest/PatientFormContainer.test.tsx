@@ -6,6 +6,7 @@ import configureStore from "redux-mock-store";
 
 import PatientFormContainer from "./PatientFormContainer";
 
+jest.mock("../..//app/commonComponents/ComboBox", () => () => <></>);
 const mockStore = configureStore([]);
 
 jest.mock("react-router-dom", () => ({

@@ -29,7 +29,7 @@ const DeleteUserModal: React.FC<Props> = ({ onClose, onDeleteUser, user }) => {
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <div className="border-0 usa-card__container">
+      <div className="border-0 card-container">
         <div className="display-flex flex-justify">
           <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
             Remove user

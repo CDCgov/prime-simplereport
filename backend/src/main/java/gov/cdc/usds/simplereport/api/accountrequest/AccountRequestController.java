@@ -57,5 +57,10 @@ public class AccountRequestController {
       LOG.info("Account request submitted: {}", objectMapper.writeValueAsString(body));
     }
     emailService.send(sendGridProperties.getAccountRequestRecipient(), subject, body);
+    emailService.send(
+        body.getEmail(),
+        "Next Steps for SimpleReport",
+        "account-next-steps",
+        "simplereport-site-onboarding-guide.pdf");
   }
 }

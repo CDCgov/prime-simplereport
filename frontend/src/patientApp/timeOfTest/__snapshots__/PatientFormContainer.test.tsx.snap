@@ -229,6 +229,16 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </option>
                 </select>
               </div>
+              <fieldset
+                className="usa-fieldset"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="preferred-language"
+                >
+                  Preferred language
+                </label>
+              </fieldset>
             </div>
             <div
               className="usa-form"
@@ -982,6 +992,15 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </label>
                 </div>
               </div>
+            </fieldset>
+            <fieldset
+              className="usa-fieldset"
+            >
+              <legend
+                className="usa-legend"
+              >
+                Tribal affiliation
+              </legend>
             </fieldset>
             <fieldset
               className="usa-fieldset prime-radios"

@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport.service.email;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -85,6 +86,7 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     assertEquals(mail.getValue().getSubject(), subject);
     assertThat(mail.getValue().getContent().get(0).getValue())
         .contains("<b>Foo:</b> var 1", "<b>Bar:</b> var 2");
+    assertNull(mail.getValue().getAttachments());
   }
 
   @Test
@@ -112,5 +114,30 @@ class EmailServiceTest extends BaseServiceTest<EmailService> {
     assertEquals(mail.getValue().getSubject(), subject);
     assertThat(mail.getValue().getContent().get(0).getValue())
         .contains("<b>Foo:</b> var 1", "<b>Bar:</b> var 2");
+    assertNull(mail.getValue().getAttachments());
+  }
+
+  @Test
+  void sendEmailWithAttachment() throws IOException {
+    // GIVEN
+    String toEmail = "test@foo.com";
+    String subject = "Testing the email service with attachment";
+    String templateName = "test-template"; // template will be filled with empty variables
+    String pdfResourceName = "test-document.pdf"; // small pdf, 376 bytes when base64 encoded
+
+    // WHEN
+    _service.send(toEmail, subject, templateName, pdfResourceName);
+
+    // THEN
+    verify(mockSendGrid, times(1)).send(mail.capture());
+    assertEquals(mail.getValue().getPersonalization().get(0).getTos().get(0).getEmail(), toEmail);
+    assertEquals(mail.getValue().getSubject(), subject);
+    assertThat(mail.getValue().getContent().get(0).getValue())
+        .doesNotContain("<b>Foo:</b> var 1", "<b>Bar:</b> var 2")
+        .contains("<b>Foo:</b>", "<b>Bar:</b>");
+    assertEquals(1, mail.getValue().getAttachments().size());
+    assertEquals(376, mail.getValue().getAttachments().get(0).getContent().length());
+    assertEquals("application/pdf", mail.getValue().getAttachments().get(0).getType());
+    assertEquals(pdfResourceName, mail.getValue().getAttachments().get(0).getFilename());
   }
 }

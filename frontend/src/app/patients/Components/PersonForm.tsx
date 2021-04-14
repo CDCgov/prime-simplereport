@@ -2,12 +2,13 @@ import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { stateCodes } from "../../../config/constants";
+import { languages, stateCodes } from "../../../config/constants";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
   ROLE_VALUES,
+  TRIBAL_AFFILIATION_VALUES,
 } from "../../constants";
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
@@ -25,6 +26,7 @@ import Input from "../../commonComponents/Input";
 import Select from "../../commonComponents/Select";
 import { getBestSuggestion } from "../../utils/smartyStreets";
 import { AddressConfirmationModal } from "../../commonComponents/AddressConfirmationModal";
+import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 
@@ -226,6 +228,26 @@ const PersonForm = (props: Props) => {
             errors={errors}
             hidden={props.hideFacilitySelect}
           />
+          <fieldset className="usa-fieldset">
+            <label className="usa-label" htmlFor="preferred-language">
+              Preferred language
+            </label>
+            <ComboBox
+              id="preferred-language-wrapper"
+              defaultValue={patient.preferredLanguage || undefined}
+              inputProps={{ id: "preferred-language" }}
+              name="preferredLanguage"
+              options={languages.map((language) => ({
+                value: language,
+                label: language,
+              }))}
+              onChange={(value) => {
+                onPersonChange("preferredLanguage")(
+                  (value as Language) || null
+                );
+              }}
+            />
+          </fieldset>
         </div>
         <div className="usa-form">
           <Input
@@ -316,6 +338,18 @@ const PersonForm = (props: Props) => {
           selectedRadio={patient.race}
           onChange={onPersonChange("race")}
         />
+        <fieldset className="usa-fieldset">
+          <legend className="usa-legend">Tribal affiliation</legend>
+          <ComboBox
+            id="tribal-affiliation"
+            name="tribal-affiliation"
+            options={TRIBAL_AFFILIATION_VALUES}
+            onChange={
+              onPersonChange("tribalAffiliation") as (value?: string) => void
+            }
+            defaultValue={String(patient.tribalAffiliation)}
+          />
+        </fieldset>
         <RadioGroup
           legend="Ethnicity"
           name="ethnicity"
