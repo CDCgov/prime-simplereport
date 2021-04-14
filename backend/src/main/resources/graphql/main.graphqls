@@ -155,7 +155,6 @@ type TestResult {
   internalId: ID
   facility: Facility
   patient: Patient
-  dateAdded: String
   pregnancy: String
   noSymptoms: Boolean
   symptoms: String
@@ -170,6 +169,7 @@ type TestResult {
   testPerformed: TestDescription!
   correctionStatus: String
   reasonForCorrection: String
+  createdAt: DateTime
   createdBy: ApiUser
   patientLink: PatientLink
 }

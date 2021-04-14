@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import graphql.kickstart.tools.GraphQLResolver;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Map;
 import org.json.JSONObject;
 import org.springframework.stereotype.Component;
@@ -25,10 +24,6 @@ public class TestResultDataResolver
 
   public Person getPatient(TestEvent testEvent) {
     return testEvent.getPatientData();
-  }
-
-  public Date getDateAdded(TestEvent testEvent) {
-    return testEvent.getTestOrder().getCreatedAt();
   }
 
   public String getPregnancy(TestEvent testEvent) {
