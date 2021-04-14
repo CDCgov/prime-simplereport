@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { stateCodes } from "../../../config/constants";
+import { languages, stateCodes } from "../../../config/constants";
 import {
   RACE_VALUES,
   ETHNICITY_VALUES,
@@ -228,6 +228,26 @@ const PersonForm = (props: Props) => {
             errors={errors}
             hidden={props.hideFacilitySelect}
           />
+          <fieldset className="usa-fieldset">
+            <label className="usa-label" htmlFor="preferred-language">
+              Preferred language
+            </label>
+            <ComboBox
+              id="preferred-language-wrapper"
+              defaultValue={patient.preferredLanguage || undefined}
+              inputProps={{ id: "preferred-language" }}
+              name="preferredLanguage"
+              options={languages.map((language) => ({
+                value: language,
+                label: language,
+              }))}
+              onChange={(value) => {
+                onPersonChange("preferredLanguage")(
+                  (value as Language) || null
+                );
+              }}
+            />
+          </fieldset>
         </div>
         <div className="usa-form">
           <Input
