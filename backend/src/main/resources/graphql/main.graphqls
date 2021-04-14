@@ -62,8 +62,8 @@ type TestDescription {
 }
 
 type PhoneNumber {
-  id: ID,
-  type: String,
+  internalId: ID,
+  type: PhoneType,
   number: String
 }
 

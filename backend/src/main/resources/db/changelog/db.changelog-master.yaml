@@ -1729,10 +1729,10 @@ databaseChangeLog:
                 DROP TYPE ${database.defaultSchemaName}.PHONE_TYPES;
           - createTable:
               tableName: phone_number
-              remarks: A non-audited join table to Person that stores phone numbers with phone type
+              remarks: A join table to Person that stores phone numbers with phone type
               columns:
                  - column:
-                     name: id
+                     name: internal_id
                      type: *idtype
                      remarks: The internal database identifier for this entity
                      constraints:
@@ -1759,3 +1759,7 @@ databaseChangeLog:
                      remarks: A person's contact telephone number
                      constraints:
                        nullable: false
+                 - column: *created_at_column
+                 - column: *created_by_column
+                 - column: *updated_at_column
+                 - column: *updated_by_column
