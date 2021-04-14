@@ -49,7 +49,7 @@ public class InitialSetupProperties {
 
   public List<Organization> getOrganizations() {
     return organizations.stream()
-        .map(o -> new Organization(o.getOrganizationName(), o.getExternalId()))
+        .map(o -> new Organization(o.getOrganizationName(), o.getExternalId(), o.getIdentityVerified()))
         .collect(Collectors.toList());
   }
 
