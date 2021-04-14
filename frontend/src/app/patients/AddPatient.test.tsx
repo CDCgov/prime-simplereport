@@ -199,7 +199,7 @@ describe("AddPatient", () => {
           },
           {
             "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Work in health care": { label: "Yes", value: "Yes" },
           }
         );
         await act(async () => {
@@ -280,7 +280,7 @@ describe("AddPatient", () => {
           },
           {
             "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Work in health care": { label: "Yes", value: "Yes" },
           }
         );
 

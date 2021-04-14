@@ -112,6 +112,6 @@ export const allPersonErrors: Required<PersonErrors> = {
   gender: "Biological Sex is incorrectly formatted",
   residentCongregateSetting:
     "Resident in congregate care/living setting? is required",
-  employedInHealthcare: "Work in Healthcare? is required",
+  employedInHealthcare: "Work in health care? is required",
   preferredLanguage: "Preferred language is incorrectly formatted",
 };
