@@ -17,7 +17,6 @@ import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,31 +103,25 @@ class OrganizationServiceTest extends BaseServiceTest<OrganizationService> {
   void getOrganizations_filterByIdentityVerified_success() {
     Organization verifiedOrg = _dataFactory.createValidOrg();
     Organization unverifiedOrg = _dataFactory.createUnverifiedOrg();
-    List<Organization> allOrgs = 
-        _service.getOrganizations(null);
+    List<Organization> allOrgs = _service.getOrganizations(null);
     // initSampleData() creates other verified orgs besides our locally created orgs
     assertTrue(allOrgs.size() >= 2);
-    Set<String> allOrgIds = allOrgs.stream()
-        .map(Organization::getExternalId)
-        .collect(Collectors.toSet());
+    Set<String> allOrgIds =
+        allOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertTrue(allOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(allOrgIds.contains(unverifiedOrg.getExternalId()));
 
-    List<Organization> verifiedOrgs = 
-        _service.getOrganizations(true);
+    List<Organization> verifiedOrgs = _service.getOrganizations(true);
     assertTrue(verifiedOrgs.size() >= 1);
-    Set<String> verifiedOrgIds = verifiedOrgs.stream()
-        .map(Organization::getExternalId)
-        .collect(Collectors.toSet());
+    Set<String> verifiedOrgIds =
+        verifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertTrue(verifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertFalse(verifiedOrgIds.contains(unverifiedOrg.getExternalId()));
 
-    List<Organization> unverifiedOrgs = 
-        _service.getOrganizations(false);  
+    List<Organization> unverifiedOrgs = _service.getOrganizations(false);
     assertEquals(1, unverifiedOrgs.size());
-    Set<String> unverifiedOrgIds = unverifiedOrgs.stream()
-        .map(Organization::getExternalId)
-        .collect(Collectors.toSet());
+    Set<String> unverifiedOrgIds =
+        unverifiedOrgs.stream().map(Organization::getExternalId).collect(Collectors.toSet());
     assertFalse(unverifiedOrgIds.contains(verifiedOrg.getExternalId()));
     assertTrue(unverifiedOrgIds.contains(unverifiedOrg.getExternalId()));
   }
