@@ -50,7 +50,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   void updateDeviceType_baseUser_error() {
     DeviceType deviceType =
-        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
+        _deviceTypeRepo.save(
+            new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(
         () -> _service.updateDeviceType(deviceType.getInternalId(), "1", "2", "3", "4", "5"));
   }
@@ -58,7 +59,8 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
   @Test
   void removeDeviceType_baseUser_eror() {
     DeviceType deviceType =
-        _deviceTypeRepo.save(new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
+        _deviceTypeRepo.save(
+            new DeviceType("A", "B", "C", "D", FAKE_SWAB_TYPE, STANDARD_TEST_LENGTH));
     assertSecurityError(() -> _service.removeDeviceType(deviceType));
   }
 

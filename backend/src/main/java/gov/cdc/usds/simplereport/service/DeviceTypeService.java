@@ -74,12 +74,7 @@ public class DeviceTypeService {
   @Transactional(readOnly = false)
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public DeviceType updateDeviceType(
-      UUID id,
-      String name,
-      String model,
-      String manufacturer,
-      String loincCode,
-      String swabType) {
+      UUID id, String name, String model, String manufacturer, String loincCode, String swabType) {
     DeviceType d = getDeviceType(id.toString());
     if (name != null) {
       d.setName(name);

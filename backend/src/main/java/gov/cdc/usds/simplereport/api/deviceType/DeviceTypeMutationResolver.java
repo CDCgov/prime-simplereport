@@ -25,7 +25,6 @@ public class DeviceTypeMutationResolver implements GraphQLMutationResolver {
   public DeviceType updateDeviceType(
       UUID id, String name, String manufacturer, String model, String loincCode, String swabType)
       throws IllegalGraphqlArgumentException {
-    return _dts.updateDeviceType(
-        id, name, model, manufacturer, loincCode, swabType);
+    return _dts.updateDeviceType(id, name, model, manufacturer, loincCode, swabType);
   }
 }
