@@ -1,4 +1,4 @@
-mutation enqueueById($id: ID!, $facilityId: ID!, $previousTestDate: LocalDate, $symptomOnsetDate: LocalDate) {
+mutation enqueueById($id: ID!, $facilityId: ID!, $previousTestDate: LocalDate, $symptomOnsetDate: LocalDate, $testResultDelivery: TestResultDeliveryPreference) {
     addPatientToQueue(
       patientId: $id,
       facilityId: $facilityId,
@@ -6,6 +6,7 @@ mutation enqueueById($id: ID!, $facilityId: ID!, $previousTestDate: LocalDate, $
       symptoms:"{}",
       firstTest: false,
       priorTestDate: $previousTestDate,
-      symptomOnset: $symptomOnsetDate
+      symptomOnset: $symptomOnsetDate,
+      testResultDelivery: $testResultDelivery
     )
   }

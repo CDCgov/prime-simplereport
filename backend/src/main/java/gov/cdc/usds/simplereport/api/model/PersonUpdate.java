@@ -17,6 +17,7 @@ public class PersonUpdate {
   private final String gender;
   private final Boolean residentCongregateSetting;
   private final Boolean employedInHealthcare;
+  private final String preferredLanguage;
 
   @JsonCreator
   public PersonUpdate(
@@ -29,7 +30,8 @@ public class PersonUpdate {
       @JsonProperty("tribalAffiliation") String tribalAffiliation,
       @JsonProperty("gender") String gender,
       @JsonProperty("residentCongregateSetting") Boolean residentCongregateSetting,
-      @JsonProperty("employedInHealthcare") Boolean employedInHealthcare) {
+      @JsonProperty("employedInHealthcare") Boolean employedInHealthcare,
+      @JsonProperty("preferredLanguage") String preferredLanguage) {
     this.address = address;
     this.telephone = telephone;
     this.role = role;
@@ -40,6 +42,7 @@ public class PersonUpdate {
     this.gender = gender;
     this.residentCongregateSetting = residentCongregateSetting;
     this.employedInHealthcare = employedInHealthcare;
+    this.preferredLanguage = preferredLanguage;
   }
 
   public StreetAddress getAddress() {
@@ -80,6 +83,10 @@ public class PersonUpdate {
 
   public String getTelephone() {
     return telephone;
+  }
+
+  public String getPreferredLanguage() {
+    return preferredLanguage;
   }
 
   @Override

@@ -1662,3 +1662,56 @@ databaseChangeLog:
                   name: tribal_affiliation
                   type: jsonb
                   remarks: JSON list of strings (but actually numeric value mappings to PRIME Data Hub's Tribal Affiliation valueset)
+  - changeSet:
+      id: add-patient-preferences
+      author: adam@skylight.digital
+      comment: Add table for non-demographic preferences relating to a Person
+      changes:
+        - createTable:
+            tableName: patient_preferences
+            columns:
+              - column:
+                  name: internal_id
+                  type: *idtype
+                  remarks: The internal database identifier of the Person to whom these preferences belong
+                  constraints:
+                    foreignKeyName: fk__patient_preferences__person
+                    references: person
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: preferred_language
+                  type: *string
+                  remarks: Tracks the individual's preferred language
+              - column:
+                  name: test_result_delivery
+                  type: ${database.defaultSchemaName}.TEST_RESULT_DELIVERY
+                  remarks: Tracks the individual's preference for receiving test results
+              - column: *created_at_column
+              - column: *created_by_column
+              - column: *updated_at_column
+              - column: *updated_by_column
+  - changeSet:
+      id: populate-patient-preferences
+      author: adam@skylight.digital
+      comment: Migrate person.test_result_delivery to into patient_preferences
+      changes:
+        - sql:
+          sql: |
+            WITH migration_user as (
+              SELECT internal_id as migrations_user_id
+              FROM ${database.defaultSchemaName}.api_user
+              WHERE login_email = '${migrations_user_email}')
+            INSERT INTO ${database.defaultSchemaName}.patient_preferences (
+                internal_id, preferred_language, test_result_delivery,
+                created_at, created_by, updated_at, updated_by)
+            SELECT
+              person.internal_id internal_id,
+              NULL preferred_language,
+              test_result_delivery,
+              now() created_at,
+              migrations_user_id created_by,
+              now() updated_at,
+              migrations_user_id updated_by
+            FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
+            WHERE test_result_delivery IS NOT NULL;

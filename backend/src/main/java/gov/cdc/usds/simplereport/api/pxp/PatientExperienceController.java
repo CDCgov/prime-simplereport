@@ -12,6 +12,7 @@ import gov.cdc.usds.simplereport.api.model.PersonUpdate;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpRequestWrapper;
 import gov.cdc.usds.simplereport.api.model.pxp.PxpVerifyResponse;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
+import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
 import gov.cdc.usds.simplereport.db.model.auxiliary.OrderStatus;
@@ -81,10 +82,11 @@ public class PatientExperienceController {
     PatientLink pl = pls.getPatientLink(plid);
     OrderStatus os = pl.getTestOrder().getOrderStatus();
     Person p = pls.getPatientFromLink(plid);
+    PatientPreferences pp = ps.getPatientPreferences(p);
     TestEvent te = tes.getLastTestResultsForPatient(p);
     tocs.storeTimeOfConsent(pl);
 
-    return new PxpVerifyResponse(p, os, te);
+    return new PxpVerifyResponse(p, os, te, pp);
   }
 
   @PutMapping("/patient")
@@ -101,7 +103,8 @@ public class PatientExperienceController {
         person.getTribalAffiliation(),
         parseGender(person.getGender()),
         person.getResidentCongregateSetting(),
-        person.getEmployedInHealthcare());
+        person.getEmployedInHealthcare(),
+        person.getPreferredLanguage());
   }
 
   @PutMapping("/questions")

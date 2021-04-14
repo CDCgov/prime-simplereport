@@ -65,7 +65,7 @@
     "lint:prettier": "prettier -c 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:prettier:write": "prettier --write 'src/**/*.{js,ts,jsx,tsx}'",
     "test": "TZ='UTC' react-scripts test",
-    "test:ci": "CI=true yarn test --coverage",
+    "test:ci": "CI=true REACT_APP_TEST_TRIBAL_AFFILIATION_BYPASS=true yarn test --coverage",
     "e2e": "./e2e.sh default",
     "e2e:chrome": "./e2e.sh chrome",
     "e2e:brave": "./e2e.sh brave",
