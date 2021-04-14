@@ -39,10 +39,10 @@ export const useFacilityValidation = (facility: Facility) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
-        let error = createFieldError(field, facility);
-        setErrors((errors) => ({
-          ...errors,
-          [field]: error,
+        let errorMessage = createFieldError(field, facility);
+        setErrors((existingErrors) => ({
+          ...existingErrors,
+          [field]: errorMessage,
         }));
       }
     },
@@ -84,9 +84,8 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
   // The `state` field may produce two different errors: one indicating
   // that no option has been selected and the other indicating that
   // SimpleReport has not gone live in that particular state.
-  let error: any;
   if (field === "state" && stateCodes.includes(facility[field])) {
-    error = (
+    return (
       <>
         <span>
           SimpleReport isn’t currently supported in{" "}
@@ -102,10 +101,8 @@ const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
         </span>
       </>
     );
-  } else {
-    error = allFacilityErrors[field];
   }
-  return error;
+  return allFacilityErrors[field];
 };
 
 interface Props {

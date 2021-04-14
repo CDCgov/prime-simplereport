@@ -76,7 +76,9 @@ type FacilityErrorKeys =
   | "orderingProvider.state"
   | "orderingProvider.zipCode";
 
-export type FacilityErrors = Partial<Record<FacilityErrorKeys, string>>;
+export type FacilityErrors = Partial<
+  Record<FacilityErrorKeys, React.ReactNode>
+>;
 
 const orderingProviderFormatError = (field: string) =>
   `"Ordering provider ${field} is incorrectly formatted"`;
