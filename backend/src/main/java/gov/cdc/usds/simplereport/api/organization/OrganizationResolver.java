@@ -32,13 +32,14 @@ public class OrganizationResolver implements GraphQLQueryResolver {
         });
   }
 
-  public List<ApiOrganization> getOrganizations() {
+  public List<ApiOrganization> getOrganizations(Boolean identityVerified) {
     // this is N+1-ey right now, but it's no better than it was before through
     // OrganizationDataResolver and this gets called _extremely_ rarely.
     // Something to clean up in a future PR.
     // Suggested implementation: get all (non-deleted) facilities (from non-deleted organizations),
     // and group them by their Organization attribute.
-    return _organizationService.getOrganizations().stream()
+    return _organizationService.getOrganizations(identityVerified)
+        .stream()
         .map(o -> new ApiOrganization(o, _organizationService.getFacilities(o)))
         .collect(Collectors.toList());
   }

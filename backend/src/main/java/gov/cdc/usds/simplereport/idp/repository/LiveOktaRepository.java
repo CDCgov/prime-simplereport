@@ -320,6 +320,28 @@ public class LiveOktaRepository implements OktaRepository {
     _app.update();
   }
 
+  public void activateOrganization(Organization org) {
+    String externalId = org.getExternalId();
+    String roleGroupName = generateRoleGroupName(externalId, OrganizationRole.ADMIN);
+    GroupList groups = _client.listGroups(roleGroupName, null, null);
+    if (groups.stream().count() == 0) {
+      throw new IllegalGraphqlArgumentException(
+          "Cannot activate nonexistent Okta organization");
+    }
+    Group group = groups.single();
+    UserList users = group.listUsers();
+    for (User u : users) {
+      if (u.getStatus() == UserStatus.PROVISIONED) {
+        u.reactivate();
+      } else if (u.getStatus() == UserStatus.STAGED) {
+        u.activate(true);
+      } else {
+        throw new IllegalGraphqlArgumentException(
+            "Cannot activate Okta organization whose users have status="+u.getStatus().name());
+      }
+    }
+  }
+
   public void createFacility(Facility facility) {
     // Only create the facility group if the facility's organization has already been created
     String orgExternalId = facility.getOrganization().getExternalId();
