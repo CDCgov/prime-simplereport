@@ -261,6 +261,16 @@ Object {
                         </option>
                       </select>
                     </div>
+                    <fieldset
+                      class="usa-fieldset"
+                    >
+                      <label
+                        class="usa-label"
+                        for="preferred-language"
+                      >
+                        Preferred language
+                      </label>
+                    </fieldset>
                   </div>
                   <div
                     class="usa-form"
@@ -1594,6 +1604,16 @@ Object {
                       </option>
                     </select>
                   </div>
+                  <fieldset
+                    class="usa-fieldset"
+                  >
+                    <label
+                      class="usa-label"
+                      for="preferred-language"
+                    >
+                      Preferred language
+                    </label>
+                  </fieldset>
                 </div>
                 <div
                   class="usa-form"

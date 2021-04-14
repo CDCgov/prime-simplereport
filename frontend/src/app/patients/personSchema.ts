@@ -9,6 +9,7 @@ import {
   TRIBAL_AFFILIATION_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
+import { languages } from "../../config/constants";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -26,7 +27,8 @@ type UpdateOptionalFields =
   | "gender"
   | "tribalAffiliation"
   | "residentCongregateSetting"
-  | "employedInHealthcare";
+  | "employedInHealthcare"
+  | "preferredLanguage";
 
 type OptionalFields = UpdateOptionalFields | "middleName";
 
@@ -70,6 +72,7 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   tribalAffiliation: yup
     .mixed()
     .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
+  preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
@@ -110,4 +113,5 @@ export const allPersonErrors: Required<PersonErrors> = {
   residentCongregateSetting:
     "Resident in congregate care/living setting? is required",
   employedInHealthcare: "Work in Healthcare? is required",
+  preferredLanguage: "Preferred language is incorrectly formatted",
 };

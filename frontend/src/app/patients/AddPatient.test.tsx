@@ -125,6 +125,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {
@@ -157,6 +158,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {

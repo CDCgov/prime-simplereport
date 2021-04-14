@@ -100,6 +100,14 @@ exports[`PatientProfileContainer snapshot 1`] = `
       <h3
         className="font-heading-sm"
       >
+        Preferred Language
+      </h3>
+      <p>
+        Not provided
+      </p>
+      <h3
+        className="font-heading-sm"
+      >
         Date of birth
       </h3>
       <p>

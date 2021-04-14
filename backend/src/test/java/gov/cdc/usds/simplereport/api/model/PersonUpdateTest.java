@@ -21,6 +21,7 @@ class PersonUpdateTest {
             + "\"gender\":\"female\","
             + "\"residentCongregateSetting\":false,"
             + "\"employedInHealthcare\":true,"
+            + "\"preferredLanguage\":\"French\","
             + "\"address\":{"
             + "\"street\":[\"12 Someplace\",\"CA\"],"
             + "\"city\":null,"
