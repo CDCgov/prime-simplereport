@@ -7,7 +7,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
-import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import java.time.LocalDate;
 import java.util.List;
 import javax.persistence.Column;
@@ -74,11 +73,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   @Column(nullable = false)
   private boolean residentCongregateSetting;
-
-  @Column
-  @Type(type = "pg_enum")
-  @Enumerated(EnumType.STRING)
-  private TestResultDeliveryPreference testResultDelivery;
 
   protected Person() {
     /* for hibernate */
@@ -297,13 +291,5 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     public static final String LAST_NAME = "lastName";
 
     private SpecField() {} // sonarcloud codesmell
-  }
-
-  public TestResultDeliveryPreference getTestResultDelivery() {
-    return testResultDelivery;
-  }
-
-  public void setTestResultDelivery(TestResultDeliveryPreference testResultDelivery) {
-    this.testResultDelivery = testResultDelivery;
   }
 }

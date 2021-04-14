@@ -56,6 +56,8 @@ const PatientProfile = ({ patient }: Props) => {
       </h2>
       <h3 className="font-heading-sm">Name</h3>
       <p>{fullName}</p>
+      <h3 className="font-heading-sm">Preferred Language</h3>
+      <p>{patient.preferredLanguage || notProvided}</p>
       <h3 className="font-heading-sm">Date of birth</h3>
       <p>
         {patient.birthDate
