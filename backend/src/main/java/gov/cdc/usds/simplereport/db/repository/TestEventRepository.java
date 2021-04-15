@@ -25,15 +25,8 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
   @Query(
       value =
-          "WITH most_recent AS ("
-              + " SELECT patient_id, MAX(created_at) created_at FROM {h-schema}test_event "
-              + " WHERE patient_id IN :patientIds"
-              + " GROUP BY patient_id"
-              + ")"
-              + " SELECT * FROM {h-schema}test_event"
-              + " JOIN most_recent ON"
-              + " test_event.patient_id = most_recent.patient_id AND"
-              + " test_event.created_at = most_recent.created_at",
+          " SELECT DISTINCT ON (created_at) * FROM {h-schema}test_event"
+              + " ORDER BY created_at DESC",
       nativeQuery = true)
   public List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
 
