@@ -122,6 +122,7 @@ exports[`AoEPatientFormContainer snapshot 1`] = `
                   className="usa-hint usa-hint--required"
                   title="required"
                 >
+                   
                   *
                 </abbr>
               </legend>

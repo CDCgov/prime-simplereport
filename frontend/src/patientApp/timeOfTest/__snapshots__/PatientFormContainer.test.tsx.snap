@@ -296,6 +296,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                         className="usa-hint usa-hint--required"
                         title="required"
                       >
+                         
                         *
                       </abbr>
                     </label>
@@ -348,6 +349,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-hint usa-hint--required"
                     title="required"
                   >
+                     
                     *
                   </abbr>
                 </label>
@@ -448,6 +450,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                         className="usa-hint usa-hint--required"
                         title="required"
                       >
+                         
                         *
                       </abbr>
                     </label>
@@ -778,6 +781,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                         className="usa-hint usa-hint--required"
                         title="required"
                       >
+                         
                         *
                       </abbr>
                     </label>
@@ -1158,6 +1162,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-hint usa-hint--required"
                   title="required"
                 >
+                   
                   *
                 </abbr>
               </legend>
@@ -1226,6 +1231,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                   className="usa-hint usa-hint--required"
                   title="required"
                 >
+                   
                   *
                 </abbr>
               </legend>
