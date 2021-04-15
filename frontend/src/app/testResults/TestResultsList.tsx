@@ -32,10 +32,10 @@ import {
 import SearchInput from "../testQueue/addToQueue/SearchInput";
 import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 import { Patient } from "../patients/ManagePatients";
+import SearchResults from "../testQueue/addToQueue/SearchResults";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
-import TestResultsByPatientSearch from "./TestResultsByPatientSearch";
 
 type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
@@ -321,7 +321,8 @@ export const DetachedTestResultsList: any = ({
                   disabled={!allowQuery}
                   placeholder={"Filter test results by a specific patient"}
                 />
-                <TestResultsByPatientSearch
+                <SearchResults
+                  page="test-results"
                   patients={patientData?.patients || []}
                   onPatientSelect={onPatientSelect}
                   shouldShowSuggestions={allowQuery}
