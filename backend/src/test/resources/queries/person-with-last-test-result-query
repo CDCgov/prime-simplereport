@@ -5,7 +5,7 @@ query getPatientsWithLastTestResult($namePrefixMatch: String = null) {
     birthDate
     telephone
     lastTest {
-      createdAt
+      dateAdded
       result
     }
   }

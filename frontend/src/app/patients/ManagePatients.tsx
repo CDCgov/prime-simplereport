@@ -65,7 +65,7 @@ export const patientQuery = gql`
       isDeleted
       role
       lastTest {
-        createdAt
+        dateAdded
       }
     }
   }
@@ -80,7 +80,7 @@ export interface Patient {
   isDeleted: boolean;
   role: string;
   lastTest: {
-    createdAt: Date;
+    dateAdded: string;
     result: TestResultType;
     dateTested: string;
     deviceTypeModel: string;
@@ -188,7 +188,7 @@ export const DetachedManagePatients = ({
           <td>{capitalizeText(patient.role)}</td>
           <td>
             {patient.lastTest
-              ? `${daysSince(moment(patient.lastTest.createdAt))}`
+              ? `${daysSince(moment(patient.lastTest.dateAdded))}`
               : "N/A"}
           </td>
           <td>

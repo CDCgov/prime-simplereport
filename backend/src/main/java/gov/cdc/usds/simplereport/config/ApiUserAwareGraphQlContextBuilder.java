@@ -122,7 +122,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
                     () -> {
                       Map<UUID, TestEvent> found =
                           testEventRepository.findLastTestsByPatient(patientIds).stream()
-                              .collect(Collectors.toMap(TestEvent::getInternalId, s -> s));
+                              .collect(Collectors.toMap(TestEvent::getPatientInternalID, s -> s));
                       return patientIds.stream()
                           .map(te -> found.getOrDefault(te, null))
                           .collect(Collectors.toList());

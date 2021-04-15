@@ -39,7 +39,7 @@ const initialState = {
     isDeleted: false,
     role: "",
     lastTest: {
-      createdAt: new Date(),
+      dateAdded: "",
       result: COVID_RESULTS.INCONCLUSIVE,
       dateTested: "",
       deviceTypeModel: "",
