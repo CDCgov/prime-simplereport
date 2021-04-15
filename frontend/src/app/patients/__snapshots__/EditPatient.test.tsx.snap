@@ -1174,7 +1174,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Resident in congregate care/living setting?
+                      Are you a resident in a congregate living setting?
                       <span
                         class="usa-sr-only"
                       >
@@ -1186,6 +1186,11 @@ Object {
                          *
                       </span>
                     </legend>
+                    <span
+                      class="usa-hint text-ls-1"
+                    >
+                      For example: nursing home, group home, prison, jail, or military
+                    </span>
                     <div
                       class="usa-form-group"
                     >
@@ -1252,7 +1257,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Work in Healthcare?
+                      Are you a health care worker?
                       <span
                         class="usa-sr-only"
                       >
@@ -2517,7 +2522,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Resident in congregate care/living setting?
+                    Are you a resident in a congregate living setting?
                     <span
                       class="usa-sr-only"
                     >
@@ -2529,6 +2534,11 @@ Object {
                        *
                     </span>
                   </legend>
+                  <span
+                    class="usa-hint text-ls-1"
+                  >
+                    For example: nursing home, group home, prison, jail, or military
+                  </span>
                   <div
                     class="usa-form-group"
                   >
@@ -2595,7 +2605,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Work in Healthcare?
+                    Are you a health care worker?
                     <span
                       class="usa-sr-only"
                     >

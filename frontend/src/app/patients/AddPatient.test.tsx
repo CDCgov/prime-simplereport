@@ -199,12 +199,16 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": {
+            "Are you a resident in a congregate living setting": {
               label: "No",
               value: "No",
               exact: true,
             },
-            "Work in Healthcare": { label: "Yes", value: "Yes", exact: true },
+            "Are you a health care worker": {
+              label: "Yes",
+              value: "Yes",
+              exact: true,
+            },
           }
         );
         await act(async () => {
@@ -284,12 +288,16 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": {
+            "Are you a resident in a congregate living setting": {
               label: "No",
               value: "No",
               exact: true,
             },
-            "Work in Healthcare": { label: "Yes", value: "Yes", exact: true },
+            "Are you a health care worker": {
+              label: "Yes",
+              value: "Yes",
+              exact: true,
+            },
           }
         );
 

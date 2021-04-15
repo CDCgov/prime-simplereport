@@ -13,7 +13,6 @@ import {
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
-import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
   allPersonErrors,
@@ -397,7 +396,8 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Other">
         <YesNoRadioGroup
-          legend="Resident in congregate care/living setting?"
+          legend="Are you a resident in a congregate living setting?"
+          hintText="For example: nursing home, group home, prison, jail, or military"
           name="residentCongregateSetting"
           value={boolToYesNoUnknown(patient.residentCongregateSetting)}
           onChange={(v) =>
@@ -412,7 +412,7 @@ const PersonForm = (props: Props) => {
           required
         />
         <YesNoRadioGroup
-          legend="Work in Healthcare?"
+          legend="Are you a health care worker?"
           name="employedInHealthcare"
           value={boolToYesNoUnknown(patient.employedInHealthcare)}
           onChange={(v) =>
