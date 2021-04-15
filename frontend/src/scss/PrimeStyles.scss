@@ -186,18 +186,20 @@ $results-dropdown-spacing: #{units(4)} - #{units(2)} - 22px - #{units(4)}; // he
 //test queue search
 .results-dropdown {
   height: auto;
-  max-height: calc(
-    100vh - #{units(6)} - #{$results-dropdown-spacing}
-  ); // uses header height on small screens
+  max-height:
+    calc(
+      100vh - #{units(6)} - #{$results-dropdown-spacing}
+    ); // uses header height on small screens
   overflow-y: scroll;
   position: absolute;
   top: units(4);
   z-index: z-index(500);
 
   @include at-media("desktop") {
-    max-height: calc(
-      100vh - 70px - #{$results-dropdown-spacing}
-    ); // uses header height on large screens
+    max-height:
+      calc(
+        100vh - 70px - #{$results-dropdown-spacing}
+      ); // uses header height on large screens
   }
 }
 
