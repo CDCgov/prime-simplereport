@@ -75,7 +75,7 @@ Object {
                   <legend
                     class="prime-formgroup-heading usa-legend"
                   >
-                    General info
+                    General information
                   </legend>
                   <p
                     class="message--required"
@@ -1325,7 +1325,7 @@ Object {
                 <legend
                   class="prime-formgroup-heading usa-legend"
                 >
-                  General info
+                  General information
                 </legend>
                 <p
                   class="message--required"

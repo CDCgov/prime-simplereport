@@ -181,7 +181,7 @@ const PersonForm = (props: Props) => {
             props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
-      <FormGroup title="General info">
+      <FormGroup title="General information">
         <RequiredMessage />
         <div className="usa-form">
           <Input

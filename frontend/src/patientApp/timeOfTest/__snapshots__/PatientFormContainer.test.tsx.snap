@@ -94,7 +94,7 @@ exports[`PatientFormContainer snapshot 1`] = `
             <legend
               className="prime-formgroup-heading usa-legend"
             >
-              General info
+              General information
             </legend>
             <p
               className="message--required"
