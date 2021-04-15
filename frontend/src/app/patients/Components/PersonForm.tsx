@@ -327,7 +327,8 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Demographics">
         <p className="usa-hint maxw-prose">
-        This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
+          This information is collected as part of public health efforts to
+          recognize and address inequality in health outcomes.
         </p>
         <RadioGroup
           legend="Race"

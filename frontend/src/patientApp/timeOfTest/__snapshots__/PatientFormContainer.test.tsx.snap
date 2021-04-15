@@ -99,18 +99,14 @@ exports[`PatientFormContainer snapshot 1`] = `
             <p
               className="message--required"
             >
-              All fields marked with 
-              <span
-                className="usa-sr-only"
+              Required fields are marked with an asterisk (
+              <abbr
+                className="usa-hint usa-hint--required"
+                title="required"
               >
-                Required
-              </span>
-              <span
-                className="usa-hint--required"
-              >
-                 *
-              </span>
-               are required
+                *
+              </abbr>
+              ).
             </p>
             <div
               className="usa-form"
@@ -296,16 +292,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="6"
                     >
                       Phone number
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-required={true}
@@ -352,16 +344,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                   htmlFor="8"
                 >
                   Street address 1
-                  <span
-                    className="usa-sr-only"
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Required
-                  </span>
-                  <span
-                    className="usa-hint--required"
-                  >
-                     *
-                  </span>
+                    *
+                  </abbr>
                 </label>
                 <input
                   aria-required={true}
@@ -456,16 +444,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="12"
                     >
                       State
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                        *
+                      </abbr>
                     </label>
                     <select
                       aria-required={true}
@@ -790,16 +774,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="13"
                     >
                       Zip code
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-required={true}
@@ -831,7 +811,7 @@ exports[`PatientFormContainer snapshot 1`] = `
             <p
               className="usa-hint maxw-prose"
             >
-              This information is important for public health efforts to recognize and address inequality in health outcomes.
+              This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
             </p>
             <fieldset
               className="usa-fieldset prime-radios"
@@ -862,7 +842,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-native"
                   >
-                    American Indian or Alaskan Native
+                    American Indian/Alaskan Native
                   </label>
                 </div>
                 <div
@@ -904,7 +884,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-black"
                   >
-                    Black or African American
+                    Black/African American
                   </label>
                 </div>
                 <div
@@ -925,7 +905,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-pacific"
                   >
-                    Native Hawaiian or other Pacific Islander
+                    Native Hawaiian/other Pacific Islander
                   </label>
                 </div>
                 <div
@@ -988,7 +968,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-refused"
                   >
-                    Refused to answer
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
@@ -1008,7 +988,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Ethnicity
+                Are you Hispanic or Latino?
               </legend>
               <div
                 className="usa-form-group"
@@ -1031,7 +1011,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="15-val-hispanic"
                   >
-                    Hispanic or Latino
+                    Yes
                   </label>
                 </div>
                 <div
@@ -1052,7 +1032,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="15-val-not_hispanic"
                   >
-                    Not Hispanic
+                    No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="15-val-refused"
+                    name="ethnicity"
+                    onChange={[Function]}
+                    type="radio"
+                    value="refused"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="15-val-refused"
+                  >
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
@@ -1063,7 +1064,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Biological Sex
+                Biological sex
               </legend>
               <div
                 className="usa-form-group"
@@ -1153,16 +1154,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                 className="usa-legend"
               >
                 Are you a resident in a congregate living setting?
-                <span
-                  className="usa-sr-only"
+                <abbr
+                  className="usa-hint usa-hint--required"
+                  title="required"
                 >
-                  Required
-                </span>
-                <span
-                  className="usa-hint--required"
-                >
-                   *
-                </span>
+                  *
+                </abbr>
               </legend>
               <span
                 className="usa-hint text-ls-1"
@@ -1225,16 +1222,12 @@ exports[`PatientFormContainer snapshot 1`] = `
                 className="usa-legend"
               >
                 Are you a health care worker?
-                <span
-                  className="usa-sr-only"
+                <abbr
+                  className="usa-hint usa-hint--required"
+                  title="required"
                 >
-                  Required
-                </span>
-                <span
-                  className="usa-hint--required"
-                >
-                   *
-                </span>
+                  *
+                </abbr>
               </legend>
               <div
                 className="usa-form-group"
