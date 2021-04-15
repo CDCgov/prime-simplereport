@@ -3,6 +3,11 @@ package gov.cdc.usds.simplereport.utils;
 public class DeviceTestLengthConverter {
   private static final Integer STANDARD_TEST_LENGTH = 15;
   private static final Integer SHORTENED_TEST_LENGTH = 10;
+
+  private DeviceTestLengthConverter() {
+    throw new IllegalStateException("DeviceTestLengthConverter is a utility class");
+  }
+  
   /**
    * Helper method to determine the test length based on the type of test. If more non-15-minute
    * test devices are added, this method should be updated.

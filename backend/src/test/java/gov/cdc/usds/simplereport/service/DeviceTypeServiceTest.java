@@ -28,7 +28,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     assertEquals(deviceType.getModel(), "C");
     assertEquals(deviceType.getLoincCode(), "D");
     assertEquals(deviceType.getSwabType(), FAKE_SWAB_TYPE);
-    assertEquals(deviceType.getTestLength(), 15);
+    assertEquals(15, deviceType.getTestLength());
   }
 
   @Test
@@ -39,7 +39,7 @@ class DeviceTypeServiceTest extends BaseServiceTest<DeviceTypeService> {
     DeviceType deviceType = _service.fetchDeviceTypes().get(0);
     System.out.print(deviceType.toString());
 
-    assertEquals(deviceType.getTestLength(), 10);
+    assertEquals(10, deviceType.getTestLength());
   }
 
   @Test

@@ -76,7 +76,6 @@ export class Timer {
       this.alarmAt = this.alarmAt + difference;
     }
     this.testLength = testLength;
-    return;
   }
 
   tick(now: number) {
@@ -92,18 +91,17 @@ export class Timer {
       this.alarmed = true;
       alarmSound.play();
     }
-    return;
   }
 }
 
 const timerFromJSON = (obj: any) => {
-  let timer = new Timer(obj.id, obj.testLength);
+  const timer = new Timer(obj.id, obj.testLength);
   timer.fromJSON(obj);
   return timer;
 };
 
 // Initialize an empty list of timers.
-let timers: Timer[] = [];
+const timers: Timer[] = [];
 
 const tickTimers = () => {
   const now = Date.now();
@@ -144,7 +142,7 @@ const addTimer = (id: string, testLength: number): Timer => {
 };
 
 export const updateTimer = (id: string, testLength: number): Timer => {
-  let timer: Timer = findTimer(id) || addTimer(id, testLength);
+  const timer: Timer = findTimer(id) || addTimer(id, testLength);
   timer.update(testLength);
   saveTimers();
   return timer;
@@ -160,7 +158,7 @@ export const removeTimer = (id: string) => {
 
 export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
-  let timer: Timer = findTimer(id) || addTimer(id, testLength);
+  const timer: Timer = findTimer(id) || addTimer(id, testLength);
   useEffect(() => {
     timer.notify = setCount;
     return () => {
@@ -174,16 +172,15 @@ export const useTestTimer = (id: string, testLength: number) => {
     ),
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
-      const timer: Timer = findTimer(id) || addTimer(id, testLength);
-      timer.start(Date.now());
+      const timerToStart: Timer = findTimer(id) || addTimer(id, testLength);
+      timerToStart.start(Date.now());
       saveTimers();
     },
     reset: () => {
-      let timer = findTimer(id);
-      if (timer) {
-        timer = timer as Timer;
+      let timerToReset = findTimer(id);
+      if (timerToReset) {
         // reset the timer
-        timer.reset();
+        timerToReset.reset();
         // force final update
         setCount(toMillis(testLength));
         saveTimers();
