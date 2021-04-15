@@ -21,7 +21,7 @@ export const TEST_RESULT_DESCRIPTIONS = {
 export const RACE_VALUES: { value: Race; label: string }[] = [
   {
     value: "native",
-    label: "American Indian or Alaskan Native",
+    label: "American Indian/Alaskan Native",
   },
   {
     value: "asian",
@@ -29,11 +29,11 @@ export const RACE_VALUES: { value: Race; label: string }[] = [
   },
   {
     value: "black",
-    label: "Black or African American",
+    label: "Black/African American",
   },
   {
     value: "pacific",
-    label: "Native Hawaiian or other Pacific Islander",
+    label: "Native Hawaiian/other Pacific Islander",
   },
   {
     value: "white",
@@ -45,7 +45,7 @@ export const RACE_VALUES: { value: Race; label: string }[] = [
   },
   {
     value: "refused",
-    label: "Refused to answer",
+    label: "Prefer not to answer",
   },
 ];
 
@@ -57,8 +57,9 @@ export const ROLE_VALUES: { value: Role; label: string }[] = [
 ];
 
 export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
-  { label: "Hispanic or Latino", value: "hispanic" },
-  { label: "Not Hispanic", value: "not_hispanic" },
+  { label: "Yes", value: "hispanic" },
+  { label: "No", value: "not_hispanic" },
+  { label: "Prefer not to answer", value: "refused" },
 ];
 export const GENDER_VALUES: { value: Gender; label: string }[] = [
   { label: "Male", value: "male" },
@@ -1593,7 +1594,7 @@ const fullTribalAffiliationValueSet: {
   },
   {
     value: "234",
-    label: "Ramona Band or Village of Cahuilla Mission Indians",
+    label: "Ramona Band/Village of Cahuilla Mission Indians",
   },
   {
     value: "235",

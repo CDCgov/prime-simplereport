@@ -327,8 +327,7 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Demographics">
         <p className="usa-hint maxw-prose">
-          This information is important for public health efforts to recognize
-          and address inequality in health outcomes.
+        This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
         </p>
         <RadioGroup
           legend="Race"
@@ -350,14 +349,14 @@ const PersonForm = (props: Props) => {
           />
         </fieldset>
         <RadioGroup
-          legend="Ethnicity"
+          legend="Are you Hispanic or Latino?"
           name="ethnicity"
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
         />
         <RadioGroup
-          legend="Biological Sex"
+          legend="Biological sex"
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
