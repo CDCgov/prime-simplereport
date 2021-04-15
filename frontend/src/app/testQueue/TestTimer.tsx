@@ -177,7 +177,7 @@ export const useTestTimer = (id: string, testLength: number) => {
       saveTimers();
     },
     reset: () => {
-      let timerToReset = findTimer(id);
+      const timerToReset = findTimer(id);
       if (timerToReset) {
         // reset the timer
         timerToReset.reset();

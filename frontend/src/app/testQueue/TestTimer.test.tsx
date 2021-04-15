@@ -3,6 +3,24 @@ import { Timer } from "./TestTimer";
 describe("TestTimer", () => {
   let now = 1600000000;
   let internalId = "internal-id";
+  it("starts the timer with the expected values", () => {
+    let timer: Timer = new Timer(internalId, 15);
+    timer.start(now);
+    expect(timer.startedAt).toBe(now);
+    expect(timer.alarmAt).toBe(now + 15 * 60 * 1000);
+  });
+  it("resets the timer with the expected values", () => {
+    let timer: Timer = new Timer(internalId, 15);
+    timer.start(now);
+    // 10 seconds have passed
+    timer.tick(now + 10000);
+    testCountdown(timer.countdown, 14, 50);
+
+    timer.reset();
+    testCountdown(timer.countdown, 15, 0);
+    expect(timer.alarmAt).toBe(0);
+    expect(timer.startedAt).toBe(0);
+  });
   it("adjusts values when timer hasn't started and test length changes", () => {
     let timer: Timer = new Timer(internalId, 10);
     timer.update(15);
