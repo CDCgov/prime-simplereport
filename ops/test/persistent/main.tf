@@ -1,7 +1,8 @@
 locals {
-  project = "prime"
-  name    = "simple-report"
-  env     = "test"
+  project      = "prime"
+  name         = "simple-report"
+  env          = "test"
+  network_cidr = "10.3.0.0/16"
   management_tags = {
     prime-app      = "simple-report"
     environment    = local.env
@@ -28,8 +29,8 @@ module "bastion" {
   resource_group_location = data.azurerm_resource_group.test.location
   resource_group_name     = data.azurerm_resource_group.test.name
 
-  virtual_network_name = "${local.name}-${local.env}-network"
-  subnet_cidr          = ["10.3.253.0/27"]
+  virtual_network_name = module.vnet.network_name
+  subnet_cidr          = [cidrsubnet(local.network_cidr, 11, 2024)] # ["10.3.253.0/27"]
 
   tags = local.management_tags
 }
@@ -47,4 +48,13 @@ module "db" {
   log_workspace_id     = module.monitoring.log_analytics_workspace_id
 
   tags = local.management_tags
+}
+
+module "vnet" {
+  source              = "../../services/virtual_network"
+  env                 = local.env
+  resource_group_name = data.azurerm_resource_group.test.name
+  network_address     = local.network_cidr
+  management_tags     = local.management_tags
+  location            = data.azurerm_resource_group.test.location
 }
