@@ -1,15 +1,11 @@
 const rootDir = process.cwd();
+const backendDir = ` ${rootDir}/backend`;
+const frontendDir = ` ${rootDir}/frontend`;
 
 module.exports = {
-  "frontend/**/*.{js,ts,jsx,tsx}": (files) => {
-    process.chdir(`${rootDir}/frontend`);
-    return [
-      `npx eslint --fix ${files.join(" ")}`,
-      `npx prettier --write ${files.join(" ")}`,
-    ];
-  },
-  "backend/**/*.java": () => {
-    process.chdir(`${rootDir}/backend`);
-    return "./gradlew spotlessApply";
-  },
+  "backend/**/*.java": () => `${backendDir}/gradlew -p ${backendDir} spotlessApply`,
+  "frontend/**/*.{js,ts,jsx,tsx}": (files) => ([
+      `${frontendDir}/node_modules/.bin/prettier --config ${frontendDir}/package.json --write ${files.join(" ")}`,
+      `${frontendDir}/node_modules/.bin/eslint --config ${frontendDir}/package.json --resolve-plugins-relative-to ${frontendDir} --fix ${files.join(" ")}`,
+    ]),
 };
