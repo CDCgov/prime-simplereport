@@ -1715,3 +1715,19 @@ databaseChangeLog:
               migrations_user_id updated_by
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
+  - changeSet:
+      id: add-org-verified
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Add a required boolean column to the organization table named identity_verified, existing records set to true.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: identity_verified
+                  type: boolean
+                  remarks: Whether this organization's identity has been verified.
+                  valueBoolean: true
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
