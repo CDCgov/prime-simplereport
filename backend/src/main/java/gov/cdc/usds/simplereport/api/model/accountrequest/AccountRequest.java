@@ -16,14 +16,16 @@ public class AccountRequest implements TemplateVariablesProvider {
   @NotNull private String email;
   @NotNull private String workPhoneNumber;
   private String cellPhoneNumber;
-  @NotNull private String streetAddress1;
+  // TODO: dedupe these once streetAddress is fully in production
+  private String mailingAddress1;
+  private String streetAddress1;
   private String streetAddress2;
   @NotNull private String city;
   @NotNull private String state;
   @NotNull private String zip;
   @NotNull private String county;
   @NotNull private String facilityType;
-  private String facilityTypeOther;
+  private String otherFacilityType;
   private String organizationName;
   @NotNull private String facilityName;
   @NotNull private String cliaNumber;
@@ -41,6 +43,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   private String opLastName;
   private String npi;
   private String opPhoneNumber;
+  private String opMailingAddress1;
   private String opStreetAddress1;
   private String opStreetAddress2;
   private String opCity;
@@ -57,6 +60,14 @@ public class AccountRequest implements TemplateVariablesProvider {
   public Map<String, Object> toTemplateVariables() {
     Map<String, Object> variableMap = new HashMap<>();
 
+    // Temporary - remove once streetAddress is consistent across FE and BE
+    if (mailingAddress1 != null || !mailingAddress1.isEmpty()) {
+        streetAddress1 = mailingAddress1;
+    }
+    if (opMailingAddress1 != null || !mailingAddress1.isEmpty()) {
+      opStreetAddress1 = opMailingAddress1;
+    }
+
     variableMap.put("firstName", firstName);
     variableMap.put("lastName", lastName);
     variableMap.put("email", email);
@@ -69,7 +80,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("zip", zip);
     variableMap.put("county", county);
     variableMap.put("facilityType", facilityType);
-    variableMap.put("facilityTypeOther", facilityTypeOther);
+    variableMap.put("otherFacilityType", otherFacilityType);
     variableMap.put("organizationName", organizationName);
     variableMap.put("facilityName", facilityName);
     variableMap.put("cliaNumber", cliaNumber);
@@ -194,11 +205,11 @@ public class AccountRequest implements TemplateVariablesProvider {
   }
 
   public String getFacilityTypeOther() {
-    return facilityTypeOther;
+    return otherFacilityType;
   }
 
-  public void setFacilityTypeOther(String facilityTypeOther) {
-    this.facilityTypeOther = facilityTypeOther;
+  public void setFacilityTypeOther(String otherFacilityType) {
+    this.otherFacilityType = otherFacilityType;
   }
 
   public String getOrganizationName() {
