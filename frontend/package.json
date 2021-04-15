@@ -60,7 +60,7 @@
     "prebuild": "yarn compile-scss",
     "build": "INLINE_RUNTIME_CHUNK=false REACT_APP_CURRENT_COMMIT=$(git rev-parse HEAD) react-scripts build",
     "postbuild": "echo 'pushstate: enabled' > build/Staticfile && echo $(git rev-parse HEAD) > build/static/commit.txt",
-    "lint": "npm-run-all -p lint:eslint lint:prettier",
+    "lint": "npm-run-all -p lint:eslint lint:prettier lint:stylelint",
     "lint:write": "npm-run-all -p lint:eslint:write lint:prettier:write lint:stylelint:write",
     "lint:eslint": "eslint --quiet 'src/**/*.{js,ts,jsx,tsx}'",
     "lint:eslint:write": "eslint --fix 'src/**/*.{js,ts,jsx,tsx}'",
