@@ -7,5 +7,6 @@ module.exports = {
   "frontend/**/*.{js,ts,jsx,tsx}": (files) => ([
       `${frontendDir}/node_modules/.bin/prettier --config ${frontendDir}/package.json --write ${files.join(" ")}`,
       `${frontendDir}/node_modules/.bin/eslint --config ${frontendDir}/package.json --resolve-plugins-relative-to ${frontendDir} --fix ${files.join(" ")}`,
-    ]),
+  ]),
+  "frontend/**/*.scss": (files) => (`${frontendDir}/node_modules/.bin/stylelint --config ${frontendDir}/package.json --config-basedir ${frontendDir} --fix ${files.join(" ")}`)
 };
