@@ -32,6 +32,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @NotNull private String defaultTestDevice;
   @NotNull private String accessDevices;
   @NotNull private String browsers;
+  private String browsersOther;
   private String workflow;
   @NotNull private String recordsTestResults;
   @NotNull private String processTime;
@@ -77,6 +78,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("defaultTestDevice", defaultTestDevice);
     variableMap.put("accessDevices", accessDevices);
     variableMap.put("browsers", browsers);
+    variableMap.put("browsersOther", browsersOther);
     variableMap.put("workflow", workflow);
     variableMap.put("recordsTestResults", recordsTestResults);
     variableMap.put("processTime", processTime);
@@ -261,6 +263,14 @@ public class AccountRequest implements TemplateVariablesProvider {
 
   public void setBrowsers(String browsers) {
     this.browsers = browsers;
+  }
+
+  public String getBrowsersOther() {
+    return browsersOther;
+  }
+
+  public void setBrowsersOther(String browsersOther) {
+    this.browsersOther = browsersOther;
   }
 
   public String getWorkflow() {
