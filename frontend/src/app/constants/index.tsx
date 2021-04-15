@@ -1594,7 +1594,7 @@ const fullTribalAffiliationValueSet: {
   },
   {
     value: "234",
-    label: "Ramona Band/Village of Cahuilla Mission Indians",
+    label: "Ramona Band or Village of Cahuilla Mission Indians",
   },
   {
     value: "235",
