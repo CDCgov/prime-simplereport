@@ -38,7 +38,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty private String testingDevicesOther;
 
   @JsonProperty @NotNull
-  private String defaultTestDevice = ""; // remove default prime-simplereport-site deployment
+  private String defaultTestDevice = ""; // remove default after prime-simplereport-site deployment
 
   @JsonProperty @NotNull private String accessDevices;
   @JsonProperty @NotNull private String browsers;
@@ -53,7 +53,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty private String opPhoneNumber;
 
   @JsonProperty
-  @JsonAlias("op-street-address1")
+  @JsonAlias("op-mailing-address1")
   private String opStreetAddress1;
 
   @JsonProperty private String opStreetAddress2;
