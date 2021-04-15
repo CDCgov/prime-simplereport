@@ -30,7 +30,7 @@ const TermsOfService: React.FunctionComponent<RouteComponentProps> = (
         <p className="margin-top-105">
           This testing site uses{" "}
           <a href="https://simplereport.gov/">SimpleReport</a> to manage
-          COVID-19 testing and reporting. The terms below explain SimpleReport's
+          COVID-19 testing and reporting. The terms below explain SimpleReport’s
           policies and terms of service.
         </p>
         <div className="tos-content prime-formgroup usa-prose height-card-lg overflow-x-hidden font-body-3xs">
