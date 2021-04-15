@@ -16,7 +16,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   @NotNull private String email;
   @NotNull private String workPhoneNumber;
   private String cellPhoneNumber;
-  @NotNull private String mailingAddress1;
+  @NotNull private String streetAddress1;
   private String streetAddress2;
   @NotNull private String city;
   @NotNull private String state;
@@ -41,7 +41,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   private String opLastName;
   private String npi;
   private String opPhoneNumber;
-  private String opMailingAddress1;
+  private String opStreetAddress1;
   private String opStreetAddress2;
   private String opCity;
   private String opState;
@@ -62,7 +62,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("email", email);
     variableMap.put("workPhoneNumber", workPhoneNumber);
     variableMap.put("cellPhoneNumber", cellPhoneNumber);
-    variableMap.put("mailingAddress1", mailingAddress1);
+    variableMap.put("streetAddress1", streetAddress1);
     variableMap.put("streetAddress2", streetAddress2);
     variableMap.put("city", city);
     variableMap.put("state", state);
@@ -87,7 +87,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("opLastName", opLastName);
     variableMap.put("npi", npi);
     variableMap.put("opPhoneNumber", opPhoneNumber);
-    variableMap.put("opMailingAddress1", opMailingAddress1);
+    variableMap.put("opStreetAddress1", opStreetAddress1);
     variableMap.put("opStreetAddress2", opStreetAddress2);
     variableMap.put("opCity", opCity);
     variableMap.put("opState", opState);
@@ -137,12 +137,12 @@ public class AccountRequest implements TemplateVariablesProvider {
     this.cellPhoneNumber = cellPhoneNumber;
   }
 
-  public String getMailingAddress1() {
-    return mailingAddress1;
+  public String getstreetAddress1() {
+    return streetAddress1;
   }
 
-  public void setMailingAddress1(String mailingAddress1) {
-    this.mailingAddress1 = mailingAddress1;
+  public void setstreetAddress1(String streetAddress1) {
+    this.streetAddress1 = streetAddress1;
   }
 
   public String getStreetAddress2() {
@@ -337,12 +337,12 @@ public class AccountRequest implements TemplateVariablesProvider {
     this.opPhoneNumber = opPhoneNumber;
   }
 
-  public String getOpMailingAddress1() {
-    return opMailingAddress1;
+  public String getOpStreetAddress1() {
+    return opStreetAddress1;
   }
 
-  public void setOpMailingAddress1(String opMailingAddress1) {
-    this.opMailingAddress1 = opMailingAddress1;
+  public void setOpStreetAddress1(String opStreetAddress1) {
+    this.opStreetAddress1 = opStreetAddress1;
   }
 
   public String getOpStreetAddress2() {
