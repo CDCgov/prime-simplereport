@@ -29,7 +29,7 @@ public class PatientDataResolver
     if (lastTestLoader != null) {
       return lastTestLoader.load(person.getInternalId());
     }
-    throw new IllegalStateException("No patient preferences data loader found");
+    throw new NoDataLoaderFoundException(LAST_TEST_DATA_LOADER);
   }
 
   public ApiFacility getFacility(Person p) {
@@ -47,7 +47,7 @@ public class PatientDataResolver
           .load(person.getInternalId())
           .thenApply(PatientPreferences::getTestResultDelivery);
     }
-    throw new IllegalStateException("No patient preferences data loader found");
+    throw new NoDataLoaderFoundException(PatientPreferences.DATA_LOADER);
   }
 
   public CompletableFuture<String> getPreferredLanguage(
@@ -60,6 +60,6 @@ public class PatientDataResolver
           .load(person.getInternalId())
           .thenApply(PatientPreferences::getPreferredLanguage);
     }
-    throw new IllegalStateException("No patient preferences data loader found");
+    throw new NoDataLoaderFoundException(PatientPreferences.DATA_LOADER);
   }
 }
