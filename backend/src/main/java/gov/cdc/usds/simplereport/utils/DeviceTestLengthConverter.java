@@ -7,7 +7,7 @@ public class DeviceTestLengthConverter {
   private DeviceTestLengthConverter() {
     throw new IllegalStateException("DeviceTestLengthConverter is a utility class");
   }
-  
+
   /**
    * Helper method to determine the test length based on the type of test. If more non-15-minute
    * test devices are added, this method should be updated.
