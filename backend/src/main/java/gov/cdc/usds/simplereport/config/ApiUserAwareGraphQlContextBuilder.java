@@ -116,7 +116,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         PatientDataResolver.LAST_TEST_DATA_LOADER,
         new DataLoader<UUID, TestEvent>(
             patientIds ->
-                supplyAsync(() -> testEventRepository.findFirstTestsByPatient(patientIds))));
+                supplyAsync(() -> testEventRepository.findLastTestsByPatient(patientIds))));
 
     return dataLoaderRegistry;
   }

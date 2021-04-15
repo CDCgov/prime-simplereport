@@ -38,7 +38,7 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
               + " test_event.patient_id = person.internal_id AND"
               + " test_event.patient_id IN :patientIds",
       nativeQuery = true)
-  public List<TestEvent> findFirstTestsByPatient(Collection<UUID> patientIds);
+  public List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
 
   @EntityGraph(attributePaths = {"patient", "order"})
   public TestEvent findByOrganizationAndInternalId(Organization o, UUID id);

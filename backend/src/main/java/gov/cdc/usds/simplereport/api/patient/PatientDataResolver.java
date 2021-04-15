@@ -3,6 +3,7 @@ package gov.cdc.usds.simplereport.api.patient;
 import gov.cdc.usds.simplereport.api.InternalIdResolver;
 import gov.cdc.usds.simplereport.api.PersonNameResolver;
 import gov.cdc.usds.simplereport.api.model.ApiFacility;
+import gov.cdc.usds.simplereport.api.model.errors.NoDataLoaderFoundException;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.PatientPreferences;
 import gov.cdc.usds.simplereport.db.model.Person;
