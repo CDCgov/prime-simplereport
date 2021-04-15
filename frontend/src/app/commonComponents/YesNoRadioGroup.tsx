@@ -8,6 +8,7 @@ interface Props {
   name: string;
   legend: React.ReactNode;
   value: boolean | null;
+  hintText?: string;
   onChange: (value: boolean) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   validationStatus?: "error" | "success";
@@ -19,6 +20,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   name,
   legend,
   value,
+  hintText,
   onChange,
   onBlur,
   validationStatus,
@@ -38,6 +40,7 @@ const YesNoRadioGroup: React.FC<Props> = ({
   return (
     <RadioGroup
       legend={legend}
+      hintText={hintText}
       name={name}
       buttons={YES_NO_VALUES}
       selectedRadio={getSelectedRadio()}
