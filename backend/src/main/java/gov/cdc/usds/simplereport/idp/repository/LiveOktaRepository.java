@@ -330,8 +330,9 @@ public class LiveOktaRepository implements OktaRepository {
     Group group = groups.single();
     UserList users = group.listUsers();
     for (User u : users) {
+      // reactivates user and sends them an Okta email to reactivate their account
       if (u.getStatus() == UserStatus.PROVISIONED) {
-        u.reactivate();
+        u.reactivate(true);
       } else if (u.getStatus() == UserStatus.STAGED) {
         u.activate(true);
       } else {
