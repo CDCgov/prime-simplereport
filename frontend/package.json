@@ -47,8 +47,6 @@
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
     "smartystreets-javascript-sdk": "^1.6.3",
-    "stylelint-config-recommended-scss": "^4.2.0",
-    "stylelint-scss": "^3.19.0",
     "uswds": "^2.10.0",
     "uuid": "^8.3.1",
     "yup": "^0.32.9"
