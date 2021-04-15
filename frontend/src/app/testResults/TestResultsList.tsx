@@ -17,6 +17,7 @@ import { TEST_RESULT_DESCRIPTIONS } from "../constants";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
+import TestResultDetailsModal from "./TestResultDetailsModal";
 
 import "./TestResultsList.scss";
 
@@ -93,6 +94,7 @@ export const DetachedTestResultsList: any = ({
 }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
+  const [detailsModalId, setDetailsModalId] = useState<string>();
 
   if (printModalId) {
     return (
@@ -137,6 +139,7 @@ export const DetachedTestResultsList: any = ({
       const removed = r.correctionStatus === "REMOVED";
       const actionItems = [
         { name: "Print result", action: () => setPrintModalId(r.internalId) },
+        { name: "View details", action: () => setDetailsModalId(r.internalId) },
       ];
       if (!removed) {
         actionItems.push({
@@ -188,47 +191,58 @@ export const DetachedTestResultsList: any = ({
   };
 
   return (
-    <main className="prime-home">
-      <div className="grid-container">
-        <div className="grid-row">
-          <div className="prime-container card-container sr-test-results-list">
-            <div className="usa-card__header">
-              <h2>
-                Test Results
-                <span className="sr-showing-results-on-page">
-                  Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
-                  {totalEntries}
-                </span>
-              </h2>
-            </div>
-            <div className="usa-card__body">
-              <table className="usa-table usa-table--borderless width-full">
-                <thead>
-                  <tr>
-                    <th scope="col">{PATIENT_TERM_CAP}</th>
-                    <th scope="col">Test date</th>
-                    <th scope="col">Result</th>
-                    <th scope="col">Device</th>
-                    <th scope="col">Symptoms</th>
-                    <th scope="col">Submitter</th>
-                    <th scope="col">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>{testResultRows()}</tbody>
-              </table>
-            </div>
-            <div className="usa-card__footer">
-              <Pagination
-                baseRoute="/results"
-                currentPage={page}
-                entriesPerPage={entriesPerPage}
-                totalEntries={totalEntries}
-              />
+    <>
+      {detailsModalId && (
+        <TestResultDetailsModal
+          testResultId={detailsModalId}
+          closeModal={() => {
+            setDetailsModalId(undefined);
+            refetch();
+          }}
+        />
+      )}
+      <main className="prime-home">
+        <div className="grid-container">
+          <div className="grid-row">
+            <div className="prime-container card-container sr-test-results-list">
+              <div className="usa-card__header">
+                <h2>
+                  Test Results
+                  <span className="sr-showing-results-on-page">
+                    Showing {Math.min(entriesPerPage, totalEntries)} of{" "}
+                    {totalEntries}
+                  </span>
+                </h2>
+              </div>
+              <div className="usa-card__body">
+                <table className="usa-table usa-table--borderless width-full">
+                  <thead>
+                    <tr>
+                      <th scope="col">{PATIENT_TERM_CAP}</th>
+                      <th scope="col">Test date</th>
+                      <th scope="col">Result</th>
+                      <th scope="col">Device</th>
+                      <th scope="col">Symptoms</th>
+                      <th scope="col">Submitter</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>{testResultRows()}</tbody>
+                </table>
+              </div>
+              <div className="usa-card__footer">
+                <Pagination
+                  baseRoute="/results"
+                  currentPage={page}
+                  entriesPerPage={entriesPerPage}
+                  totalEntries={totalEntries}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </>
   );
 };
 
