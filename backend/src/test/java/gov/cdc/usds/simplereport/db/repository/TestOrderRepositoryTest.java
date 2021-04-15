@@ -32,8 +32,8 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void runChanges() {
-    Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu"));
-    Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+    Organization gwu = _orgRepo.save(new Organization("George Washington", "gwu", true));
+    Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", true));
     Facility site = _dataFactory.createValidFacility(gtown);
     Facility otherSite = _dataFactory.createValidFacility(gwu);
     Person hoya =
@@ -73,7 +73,7 @@ class TestOrderRepositoryTest extends BaseRepositoryTest {
   @Test
   void testLifeCycle() {
     DeviceType device = _dataFactory.getGenericDevice();
-    Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt"));
+    Organization gtown = _orgRepo.save(new Organization("Georgetown", "gt", true));
     Person hoya =
         _personRepo.save(
             new Person(
