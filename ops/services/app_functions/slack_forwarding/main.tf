@@ -57,7 +57,7 @@ resource "azurerm_function_app" "alerts" {
 
   app_settings = {
     APPINSIGHTS_INSTRUMENTATIONKEY        = var.app_insights_key
-    APPLICATIONINSIGHTS_CONNECTION_STRING = "InstrumentationKey=${var.app_insights_key};IngestionEndpoint=https://eastus-1.in.applicationinsights.azure.com/"
+    APPLICATIONINSIGHTS_CONNECTION_STRING = var.app_insights_connection_string
     FUNCTIONS_WORKER_RUNTIME              = "node"
     WEBSITE_NODE_DEFAULT_VERSION          = "~12"
     HASH                                  = base64encode(filesha256(local.function_code))
