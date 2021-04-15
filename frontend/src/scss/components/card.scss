@@ -1,5 +1,6 @@
 @mixin card($border-radius, $padding: 0) {
   @include u-padding($padding);
+
   background: color("white");
   border-width: units("2px");
   border-color: color("base-lighter");
