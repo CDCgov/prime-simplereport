@@ -17,17 +17,19 @@ public class AccountRequest implements TemplateVariablesProvider {
   @NotNull private String workPhoneNumber;
   private String cellPhoneNumber;
   @NotNull private String mailingAddress1;
-  private String aptSuiteOther;
-  private String aptFloorSuiteNo;
+  private String streetAddress2;
   @NotNull private String city;
   @NotNull private String state;
   @NotNull private String zip;
   @NotNull private String county;
   @NotNull private String facilityType;
+  private String facilityTypeOther;
   private String organizationName;
   @NotNull private String facilityName;
   @NotNull private String cliaNumber;
   @NotNull private String testingDevices;
+  private String testingDevicesOther;
+  @NotNull private String defaultTestDevice;
   @NotNull private String accessDevices;
   @NotNull private String browsers;
   private String workflow;
@@ -39,8 +41,7 @@ public class AccountRequest implements TemplateVariablesProvider {
   private String npi;
   private String opPhoneNumber;
   private String opMailingAddress1;
-  private String opAptSuiteOther;
-  private String opAptFloorSuiteNo;
+  private String opStreetAddress2;
   private String opCity;
   private String opState;
   private String opZip;
@@ -61,17 +62,19 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("workPhoneNumber", workPhoneNumber);
     variableMap.put("cellPhoneNumber", cellPhoneNumber);
     variableMap.put("mailingAddress1", mailingAddress1);
-    variableMap.put("aptSuiteOther", aptSuiteOther);
-    variableMap.put("aptFloorSuiteNo", aptFloorSuiteNo);
+    variableMap.put("streetAddress2", streetAddress2);
     variableMap.put("city", city);
     variableMap.put("state", state);
     variableMap.put("zip", zip);
     variableMap.put("county", county);
     variableMap.put("facilityType", facilityType);
+    variableMap.put("facilityTypeOther", facilityTypeOther);
     variableMap.put("organizationName", organizationName);
     variableMap.put("facilityName", facilityName);
     variableMap.put("cliaNumber", cliaNumber);
     variableMap.put("testingDevices", testingDevices);
+    variableMap.put("testingDevicesOther", testingDevicesOther);
+    variableMap.put("defaultTestDevice", defaultTestDevice);
     variableMap.put("accessDevices", accessDevices);
     variableMap.put("browsers", browsers);
     variableMap.put("workflow", workflow);
@@ -83,8 +86,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("npi", npi);
     variableMap.put("opPhoneNumber", opPhoneNumber);
     variableMap.put("opMailingAddress1", opMailingAddress1);
-    variableMap.put("opAptSuiteOther", opAptSuiteOther);
-    variableMap.put("opAptFloorSuiteNo", opAptFloorSuiteNo);
+    variableMap.put("opStreetAddress2", opStreetAddress2);
     variableMap.put("opCity", opCity);
     variableMap.put("opState", opState);
     variableMap.put("opZip", opZip);
@@ -141,20 +143,12 @@ public class AccountRequest implements TemplateVariablesProvider {
     this.mailingAddress1 = mailingAddress1;
   }
 
-  public String getAptSuiteOther() {
-    return aptSuiteOther;
+  public String getStreetAddress2() {
+    return streetAddress2;
   }
 
-  public void setAptSuiteOther(String aptSuiteOther) {
-    this.aptSuiteOther = aptSuiteOther;
-  }
-
-  public String getAptFloorSuiteNo() {
-    return aptFloorSuiteNo;
-  }
-
-  public void setAptFloorSuiteNo(String aptFloorSuiteNo) {
-    this.aptFloorSuiteNo = aptFloorSuiteNo;
+  public void setStreetAddress2(String streetAddress2) {
+    this.streetAddress2 = streetAddress2;
   }
 
   public String getCity() {
@@ -197,6 +191,14 @@ public class AccountRequest implements TemplateVariablesProvider {
     this.facilityType = facilityType;
   }
 
+  public String getFacilityTypeOther() {
+    return facilityTypeOther;
+  }
+
+  public void setFacilityTypeOther(String facilityTypeOther) {
+    this.facilityTypeOther = facilityTypeOther;
+  }
+
   public String getOrganizationName() {
     return organizationName;
   }
@@ -227,6 +229,22 @@ public class AccountRequest implements TemplateVariablesProvider {
 
   public void setTestingDevices(String testingDevices) {
     this.testingDevices = testingDevices;
+  }
+
+  public String getTestingDevicesOther() {
+    return testingDevicesOther;
+  }
+
+  public void setTestingDevicesOther(String testingDevicesOther) {
+    this.testingDevicesOther = testingDevicesOther;
+  }
+
+  public String getDefaultTestDevice() {
+    return defaultTestDevice;
+  }
+
+  public void setDefaultTestDevice(String defaultTestDevice) {
+    this.defaultTestDevice = defaultTestDevice;
   }
 
   public String getAccessDevices() {
@@ -317,20 +335,12 @@ public class AccountRequest implements TemplateVariablesProvider {
     this.opMailingAddress1 = opMailingAddress1;
   }
 
-  public String getOpAptSuiteOther() {
-    return opAptSuiteOther;
+  public String getOpStreetAddress2() {
+    return opStreetAddress2;
   }
 
-  public void setOpAptSuiteOther(String opAptSuiteOther) {
-    this.opAptSuiteOther = opAptSuiteOther;
-  }
-
-  public String getOpAptFloorSuiteNo() {
-    return opAptFloorSuiteNo;
-  }
-
-  public void setOpAptFloorSuiteNo(String opAptFloorSuiteNo) {
-    this.opAptFloorSuiteNo = opAptFloorSuiteNo;
+  public void setOpStreetAddress2(String opStreetAddress2) {
+    this.opStreetAddress2 = opStreetAddress2;
   }
 
   public String getOpCity() {
