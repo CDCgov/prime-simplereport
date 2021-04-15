@@ -10,6 +10,7 @@ type Organization {
   externalId: String
   testingFacility: [Facility] @deprecated(reason: "Use the one that makes sense")
   facilities: [Facility!]!
+  identityVerified: Boolean
 }
 
 type Facility {

@@ -60,7 +60,7 @@ public class TestDataFactory {
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
 
   public Organization createValidOrg(String name, String externalId) {
-    return _orgRepo.save(new Organization(name, externalId));
+    return _orgRepo.save(new Organization(name, externalId, true));
   }
 
   public Organization createValidOrg() {

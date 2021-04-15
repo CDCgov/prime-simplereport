@@ -1734,3 +1734,19 @@ databaseChangeLog:
                   valueComputed: (SELECT name, CASE WHEN name = 'Access io CareStart' THEN 10 END FROM ${database.defaultSchemaName}.device_type)
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-org-verified
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Add a required boolean column to the organization table named identity_verified, existing records set to true.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: identity_verified
+                  type: boolean
+                  remarks: Whether this organization's identity has been verified.
+                  valueBoolean: true
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false

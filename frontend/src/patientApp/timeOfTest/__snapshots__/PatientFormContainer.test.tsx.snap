@@ -1152,7 +1152,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Resident in congregate care/living setting?
+                Are you a resident in a congregate living setting?
                 <span
                   className="usa-sr-only"
                 >
@@ -1164,6 +1164,11 @@ exports[`PatientFormContainer snapshot 1`] = `
                    *
                 </span>
               </legend>
+              <span
+                className="usa-hint text-ls-1"
+              >
+                For example: nursing home, group home, prison, jail, or military
+              </span>
               <div
                 className="usa-form-group"
               >
@@ -1219,7 +1224,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Work in Healthcare?
+                Are you a health care worker?
                 <span
                   className="usa-sr-only"
                 >

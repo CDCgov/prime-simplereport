@@ -32,4 +32,8 @@ public class ApiOrganization extends WrappedEntity<Organization> {
   public List<ApiFacility> getFacilities() {
     return facilities.stream().map(ApiFacility::new).collect(Collectors.toList());
   }
+
+  public boolean getIdentityVerified() {
+    return wrapped.getIdentityVerified();
+  }
 }
