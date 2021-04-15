@@ -20,7 +20,9 @@ import graphql.kickstart.servlet.context.GraphQLServletContextBuilder;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -116,7 +118,15 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
         PatientDataResolver.LAST_TEST_DATA_LOADER,
         new DataLoader<UUID, TestEvent>(
             patientIds ->
-                supplyAsync(() -> testEventRepository.findLastTestsByPatient(patientIds))));
+                supplyAsync(
+                    () -> {
+                      Map<UUID, TestEvent> found =
+                          testEventRepository.findLastTestsByPatient(patientIds).stream()
+                              .collect(Collectors.toMap(TestEvent::getInternalId, s -> s));
+                      return patientIds.stream()
+                          .map(te -> found.getOrDefault(te, null))
+                          .collect(Collectors.toList());
+                    })));
 
     return dataLoaderRegistry;
   }
