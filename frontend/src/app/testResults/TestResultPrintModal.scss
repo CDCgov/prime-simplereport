@@ -6,11 +6,13 @@
     margin: 0 0 0 1.5rem;
   }
 }
+
 @media print {
   body {
     .sr-result-print-buttons {
       display: none;
     }
+
     .sr-test-results-modal-content {
       transform: none;
       max-height: none;
@@ -84,18 +86,22 @@
     background: #6c6c6c;
     margin: 0;
     padding: 0.5rem;
+
     /* allow dark background on header */
     -webkit-print-color-adjust: exact;
   }
+
   h3 {
     margin: 0.75rem 1rem;
   }
+
   ul.sr-multi-column {
     display: flex;
     flex-direction: column;
     flex-wrap: wrap;
     max-height: 14ex;
   }
+
   p {
     margin: 0.75rem 1rem;
   }
@@ -105,6 +111,7 @@
 .sr-result-facility-details {
   width: 49%;
 }
+
 .sr-result-facility-details {
   margin-left: 2%;
 }
@@ -117,15 +124,18 @@
   li {
     margin: 0.5rem;
   }
+
   b {
     float: left;
     clear: left;
     width: 8rem;
   }
+
   div {
     margin: 0.25rem 0 0.25rem 8rem;
   }
-  div:empty:after {
+
+  div:empty::after {
     content: ".";
     visibility: hidden;
   }
