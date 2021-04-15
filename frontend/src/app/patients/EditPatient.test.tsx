@@ -200,7 +200,7 @@ describe("EditPatient", () => {
       });
     });
     it("shows unknown answers", () => {
-      ["Resident in", "Work in"].forEach((legend) => {
+      ["congregate", "health care"].forEach((legend) => {
         const fieldset = screen
           .getByText(legend, { exact: false })
           .closest("fieldset");
