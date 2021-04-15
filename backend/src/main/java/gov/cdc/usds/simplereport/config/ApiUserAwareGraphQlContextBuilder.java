@@ -17,7 +17,9 @@ import graphql.kickstart.servlet.context.GraphQLServletContextBuilder;
 import java.security.Principal;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,11 +99,18 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
     DataLoaderRegistry dataLoaderRegistry = new DataLoaderRegistry();
     DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
         new DataLoader<>(
-            personIds ->
+            patientIds ->
                 supplyAsync(
-                    () ->
-                        patientPreferencesRepository.findAllAndCoalesceEmptyByPersonInternalIdIn(
-                            personIds)));
+                    () -> {
+                      Map<UUID, PatientPreferences> found =
+                          patientPreferencesRepository
+                              .findAllByPersonInternalIdIn(patientIds)
+                              .stream()
+                              .collect(Collectors.toMap(PatientPreferences::getInternalId, s -> s));
+                      return patientIds.stream()
+                          .map(p -> found.getOrDefault(p, PatientPreferences.DEFAULT))
+                          .collect(Collectors.toList());
+                    }));
     dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesLoader);
     return dataLoaderRegistry;
   }
