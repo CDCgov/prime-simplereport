@@ -39,7 +39,7 @@ export const useFacilityValidation = (facility: Facility) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
-        let errorMessage = createFieldError(field, facility);
+        const errorMessage = createFieldError(field, facility);
         setErrors((existingErrors) => ({
           ...existingErrors,
           [field]: errorMessage,

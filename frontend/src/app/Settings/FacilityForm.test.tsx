@@ -138,4 +138,30 @@ describe("FacilityForm", () => {
     });
     expect(saveFacility).toBeCalledTimes(1);
   });
+  it("only accepts live jurisdictions", async () => {
+    render(
+      <MemoryRouter>
+        <FacilityForm
+          facility={validFacility}
+          deviceOptions={devices}
+          saveFacility={saveFacility}
+        />
+      </MemoryRouter>
+    );
+    const stateDropdownElement = screen.getByTestId("facility-state-dropdown");
+    fireEvent.change(stateDropdownElement, { target: { selectedValue: "CA" } });
+    fireEvent.change(stateDropdownElement, { target: { value: "CA" } });
+    await waitFor(async () => {
+      fireEvent.blur(stateDropdownElement);
+    });
+
+    // There's a line break between these two statements, so they have to be separated
+    const warning = await screen.findByText(
+      "SimpleReport isn’t currently supported in",
+      { exact: false }
+    );
+    expect(warning).toBeInTheDocument();
+    const state = await screen.findByText("California", { exact: false });
+    expect(state).toBeInTheDocument();
+  });
 });

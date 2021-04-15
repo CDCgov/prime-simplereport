@@ -129,6 +129,7 @@ const FacilityInformation: React.FC<Props> = ({
         validationStatus={errors.state ? "error" : undefined}
         errorMessage={errors.state}
         selectClassName="usa-input--medium"
+        data-testid="facility-state-dropdown"
       />
     </div>
   );
