@@ -96,7 +96,7 @@
     semver "^5.4.1"
     source-map "^0.5.0"
 
-"@babel/core@^7.1.0", "@babel/core@^7.12.3", "@babel/core@^7.7.5", "@babel/core@^7.8.4", "@babel/core@^7.9.0":
+"@babel/core@^7.1.0", "@babel/core@^7.12.3", "@babel/core@^7.7.5", "@babel/core@^7.8.4":
   version "7.12.10"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.12.10.tgz#b79a2e1b9f70ed3d84bbfb6d8c4ef825f606bccd"
   integrity sha512-eTAlQKq65zHfkHZV0sIVODCPGVgoo1HdBlbSLi9CqOzuZanMv2ihzY+4paiKr1mH+XmYESMAmJ/dpZ68eN6d8w==
@@ -117,7 +117,7 @@
     semver "^5.4.1"
     source-map "^0.5.0"
 
-"@babel/core@^7.12.10":
+"@babel/core@^7.12.10", "@babel/core@^7.9.0":
   version "7.13.15"
   resolved "https://registry.yarnpkg.com/@babel/core/-/core-7.13.15.tgz#a6d40917df027487b54312202a06812c4f7792d0"
   integrity sha512-6GXmNYeNjS2Uz+uls5jalOemgIhnTMeaXo+yBUA72kC2uX/8VW6XyhVIo2L8/q0goKQA3EVKx0KOQpVKSeWadQ==
@@ -1426,11 +1426,11 @@
     "@babel/helper-plugin-utils" "^7.12.13"
 
 "@babel/plugin-transform-react-constant-elements@^7.9.0":
-  version "7.12.1"
-  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.12.1.tgz#4471f0851feec3231cc9aaa0dccde39947c1ac1e"
-  integrity sha512-KOHd0tIRLoER+J+8f9DblZDa1fLGPwaaN1DI1TVHuQFOpjHV22C3CUB3obeC4fexHY9nx+fH0hQNvLFFfA1mxA==
+  version "7.13.13"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-constant-elements/-/plugin-transform-react-constant-elements-7.13.13.tgz#0208b1d942bf939cd4f7aa5b255d42602aa4a920"
+  integrity sha512-SNJU53VM/SjQL0bZhyU+f4kJQz7bQQajnrZRSaU21hruG/NWY41AEM9AWXeXX90pYr/C2yAmTgI6yW3LlLrAUQ==
   dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
+    "@babel/helper-plugin-utils" "^7.13.0"
 
 "@babel/plugin-transform-react-display-name@7.12.1", "@babel/plugin-transform-react-display-name@^7.12.1":
   version "7.12.1"
@@ -1446,7 +1446,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.12.13"
 
-"@babel/plugin-transform-react-jsx-development@^7.12.1", "@babel/plugin-transform-react-jsx-development@^7.12.7":
+"@babel/plugin-transform-react-jsx-development@^7.12.1":
   version "7.12.7"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-jsx-development/-/plugin-transform-react-jsx-development-7.12.7.tgz#4c2a647de79c7e2b16bfe4540677ba3121e82a08"
   integrity sha512-Rs3ETtMtR3VLXFeYRChle5SsP/P9Jp/6dsewBQfokDSzKJThlsuFcnzLTDRALiUmTC48ej19YD9uN1mupEeEDg==
@@ -1476,7 +1476,7 @@
   dependencies:
     "@babel/helper-plugin-utils" "^7.10.4"
 
-"@babel/plugin-transform-react-jsx@^7.12.1", "@babel/plugin-transform-react-jsx@^7.12.10":
+"@babel/plugin-transform-react-jsx@^7.12.1":
   version "7.12.10"
   resolved "https://registry.yarnpkg.com/@babel/plugin-transform-react-jsx/-/plugin-transform-react-jsx-7.12.10.tgz#a7af3097c73479123594c8c8fe39545abebd44e3"
   integrity sha512-MM7/BC8QdHXM7Qc1wdnuk73R4gbuOpfrSUgfV/nODGc86sPY1tgmY2M9E9uAnf2e4DOIp8aKGWqgZfQxnTNGuw==
@@ -1735,7 +1735,7 @@
     core-js-compat "^3.6.2"
     semver "^5.5.0"
 
-"@babel/preset-env@^7.12.11":
+"@babel/preset-env@^7.12.11", "@babel/preset-env@^7.9.5":
   version "7.13.15"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.13.15.tgz#c8a6eb584f96ecba183d3d414a83553a599f478f"
   integrity sha512-D4JAPMXcxk69PKe81jRJ21/fP/uYdcTZ3hJDF5QX2HSI9bBxxYw/dumdR6dGumhjxlprHPE4XWoPaqzZUVy2MA==
@@ -1810,7 +1810,7 @@
     core-js-compat "^3.9.0"
     semver "^6.3.0"
 
-"@babel/preset-env@^7.8.4", "@babel/preset-env@^7.9.5":
+"@babel/preset-env@^7.8.4":
   version "7.12.10"
   resolved "https://registry.yarnpkg.com/@babel/preset-env/-/preset-env-7.12.10.tgz#ca981b95f641f2610531bd71948656306905e6ab"
   integrity sha512-Gz9hnBT/tGeTE2DBNDkD7BiWRELZt+8lSysHuDwmYXUIvtwZl0zI+D6mZgXZX0u8YBlLS4tmai9ONNY9tjRgRA==
@@ -1915,7 +1915,7 @@
     "@babel/plugin-transform-react-jsx-source" "^7.12.1"
     "@babel/plugin-transform-react-pure-annotations" "^7.12.1"
 
-"@babel/preset-react@^7.12.10":
+"@babel/preset-react@^7.12.10", "@babel/preset-react@^7.9.4":
   version "7.13.13"
   resolved "https://registry.yarnpkg.com/@babel/preset-react/-/preset-react-7.13.13.tgz#fa6895a96c50763fe693f9148568458d5a839761"
   integrity sha512-gx+tDLIE06sRjKJkVtpZ/t3mzCDOnPG+ggHZG9lffUbX8+wC739x20YQc9V35Do6ZAxaUc/HhVHIiOzz5MvDmA==
@@ -1925,17 +1925,6 @@
     "@babel/plugin-transform-react-display-name" "^7.12.13"
     "@babel/plugin-transform-react-jsx" "^7.13.12"
     "@babel/plugin-transform-react-jsx-development" "^7.12.17"
-    "@babel/plugin-transform-react-pure-annotations" "^7.12.1"
-
-"@babel/preset-react@^7.9.4":
-  version "7.12.10"
-  resolved "https://registry.yarnpkg.com/@babel/preset-react/-/preset-react-7.12.10.tgz#4fed65f296cbb0f5fb09de6be8cddc85cc909be9"
-  integrity sha512-vtQNjaHRl4DUpp+t+g4wvTHsLQuye+n0H/wsXIZRn69oz/fvNC7gQ4IK73zGJBaxvHoxElDvnYCthMcT7uzFoQ==
-  dependencies:
-    "@babel/helper-plugin-utils" "^7.10.4"
-    "@babel/plugin-transform-react-display-name" "^7.12.1"
-    "@babel/plugin-transform-react-jsx" "^7.12.10"
-    "@babel/plugin-transform-react-jsx-development" "^7.12.7"
     "@babel/plugin-transform-react-pure-annotations" "^7.12.1"
 
 "@babel/preset-typescript@7.12.1":
@@ -3818,10 +3807,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/eslint@^7.2.4":
-  version "7.2.6"
-  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-7.2.6.tgz#5e9aff555a975596c03a98b59ecd103decc70c3c"
-  integrity sha512-I+1sYH+NPQ3/tVqCeUSBwTE/0heyvtXqpIopUUArlBm0Kpocb8FbMa3AZ/ASKIFpN3rnEx932TTXDbt9OXsNDw==
+"@types/eslint@^7.2.6":
+  version "7.2.10"
+  resolved "https://registry.yarnpkg.com/@types/eslint/-/eslint-7.2.10.tgz#4b7a9368d46c0f8cd5408c23288a59aa2394d917"
+  integrity sha512-kUEPnMKrqbtpCq/KTaGFFKAcz6Ethm2EjCoKIDaCmfRBWLbFuTcOJfTlorwbnboXBzahqWLgUp1BQeKHiJzPUQ==
   dependencies:
     "@types/estree" "*"
     "@types/json-schema" "*"
@@ -8072,11 +8061,11 @@ eslint-visitor-keys@^2.0.0:
   integrity sha512-QudtT6av5WXels9WjIM7qz1XD1cWGvX4gGXvp/zBn9nXG02D0utdU3Em2m/QjTnrsk6bBjmCygl3rmj118msQQ==
 
 eslint-webpack-plugin@^2.1.0:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/eslint-webpack-plugin/-/eslint-webpack-plugin-2.4.1.tgz#9353ec46a31d29558734a38a05eb14c5760a7144"
-  integrity sha512-cj8iPWZKuAiVD8MMgTSunyMCAvxQxp5mxoPHZl1UMGkApFXaXJHdCFcCR+oZEJbBNhReNa5SjESIn34uqUbBtg==
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/eslint-webpack-plugin/-/eslint-webpack-plugin-2.5.3.tgz#a125585a1d8bb9c939f2a920a9bc9be4a21cdb58"
+  integrity sha512-LewNevZf9ghDCxCGT6QltNWVi8KIYWc4LKcin8K9Azh1hypG7YAmobUDIU67fAPa+eMjRnU4rjEkLbYI1w5/UA==
   dependencies:
-    "@types/eslint" "^7.2.4"
+    "@types/eslint" "^7.2.6"
     arrify "^2.0.1"
     jest-worker "^26.6.2"
     micromatch "^4.0.2"
@@ -9814,11 +9803,6 @@ ignore@^5.1.4:
   version "5.1.8"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.1.8.tgz#f150a8b50a34289b33e22f5889abd4d8016f0e57"
   integrity sha512-BMpfD7PpiETpBl/A6S498BaIJ6Y/ABT93ETbby2fP00v4EbvPBXWEoaR1UBPKs3iR53pJY7EtZk5KACI57i1Uw==
-
-immer@7.0.9:
-  version "7.0.9"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-7.0.9.tgz#28e7552c21d39dd76feccd2b800b7bc86ee4a62e"
-  integrity sha512-Vs/gxoM4DqNAYR7pugIxi0Xc8XAun/uy7AQu4fLLqaTBHxjOP9pJ266Q9MWA/ly4z6rAFZbvViOtihxUZ7O28A==
 
 immer@8.0.1:
   version "8.0.1"
@@ -14391,37 +14375,7 @@ react-colorful@^5.0.1:
   resolved "https://registry.yarnpkg.com/react-colorful/-/react-colorful-5.1.2.tgz#5cb1506b8f9104b88d02d34984a36c2d1e477e9e"
   integrity sha512-FRt9jz6xjiPqQ6bIAQ26kd0oJhHbGBwsA4BDz/F8FDCFuQJDiEl0wVUARNiqRyvQjwfKuhM42P/bMYI0l92hRw==
 
-react-dev-utils@^11.0.1:
-  version "11.0.1"
-  resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-11.0.1.tgz#30106c2055acfd6b047d2dc478a85c356e66fe45"
-  integrity sha512-rlgpCupaW6qQqvu0hvv2FDv40QG427fjghV56XyPcP5aKtOAPzNAhQ7bHqk1YdS2vpW1W7aSV3JobedxuPlBAA==
-  dependencies:
-    "@babel/code-frame" "7.10.4"
-    address "1.1.2"
-    browserslist "4.14.2"
-    chalk "2.4.2"
-    cross-spawn "7.0.3"
-    detect-port-alt "1.1.6"
-    escape-string-regexp "2.0.0"
-    filesize "6.1.0"
-    find-up "4.1.0"
-    fork-ts-checker-webpack-plugin "4.1.6"
-    global-modules "2.0.0"
-    globby "11.0.1"
-    gzip-size "5.1.1"
-    immer "7.0.9"
-    is-root "2.1.0"
-    loader-utils "2.0.0"
-    open "^7.0.2"
-    pkg-up "3.1.0"
-    prompts "2.4.0"
-    react-error-overlay "^6.0.8"
-    recursive-readdir "2.2.2"
-    shell-quote "1.7.2"
-    strip-ansi "6.0.0"
-    text-table "0.2.0"
-
-react-dev-utils@^11.0.3:
+react-dev-utils@^11.0.1, react-dev-utils@^11.0.3:
   version "11.0.4"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-11.0.4.tgz#a7ccb60257a1ca2e0efe7a83e38e6700d17aa37a"
   integrity sha512-dx0LvIGHcOPtKbeiSUM4jqpBl3TcY7CDjZdfOIcKeznE7BWr9dg0iPG90G5yfVQ+p/rGNMXdbfStvzQZEVEi4A==
@@ -14506,11 +14460,6 @@ react-element-to-jsx-string@^14.3.2:
   dependencies:
     "@base2/pretty-print-object" "1.0.0"
     is-plain-object "3.0.1"
-
-react-error-overlay@^6.0.8:
-  version "6.0.8"
-  resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.8.tgz#474ed11d04fc6bda3af643447d85e9127ed6b5de"
-  integrity sha512-HvPuUQnLp5H7TouGq3kzBeioJmXms1wHy9EGjz2OURWBp4qZO6AfGEcnxts1D/CbwPLRAgTMPCEgYhA3sEM4vw==
 
 react-error-overlay@^6.0.9:
   version "6.0.9"
