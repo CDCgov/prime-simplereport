@@ -77,7 +77,7 @@ class ApiUserAwareGraphQlContextBuilderTest {
   }
 
   private static Stream<Arguments> userProvider() {
-    var organizationA = new Organization("orgName", "externalId");
+    var organizationA = new Organization("orgName", "externalId", true);
     return Stream.of(
         Arguments.of(
             new UserInfo(

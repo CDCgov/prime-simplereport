@@ -13,7 +13,6 @@ import {
 import RadioGroup from "../../commonComponents/RadioGroup";
 import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { showError } from "../../utils";
-import "../EditPatient.scss";
 import FormGroup from "../../commonComponents/FormGroup";
 import {
   allPersonErrors,

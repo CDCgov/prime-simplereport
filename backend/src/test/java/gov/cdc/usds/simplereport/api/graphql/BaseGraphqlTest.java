@@ -209,8 +209,7 @@ public abstract class BaseGraphqlTest extends BaseFullStackTest {
    * @param queryFileName the resource file name of the query (to be found in
    *     src/test/resources/queries, unless a "/" is found in the filename)
    * @param operationName the operation name from the query file, in the event that the query file
-   *     is a multi-operation document (apparently). This turns out not to be needed for any of our
-   *     cases, but we can leave it supported for the day when it is.
+   *     is a multi-operation document.
    * @return the "data" key from the server response.
    * @throws AssertionFailedError if the response has errors
    * @throws RuntimeException for unexpected errors

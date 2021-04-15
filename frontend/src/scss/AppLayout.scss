@@ -39,9 +39,7 @@ main {
   }
 }
 
-.prime-radios
-  .usa-form-group:not(.prime-radio--horizontal__container)
-  .usa-radio {
+.prime-radios .usa-form-group:not(.prime-radio--horizontal__container) .usa-radio {
   margin-top: 1em;
 }
 
@@ -49,12 +47,15 @@ main {
   &.sr-width-sm {
     width: 8em;
   }
+
   &.sr-width-md {
     width: 10em;
   }
+
   &.sr-width-lg {
     width: 20em;
   }
+
   &.sr-width-xl {
     width: 40em;
   }
