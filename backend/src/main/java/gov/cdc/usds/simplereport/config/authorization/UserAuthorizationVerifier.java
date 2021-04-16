@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.config.authorization;
 import gov.cdc.usds.simplereport.api.model.errors.NonexistentUserException;
 import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -18,6 +17,7 @@ import gov.cdc.usds.simplereport.db.repository.PersonRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
 import gov.cdc.usds.simplereport.db.repository.TestOrderRepository;
 import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
+import gov.cdc.usds.simplereport.service.AuthorizationService;
 import gov.cdc.usds.simplereport.service.OrganizationService;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
@@ -41,7 +41,6 @@ public class UserAuthorizationVerifier {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserAuthorizationVerifier.class);
 
-  private SiteAdminEmailList _admins;
   private IdentitySupplier _supplier;
   private OrganizationService _orgService;
   private ApiUserRepository _userRepo;
@@ -51,9 +50,9 @@ public class UserAuthorizationVerifier {
   private TestOrderRepository _testOrderRepo;
   private PatientLinkRepository _patientLinkRepo;
   private OktaRepository _oktaRepo;
+  private AuthorizationService _authService;
 
   public UserAuthorizationVerifier(
-      SiteAdminEmailList admins,
       IdentitySupplier supplier,
       OrganizationService orgService,
       ApiUserRepository userRepo,
@@ -62,9 +61,9 @@ public class UserAuthorizationVerifier {
       TestEventRepository testEventRepo,
       TestOrderRepository testOrderRepo,
       PatientLinkRepository patientLinkRepo,
-      OktaRepository oktaRepo) {
+      OktaRepository oktaRepo,
+      AuthorizationService authService) {
     super();
-    this._admins = admins;
     this._supplier = supplier;
     this._orgService = orgService;
     this._userRepo = userRepo;
@@ -74,11 +73,11 @@ public class UserAuthorizationVerifier {
     this._testOrderRepo = testOrderRepo;
     this._patientLinkRepo = patientLinkRepo;
     this._oktaRepo = oktaRepo;
+    this._authService = authService;
   }
 
   public boolean userHasSiteAdminRole() {
-    IdentityAttributes id = _supplier.get();
-    return id != null && _admins.contains(id.getUsername().toLowerCase());
+    return _authService.isSiteAdmin();
   }
 
   public boolean userHasPermissions(Set<UserPermission> permissions) {
