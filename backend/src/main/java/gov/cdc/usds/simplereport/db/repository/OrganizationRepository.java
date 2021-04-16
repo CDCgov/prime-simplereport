@@ -16,5 +16,5 @@ public interface OrganizationRepository extends EternalAuditedEntityRepository<O
   public List<Organization> findAllByExternalId(Collection<String> externalIds);
 
   @Query(EternalAuditedEntityRepository.BASE_QUERY + " and e.identityVerified = :identityVerified")
-  public List<Organization> findAllByIdentityVerified(Boolean identityVerified);
+  public List<Organization> findAllByIdentityVerified(boolean identityVerified);
 }
