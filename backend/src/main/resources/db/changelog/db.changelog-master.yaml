@@ -1731,3 +1731,20 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
+  - changeSet:
+      id: add-test-length
+      author: emma@skylight.digital
+      comment: Add test length column to the device type table. Test length will be based on the model used.
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: test_length
+                  type: int
+                  remarks: The length (in minutes) that the test will take.
+                  defaultValueNumeric: 15
+                  valueComputed: (CASE WHEN name like '%CareStart%' THEN 10 ELSE 15 END)
+                  # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
+                  constraints:
+                    nullable: false
