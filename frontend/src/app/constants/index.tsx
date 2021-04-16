@@ -15,12 +15,11 @@ export const TEST_RESULT_DESCRIPTIONS: Record<TestResult, string> = {
 };
 
 export const RACE_VALUES: { value: Race; label: string }[] = [
-  { value: "native", label: "American Indian or Alaskan Native" },
+  { value: "native", label: "American Indian/Alaskan Native" },
   { value: "asian", label: "Asian" },
-  { value: "black", label: "Black or African American" },
-  { value: "pacific", label: "Native Hawaiian or other Pacific Islander" },
+  { value: "black", label: "Black/African American" },
+  { value: "pacific", label: "Native Hawaiian/other Pacific Islander" },
   { value: "white", label: "White" },
-  { value: "other", label: "Other" },
   { value: "refused", label: "Prefer not to answer" },
 ];
 
@@ -32,8 +31,8 @@ export const ROLE_VALUES: { value: Role; label: string }[] = [
 ];
 
 export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
-  { label: "Hispanic or Latino", value: "hispanic" },
-  { label: "Not Hispanic", value: "not_hispanic" },
+  { label: "Yes", value: "hispanic" },
+  { label: "No", value: "not_hispanic" },
   { label: "Prefer not to answer", value: "refused" },
 ];
 export const GENDER_VALUES: { value: Gender; label: string }[] = [
