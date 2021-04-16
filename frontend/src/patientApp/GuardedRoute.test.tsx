@@ -28,7 +28,7 @@ const mockContainer = (auth: boolean) => (
 describe("GuardedRoute", () => {
   it("should not redirect to '/' if auth is true", () => {
     const { getByText } = render(mockContainer(true));
-    expect(getByText("Terms of Service")).toBeInTheDocument();
+    expect(getByText("Terms of service")).toBeInTheDocument();
   });
   it("should redirect to '/' if auth is false", () => {
     const { getByText } = render(mockContainer(false));
