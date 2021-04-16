@@ -378,15 +378,15 @@ export const resultsCountByPatientQuery = gql`
   }
 `;
 
-type TestResultsListProps = Omit<
-  Props,
+type OmittedProps =
   | InjectedQueryWrapperProps
   | "pageCount"
   | "entriesPerPage"
   | "totalEntries"
   | "facilityId"
-  | "setSelectedPatientId"
->;
+  | "setSelectedPatientId";
+
+type TestResultsListProps = Omit<Props, OmittedProps>;
 
 const TestResultsList = (props: TestResultsListProps) => {
   const activeFacilityId = useSelector(

@@ -28,23 +28,17 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
   const [dialogPatient, setDialogPatient] = useState<Patient | null>(null);
   const [canAddToQueue, setCanAddToQueue] = useState(false);
 
-  const canAddToTestQueue =
-    props.page === "queue"
-      ? (patientId = "") => {
-          return props.patientsInQueue.indexOf(patientId) === -1;
-        }
-      : () => false;
-  let results;
-
   const actionByPage = (patient: Patient) => {
     if (props.page === "queue") {
-      return canAddToTestQueue(patient.internalId) ? (
+      const canAddToTestQueue =
+        props.patientsInQueue.indexOf(patient.internalId) === -1;
+      return canAddToTestQueue ? (
         <Button
           variant="unstyled"
           label="Begin test"
           onClick={() => {
             setDialogPatient(patient);
-            setCanAddToQueue(canAddToTestQueue(patient.internalId));
+            setCanAddToQueue(canAddToTestQueue);
           }}
         />
       ) : (
@@ -64,42 +58,39 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
     return "";
   };
 
-  if (!shouldShowSuggestions) {
-    results = null;
+  let resultsContent;
+  if (loading) {
+    resultsContent = <p>Searching...</p>;
+  } else if (patients.length === 0) {
+    resultsContent = <p>No results</p>;
   } else {
-    results = (
-      <div className="card-container shadow-3 results-dropdown">
-        <div className="usa-card__body">
-          {loading ? (
-            <p>Searching...</p>
-          ) : patients.length === 0 ? (
-            <p>No results</p>
-          ) : (
-            <table className="usa-table usa-table--borderless">
-              <thead>
-                <tr>
-                  <th scope="col">Full name</th>
-                  <th scope="col">Date of birth</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {patients.map((p) => (
-                  <tr key={p.internalId}>
-                    <td>
-                      {displayFullName(p.firstName, p.middleName, p.lastName)}
-                    </td>
-                    <td>{p.birthDate}</td>
-                    <td>{actionByPage(p)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </div>
+    resultsContent = (
+      <table className="usa-table usa-table--borderless">
+        <thead>
+          <tr>
+            <th scope="col">Full name</th>
+            <th scope="col">Date of birth</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {patients.map((p) => (
+            <tr key={p.internalId}>
+              <td>{displayFullName(p.firstName, p.middleName, p.lastName)}</td>
+              <td>{p.birthDate}</td>
+              <td>{actionByPage(p)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     );
   }
+
+  const results = (
+    <div className="card-container shadow-3 results-dropdown">
+      <div className="usa-card__body">{resultsContent}</div>
+    </div>
+  );
 
   return (
     <>
