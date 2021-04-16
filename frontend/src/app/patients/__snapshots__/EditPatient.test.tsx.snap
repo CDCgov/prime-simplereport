@@ -1022,24 +1022,6 @@ Object {
                           No
                         </label>
                       </div>
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="35-val-refused"
-                          name="ethnicity"
-                          type="radio"
-                          value="refused"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="35-val-refused"
-                        >
-                          Prefer not to answer
-                        </label>
-                      </div>
                     </div>
                   </fieldset>
                   <fieldset

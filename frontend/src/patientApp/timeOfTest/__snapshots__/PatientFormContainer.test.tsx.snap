@@ -1039,27 +1039,6 @@ exports[`PatientFormContainer snapshot 1`] = `
                     No
                   </label>
                 </div>
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="15-val-refused"
-                    name="ethnicity"
-                    onChange={[Function]}
-                    type="radio"
-                    value="refused"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="15-val-refused"
-                  >
-                    Prefer not to answer
-                  </label>
-                </div>
               </div>
             </fieldset>
             <fieldset
