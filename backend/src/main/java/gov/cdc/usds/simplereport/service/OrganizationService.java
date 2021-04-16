@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.service;
 
+import gov.cdc.usds.simplereport.api.CurrentOrganizationRolesContextHolder;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
@@ -38,21 +39,27 @@ public class OrganizationService {
   private ProviderRepository _providerRepo;
   private AuthorizationService _authService;
   private OktaRepository _oktaRepo;
+  private CurrentOrganizationRolesContextHolder _currentFacilityHolder;
 
   public OrganizationService(
       OrganizationRepository repo,
       FacilityRepository facilityRepo,
       AuthorizationService authService,
       ProviderRepository providerRepo,
-      OktaRepository oktaRepo) {
+      OktaRepository oktaRepo,
+      CurrentOrganizationRolesContextHolder currentFacilityHolder) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
+    _currentFacilityHolder = currentFacilityHolder;
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
+    if (_currentFacilityHolder.hasOrganizationRoles()) {
+      return _currentFacilityHolder.getOrganizationRoles();
+    }
     List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
         orgRoles.stream()
@@ -69,7 +76,9 @@ public class OrganizationService {
         orgRoles.stream()
             .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
             .findFirst();
-    return foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
+    Optional<OrganizationRoles> result = foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
+    _currentFacilityHolder.setOrganizationRoles(result);
+    return result;
   }
 
   public Set<Facility> getAccessibleFacilities() {
