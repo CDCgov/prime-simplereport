@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -40,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-  @Autowired private SiteAdminEmailList _siteAdmins;
+  @Autowired private AuthorizationService _authService;
 
   @Autowired private ApiUserRepository _apiUserRepo;
 
@@ -171,8 +170,10 @@ public class ApiUserService {
     return result;
   }
 
+  // In the future, this should be removed, but in the meantime, always return false.
+  // For more detail see comments on: https://github.com/CDCgov/prime-simplereport/pull/1218
   public boolean isAdmin(ApiUser user) {
-    return _siteAdmins.contains(user.getLoginEmail());
+    return false;
   }
 
   // Creating separate getCurrentApiUser() methods because the auditing use case and
@@ -249,7 +250,7 @@ public class ApiUserService {
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    boolean isAdmin = isAdmin(currentUser);
+    boolean isAdmin = _authService.isSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 
