@@ -31,8 +31,7 @@ module "bastion" {
   resource_group_location = local.rg_location
   resource_group_name     = local.rg_name
 
-  virtual_network_name = module.vnet.network_name
-  subnet_cidr          = [cidrsubnet(local.network_cidr, 11, 2024)] # ["10.3.253.0/27"]
+  virtual_network = module.vnet.network
 
   tags = local.management_tags
 }

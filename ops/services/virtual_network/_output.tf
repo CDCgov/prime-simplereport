@@ -10,6 +10,6 @@ output "subnet_webapp_id" {
   value = azurerm_subnet.webapp.id
 }
 
-output "network_name" {
-  value = azurerm_virtual_network.vn.name
+output "network" {
+  value = azurerm_virtual_network.vn
 }

@@ -28,7 +28,7 @@ resource "azurerm_subnet" "vms" {
   name                                           = "${var.env}-vms"
   resource_group_name                            = var.resource_group_name
   virtual_network_name                           = azurerm_virtual_network.vn.name
-  address_prefixes                               = [cidrsubnet(var.network_address, 8, 252)]
+  address_prefixes                               = [cidrsubnet(var.network_address, 8, 252)] # X.X.252.0/24
   enforce_private_link_endpoint_network_policies = true
 }
 
@@ -36,14 +36,14 @@ resource "azurerm_subnet" "lbs" {
   name                 = "${local.subnet_basename}-lb"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 254)]
+  address_prefixes     = [cidrsubnet(var.network_address, 8, 254)] # X.X.254.0/24
 }
 
 resource "azurerm_subnet" "webapp" {
   name                 = "${local.subnet_basename}-webapp"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
-  address_prefixes     = [cidrsubnet(var.network_address, 8, 100)]
+  address_prefixes     = [cidrsubnet(var.network_address, 8, 100)] # X.X.100.0/24
 
   delegation {
     name = "serverfarms"
