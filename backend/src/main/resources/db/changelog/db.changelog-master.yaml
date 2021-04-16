@@ -1716,25 +1716,6 @@ databaseChangeLog:
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
   - changeSet:
-      id: add-test-length
-      author: emma@skylight.digital
-      comment: Add test length column to the device type table. Test length will be based on the model used.
-      validCheckSum: # hopefully this is temporary because I have no idea why the checksum changed. Putting it in so I can test changes
-        - "8:1fc847472c39db08ed0c4428eabbaaa2"
-      changes:
-        - addColumn:
-            tableName: device_type
-            columns:
-              - column:
-                  name: test_length
-                  type: int
-                  remarks: The length (in minutes) that the test will take.
-                  valueNumeric: 15 # backfill the default test length to 15 minutes, since almost all devices have a 15 min test.
-                  defaultValueNumeric: 15
-                  valueComputed: (SELECT name, CASE WHEN name = 'Access io CareStart' THEN 10 END FROM ${database.defaultSchemaName}.device_type)
-                  constraints:
-                    nullable: false
-  - changeSet:
       id: add-org-verified
       author: jeremy.a.zitomer@omb.eop.gov
       comment: Add a required boolean column to the organization table named identity_verified, existing records set to true.
@@ -1748,5 +1729,22 @@ databaseChangeLog:
                   remarks: Whether this organization's identity has been verified.
                   valueBoolean: true
                   defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-test-length
+      author: emma@skylight.digital
+      comment: Add test length column to the device type table. Test length will be based on the model used.
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: test_length
+                  type: int
+                  remarks: The length (in minutes) that the test will take.
+                  defaultValueNumeric: 15
+                  valueComputed: (SELECT name, CASE WHEN name = 'Access io CareStart' THEN 10 ELSE 15 END FROM ${database.defaultSchemaName}.device_type)
+                  # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
                   constraints:
                     nullable: false
