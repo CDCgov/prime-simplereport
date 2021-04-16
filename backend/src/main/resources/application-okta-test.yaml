@@ -6,4 +6,4 @@ okta:
 simple-report:
   authorization:
     role-claim: test_roles
-    role-prefix: "SR-TEST-TENANT:"
+    environment-name: "TEST"
