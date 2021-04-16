@@ -65,11 +65,16 @@ less common or more advanced commands.
 
 ## Tasks
 
+Things you may need to do for several different tasks:
+
+- Find the commit that is currently deployed to the API in a given environment: `export SHORT_COMMIT=$(curl -s https://api-${ENVIRONMENT}.simplereport.gov/actuator/info | jq -r '.git.commit.id')`
+- Find the commit of the latest tag released to production: `export SHORT_COMMIT=$(git tag --list --sort -committerdate --format='%(objectname:short=7)' | head -1)`
+
 ### Adding an env var
 1. update `${ENVIRONMENT}/api.tf` and `${ENVIRONMENT}/_data_.tf`
 2. cd `${ENVIRONMENT}`
 3. `terraform init`
-4. `terraform plan -var="acr_image_tag=${SHORT_COMMIT}" -out=plan.tfplan` GITHUB_SHA should be the value of the currently deployed commit. This can be accessed /api/actuator/info.
+4. `terraform plan -var="acr_image_tag=${SHORT_COMMIT}" -out=plan.tfplan` (see above for the value of `SHORT_COMMIT`)
 5. Review the terraform plan. NOTE: If you see a change to the azure container register url then you need to update `acr_image_tag` to the correct value
 6. `terraform apply "plan.tfplan"`
 

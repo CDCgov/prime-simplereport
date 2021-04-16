@@ -15,15 +15,19 @@ public class Organization extends EternalAuditedEntity {
   @NaturalId
   private String externalId;
 
+  @Column(nullable = false)
+  private boolean identityVerified;
+
   protected Organization() {
     /* for hibernate */
   }
 
   @ConstructorBinding
-  public Organization(String orgName, String externalId) {
+  public Organization(String orgName, String externalId, boolean identityVerified) {
     this();
     this.organizationName = orgName;
     this.externalId = externalId;
+    this.identityVerified = identityVerified;
   }
 
   public String getOrganizationName() {
@@ -36,5 +40,9 @@ public class Organization extends EternalAuditedEntity {
 
   public String getExternalId() {
     return externalId;
+  }
+
+  public boolean getIdentityVerified() {
+    return identityVerified;
   }
 }

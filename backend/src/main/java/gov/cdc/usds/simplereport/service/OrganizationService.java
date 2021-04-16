@@ -52,13 +52,6 @@ public class OrganizationService {
     _oktaRepo = oktaRepo;
   }
 
-  public void migrateOktaGroups() {
-    // migrate existing orgs/facilities to Okta groups on startup
-    for (Organization org : _repo.findAll()) {
-      _oktaRepo.createOrganization(org, getFacilities(org), true);
-    }
-  }
-
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
     List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
     List<String> candidateExternalIds =
@@ -209,7 +202,8 @@ public class OrganizationService {
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
-    Organization org = _repo.save(new Organization(name, externalId));
+    // for now, all new organizations have identity_verified = true by default
+    Organization org = _repo.save(new Organization(name, externalId, true));
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));

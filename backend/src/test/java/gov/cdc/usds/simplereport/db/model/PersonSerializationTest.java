@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -46,7 +47,7 @@ class PersonSerializationTest {
 
   @Test
   void serialize_withoutFacility_valuesStored() throws IOException {
-    Organization fakeOrg = new Organization("ABC", "123");
+    Organization fakeOrg = new Organization("ABC", "123", true);
     Person p = makeSerializablePerson(fakeOrg);
     JsonContent<Person> serialized = _tester.write(p);
     assertThat(serialized).extractingJsonPathStringValue("firstName").isEqualTo("John");
@@ -68,7 +69,7 @@ class PersonSerializationTest {
 
   @Test
   void serialize_withFacility_noOrgOrFacility() throws IOException {
-    Organization fakeOrg = new Organization("ABC", "123");
+    Organization fakeOrg = new Organization("ABC", "123", true);
     Person p = makeSerializablePerson(fakeOrg);
     Provider mccoy = new Provider("Doc", "", "", "", "NCC1701", null, "(1) (111) 2222222");
     DeviceSpecimenType ds =
@@ -119,6 +120,7 @@ class PersonSerializationTest {
             "a@b.c",
             "marathon",
             "generic",
+            Arrays.asList("123"),
             "Male-ish",
             true,
             false);

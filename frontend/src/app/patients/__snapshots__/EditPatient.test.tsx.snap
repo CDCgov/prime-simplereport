@@ -261,6 +261,16 @@ Object {
                         </option>
                       </select>
                     </div>
+                    <fieldset
+                      class="usa-fieldset"
+                    >
+                      <label
+                        class="usa-label"
+                        for="preferred-language"
+                      >
+                        Preferred language
+                      </label>
+                    </fieldset>
                   </div>
                   <div
                     class="usa-form"
@@ -985,6 +995,15 @@ Object {
                     </div>
                   </fieldset>
                   <fieldset
+                    class="usa-fieldset"
+                  >
+                    <legend
+                      class="usa-legend"
+                    >
+                      Tribal affiliation
+                    </legend>
+                  </fieldset>
+                  <fieldset
                     class="usa-fieldset prime-radios"
                   >
                     <legend
@@ -1119,7 +1138,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Resident in congregate care/living setting?
+                      Are you a resident in a congregate living setting?
                       <span
                         class="usa-sr-only"
                       >
@@ -1131,6 +1150,11 @@ Object {
                          *
                       </span>
                     </legend>
+                    <span
+                      class="usa-hint text-ls-1"
+                    >
+                      For example: nursing home, group home, prison, jail, or military
+                    </span>
                     <div
                       class="usa-form-group"
                     >
@@ -1179,7 +1203,7 @@ Object {
                     <legend
                       class="usa-legend"
                     >
-                      Work in Healthcare?
+                      Are you a health care worker?
                       <span
                         class="usa-sr-only"
                       >
@@ -1513,6 +1537,16 @@ Object {
                       </option>
                     </select>
                   </div>
+                  <fieldset
+                    class="usa-fieldset"
+                  >
+                    <label
+                      class="usa-label"
+                      for="preferred-language"
+                    >
+                      Preferred language
+                    </label>
+                  </fieldset>
                 </div>
                 <div
                   class="usa-form"
@@ -2237,6 +2271,15 @@ Object {
                   </div>
                 </fieldset>
                 <fieldset
+                  class="usa-fieldset"
+                >
+                  <legend
+                    class="usa-legend"
+                  >
+                    Tribal affiliation
+                  </legend>
+                </fieldset>
+                <fieldset
                   class="usa-fieldset prime-radios"
                 >
                   <legend
@@ -2371,7 +2414,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Resident in congregate care/living setting?
+                    Are you a resident in a congregate living setting?
                     <span
                       class="usa-sr-only"
                     >
@@ -2383,6 +2426,11 @@ Object {
                        *
                     </span>
                   </legend>
+                  <span
+                    class="usa-hint text-ls-1"
+                  >
+                    For example: nursing home, group home, prison, jail, or military
+                  </span>
                   <div
                     class="usa-form-group"
                   >
@@ -2431,7 +2479,7 @@ Object {
                   <legend
                     class="usa-legend"
                   >
-                    Work in Healthcare?
+                    Are you a health care worker?
                     <span
                       class="usa-sr-only"
                     >

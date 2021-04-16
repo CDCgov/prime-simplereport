@@ -7,22 +7,6 @@ graphql.servlet.cors:
     - https://simple-report-dev.azureedge.net
     - https://dev.simplereport.gov
 simple-report:
-  site-admin-emails:
-    - bwarfield@cdc.gov
-    - tim.best@usds.dhs.gov
-    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
-    - jonathan.eskew@cms.hhs.gov
-    - neil.s.sharma@omb.eop.gov
-    - wsullivan@cdc.gov
-    - jeremy.a.zitomer@omb.eop.gov
-    - nicholas.scialli@usds.dhs.gov
-    - qrk8@cdc.gov # Sparkle
-    - thomas.a.nielsen@omb.eop.gov
-    - adam@skylight.digital
-    - josh@skylight.digital
-    - qom5@cdc.gov # Heather
-    - qpu1@cdc.gov # Katherine
-    - qyl5@cdc.gov # Brett
   data-hub:
     upload-enabled: false
     upload-url: "https://prime-data-hub-test.azurefd.net/api/reports?option=SkipInvalidItems"

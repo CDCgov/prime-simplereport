@@ -8,6 +8,8 @@ import RequiredMessage from "../../commonComponents/RequiredMessage";
 import { LinkWithQuery } from "../../commonComponents/LinkWithQuery";
 import Alert from "../../commonComponents/Alert";
 import { showNotification } from "../../utils";
+import { stateCodes, urls } from "../../../config/constants";
+import { getStateNameFromCode } from "../../utils/state";
 
 import ManageDevices from "./Components/ManageDevices";
 import OrderingProviderSettings from "./Components/OrderingProvider";
@@ -38,9 +40,10 @@ export const useFacilityValidation = (facility: Facility) => {
         clearError(field);
         await facilitySchema.validateAt(field, facility);
       } catch (e) {
+        const errorMessage = createFieldError(field, facility);
         setErrors((existingErrors) => ({
           ...existingErrors,
-          [field]: allFacilityErrors[field],
+          [field]: errorMessage,
         }));
       }
     },
@@ -57,7 +60,7 @@ export const useFacilityValidation = (facility: Facility) => {
           acc: FacilityErrors,
           el: { path: keyof FacilityErrors; message: string }
         ) => {
-          acc[el.path] = allFacilityErrors[el.path];
+          acc[el.path] = createFieldError(el.path, facility);
           return acc;
         },
         {} as FacilityErrors
@@ -76,6 +79,31 @@ export const useFacilityValidation = (facility: Facility) => {
   };
 
   return { errors, validateField, validateFacility };
+};
+
+const createFieldError = (field: keyof FacilityErrors, facility: Facility) => {
+  // The `state` field may produce two different errors: one indicating
+  // that no option has been selected and the other indicating that
+  // SimpleReport has not gone live in that particular state.
+  if (field === "state" && stateCodes.includes(facility[field])) {
+    return (
+      <>
+        <span>
+          SimpleReport isn’t currently supported in{" "}
+          {getStateNameFromCode(facility.state)}.
+        </span>
+        <span className="display-block margin-top-05">
+          See a{" "}
+          <a href={urls.FACILITY_INFO}>
+            {" "}
+            list of states where SimpleReport is supported
+          </a>
+          .
+        </span>
+      </>
+    );
+  }
+  return allFacilityErrors[field];
 };
 
 interface Props {

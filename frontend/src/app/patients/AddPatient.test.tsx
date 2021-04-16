@@ -123,6 +123,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {
@@ -155,6 +156,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {
@@ -196,8 +198,11 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Are you a resident in a congregate living setting": {
+              label: "No",
+              value: "No",
+            },
+            "Are you a health care worker": { label: "Yes", value: "Yes" },
           }
         );
         await act(async () => {
@@ -277,8 +282,11 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Are you a resident in a congregate living setting": {
+              label: "No",
+              value: "No",
+            },
+            "Are you a health care worker": { label: "Yes", value: "Yes" },
           }
         );
 

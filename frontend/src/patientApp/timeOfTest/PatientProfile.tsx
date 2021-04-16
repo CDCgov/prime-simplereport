@@ -8,6 +8,7 @@ import {
   RACE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
+  TRIBAL_AFFILIATION_VALUES,
 } from "../../app/constants";
 
 interface Props {
@@ -31,6 +32,11 @@ const PatientProfile = ({ patient }: Props) => {
   const ethnicity = ETHNICITY_VALUES.find(
     (val) => val.value === patient.ethnicity
   )?.label;
+  const tribalAffiliation =
+    patient.tribalAffiliation?.length &&
+    TRIBAL_AFFILIATION_VALUES.find(
+      (val) => val.value === patient.tribalAffiliation[0]
+    )?.label;
   const gender = GENDER_VALUES.find((val) => val.value === patient.gender)
     ?.label;
 
@@ -50,6 +56,8 @@ const PatientProfile = ({ patient }: Props) => {
       </h2>
       <h3 className="font-heading-sm">Name</h3>
       <p>{fullName}</p>
+      <h3 className="font-heading-sm">Preferred Language</h3>
+      <p>{patient.preferredLanguage || notProvided}</p>
       <h3 className="font-heading-sm">Date of birth</h3>
       <p>
         {patient.birthDate
@@ -71,6 +79,8 @@ const PatientProfile = ({ patient }: Props) => {
       <p></p> */}
       <h3 className="font-heading-sm">Ethnicity</h3>
       <p>{ethnicity || notProvided}</p>
+      <h3 className="font-heading-sm">Tribal Affiliation</h3>
+      <p>{tribalAffiliation || notProvided}</p>
       <h3 className="font-heading-sm">Biological sex</h3>
       <p>{gender || notProvided}</p>
       <h2 className="prime-formgroup-heading font-heading-lg">Other</h2>

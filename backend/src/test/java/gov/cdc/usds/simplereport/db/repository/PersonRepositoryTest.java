@@ -28,8 +28,8 @@ class PersonRepositoryTest extends BaseRepositoryTest {
 
   @Test
   void doPersonOperations() {
-    Organization org = _orgRepo.save(new Organization("Here", "there"));
-    Organization other = _orgRepo.save(new Organization("There", "where?"));
+    Organization org = _orgRepo.save(new Organization("Here", "there", true));
+    Organization other = _orgRepo.save(new Organization("There", "where?", true));
 
     _repo.save(
         new Person(
@@ -46,6 +46,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             "",
             null,
             "",
+            null,
             "",
             false,
             false));
