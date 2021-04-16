@@ -1744,7 +1744,7 @@ databaseChangeLog:
                   type: int
                   remarks: The length (in minutes) that the test will take.
                   defaultValueNumeric: 15
-                  valueComputed: (SELECT name, CASE WHEN name = 'Access io CareStart' THEN 10 ELSE 15 END FROM ${database.defaultSchemaName}.device_type)
+                  valueComputed: (CASE WHEN name like '%CareStart%' THEN 10 ELSE 15 END)
                   # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
                   constraints:
                     nullable: false
