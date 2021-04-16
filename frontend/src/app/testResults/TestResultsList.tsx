@@ -143,6 +143,81 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
   return "Unknown";
 }
 
+function testResultRows(
+  testResults: any,
+  setPrintModalId: SetStateAction<any>,
+  setMarkErrorId: SetStateAction<any>
+) {
+  const byDateTested = (a: any, b: any) => {
+    // ISO string dates sort nicely
+    if (a.dateTested === b.dateTested) return 0;
+    if (a.dateTested < b.dateTested) return 1;
+    return -1;
+  };
+
+  if (testResults.length === 0) {
+    return (
+      <tr>
+        <td>No results</td>
+      </tr>
+    );
+  }
+
+  // `sort` mutates the array, so make a copy
+  return [...testResults].sort(byDateTested).map((r) => {
+    const removed = r.correctionStatus === "REMOVED";
+    const actionItems = [
+      { name: "Print result", action: () => setPrintModalId(r.internalId) },
+    ];
+    if (!removed) {
+      actionItems.push({
+        name: "Mark as error",
+        action: () => setMarkErrorId(r.internalId),
+      });
+    }
+    return (
+      <tr
+        key={r.internalId}
+        title={removed ? "Marked as error" : ""}
+        className={classnames(
+          "sr-test-result-row",
+          removed && "sr-test-result-row--removed"
+        )}
+        data-patient-link={
+          r.patientLink
+            ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
+            : null
+        }
+      >
+        <th scope="row">
+          {displayFullName(
+            r.patient.firstName,
+            r.patient.middleName,
+            r.patient.lastName
+          )}
+          <span className="display-block text-base font-ui-2xs">
+            DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
+          </span>
+        </th>
+        <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
+        <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
+        <td>{r.deviceType.name}</td>
+        <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
+        <td>
+          {displayFullNameInOrder(
+            r.createdBy.nameInfo.firstName,
+            r.createdBy.nameInfo.middleName,
+            r.createdBy.nameInfo.lastName
+          )}
+        </td>
+        <td>
+          <ActionsMenu items={actionItems} />
+        </td>
+      </tr>
+    );
+  });
+}
+
 export const DetachedTestResultsList: any = ({
   data,
   refetch,
@@ -209,76 +284,7 @@ export const DetachedTestResultsList: any = ({
 
   const testResults = data?.testResults || data?.testResultsByPatient || [];
 
-  const testResultRows = () => {
-    const byDateTested = (a: any, b: any) => {
-      // ISO string dates sort nicely
-      if (a.dateTested === b.dateTested) return 0;
-      if (a.dateTested < b.dateTested) return 1;
-      return -1;
-    };
-
-    if (testResults.length === 0) {
-      return (
-        <tr>
-          <td>No results</td>
-        </tr>
-      );
-    }
-
-    // `sort` mutates the array, so make a copy
-    return [...testResults].sort(byDateTested).map((r) => {
-      const removed = r.correctionStatus === "REMOVED";
-      const actionItems = [
-        { name: "Print result", action: () => setPrintModalId(r.internalId) },
-      ];
-      if (!removed) {
-        actionItems.push({
-          name: "Mark as error",
-          action: () => setMarkErrorId(r.internalId),
-        });
-      }
-      return (
-        <tr
-          key={r.internalId}
-          title={removed ? "Marked as error" : ""}
-          className={classnames(
-            "sr-test-result-row",
-            removed && "sr-test-result-row--removed"
-          )}
-          data-patient-link={
-            r.patientLink
-              ? `${getUrl()}pxp?plid=${r.patientLink.internalId}`
-              : null
-          }
-        >
-          <th scope="row">
-            {displayFullName(
-              r.patient.firstName,
-              r.patient.middleName,
-              r.patient.lastName
-            )}
-            <span className="display-block text-base font-ui-2xs">
-              DOB: {moment(r.patient.birthDate).format("MM/DD/YYYY")}
-            </span>
-          </th>
-          <td>{moment(r.dateTested).format("MM/DD/YYYY h:mma")}</td>
-          <td>{TEST_RESULT_DESCRIPTIONS[r.result as Results]}</td>
-          <td>{r.deviceType.name}</td>
-          <td>{hasSymptoms(r.noSymptoms, r.symptoms)}</td>
-          <td>
-            {displayFullNameInOrder(
-              r.createdBy.nameInfo.firstName,
-              r.createdBy.nameInfo.middleName,
-              r.createdBy.nameInfo.lastName
-            )}
-          </td>
-          <td>
-            <ActionsMenu items={actionItems} />
-          </td>
-        </tr>
-      );
-    });
-  };
+  const rows = testResultRows(testResults, setPrintModalId, setMarkErrorId);
 
   return (
     <main className="prime-home">
@@ -343,7 +349,7 @@ export const DetachedTestResultsList: any = ({
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>{testResultRows()}</tbody>
+                <tbody>{rows}</tbody>
               </table>
             </div>
             <div className="usa-card__footer">
@@ -372,17 +378,17 @@ export const resultsCountByPatientQuery = gql`
   }
 `;
 
-const TestResultsList = (
-  props: Omit<
-    Props,
-    | InjectedQueryWrapperProps
-    | "pageCount"
-    | "entriesPerPage"
-    | "totalEntries"
-    | "facilityId"
-    | "setSelectedPatientId"
-  >
-) => {
+type TestResultsListProps = Omit<
+  Props,
+  | InjectedQueryWrapperProps
+  | "pageCount"
+  | "entriesPerPage"
+  | "totalEntries"
+  | "facilityId"
+  | "setSelectedPatientId"
+>;
+
+const TestResultsList = (props: TestResultsListProps) => {
   const activeFacilityId = useSelector(
     (state) => (state as any).facility.id as string
   );

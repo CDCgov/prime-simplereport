@@ -36,6 +36,34 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
       : () => false;
   let results;
 
+  const actionByPage = (patient: Patient) => {
+    if (props.page === "queue") {
+      return canAddToTestQueue(patient.internalId) ? (
+        <Button
+          variant="unstyled"
+          label="Begin test"
+          onClick={() => {
+            setDialogPatient(patient);
+            setCanAddToQueue(canAddToTestQueue(patient.internalId));
+          }}
+        />
+      ) : (
+        "Test in progress"
+      );
+    } else if (props.page === "test-results") {
+      return (
+        <Button
+          variant="unstyled"
+          label="Get test results"
+          onClick={() => {
+            props.onPatientSelect(patient);
+          }}
+        />
+      );
+    }
+    return "";
+  };
+
   if (!shouldShowSuggestions) {
     results = null;
   } else {
@@ -62,30 +90,7 @@ const SearchResults = (props: QueueProps | TestResultsProps) => {
                       {displayFullName(p.firstName, p.middleName, p.lastName)}
                     </td>
                     <td>{p.birthDate}</td>
-                    <td>
-                      {props.page === "queue" ? (
-                        canAddToTestQueue(p.internalId) ? (
-                          <Button
-                            variant="unstyled"
-                            label="Begin test"
-                            onClick={() => {
-                              setDialogPatient(p);
-                              setCanAddToQueue(canAddToTestQueue(p.internalId));
-                            }}
-                          />
-                        ) : (
-                          "Test in progress"
-                        )
-                      ) : (
-                        <Button
-                          variant="unstyled"
-                          label="Get test results"
-                          onClick={() => {
-                            props.onPatientSelect(p);
-                          }}
-                        />
-                      )}
-                    </td>
+                    <td>{actionByPage(p)}</td>
                   </tr>
                 ))}
               </tbody>
