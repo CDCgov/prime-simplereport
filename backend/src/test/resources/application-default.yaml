@@ -32,7 +32,7 @@ logging:
     # org.springframework.security: DEBUG
 simple-report:
   authorization:
-    role-prefix: "SR-UNITTEST-TENANT:"
+    environment-name: "UNITTEST"
   sendgrid:
     enabled: false
     from-email: support@simplereport.gov
@@ -41,10 +41,10 @@ simple-report:
       - Protect-ServiceDesk@hhs.gov
     waitlist-recipient: 
       - support@simplereport.gov
-  site-admin-emails:
-    - ruby@example.com
-    - notruby@example.com
   demo-users:
+    site-admin-emails:
+      - ruby@example.com
+      - notruby@example.com
     # These users are mapped to constants in TestUserIdentities. Do not modify casually!
     alternate-users:
       - identity: # STANDARD_USER

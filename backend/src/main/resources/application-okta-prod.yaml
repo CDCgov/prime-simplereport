@@ -6,4 +6,4 @@ okta:
 simple-report:
   authorization:
     role-claim: prod_roles
-    role-prefix: "SR-PROD-TENANT:"
+    environment-name: "PROD"

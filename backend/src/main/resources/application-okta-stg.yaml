@@ -6,4 +6,4 @@ okta:
 simple-report:
   authorization:
     role-claim: stg_roles
-    role-prefix: "SR-STG-TENANT:"
+    environment-name: "STG"

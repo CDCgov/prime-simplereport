@@ -69,7 +69,9 @@ describe("PatientFormContainer", () => {
     });
     it("shows required field instruction once", () => {
       expect(
-        screen.getByText("All fields marked with", { exact: false })
+        screen.getByText("Required fields are marked with an asterisk", {
+          exact: false,
+        })
       ).toBeInTheDocument();
     });
     it("doesn't show a facility input", () => {
