@@ -325,7 +325,8 @@ export const DetachedTestResultsList: any = ({
                   onInputChange={onInputChange}
                   queryString={debounced}
                   disabled={!allowQuery}
-                  placeholder={"Filter test results by a specific patient"}
+                  label={"Search by name"}
+                  placeholder={""}
                 />
                 <SearchResults
                   page="test-results"
