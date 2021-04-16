@@ -43,6 +43,7 @@ public class TestDataFactory {
   public static final LocalDate DEFAULT_BDAY = LocalDate.of(1899, 5, 10);
 
   public static final String DEFAULT_ORG_ID = "MALLRAT";
+  public static final String ALT_ORG_ID = "PLAZARAT";
 
   private static final String DEFAULT_DEVICE_TYPE = "Acme SuperFine";
   private static final String DEFAULT_SPECIMEN_TYPE = "Nasal swab";
@@ -59,12 +60,16 @@ public class TestDataFactory {
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
 
-  public Organization createValidOrg(String name, String externalId) {
-    return _orgRepo.save(new Organization(name, externalId, true));
+  public Organization createValidOrg(String name, String externalId, boolean identityVerified) {
+    return _orgRepo.save(new Organization(name, externalId, identityVerified));
   }
 
   public Organization createValidOrg() {
-    return createValidOrg("The Mall", DEFAULT_ORG_ID);
+    return createValidOrg("The Mall", DEFAULT_ORG_ID, true);
+  }
+
+  public Organization createUnverifiedOrg() {
+    return createValidOrg("The Plaza", ALT_ORG_ID, false);
   }
 
   public Facility createValidFacility(Organization org) {
