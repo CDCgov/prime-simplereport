@@ -170,11 +170,6 @@ public class ApiUserService {
     return result;
   }
 
-  // current user is checked using their token
-  private boolean isCurrentUserSiteAdmin() {
-    return _authService.isSiteAdmin();
-  }
-
   // In the future, this should be removed, but in the meantime, always return false.
   // For more detail see comments on: https://github.com/CDCgov/prime-simplereport/pull/1218
   public boolean isAdmin(ApiUser user) {
@@ -255,7 +250,7 @@ public class ApiUserService {
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    boolean isAdmin = isCurrentUserSiteAdmin();
+    boolean isAdmin = _authService.isSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 

@@ -126,7 +126,7 @@ public class DemoAuthenticationConfiguration {
 
     private final IdentitySupplier _getCurrentUser;
     private final OktaRepository _oktaRepo;
-    private final Set<String> adminGroupMemberSet;
+    private final Set<String> _adminGroupMemberSet;
 
     public DemoAuthorizationService(
         OktaRepository oktaRepo,
@@ -136,9 +136,8 @@ public class DemoAuthenticationConfiguration {
       this._getCurrentUser = getCurrent;
       this._oktaRepo = oktaRepo;
 
-      adminGroupMemberSet =
+      _adminGroupMemberSet =
           demoUserConfiguration.getSiteAdminEmails().stream()
-              .map(String::toLowerCase)
               .collect(Collectors.toUnmodifiableSet());
     }
 
@@ -152,8 +151,8 @@ public class DemoAuthenticationConfiguration {
 
     @Override
     public boolean isSiteAdmin() {
-      final String userEmail = _getCurrentUser.get().getUsername().toLowerCase();
-      return adminGroupMemberSet.contains(userEmail);
+      final String userEmail = _getCurrentUser.get().getUsername();
+      return _adminGroupMemberSet.contains(userEmail);
     }
   }
 }
