@@ -20,6 +20,7 @@ export const RACE_VALUES: { value: Race; label: string }[] = [
   { value: "black", label: "Black/African American" },
   { value: "pacific", label: "Native Hawaiian/other Pacific Islander" },
   { value: "white", label: "White" },
+  { value: "other", label: "Other" },
   { value: "refused", label: "Prefer not to answer" },
 ];
 

@@ -190,14 +190,18 @@ describe("EditPatient", () => {
     });
 
     it("shows prefer not to answer options", () => {
-      ["Race", "Ethnicity", "Biological Sex"].forEach((legend) => {
-        const fieldset = screen.getByText(legend).closest("fieldset");
-        if (fieldset === null) {
-          throw Error(`Unable to corresponding fieldset for ${legend}`);
+      ["Race", "Are you Hispanic or Latino?", "Biological sex"].forEach(
+        (legend) => {
+          const fieldset = screen.getByText(legend).closest("fieldset");
+          if (fieldset === null) {
+            throw Error(`Unable to corresponding fieldset for ${legend}`);
+          }
+          const option = within(fieldset).getByLabelText(
+            "Prefer not to answer"
+          );
+          expect(option).toBeChecked();
         }
-        const option = within(fieldset).getByLabelText("Prefer not to answer");
-        expect(option).toBeChecked();
-      });
+      );
     });
     it("shows unknown answers", () => {
       ["congregate", "health care"].forEach((legend) => {
