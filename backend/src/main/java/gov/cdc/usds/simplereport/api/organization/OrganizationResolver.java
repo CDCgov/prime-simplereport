@@ -34,8 +34,9 @@ public class OrganizationResolver implements GraphQLQueryResolver {
 
   /**
    * Retrieves a list of all organizations, optionally filtered by identity verification status
+   *
    * @param identityVerified the status of identity verification by which to filter orgs; if null,
-   *      no filter is applied and all organizations are returned
+   *     no filter is applied and all organizations are returned
    * @return a list of organizations
    */
   public List<ApiOrganization> getOrganizations(Boolean identityVerified) {
