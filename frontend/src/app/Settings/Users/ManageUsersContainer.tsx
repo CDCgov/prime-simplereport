@@ -7,29 +7,29 @@ import { UserRole, UserPermission, Role } from "../../permissions";
 import ManageUsers from "./ManageUsers";
 
 // I think this is what needs to be changed - going from getUsers to a singleGetUser for whoever happens to be in view
-// const GET_USERS = gql`
-//   query GetUsers {
-//     users {
-//       id
-//       firstName
-//       middleName
-//       lastName
-//       roleDescription
-//       role
-//       permissions
-//       email
-//       organization {
-//         testingFacility {
-//           id
-//           name
-//         }
-//       }
-//     }
-//   }
-// `;
+const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      firstName
+      middleName
+      lastName
+      roleDescription
+      role
+      permissions
+      email
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
 
 const GET_USER = gql`
-  query GetUser {
+  query GetUser($id: ID!) {
     user(id: $id) {
        id
        firstName
@@ -66,6 +66,10 @@ export interface SettingsUser {
 
 interface UserData {
   users: SettingsUser[];
+}
+
+interface SingleUserData {
+  user: SettingsUser;
 }
 
 const UPDATE_USER_PRIVILEGES = gql`
@@ -142,24 +146,24 @@ export interface NewUserInvite {
 }
 
 const ManageUsersContainer: any = () => {
-  console.log("managing the user container");
   const loggedInUser = useSelector((state) => (state as any).user as User);
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
-  // const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-  //   GET_USERS,
-  //   { fetchPolicy: "no-cache" }
-  // );
-
-  // here is where we need a lot of the logic to go, I think
-  // currently the data that's being returned from GET_USERS is used to populate all the other facility information
-  // could maybe change that to a single user query? but I'm not sure
-  const { data, loading, error, refetch: getUser } = useQuery<UserData, {}>(
-    GET_USER,
-     { fetchPolicy: "no-cache" }
+  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
+    GET_USERS,
+    { fetchPolicy: "no-cache" }
   );
+
+    const { data: singleUserData, refetch: getUser } = useQuery<SingleUserData, {}>(
+    GET_USER,
+     { 
+      variables: { id: loggedInUser.id || "" }, 
+      fetchPolicy: "no-cache" }
+  );
+
+  console.log("singleUserData: ", singleUserData);
 
   const {
     data: dataFacilities,
@@ -185,18 +189,27 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Facilities not found</p>;
   }
 
+  if (singleUserData === undefined) {
+    return <p>Error: Privileges could not be loaded for user</p>
+  }
+
+  console.log(singleUserData.user);
+
   const allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
 
   return (
     <ManageUsers
       users={data.users}
+      // this is definitely janky and needs fixing - selectedUserPrivileges should be of type SettingsUser, and 
+      // users should be of type User (since it doesn't have role information)
+      selectedUserPrivileges={singleUserData.user}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
-      // getUsers={getUsers}
+      getUsers={getUsers}
       getUser={getUser}
     />
   );

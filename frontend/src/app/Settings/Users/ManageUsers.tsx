@@ -28,15 +28,27 @@ import "./ManageUsers.scss";
 // the getUsers newly will not return permissions from Okta, just a list of users
 // getUser(privileges) will return the privileges for a single selected user 
 
+// ok Emma time to put the thinking cap on.
+// this file needs *some* version of getUsers so that we can correctly load the side panel.
+// however, getUsers shouldn't be loading all the permissions for every user in the set.
+// (I think that piece is taken care of on the backend.)
+// we only want permissions for the currently selected user, which we can get using getUser(id).
+// so: continue to call getUsers() for the list of users, but edit the app to somehow only call getUser(id) for selected users.
+// that getUser(id) will be passed as a prop to ManageUsers, but probably defined in the container.
+
+// update: now we've got the manageUsersContainer correctly passing in both getUser query and the selectedUserPrivileges! now this file
+// just needs to be updated to use those, instead of calling getUsers() all over the place
+
 interface Props {
   users: SettingsUser[];
   loggedInUser: User;
+  selectedUserPrivileges: SettingsUser,
   allFacilities: UserFacilitySetting[];
   updateUserPrivileges: (variables: any) => Promise<any>; // these are all passed in from the ManageUsersContainer file
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
-  // getUsers: () => Promise<any>;
-  getUser: () => Promise<any>;
+  getUsers: () => Promise<any>;
+  getUser: (variables: any) => Promise<any>;
 }
 
 export type SettingsUsers = { [id: string]: SettingsUser };
@@ -69,9 +81,8 @@ const ManageUsers: React.FC<Props> = ({
   updateUserPrivileges,
   addUserToOrg,
   deleteUser,
-  getUser,
+  getUsers,
 }) => {
-  console.log("managing some users");
   const [activeUser, updateActiveUser] = useState<SettingsUser>();
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
@@ -145,7 +156,7 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(() => {
-        getUser();
+        getUsers();
         updateIsUserEdited(false);
         const user = usersState[activeUser.id];
         const fullName = displayFullNameInOrder(
@@ -196,7 +207,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
 
-      await getUser();
+      await getUsers();
       const fullName = displayFullNameInOrder(firstName, "", lastName);
       showNotification(
         toast,
@@ -236,7 +247,7 @@ const ManageUsers: React.FC<Props> = ({
         toast,
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
-      await getUser();
+      await getUsers();
       updateActiveUser(sortedUsers[0]); // arbitrarily pick the first user as the next active.
       setDeletedUserId(undefined);
     } catch (e) {
