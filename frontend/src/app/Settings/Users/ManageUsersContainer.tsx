@@ -6,25 +6,47 @@ import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
 
-const GET_USERS = gql`
-  query GetUsers {
-    users {
-      id
-      firstName
-      middleName
-      lastName
-      roleDescription
-      role
-      permissions
-      email
-      organization {
-        testingFacility {
-          id
-          name
-        }
-      }
+// I think this is what needs to be changed - going from getUsers to a singleGetUser for whoever happens to be in view
+// const GET_USERS = gql`
+//   query GetUsers {
+//     users {
+//       id
+//       firstName
+//       middleName
+//       lastName
+//       roleDescription
+//       role
+//       permissions
+//       email
+//       organization {
+//         testingFacility {
+//           id
+//           name
+//         }
+//       }
+//     }
+//   }
+// `;
+
+const GET_USER = gql`
+  query GetUser {
+    user(id: $id) {
+       id
+       firstName
+       middleName
+       lastName
+       roleDescription
+       role
+       permissions
+       email
+       organization {
+         testingFacility {
+           id
+           name
+         }
+       }
+     }
     }
-  }
 `;
 
 // structure for `getUsers` query
@@ -120,14 +142,23 @@ export interface NewUserInvite {
 }
 
 const ManageUsersContainer: any = () => {
+  console.log("managing the user container");
   const loggedInUser = useSelector((state) => (state as any).user as User);
   const [updateUserPrivileges] = useMutation(UPDATE_USER_PRIVILEGES);
   const [deleteUser] = useMutation(DELETE_USER);
   const [addUserToOrg] = useMutation(ADD_USER_TO_ORG);
 
-  const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
-    GET_USERS,
-    { fetchPolicy: "no-cache" }
+  // const { data, loading, error, refetch: getUsers } = useQuery<UserData, {}>(
+  //   GET_USERS,
+  //   { fetchPolicy: "no-cache" }
+  // );
+
+  // here is where we need a lot of the logic to go, I think
+  // currently the data that's being returned from GET_USERS is used to populate all the other facility information
+  // could maybe change that to a single user query? but I'm not sure
+  const { data, loading, error, refetch: getUser } = useQuery<UserData, {}>(
+    GET_USER,
+     { fetchPolicy: "no-cache" }
   );
 
   const {
@@ -165,7 +196,8 @@ const ManageUsersContainer: any = () => {
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
-      getUsers={getUsers}
+      // getUsers={getUsers}
+      getUser={getUser}
     />
   );
 };

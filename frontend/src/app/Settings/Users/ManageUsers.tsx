@@ -21,14 +21,22 @@ import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
+// this file will also need to be updated with the multiple versions of getUser(s)
+// getUsers should only return what is contained in the ApiUser class, and then the frontend should call a new getUser query to load the privilege details for a specific selected user. 
+
+// this file manages the view for all users, not just a single users
+// the getUsers newly will not return permissions from Okta, just a list of users
+// getUser(privileges) will return the privileges for a single selected user 
+
 interface Props {
   users: SettingsUser[];
   loggedInUser: User;
   allFacilities: UserFacilitySetting[];
-  updateUserPrivileges: (variables: any) => Promise<any>;
+  updateUserPrivileges: (variables: any) => Promise<any>; // these are all passed in from the ManageUsersContainer file
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
-  getUsers: () => Promise<any>;
+  // getUsers: () => Promise<any>;
+  getUser: () => Promise<any>;
 }
 
 export type SettingsUsers = { [id: string]: SettingsUser };
@@ -61,8 +69,9 @@ const ManageUsers: React.FC<Props> = ({
   updateUserPrivileges,
   addUserToOrg,
   deleteUser,
-  getUsers,
+  getUser,
 }) => {
+  console.log("managing some users");
   const [activeUser, updateActiveUser] = useState<SettingsUser>();
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
@@ -136,7 +145,7 @@ const ManageUsers: React.FC<Props> = ({
       },
     })
       .then(() => {
-        getUsers();
+        getUser();
         updateIsUserEdited(false);
         const user = usersState[activeUser.id];
         const fullName = displayFullNameInOrder(
@@ -187,7 +196,7 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
 
-      await getUsers();
+      await getUser();
       const fullName = displayFullNameInOrder(firstName, "", lastName);
       showNotification(
         toast,
@@ -227,7 +236,7 @@ const ManageUsers: React.FC<Props> = ({
         toast,
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
-      await getUsers();
+      await getUser();
       updateActiveUser(sortedUsers[0]); // arbitrarily pick the first user as the next active.
       setDeletedUserId(undefined);
     } catch (e) {
