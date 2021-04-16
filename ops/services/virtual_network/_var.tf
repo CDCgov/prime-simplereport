@@ -2,8 +2,7 @@ variable "project" {
   default = "prime"
 }
 
-variable "name" {
-  # should be app_name
+variable "app_name" {
   default = "simple-report"
 }
 

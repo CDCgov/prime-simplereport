@@ -6,10 +6,13 @@
 # terraform state mv azurerm_subnet.lbs module.vnet.azurerm_subnet.lbs
 # terraform state mv azurerm_subnet.webapp module.vnet.azurerm_subnet.webapp
 
+locals {
+  subnet_basename = "${var.project}-${var.app_name}-${var.env}"
+}
 
 # Create the virtual network and the persistent subnets
 resource "azurerm_virtual_network" "vn" {
-  name                = "${var.name}-${var.env}-network"
+  name                = "${var.app_name}-${var.env}-network"
   resource_group_name = var.resource_group_name
   location            = var.location
   address_space       = [var.network_address]
@@ -19,6 +22,9 @@ resource "azurerm_virtual_network" "vn" {
 
 # VMs subnet
 resource "azurerm_subnet" "vms" {
+  # We did try to rename this, but it turns out we have manual infrastructure attached to this subnet,
+  # so renaming it (by which we mean destroying and rebuilding it) would be a bit complicated.
+  # That manual infrastructure should be imported (see #1360)--if that is done, revisit this.
   name                                           = "${var.env}-vms"
   resource_group_name                            = var.resource_group_name
   virtual_network_name                           = azurerm_virtual_network.vn.name
@@ -27,20 +33,25 @@ resource "azurerm_subnet" "vms" {
 }
 
 resource "azurerm_subnet" "lbs" {
-  name                 = "${var.project}-${var.name}-${var.env}-lb"
+  name                 = "${local.subnet_basename}-lb"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
   address_prefixes     = [cidrsubnet(var.network_address, 8, 254)]
 }
 
 resource "azurerm_subnet" "webapp" {
-  name                 = "${var.project}-${var.name}-${var.env}-webapp"
+  name                 = "${local.subnet_basename}-webapp"
   resource_group_name  = var.resource_group_name
   virtual_network_name = azurerm_virtual_network.vn.name
   address_prefixes     = [cidrsubnet(var.network_address, 8, 100)]
 
-  # we need to actually do the delegation instead!
-  lifecycle {
-    ignore_changes = [delegation]
+  delegation {
+    name = "serverfarms"
+    service_delegation {
+      name = "Microsoft.Web/serverFarms"
+      actions = [
+        "Microsoft.Network/virtualNetworks/subnets/action"
+      ]
+    }
   }
 }
