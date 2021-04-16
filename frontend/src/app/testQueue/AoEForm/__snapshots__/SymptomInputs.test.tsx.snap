@@ -12,16 +12,13 @@ Array [
         className="usa-legend"
       >
         Are you experiencing any of the following symptoms?
-        <span
-          className="usa-sr-only"
+        <abbr
+          className="usa-hint usa-hint--required"
+          title="required"
         >
-          Required
-        </span>
-        <span
-          className="usa-hint--required"
-        >
-           *
-        </span>
+           
+          *
+        </abbr>
       </legend>
       <div
         className="usa-form-group"

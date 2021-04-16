@@ -56,7 +56,7 @@ const PatientProfile = ({ patient }: Props) => {
       </h2>
       <h3 className="font-heading-sm">Name</h3>
       <p>{fullName}</p>
-      <h3 className="font-heading-sm">Preferred Language</h3>
+      <h3 className="font-heading-sm">Preferred language</h3>
       <p>{patient.preferredLanguage || notProvided}</p>
       <h3 className="font-heading-sm">Date of birth</h3>
       <p>
@@ -75,17 +75,15 @@ const PatientProfile = ({ patient }: Props) => {
       <h2 className="prime-formgroup-heading font-heading-lg">Demographics</h2>
       <h3 className="font-heading-sm">Race</h3>
       <p>{race || notProvided}</p>
-      {/* <h3 className="font-heading-sm">Tribal affiliation</h3>
-      <p></p> */}
       <h3 className="font-heading-sm">Ethnicity</h3>
       <p>{ethnicity || notProvided}</p>
-      <h3 className="font-heading-sm">Tribal Affiliation</h3>
+      <h3 className="font-heading-sm">Tribal affiliation</h3>
       <p>{tribalAffiliation || notProvided}</p>
       <h3 className="font-heading-sm">Biological sex</h3>
       <p>{gender || notProvided}</p>
       <h2 className="prime-formgroup-heading font-heading-lg">Other</h2>
       <h3 className="font-heading-sm">
-        Resident in congregate care/living setting
+        Are you a resident in a congregate living setting?
       </h3>
       <p>
         {patient.residentCongregateSetting === true
@@ -94,7 +92,7 @@ const PatientProfile = ({ patient }: Props) => {
           ? "No"
           : notProvided}
       </p>
-      <h3 className="font-heading-sm">Employed in healthcare</h3>
+      <h3 className="font-heading-sm">Are you a health care worker?</h3>
       <p>
         {patient.employedInHealthcare === true
           ? "Yes"

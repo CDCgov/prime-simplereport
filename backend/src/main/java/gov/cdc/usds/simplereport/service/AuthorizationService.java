@@ -3,7 +3,6 @@ package gov.cdc.usds.simplereport.service;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
 import java.util.List;
 
-@FunctionalInterface
 public interface AuthorizationService {
 
   /**
@@ -12,4 +11,7 @@ public interface AuthorizationService {
    * if any of these claims applies to the actual data model of the current API instance.
    */
   List<OrganizationRoleClaims> findAllOrganizationRoles();
+
+  /** Is the current user a global site admin */
+  boolean isSiteAdmin();
 }
