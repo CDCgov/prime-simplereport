@@ -1,6 +1,6 @@
 import React from "react";
 
-import { YES_NO_UNKNOWN_VALUES, YES_NO_VALUES } from "../constants";
+import { YES_NO_UNKNOWN_VALUES } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
@@ -14,7 +14,6 @@ interface Props {
   validationStatus?: "error" | "success";
   errorMessage?: React.ReactNode;
   required?: boolean;
-  showUnknown?: boolean;
 }
 
 const YesNoRadioGroup: React.FC<Props> = ({
@@ -27,9 +26,8 @@ const YesNoRadioGroup: React.FC<Props> = ({
   validationStatus,
   errorMessage,
   required,
-  showUnknown,
 }) => {
-  const values = showUnknown ? YES_NO_UNKNOWN_VALUES : YES_NO_VALUES;
+  const values = YES_NO_UNKNOWN_VALUES;
 
   return (
     <RadioGroup

@@ -408,7 +408,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("residentCongregateSetting")}
           errorMessage={errors.residentCongregateSetting}
-          showUnknown
           required
         />
         <YesNoRadioGroup
@@ -423,7 +422,6 @@ const PersonForm = (props: Props) => {
           }}
           validationStatus={validationStatus("employedInHealthcare")}
           errorMessage={errors.employedInHealthcare}
-          showUnknown
           required
         />
       </FormGroup>
