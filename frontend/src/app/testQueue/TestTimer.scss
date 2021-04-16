@@ -5,18 +5,22 @@
   text-align: right;
   cursor: pointer;
 }
+
 .timer-reset {
   color: white;
   background-color: #005ea2;
 }
+
 .timer-running {
   color: white;
   background-color: #162e51;
 }
+
 .timer-ready {
   color: green;
   background-color: white;
 }
+
 .timer-overtime {
   color: gray;
   font-style: italic;

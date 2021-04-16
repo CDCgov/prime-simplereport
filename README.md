@@ -11,7 +11,7 @@ https://simplereport.gov/
   - [Setup](#setup)
   - [Backend](#backend)
     - [Backend-Setup](#backend-setup)
-    - [Running the app with Make](#running-the-app-with-make)
+    - [Running the app with Make or start.sh](#running-the-app-with-make-or-startsh)
     - [Updating user role](#updating-user-role)
       - [Organization roles](#organization-roles)
       - [Site roles](#site-roles)
@@ -272,7 +272,7 @@ The frontend is a React app. The app uses [Apollo](https://www.apollographql.com
 
 ## Linters
 
-This project uses [eslint](https://eslint.org/) and [prettier](https://prettier.io/) as frontend linters,
+This project uses [eslint](https://eslint.org/), [prettier](https://prettier.io/), and [stylelint](https://stylelint.io/) as frontend linters,
 and [spotless](https://github.com/diffplug/spotless) and [google-java-format](https://github.com/google/google-java-format) for the backend.
 GitHub Actions is configured to run these linters on every pull request, so you must resolve all mismatches/errors prior to merging.
 There are a few ways to manage this:
