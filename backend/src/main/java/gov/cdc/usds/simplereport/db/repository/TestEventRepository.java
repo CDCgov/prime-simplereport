@@ -25,9 +25,9 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
 
   @Query(
       value =
-          " SELECT DISTINCT ON (patient_id) * FROM {h-schema}test_event"
+          " SELECT DISTINCT ON (patient_id) *, COALESCE(date_tested_backdate, created_at) test_date FROM {h-schema}test_event"
               + " WHERE patient_id IN :patientIds"
-              + " ORDER BY patient_id, created_at DESC",
+              + " ORDER BY patient_id, test_date DESC",
       nativeQuery = true)
   public List<TestEvent> findLastTestsByPatient(Collection<UUID> patientIds);
 
