@@ -117,8 +117,10 @@ simple-report-initialization:
   organizations:
     - org-name: Dis Organization
       external-id: DIS_ORG
+      identity-verified: true
     - org-name: Dat Organization
       external-id: DAT_ORG
+      identity-verified: true
   facilities:
     - facility-name: Injection Site
       clia-number: "000111222-3"
