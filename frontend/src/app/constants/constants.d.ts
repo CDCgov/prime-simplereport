@@ -6,7 +6,7 @@ type Race =
   | "white"
   | "unknown"
   | "refused";
-type Ethnicity = "hispanic" | "not_hispanic" | "refused";
+type Ethnicity = "hispanic" | "not_hispanic";
 type Gender = "male" | "female" | "other";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";

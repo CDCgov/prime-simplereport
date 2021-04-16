@@ -59,7 +59,6 @@ export const ROLE_VALUES: { value: Role; label: string }[] = [
 export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
   { label: "Yes", value: "hispanic" },
   { label: "No", value: "not_hispanic" },
-  { label: "Prefer not to answer", value: "refused" },
 ];
 export const GENDER_VALUES: { value: Gender; label: string }[] = [
   { label: "Male", value: "male" },
