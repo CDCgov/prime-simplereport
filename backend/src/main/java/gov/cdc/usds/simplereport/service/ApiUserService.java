@@ -18,6 +18,7 @@ import gov.cdc.usds.simplereport.idp.repository.OktaRepository;
 import gov.cdc.usds.simplereport.service.model.IdentityAttributes;
 import gov.cdc.usds.simplereport.service.model.IdentitySupplier;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
+import gov.cdc.usds.simplereport.service.model.UserIdentityInfo;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -255,31 +256,12 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public List<UserInfo> getUsersInCurrentOrg() {
+  public List<UserIdentityInfo> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
-    Map<String, OrganizationRoleClaims> userClaims = _oktaRepo.getAllUsersForOrganization(org);
-    Set<ApiUser> apiUsers = _apiUserRepo.findAllByLoginEmailIn(userClaims.keySet());
-    // will add facilities to their users in a subsequent PR
-    List<Facility> facilities = _orgService.getFacilities(org);
-    Set<Facility> facilitiesSet = new HashSet<>(facilities);
-    Map<UUID, Facility> facilitiesByUUID =
-        facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
-    return apiUsers.stream()
-        .map(
-            u -> {
-              OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
-              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-              Set<Facility> accessibleFacilities =
-                  allFacilityAccess
-                      ? facilitiesSet
-                      : claims.getFacilities().stream()
-                          .map(facilitiesByUUID::get)
-                          .collect(Collectors.toSet());
-              OrganizationRoles orgRoles =
-                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-              return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
-            })
-        .collect(Collectors.toList());
+    final Set<String> orgUserEmails = _oktaRepo.getAllUsersForOrganization(org);
+    final Set<ApiUser> orgApiUsers = _apiUserRepo.findAllByLoginEmailIn(orgUserEmails);
+
+    return orgApiUsers.stream().map(UserIdentityInfo::new).collect(Collectors.toList());
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser

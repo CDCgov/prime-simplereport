@@ -51,6 +51,9 @@ public class LiveOktaRepository implements OktaRepository {
 
   private static final Logger LOG = LoggerFactory.getLogger(LiveOktaRepository.class);
 
+  private static final String FILTER_TYPE_EQ_OKTA_GROUP =
+      "type eq \"" + GroupType.OKTA_GROUP + "\"";
+
   private String _rolePrefix;
   private Client _client;
   private Application _app;
@@ -160,37 +163,24 @@ public class LiveOktaRepository implements OktaRepository {
     return Optional.of(claims.get(0));
   }
 
-  public Map<String, OrganizationRoleClaims> getAllUsersForOrganization(Organization org) {
+  public Set<String> getAllUsersForOrganization(Organization org) {
+    final String noAccessGroupName =
+        generateRoleGroupName(org.getExternalId(), OrganizationRole.NO_ACCESS);
+    final GroupList oktaGroupList =
+        _client.listGroups(noAccessGroupName, FILTER_TYPE_EQ_OKTA_GROUP, null);
 
-    GroupList orgGroups =
-        _client.listGroups(generateGroupOrgPrefix(org.getExternalId()), null, null);
-    if (orgGroups.stream().count() == 0) {
-      throw new IllegalGraphqlArgumentException(
-          "Cannot get Okta users for org=" + org.getExternalId() + ": Okta groups are nonexistent");
-    }
+    Group noAccessOktaGroup =
+        oktaGroupList.stream()
+            .filter(g -> noAccessGroupName.equals(g.getProfile().getName()))
+            .findFirst()
+            .orElseThrow(
+                () ->
+                    new IllegalGraphqlArgumentException(
+                        "Okta group not found for this organization"));
 
-    // Create a map from each user to their Okta groups...
-    Map<String, Set<String>> usersToGroupNames = new HashMap<>();
-    orgGroups.forEach(
-        g -> {
-          String groupName = g.getProfile().getName();
-          g.listUsers()
-              .forEach(
-                  u -> {
-                    if (u.getStatus() != UserStatus.SUSPENDED) {
-                      String username = u.getProfile().getEmail();
-                      if (!usersToGroupNames.containsKey(username)) {
-                        usersToGroupNames.put(username, new HashSet<>());
-                      }
-                      usersToGroupNames.get(username).add(groupName);
-                    }
-                  });
-        });
-
-    // ...then convert each user's relevant Okta groups to an OrganizationRoleClaims object
-    return usersToGroupNames.entrySet().stream()
-        .collect(
-            Collectors.toMap(e -> e.getKey(), e -> _extractor.convertClaims(e.getValue()).get(0)));
+    return noAccessOktaGroup.listUsers().stream()
+        .map(u -> u.getProfile().getEmail())
+        .collect(Collectors.toUnmodifiableSet());
   }
 
   public Optional<OrganizationRoleClaims> updateUser(IdentityAttributes userIdentity) {

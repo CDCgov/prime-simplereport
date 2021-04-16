@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
+import gov.cdc.usds.simplereport.service.model.UserIdentityInfo;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportOrgAdminUser;
 import gov.cdc.usds.simplereport.test_util.SliceTestConfiguration.WithSimpleReportSiteAdminUser;
@@ -25,20 +26,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   @WithSimpleReportOrgAdminUser
   void getUsersInCurrentOrg_adminUser_success() {
     initSampleData();
-    List<UserInfo> users = _service.getUsersInCurrentOrg();
-    Collections.sort(users, new UserInfoEmailComparator());
+    List<UserIdentityInfo> users = _service.getUsersInCurrentOrg();
+    Collections.sort(users, new UserIdentityInfoEmailComparator());
     assertEquals(users.size(), 5);
     assertEquals(users.get(0).getEmail(), "admin@example.com");
-    roleCheck(users.get(0), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.ADMIN));
     assertEquals(users.get(1).getEmail(), "allfacilities@example.com");
-    roleCheck(
-        users.get(1),
-        EnumSet.of(
-            OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
     assertEquals(users.get(2).getEmail(), "bobbity@example.com");
-    roleCheck(users.get(2), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.USER));
     assertEquals(users.get(3).getEmail(), "nobody@example.com");
-    roleCheck(users.get(3), EnumSet.of(OrganizationRole.NO_ACCESS, OrganizationRole.ENTRY_ONLY));
   }
 
   @Test
@@ -109,9 +103,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     assertEquals(expected, actual);
   }
 
-  private class UserInfoEmailComparator implements Comparator<UserInfo> {
+  private class UserIdentityInfoEmailComparator implements Comparator<UserIdentityInfo> {
     @Override
-    public int compare(UserInfo u1, UserInfo u2) {
+    public int compare(UserIdentityInfo u1, UserIdentityInfo u2) {
       return u1.getEmail().compareTo(u2.getEmail());
     }
   }

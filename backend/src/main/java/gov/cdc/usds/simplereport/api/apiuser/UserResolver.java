@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api.apiuser;
 
 import gov.cdc.usds.simplereport.api.model.User;
+import gov.cdc.usds.simplereport.api.model.UserIdentity;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
@@ -22,8 +23,10 @@ public class UserResolver implements GraphQLQueryResolver {
     return new User(_userService.getCurrentUserInfo());
   }
 
-  public List<User> getUsers() {
-    return _userService.getUsersInCurrentOrg().stream().map(User::new).collect(Collectors.toList());
+  public List<UserIdentity> getUsers() {
+    return _userService.getUsersInCurrentOrg().stream()
+        .map(UserIdentity::new)
+        .collect(Collectors.toList());
   }
 
   public User getUser(UUID userId) {

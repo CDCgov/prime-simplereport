@@ -83,6 +83,16 @@ type User {
   roles: [Role!]! @deprecated(reason: "Users have only one role now")
 }
 
+type UserIdentity {
+  id: ID
+  name: NameInfo
+  firstName: String
+  middleName: String
+  lastName: String!
+  suffix: String
+  email: String!
+}
+
 type ApiUser {
   name: NameInfo
   nameInfo: NameInfo @deprecated(reason: "needless connection of type to field name")
@@ -213,7 +223,7 @@ type Query {
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
   testResult(id: ID!): TestResult
     @requiredPermissions(allOf: ["READ_RESULT_LIST"])
-  users: [User] @requiredPermissions(allOf: ["MANAGE_USERS"])
+  users: [UserIdentity] @requiredPermissions(allOf: ["MANAGE_USERS"])
   user(id: ID!): User @requiredPermissions(allOf: ["MANAGE_USERS"])
   whoami: User!
 }
