@@ -107,11 +107,18 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
 
     DataLoader<UUID, PatientPreferences> patientPreferencesDataLoader =
         new DataLoader<>(
-            personIds ->
+            patientIds ->
                 supplyAsync(
-                    () ->
-                        patientPreferencesRepository.findAllAndCoalesceEmptyByPersonInternalIdIn(
-                            personIds)));
+                    () -> {
+                      Map<UUID, PatientPreferences> found =
+                          patientPreferencesRepository
+                              .findAllByPersonInternalIdIn(patientIds)
+                              .stream()
+                              .collect(Collectors.toMap(PatientPreferences::getInternalId, s -> s));
+                      return patientIds.stream()
+                          .map(p -> found.getOrDefault(p, PatientPreferences.DEFAULT))
+                          .collect(Collectors.toList());
+                    }));
     dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesDataLoader);
 
     DataLoader<UUID, TestEvent> testEventDataLoader =
@@ -127,6 +134,7 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
                           .collect(Collectors.toList());
                     }));
     dataLoaderRegistry.register(PatientDataResolver.LAST_TEST_DATA_LOADER, testEventDataLoader);
+    dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesDataLoader);
 
     return dataLoaderRegistry;
   }

@@ -40,26 +40,21 @@ public class PatientDataResolver
 
   public CompletableFuture<TestResultDeliveryPreference> getTestResultDelivery(
       Person person, DataFetchingEnvironment dfe) {
-    DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
-    DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
-        registry.getDataLoader(PatientPreferences.DATA_LOADER);
-    if (patientPreferencesLoader != null) {
-      return patientPreferencesLoader
-          .load(person.getInternalId())
-          .thenApply(PatientPreferences::getTestResultDelivery);
-    }
-    throw new NoDataLoaderFoundException(PatientPreferences.DATA_LOADER);
+    return getPatientPreferences(person, dfe).thenApply(PatientPreferences::getTestResultDelivery);
   }
 
   public CompletableFuture<String> getPreferredLanguage(
+      Person person, DataFetchingEnvironment dfe) {
+    return getPatientPreferences(person, dfe).thenApply(PatientPreferences::getPreferredLanguage);
+  }
+
+  private CompletableFuture<PatientPreferences> getPatientPreferences(
       Person person, DataFetchingEnvironment dfe) {
     DataLoaderRegistry registry = ((GraphQLContext) dfe.getContext()).getDataLoaderRegistry();
     DataLoader<UUID, PatientPreferences> patientPreferencesLoader =
         registry.getDataLoader(PatientPreferences.DATA_LOADER);
     if (patientPreferencesLoader != null) {
-      return patientPreferencesLoader
-          .load(person.getInternalId())
-          .thenApply(PatientPreferences::getPreferredLanguage);
+      return patientPreferencesLoader.load(person.getInternalId());
     }
     throw new NoDataLoaderFoundException(PatientPreferences.DATA_LOADER);
   }
