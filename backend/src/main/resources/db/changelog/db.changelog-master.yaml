@@ -1748,3 +1748,13 @@ databaseChangeLog:
                   # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
                   constraints:
                     nullable: false
+  - changeSet:
+      id: remove-person-test_result_delivery
+      author: adam@skylight.digital
+      comment: Remove the orphaned person.test_result_delivery column
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery
