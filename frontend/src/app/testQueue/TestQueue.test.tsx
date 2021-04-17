@@ -93,6 +93,7 @@ const createPatient = ({
   priorTestResult: "",
   deviceType: {
     internalId,
+    testLength: 15,
     name: "LumiraDX",
     __typename: "DeviceType",
   },
@@ -141,17 +142,20 @@ const result = {
           deviceTypes: [
             {
               internalId,
+              testLength: 15,
               name: "LumiraDX",
               __typename: "DeviceType",
             },
             {
               internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+              testLength: 15,
               name: "Quidel Sofia 2",
               __typename: "DeviceType",
             },
           ],
           defaultDeviceType: {
             internalId,
+            testLength: 15,
             name: "LumiraDX",
             __typename: "DeviceType",
           },
