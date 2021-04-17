@@ -47,13 +47,13 @@ public class OrganizationService {
       AuthorizationService authService,
       ProviderRepository providerRepo,
       OktaRepository oktaRepo,
-      CurrentOrganizationRolesContextHolder currentFacilityHolder) {
+      CurrentOrganizationRolesContextHolder currentOrgRolesContextHolder) {
     _repo = repo;
     _facilityRepo = facilityRepo;
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
-    _currentOrgRolesContextHolder = currentFacilityHolder;
+    _currentOrgRolesContextHolder = currentOrgRolesContextHolder;
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
