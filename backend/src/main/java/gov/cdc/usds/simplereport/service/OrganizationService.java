@@ -39,7 +39,7 @@ public class OrganizationService {
   private ProviderRepository _providerRepo;
   private AuthorizationService _authService;
   private OktaRepository _oktaRepo;
-  private CurrentOrganizationRolesContextHolder _currentFacilityHolder;
+  private CurrentOrganizationRolesContextHolder _currentOrgRolesContextHolder;
 
   public OrganizationService(
       OrganizationRepository repo,
@@ -53,32 +53,35 @@ public class OrganizationService {
     _authService = authService;
     _providerRepo = providerRepo;
     _oktaRepo = oktaRepo;
-    _currentFacilityHolder = currentFacilityHolder;
+    _currentOrgRolesContextHolder = currentFacilityHolder;
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    if (_currentFacilityHolder.hasOrganizationRoles()) {
-      return _currentFacilityHolder.getOrganizationRoles();
-    }
-    List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
-    List<String> candidateExternalIds =
-        orgRoles.stream()
-            .map(OrganizationRoleClaims::getOrganizationExternalId)
-            .collect(Collectors.toList());
-    List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
-    if (validOrgs == null || validOrgs.size() != 1) {
-      int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
-      LOG.warn("Found {} organizations for user", numOrgs);
-      return Optional.empty();
-    }
-    Organization foundOrg = validOrgs.get(0);
-    Optional<OrganizationRoleClaims> foundRoles =
-        orgRoles.stream()
-            .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
-            .findFirst();
-    Optional<OrganizationRoles> result = foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
-    _currentFacilityHolder.setOrganizationRoles(result);
-    return result;
+    return _currentOrgRolesContextHolder
+        .getOrganizationRoles()
+        .or(
+            () -> {
+              List<OrganizationRoleClaims> orgRoles = _authService.findAllOrganizationRoles();
+              List<String> candidateExternalIds =
+                  orgRoles.stream()
+                      .map(OrganizationRoleClaims::getOrganizationExternalId)
+                      .collect(Collectors.toList());
+              List<Organization> validOrgs = _repo.findAllByExternalId(candidateExternalIds);
+              if (validOrgs == null || validOrgs.size() != 1) {
+                int numOrgs = (validOrgs == null) ? 0 : validOrgs.size();
+                LOG.warn("Found {} organizations for user", numOrgs);
+                return Optional.empty();
+              }
+              Organization foundOrg = validOrgs.get(0);
+              Optional<OrganizationRoleClaims> foundRoles =
+                  orgRoles.stream()
+                      .filter(r -> r.getOrganizationExternalId().equals(foundOrg.getExternalId()))
+                      .findFirst();
+              Optional<OrganizationRoles> result =
+                  foundRoles.map(r -> getOrganizationRoles(foundOrg, r));
+              _currentOrgRolesContextHolder.setOrganizationRoles(result);
+              return result;
+            });
   }
 
   public Set<Facility> getAccessibleFacilities() {

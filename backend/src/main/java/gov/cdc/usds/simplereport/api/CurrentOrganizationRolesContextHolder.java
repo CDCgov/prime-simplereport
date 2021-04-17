@@ -10,11 +10,7 @@ import org.springframework.web.context.WebApplicationContext;
 @Repository
 @Scope(scopeName = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CurrentOrganizationRolesContextHolder {
-  private Optional<OrganizationRoles> organizationRoles;
-
-  public boolean hasOrganizationRoles() {
-    return organizationRoles != null;
-  }
+  private Optional<OrganizationRoles> organizationRoles = Optional.empty();
 
   public Optional<OrganizationRoles> getOrganizationRoles() {
     return organizationRoles;
