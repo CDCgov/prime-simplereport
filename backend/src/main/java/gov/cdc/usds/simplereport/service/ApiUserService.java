@@ -282,7 +282,7 @@ public class ApiUserService {
         .collect(Collectors.toList());
   }
 
-  @AuthorizationConfiguration.RequirePermissionManageUsers
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUserInCurrentOrg(final UUID userId) {
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
@@ -297,11 +297,7 @@ public class ApiUserService {
     }
     final OrganizationRoleClaims claims = optClaims.get();
 
-    // ensure the user is in this organization
     Organization org = _orgService.getCurrentOrganization();
-    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new UnidentifiedUserException();
-    }
 
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
