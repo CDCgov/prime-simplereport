@@ -1,11 +1,5 @@
 spring:
   profiles.include: okta-prod
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-prod.azurewebsites.net
-    - https://simple-report-prod.azureedge.net
-    - https://prod.simplereport.gov
-    - https://simplereport.gov
 simple-report:
   data-hub:
     upload-enabled: true
@@ -14,6 +8,12 @@ simple-report:
   patient-link-url: https://simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: true
+  cors:
+    allowed-origins:
+      - https://simple-report-api-prod.azurewebsites.net
+      - https://simple-report-prod.azureedge.net
+      - https://www.simplereport.gov
+      - https://simplereport.gov
 twilio:
   enabled: true
   from-number: "+14045312484"
