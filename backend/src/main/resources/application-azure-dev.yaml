@@ -1,11 +1,5 @@
 spring:
   profiles.include: okta-dev, server-debug
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simplereportdevapp.z13.web.core.windows.net
-    - https://simple-report-api-dev.azurewebsites.net
-    - https://simple-report-dev.azureedge.net
-    - https://dev.simplereport.gov
 simple-report:
   data-hub:
     upload-enabled: false
@@ -15,5 +9,11 @@ simple-report:
   patient-link-url: https://dev.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false
+  cors:
+    allowed-origins:
+      - https://simplereportdevapp.z13.web.core.windows.net
+      - https://simple-report-api-dev.azurewebsites.net
+      - https://simple-report-dev.azureedge.net
+      - https://dev.simplereport.gov
 twilio:
   enabled: true
