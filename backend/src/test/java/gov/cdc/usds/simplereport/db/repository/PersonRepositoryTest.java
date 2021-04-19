@@ -42,6 +42,7 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             LocalDate.now(),
             _dataFactory.getAddress(),
             "(123) 456-7890",
+            null,
             PersonRole.VISITOR,
             "",
             null,

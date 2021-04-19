@@ -140,6 +140,7 @@ public class TestDataFactory {
             DEFAULT_BDAY,
             getAddress(),
             telephone,
+            null,
             PersonRole.RESIDENT,
             null,
             "W",
