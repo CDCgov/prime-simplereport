@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.i18n.phonenumbers.NumberParseException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
@@ -49,7 +48,6 @@ public class TestOrderService {
   private SmsService _smss;
   private final CurrentPatientContextHolder _patientContext;
   private final TestEventReportingService _testEventReportingService;
-  private final ObjectMapper mapper = new ObjectMapper();
 
   @Value("${simple-report.patient-link-url:https://simplereport.gov/pxp?plid=}")
   private String patientLinkUrl;

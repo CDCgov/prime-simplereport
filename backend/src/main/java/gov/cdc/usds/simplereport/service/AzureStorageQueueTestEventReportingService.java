@@ -63,7 +63,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
               queueClient
                   .deleteMessage(message.getMessageId(), message.getPopReceipt())
                   .toFuture()
-                  .thenAccept(_v -> idsToComplete.remove(resultId))
+                  .thenAccept(voidValue -> idsToComplete.remove(resultId))
                   .exceptionally(
                       t -> {
                         LOG.warn("Unable to delete queue message concerning test [{}]", resultId);
@@ -80,7 +80,7 @@ public final class AzureStorageQueueTestEventReportingService implements TestEve
     try {
       return mapper.writeValueAsString(new TestEventExport(testEvent));
     } catch (IOException e) {
-      throw new RuntimeException("Failed to serialize test event", e);
+      throw new IllegalArgumentException("Failed to serialize test event", e);
     }
   }
 }

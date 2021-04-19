@@ -51,7 +51,8 @@ class AzureStorageQueueTestEventReportingServiceTest
     when(client.sendMessage(any(String.class))).thenThrow(IllegalCallerException.class);
 
     var sut = new AzureStorageQueueTestEventReportingService(new ObjectMapper(), client);
-    assertThrows(IllegalCallerException.class, () -> sut.report(createTestEvent()));
+    var testEvent = createTestEvent();
+    assertThrows(IllegalCallerException.class, () -> sut.report(testEvent));
   }
 
   @Test
