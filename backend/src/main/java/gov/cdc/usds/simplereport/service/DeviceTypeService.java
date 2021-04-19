@@ -1,5 +1,7 @@
 package gov.cdc.usds.simplereport.service;
 
+import static gov.cdc.usds.simplereport.utils.DeviceTestLengthConverter.determineTestLength;
+
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
@@ -76,6 +78,7 @@ public class DeviceTypeService {
     DeviceType d = getDeviceType(id.toString());
     if (name != null) {
       d.setName(name);
+      d.setTestLength((determineTestLength(name)));
     }
     if (manufacturer != null) {
       d.setManufacturer(manufacturer);
@@ -107,7 +110,10 @@ public class DeviceTypeService {
     if (st.isDeleted()) {
       throw new IllegalGraphqlArgumentException("swab type has been deleted and cannot be used");
     }
-    DeviceType dt = _repo.save(new DeviceType(name, manufacturer, model, loincCode, swabType));
+    DeviceType dt =
+        _repo.save(
+            new DeviceType(
+                name, manufacturer, model, loincCode, swabType, determineTestLength(name)));
     _deviceSpecimenRepo.save(new DeviceSpecimenType(dt, st));
     return dt;
   }

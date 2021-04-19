@@ -23,19 +23,28 @@ public class DeviceType extends EternalAuditedEntity {
   @Column(nullable = false)
   private String swabType;
 
+  @Column(nullable = false)
+  private int testLength;
+
   protected DeviceType() {
     /* no-op for hibernate */
   }
 
   @ConstructorBinding
   public DeviceType(
-      String name, String manufacturer, String model, String loincCode, String swabType) {
+      String name,
+      String manufacturer,
+      String model,
+      String loincCode,
+      String swabType,
+      int testLength) {
     super();
     this.name = name;
     this.manufacturer = manufacturer;
     this.model = model;
     this.loincCode = loincCode;
     this.swabType = swabType;
+    this.testLength = testLength;
   }
 
   public String getName() {
@@ -76,5 +85,13 @@ public class DeviceType extends EternalAuditedEntity {
 
   public void setSwabType(String swabType) {
     this.swabType = swabType;
+  }
+
+  public int getTestLength() {
+    return this.testLength;
+  }
+
+  public void setTestLength(int testLength) {
+    this.testLength = testLength;
   }
 }

@@ -3,7 +3,7 @@ package gov.cdc.usds.simplereport.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import gov.cdc.usds.simplereport.api.model.errors.UnidentifiedUserException;
+import gov.cdc.usds.simplereport.api.model.errors.MisconfiguredUserException;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.repository.ApiUserRepository;
@@ -76,15 +76,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
   void getUserInCurrentOrg_adminUserWrongOrg_error() {
     initSampleData();
 
-    final String email = "captain@pirate.com"; // member of DAT_ORG
-    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
-
-    Exception e =
-        assertThrows(
-            UnidentifiedUserException.class,
-            () -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
-
-    assertEquals("Cannot determine user's identity.", e.getMessage());
+    // captain@pirate.com is a member of DAT_ORG, but requester is admin of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail("captain@pirate.com").get();
+    assertSecurityError(() -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
   }
 
   @Test
@@ -93,7 +87,9 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
     initSampleData();
 
     ApiUser apiUser = _apiUserRepo.findByLoginEmail("allfacilities@example.com").get();
-    assertSecurityError(() -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
+    assertThrows(
+        MisconfiguredUserException.class,
+        () -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
   }
 
   @Test

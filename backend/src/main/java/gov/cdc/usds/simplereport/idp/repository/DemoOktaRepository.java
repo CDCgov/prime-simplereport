@@ -132,6 +132,9 @@ public class DemoOktaRepository implements OktaRepository {
     orgFacilitiesMap.putIfAbsent(externalId, new HashSet<>());
   }
 
+  // this method means nothing in a demo env
+  public void activateOrganization(Organization org) {}
+
   public void createFacility(Facility facility) {
     String orgExternalId = facility.getOrganization().getExternalId();
     if (!orgFacilitiesMap.containsKey(orgExternalId)) {

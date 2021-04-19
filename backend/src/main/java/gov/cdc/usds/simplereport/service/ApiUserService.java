@@ -8,7 +8,6 @@ import gov.cdc.usds.simplereport.api.pxp.CurrentPatientContextHolder;
 import gov.cdc.usds.simplereport.config.AuthorizationConfiguration;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRole;
 import gov.cdc.usds.simplereport.config.authorization.OrganizationRoleClaims;
-import gov.cdc.usds.simplereport.config.simplereport.SiteAdminEmailList;
 import gov.cdc.usds.simplereport.db.model.ApiUser;
 import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
@@ -40,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = false)
 public class ApiUserService {
 
-  @Autowired private SiteAdminEmailList _siteAdmins;
+  @Autowired private AuthorizationService _authService;
 
   @Autowired private ApiUserRepository _apiUserRepo;
 
@@ -171,8 +170,10 @@ public class ApiUserService {
     return result;
   }
 
+  // In the future, this should be removed, but in the meantime, always return false.
+  // For more detail see comments on: https://github.com/CDCgov/prime-simplereport/pull/1218
   public boolean isAdmin(ApiUser user) {
-    return _siteAdmins.contains(user.getLoginEmail());
+    return false;
   }
 
   // Creating separate getCurrentApiUser() methods because the auditing use case and
@@ -250,7 +251,7 @@ public class ApiUserService {
   public UserInfo getCurrentUserInfo() {
     ApiUser currentUser = getCurrentApiUser();
     Optional<OrganizationRoles> currentOrgRoles = _orgService.getCurrentOrganizationRoles();
-    boolean isAdmin = isAdmin(currentUser);
+    boolean isAdmin = _authService.isSiteAdmin();
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 
@@ -292,7 +293,7 @@ public class ApiUserService {
         .collect(Collectors.toList());
   }
 
-  @AuthorizationConfiguration.RequirePermissionManageUsers
+  @AuthorizationConfiguration.RequirePermissionManageTargetUser
   public UserInfo getUserInCurrentOrg(final UUID userId) {
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
@@ -307,18 +308,22 @@ public class ApiUserService {
     }
     final OrganizationRoleClaims claims = optClaims.get();
 
-    // ensure the user is in this organization
     Organization org = _orgService.getCurrentOrganization();
-    if (!org.getExternalId().equals(claims.getOrganizationExternalId())) {
-      throw new UnidentifiedUserException();
-    }
 
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);
     Map<UUID, Facility> facilitiesByUUID =
         facilities.stream().collect(Collectors.toMap(Facility::getInternalId, Function.identity()));
 
-    return convertOrganizationRoleClaimsToUserInfo(
-        facilitiesSet, facilitiesByUUID, org, apiUser, claims);
+    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+    Set<Facility> accessibleFacilities =
+        allFacilityAccess
+            ? facilitiesSet
+            : claims.getFacilities().stream()
+                .map(facilitiesByUUID::get)
+                .collect(Collectors.toSet());
+    OrganizationRoles orgRoles =
+        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
   }
 }

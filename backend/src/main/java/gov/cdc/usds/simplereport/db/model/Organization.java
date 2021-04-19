@@ -45,4 +45,8 @@ public class Organization extends EternalAuditedEntity {
   public boolean getIdentityVerified() {
     return identityVerified;
   }
+
+  public void setIdentityVerified(boolean newStatus) {
+    identityVerified = newStatus;
+  }
 }
