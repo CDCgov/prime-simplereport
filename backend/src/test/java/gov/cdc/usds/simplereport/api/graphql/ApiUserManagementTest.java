@@ -831,7 +831,10 @@ class ApiUserManagementTest extends BaseGraphqlTest {
 
     // user has permission to make the query, but not to access the user
     useOutsideOrgAdmin();
-    runQuery("user-query", getGetUserVariables(nobodyUserId), "Cannot determine user's identity.");
+    runQuery(
+        "user-query",
+        getGetUserVariables(nobodyUserId),
+        "Current user does not have permission for this action");
   }
 
   @Test
