@@ -169,6 +169,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String zipCode,
       String phone,
       String email,
+      PersonName providerName,
       String orderingProviderFirstName,
       String orderingProviderMiddleName,
       String orderingProviderLastName,
@@ -183,6 +184,7 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
       String orderingProviderTelephone,
       List<String> deviceIds,
       String defaultDeviceId,
+      PersonName adminName,
       String adminFirstName,
       String adminMiddleName,
       String adminLastName,
@@ -201,12 +203,17 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             Translators.parseState(orderingProviderState),
             Translators.parseString(orderingProviderZipCode),
             Translators.parseString(orderingProviderCounty));
-    PersonName providerName =
-        new PersonName(
+    providerName = // SPECIAL CASE: MAY BE ALL NULLS/BLANKS
+        Translators.consolidateNameArguments(
+            providerName,
             orderingProviderFirstName,
             orderingProviderMiddleName,
             orderingProviderLastName,
-            orderingProviderSuffix);
+            orderingProviderSuffix,
+            true);
+    adminName =
+        Translators.consolidateNameArguments(
+            adminName, adminFirstName, adminMiddleName, adminLastName, adminSuffix);
     Organization org =
         _os.createOrganization(
             name,
@@ -221,19 +228,16 @@ public class OrganizationMutationResolver implements GraphQLMutationResolver {
             providerAddress,
             Translators.parsePhoneNumber(orderingProviderTelephone),
             orderingProviderNPI);
-    _aus.createUser(
-        adminEmail,
-        adminFirstName,
-        adminMiddleName,
-        adminLastName,
-        adminSuffix,
-        externalId,
-        Role.ADMIN);
+    _aus.createUser(adminEmail, adminName, externalId, Role.ADMIN);
     List<Facility> facilities = _os.getFacilities(org);
     return new ApiOrganization(org, facilities);
   }
 
   public void updateOrganization(String name) {
     _os.updateOrganization(name);
+  }
+
+  public boolean setOrganizationIdentityVerified(String externalId, boolean verified) {
+    return _os.setIdentityVerified(externalId, verified);
   }
 }

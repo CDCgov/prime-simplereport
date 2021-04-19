@@ -10,5 +10,5 @@ import java.util.UUID;
 public interface PatientPreferencesRepository extends AuditedEntityRepository<PatientPreferences> {
   Optional<PatientPreferences> findByPerson(Person person);
 
-  List<PatientPreferences> findAllByPersonInternalIdIn(Collection<UUID> person);
+  List<PatientPreferences> findAllByPersonInternalIdIn(Collection<UUID> personIds);
 }

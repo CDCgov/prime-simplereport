@@ -1716,6 +1716,7 @@ databaseChangeLog:
             FROM ${database.defaultSchemaName}.person CROSS JOIN migration_user
             WHERE test_result_delivery IS NOT NULL;
   - changeSet:
+<<<<<<< HEAD
       id: add-phone-number-table
       author: nathan@skylight.digital
       comment: Add table to track user phone numbers
@@ -1763,3 +1764,45 @@ databaseChangeLog:
                  - column: *created_by_column
                  - column: *updated_at_column
                  - column: *updated_by_column
+      id: add-org-verified
+      author: jeremy.a.zitomer@omb.eop.gov
+      comment: Add a required boolean column to the organization table named identity_verified, existing records set to true.
+      changes:
+        - addColumn:
+            tableName: organization
+            columns:
+              - column:
+                  name: identity_verified
+                  type: boolean
+                  remarks: Whether this organization's identity has been verified.
+                  valueBoolean: true
+                  defaultValueBoolean: true
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: add-test-length
+      author: emma@skylight.digital
+      comment: Add test length column to the device type table. Test length will be based on the model used.
+      changes:
+        - addColumn:
+            tableName: device_type
+            columns:
+              - column:
+                  name: test_length
+                  type: int
+                  remarks: The length (in minutes) that the test will take.
+                  defaultValueNumeric: 15
+                  valueComputed: (CASE WHEN name like '%CareStart%' THEN 10 ELSE 15 END)
+                  # This valueComputed backfills the column to have the correct values for all existing device_type rows. It does not apply to new rows.
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: remove-person-test_result_delivery
+      author: adam@skylight.digital
+      comment: Remove the orphaned person.test_result_delivery column
+      changes:
+        - dropColumn:
+            tableName: person
+            columns:
+              - column:
+                  name: test_result_delivery

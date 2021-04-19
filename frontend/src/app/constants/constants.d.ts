@@ -4,13 +4,14 @@ type Race =
   | "black"
   | "pacific"
   | "white"
-  | "unknown"
+  | "other"
   | "refused";
-type Ethnicity = "hispanic" | "not_hispanic";
-type Gender = "male" | "female" | "other";
+type Ethnicity = "hispanic" | "not_hispanic" | "refused";
+type Gender = "male" | "female" | "other" | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
 type PhoneType = "mobile" | "landline" | "unknown";
+type YesNoUnknown = YesNo | "UNKNOWN";
 type TribalAffiliation =
   | "1"
   | "2"
@@ -585,9 +586,9 @@ interface PersonUpdate extends Address {
   race: Race;
   ethnicity: Ethnicity;
   gender: Gender;
+  residentCongregateSetting: boolean | null | undefined;
+  employedInHealthcare: boolean | null | undefined;
   tribalAffiliation: TribalAffiliation;
-  residentCongregateSetting: boolean;
-  employedInHealthcare: boolean;
   telephone: string;
   county: string;
   email: string;

@@ -4,6 +4,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -16,6 +17,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
 
 /**
@@ -124,7 +126,8 @@ public class Translators {
           "native hawaiian or other pacific islander", "pacific",
           "white", "white",
           "unknown", "unknown",
-          "refused to answer", "refused");
+          "prefer not to answer", "refused",
+          "other", "other");
 
   private static final Set<String> RACE_VALUES =
       RACES.values().stream().collect(Collectors.toSet());
@@ -158,7 +161,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(r, RACE_KEYS);
   }
 
-  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic");
+  private static final Set<String> ETHNICITIES = Set.of("hispanic", "not_hispanic", "refused");
 
   public static String parseEthnicity(String e) {
     String ethnicity = parseString(e);
@@ -189,7 +192,7 @@ public class Translators {
     throw IllegalGraphqlArgumentException.mustBeEnumerated(ta, TRIBAL_AFFILIATIONS);
   }
 
-  private static final Set<String> GENDERS = Set.of("male", "female", "other");
+  private static final Set<String> GENDERS = Set.of("male", "female", "other", "refused");
 
   public static String parseGender(String g) {
     String gender = parseString(g);
@@ -248,5 +251,30 @@ public class Translators {
       symptomsMap.put(key, value);
     }
     return symptomsMap;
+  }
+
+  public static PersonName consolidateNameArguments(
+      PersonName name, String firstName, String middleName, String lastName, String suffix) {
+    return consolidateNameArguments(name, firstName, middleName, lastName, suffix, false);
+  }
+
+  public static PersonName consolidateNameArguments(
+      PersonName name,
+      String firstName,
+      String middleName,
+      String lastName,
+      String suffix,
+      boolean allowEmpty) {
+    if (name != null && !StringUtils.isAllBlank(firstName, middleName, lastName, suffix)) {
+      throw new IllegalGraphqlArgumentException(
+          "Do not specify both unrolled and structured name arguments");
+    }
+    if (name == null) {
+      name = new PersonName(firstName, middleName, lastName, suffix);
+    }
+    if (!allowEmpty && StringUtils.isBlank(name.getLastName())) {
+      throw new IllegalGraphqlArgumentException("lastName cannot be empty");
+    }
+    return name;
   }
 }

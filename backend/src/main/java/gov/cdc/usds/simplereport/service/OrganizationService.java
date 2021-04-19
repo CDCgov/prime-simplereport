@@ -103,8 +103,10 @@ public class OrganizationService {
   }
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
-  public List<Organization> getOrganizations() {
-    return _repo.findAll();
+  public List<Organization> getOrganizations(Boolean identityVerified) {
+    return identityVerified == null
+        ? _repo.findAll()
+        : _repo.findAllByIdentityVerified(identityVerified);
   }
 
   public Set<Facility> getAccessibleFacilities(
@@ -202,7 +204,8 @@ public class OrganizationService {
       StreetAddress providerAddress,
       String providerTelephone,
       String providerNPI) {
-    Organization org = _repo.save(new Organization(name, externalId));
+    // for now, all new organizations have identity_verified = true by default
+    Organization org = _repo.save(new Organization(name, externalId, true));
     Provider orderingProvider =
         _providerRepo.save(
             new Provider(providerName, providerNPI, providerAddress, providerTelephone));
@@ -229,6 +232,19 @@ public class OrganizationService {
     Organization org = getCurrentOrganization();
     org.setOrganizationName(name);
     return _repo.save(org);
+  }
+
+  @Transactional(readOnly = false)
+  @AuthorizationConfiguration.RequireGlobalAdminUser
+  public boolean setIdentityVerified(String externalId, boolean verified) {
+    Organization org = getOrganization(externalId);
+    boolean oldStatus = org.getIdentityVerified();
+    org.setIdentityVerified(verified);
+    boolean newStatus = _repo.save(org).getIdentityVerified();
+    if (oldStatus == false && newStatus == true) {
+      _oktaRepo.activateOrganization(org);
+    }
+    return newStatus;
   }
 
   @Transactional(readOnly = false)
