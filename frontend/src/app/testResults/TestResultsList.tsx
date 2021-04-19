@@ -40,48 +40,14 @@ import TestResultCorrectionModal from "./TestResultCorrectionModal";
 type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
 export const testResultQuery = gql`
-  query GetFacilityResults($facilityId: ID!, $pageNumber: Int, $pageSize: Int) {
+  query GetFacilityResults(
+    $facilityId: ID
+    $patientId: ID
+    $pageNumber: Int
+    $pageSize: Int
+  ) {
     testResults(
       facilityId: $facilityId
-      pageNumber: $pageNumber
-      pageSize: $pageSize
-    ) {
-      internalId
-      dateTested
-      result
-      correctionStatus
-      deviceType {
-        internalId
-        name
-      }
-      patient {
-        internalId
-        firstName
-        middleName
-        lastName
-        birthDate
-        gender
-        lookupId
-      }
-      createdBy {
-        nameInfo {
-          firstName
-          middleName
-          lastName
-        }
-      }
-      patientLink {
-        internalId
-      }
-      symptoms
-      noSymptoms
-    }
-  }
-`;
-
-export const testResultByPatientQuery = gql`
-  query GetPatientResults($patientId: ID!, $pageNumber: Int, $pageSize: Int) {
-    testResultsByPatient(
       patientId: $patientId
       pageNumber: $pageNumber
       pageSize: $pageSize
@@ -282,7 +248,7 @@ export const DetachedTestResultsList: any = ({
     );
   }
 
-  const testResults = data?.testResults || data?.testResultsByPatient || [];
+  const testResults = data?.testResults || [];
 
   const rows = testResultRows(testResults, setPrintModalId, setMarkErrorId);
 
@@ -369,13 +335,8 @@ export const DetachedTestResultsList: any = ({
 };
 
 export const resultsCountQuery = gql`
-  query GetResultsCountByFacility($facilityId: ID!) {
-    testResultsCount(facilityId: $facilityId)
-  }
-`;
-export const resultsCountByPatientQuery = gql`
-  query GetResultsCountByPatient($patientId: ID!) {
-    testResultsCountByPatient(patientId: $patientId)
+  query GetResultsCountByFacility($facilityId: ID, $patientId: ID) {
+    testResultsCount(facilityId: $facilityId, patientId: $patientId)
   }
 `;
 
@@ -399,27 +360,25 @@ const TestResultsList = (props: TestResultsListProps) => {
   const entriesPerPage = 20;
   const pageNumber = props.page || 1;
 
-  let query, countQuery, countQueryVariables;
   const queryVariables: {
     patientId?: string;
-    facilityId?: string;
+    facilityId: string;
     pageNumber: number;
     pageSize: number;
   } = {
+    facilityId: activeFacilityId,
     pageNumber: pageNumber - 1,
     pageSize: entriesPerPage,
   };
 
+  const countQueryVariables: {
+    patientId?: string;
+    facilityId: string;
+  } = { facilityId: activeFacilityId };
+
   if (selectedPatientId) {
-    query = testResultByPatientQuery;
-    countQuery = resultsCountByPatientQuery;
     queryVariables.patientId = selectedPatientId;
-    countQueryVariables = { patientId: selectedPatientId };
-  } else {
-    query = testResultQuery;
-    countQuery = resultsCountQuery;
-    queryVariables.facilityId = activeFacilityId;
-    countQueryVariables = { facilityId: activeFacilityId };
+    countQueryVariables.patientId = selectedPatientId;
   }
 
   const {
@@ -427,7 +386,7 @@ const TestResultsList = (props: TestResultsListProps) => {
     loading,
     error,
     refetch: refetchCount,
-  } = useQuery(countQuery, {
+  } = useQuery(resultsCountQuery, {
     variables: countQueryVariables,
     fetchPolicy: "no-cache",
   });
@@ -443,12 +402,11 @@ const TestResultsList = (props: TestResultsListProps) => {
     throw error;
   }
 
-  const totalEntries =
-    totalResults.testResultsCount || totalResults.testResultsCountByPatient;
+  const totalEntries = totalResults.testResultsCount;
 
   return (
     <QueryWrapper<Props>
-      query={query}
+      query={testResultQuery}
       queryOptions={{
         variables: queryVariables,
       }}

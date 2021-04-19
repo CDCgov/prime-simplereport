@@ -9,9 +9,7 @@ import { QUERY_PATIENT } from "../testQueue/addToQueue/AddToQueueSearch";
 
 import TestResultsList, {
   DetachedTestResultsList,
-  resultsCountByPatientQuery,
   resultsCountQuery,
-  testResultByPatientQuery,
   testResultQuery,
 } from "./TestResultsList";
 
@@ -223,21 +221,23 @@ const mocks = [
   },
   {
     request: {
-      query: resultsCountByPatientQuery,
+      query: resultsCountQuery,
       variables: {
+        facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
       },
     },
     result: {
       data: {
-        testResultsCountByPatient: testResultsByPatient.length,
+        testResultsCount: testResultsByPatient.length,
       },
     },
   },
   {
     request: {
-      query: testResultByPatientQuery,
+      query: testResultQuery,
       variables: {
+        facilityId: "1",
         patientId: "48c523e8-7c65-4047-955c-e3f65bb8b58a",
         pageNumber: 0,
         pageSize: 20,
@@ -245,7 +245,7 @@ const mocks = [
     },
     result: {
       data: {
-        testResultsByPatient,
+        testResults: testResultsByPatient,
       },
     },
   },
