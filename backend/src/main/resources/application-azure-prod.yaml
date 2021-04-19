@@ -1,43 +1,19 @@
 spring:
   profiles.include: okta-prod
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-prod.azurewebsites.net
-    - https://simple-report-prod.azureedge.net
-    - https://prod.simplereport.gov
-    - https://simplereport.gov
 simple-report:
   data-hub:
     upload-enabled: true
     upload-url: "https://prime-data-hub-prod.azurefd.net/api/reports?option=SkipInvalidItems"
     upload-schedule: "0 0 5-21/2 * * *"
-  site-admin-emails:
-    - bwarfield@cdc.gov
-    - tim.best@usds.dhs.gov
-    - qom2@cdc.gov # a.k.a. abeckett@cdc.gov
-    - jonathan.eskew@cms.hhs.gov
-    - neil.s.sharma@omb.eop.gov
-    - wsullivan@cdc.gov
-    - jeremy.a.zitomer@omb.eop.gov
-    - nicholas.scialli@usds.dhs.gov
-    - qrk8@cdc.gov # Sparkle
-    - thomas.a.nielsen@omb.eop.gov
-    - adam@skylight.digital
-    - josh@skylight.digital
-    - qom5@cdc.gov # Heather
-    - qpu1@cdc.gov # Katherine
-    - qyl5@cdc.gov # Brett
-    - niki.ward@hhs.gov
-    - angelica.tanglao@hhs.gov
-    - jehofasolape.olaniyan@hhs.gov
-    - sharon.liu@hhs.gov
-    - teophanis.khoury@hhs.gov
-    - jessica.cox@hhs.gov
-    - vanessa.bonetti@hhs.gov
-    - nikolas.cribb@hhs.gov
   patient-link-url: https://simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: true
+  cors:
+    allowed-origins:
+      - https://simple-report-api-prod.azurewebsites.net
+      - https://simple-report-prod.azureedge.net
+      - https://www.simplereport.gov
+      - https://simplereport.gov
 twilio:
   enabled: true
   from-number: "+14045312484"

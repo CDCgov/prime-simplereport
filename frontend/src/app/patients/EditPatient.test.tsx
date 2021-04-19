@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  within,
+} from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -125,6 +131,88 @@ describe("EditPatient", () => {
           target: { value: mockFacilityID },
         });
         expect(facilityInput.value).toBe(mockFacilityID);
+      });
+    });
+  });
+  describe("non-answer and unknown options", () => {
+    beforeEach(async () => {
+      const mocks = [
+        {
+          request: {
+            query: GET_PATIENT,
+            variables: {
+              id: mockPatientID,
+            },
+          },
+          result: {
+            data: {
+              patient: {
+                firstName: "Eugenia",
+                middleName: null,
+                lastName: "Franecki",
+                birthDate: "1939-10-11",
+                street: "736 Jackson PI NW",
+                streetTwo: "DC",
+                city: null,
+                state: "DC",
+                zipCode: null,
+                telephone: "(634) 397-4114",
+                role: "UNKNOWN",
+                email: "foo@bar.com",
+                county: null,
+                race: "refused",
+                ethnicity: "refused",
+                gender: "refused",
+                residentCongregateSetting: null,
+                employedInHealthcare: null,
+                facility: null,
+              },
+            },
+          },
+        },
+      ];
+
+      render(
+        <MemoryRouter>
+          <Provider store={store}>
+            <MockedProvider mocks={mocks} addTypename={false}>
+              <EditPatient
+                facilityId={mockFacilityID}
+                patientId={mockPatientID}
+              />
+            </MockedProvider>
+          </Provider>
+        </MemoryRouter>
+      );
+      await act(async () => {
+        await screen.findAllByText("Franecki, Eugenia", { exact: false });
+      });
+    });
+
+    it("shows prefer not to answer options", () => {
+      ["Race", "Are you Hispanic or Latino?", "Biological sex"].forEach(
+        (legend) => {
+          const fieldset = screen.getByText(legend).closest("fieldset");
+          if (fieldset === null) {
+            throw Error(`Unable to corresponding fieldset for ${legend}`);
+          }
+          const option = within(fieldset).getByLabelText(
+            "Prefer not to answer"
+          );
+          expect(option).toBeChecked();
+        }
+      );
+    });
+    it("shows unknown answers", () => {
+      ["congregate", "health care"].forEach((legend) => {
+        const fieldset = screen
+          .getByText(legend, { exact: false })
+          .closest("fieldset");
+        if (fieldset === null) {
+          throw Error(`Unable to corresponding fieldset for ${legend}`);
+        }
+        const option = within(fieldset).getByLabelText("Unknown");
+        expect(option).toBeChecked();
       });
     });
   });
