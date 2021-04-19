@@ -49,6 +49,12 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
               </div>
             </div>
             <div className="usa-card__body">
+            <div className="usa-alert usa-alert--warning" >
+              <div className="usa-alert__body">
+                <h4 className="usa-alert__heading">Reminder</h4>
+                <p className="usa-alert__text">Add the new device type to the Sign up form device options.</p>
+              </div>
+            </div>
               <div className="grid-row grid-gap">
                 <div className="tablet:grid-col">
                   <TextInput
