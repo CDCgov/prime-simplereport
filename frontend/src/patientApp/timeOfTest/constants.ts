@@ -33,13 +33,30 @@ export type Pregnancy = typeof pregnancyMap;
 export type PregnancyCode = keyof Pregnancy;
 export type PregnancyDescription = Pregnancy[PregnancyCode];
 
-export const globalSymptomDefinitions = Object.entries(symptomsMap).reduce(
-  (acc, [code, name]) => {
-    acc.push({ value: code as SymptomCode, label: name });
-    return acc;
-  },
-  [] as { value: SymptomCode; label: SymptomName }[]
-);
+const symptomOrder: SymptomCode[] = [
+  "426000000",
+  "103001002",
+  "43724002",
+  "49727002",
+  "267036007",
+  "230145002",
+  "84229001",
+  "68962001",
+  "25064002",
+  "36955009",
+  "44169009",
+  "162397003",
+  "68235000",
+  "64531003",
+  "422587007",
+  "422400008",
+  "62315008",
+];
+
+export const globalSymptomDefinitions = symptomOrder.map((value) => ({
+  value,
+  label: symptomsMap[value],
+}));
 
 export const getSymptomList = () => globalSymptomDefinitions;
 
@@ -55,11 +72,10 @@ type PregnancyResponses = {
   value: PregnancyCode;
 }[];
 
+const pregancyOrder: PregnancyCode[] = ["77386006", "60001007", "261665006"];
+
 export const getPregnancyResponses = (): PregnancyResponses =>
-  Object.entries(pregnancyMap).reduce((acc, [code, description]) => {
-    acc.push({ label: description, value: code as PregnancyCode });
-    return acc;
-  }, [] as PregnancyResponses);
+  pregancyOrder.map((value) => ({ value, label: pregnancyMap[value] }));
 
 export const getTimeOfTestSteps = () => [
   {

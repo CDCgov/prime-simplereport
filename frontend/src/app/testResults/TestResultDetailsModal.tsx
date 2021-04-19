@@ -73,6 +73,9 @@ export const testQuery = gql`
 `;
 
 const labelClasses = "text-bold text-no-strike text-ink";
+const listClasses =
+  "font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
+const strikeClasses = "text-base text-strike";
 
 interface Props {
   data: { testResult: Nullable<Result> };
@@ -93,8 +96,6 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     createdBy,
   } = data.testResult;
 
-  const listClasses =
-    "font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
 
@@ -139,10 +140,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             Name
           </span>
           <span
-            className={classnames(
-              "font-sans-lg",
-              removed && "text-base text-strike"
-            )}
+            className={classnames("font-sans-lg", removed && strikeClasses)}
           >
             {patient ? formatFullName(patient) : "--"}
           </span>
@@ -157,19 +155,14 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             Date of birth
           </span>
           <span
-            className={classnames(
-              "font-sans-lg",
-              removed && "text-base text-strike"
-            )}
+            className={classnames("font-sans-lg", removed && strikeClasses)}
           >
             {patient?.birthDate ? formatDate(patient.birthDate) : "--"}
           </span>
         </div>
       </div>
       <h2 className="font-sans-md margin-top-3">Test details</h2>
-      <ul
-        className={classnames(listClasses, removed && "text-strike text-base")}
-      >
+      <ul className={classnames(listClasses, removed && strikeClasses)}>
         <DetailsRow label="SARS-CoV-2 Result" value={result} />
         <DetailsRow
           label="Test Date"
