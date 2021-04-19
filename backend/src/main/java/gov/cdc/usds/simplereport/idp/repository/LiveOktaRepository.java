@@ -80,7 +80,8 @@ public class LiveOktaRepository implements OktaRepository {
       IdentityAttributes userIdentity,
       Organization org,
       Set<Facility> facilities,
-      Set<OrganizationRole> roles) {
+      Set<OrganizationRole> roles,
+      boolean active) {
     // need to validate fields before adding them because Maps don't like nulls
     Map<String, Object> userProfileMap = new HashMap<String, Object>();
     if (userIdentity.getFirstName() != null && !userIdentity.getFirstName().isEmpty()) {
@@ -150,6 +151,7 @@ public class LiveOktaRepository implements OktaRepository {
     UserBuilder.instance()
         .setProfileProperties(userProfileMap)
         .setGroups(groupIdsToAdd)
+        .setActive(active)
         .buildAndCreate(_client);
 
     List<OrganizationRoleClaims> claims = _extractor.convertClaims(groupNamesToAdd);

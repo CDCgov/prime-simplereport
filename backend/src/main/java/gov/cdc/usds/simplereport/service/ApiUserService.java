@@ -56,25 +56,25 @@ public class ApiUserService {
 
   @AuthorizationConfiguration.RequireGlobalAdminUser
   public UserInfo createUser(
-      String username, PersonName name, String organizationExternalId, Role role) {
+      String username, PersonName name, String organizationExternalId, Role role, boolean active) {
     Organization org = _orgService.getOrganization(organizationExternalId);
-    return createUserHelper(username, name, org, role);
+    return createUserHelper(username, name, org, role, active);
   }
 
   @AuthorizationConfiguration.RequirePermissionManageUsers
-  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role) {
+  public UserInfo createUserInCurrentOrg(String username, PersonName name, Role role, boolean active) {
     Organization org = _orgService.getCurrentOrganization();
-    return createUserHelper(username, name, org, role);
+    return createUserHelper(username, name, org, role, true);
   }
 
-  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role) {
+  private UserInfo createUserHelper(String username, PersonName name, Organization org, Role role, boolean active) {
     IdentityAttributes userIdentity = new IdentityAttributes(username, name);
     ApiUser apiUser = _apiUserRepo.save(new ApiUser(username, userIdentity));
     // for now, all new users have no access to any facilities by default unless they are admins
     Set<OrganizationRole> roles =
         EnumSet.of(role.toOrganizationRole(), OrganizationRole.getDefault());
     Optional<OrganizationRoleClaims> roleClaims =
-        _oktaRepo.createUser(userIdentity, org, Set.of(), roles);
+        _oktaRepo.createUser(userIdentity, org, Set.of(), roles, active);
     Optional<OrganizationRoles> orgRoles = roleClaims.map(c -> _orgService.getOrganizationRoles(c));
     boolean isAdmin = isAdmin(apiUser);
     UserInfo user = new UserInfo(apiUser, orgRoles, isAdmin);

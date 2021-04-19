@@ -76,7 +76,7 @@ class DemoOktaRepositoryTest {
     assertTrue(
         new OrganizationRoleClaimsMatcher(amos_expected)
             .matches(
-                _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER)).get()));
+                _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(brad_expected)
             .matches(
@@ -85,11 +85,12 @@ class DemoOktaRepositoryTest {
                         BRAD,
                         ABC,
                         Set.of(ABC_2),
-                        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES))
+                        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+                        true)
                     .get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(charles_expected)
-            .matches(_repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of()).get()));
+            .matches(_repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of(), true).get()));
     assertTrue(
         new OrganizationRoleClaimsMatcher(diane_expected)
             .matches(
@@ -101,7 +102,8 @@ class DemoOktaRepositoryTest {
                         Set.of(
                             OrganizationRole.NO_ACCESS,
                             OrganizationRole.ALL_FACILITIES,
-                            OrganizationRole.ADMIN))
+                            OrganizationRole.ADMIN),
+                        true)
                     .get()));
 
     assertTrue(
@@ -137,7 +139,7 @@ class DemoOktaRepositoryTest {
     OrganizationRoleClaims expected_3 =
         new OrganizationRoleClaims(
             ABC.getExternalId(), Set.of(), Set.of(OrganizationRole.NO_ACCESS));
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
 
     assertTrue(
         new OrganizationRoleClaimsMatcher(expected_1)
@@ -183,8 +185,9 @@ class DemoOktaRepositoryTest {
         AMOS,
         ABC,
         Set.of(ABC_1, ABC_2),
-        Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
-    _repo.createUser(BRAD, ABC, Set.of(ABC_1), Set.of(OrganizationRole.ENTRY_ONLY));
+        Set.of(OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        true);
+    _repo.createUser(BRAD, ABC, Set.of(ABC_1), Set.of(OrganizationRole.ENTRY_ONLY), true);
 
     Optional<OrganizationRoleClaims> amos_actual =
         _repo.getOrganizationRoleClaimsForUser(AMOS.getUsername());
@@ -242,19 +245,21 @@ class DemoOktaRepositoryTest {
                 OrganizationRole.ALL_FACILITIES,
                 OrganizationRole.ADMIN));
 
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
         BRAD,
         ABC,
         Set.of(ABC_2),
-        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
-    _repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of());
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+        true);
+    _repo.createUser(CHARLES, ABC, Set.of(ABC_1, ABC_2), Set.of(), true);
     _repo.createUser(
         DIANE,
         ABC,
         Set.of(ABC_1, ABC_2),
         Set.of(
-            OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN));
+            OrganizationRole.NO_ACCESS, OrganizationRole.ALL_FACILITIES, OrganizationRole.ADMIN),
+        true);
 
     Map<String, OrganizationRoleClaims> all_users_actual = _repo.getAllUsersForOrganization(ABC);
     assertTrue(
@@ -273,12 +278,13 @@ class DemoOktaRepositoryTest {
 
   @Test
   void deactivateUser() {
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
         BRAD,
         ABC,
         Set.of(ABC_2),
-        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+        true);
     _repo.setUserIsActive(AMOS.getUsername(), false);
 
     assertTrue(_repo.getAllUsersForOrganization(ABC).containsKey(BRAD.getUsername()));
@@ -287,12 +293,13 @@ class DemoOktaRepositoryTest {
 
   @Test
   void deleteOrgAndFacilities() {
-    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER));
+    _repo.createUser(AMOS, ABC, Set.of(ABC_1), Set.of(OrganizationRole.USER), true);
     _repo.createUser(
         BRAD,
         ABC,
         Set.of(ABC_2),
-        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES));
+        Set.of(OrganizationRole.ENTRY_ONLY, OrganizationRole.ALL_FACILITIES),
+        true);
     _repo.deleteFacility(ABC_1);
 
     OrganizationRoleClaims amos_expected =

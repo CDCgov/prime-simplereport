@@ -235,7 +235,7 @@ public class OrganizationInitializingService {
       Set<OrganizationRole> roles) {
     try {
       LOG.info("Creating user {} in Okta", user.getUsername());
-      _oktaRepo.createUser(user, org, facilities, roles);
+      _oktaRepo.createUser(user, org, facilities, roles, true);
     } catch (ResourceException e) {
       LOG.info("User {} already exists in Okta", user.getUsername());
     }
