@@ -4,11 +4,10 @@ import moment from "moment";
 import classnames from "classnames";
 
 import Button from "../commonComponents/Button";
-import { displayFullName } from "../utils";
 import "./TestResultPrintModal.scss";
-import logo from "../../img/simplereport-logo-black.svg";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import { TestResult } from "../testQueue/QueueItem";
+import { formatFullName } from "../utils/user";
 
 type Result = {
   dateTested: string;
@@ -110,6 +109,20 @@ export const DetachedTestResultDetailsModal = ({
       <h1>Test Details</h1>
       <h2>Patient</h2>
       <h2>Test details</h2>
+      <ul>
+        <li>SARS-CoV-2 Result - {result}</li>
+        <li>Test date - {dateTested ? formatDate(dateTested) : "Missing"}</li>
+        <li>Device - {deviceType ? deviceType.name : "Missing"}</li>
+        <li>Symptoms - {symptoms}</li>
+        <li>
+          Symptom Onset - {symptomOnset ? formatDate(symptomOnset) : "Missing"}
+        </li>
+        <li>Pregnant? - {pregnancy}</li>
+        <li>
+          Submitted by -{" "}
+          {createdBy?.name ? formatFullName(createdBy.name as User) : "Missing"}
+        </li>
+      </ul>
     </Modal>
   );
 };
