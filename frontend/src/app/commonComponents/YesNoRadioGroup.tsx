@@ -1,15 +1,15 @@
 import React from "react";
 
-import { YES_NO_VALUES } from "../constants";
+import { YES_NO_UNKNOWN_VALUES } from "../constants";
 
 import RadioGroup from "./RadioGroup";
 
 interface Props {
   name: string;
   legend: React.ReactNode;
-  value: boolean | null;
+  value: YesNoUnknown | undefined;
+  onChange: (value: YesNoUnknown) => void;
   hintText?: string;
-  onChange: (value: boolean) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
   validationStatus?: "error" | "success";
   errorMessage?: React.ReactNode;
@@ -27,24 +27,16 @@ const YesNoRadioGroup: React.FC<Props> = ({
   errorMessage,
   required,
 }) => {
-  const getSelectedRadio = (): YesNo | null => {
-    switch (value) {
-      case true:
-        return "YES";
-      case false:
-        return "NO";
-      default:
-        return null;
-    }
-  };
+  const values = YES_NO_UNKNOWN_VALUES;
+
   return (
     <RadioGroup
       legend={legend}
       hintText={hintText}
       name={name}
-      buttons={YES_NO_VALUES}
-      selectedRadio={getSelectedRadio()}
-      onChange={(v) => onChange(v === "YES")}
+      buttons={values}
+      selectedRadio={value}
+      onChange={onChange}
       onBlur={onBlur}
       validationStatus={validationStatus}
       errorMessage={errorMessage}

@@ -33,6 +33,8 @@ public interface OktaRepository {
 
   public void createOrganization(Organization org);
 
+  public void activateOrganization(Organization org);
+
   public void createFacility(Facility facility);
 
   public void deleteOrganization(Organization org);

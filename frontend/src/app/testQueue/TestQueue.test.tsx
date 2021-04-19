@@ -74,12 +74,14 @@ const createPatient = ({
   last,
   birthDate,
   resultId,
+  firstTest,
 }: {
   first: string;
   middle: string | null;
   last: string;
   birthDate: string;
   resultId: string;
+  firstTest: boolean;
 }) => ({
   internalId: resultId,
   pregnancy: null,
@@ -87,12 +89,13 @@ const createPatient = ({
   symptoms,
   symptomOnset: null,
   noSymptoms: false,
-  firstTest: false,
+  firstTest,
   priorTestDate: null,
   priorTestType: null,
   priorTestResult: "",
   deviceType: {
     internalId,
+    testLength: 15,
     name: "LumiraDX",
     __typename: "DeviceType",
   },
@@ -125,6 +128,7 @@ const result = {
         last: "Doe",
         birthDate: "1996-06-19",
         resultId: "abc",
+        firstTest: true,
       }),
       createPatient({
         first: "Jane",
@@ -132,6 +136,7 @@ const result = {
         last: "Smith",
         birthDate: "2021-02-01",
         resultId: "def",
+        firstTest: false,
       }),
     ],
     organization: {
@@ -141,17 +146,20 @@ const result = {
           deviceTypes: [
             {
               internalId,
+              testLength: 15,
               name: "LumiraDX",
               __typename: "DeviceType",
             },
             {
               internalId: "0f3d7426-3476-4800-97e7-3de8a93b090c",
+              testLength: 15,
               name: "Quidel Sofia 2",
               __typename: "DeviceType",
             },
           ],
           defaultDeviceType: {
             internalId,
+            testLength: 15,
             name: "LumiraDX",
             __typename: "DeviceType",
           },

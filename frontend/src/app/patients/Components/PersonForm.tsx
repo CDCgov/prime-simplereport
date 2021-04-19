@@ -29,6 +29,36 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 
+const boolToYesNoUnknown = (
+  value: boolean | null | undefined
+): YesNoUnknown | undefined => {
+  if (value) {
+    return "YES";
+  }
+  if (value === false) {
+    return "NO";
+  }
+  if (value === null) {
+    return "UNKNOWN";
+  }
+  return undefined;
+};
+
+const yesNoUnknownToBool = (
+  value: YesNoUnknown
+): boolean | null | undefined => {
+  if (value === "YES") {
+    return true;
+  }
+  if (value === "NO") {
+    return false;
+  }
+  if (value === "UNKNOWN") {
+    return null;
+  }
+  return undefined;
+};
+
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
@@ -181,7 +211,7 @@ const PersonForm = (props: Props) => {
             props.getHeader(patient, validateForm, formChanged)}
         </div>
       )}
-      <FormGroup title="General info">
+      <FormGroup title="General information">
         <RequiredMessage />
         <div className="usa-form">
           <Input
@@ -327,8 +357,8 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Demographics">
         <p className="usa-hint maxw-prose">
-          This information is important for public health efforts to recognize
-          and address inequality in health outcomes.
+          This information is collected as part of public health efforts to
+          recognize and address inequality in health outcomes.
         </p>
         <RadioGroup
           legend="Race"
@@ -350,14 +380,14 @@ const PersonForm = (props: Props) => {
           />
         </fieldset>
         <RadioGroup
-          legend="Ethnicity"
+          legend="Are you Hispanic or Latino?"
           name="ethnicity"
           buttons={ETHNICITY_VALUES}
           selectedRadio={patient.ethnicity}
           onChange={onPersonChange("ethnicity")}
         />
         <RadioGroup
-          legend="Biological Sex"
+          legend="Biological sex"
           name="gender"
           buttons={GENDER_VALUES}
           selectedRadio={patient.gender}
@@ -369,8 +399,10 @@ const PersonForm = (props: Props) => {
           legend="Are you a resident in a congregate living setting?"
           hintText="For example: nursing home, group home, prison, jail, or military"
           name="residentCongregateSetting"
-          value={patient.residentCongregateSetting}
-          onChange={onPersonChange("residentCongregateSetting")}
+          value={boolToYesNoUnknown(patient.residentCongregateSetting)}
+          onChange={(v) =>
+            onPersonChange("residentCongregateSetting")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("residentCongregateSetting");
           }}
@@ -381,8 +413,10 @@ const PersonForm = (props: Props) => {
         <YesNoRadioGroup
           legend="Are you a health care worker?"
           name="employedInHealthcare"
-          value={patient.employedInHealthcare}
-          onChange={onPersonChange("employedInHealthcare")}
+          value={boolToYesNoUnknown(patient.employedInHealthcare)}
+          onChange={(v) =>
+            onPersonChange("employedInHealthcare")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("employedInHealthcare");
           }}
