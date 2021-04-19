@@ -48,7 +48,7 @@ const DeviceTypeForm: React.FC<Props> = ({ saveDeviceType }) => {
                 />
               </div>
             </div>
-            <div className="usa-card__body">
+            <div className="usa-card__body margin-top-1">
               <div>
                 <div className="usa-alert usa-alert--warning">
                   <div className="usa-alert__body">
