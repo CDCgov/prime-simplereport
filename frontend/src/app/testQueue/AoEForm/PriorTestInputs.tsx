@@ -10,15 +10,16 @@ import RadioGroup from "../../commonComponents/RadioGroup";
 import Dropdown, { Option } from "../../commonComponents/Dropdown";
 import TextInput from "../../commonComponents/TextInput";
 import Optional from "../../commonComponents/Optional";
+import Checkboxes from "../../commonComponents/Checkboxes";
 
 interface Props {
   testTypeConfig: Option[];
   isFirstTest: boolean | undefined;
   setIsFirstTest: (isFirstTest: boolean) => void;
-  priorTestDate: string | undefined;
+  priorTestDate: string | undefined | null;
   setPriorTestDate: (priorTestDate: string | undefined) => void;
-  priorTestResult: string | undefined;
-  setPriorTestResult: (priorTestResult: string | undefined) => void;
+  priorTestResult: string | undefined | null;
+  setPriorTestResult: (priorTestResult: string | undefined | null) => void;
   priorTestType: string | undefined;
   setPriorTestType: (priorTestType: string | undefined) => void;
   lastTest:
@@ -48,26 +49,39 @@ const PriorTestInputs: React.FC<Props> = ({
     lastTest &&
     lastTest.result === priorTestResult;
   const [lastTestAnswer, setlastTestAnswer] = useState(
-    !priorTestDate || isFirstTest === undefined
-      ? undefined
-      : filledPriorTest
-      ? "yes"
-      : "no"
+    isFirstTest === undefined ? undefined : filledPriorTest ? "yes" : "no"
+  );
+  const [lastTestDateKnown, setLastTestDateKnown] = useState(
+    !!priorTestDate || priorTestDate === undefined
   );
   const previousTestEntry = (
     <>
       <TextInput
         type="date"
-        label="Date of Most Recent Test"
+        label="Date of most recent test"
         name="prior_test_date"
-        value={priorTestDate}
+        value={priorTestDate || undefined}
         onChange={(e) => setPriorTestDate(e.target.value)}
         max={new Date().toISOString().split("T")[0]}
         min="2020-02-01"
+        disabled={!lastTestDateKnown}
+      />
+      <Checkboxes
+        legend="Date of most recent test unknown?"
+        name="mostRecentTestUnknown"
+        legendSrOnly={true}
+        boxes={[{ label: "Unknown", value: "UNKNOWN" }]}
+        checkedValues={{ UNKNOWN: !lastTestDateKnown }}
+        onChange={(e) => {
+          setLastTestDateKnown(!e.target.checked);
+          if (e.target.checked) {
+            setPriorTestDate(undefined);
+          }
+        }}
       />
       <Dropdown
         options={testTypeConfig}
-        label="Type of Prior Test"
+        label="Type of prior test"
         name="prior_test_type"
         selectedValue={priorTestType || ""}
         onChange={(e) => setPriorTestType(e.target.value)}
@@ -87,10 +101,18 @@ const PriorTestInputs: React.FC<Props> = ({
             value: COVID_RESULTS.INCONCLUSIVE,
             label: TEST_RESULT_DESCRIPTIONS.UNDETERMINED,
           },
+          {
+            value: COVID_RESULTS.UNKNOWN,
+            label: TEST_RESULT_DESCRIPTIONS.UNKNOWN,
+          },
         ]}
-        label="Result of Prior Test"
+        label="Result of prior test"
         name="prior_test_result"
-        selectedValue={priorTestResult || ""}
+        selectedValue={
+          priorTestResult === null
+            ? COVID_RESULTS.UNKNOWN
+            : priorTestResult || ""
+        }
         defaultSelect
         onChange={(e) => setPriorTestResult(e.target.value)}
       />

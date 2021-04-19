@@ -934,16 +934,16 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
-                          id="34-val-unknown"
+                          id="34-val-other"
                           name="race"
                           type="radio"
-                          value="unknown"
+                          value="other"
                         />
                         <label
                           class="usa-radio__label"
-                          for="34-val-unknown"
+                          for="34-val-other"
                         >
-                          Unknown
+                          Other
                         </label>
                       </div>
                       <div
@@ -1022,6 +1022,24 @@ Object {
                           No
                         </label>
                       </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="35-val-refused"
+                          name="ethnicity"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="35-val-refused"
+                        >
+                          Prefer not to answer
+                        </label>
+                      </div>
                     </div>
                   </fieldset>
                   <fieldset
@@ -1035,24 +1053,6 @@ Object {
                     <div
                       class="usa-form-group"
                     >
-                      <div
-                        class="usa-radio"
-                      >
-                        <input
-                          class="usa-radio__input"
-                          data-required="false"
-                          id="36-val-male"
-                          name="gender"
-                          type="radio"
-                          value="male"
-                        />
-                        <label
-                          class="usa-radio__label"
-                          for="36-val-male"
-                        >
-                          Male
-                        </label>
-                      </div>
                       <div
                         class="usa-radio"
                       >
@@ -1077,6 +1077,24 @@ Object {
                         <input
                           class="usa-radio__input"
                           data-required="false"
+                          id="36-val-male"
+                          name="gender"
+                          type="radio"
+                          value="male"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="36-val-male"
+                        >
+                          Male
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
                           id="36-val-other"
                           name="gender"
                           type="radio"
@@ -1087,6 +1105,24 @@ Object {
                           for="36-val-other"
                         >
                           Other
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="false"
+                          id="36-val-refused"
+                          name="gender"
+                          type="radio"
+                          value="refused"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="36-val-refused"
+                        >
+                          Prefer not to answer
                         </label>
                       </div>
                     </div>
@@ -1164,6 +1200,24 @@ Object {
                           No
                         </label>
                       </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="37-val-UNKNOWN"
+                          name="residentCongregateSetting"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="37-val-UNKNOWN"
+                        >
+                          Unknown
+                        </label>
+                      </div>
                     </div>
                   </fieldset>
                   <fieldset
@@ -1219,6 +1273,24 @@ Object {
                           for="38-val-NO"
                         >
                           No
+                        </label>
+                      </div>
+                      <div
+                        class="usa-radio"
+                      >
+                        <input
+                          class="usa-radio__input"
+                          data-required="true"
+                          id="38-val-UNKNOWN"
+                          name="employedInHealthcare"
+                          type="radio"
+                          value="UNKNOWN"
+                        />
+                        <label
+                          class="usa-radio__label"
+                          for="38-val-UNKNOWN"
+                        >
+                          Unknown
                         </label>
                       </div>
                     </div>
@@ -2176,16 +2248,16 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
-                        id="34-val-unknown"
+                        id="34-val-other"
                         name="race"
                         type="radio"
-                        value="unknown"
+                        value="other"
                       />
                       <label
                         class="usa-radio__label"
-                        for="34-val-unknown"
+                        for="34-val-other"
                       >
-                        Unknown
+                        Other
                       </label>
                     </div>
                     <div
@@ -2264,6 +2336,24 @@ Object {
                         No
                       </label>
                     </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="35-val-refused"
+                        name="ethnicity"
+                        type="radio"
+                        value="refused"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="35-val-refused"
+                      >
+                        Prefer not to answer
+                      </label>
+                    </div>
                   </div>
                 </fieldset>
                 <fieldset
@@ -2277,24 +2367,6 @@ Object {
                   <div
                     class="usa-form-group"
                   >
-                    <div
-                      class="usa-radio"
-                    >
-                      <input
-                        class="usa-radio__input"
-                        data-required="false"
-                        id="36-val-male"
-                        name="gender"
-                        type="radio"
-                        value="male"
-                      />
-                      <label
-                        class="usa-radio__label"
-                        for="36-val-male"
-                      >
-                        Male
-                      </label>
-                    </div>
                     <div
                       class="usa-radio"
                     >
@@ -2319,6 +2391,24 @@ Object {
                       <input
                         class="usa-radio__input"
                         data-required="false"
+                        id="36-val-male"
+                        name="gender"
+                        type="radio"
+                        value="male"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="36-val-male"
+                      >
+                        Male
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
                         id="36-val-other"
                         name="gender"
                         type="radio"
@@ -2329,6 +2419,24 @@ Object {
                         for="36-val-other"
                       >
                         Other
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="false"
+                        id="36-val-refused"
+                        name="gender"
+                        type="radio"
+                        value="refused"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="36-val-refused"
+                      >
+                        Prefer not to answer
                       </label>
                     </div>
                   </div>
@@ -2406,6 +2514,24 @@ Object {
                         No
                       </label>
                     </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="37-val-UNKNOWN"
+                        name="residentCongregateSetting"
+                        type="radio"
+                        value="UNKNOWN"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="37-val-UNKNOWN"
+                      >
+                        Unknown
+                      </label>
+                    </div>
                   </div>
                 </fieldset>
                 <fieldset
@@ -2461,6 +2587,24 @@ Object {
                         for="38-val-NO"
                       >
                         No
+                      </label>
+                    </div>
+                    <div
+                      class="usa-radio"
+                    >
+                      <input
+                        class="usa-radio__input"
+                        data-required="true"
+                        id="38-val-UNKNOWN"
+                        name="employedInHealthcare"
+                        type="radio"
+                        value="UNKNOWN"
+                      />
+                      <label
+                        class="usa-radio__label"
+                        for="38-val-UNKNOWN"
+                      >
+                        Unknown
                       </label>
                     </div>
                   </div>
