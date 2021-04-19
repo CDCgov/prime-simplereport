@@ -134,7 +134,6 @@ class ApiUserAwareGraphQlContextBuilder implements GraphQLServletContextBuilder 
                           .collect(Collectors.toList());
                     }));
     dataLoaderRegistry.register(PatientDataResolver.LAST_TEST_DATA_LOADER, testEventDataLoader);
-    dataLoaderRegistry.register(PatientPreferences.DATA_LOADER, patientPreferencesDataLoader);
 
     return dataLoaderRegistry;
   }
