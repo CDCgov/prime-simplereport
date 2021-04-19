@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
+import { identity } from "lodash";
 
 // I think this is what needs to be changed - going from getUsers to a singleGetUser for whoever happens to be in view
 const GET_USERS = gql`
@@ -14,16 +15,7 @@ const GET_USERS = gql`
       firstName
       middleName
       lastName
-      roleDescription
-      role
-      permissions
       email
-      organization {
-        testingFacility {
-          id
-          name
-        }
-      }
     }
   }
 `;
@@ -49,7 +41,7 @@ const GET_USER = gql`
     }
 `;
 
-// structure for `getUsers` query
+// structure for `getUser` query
 export interface SettingsUser {
   id: string;
   firstName: string;
@@ -64,11 +56,20 @@ export interface SettingsUser {
   };
 }
 
-interface UserData {
-  users: SettingsUser[];
+// structure for `getUsers` query 
+export interface LimitedUser {
+  id: string;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  email: string;
 }
 
-interface SingleUserData {
+interface UserData {
+  users: LimitedUser[];
+}
+
+export interface SingleUserData {
   user: SettingsUser;
 }
 
@@ -156,14 +157,13 @@ const ManageUsersContainer: any = () => {
     { fetchPolicy: "no-cache" }
   );
 
-    const { data: singleUserData, refetch: getUser } = useQuery<SingleUserData, {}>(
+  const { data: singleUserData } = useQuery<SingleUserData, {}>(
     GET_USER,
      { 
-      variables: { id: loggedInUser.id || "" }, 
-      fetchPolicy: "no-cache" }
+      variables: { id: loggedInUser.id }, 
+      fetchPolicy: "no-cache" 
+    }
   );
-
-  console.log("singleUserData: ", singleUserData);
 
   const {
     data: dataFacilities,
@@ -190,10 +190,8 @@ const ManageUsersContainer: any = () => {
   }
 
   if (singleUserData === undefined) {
-    return <p>Error: Privileges could not be loaded for user</p>
+    return <p>Error: could not load user</p>;
   }
-
-  console.log(singleUserData.user);
 
   const allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
@@ -201,16 +199,12 @@ const ManageUsersContainer: any = () => {
   return (
     <ManageUsers
       users={data.users}
-      // this is definitely janky and needs fixing - selectedUserPrivileges should be of type SettingsUser, and 
-      // users should be of type User (since it doesn't have role information)
-      selectedUserPrivileges={singleUserData.user}
       loggedInUser={loggedInUser}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
       deleteUser={deleteUser}
       getUsers={getUsers}
-      getUser={getUser}
     />
   );
 };

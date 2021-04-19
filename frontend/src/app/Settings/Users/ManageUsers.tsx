@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 
+import { gql, useQuery } from "@apollo/client";
 import Alert from "../../commonComponents/Alert";
 import Button from "../../commonComponents/Button";
 import {
@@ -17,43 +18,59 @@ import InProgressModal from "./InProgressModal";
 import UserFacilitiesSettingsForm from "./UserFacilitiesSettingsForm";
 import UserRoleSettingsForm from "./UserRoleSettingsForm";
 import UsersSideNav from "./UsersSideNav";
-import { SettingsUser, UserFacilitySetting } from "./ManageUsersContainer";
+import { SettingsUser, LimitedUser, UserFacilitySetting, SingleUserData } from "./ManageUsersContainer";
 
 import "./ManageUsers.scss";
 
-// this file will also need to be updated with the multiple versions of getUser(s)
-// getUsers should only return what is contained in the ApiUser class, and then the frontend should call a new getUser query to load the privilege details for a specific selected user. 
-
-// this file manages the view for all users, not just a single users
-// the getUsers newly will not return permissions from Okta, just a list of users
-// getUser(privileges) will return the privileges for a single selected user 
-
-// ok Emma time to put the thinking cap on.
-// this file needs *some* version of getUsers so that we can correctly load the side panel.
-// however, getUsers shouldn't be loading all the permissions for every user in the set.
-// (I think that piece is taken care of on the backend.)
-// we only want permissions for the currently selected user, which we can get using getUser(id).
-// so: continue to call getUsers() for the list of users, but edit the app to somehow only call getUser(id) for selected users.
-// that getUser(id) will be passed as a prop to ManageUsers, but probably defined in the container.
-
-// update: now we've got the manageUsersContainer correctly passing in both getUser query and the selectedUserPrivileges! now this file
-// just needs to be updated to use those, instead of calling getUsers() all over the place
+const GET_USER = gql`
+  query GetUser($id: ID!) {
+    user(id: $id) {
+       id
+       firstName
+       middleName
+       lastName
+       roleDescription
+       role
+       permissions
+       email
+       organization {
+         testingFacility {
+           id
+           name
+         }
+       }
+     }
+    }
+`;
 
 interface Props {
-  users: SettingsUser[];
+  users: LimitedUser[];
   loggedInUser: User;
-  selectedUserPrivileges: SettingsUser,
   allFacilities: UserFacilitySetting[];
-  updateUserPrivileges: (variables: any) => Promise<any>; // these are all passed in from the ManageUsersContainer file
+  updateUserPrivileges: (variables: any) => Promise<any>;
   addUserToOrg: (variables: any) => Promise<any>;
   deleteUser: (variables: any) => Promise<any>;
   getUsers: () => Promise<any>;
-  getUser: (variables: any) => Promise<any>;
 }
+
+const emptySettingsUser : SettingsUser =
+  {
+    firstName: "John",
+    middleName: "",
+    lastName: "Arthur",
+    id: "a123",
+    email: "john@arthur.org",
+    organization: { testingFacility: [] },
+    permissions: ["READ_PATIENT_LIST"],
+    roleDescription: "user",
+    role: "USER",
+  };
+
+export type LimitedUsers = { [id: string]: LimitedUser };
 
 export type SettingsUsers = { [id: string]: SettingsUser };
 
-const sortUsers = (users: SettingsUsers) =>
+const sortUsers = (users: LimitedUsers) =>
   Object.values(users).sort((a, b) => {
     const nameA = displayFullName(a.firstName, a.middleName, a.lastName);
     const nameB = displayFullName(b.firstName, b.middleName, b.lastName);
@@ -61,8 +78,8 @@ const sortUsers = (users: SettingsUsers) =>
     return nameA > nameB ? 1 : -1;
   });
 
-const getSettingsUser = (users: SettingsUser[]) =>
-  users.reduce((acc: SettingsUsers, user: SettingsUser) => {
+  const getLimitedUser = (users: LimitedUser[]) =>
+  users.reduce((acc: LimitedUsers, user: LimitedUser) => {
     acc[user.id] = user;
     return acc;
   }, {});
@@ -74,6 +91,17 @@ export type UpdateUser = <K extends keyof SettingsUser>(
 
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
+const FetchUserPermissions = (id: string) => {
+  const { data: singleUserData } = useQuery<SingleUserData, {}>(
+    GET_USER,
+     { 
+      variables: { id: id }, 
+      fetchPolicy: "no-cache" 
+    }
+  );
+  return singleUserData?.user;
+}
+
 const ManageUsers: React.FC<Props> = ({
   users,
   loggedInUser,
@@ -83,7 +111,7 @@ const ManageUsers: React.FC<Props> = ({
   deleteUser,
   getUsers,
 }) => {
-  const [activeUser, updateActiveUser] = useState<SettingsUser>();
+  const [activeUser, updateActiveUser] = useState<LimitedUser>();
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -98,6 +126,20 @@ const ManageUsers: React.FC<Props> = ({
   // Maintain added user on client while request is in flight
   const [addedUserId, setAddedUserId] = useState<string>();
 
+  const activeUserId = activeUser ? activeUser.id : "";
+
+  const { data: singleUserData } = useQuery<SingleUserData, {}>(
+    GET_USER,
+     { 
+      variables: { id: activeUserId }, 
+      fetchPolicy: "no-cache" 
+    }
+  );
+  const activeUserWithPermissions = singleUserData?.user;
+
+  console.log("active user id= ", activeUserId);
+  console.log("active user with permissions=", activeUserWithPermissions);
+
   if (error) {
     throw error;
   }
@@ -107,7 +149,8 @@ const ManageUsers: React.FC<Props> = ({
   if (deletedUserId) {
     localUsers = localUsers.filter(({ id }) => id !== deletedUserId);
   }
-  const usersState: SettingsUsers = getSettingsUser(localUsers);
+
+  const usersState: LimitedUsers = getLimitedUser(localUsers);
   const sortedUsers = sortUsers(usersState);
 
   // only updates the local state
@@ -147,10 +190,10 @@ const ManageUsers: React.FC<Props> = ({
     setIsUpdating(true);
     updateUserPrivileges({
       variables: {
-        id: activeUser.id,
-        role: activeUser.role,
-        facilities: activeUser.organization.testingFacility.map(({ id }) => id),
-        accessAllFacilities: activeUser.permissions.includes(
+        id: activeUserWithPermissions?.id,
+        role: activeUserWithPermissions?.role,
+        facilities: activeUserWithPermissions?.organization.testingFacility.map(({ id }) => id),
+        accessAllFacilities: activeUserWithPermissions?.permissions.includes(
           "ACCESS_ALL_FACILITIES"
         ),
       },
@@ -158,11 +201,11 @@ const ManageUsers: React.FC<Props> = ({
       .then(() => {
         getUsers();
         updateIsUserEdited(false);
-        const user = usersState[activeUser.id];
+        const user = activeUserWithPermissions;
         const fullName = displayFullNameInOrder(
-          user.firstName,
-          user.middleName,
-          user.lastName
+          user?.firstName,
+          user?.middleName,
+          user?.lastName
         );
 
         setIsUpdating(false);
@@ -234,12 +277,13 @@ const ManageUsers: React.FC<Props> = ({
         },
       });
       const deletedUserId = data.data.setUserIsDeleted.id;
-      const user = usersState[deletedUserId];
+      const user = activeUserWithPermissions;
+      // const user = usersState[deletedUserId];
 
       const fullName = displayFullNameInOrder(
-        user.firstName,
-        user.middleName,
-        user.lastName
+        user?.firstName,
+        user?.middleName,
+        user?.lastName
       );
       updateShowDeleteUserModal(false);
       setDeletedUserId(userId);
@@ -328,7 +372,7 @@ const ManageUsers: React.FC<Props> = ({
                 </p>
                 {
                   <UserRoleSettingsForm
-                    activeUser={activeUser}
+                    activeUser={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
                     loggedInUser={loggedInUser}
                     onUpdateUser={updateUser}
                   />
@@ -336,7 +380,7 @@ const ManageUsers: React.FC<Props> = ({
 
                 {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
-                    activeUser={activeUser}
+                    activeUser={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
                     allFacilities={allFacilities}
                     onUpdateUser={updateUser}
                   />
@@ -358,8 +402,8 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    !roles.includes(activeUser.role) ||
-                    activeUser.organization.testingFacility.length === 0 ||
+                    !roles.includes(activeUserWithPermissions ? activeUserWithPermissions.role : "USER") ||
+                    activeUserWithPermissions?.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription
@@ -384,7 +428,7 @@ const ManageUsers: React.FC<Props> = ({
               {showDeleteUserModal &&
               process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                 <DeleteUserModal
-                  user={activeUser}
+                  user={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
                   onClose={() => updateShowDeleteUserModal(false)}
                   onDeleteUser={handleDeleteUser}
                 />

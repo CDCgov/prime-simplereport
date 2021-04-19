@@ -217,6 +217,7 @@ public class ApiUserService {
   }
 
   private ApiUser getCurrentApiUser() {
+    System.out.println("BOOYAH in getCurrentApiUser");
     IdentityAttributes userIdentity = _supplier.get();
     if (userIdentity == null) {
       if (_contextHolder.hasPatientLink()) {
