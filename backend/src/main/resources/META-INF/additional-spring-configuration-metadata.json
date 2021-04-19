@@ -21,16 +21,6 @@
       "description": "Definitions of graphql scalar types implemented by graphql-datetime"
     },
     {
-      "name": "simple-report.site-admin-emails",
-      "type": "java.util.List<java.lang.String>",
-      "description": "The e-mails of admin users for the application."
-    },
-    {
-      "name": "simple-report.data-hub",
-      "type": "gov.cdc.usds.simplereport.config.simplereport.DataHubConfig",
-      "description": "A description for 'simple-report.data-hub.upload-enabled'"
-    },
-    {
       "name": "simple-report.demo-users",
       "type": "gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration",
       "description": "A description for 'simple-report.demo-users.default-user.authorization.granted-roles'"
@@ -57,7 +47,7 @@
     },
     {
       "name": "simple-report.sendgrid",
-      "type": "gov.cdc.usds.simplereport.config.SendGridProperties",
+      "type": "gov.cdc.usds.simplereport.properties.SendGridProperties",
       "description": "Properties for configuring SendGrid"
     }
   ]

@@ -73,7 +73,9 @@
     "e2e:brave": "./e2e.sh brave",
     "eject": "react-scripts eject",
     "compile-scss": "node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss --output-style compressed -o ./src/styles/ ./src/scss/App.scss",
-    "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss"
+    "watch-css": "yarn compile-scss && node-sass --include-path ./src/scss --include-path ./node_modules/uswds/dist/scss -o src/styles/ --watch --recursive src/scss/App.scss",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public"
   },
   "prettier": {
     "singleQuote": false
@@ -108,7 +110,17 @@
       ],
       "import/newline-after-import": 1,
       "import/no-commonjs": 0
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
   },
   "browserslist": {
     "production": [
@@ -123,6 +135,12 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-actions": "^6.2.8",
+    "@storybook/addon-essentials": "^6.2.8",
+    "@storybook/addon-links": "^6.2.8",
+    "@storybook/node-logger": "^6.2.8",
+    "@storybook/preset-create-react-app": "^3.1.7",
+    "@storybook/react": "^6.2.8",
     "@types/apollo-upload-client": "^14.1.0",
     "@types/classnames": "^2.2.11",
     "@types/jest": "^26.0.22",
@@ -135,6 +153,7 @@
     "@types/redux-mock-store": "^1.0.2",
     "@types/smartystreets-javascript-sdk": "^1.6.2",
     "@types/uuid": "^8.3.0",
+    "babel-loader": "8.1.0",
     "chromedriver": "^88.0.0",
     "dayjs": "^1.10.4",
     "eslint-config-prettier": "^8.1.0",
@@ -152,5 +171,8 @@
     "stylelint": "^13.12.0",
     "stylelint-config-standard": "^21.0.0",
     "typescript": "^4.1.2"
+  },
+  "resolutions": {
+    "@storybook/react/babel-loader": "8.1.0"
   }
 }
