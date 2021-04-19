@@ -941,17 +941,17 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="14-val-unknown"
+                    id="14-val-other"
                     name="race"
                     onChange={[Function]}
                     type="radio"
-                    value="unknown"
+                    value="other"
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="14-val-unknown"
+                    htmlFor="14-val-other"
                   >
-                    Unknown
+                    Other
                   </label>
                 </div>
                 <div
@@ -1039,6 +1039,27 @@ exports[`PatientFormContainer snapshot 1`] = `
                     No
                   </label>
                 </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="15-val-refused"
+                    name="ethnicity"
+                    onChange={[Function]}
+                    type="radio"
+                    value="refused"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="15-val-refused"
+                  >
+                    Prefer not to answer
+                  </label>
+                </div>
               </div>
             </fieldset>
             <fieldset
@@ -1052,27 +1073,6 @@ exports[`PatientFormContainer snapshot 1`] = `
               <div
                 className="usa-form-group"
               >
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-male"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="male"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-male"
-                  >
-                    Male
-                  </label>
-                </div>
                 <div
                   className="usa-radio"
                 >
@@ -1102,6 +1102,27 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
+                    id="16-val-male"
+                    name="gender"
+                    onChange={[Function]}
+                    type="radio"
+                    value="male"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="16-val-male"
+                  >
+                    Male
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
                     id="16-val-other"
                     name="gender"
                     onChange={[Function]}
@@ -1113,6 +1134,27 @@ exports[`PatientFormContainer snapshot 1`] = `
                     htmlFor="16-val-other"
                   >
                     Other
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="16-val-refused"
+                    name="gender"
+                    onChange={[Function]}
+                    type="radio"
+                    value="refused"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="16-val-refused"
+                  >
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
@@ -1197,6 +1239,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     No
                   </label>
                 </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required={true}
+                    disabled={false}
+                    id="17-val-UNKNOWN"
+                    name="residentCongregateSetting"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    type="radio"
+                    value="UNKNOWN"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="17-val-UNKNOWN"
+                  >
+                    Unknown
+                  </label>
+                </div>
               </div>
             </fieldset>
             <fieldset
@@ -1259,6 +1323,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     htmlFor="18-val-NO"
                   >
                     No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required={true}
+                    disabled={false}
+                    id="18-val-UNKNOWN"
+                    name="employedInHealthcare"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    type="radio"
+                    value="UNKNOWN"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="18-val-UNKNOWN"
+                  >
+                    Unknown
                   </label>
                 </div>
               </div>

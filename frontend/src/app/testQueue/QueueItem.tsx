@@ -32,7 +32,7 @@ import {
 import AoEModalForm from "./AoEForm/AoEModalForm";
 import "./QueueItem.scss";
 
-export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED";
+export type TestResult = "POSITIVE" | "NEGATIVE" | "UNDETERMINED" | "UNKNOWN";
 
 const EARLIEST_TEST_DATE = new Date("01/01/2020 12:00:00 AM");
 

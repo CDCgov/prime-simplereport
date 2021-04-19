@@ -29,6 +29,36 @@ import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
 
+const boolToYesNoUnknown = (
+  value: boolean | null | undefined
+): YesNoUnknown | undefined => {
+  if (value) {
+    return "YES";
+  }
+  if (value === false) {
+    return "NO";
+  }
+  if (value === null) {
+    return "UNKNOWN";
+  }
+  return undefined;
+};
+
+const yesNoUnknownToBool = (
+  value: YesNoUnknown
+): boolean | null | undefined => {
+  if (value === "YES") {
+    return true;
+  }
+  if (value === "NO") {
+    return false;
+  }
+  if (value === "UNKNOWN") {
+    return null;
+  }
+  return undefined;
+};
+
 interface Props {
   patient: Nullable<PersonFormData>;
   patientId?: string;
@@ -369,8 +399,10 @@ const PersonForm = (props: Props) => {
           legend="Are you a resident in a congregate living setting?"
           hintText="For example: nursing home, group home, prison, jail, or military"
           name="residentCongregateSetting"
-          value={patient.residentCongregateSetting}
-          onChange={onPersonChange("residentCongregateSetting")}
+          value={boolToYesNoUnknown(patient.residentCongregateSetting)}
+          onChange={(v) =>
+            onPersonChange("residentCongregateSetting")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("residentCongregateSetting");
           }}
@@ -381,8 +413,10 @@ const PersonForm = (props: Props) => {
         <YesNoRadioGroup
           legend="Are you a health care worker?"
           name="employedInHealthcare"
-          value={patient.employedInHealthcare}
-          onChange={onPersonChange("employedInHealthcare")}
+          value={boolToYesNoUnknown(patient.employedInHealthcare)}
+          onChange={(v) =>
+            onPersonChange("employedInHealthcare")(yesNoUnknownToBool(v))
+          }
           onBlur={() => {
             validateField("employedInHealthcare");
           }}

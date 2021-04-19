@@ -4,49 +4,24 @@ export const COVID_RESULTS: { [key: string]: TestResult } = {
   POSITIVE: "POSITIVE",
   NEGATIVE: "NEGATIVE",
   INCONCLUSIVE: "UNDETERMINED",
+  UNKNOWN: "UNKNOWN",
 };
 
-export const TEST_RESULT_VALUES = {
-  0: COVID_RESULTS.NEGATIVE,
-  1: COVID_RESULTS.POSITIVE,
-  2: COVID_RESULTS.INCONCLUSIVE,
-};
-
-export const TEST_RESULT_DESCRIPTIONS = {
+export const TEST_RESULT_DESCRIPTIONS: Record<TestResult, string> = {
   NEGATIVE: "Negative",
   POSITIVE: "Positive",
   UNDETERMINED: "Inconclusive",
+  UNKNOWN: "Unknown",
 };
 
 export const RACE_VALUES: { value: Race; label: string }[] = [
-  {
-    value: "native",
-    label: "American Indian/Alaskan Native",
-  },
-  {
-    value: "asian",
-    label: "Asian",
-  },
-  {
-    value: "black",
-    label: "Black/African American",
-  },
-  {
-    value: "pacific",
-    label: "Native Hawaiian/other Pacific Islander",
-  },
-  {
-    value: "white",
-    label: "White",
-  },
-  {
-    value: "unknown",
-    label: "Unknown",
-  },
-  {
-    value: "refused",
-    label: "Prefer not to answer",
-  },
+  { value: "native", label: "American Indian/Alaskan Native" },
+  { value: "asian", label: "Asian" },
+  { value: "black", label: "Black/African American" },
+  { value: "pacific", label: "Native Hawaiian/other Pacific Islander" },
+  { value: "white", label: "White" },
+  { value: "other", label: "Other" },
+  { value: "refused", label: "Prefer not to answer" },
 ];
 
 export const ROLE_VALUES: { value: Role; label: string }[] = [
@@ -59,17 +34,24 @@ export const ROLE_VALUES: { value: Role; label: string }[] = [
 export const ETHNICITY_VALUES: { value: Ethnicity; label: string }[] = [
   { label: "Yes", value: "hispanic" },
   { label: "No", value: "not_hispanic" },
+  { label: "Prefer not to answer", value: "refused" },
 ];
 export const GENDER_VALUES: { value: Gender; label: string }[] = [
-  { label: "Male", value: "male" },
   { label: "Female", value: "female" },
+  { label: "Male", value: "male" },
   { label: "Other", value: "other" },
+  { label: "Prefer not to answer", value: "refused" },
 ];
 
 export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
   { label: "Yes", value: "YES" },
   { label: "No", value: "NO" },
 ];
+
+export const YES_NO_UNKNOWN_VALUES: {
+  value: YesNoUnknown;
+  label: string;
+}[] = [...YES_NO_VALUES, { value: "UNKNOWN", label: "Unknown" }];
 
 const fullTribalAffiliationValueSetMap: { [key: string]: TribalAffiliation } = {
   "Village of Afognak": "338",
