@@ -33,9 +33,11 @@ export const ADD_PATIENT = gql`
     $county: String
     $race: String
     $ethnicity: String
+    $tribalAffiliation: String
     $gender: String
-    $residentCongregateSetting: Boolean!
-    $employedInHealthcare: Boolean!
+    $residentCongregateSetting: Boolean
+    $employedInHealthcare: Boolean
+    $preferredLanguage: String
   ) {
     addPatient(
       facilityId: $facilityId
@@ -55,9 +57,11 @@ export const ADD_PATIENT = gql`
       county: $county
       race: $race
       ethnicity: $ethnicity
+      tribalAffiliation: $tribalAffiliation
       gender: $gender
       residentCongregateSetting: $residentCongregateSetting
       employedInHealthcare: $employedInHealthcare
+      preferredLanguage: $preferredLanguage
     ) {
       internalId
     }
@@ -116,8 +120,9 @@ const AddPatient = () => {
             race: null,
             ethnicity: null,
             gender: null,
-            residentCongregateSetting: null,
-            employedInHealthcare: null,
+            residentCongregateSetting: undefined,
+            employedInHealthcare: undefined,
+            tribalAffiliation: null,
             birthDate: null,
             telephone: null,
             county: null,
@@ -127,6 +132,7 @@ const AddPatient = () => {
             city: null,
             state: null,
             zipCode: null,
+            preferredLanguage: null,
           }}
           activeFacilityId={activeFacilityId}
           savePerson={savePerson}

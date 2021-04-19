@@ -53,6 +53,8 @@ export const queueQuery = gql`
       deviceType {
         internalId
         name
+        model
+        testLength
       }
       patient {
         internalId
@@ -63,6 +65,7 @@ export const queueQuery = gql`
         lastName
         gender
         testResultDelivery
+        preferredLanguage
       }
       result
       dateTested
@@ -76,10 +79,14 @@ export const queueQuery = gql`
         deviceTypes {
           internalId
           name
+          model
+          testLength
         }
         defaultDeviceType {
           internalId
           name
+          model
+          testLength
         }
       }
     }
@@ -102,6 +109,7 @@ interface QueueItemData {
   priorTestResult: string;
   deviceType: {
     internalId: string;
+    testLength: number;
   };
   patient: {
     internalId: string;
@@ -177,6 +185,7 @@ const TestQueue: React.FC<Props> = ({ activeFacilityId }) => {
                 patient={patient}
                 askOnEntry={questions}
                 selectedDeviceId={deviceType?.internalId || null}
+                selectedDeviceTestLength={deviceType?.testLength || null}
                 selectedTestResult={result}
                 devices={facility.deviceTypes}
                 defaultDevice={facility.defaultDeviceType}

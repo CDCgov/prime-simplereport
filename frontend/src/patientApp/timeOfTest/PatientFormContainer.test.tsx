@@ -6,6 +6,7 @@ import configureStore from "redux-mock-store";
 
 import PatientFormContainer from "./PatientFormContainer";
 
+jest.mock("../..//app/commonComponents/ComboBox", () => () => <></>);
 const mockStore = configureStore([]);
 
 jest.mock("react-router-dom", () => ({
@@ -68,7 +69,9 @@ describe("PatientFormContainer", () => {
     });
     it("shows required field instruction once", () => {
       expect(
-        screen.getByText("All fields marked with", { exact: false })
+        screen.getByText("Required fields are marked with an asterisk", {
+          exact: false,
+        })
       ).toBeInTheDocument();
     });
     it("doesn't show a facility input", () => {

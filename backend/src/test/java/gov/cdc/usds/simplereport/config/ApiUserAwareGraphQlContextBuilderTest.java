@@ -16,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.Facility;
 import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import gov.cdc.usds.simplereport.service.model.OrganizationRoles;
 import gov.cdc.usds.simplereport.service.model.UserInfo;
@@ -39,9 +40,10 @@ class ApiUserAwareGraphQlContextBuilderTest {
   @MethodSource("userProvider")
   void populatesSubject(UserInfo user) {
     var apiUserService = mock(ApiUserService.class);
+    var patientPreferencesRepository = mock(PatientPreferencesRepository.class);
     when(apiUserService.getCurrentUserInfo()).thenReturn(user);
 
-    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService);
+    var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, patientPreferencesRepository);
     validateSubject(
         sut.build(mock(HttpServletRequest.class), mock(HttpServletResponse.class))
             .getSubject()
@@ -75,7 +77,7 @@ class ApiUserAwareGraphQlContextBuilderTest {
   }
 
   private static Stream<Arguments> userProvider() {
-    var organizationA = new Organization("orgName", "externalId");
+    var organizationA = new Organization("orgName", "externalId", true);
     return Stream.of(
         Arguments.of(
             new UserInfo(

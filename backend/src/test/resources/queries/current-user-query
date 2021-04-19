@@ -5,6 +5,12 @@ query whoDat {
     middleName
     lastName
     suffix
+    name {
+      firstName
+      middleName
+      lastName
+      suffix
+    }
     email
     role
     roles

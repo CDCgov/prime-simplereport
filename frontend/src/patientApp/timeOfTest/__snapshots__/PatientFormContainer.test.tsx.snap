@@ -94,23 +94,19 @@ exports[`PatientFormContainer snapshot 1`] = `
             <legend
               className="prime-formgroup-heading usa-legend"
             >
-              General info
+              General information
             </legend>
             <p
               className="message--required"
             >
-              All fields marked with 
-              <span
-                className="usa-sr-only"
+              Required fields are marked with an asterisk (
+              <abbr
+                className="usa-hint usa-hint--required"
+                title="required"
               >
-                Required
-              </span>
-              <span
-                className="usa-hint--required"
-              >
-                 *
-              </span>
-               are required
+                *
+              </abbr>
+              ).
             </p>
             <div
               className="usa-form"
@@ -229,6 +225,16 @@ exports[`PatientFormContainer snapshot 1`] = `
                   </option>
                 </select>
               </div>
+              <fieldset
+                className="usa-fieldset"
+              >
+                <label
+                  className="usa-label"
+                  htmlFor="preferred-language"
+                >
+                  Preferred language
+                </label>
+              </fieldset>
             </div>
             <div
               className="usa-form"
@@ -286,16 +292,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="6"
                     >
                       Phone number
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-required={true}
@@ -342,16 +345,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                   htmlFor="8"
                 >
                   Street address 1
-                  <span
-                    className="usa-sr-only"
+                  <abbr
+                    className="usa-hint usa-hint--required"
+                    title="required"
                   >
-                    Required
-                  </span>
-                  <span
-                    className="usa-hint--required"
-                  >
-                     *
-                  </span>
+                     
+                    *
+                  </abbr>
                 </label>
                 <input
                   aria-required={true}
@@ -446,16 +446,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="12"
                     >
                       State
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <select
                       aria-required={true}
@@ -780,16 +777,13 @@ exports[`PatientFormContainer snapshot 1`] = `
                       htmlFor="13"
                     >
                       Zip code
-                      <span
-                        className="usa-sr-only"
+                      <abbr
+                        className="usa-hint usa-hint--required"
+                        title="required"
                       >
-                        Required
-                      </span>
-                      <span
-                        className="usa-hint--required"
-                      >
-                         *
-                      </span>
+                         
+                        *
+                      </abbr>
                     </label>
                     <input
                       aria-required={true}
@@ -821,7 +815,7 @@ exports[`PatientFormContainer snapshot 1`] = `
             <p
               className="usa-hint maxw-prose"
             >
-              This information is important for public health efforts to recognize and address inequality in health outcomes.
+              This information is collected as part of public health efforts to recognize and address inequality in health outcomes.
             </p>
             <fieldset
               className="usa-fieldset prime-radios"
@@ -852,7 +846,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-native"
                   >
-                    American Indian or Alaskan Native
+                    American Indian/Alaskan Native
                   </label>
                 </div>
                 <div
@@ -894,7 +888,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-black"
                   >
-                    Black or African American
+                    Black/African American
                   </label>
                 </div>
                 <div
@@ -915,7 +909,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-pacific"
                   >
-                    Native Hawaiian or other Pacific Islander
+                    Native Hawaiian/other Pacific Islander
                   </label>
                 </div>
                 <div
@@ -947,17 +941,17 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
-                    id="14-val-unknown"
+                    id="14-val-other"
                     name="race"
                     onChange={[Function]}
                     type="radio"
-                    value="unknown"
+                    value="other"
                   />
                   <label
                     className="usa-radio__label"
-                    htmlFor="14-val-unknown"
+                    htmlFor="14-val-other"
                   >
-                    Unknown
+                    Other
                   </label>
                 </div>
                 <div
@@ -978,10 +972,19 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="14-val-refused"
                   >
-                    Refused to answer
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
+            </fieldset>
+            <fieldset
+              className="usa-fieldset"
+            >
+              <legend
+                className="usa-legend"
+              >
+                Tribal affiliation
+              </legend>
             </fieldset>
             <fieldset
               className="usa-fieldset prime-radios"
@@ -989,7 +992,7 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Ethnicity
+                Are you Hispanic or Latino?
               </legend>
               <div
                 className="usa-form-group"
@@ -1012,7 +1015,7 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="15-val-hispanic"
                   >
-                    Hispanic or Latino
+                    Yes
                   </label>
                 </div>
                 <div
@@ -1033,7 +1036,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__label"
                     htmlFor="15-val-not_hispanic"
                   >
-                    Not Hispanic
+                    No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="15-val-refused"
+                    name="ethnicity"
+                    onChange={[Function]}
+                    type="radio"
+                    value="refused"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="15-val-refused"
+                  >
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
@@ -1044,32 +1068,11 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Biological Sex
+                Biological sex
               </legend>
               <div
                 className="usa-form-group"
               >
-                <div
-                  className="usa-radio"
-                >
-                  <input
-                    checked={false}
-                    className="usa-radio__input"
-                    data-required="false"
-                    disabled={false}
-                    id="16-val-male"
-                    name="gender"
-                    onChange={[Function]}
-                    type="radio"
-                    value="male"
-                  />
-                  <label
-                    className="usa-radio__label"
-                    htmlFor="16-val-male"
-                  >
-                    Male
-                  </label>
-                </div>
                 <div
                   className="usa-radio"
                 >
@@ -1099,6 +1102,27 @@ exports[`PatientFormContainer snapshot 1`] = `
                     className="usa-radio__input"
                     data-required="false"
                     disabled={false}
+                    id="16-val-male"
+                    name="gender"
+                    onChange={[Function]}
+                    type="radio"
+                    value="male"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="16-val-male"
+                  >
+                    Male
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
                     id="16-val-other"
                     name="gender"
                     onChange={[Function]}
@@ -1110,6 +1134,27 @@ exports[`PatientFormContainer snapshot 1`] = `
                     htmlFor="16-val-other"
                   >
                     Other
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required="false"
+                    disabled={false}
+                    id="16-val-refused"
+                    name="gender"
+                    onChange={[Function]}
+                    type="radio"
+                    value="refused"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="16-val-refused"
+                  >
+                    Prefer not to answer
                   </label>
                 </div>
               </div>
@@ -1133,18 +1178,20 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Resident in congregate care/living setting?
-                <span
-                  className="usa-sr-only"
+                Are you a resident in a congregate living setting?
+                <abbr
+                  className="usa-hint usa-hint--required"
+                  title="required"
                 >
-                  Required
-                </span>
-                <span
-                  className="usa-hint--required"
-                >
-                   *
-                </span>
+                   
+                  *
+                </abbr>
               </legend>
+              <span
+                className="usa-hint text-ls-1"
+              >
+                For example: nursing home, group home, prison, jail, or military
+              </span>
               <div
                 className="usa-form-group"
               >
@@ -1192,6 +1239,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     No
                   </label>
                 </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required={true}
+                    disabled={false}
+                    id="17-val-UNKNOWN"
+                    name="residentCongregateSetting"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    type="radio"
+                    value="UNKNOWN"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="17-val-UNKNOWN"
+                  >
+                    Unknown
+                  </label>
+                </div>
               </div>
             </fieldset>
             <fieldset
@@ -1200,17 +1269,14 @@ exports[`PatientFormContainer snapshot 1`] = `
               <legend
                 className="usa-legend"
               >
-                Work in Healthcare?
-                <span
-                  className="usa-sr-only"
+                Are you a health care worker?
+                <abbr
+                  className="usa-hint usa-hint--required"
+                  title="required"
                 >
-                  Required
-                </span>
-                <span
-                  className="usa-hint--required"
-                >
-                   *
-                </span>
+                   
+                  *
+                </abbr>
               </legend>
               <div
                 className="usa-form-group"
@@ -1257,6 +1323,28 @@ exports[`PatientFormContainer snapshot 1`] = `
                     htmlFor="18-val-NO"
                   >
                     No
+                  </label>
+                </div>
+                <div
+                  className="usa-radio"
+                >
+                  <input
+                    checked={false}
+                    className="usa-radio__input"
+                    data-required={true}
+                    disabled={false}
+                    id="18-val-UNKNOWN"
+                    name="employedInHealthcare"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    type="radio"
+                    value="UNKNOWN"
+                  />
+                  <label
+                    className="usa-radio__label"
+                    htmlFor="18-val-UNKNOWN"
+                  >
+                    Unknown
                   </label>
                 </div>
               </div>

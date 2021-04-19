@@ -4,7 +4,6 @@ import {
   fireEvent,
   cleanup,
   within,
-  waitFor,
 } from "@testing-library/react";
 import { MockedProvider } from "@apollo/client/testing";
 import { Provider } from "react-redux";
@@ -22,7 +21,9 @@ jest.mock("../utils/smartyStreets", () => ({
 
 const fillOutForm = (
   inputs: { [label: string]: string },
-  inputGroups: { [legend: string]: { label: string; value: string } }
+  inputGroups: {
+    [legend: string]: { label: string; value: string; exact?: boolean };
+  }
 ) => {
   Object.entries(inputs).forEach(([label, value]) => {
     fireEvent.change(
@@ -34,7 +35,7 @@ const fillOutForm = (
       }
     );
   });
-  Object.entries(inputGroups).forEach(([legend, { label, value }]) => {
+  Object.entries(inputGroups).forEach(([legend, { label, value, exact }]) => {
     const fieldset = screen
       .getByText(legend, {
         exact: false,
@@ -45,7 +46,7 @@ const fillOutForm = (
     }
     fireEvent.click(
       within(fieldset).getByLabelText(label, {
-        exact: false,
+        exact: exact || false,
       }),
       {
         target: { value },
@@ -123,6 +124,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {
@@ -155,6 +157,7 @@ describe("AddPatient", () => {
               residentCongregateSetting: false,
               employedInHealthcare: true,
               facilityId: mockFacilityID,
+              preferredLanguage: null,
             },
           },
           result: {
@@ -196,8 +199,16 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Are you a resident in a congregate living setting": {
+              label: "No",
+              value: "No",
+              exact: true,
+            },
+            "Are you a health care worker": {
+              label: "Yes",
+              value: "Yes",
+              exact: true,
+            },
           }
         );
         await act(async () => {
@@ -277,43 +288,23 @@ describe("AddPatient", () => {
             "Zip code": "02115",
           },
           {
-            "Resident in congregate care": { label: "No", value: "No" },
-            "Work in Healthcare": { label: "Yes", value: "Yes" },
+            "Are you a resident in a congregate living setting": {
+              label: "No",
+              value: "No",
+              exact: true,
+            },
+            "Are you a health care worker": {
+              label: "Yes",
+              value: "Yes",
+              exact: true,
+            },
           }
         );
 
         fireEvent.change(screen.getByLabelText("Role"), {
           target: { value: "STUDENT" },
         });
-        await waitFor(() => {
-          expect(screen.getByLabelText("Student ID")).toBeInTheDocument();
-        });
-        fireEvent.change(screen.getByLabelText("Student ID"), {
-          target: { value: "student-123" },
-        });
-        await waitFor(() => {
-          fireEvent.click(screen.getAllByText("Save changes")[0]);
-        });
-
-        const modal = screen.getByRole("dialog", {
-          exact: false,
-        });
-
-        fireEvent.click(
-          within(modal).getByLabelText("Use address as entered", {
-            exact: false,
-          }),
-          {
-            target: { value: "userAddress" },
-          }
-        );
-        await act(async () => {
-          fireEvent.click(
-            within(modal).getByText("Save changes", {
-              exact: false,
-            })
-          );
-        });
+        expect(await screen.findByText("Student ID")).toBeInTheDocument();
       });
     });
   });

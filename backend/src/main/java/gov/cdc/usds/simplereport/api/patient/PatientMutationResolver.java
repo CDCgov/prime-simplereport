@@ -8,6 +8,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parsePhoneNumber;
 import static gov.cdc.usds.simplereport.api.Translators.parseRace;
 import static gov.cdc.usds.simplereport.api.Translators.parseState;
 import static gov.cdc.usds.simplereport.api.Translators.parseString;
+import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
@@ -69,9 +70,11 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     return _ps.addPatient(
         facilityId,
         parseString(lookupId),
@@ -92,9 +95,11 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage);
   }
 
   public Person updatePatient(
@@ -117,9 +122,11 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String county,
       String race,
       String ethnicity,
+      String tribalAffiliation,
       String gender,
       Boolean residentCongregateSetting,
-      Boolean employedInHealthcare) {
+      Boolean employedInHealthcare,
+      String preferredLanguage) {
     return _ps.updatePatient(
         facilityId,
         patientId,
@@ -141,9 +148,11 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
         parseEmail(email),
         parseRace(race),
         parseEthnicity(ethnicity),
+        parseTribalAffiliation(tribalAffiliation),
         parseGender(gender),
         residentCongregateSetting,
-        employedInHealthcare);
+        employedInHealthcare,
+        preferredLanguage);
   }
 
   public Person setPatientIsDeleted(UUID id, Boolean deleted) {

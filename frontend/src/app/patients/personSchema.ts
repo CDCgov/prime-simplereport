@@ -6,8 +6,10 @@ import {
   ROLE_VALUES,
   ETHNICITY_VALUES,
   GENDER_VALUES,
+  TRIBAL_AFFILIATION_VALUES,
 } from "../constants";
 import { Option } from "../commonComponents/Dropdown";
+import { languages } from "../../config/constants";
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
@@ -23,8 +25,10 @@ type UpdateOptionalFields =
   | "race"
   | "ethnicity"
   | "gender"
+  | "tribalAffiliation"
   | "residentCongregateSetting"
-  | "employedInHealthcare";
+  | "employedInHealthcare"
+  | "preferredLanguage";
 
 type OptionalFields = UpdateOptionalFields | "middleName";
 
@@ -63,8 +67,12 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
   race: yup.mixed().oneOf([...getValues(RACE_VALUES), "", null]),
   ethnicity: yup.mixed().oneOf([...getValues(ETHNICITY_VALUES), "", null]),
   gender: yup.mixed().oneOf([...getValues(GENDER_VALUES), "", null]),
-  residentCongregateSetting: yup.bool().required(),
-  employedInHealthcare: yup.bool().required(),
+  residentCongregateSetting: yup.boolean().nullable(),
+  employedInHealthcare: yup.boolean().nullable(),
+  tribalAffiliation: yup
+    .mixed()
+    .oneOf([...getValues(TRIBAL_AFFILIATION_VALUES), "", null]),
+  preferredLanguage: yup.mixed().oneOf([...languages, "", null]),
 };
 
 export const personUpdateSchema: yup.SchemaOf<PersonUpdateFields> = yup.object(
@@ -99,9 +107,11 @@ export const allPersonErrors: Required<PersonErrors> = {
   city: "City is incorrectly formatted",
   county: "County is incorrectly formatted",
   race: "Race is incorrectly formatted",
+  tribalAffiliation: "Tribal Affiliation is incorrectly formatted",
   ethnicity: "Ethnicity is incorrectly formatted",
   gender: "Biological Sex is incorrectly formatted",
   residentCongregateSetting:
-    "Resident in congregate care/living setting? is required",
-  employedInHealthcare: "Work in Healthcare? is required",
+    "Are you a resident in a congregate living setting? is required",
+  employedInHealthcare: "Are you a health care worker? is required",
+  preferredLanguage: "Preferred language is incorrectly formatted",
 };

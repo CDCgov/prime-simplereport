@@ -3,58 +3,110 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopwatch, faRedo } from "@fortawesome/free-solid-svg-icons";
 import "./TestTimer.scss";
 
-type DateTimeStamp = ReturnType<typeof Date.now>;
-type TimerId = string;
-
-type Timer = {
-  id: TimerId;
-  startedAt: DateTimeStamp;
-  alarmAt: DateTimeStamp;
-  countdown: number; // milliseconds
-  elapsed: number; // milliseconds
-  alarmed: boolean;
-  notify?: (value: number) => any;
-};
-
-// Starting timer value in milliseconds
-const initialTimerCount = 15 * 60 * 1000;
-
-// Timer list
-const timers: Timer[] = [];
-
-// Initialized timer values, id is always created unique
-const initialTimerValues: Omit<Timer, "id"> = {
-  alarmAt: 0,
-  startedAt: 0,
-  countdown: initialTimerCount,
-  elapsed: 0,
-  alarmed: false,
-} as const;
-
-// React-scripts 4.x (or a dependency) changed the way `require`
-// returns the name of the file. New: a `Module` with a `default`
-// string having the file name; Old: the actual file name.
 const alarmModule = require("./test-timer.mp3");
 
 const alarmSound = new Audio(alarmModule.default || alarmModule);
 
-const timerTick = () => {
-  const now = Date.now();
+type DateTimeStamp = ReturnType<typeof Date.now>;
 
-  timers.forEach((t) => {
-    if (!t.startedAt) {
-      // Initial state or reset, not running
+function toMillis(minutes: number) {
+  return minutes * 60 * 1000;
+}
+
+export class Timer {
+  id: string;
+  startedAt: DateTimeStamp;
+  alarmAt: DateTimeStamp;
+  testLength: number;
+  countdown: number;
+  elapsed: number;
+  alarmed: boolean;
+  notify?: (value: number) => any;
+
+  constructor(id: string, testLength: number) {
+    this.id = id;
+    this.startedAt = 0;
+    this.alarmAt = 0;
+    this.testLength = testLength;
+    this.countdown = toMillis(testLength);
+    this.elapsed = 0;
+    this.alarmed = false;
+  }
+
+  fromJSON(obj: any) {
+    this.id = obj.id;
+    this.startedAt = obj.startedAt;
+    this.alarmAt = obj.alarmAt;
+    this.testLength = obj.testLength;
+    this.countdown = obj.countdown;
+    this.elapsed = obj.elapsed;
+    this.alarmed = obj.alarmed;
+    this.notify = obj.notify;
+  }
+
+  start(now: number) {
+    this.startedAt = now;
+    this.alarmAt = this.startedAt + toMillis(this.testLength);
+  }
+
+  reset() {
+    this.startedAt = 0;
+    this.alarmAt = 0;
+    this.countdown = toMillis(this.testLength);
+    this.elapsed = 0;
+    this.alarmed = false;
+  }
+
+  // Updates the timer when the length of test changes (used for device changes.)
+  update(testLength: number) {
+    if (testLength === this.testLength) {
       return;
     }
-    t.countdown = Math.round(t.alarmAt - now);
-    t.elapsed = now - t.startedAt;
-    if (t.notify) {
-      t.notify(t.countdown);
+    if (!this.startedAt) {
+      this.testLength = testLength;
+      this.countdown = toMillis(testLength);
+      return;
     }
-    if (!t.alarmed && t.alarmAt <= now) {
-      t.alarmed = true;
+    const difference = toMillis(Math.abs(this.testLength - testLength));
+    if (this.testLength > testLength) {
+      this.countdown = this.countdown - difference;
+      this.alarmAt = this.alarmAt - difference;
+    } else {
+      this.countdown = this.countdown + difference;
+      this.alarmAt = this.alarmAt + difference;
+    }
+    this.testLength = testLength;
+  }
+
+  tick(now: number) {
+    if (!this.startedAt) {
+      return;
+    }
+    this.countdown = Math.round(this.alarmAt - now);
+    this.elapsed = now - this.startedAt;
+    if (this.notify) {
+      this.notify(this.countdown);
+    }
+    if (!this.alarmed && this.alarmAt <= now) {
+      this.alarmed = true;
       alarmSound.play();
     }
+  }
+}
+
+const timerFromJSON = (obj: any) => {
+  const timer = new Timer(obj.id, obj.testLength);
+  timer.fromJSON(obj);
+  return timer;
+};
+
+// Initialize an empty list of timers.
+const timers: Timer[] = [];
+
+const tickTimers = () => {
+  const now = Date.now();
+  timers.forEach((t) => {
+    t.tick(now);
   });
 };
 
@@ -66,29 +118,37 @@ const saveTimers = () => {
 // only keep running timers that aren't super stale.
 // Then start the timer tick.
 {
-  // Stale timer value (from alarm time) in milliseconds
-  const staleTimerCount = 60 * 60 * 1000;
-
   let oldTimers: Timer[] = [];
   try {
     const storage = localStorage.getItem("timers") || "[]";
-    const cutoff = Date.now() - staleTimerCount;
-    oldTimers = JSON.parse(storage).filter((t: Timer) => t.alarmAt > cutoff);
+    const cutoff = Date.now() - toMillis(60);
+    oldTimers = JSON.parse(storage).filter((t: any) => t.alarmAt > cutoff);
   } catch (e) {}
-  timers.push(...oldTimers);
+  oldTimers.forEach((t) => {
+    timers.push(timerFromJSON(t));
+  });
   saveTimers();
-  window.setInterval(timerTick, 1000);
+  window.setInterval(tickTimers, 1000);
 }
 
-const findTimer = (id: TimerId): Timer | undefined =>
+const findTimer = (id: string): Timer | undefined =>
   timers.find((t) => t.id === id);
-const addTimer = (id: TimerId): Timer => {
-  const newTimer = { id, ...initialTimerValues };
+
+const addTimer = (id: string, testLength: number): Timer => {
+  const newTimer = new Timer(id, testLength);
   timers.push(newTimer);
   saveTimers();
   return newTimer;
 };
-export const removeTimer = (id: TimerId) => {
+
+export const updateTimer = (id: string, testLength: number): Timer => {
+  const timer: Timer = findTimer(id) || addTimer(id, testLength);
+  timer.update(testLength);
+  saveTimers();
+  return timer;
+};
+
+export const removeTimer = (id: string) => {
   const index = timers.findIndex((t) => t.id === id);
   if (index >= 0) {
     timers.splice(index, 1);
@@ -96,9 +156,9 @@ export const removeTimer = (id: TimerId) => {
   }
 };
 
-export const useTestTimer = (id: string) => {
+export const useTestTimer = (id: string, testLength: number) => {
   const [, setCount] = useState(0);
-  let timer = findTimer(id) || addTimer(id);
+  const timer: Timer = findTimer(id) || addTimer(id, testLength);
   useEffect(() => {
     timer.notify = setCount;
     return () => {
@@ -108,22 +168,21 @@ export const useTestTimer = (id: string) => {
   return {
     running: timer.startedAt !== 0,
     countdown: Math.round(
-      (timer.startedAt ? timer.countdown : initialTimerCount) / 1000
+      (timer.startedAt ? timer.countdown : toMillis(timer.testLength)) / 1000
     ),
     elapsed: Math.round(timer.elapsed / 1000),
     start: () => {
-      const timer = findTimer(id) || addTimer(id);
-      timer.startedAt = Date.now();
-      timer.alarmAt = timer.startedAt + initialTimerCount;
+      const timerToStart: Timer = findTimer(id) || addTimer(id, testLength);
+      timerToStart.start(Date.now());
       saveTimers();
     },
     reset: () => {
-      const timer = findTimer(id);
-      if (timer) {
+      const timerToReset = findTimer(id);
+      if (timerToReset) {
         // reset the timer
-        Object.assign(timer, initialTimerValues);
+        timerToReset.reset();
         // force final update
-        setCount(initialTimerCount);
+        setCount(toMillis(testLength));
         saveTimers();
       }
     },
@@ -135,7 +194,7 @@ type Props = {
 };
 
 export const TestTimerWidget = ({ timer }: Props) => {
-  const { running, countdown, elapsed, reset, start } = timer;
+  const { running, countdown, elapsed, start, reset } = timer;
   const mmss = (t: number) => {
     const mins = Math.floor(Math.abs(t) / 60);
     const secs = Math.abs(t) % 60;
@@ -143,21 +202,33 @@ export const TestTimerWidget = ({ timer }: Props) => {
   };
   if (!running) {
     return (
-      <button className="timer-button timer-reset" onClick={start}>
+      <button
+        className="timer-button timer-reset"
+        onClick={start}
+        data-testid="timer"
+      >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faStopwatch} />
       </button>
     );
   }
   if (countdown >= 0) {
     return (
-      <button className="timer-button timer-running" onClick={reset}>
+      <button
+        className="timer-button timer-running"
+        onClick={reset}
+        data-testid="timer"
+      >
         <span>{mmss(countdown)}</span> <FontAwesomeIcon icon={faRedo} />
       </button>
     );
   }
   return (
     <div>
-      <button className="timer-button timer-ready" onClick={reset}>
+      <button
+        className="timer-button timer-ready"
+        onClick={reset}
+        data-testid="timer"
+      >
         <span className="result-ready">RESULT READY</span>{" "}
         <span className="timer-overtime">{mmss(elapsed)} elapsed </span>{" "}
         <FontAwesomeIcon icon={faRedo} />

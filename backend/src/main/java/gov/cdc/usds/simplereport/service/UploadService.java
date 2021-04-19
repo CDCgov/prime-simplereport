@@ -123,9 +123,11 @@ public class UploadService {
             parseEmail(getRow(row, "Email", false)),
             parseRaceDisplayValue(getRow(row, "Race", false)),
             parseEthnicity(getRow(row, "Ethnicity", false)),
+            null,
             parseGender(getRow(row, "biologicalSex", false)),
             parseYesNo(getRow(row, "residentCongregateSetting", true)),
-            parseYesNo(getRow(row, "employedInHealthcare", true)));
+            parseYesNo(getRow(row, "employedInHealthcare", true)),
+            null); // Not including preferredLanguage for now
       } catch (IllegalGraphqlArgumentException e) {
         throw new IllegalGraphqlArgumentException(
             "Error on row " + rowNumber + "; " + e.getMessage());
