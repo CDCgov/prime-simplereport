@@ -1,13 +1,13 @@
 spring:
   profiles.include: okta-test, server-debug
-graphql.servlet.cors:
-  allowed-origins:
-    - https://simple-report-api-test.azurewebsites.net
-    - https://simple-report-test.azureedge.net
-    - https://test.simplereport.gov
 simple-report:
   patient-link-url: https://test.simplereport.gov/app/pxp?plid=
   sendgrid:
     enabled: false
+  cors:
+    allowed-origins:
+      - https://simple-report-api-test.azurewebsites.net
+      - https://simple-report-test.azureedge.net
+      - https://test.simplereport.gov
 twilio:
   enabled: true

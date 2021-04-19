@@ -2,6 +2,7 @@ package gov.cdc.usds.simplereport;
 
 import gov.cdc.usds.simplereport.config.AuthorizationProperties;
 import gov.cdc.usds.simplereport.config.BeanProfiles;
+import gov.cdc.usds.simplereport.config.CorsProperties;
 import gov.cdc.usds.simplereport.config.InitialSetupProperties;
 import gov.cdc.usds.simplereport.config.simplereport.DataHubConfig;
 import gov.cdc.usds.simplereport.config.simplereport.DemoUserConfiguration;
@@ -26,7 +27,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
   DataHubConfig.class,
   DemoUserConfiguration.class,
   SmartyStreetsProperties.class,
-  SendGridProperties.class
+  SendGridProperties.class,
+  CorsProperties.class
 })
 @EnableScheduling
 public class SimpleReportApplication {
