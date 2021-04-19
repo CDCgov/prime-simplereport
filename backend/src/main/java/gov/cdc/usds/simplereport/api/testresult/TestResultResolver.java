@@ -44,21 +44,6 @@ public class TestResultResolver implements GraphQLQueryResolver, GraphQLMutation
     }
   }
 
-  public List<TestEvent> getTestResultsByPatient(UUID patientId, int pageNumber, int pageSize) {
-    if (pageNumber < 0) {
-      pageNumber = TestOrderService.DEFAULT_PAGINATION_PAGEOFFSET;
-    }
-    if (pageSize < 1) {
-      pageSize = TestOrderService.DEFAULT_PAGINATION_PAGESIZE;
-    }
-
-    return tos.getTestEventsResultsByPatient(patientId, pageNumber, pageSize);
-  }
-
-  public int testResultsCountByPatient(UUID patientId) {
-    return tos.getTestResultsCountByPatient(patientId);
-  }
-
   public TestEvent correctTestMarkAsError(UUID id, String reasonForCorrection) {
     return tos.correctTestMarkAsError(id, reasonForCorrection);
   }
