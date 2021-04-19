@@ -2,12 +2,17 @@ import { gql } from "@apollo/client";
 import Modal from "react-modal";
 import moment from "moment";
 import classnames from "classnames";
+import iconClose from "uswds/dist/img/usa-icons/close.svg";
 
-import Button from "../commonComponents/Button";
 import "./TestResultPrintModal.scss";
 import { QueryWrapper } from "../commonComponents/QueryWrapper";
 import { TestResult } from "../testQueue/QueueItem";
 import { formatFullName } from "../utils/user";
+import { symptomsStringToArray } from "../utils/symptoms";
+import {
+  PregnancyCode,
+  pregnancyMap,
+} from "../../patientApp/timeOfTest/constants";
 
 type Result = {
   dateTested: string;
@@ -16,7 +21,7 @@ type Result = {
   noSymptoms: boolean;
   symptoms: string;
   symptomOnset: string;
-  pregnancy: string;
+  pregnancy: PregnancyCode;
   deviceType: {
     name: string;
   };
@@ -44,7 +49,6 @@ export const testQuery = gql`
       dateTested
       result
       correctionStatus
-      noSymptoms
       symptoms
       symptomOnset
       pregnancy
@@ -68,22 +72,19 @@ export const testQuery = gql`
   }
 `;
 
+const labelClasses = "text-bold text-no-strike text-ink";
+
 interface Props {
   data: { testResult: Nullable<Result> };
   testResultId: string;
   closeModal: () => void;
 }
 
-export const DetachedTestResultDetailsModal = ({
-  testResultId,
-  data,
-  closeModal,
-}: Props) => {
+export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
   const {
     dateTested,
     result,
     correctionStatus,
-    noSymptoms,
     symptoms,
     symptomOnset,
     pregnancy,
@@ -92,13 +93,18 @@ export const DetachedTestResultDetailsModal = ({
     createdBy,
   } = data.testResult;
 
+  const listClasses =
+    "font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
+  const removed = correctionStatus === "REMOVED";
+  const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
+
   return (
     <Modal
       isOpen={true}
       style={{
         content: {
           maxHeight: "90vh",
-          width: "40em",
+          width: "50em",
           position: "initial",
         },
       }}
@@ -106,22 +112,90 @@ export const DetachedTestResultDetailsModal = ({
       contentLabel="Unsaved changes to current user"
       ariaHideApp={process.env.NODE_ENV !== "test"}
     >
-      <h1>Test Details</h1>
-      <h2>Patient</h2>
-      <h2>Test details</h2>
-      <ul>
-        <li>SARS-CoV-2 Result - {result}</li>
-        <li>Test date - {dateTested ? formatDate(dateTested) : "Missing"}</li>
-        <li>Device - {deviceType ? deviceType.name : "Missing"}</li>
-        <li>Symptoms - {symptoms}</li>
-        <li>
-          Symptom Onset - {symptomOnset ? formatDate(symptomOnset) : "Missing"}
-        </li>
-        <li>Pregnant? - {pregnancy}</li>
-        <li>
-          Submitted by -{" "}
-          {createdBy?.name ? formatFullName(createdBy.name as User) : "Missing"}
-        </li>
+      <div className="display-flex flex-justify">
+        <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
+          Test Details
+        </h1>
+        <div className="sr-time-of-test-buttons">
+          <button
+            className="modal__close-button"
+            style={{ cursor: "pointer" }}
+            onClick={closeModal}
+          >
+            <img className="modal__close-img" src={iconClose} alt="Close" />
+          </button>
+        </div>
+      </div>
+      <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
+      <h2 className="font-sans-md margin-top-3">Patient</h2>
+      <div className={classnames(listClasses, "grid-row flex-row padding-0")}>
+        <div className="grid-col padding-2 border-right-1px border-base-lighter">
+          <span
+            className={classnames(
+              labelClasses,
+              "display-block margin-bottom-1"
+            )}
+          >
+            Name
+          </span>
+          <span
+            className={classnames(
+              "font-sans-lg",
+              removed && "text-base text-strike"
+            )}
+          >
+            {patient ? formatFullName(patient) : "--"}
+          </span>
+        </div>
+        <div className="grid-col padding-2">
+          <span
+            className={classnames(
+              labelClasses,
+              "display-block margin-bottom-1"
+            )}
+          >
+            Date of birth
+          </span>
+          <span
+            className={classnames(
+              "font-sans-lg",
+              removed && "text-base text-strike"
+            )}
+          >
+            {patient?.birthDate ? formatDate(patient.birthDate) : "--"}
+          </span>
+        </div>
+      </div>
+      <h2 className="font-sans-md margin-top-3">Test details</h2>
+      <ul
+        className={classnames(listClasses, removed && "text-strike text-base")}
+      >
+        <DetailsRow label="SARS-CoV-2 Result" value={result} />
+        <DetailsRow
+          label="Test Date"
+          value={dateTested && formatDate(dateTested)}
+        />
+        <DetailsRow label="Device" value={deviceType && deviceType.name} />
+        <DetailsRow
+          label="Symptoms"
+          value={
+            symptomList.length > 0 ? symptomList.join(", ") : "No Symptoms"
+          }
+        />
+        <DetailsRow
+          label="Symptom Onset"
+          value={symptomOnset && formatDate(symptomOnset)}
+          indent
+        />
+        <DetailsRow
+          label="Pregnant?"
+          value={pregnancy && pregnancyMap[pregnancy]}
+        />
+        <DetailsRow
+          label="Submitted by"
+          value={createdBy?.name && formatFullName(createdBy.name)}
+          last
+        />
       </ul>
     </Modal>
   );
@@ -137,3 +211,36 @@ const TestResultDetailsModal = (props: Omit<Props, "data">) => (
 );
 
 export default TestResultDetailsModal;
+
+type StringOrFalsey = string | null | undefined | false;
+
+const DetailsRow = ({
+  label,
+  value,
+  indent,
+  last,
+}: {
+  label: string;
+  value: StringOrFalsey;
+  indent?: boolean;
+  last?: boolean;
+}) => {
+  const listItemClasses = classnames(
+    "padding-y-3",
+    !last && "border-bottom-1px border-base-lightest"
+  );
+
+  const spanClasses = classnames(
+    labelClasses,
+    "width-card-lg",
+    "display-inline-block",
+    indent && "font-sans-sm padding-left-2"
+  );
+
+  return (
+    <li className={listItemClasses}>
+      <span className={spanClasses}>{label}</span>
+      {value || "--"}
+    </li>
+  );
+};

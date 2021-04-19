@@ -1,5 +1,5 @@
 import {
-  symptoms,
+  symptomsMap,
   SymptomCode,
   SymptomName,
 } from "../../patientApp/timeOfTest/constants";
@@ -10,7 +10,7 @@ export const symptomsStringToArray = (symptomString: string): SymptomName[] => {
   );
   return Object.entries(parsed).reduce((acc, [code, symptomatic]) => {
     if (symptomatic === "true") {
-      acc.push(symptoms[code as SymptomCode]);
+      acc.push(symptomsMap[code as SymptomCode]);
     }
     return acc;
   }, [] as SymptomName[]);

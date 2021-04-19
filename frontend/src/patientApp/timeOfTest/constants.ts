@@ -1,5 +1,5 @@
 // BEGIN things that should be service calls
-export const symptoms = {
+export const symptomsMap = {
   "426000000": "Fever over 100.4F",
   "103001002": "Feeling feverish",
   "43724002": "Chills",
@@ -19,11 +19,21 @@ export const symptoms = {
   "62315008": "Diarrhea",
 } as const;
 
-export type Symptoms = typeof symptoms;
+export type Symptoms = typeof symptomsMap;
 export type SymptomCode = keyof Symptoms;
 export type SymptomName = Symptoms[SymptomCode];
 
-export const globalSymptomDefinitions = Object.entries(symptoms).reduce(
+export const pregnancyMap = {
+  "77386006": "Yes",
+  "60001007": "No",
+  "261665006": "Prefer not to answer",
+} as const;
+
+export type Pregnancy = typeof pregnancyMap;
+export type PregnancyCode = keyof Pregnancy;
+export type PregnancyDescription = Pregnancy[PregnancyCode];
+
+export const globalSymptomDefinitions = Object.entries(symptomsMap).reduce(
   (acc, [code, name]) => {
     acc.push({ value: code as SymptomCode, label: name });
     return acc;
@@ -40,11 +50,16 @@ export const getTestTypes = () => [
   { label: "Unknown", value: "4" },
 ];
 
-export const getPregnancyResponses = () => [
-  { label: "Yes", value: "77386006" },
-  { label: "No", value: "60001007" },
-  { label: "Prefer not to answer", value: "261665006" },
-];
+type PregnancyResponses = {
+  label: PregnancyDescription;
+  value: PregnancyCode;
+}[];
+
+export const getPregnancyResponses = (): PregnancyResponses =>
+  Object.entries(pregnancyMap).reduce((acc, [code, description]) => {
+    acc.push({ label: description, value: code as PregnancyCode });
+    return acc;
+  }, [] as PregnancyResponses);
 
 export const getTimeOfTestSteps = () => [
   {
