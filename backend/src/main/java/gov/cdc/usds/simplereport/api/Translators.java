@@ -6,6 +6,8 @@ import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentExceptio
 import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -56,21 +58,30 @@ public class Translators {
     }
   }
 
-  public static List<PhoneNumber> parsePhoneNumbers(List<PhoneNumber> phoneNumbers) {
+  public static List<PhoneNumber> parsePhoneNumbers(List<PhoneNumberInput> phoneNumbers) {
     if (phoneNumbers == null) {
-      return null;
+      return List.of();
     }
-
-    var phoneUtil = PhoneNumberUtil.getInstance();
 
     return phoneNumbers.stream()
         .map(
-            phoneNumber -> {
-              phoneNumber.setNumber(parsePhoneNumber(phoneNumber.getNumber()));
-
-              return phoneNumber;
-            })
+            phoneNumberInput ->
+                new PhoneNumber(
+                    parsePhoneType(phoneNumberInput.getType()),
+                    parsePhoneNumber(phoneNumberInput.getNumber())))
         .collect(Collectors.toList());
+  }
+
+  private static PhoneType parsePhoneType(String t) {
+    String type = parseString(t);
+    if (type == null) {
+      throw new IllegalGraphqlArgumentException("Invalid PhoneType received");
+    }
+    try {
+      return PhoneType.valueOf(t.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      throw new IllegalGraphqlArgumentException("Invalid PhoneType received");
+    }
   }
 
   public static String parseString(String value) {

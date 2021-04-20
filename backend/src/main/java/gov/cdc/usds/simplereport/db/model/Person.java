@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -64,7 +65,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   @Column private String ethnicity;
   @Column private String telephone;
 
-  @OneToMany(mappedBy = "person")
+  @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST)
   @JsonIgnore
   private List<PhoneNumber> phoneNumbers;
 

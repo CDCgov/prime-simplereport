@@ -14,7 +14,7 @@ import static gov.cdc.usds.simplereport.api.Translators.parseTribalAffiliation;
 import gov.cdc.usds.simplereport.api.model.errors.CsvProcessingException;
 import gov.cdc.usds.simplereport.api.model.errors.IllegalGraphqlArgumentException;
 import gov.cdc.usds.simplereport.db.model.Person;
-import gov.cdc.usds.simplereport.db.model.PhoneNumber;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.service.PersonService;
 import gov.cdc.usds.simplereport.service.UploadService;
@@ -68,7 +68,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String state,
       String zipCode,
       String telephone,
-      List<PhoneNumber> phoneNumbers,
+      List<PhoneNumberInput> phoneNumbers,
       String role,
       String email,
       String county,
@@ -122,7 +122,7 @@ public class PatientMutationResolver implements GraphQLMutationResolver {
       String state,
       String zipCode,
       String telephone,
-      List<PhoneNumber> phoneNumbers,
+      List<PhoneNumberInput> phoneNumbers,
       String role,
       String email,
       String county,

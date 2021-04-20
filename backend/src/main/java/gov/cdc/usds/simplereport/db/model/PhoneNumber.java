@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.hibernate.annotations.Type;
 
 @Entity
 public class PhoneNumber extends AuditedEntity {
@@ -15,10 +16,24 @@ public class PhoneNumber extends AuditedEntity {
   private Person person;
 
   @Enumerated(EnumType.STRING)
+  @Type(type = "pg_enum")
   @Column
   private PhoneType type;
 
   @Column private String number;
+
+  public PhoneNumber() {
+    /* For Hibernate */
+  }
+
+  public PhoneNumber(PhoneType type, String number) {
+    this.type = type;
+    this.number = number;
+  }
+
+  public void setPerson(Person person) {
+    this.person = person;
+  }
 
   public Person getPerson() {
     return person;
@@ -30,10 +45,6 @@ public class PhoneNumber extends AuditedEntity {
 
   public String getNumber() {
     return number;
-  }
-
-  public void setNumber(String number) {
-    this.number = number;
   }
 
   public boolean isMobile() {

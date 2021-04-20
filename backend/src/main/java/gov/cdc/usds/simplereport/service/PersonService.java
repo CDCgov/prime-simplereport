@@ -224,6 +224,7 @@ public class PersonService {
             employedInHealthcare);
 
     updatePersonFacility(newPatient, facilityId);
+    phoneNumbers.forEach(pn -> pn.setPerson(newPatient));
     Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     return savedPerson;
@@ -263,6 +264,7 @@ public class PersonService {
         gender,
         residentCongregateSetting,
         employedInHealthcare);
+    phoneNumbers.forEach(pn -> pn.setPerson(toUpdate));
     upsertPreferredLanguage(toUpdate, preferredLanguage);
     return _repo.save(toUpdate);
   }
@@ -343,6 +345,7 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
 
+    phoneNumbers.forEach(pn -> pn.setPerson(patientToUpdate));
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);

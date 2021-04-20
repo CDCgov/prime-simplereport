@@ -2,8 +2,8 @@ package gov.cdc.usds.simplereport.api.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +11,7 @@ import java.util.Objects;
 public class PersonUpdate {
   private final StreetAddress address;
   private final String telephone;
-  private final List<PhoneNumber> phoneNumbers;
+  private final List<PhoneNumberInput> phoneNumbers;
   private final PersonRole role;
   private final String email;
   private final String race;
@@ -90,7 +90,7 @@ public class PersonUpdate {
     return telephone;
   }
 
-  public List<PhoneNumber> getPhoneNumbers() {
+  public List<PhoneNumberInput> getPhoneNumbers() {
     return phoneNumbers;
   }
 
