@@ -7,7 +7,8 @@ output "acr_simeplereport_admin_name" {
 }
 
 output "acr_simeplereport_admin_password" {
-  value = azurerm_container_registry.sr.admin_password
+  value     = azurerm_container_registry.sr.admin_password
+  sensitive = true
 }
 
 output "slack_alert_action_id" {
