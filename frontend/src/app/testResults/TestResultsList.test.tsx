@@ -1,9 +1,10 @@
 import { MockedProvider } from "@apollo/client/testing";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router";
 import configureStore from "redux-mock-store";
 
+import { testResultDetailsQuery } from "./TestResultDetailsModal";
 import TestResultsList, {
   DetachedTestResultsList,
   resultsCountQuery,
@@ -166,6 +167,43 @@ const mocks = [
       },
     },
   },
+  {
+    request: {
+      query: testResultDetailsQuery,
+      variables: {
+        id: testResults[0].internalId,
+      },
+    },
+    result: {
+      data: {
+        testResult: {
+          dateTested: "2021-03-17T19:27:23.806Z",
+          result: "NEGATIVE",
+          correctionStatus: "ORIGINAL",
+          deviceType: {
+            name: "Abbott IDNow",
+            __typename: "DeviceType",
+          },
+          patient: {
+            firstName: "Barb",
+            middleName: "Whitaker",
+            lastName: "Cragell",
+            birthDate: "1960-11-07",
+          },
+          createdBy: {
+            name: {
+              firstName: "Arthur",
+              middleName: "A",
+              lastName: "Admin",
+            },
+          },
+          symptoms: "{}",
+          symptomOnset: null,
+          __typename: "TestResult",
+        },
+      },
+    },
+  },
 ];
 
 describe("TestResultsList", () => {
@@ -200,5 +238,24 @@ describe("TestResultsList", () => {
     expect(
       await screen.findByText("Cragell, Barb Whitaker")
     ).toBeInTheDocument();
+  });
+  it("opens the test detail view", async () => {
+    render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <MockedProvider mocks={mocks}>
+            <TestResultsList page={1} />
+          </MockedProvider>
+        </Provider>
+      </MemoryRouter>
+    );
+    await screen.findByText("Test Results", { exact: false });
+    const moreActions = within(screen.getByRole("table")).getAllByRole(
+      "button"
+    )[0];
+    fireEvent.click(moreActions);
+    const viewDetails = await screen.findByText("View details");
+    fireEvent.click(viewDetails);
+    expect(screen.queryByText("Test Details")).toBeInTheDocument();
   });
 });

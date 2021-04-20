@@ -43,7 +43,7 @@ type Result = {
 const formatDate = (date: string | undefined) =>
   moment(date)?.format("MM/DD/yyyy");
 
-export const testQuery = gql`
+export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
     testResult(id: $id) {
       dateTested
@@ -94,7 +94,9 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     deviceType,
     patient,
     createdBy,
-  } = data.testResult;
+  } = { ...data?.testResult };
+
+  console.log(data);
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
@@ -213,10 +215,11 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
 
 const TestResultDetailsModal = (props: Omit<Props, "data">) => (
   <QueryWrapper<Props>
-    query={testQuery}
+    query={testResultDetailsQuery}
     queryOptions={{ variables: { id: props.testResultId } }}
     Component={DetachedTestResultDetailsModal}
     componentProps={{ ...props }}
+    displayLoadingIndicator={false}
   />
 );
 
