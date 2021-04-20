@@ -157,13 +157,13 @@ const ManageUsersContainer: any = () => {
     { fetchPolicy: "no-cache" }
   );
 
-  const { data: singleUserData } = useQuery<SingleUserData, {}>(
-    GET_USER,
-     { 
-      variables: { id: loggedInUser.id }, 
-      fetchPolicy: "no-cache" 
-    }
-  );
+  // const { data: loggedInUserData, refetch: getUser } = useQuery<SingleUserData, {}>(
+  //   GET_USER,
+  //    { 
+  //     variables: { id: loggedInUser.id }, 
+  //     fetchPolicy: "no-cache" 
+  //   }
+  // );
 
   const {
     data: dataFacilities,
@@ -189,9 +189,9 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Facilities not found</p>;
   }
 
-  if (singleUserData === undefined) {
-    return <p>Error: could not load user</p>;
-  }
+  // if (loggedInUserData === undefined) {
+  //   return <p>Error: could not load user</p>;
+  // }
 
   const allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
@@ -200,6 +200,7 @@ const ManageUsersContainer: any = () => {
     <ManageUsers
       users={data.users}
       loggedInUser={loggedInUser}
+      // activeUserWithPermissions={loggedInUserData.user}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}

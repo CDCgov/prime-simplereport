@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import { Prompt } from "react-router-dom";
 import { toast } from "react-toastify";
 
@@ -53,19 +53,6 @@ interface Props {
   getUsers: () => Promise<any>;
 }
 
-const emptySettingsUser : SettingsUser =
-  {
-    firstName: "John",
-    middleName: "",
-    lastName: "Arthur",
-    id: "a123",
-    email: "john@arthur.org",
-    organization: { testingFacility: [] },
-    permissions: ["READ_PATIENT_LIST"],
-    roleDescription: "user",
-    role: "USER",
-  };
-
 export type LimitedUsers = { [id: string]: LimitedUser };
 
 export type SettingsUsers = { [id: string]: SettingsUser };
@@ -92,15 +79,33 @@ export type UpdateUser = <K extends keyof SettingsUser>(
 const roles: Role[] = ["ADMIN", "ENTRY_ONLY", "USER"];
 
 const FetchUserPermissions = (id: string) => {
+  console.log("in FetchUserPermissions");
   const { data: singleUserData } = useQuery<SingleUserData, {}>(
     GET_USER,
      { 
       variables: { id: id }, 
-      fetchPolicy: "no-cache" 
     }
   );
   return singleUserData?.user;
 }
+
+const fetchPermissons = (activeUser : LimitedUser | undefined, users : LimitedUser[]) => {
+  let queryId;
+  if (activeUser) {
+    queryId = activeUser.id;
+  } else {
+    queryId = users[0].id;
+  }
+  console.log(queryId);
+  let user = FetchUserPermissions(queryId);
+  if (user) {
+    return user;
+  } else {
+    throw new Error("unknown user");
+  }
+}
+
+let activeUserWithPermissions: SettingsUser | undefined;
 
 const ManageUsers: React.FC<Props> = ({
   users,
@@ -112,6 +117,9 @@ const ManageUsers: React.FC<Props> = ({
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
+  let U = fetchPermissons(activeUser, users);
+  console.log(U);
+  const [userWithPermissions, updateUserWithPermissions] = useState<SettingsUser>(U);
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -126,19 +134,18 @@ const ManageUsers: React.FC<Props> = ({
   // Maintain added user on client while request is in flight
   const [addedUserId, setAddedUserId] = useState<string>();
 
-  const activeUserId = activeUser ? activeUser.id : "";
+  console.log("userwithpermissions", userWithPermissions);
+
+  const queryUserId = activeUser ? activeUser.id : loggedInUser.id;
 
   const { data: singleUserData } = useQuery<SingleUserData, {}>(
     GET_USER,
      { 
-      variables: { id: activeUserId }, 
-      fetchPolicy: "no-cache" 
+      variables: { id: queryUserId }, 
     }
   );
-  const activeUserWithPermissions = singleUserData?.user;
 
-  console.log("active user id= ", activeUserId);
-  console.log("active user with permissions=", activeUserWithPermissions);
+  activeUserWithPermissions = FetchUserPermissions(queryUserId);
 
   if (error) {
     throw error;
@@ -152,14 +159,22 @@ const ManageUsers: React.FC<Props> = ({
 
   const usersState: LimitedUsers = getLimitedUser(localUsers);
   const sortedUsers = sortUsers(usersState);
+  // updateActiveUserWithPermissions(singleUserData?.user);
 
   // only updates the local state
   const updateUser: UpdateUser = (key, value) => {
-    if (activeUser) {
-      updateActiveUser({
-        ...activeUser,
-        [key]: value,
-      });
+    if (activeUser && activeUserWithPermissions) {
+      console.log("activeUserWithPermissions before: ", activeUserWithPermissions);
+      console.log("activeUserPermissions: ", activeUserWithPermissions[key]);
+      console.log(typeof activeUserWithPermissions);
+      // activeUserWithPermissions.firstName = "Emma";
+      // activeUserWithPermissions[key] = value;
+      // updateActiveSettingsUser({
+      //   ...activeUserWithPermissions,
+      //   [key]: value,
+      // });
+      console.log(key, value);
+      console.log("activeUserWithPermissions after: ", activeUserWithPermissions);
       updateIsUserEdited(true);
     }
   };
@@ -188,6 +203,7 @@ const ManageUsers: React.FC<Props> = ({
       return;
     }
     setIsUpdating(true);
+    console.log("handleUpdateUser activeUserWithPermissions: ", activeUserWithPermissions);
     updateUserPrivileges({
       variables: {
         id: activeUserWithPermissions?.id,
@@ -201,13 +217,11 @@ const ManageUsers: React.FC<Props> = ({
       .then(() => {
         getUsers();
         updateIsUserEdited(false);
-        const user = activeUserWithPermissions;
         const fullName = displayFullNameInOrder(
-          user?.firstName,
-          user?.middleName,
-          user?.lastName
+          activeUserWithPermissions?.firstName,
+          activeUserWithPermissions?.middleName,
+          activeUserWithPermissions?.lastName
         );
-
         setIsUpdating(false);
         showNotification(
           toast,
@@ -314,6 +328,10 @@ const ManageUsers: React.FC<Props> = ({
     }
   }, [addedUserId, usersState]);
 
+  if (activeUserWithPermissions === undefined) {
+    return <div>Loading user permissions...</div>
+  }
+
   return (
     <div className="prime-container card-container">
       <div className="usa-card__header">
@@ -372,7 +390,7 @@ const ManageUsers: React.FC<Props> = ({
                 </p>
                 {
                   <UserRoleSettingsForm
-                    activeUser={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
+                    activeUser={activeUserWithPermissions}
                     loggedInUser={loggedInUser}
                     onUpdateUser={updateUser}
                   />
@@ -380,7 +398,7 @@ const ManageUsers: React.FC<Props> = ({
 
                 {process.env.REACT_APP_VIEW_USER_FACILITIES === "true" ? (
                   <UserFacilitiesSettingsForm
-                    activeUser={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
+                    activeUser={activeUserWithPermissions}
                     allFacilities={allFacilities}
                     onUpdateUser={updateUser}
                   />
@@ -402,8 +420,8 @@ const ManageUsers: React.FC<Props> = ({
                   onClick={() => handleUpdateUser()}
                   label={isUpdating ? "Saving..." : "Save changes"}
                   disabled={
-                    !roles.includes(activeUserWithPermissions ? activeUserWithPermissions.role : "USER") ||
-                    activeUserWithPermissions?.organization.testingFacility.length === 0 ||
+                    !roles.includes(activeUserWithPermissions.role) ||
+                    activeUserWithPermissions.organization.testingFacility.length === 0 ||
                     !isUserEdited ||
                     !["Admin user", "Admin user (SU)"].includes(
                       loggedInUser.roleDescription
@@ -428,7 +446,7 @@ const ManageUsers: React.FC<Props> = ({
               {showDeleteUserModal &&
               process.env.REACT_APP_DELETE_USER_ENABLED === "true" ? (
                 <DeleteUserModal
-                  user={activeUserWithPermissions ? activeUserWithPermissions : emptySettingsUser}
+                  user={activeUserWithPermissions}
                   onClose={() => updateShowDeleteUserModal(false)}
                   onDeleteUser={handleDeleteUser}
                 />
