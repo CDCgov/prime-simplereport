@@ -1,4 +1,5 @@
 variable "env" {}
+variable "app_insights_id" {}
 variable "app_service_plan_id" {}
 variable "app_service_id" {}
 variable "action_group_id" {}
