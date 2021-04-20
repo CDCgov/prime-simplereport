@@ -73,8 +73,8 @@ export const testQuery = gql`
 `;
 
 const labelClasses = "text-bold text-no-strike text-ink";
-const listClasses =
-  "font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
+const containerClasses =
+  "width-full font-sans-md add-list-reset border-base-lighter border-2px radius-md padding-x-2 padding-y-1";
 const strikeClasses = "text-base text-strike";
 
 interface Props {
@@ -129,7 +129,9 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       </div>
       <div className="border-top border-base-lighter margin-x-neg-205 margin-top-1"></div>
       <h2 className="font-sans-md margin-top-3">Patient</h2>
-      <div className={classnames(listClasses, "grid-row flex-row padding-0")}>
+      <div
+        className={classnames(containerClasses, "grid-row flex-row padding-0")}
+      >
         <div className="grid-col padding-2 border-right-1px border-base-lighter">
           <span
             className={classnames(
@@ -162,34 +164,49 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
         </div>
       </div>
       <h2 className="font-sans-md margin-top-3">Test details</h2>
-      <ul className={classnames(listClasses, removed && strikeClasses)}>
-        <DetailsRow label="SARS-CoV-2 Result" value={result} />
-        <DetailsRow
-          label="Test Date"
-          value={dateTested && formatDate(dateTested)}
-        />
-        <DetailsRow label="Device" value={deviceType && deviceType.name} />
-        <DetailsRow
-          label="Symptoms"
-          value={
-            symptomList.length > 0 ? symptomList.join(", ") : "No Symptoms"
-          }
-        />
-        <DetailsRow
-          label="Symptom Onset"
-          value={symptomOnset && formatDate(symptomOnset)}
-          indent
-        />
-        <DetailsRow
-          label="Pregnant?"
-          value={pregnancy && pregnancyMap[pregnancy]}
-        />
-        <DetailsRow
-          label="Submitted by"
-          value={createdBy?.name && formatFullName(createdBy.name)}
-          last
-        />
-      </ul>
+      <table className={containerClasses}>
+        <tbody>
+          <DetailsRow
+            label="SARS-CoV-2 Result"
+            value={result}
+            removed={removed}
+          />
+          <DetailsRow
+            label="Test Date"
+            value={dateTested && formatDate(dateTested)}
+            removed={removed}
+          />
+          <DetailsRow
+            label="Device"
+            value={deviceType && deviceType.name}
+            removed={removed}
+          />
+          <DetailsRow
+            label="Symptoms"
+            value={
+              symptomList.length > 0 ? symptomList.join(", ") : "No Symptoms"
+            }
+            removed={removed}
+          />
+          <DetailsRow
+            label="Symptom Onset"
+            value={symptomOnset && formatDate(symptomOnset)}
+            indent
+            removed={removed}
+          />
+          <DetailsRow
+            label="Pregnant?"
+            value={pregnancy && pregnancyMap[pregnancy]}
+            removed={removed}
+          />
+          <DetailsRow
+            label="Submitted by"
+            value={createdBy?.name && formatFullName(createdBy.name)}
+            removed={removed}
+            last
+          />
+        </tbody>
+      </table>
     </Modal>
   );
 };
@@ -212,28 +229,32 @@ const DetailsRow = ({
   value,
   indent,
   last,
+  removed,
 }: {
   label: string;
   value: StringOrFalsey;
   indent?: boolean;
   last?: boolean;
+  removed?: boolean;
 }) => {
-  const listItemClasses = classnames(
+  const tdClasses = classnames(
     "padding-y-3",
-    !last && "border-bottom-1px border-base-lightest"
+    !last && "border-bottom-1px border-base-lighter"
   );
 
-  const spanClasses = classnames(
+  const labelColumnClasses = classnames(
     labelClasses,
-    "width-card-lg",
-    "display-inline-block",
+    tdClasses,
+    "width-card-lg text-left",
     indent && "font-sans-sm padding-left-2"
   );
 
   return (
-    <li className={listItemClasses}>
-      <span className={spanClasses}>{label}</span>
-      {value || "--"}
-    </li>
+    <tr>
+      <th className={labelColumnClasses}>{label}</th>
+      <td className={classnames(tdClasses, removed && strikeClasses)}>
+        {value || "--"}
+      </td>
+    </tr>
   );
 };
