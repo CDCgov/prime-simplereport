@@ -113,7 +113,8 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
-  setMarkErrorId: SetStateAction<any>
+  setMarkErrorId: SetStateAction<any>,
+  setDetailsModalId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
     // ISO string dates sort nicely
@@ -135,6 +136,10 @@ function testResultRows(
     const removed = r.correctionStatus === "REMOVED";
     const actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
+      {
+        name: "View details",
+        action: () => setDetailsModalId(r.internalId),
+      },
     ];
     if (!removed) {
       actionItems.push({
@@ -252,7 +257,12 @@ export const DetachedTestResultsList: any = ({
 
   const testResults = data?.testResults || [];
 
-  const rows = testResultRows(testResults, setPrintModalId, setMarkErrorId);
+  const rows = testResultRows(
+    testResults,
+    setPrintModalId,
+    setMarkErrorId,
+    setDetailsModalId
+  );
 
   return (
     <main className="prime-home">
