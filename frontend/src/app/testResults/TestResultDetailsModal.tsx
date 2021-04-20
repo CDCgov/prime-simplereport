@@ -40,8 +40,12 @@ type Result = {
   };
 };
 
-const formatDate = (date: string | undefined) =>
-  moment(date)?.format("MM/DD/yyyy");
+const formatDate = (date: string | undefined, withTime?: boolean) => {
+  const dateFormat = "MM/DD/yyyy";
+  const timeFormat = "h:mma";
+  const format = withTime ? `${dateFormat} ${timeFormat}` : dateFormat;
+  return moment(date)?.format(format);
+};
 
 export const testResultDetailsQuery = gql`
   query getTestResultDetails($id: ID!) {
@@ -95,8 +99,6 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     patient,
     createdBy,
   } = { ...data?.testResult };
-
-  console.log(data);
 
   const removed = correctionStatus === "REMOVED";
   const symptomList = symptoms ? symptomsStringToArray(symptoms) : [];
@@ -175,7 +177,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
           />
           <DetailsRow
             label="Test date"
-            value={dateTested && formatDate(dateTested)}
+            value={dateTested && formatDate(dateTested, true)}
             removed={removed}
           />
           <DetailsRow
