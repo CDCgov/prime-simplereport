@@ -117,7 +117,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
     >
       <div className="display-flex flex-justify">
         <h1 className="font-heading-lg margin-top-05 margin-bottom-0">
-          Test Details
+          Test details
         </h1>
         <div className="sr-time-of-test-buttons">
           <button
@@ -169,12 +169,12 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
       <table className={containerClasses}>
         <tbody>
           <DetailsRow
-            label="SARS-CoV-2 Result"
+            label="SARS-CoV-2 result"
             value={result}
             removed={removed}
           />
           <DetailsRow
-            label="Test Date"
+            label="Test date"
             value={dateTested && formatDate(dateTested)}
             removed={removed}
           />
@@ -191,7 +191,7 @@ export const DetachedTestResultDetailsModal = ({ data, closeModal }: Props) => {
             removed={removed}
           />
           <DetailsRow
-            label="Symptom Onset"
+            label="Symptom onset"
             value={symptomOnset && formatDate(symptomOnset)}
             indent
             removed={removed}

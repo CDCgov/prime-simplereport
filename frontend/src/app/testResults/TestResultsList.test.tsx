@@ -382,6 +382,6 @@ describe("TestResultsList", () => {
     fireEvent.click(moreActions);
     const viewDetails = await screen.findByText("View details");
     fireEvent.click(viewDetails);
-    expect(screen.queryByText("Test Details")).toBeInTheDocument();
+    expect(screen.queryAllByText("Test details").length).toBe(2);
   });
 });
