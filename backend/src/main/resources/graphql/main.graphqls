@@ -64,7 +64,6 @@ type TestDescription {
 }
 
 type PhoneNumber {
-  internalId: ID,
   type: PhoneType,
   number: String
 }
@@ -129,7 +128,9 @@ type Patient
   zipCode: String @requiredPermissions(allOf: ["READ_PATIENT_LIST"])
   telephone: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
-  phoneNumbers: [PhoneNumber]
+  phoneNumbers: [String]
+    @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
+  phoneNumberDetails: [PhoneNumber]
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])
   email: String
     @requiredPermissions(anyOf: ["READ_PATIENT_LIST", "UPDATE_TEST"])

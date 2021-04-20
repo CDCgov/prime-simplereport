@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
+import gov.cdc.usds.simplereport.test_util.TestDataFactory;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -115,8 +116,7 @@ class PersonSerializationTest {
             "Jr.",
             LocalDate.of(BIRTH_YEAR, BIRTH_MONTH, BIRTH_DAY),
             addy,
-            "1234556",
-            null,
+            TestDataFactory.getListOfOnePhoneNumber(),
             null,
             "a@b.c",
             "marathon",

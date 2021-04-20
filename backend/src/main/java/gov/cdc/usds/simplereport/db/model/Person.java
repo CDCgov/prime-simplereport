@@ -9,6 +9,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -18,6 +19,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import org.hibernate.annotations.Type;
 
 /**
@@ -63,10 +65,14 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   private List<String> tribalAffiliation;
 
   @Column private String ethnicity;
-  @Column private String telephone;
+
+  /**
+   * Note that for the purposes of all upserts, the <em>first</em> phone number in a
+   * List<PhoneNumber> is considered to be the primary
+   */
+  @OneToOne private PhoneNumber primaryPhone;
 
   @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST)
-  @JsonIgnore
   private List<PhoneNumber> phoneNumbers;
 
   @Column private String email;
@@ -101,7 +107,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
@@ -115,7 +120,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
-    this.telephone = telephone;
     this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
@@ -143,7 +147,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
@@ -159,7 +162,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo.setLastName(lastName);
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
-    this.telephone = telephone;
     this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
@@ -213,12 +215,19 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   }
 
   public String getTelephone() {
-    return telephone;
+    if (primaryPhone == null) {
+      return "";
+    }
+    return primaryPhone.getNumber();
   }
 
-  @JsonIgnore // TODO: I think this _shouldn't_ be JsonIgnored any more?
-  public List<PhoneNumber> getPhoneNumbers() {
+  @JsonIgnore
+  public List<PhoneNumber> getPhoneNumberDetails() {
     return phoneNumbers;
+  }
+
+  public List<String> getPhoneNumbers() {
+    return phoneNumbers.stream().map(PhoneNumber::getNumber).collect(Collectors.toList());
   }
 
   public String getEmail() {
@@ -298,6 +307,9 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
   public void addPhoneNumbers(List<PhoneNumber> phoneNumbers) {
     if (phoneNumbers != null) {
       phoneNumbers.forEach(pn -> pn.setPerson(this));
+      if (phoneNumbers.size() > 0) {
+        this.primaryPhone = phoneNumbers.get(0);
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.test_util;
 
+import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -7,6 +8,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -14,6 +16,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
@@ -139,8 +142,7 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
-            telephone,
-            null,
+            getListOfOnePhoneNumber(),
             PersonRole.RESIDENT,
             null,
             "W",
@@ -244,5 +246,9 @@ public class TestDataFactory {
 
   public StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
+  }
+
+  public static List<PhoneNumber> getListOfOnePhoneNumber() {
+    return Translators.parsePhoneNumbers(List.of(new PhoneNumberInput("503-867-5309")));
   }
 }

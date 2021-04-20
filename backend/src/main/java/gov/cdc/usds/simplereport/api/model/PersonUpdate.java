@@ -26,7 +26,7 @@ public class PersonUpdate {
   public PersonUpdate(
       @JsonProperty("address") StreetAddress address,
       @JsonProperty("telephone") String telephone,
-      @JsonProperty("phoneNumbers") List phoneNumbers,
+      @JsonProperty("phoneNumbers") List<PhoneNumberInput> phoneNumbers,
       @JsonProperty("role") PersonRole role,
       @JsonProperty("email") String email,
       @JsonProperty("race") String race,
