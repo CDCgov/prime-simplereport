@@ -153,8 +153,9 @@ You can make the default user a site admin by adding the following to `applicati
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -217,8 +218,9 @@ Useful local settings
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 - make SQL pretty
@@ -230,6 +232,16 @@ spring:
       hibernate:
         format_sql: true
 ```
+
+- set CORS allowed-origins (this can be useful for testing the Okta integration)
+
+```
+simple-report:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+```
+
 
 ### SchemaSpy
 

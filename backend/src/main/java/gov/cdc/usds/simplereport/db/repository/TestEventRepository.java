@@ -13,6 +13,16 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 
 public interface TestEventRepository extends AuditedEntityRepository<TestEvent> {
+  public static final String WITH_FILTEREDEVENTS =
+      "WITH FILTEREDEVENTS AS ("
+          + " SELECT DISTINCT ON (test_order_id) * "
+          + " FROM {h-schema}test_event te ";
+  public static final String ORDER_BY_CREATED_AT =
+      " ORDER BY test_order_id, te.created_at desc"
+          + ") "
+          + " SELECT * FROM FILTEREDEVENTS "
+          + " ORDER BY created_at DESC ";
+  public static final String COUNT_QUERY = " SELECT count(*) FROM FILTEREDEVENTS ";
 
   @Query("FROM #{#entityName} e WHERE e.patient = :p and e.facility in :facilities")
   public List<TestEvent> findAllByPatientAndFacilities(Person p, Collection<Facility> facilities);
@@ -41,31 +51,26 @@ public interface TestEventRepository extends AuditedEntityRepository<TestEvent> 
   public List<TestEvent> queryMatchAllBetweenDates(Date before, Date after, Pageable p);
 
   @Query(
-      value =
-          "WITH FILTEREDEVENTS AS ("
-              + " SELECT DISTINCT ON (test_order_id) * "
-              + " FROM {h-schema}test_event te "
-              + " WHERE te.facility_id = :facilityId "
-              + " ORDER BY test_order_id, te.created_at desc"
-              + ") "
-              + " SELECT * FROM FILTEREDEVENTS "
-              // moving this filter into the CTE makes this query significantly
-              // more efficient (like 75% faster in one case), but then when we
-              // make it more complicated somebody will probably break it
-              + " ORDER BY created_at DESC ",
-      countQuery = "SELECT count(*) FROM FILTEREDEVENTS",
+      value = WITH_FILTEREDEVENTS + " WHERE te.facility_id = :facilityId " + ORDER_BY_CREATED_AT,
+      countQuery = COUNT_QUERY,
       nativeQuery = true)
   public List<TestEvent> getTestEventResults(UUID facilityId, Pageable pageable);
 
   @Query(
-      value =
-          "WITH FILTEREDEVENTS AS ("
-              + " SELECT DISTINCT ON (test_order_id) * "
-              + " FROM {h-schema}test_event te "
-              + " WHERE te.facility_id = :facilityId) "
-              + " SELECT count(*) FROM FILTEREDEVENTS ",
+      value = WITH_FILTEREDEVENTS + " WHERE te.facility_id = :facilityId) " + COUNT_QUERY,
       nativeQuery = true)
   public int getTestResultsCount(UUID facilityId);
+
+  @Query(
+      value = WITH_FILTEREDEVENTS + " WHERE te.patient_id = :patientId " + ORDER_BY_CREATED_AT,
+      countQuery = COUNT_QUERY,
+      nativeQuery = true)
+  public List<TestEvent> getTestEventResultsByPatient(UUID patientId, Pageable pageable);
+
+  @Query(
+      value = WITH_FILTEREDEVENTS + " WHERE te.patient_id = :patientId) " + COUNT_QUERY,
+      nativeQuery = true)
+  public int getTestResultsCountByPatient(UUID patientId);
 
   // @Query("FROM #{#entityName} q WHERE q.facility = :facility and q.createdAt >
   // :newerThanDate

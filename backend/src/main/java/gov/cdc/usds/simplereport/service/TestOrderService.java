@@ -94,6 +94,17 @@ public class TestOrderService {
   }
 
   @Transactional(readOnly = true)
+  @AuthorizationConfiguration.RequirePermissionReadResultListAtFacility
+  public List<TestEvent> getTestEventsResultsByPatient(
+      UUID patientId, int pageOffset, int pageSize) {
+    return _terepo.getTestEventResultsByPatient(patientId, PageRequest.of(pageOffset, pageSize));
+  }
+
+  public int getTestResultsCountByPatient(UUID patientId) {
+    return _terepo.getTestResultsCountByPatient(patientId);
+  }
+
+  @Transactional(readOnly = true)
   @AuthorizationConfiguration.RequirePermissionReadResultListForTestEvent
   public TestEvent getTestResult(UUID testEventId) {
     Organization org = _os.getCurrentOrganization();
