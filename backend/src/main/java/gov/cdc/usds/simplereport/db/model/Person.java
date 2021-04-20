@@ -116,7 +116,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
     this.telephone = telephone;
-    this.phoneNumbers = phoneNumbers;
+    this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
     this.email = email;
@@ -160,7 +160,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
     this.telephone = telephone;
-    this.phoneNumbers = phoneNumbers;
+    this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
     this.email = email;
@@ -216,7 +216,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     return telephone;
   }
 
-  @JsonIgnore
+  @JsonIgnore // TODO: I think this _shouldn't_ be JsonIgnored any more?
   public List<PhoneNumber> getPhoneNumbers() {
     return phoneNumbers;
   }
@@ -293,6 +293,12 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public PersonRole getRole() {
     return role;
+  }
+
+  public void addPhoneNumbers(List<PhoneNumber> phoneNumbers) {
+    if (phoneNumbers != null) {
+      phoneNumbers.forEach(pn -> pn.setPerson(this));
+    }
   }
 
   // these field names strings are used by Specification builders
