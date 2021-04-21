@@ -33,6 +33,8 @@ jobs:
         run: |
           ./build_and_push.sh
       - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.14.10
       - name: Terraform Init
         working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
         run: terraform init
