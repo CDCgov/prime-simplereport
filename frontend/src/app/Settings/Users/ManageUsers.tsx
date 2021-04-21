@@ -89,7 +89,7 @@ const ManageUsers: React.FC<Props> = ({
     userWithPermissions,
     updateUserWithPermissions,
   ] = useState<SettingsUser>();
-  const [queryUserWithPermissions, { data }] = useLazyQuery<SingleUserData, {}>(
+  const [queryUserWithPermissions] = useLazyQuery<SingleUserData, {}>(
     GET_USER,
     {
       variables: { id: activeUser ? activeUser.id : loggedInUser.id },
@@ -126,7 +126,7 @@ const ManageUsers: React.FC<Props> = ({
 
   // only updates the local state
   const updateUser: UpdateUser = (key, value) => {
-    if (activeUser && data && userWithPermissions) {
+    if (activeUser && userWithPermissions) {
       updateUserWithPermissions({
         ...userWithPermissions,
         [key]: value,
@@ -161,13 +161,14 @@ const ManageUsers: React.FC<Props> = ({
       return;
     }
     setIsUpdating(true);
-    const user = userWithPermissions;
     updateUserPrivileges({
       variables: {
-        id: user?.id,
-        role: user?.role,
-        facilities: user?.organization.testingFacility.map(({ id }) => id),
-        accessAllFacilities: user?.permissions.includes(
+        id: userWithPermissions?.id,
+        role: userWithPermissions?.role,
+        facilities: userWithPermissions?.organization.testingFacility.map(
+          ({ id }) => id
+        ),
+        accessAllFacilities: userWithPermissions?.permissions.includes(
           "ACCESS_ALL_FACILITIES"
         ),
       },
@@ -176,9 +177,9 @@ const ManageUsers: React.FC<Props> = ({
         getUsers();
         updateIsUserEdited(false);
         const fullName = displayFullNameInOrder(
-          user?.firstName,
-          user?.middleName,
-          user?.lastName
+          userWithPermissions?.firstName,
+          userWithPermissions?.middleName,
+          userWithPermissions?.lastName
         );
         setIsUpdating(false);
         showNotification(
@@ -248,12 +249,10 @@ const ManageUsers: React.FC<Props> = ({
           deleted: true,
         },
       });
-      const user = userWithPermissions;
-
       const fullName = displayFullNameInOrder(
-        user?.firstName,
-        user?.middleName,
-        user?.lastName
+        userWithPermissions?.firstName,
+        userWithPermissions?.middleName,
+        userWithPermissions?.lastName
       );
       updateShowDeleteUserModal(false);
       setDeletedUserId(userId);
@@ -263,7 +262,8 @@ const ManageUsers: React.FC<Props> = ({
       );
       await getUsers();
       // there is an unrelated bug here
-      // sortedUsers doesn't automatically update when getUsers() returns, so if you delete the first person in the sequence the active user is still the deleted user
+      // sortedUsers doesn't automatically update when getUsers() returns, so if you delete
+      // the first person in the sequence the active user is still the deleted user
       updateActiveUser(sortedUsers[0]); // arbitrarily pick the first user as the next active.
       queryUserWithPermissions();
       setDeletedUserId(undefined);
