@@ -85,15 +85,18 @@ const ManageUsers: React.FC<Props> = ({
   getUsers,
 }) => {
   const [activeUser, updateActiveUser] = useState<LimitedUser>();
-  const [userWithPermissions, updateUserWithPermissions] = useState<SettingsUser>();
-  const [queryUserWithPermissions, { data }] = useLazyQuery<
-    SingleUserData,
-    {}
-  >(GET_USER, {
-    variables: { id: activeUser ? activeUser.id : loggedInUser.id },
-    fetchPolicy: "no-cache",
-    onCompleted: (data) => updateUserWithPermissions(data.user),
-  });
+  const [
+    userWithPermissions,
+    updateUserWithPermissions,
+  ] = useState<SettingsUser>();
+  const [queryUserWithPermissions, { data }] = useLazyQuery<SingleUserData, {}>(
+    GET_USER,
+    {
+      variables: { id: activeUser ? activeUser.id : loggedInUser.id },
+      fetchPolicy: "no-cache",
+      onCompleted: (data) => updateUserWithPermissions(data.user),
+    }
+  );
   const [nextActiveUserId, updateNextActiveUserId] = useState<string | null>(
     null
   );
@@ -159,7 +162,6 @@ const ManageUsers: React.FC<Props> = ({
     }
     setIsUpdating(true);
     const user = userWithPermissions;
-    console.log("userWithPermissions: ", userWithPermissions);
     updateUserPrivileges({
       variables: {
         id: user?.id,
