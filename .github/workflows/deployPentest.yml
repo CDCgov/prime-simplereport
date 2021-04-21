@@ -27,6 +27,9 @@ jobs:
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+      - uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - name: Login to ACR
         run: docker login ${{ secrets.ACR_REPO_URL }} -u ${{ secrets.ACR_ADMIN_USERNAME }} -p ${{ secrets.ACR_ADMIN_PASWORD }}
       - name: Build and push Docker images
@@ -41,6 +44,13 @@ jobs:
       - name: Azure deploy Api
         working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
         run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api"
+      - name: Wait for staging deploy to complete
+        working-directory: ${{ github.workspace }}/ops
+        timeout-minutes: 10
+        run: make wait-for-${{ env.DEPLOY_ENV }}
+      - name: Promote staging to production
+        working-directory: ${{ github.workspace }}/ops
+        run: make promote-${{ env.DEPLOY_ENV }}
   deploy-frontend:
     runs-on: ubuntu-latest
     defaults:
