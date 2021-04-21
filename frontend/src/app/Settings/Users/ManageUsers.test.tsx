@@ -425,15 +425,7 @@ describe("ManageUsers", () => {
           <Provider store={store}>
             <MockedProvider mocks={updatedMocks}>
               <ManageUsers
-                users={users.map((user) => ({
-                  ...user,
-                  organization: {
-                    testingFacility: [
-                      { id: "a1", name: "Foo Facility" },
-                      { id: "a2", name: "Bar Facility" },
-                    ],
-                  },
-                }))}
+                users={users}
                 loggedInUser={loggedInUser}
                 allFacilities={allFacilities}
                 updateUserPrivileges={updateUserPrivileges}
