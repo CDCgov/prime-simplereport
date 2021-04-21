@@ -1,5 +1,6 @@
 # Makefile for az cli shortcuts for SimpleReport operations
 
+SHELL:=/bin/bash # I gave up on being compatible with ye olde "sh"
 SOURCE_SLOT?=staging
 TARGET_SLOT?=production
 DEPLOYED_COMMIT?=$(shell git show --abbrev=7 -s --pretty=%h)
