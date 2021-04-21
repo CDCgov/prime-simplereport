@@ -1,3 +1,14 @@
+locals {
+  all_app_settings = merge(var.app_settings, {
+    "DOCKER_REGISTRY_SERVER_PASSWORD" = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
+    "DOCKER_REGISTRY_SERVER_URL"      = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
+    "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
+    "WEBSITES_PORT"                   = "8080"
+    "WEBSITE_DNS_SERVER"              = "168.63.129.16" # https://docs.microsoft.com/en-us/azure/app-service/web-sites-integrate-with-vnet#azure-dns-private-zones
+    "WEBSITE_VNET_ROUTE_ALL"          = "1"
+  })
+}
+
 resource "azurerm_app_service_plan" "service_plan" {
   name                = "${var.az_account}-appserviceplan-${var.env}"
   location            = var.resource_group_location
@@ -27,15 +38,8 @@ resource "azurerm_app_service" "service" {
     min_tls_version  = "1.2"
   }
 
-  app_settings = merge(var.app_settings, {
-    "DOCKER_REGISTRY_SERVER_PASSWORD" = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
-    "DOCKER_REGISTRY_SERVER_URL"      = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
-    "DOCKER_REGISTRY_SERVER_USERNAME" = data.terraform_remote_state.global.outputs.acr_simeplereport_name
-    "WEBSITES_PORT"                   = "8080"
-    "WEBSITE_DNS_SERVER"              = "168.63.129.16"
-    "WEBSITE_VNET_ROUTE_ALL"          = "1"
-  })
-  https_only = var.https_only
+  app_settings = local.all_app_settings
+  https_only   = var.https_only
 
   identity {
     type = "SystemAssigned"
@@ -52,7 +56,7 @@ resource "azurerm_app_service" "service" {
 
   lifecycle {
     ignore_changes = [
-      site_config[0].linux_fx_version
+      app_settings, site_config[0].linux_fx_version
     ]
   }
 }
@@ -64,14 +68,8 @@ resource "azurerm_app_service_slot" "staging" {
   resource_group_name = var.resource_group_name
   location            = var.resource_group_location
 
-  app_settings = merge(var.app_settings, {
-    "DOCKER_REGISTRY_SERVER_PASSWORD"                = data.terraform_remote_state.global.outputs.acr_simeplereport_admin_password
-    "DOCKER_REGISTRY_SERVER_URL"                     = "https://${data.terraform_remote_state.global.outputs.acr_simeplereport_name}.azurecr.io"
-    "DOCKER_REGISTRY_SERVER_USERNAME"                = data.terraform_remote_state.global.outputs.acr_simeplereport_name
-    "WEBSITES_PORT"                                  = "8080"
-    "WEBSITE_DNS_SERVER"                             = "168.63.129.16"
-    "WEBSITE_VNET_ROUTE_ALL"                         = "1"
-  })
+  app_settings = local.all_app_settings
+  https_only   = var.https_only
 
   site_config {
     linux_fx_version = var.docker_image_uri
