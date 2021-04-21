@@ -39,6 +39,13 @@ jobs:
       - name: Azure deploy Api
         working-directory: ${{ github.workspace }}/ops/${{ env.DEPLOY_ENV }}
         run: terraform apply -auto-approve -var="acr_image_tag=${GITHUB_SHA::7}" -target="module.simple_report_api"
+      - name: Wait for staging deploy to complete
+        working-directory: ${{ github.workspace }}/ops
+        timeout-minutes: 10
+        run: make wait-for-${{ env.DEPLOY_ENV }}
+      - name: Promote staging to production
+        working-directory: ${{ github.workspace }}/ops
+        run: make promote-${{ env.DEPLOY_ENV }}
   deploy-frontend:
     runs-on: ubuntu-latest
     defaults:
