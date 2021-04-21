@@ -323,8 +323,7 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
 4. Click publish release
-5. Post a link to the release in [#shared-cdc-prime-simplereport-engineering](https://usds.slack.com/archives/C01LTSNKEPP). Example: `Deploying prod https://github.com/CDCgov/prime-simplereport/releases/tag/0.test`
-6. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+5. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
 
 ### Deploy With Action
 
