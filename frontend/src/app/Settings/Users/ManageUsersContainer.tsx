@@ -5,9 +5,7 @@ import { useSelector } from "react-redux";
 import { UserRole, UserPermission, Role } from "../../permissions";
 
 import ManageUsers from "./ManageUsers";
-import { identity } from "lodash";
 
-// I think this is what needs to be changed - going from getUsers to a singleGetUser for whoever happens to be in view
 const GET_USERS = gql`
   query GetUsers {
     users {
@@ -20,25 +18,25 @@ const GET_USERS = gql`
   }
 `;
 
-const GET_USER = gql`
+export const GET_USER = gql`
   query GetUser($id: ID!) {
     user(id: $id) {
-       id
-       firstName
-       middleName
-       lastName
-       roleDescription
-       role
-       permissions
-       email
-       organization {
-         testingFacility {
-           id
-           name
-         }
-       }
-     }
+      id
+      firstName
+      middleName
+      lastName
+      roleDescription
+      role
+      permissions
+      email
+      organization {
+        testingFacility {
+          id
+          name
+        }
+      }
     }
+  }
 `;
 
 // structure for `getUser` query
@@ -56,7 +54,7 @@ export interface SettingsUser {
   };
 }
 
-// structure for `getUsers` query 
+// structure for `getUsers` query
 export interface LimitedUser {
   id: string;
   firstName: string;
@@ -157,14 +155,6 @@ const ManageUsersContainer: any = () => {
     { fetchPolicy: "no-cache" }
   );
 
-  // const { data: loggedInUserData, refetch: getUser } = useQuery<SingleUserData, {}>(
-  //   GET_USER,
-  //    { 
-  //     variables: { id: loggedInUser.id }, 
-  //     fetchPolicy: "no-cache" 
-  //   }
-  // );
-
   const {
     data: dataFacilities,
     loading: loadingFacilities,
@@ -189,10 +179,6 @@ const ManageUsersContainer: any = () => {
     return <p>Error: Facilities not found</p>;
   }
 
-  // if (loggedInUserData === undefined) {
-  //   return <p>Error: could not load user</p>;
-  // }
-
   const allFacilities = dataFacilities.organization
     .testingFacility as UserFacilitySetting[];
 
@@ -200,7 +186,6 @@ const ManageUsersContainer: any = () => {
     <ManageUsers
       users={data.users}
       loggedInUser={loggedInUser}
-      // activeUserWithPermissions={loggedInUserData.user}
       allFacilities={allFacilities}
       updateUserPrivileges={updateUserPrivileges}
       addUserToOrg={addUserToOrg}
