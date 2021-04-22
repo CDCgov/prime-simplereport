@@ -283,7 +283,7 @@ const ManageUsers: React.FC<Props> = ({
     }
   }, [addedUserId, usersState, queryUserWithPermissions]);
 
-  // Navigate to correct user on user deletion (next first)
+  // Navigate to correct user on user deletion (first sorted, unless the deleted user was first)
   useEffect(() => {
     if (deletedUserId) {
       const nextUser: LimitedUser =
@@ -296,7 +296,7 @@ const ManageUsers: React.FC<Props> = ({
     }
   }, [deletedUserId, usersState, sortedUsers, queryUserWithPermissions]);
 
-  // if there's no userWithPermisions, call the permissions query again.
+  // If there's no userWithPermisions, call the permissions query again
   useEffect(() => {
     if (userWithPermissions === undefined) {
       queryUserWithPermissions();
