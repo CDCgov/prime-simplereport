@@ -226,6 +226,8 @@ public class LiveOktaRepository implements OktaRepository {
     final String groupOrgPrefix = generateGroupOrgPrefix(orgId);
     final String groupOrgDefaultName = generateRoleGroupName(orgId, OrganizationRole.getDefault());
 
+    // Map user's current Okta group memberships (Okta group name -> Okta Group).
+    // The Okta group name is our friendly role and facility group names
     Map<String, Group> currentOrgGroupMapForUser =
         user.listGroups().stream()
             .filter(
@@ -235,6 +237,8 @@ public class LiveOktaRepository implements OktaRepository {
             .collect(Collectors.toMap(g -> g.getProfile().getName(), g -> g));
 
     if (!currentOrgGroupMapForUser.containsKey(groupOrgDefaultName)) {
+      // The user is not a member of the default group for this organization.  If they happen
+      // to be in any of this organization's groups, remove the user from those groups.
       currentOrgGroupMapForUser.values().forEach(g -> g.removeUser(user.getId()));
       throw new IllegalGraphqlArgumentException(
           "Cannot update privileges of Okta user in organization they do not belong to.");
@@ -259,7 +263,7 @@ public class LiveOktaRepository implements OktaRepository {
     Set<String> groupNamesToAdd = new HashSet<>(expectedOrgGroupNamesForUser);
     groupNamesToAdd.removeIf(currentOrgGroupMapForUser::containsKey);
 
-    if (groupNamesToRemove.size() + groupNamesToAdd.size() > 0) {
+    if (!groupNamesToRemove.isEmpty() || !groupNamesToAdd.isEmpty()) {
       Map<String, Group> fullOrgGroupMap =
           _client.listGroups(groupOrgPrefix, null, null).stream()
               .filter(g -> GroupType.OKTA_GROUP.equals(g.getType()))
