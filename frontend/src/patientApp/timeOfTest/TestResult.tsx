@@ -130,7 +130,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
           <p>
             COVID-19 antigen tests can sometimes provide inaccurate or false
             results and follow up testing may be needed. Continue social
-            distancing and wearing a mask. Contact your healthcare provider to
+            distancing and wearing a mask. Contact your health care provider to
             decide if additional testing is needed, especially if you experience
             any of these symptoms:
           </p>
