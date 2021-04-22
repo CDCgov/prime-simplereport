@@ -15,6 +15,12 @@ const Admin = () => {
             <div className="usa-card__body">
               <div>
                 {" "}
+                <Link to="/admin/pending-organizations">
+                  Organizations pending identify verification
+                </Link>
+              </div>
+              <div>
+                {" "}
                 <Link to="/admin/create-organization">
                   Create new organization
                 </Link>
