@@ -25,6 +25,10 @@ export const GET_PATIENT = gql`
       state
       zipCode
       telephone
+      phoneNumbers {
+        type
+        number
+      }
       role
       lookupId
       email

@@ -76,8 +76,8 @@ interface DeviceTypes {
 }
 
 interface PhoneNumber {
-  phoneType: string;
-  phoneNumber: string;
+  type: string;
+  number: string;
 }
 
 interface PhoneNumbers {

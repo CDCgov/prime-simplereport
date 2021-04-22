@@ -49,8 +49,8 @@ export const YES_NO_VALUES: { value: YesNo; label: string }[] = [
 ];
 
 export const PHONE_TYPE_VALUES: { value: PhoneType; label: string }[] = [
-  { label: "Mobile", value: "mobile" },
-  { label: "Landline", value: "landline" },
+  { label: "Mobile", value: "MOBILE" },
+  { label: "Landline", value: "LANDLINE" },
 ];
 
 export const YES_NO_UNKNOWN_VALUES: {

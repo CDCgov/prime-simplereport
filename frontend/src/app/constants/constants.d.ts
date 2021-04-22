@@ -10,7 +10,7 @@ type Ethnicity = "hispanic" | "not_hispanic" | "refused";
 type Gender = "male" | "female" | "other" | "refused";
 type YesNo = "YES" | "NO";
 type Role = "STAFF" | "RESIDENT" | "STUDENT" | "VISITOR" | "";
-type PhoneType = "mobile" | "landline" | "unknown";
+type PhoneType = "MOBILE" | "LANDLINE" | "UNKNOWN";
 type YesNoUnknown = YesNo | "UNKNOWN";
 type TribalAffiliation =
   | "1"
@@ -590,6 +590,7 @@ interface PersonUpdate extends Address {
   employedInHealthcare: boolean | null | undefined;
   tribalAffiliation: TribalAffiliation;
   telephone: string;
+  phoneNumbers: PhoneNumber[] | null;
   county: string;
   email: string;
   preferredLanguage: Language | null;

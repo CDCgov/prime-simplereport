@@ -57,6 +57,20 @@ const updateFieldSchemata: Record<keyof PersonUpdate, yup.AnySchema> = {
       return phoneUtil.isValidNumber(number);
     })
     .required(),
+  phoneNumbers: yup.array().test(function (phoneNumbers) {
+    if (!phoneNumbers) {
+      return false;
+    }
+
+    return phoneNumbers.every((phoneNumber) => {
+      if (!phoneNumber || !phoneNumber.number || !phoneNumber.type) {
+        return false;
+      }
+
+      const number = phoneUtil.parseAndKeepRawInput(phoneNumber.number, "US");
+      return phoneUtil.isValidNumber(number);
+    });
+  }),
   email: yup.string().email().nullable(),
   street: yup.string().required(),
   streetTwo: yup.string().nullable(),
@@ -99,6 +113,7 @@ export const allPersonErrors: Required<PersonErrors> = {
   facilityId: "Facility is required",
   birthDate: "Date of birth is missing or incorrectly formatted",
   telephone: "Phone number is missing or invalid",
+  phoneNumbers: "Phone number is missing or invalid",
   email: "Email is missing or incorrectly formatted",
   street: "Street is missing",
   streetTwo: "Street Two is incorrectly formatted",

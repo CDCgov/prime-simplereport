@@ -28,6 +28,9 @@ import { AddressConfirmationModal } from "../../commonComponents/AddressConfirma
 import ComboBox from "../../commonComponents/ComboBox";
 
 import FacilitySelect from "./FacilitySelect";
+import ManagePhoneNumbers from "./ManagePhoneNumbers";
+
+export type ValidateField = (field: keyof PersonErrors) => Promise<void>;
 
 const boolToYesNoUnknown = (
   value: boolean | null | undefined
@@ -291,17 +294,18 @@ const PersonForm = (props: Props) => {
       </FormGroup>
       <FormGroup title="Contact information">
         <div className="usa-form">
-          <div className="grid-row grid-gap">
-            <div className="mobile-lg:grid-col-6">
-              <Input
-                {...commonInputProps}
-                field="telephone"
-                label="Phone number"
-                type="tel"
-                required
-              />
-            </div>
-          </div>
+          {/*<div className="grid-row grid-gap">
+      <div className="mobile-lg:grid-col-6">*/}
+          <ManagePhoneNumbers
+            phoneNumbers={patient.phoneNumbers || []}
+            updatePhoneNumbers={onPersonChange("phoneNumbers")}
+            errors={errors}
+            validateField={() => validateField("phoneNumbers")}
+          />
+        </div>
+        {/*</div>
+          </div>*/}
+        <div className="usa-form">
           <Input
             {...commonInputProps}
             field="email"

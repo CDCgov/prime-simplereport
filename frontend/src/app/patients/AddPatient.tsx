@@ -125,6 +125,7 @@ const AddPatient = () => {
             tribalAffiliation: null,
             birthDate: null,
             telephone: null,
+            phoneNumbers: null,
             county: null,
             email: null,
             street: null,
