@@ -27,6 +27,6 @@ public class UserResolver implements GraphQLQueryResolver {
   }
 
   public User getUser(UUID userId) {
-    return new User(_userService.getUserInCurrentOrg(userId));
+    return new User(_userService.getUser(userId));
   }
 }
