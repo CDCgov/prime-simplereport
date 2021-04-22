@@ -21,7 +21,7 @@ jobs:
           $SITE_URL/app/settings/
           $SITE_URL/app/settings/facilities/
           $SITE_URL/app/settings/add-facility/
-        uploadArtifacts: false
+        uploadArtifacts: true
         configPath: ./lighthouserc.yml
         runs: 1
       env:
