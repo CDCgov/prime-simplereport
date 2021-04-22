@@ -271,7 +271,6 @@ export const DetachedTestResultsList: any = ({
           testResultId={detailsModalId}
           closeModal={() => {
             setDetailsModalId(undefined);
-            refetch();
           }}
         />
       )}
