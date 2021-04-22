@@ -1,26 +1,21 @@
 import { gql, useMutation } from "@apollo/client";
-import React, {
-  useState,
-} from "react";
+import React, { useState } from "react";
 import classnames from "classnames";
+import { toast } from "react-toastify";
+
 import {
   InjectedQueryWrapperProps,
   QueryWrapper,
 } from "../../commonComponents/QueryWrapper";
 import "./PendingOrganizationsList.scss";
 import Alert from "../../commonComponents/Alert";
-import { toast } from "react-toastify";
 import { showNotification } from "../../utils";
 import Checkboxes from "../../commonComponents/Checkboxes";
 import Button from "../../commonComponents/Button";
 
 export const ORGANIZATIONS_QUERY = gql`
-  query GetUnverifiedOrganizations(
-    $identityVerified: Boolean
-  ) {
-    organizations(
-      identityVerified: $identityVerified
-    ) {
+  query GetUnverifiedOrganizations($identityVerified: Boolean) {
+    organizations(identityVerified: $identityVerified) {
       id
       name
       externalId
@@ -30,7 +25,10 @@ export const ORGANIZATIONS_QUERY = gql`
 `;
 export const SET_ORG_IDENTITY_VERIFIED_MUTATION = gql`
   mutation SetOrgIdentityVerified($externalId: String!, $verified: Boolean!) {
-    setOrganizationIdentityVerified(externalId: $externalId, verified: $verified)
+    setOrganizationIdentityVerified(
+      externalId: $externalId
+      verified: $verified
+    )
   }
 `;
 
@@ -39,10 +37,7 @@ interface Props {
   refetch: () => void;
 }
 
-function orgRows(
-  orgs: any,
-  refetch: () => void,
-) {
+function orgRows(orgs: any, refetch: () => void) {
   if (orgs.length === 0) {
     return (
       <tr>
@@ -52,7 +47,6 @@ function orgRows(
   }
 
   return [...orgs].map((o) => {
-
     const [identityVerified, setIdentityVerified] = useState(
       o.identityVerified
     );
@@ -66,7 +60,11 @@ function orgRows(
       })
         .then(() => {
           const alert = (
-            <Alert type="success" title={o.name+" identity verified"} body="" />
+            <Alert
+              type="success"
+              title={o.name + " identity verified"}
+              body=""
+            />
           );
           showNotification(toast, alert);
         })
@@ -77,9 +75,7 @@ function orgRows(
       <tr
         key={o.id}
         //title=""
-        className={classnames(
-          "sr-org-row"
-        )}
+        className={classnames("sr-org-row")}
       >
         <th scope="row">
           {o.name}
@@ -118,7 +114,6 @@ export const DetachedPendingOrganizationsList: any = ({
   data,
   refetch,
 }: Props) => {
-
   const orgs = data?.organizations || [];
 
   const rows = orgRows(orgs, refetch);
@@ -129,9 +124,7 @@ export const DetachedPendingOrganizationsList: any = ({
         <div className="grid-row">
           <div className="prime-container card-container sr-pending-organizations-list">
             <div className="usa-card__header">
-              <h2>
-                Organizations Pending Identity Verification
-              </h2>
+              <h2>Organizations Pending Identity Verification</h2>
             </div>
             <div className="usa-card__body">
               <table className="usa-table usa-table--borderless width-full">
@@ -152,13 +145,11 @@ export const DetachedPendingOrganizationsList: any = ({
   );
 };
 
-type OmittedProps =
-  | InjectedQueryWrapperProps;
+type OmittedProps = InjectedQueryWrapperProps;
 
 type PendingOrganizationsListProps = Omit<Props, OmittedProps>;
 
 const PendingOrganizationsList = (props: PendingOrganizationsListProps) => {
-
   const queryVariables: {
     identityVerified: boolean;
   } = {
