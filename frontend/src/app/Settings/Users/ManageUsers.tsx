@@ -294,7 +294,7 @@ const ManageUsers: React.FC<Props> = ({
       queryUserWithPermissions();
       setDeletedUserId(undefined);
     }
-  }, [deletedUserId, usersState, sortedUsers, queryUserWithPermissions]);
+  }, [deletedUserId, sortedUsers, queryUserWithPermissions]);
 
   // If there's no userWithPermisions, call the permissions query again
   useEffect(() => {
