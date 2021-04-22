@@ -36,6 +36,7 @@ import SearchResults from "../testQueue/addToQueue/SearchResults";
 
 import TestResultPrintModal from "./TestResultPrintModal";
 import TestResultCorrectionModal from "./TestResultCorrectionModal";
+import TestResultDetailsModal from "./TestResultDetailsModal";
 
 type Results = keyof typeof TEST_RESULT_DESCRIPTIONS;
 
@@ -112,7 +113,8 @@ function hasSymptoms(noSymptoms: boolean, symptoms: string) {
 function testResultRows(
   testResults: any,
   setPrintModalId: SetStateAction<any>,
-  setMarkErrorId: SetStateAction<any>
+  setMarkErrorId: SetStateAction<any>,
+  setDetailsModalId: SetStateAction<any>
 ) {
   const byDateTested = (a: any, b: any) => {
     // ISO string dates sort nicely
@@ -134,6 +136,10 @@ function testResultRows(
     const removed = r.correctionStatus === "REMOVED";
     const actionItems = [
       { name: "Print result", action: () => setPrintModalId(r.internalId) },
+      {
+        name: "View details",
+        action: () => setDetailsModalId(r.internalId),
+      },
     ];
     if (!removed) {
       actionItems.push({
@@ -195,6 +201,7 @@ export const DetachedTestResultsList: any = ({
 }: Props) => {
   const [printModalId, setPrintModalId] = useState(undefined);
   const [markErrorId, setMarkErrorId] = useState(undefined);
+  const [detailsModalId, setDetailsModalId] = useState<string>();
   const [showFilters, setShowFilters] = useState(false);
 
   const [queryString, debounced, setDebounced] = useDebounce("", {
@@ -250,10 +257,23 @@ export const DetachedTestResultsList: any = ({
 
   const testResults = data?.testResults || [];
 
-  const rows = testResultRows(testResults, setPrintModalId, setMarkErrorId);
+  const rows = testResultRows(
+    testResults,
+    setPrintModalId,
+    setMarkErrorId,
+    setDetailsModalId
+  );
 
   return (
     <main className="prime-home">
+      {detailsModalId && (
+        <TestResultDetailsModal
+          testResultId={detailsModalId}
+          closeModal={() => {
+            setDetailsModalId(undefined);
+          }}
+        />
+      )}
       <div className="grid-container">
         <div className="grid-row">
           <div className="prime-container card-container sr-test-results-list">
