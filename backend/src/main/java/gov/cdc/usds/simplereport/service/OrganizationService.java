@@ -57,9 +57,8 @@ public class OrganizationService {
   }
 
   public Optional<OrganizationRoles> getCurrentOrganizationRoles() {
-    var cachedResult = _currentOrgRolesContextHolder.getOrganizationRoles();
-    if (cachedResult.isPresent()) {
-      return cachedResult;
+    if (_currentOrgRolesContextHolder.hasBeenPopulated()) {
+      return _currentOrgRolesContextHolder.getOrganizationRoles();
     }
     var result = fetchCurrentOrganizationRoles();
     _currentOrgRolesContextHolder.setOrganizationRoles(result);
