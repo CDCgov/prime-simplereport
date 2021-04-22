@@ -25,4 +25,4 @@ jobs:
         configPath: ./lighthouserc.yml
         runs: 1
       env:
-        SITE_URL: https://demo.simplereport.gov/
+        SITE_URL: https://demo.simplereport.gov
