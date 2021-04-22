@@ -261,12 +261,6 @@ const ManageUsers: React.FC<Props> = ({
         <Alert type="success" title={`User account removed for ${fullName}`} />
       );
       await getUsers();
-      // there is an unrelated bug here
-      // sortedUsers doesn't automatically update when getUsers() returns, so if you delete
-      // the first person in the sequence the active user is still the deleted user
-      updateActiveUser(sortedUsers[0]); // arbitrarily pick the first user as the next active.
-      queryUserWithPermissions();
-      setDeletedUserId(undefined);
     } catch (e) {
       setError(e);
     }
@@ -288,6 +282,19 @@ const ManageUsers: React.FC<Props> = ({
       setAddedUserId(undefined);
     }
   }, [addedUserId, usersState, queryUserWithPermissions]);
+
+  // Navigate to correct user on user deletion (next first)
+  useEffect(() => {
+    if (deletedUserId) {
+      const nextUser: LimitedUser =
+        sortedUsers[0].id === deletedUserId && sortedUsers.length > 1
+          ? sortedUsers[1]
+          : sortedUsers[0];
+      updateActiveUser(nextUser);
+      queryUserWithPermissions();
+      setDeletedUserId(undefined);
+    }
+  }, [deletedUserId, usersState, sortedUsers, queryUserWithPermissions]);
 
   // if there's no userWithPermisions, call the permissions query again.
   useEffect(() => {
