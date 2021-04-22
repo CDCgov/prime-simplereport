@@ -33,14 +33,14 @@ const TestResult = () => {
           </div>
           <h2 className="font-heading-sm">Test device</h2>
           <p className="margin-top-05">{deviceType}</p>
-          <h2 className="font-heading-sm">Notes</h2>
+          <h2 className="font-heading-sm">What does my result mean?</h2>
           <TestResultNotes result={patient.lastTest.result} />
           <p>
-            For further guidance, please consult the{" "}
+            For more information, please visit the{" "}
             <a href="https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html">
-              Centers for Disease Control and Prevention (CDC)
+              Centers for Disease Control and Prevention (CDC) website
             </a>{" "}
-            website or contact your local health department.
+            or contact your local health department.
           </p>
         </div>
       </div>
@@ -57,31 +57,70 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
     case COVID_RESULTS.POSITIVE:
       return (
         <>
-          <p>Please self-isolate at home. You can be around others after:</p>
+          <p>
+            Getting a positive COVID-19 test result can be difficult news, so
+            it’s important to{" "}
+            <a href="https://www.cdc.gov/coronavirus/2019-ncov/daily-life-coping/managing-stress-anxiety.html">
+              take steps to cope with stress
+            </a>{" "}
+            during this time. Reach out to your support system and make a phone
+            or video appointment with a mental health professional if needed.
+          </p>
+          <p>
+            Most people who get COVID-19 will be able to recover at home. Make
+            sure to follow CDC guidelines for people who are recovering at home
+            and their caregivers, including:
+          </p>
           <ul>
+            <li>Stay home when you are sick, except to get medical care.</li>
             <li>
-              10 days since symptoms first appeared <b>and</b>
+              Self isolate for 10 full days after symptoms first appeared (or
+              starting the day after you had your test, if you have no
+              symptoms).
             </li>
             <li>
-              24 hours with no fever without the use of fever-reducing
-              medications <b>and</b>
+              If you are self isolating at home where others live, use a
+              separate room and bathroom for sick household members (if
+              possible). Clean any shared rooms as needed, to avoid transmitting
+              the virus.
             </li>
-            <li>Other symptoms of COVID-19 are improving*</li>
+            <li>
+              Wash your hands often with soap and water for at least 20 seconds,
+              especially after blowing your nose, coughing, or sneezing; going
+              to the bathroom; and before eating or preparing food.
+            </li>
+            <li>
+              If soap and water are not available, use an alcohol-based hand
+              sanitizer with at least 60% alcohol.
+            </li>
+            <li>
+              Have a supply of clean, disposable face masks. Everyone, no matter
+              their COVID-19 diagnosis, should wear face masks while in the
+              home.
+            </li>
           </ul>
           <p>
-            *Loss of taste and smell may persist for weeks or months after
-            recovery and need not delay the end of isolation​
+            <a href="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/symptoms.html">
+              Watch for symptoms and learn when to seek emergency medical
+              attention
+            </a>
+            .
           </p>
           <p>
-            Most people do not require testing to decide when they can be around
-            others; however, if your healthcare provider recommends testing,
-            they will let you know when you can resume being around others based
-            on your test results.
+            If someone is showing any of these signs, seek emergency medical
+            care immediately:
           </p>
+          <ul>
+            <li>Trouble breathing</li>
+            <li>Persistent chest pain/pressure</li>
+            <li>Confusion</li>
+            <li>Inability to wake or stay awake</li>
+            <li>Bluish lips or face</li>
+          </ul>
           <p>
-            Note that these recommendations <b>do not</b> apply to persons with
-            severe COVID-19 or with severely weakened immune systems
-            (immunocompromised).
+            Call 911 or call ahead to your local emergency room: Notify the
+            operator that you are seeking care for someone who has or may have
+            COVID-19.
           </p>
         </>
       );
@@ -89,11 +128,11 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
       return (
         <>
           <p>
-            Antigen tests can return inaccurate or false results and follow up
-            testing may be needed. Continue social distancing and wearing a
-            mask. Contact your healthcare provider to determine if additional
-            testing is needed especially if you experience any of these COVID-19
-            symptoms:
+            COVID-19 antigen tests can sometimes provide inaccurate or false
+            results and follow up testing may be needed. Continue social
+            distancing and wearing a mask. Contact your health care provider to
+            decide if additional testing is needed, especially if you experience
+            any of these symptoms:
           </p>
           <ul>
             <li>Fever or chills</li>
@@ -102,7 +141,7 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
             <li>Fatigue</li>
             <li>Muscle or body aches</li>
             <li>Headache</li>
-            <li>New loss of taste or smell</li>
+            <li>Loss of taste or smell</li>
             <li>Sore throat</li>
             <li>Congestion or runny nose</li>
             <li>Nausea or vomiting</li>
@@ -112,13 +151,20 @@ const TestResultNotes: React.FC<TestResultNotesProps> = (props) => {
       );
     default:
       return (
-        <p>
-          An inconclusive result is neither positive nor negative. This result
-          can occur from inadequate sample collection, very early-stage
-          infection, or for patients close to recovery. With an inconclusive
-          result, collecting and testing another sample is recommended. Please
-          make an appointment for another test as soon as possible.
-        </p>
+        <>
+          <p>
+            An inconclusive result is neither positive nor negative. This can
+            happen because of problems with the sample collection, a very
+            early-stage COVID-19 infection, or for patients with COVID-19 that
+            are close to recovery. With an inconclusive result, collecting and
+            testing another sample is recommended.
+          </p>
+          <p>
+            Please make an appointment for another test as soon as possible. If
+            you’ve gotten tested due to COVID-19 symptoms, it is recommended
+            that you self-isolate until you get your new test results.
+          </p>
+        </>
       );
   }
 };
