@@ -15,7 +15,8 @@ output "app_insight_id" {
 }
 
 output "app_insights_instrumentation_key" {
-  value = module.monitoring.app_insights_instrumentation_key
+  value     = module.monitoring.app_insights_instrumentation_key
+  sensitive = true
 }
 
 output "postgres_server_name" {
