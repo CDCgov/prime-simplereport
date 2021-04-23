@@ -8,7 +8,11 @@ export const PasswordForm = () => {
 
   return (
     <CardContainer logo>
-      <TextInput />
+    <TextInput
+      label={"Password"}
+      name={"password"}
+      onChange={(evt) => setPassword(evt.currentTarget.value)}
+    />
     </CardContainer>
   );
 };
