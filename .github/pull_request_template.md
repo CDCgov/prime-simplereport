@@ -26,7 +26,7 @@
 - [ ] GraphQL schema changes are backward compatible with older version of the front-end
 
 ### Security
-- [ ] This PR does not introduce changes that require a security review (encryption changes, etc)
+- [ ] Changes with security implications have been approved by a security engineer (changes to  authentication, encryption, handling of PII, etc.)
 - [ ] Any dependencies introduced have been vetted and discussed
 
 ## Cloud
