@@ -1,6 +1,6 @@
 import { Story, Meta } from "@storybook/react";
 
-import { CardContainer } from "../app/commonComponents/CardContainer";
+import { CardContainer } from "./CardContainer";
 
 export default {
   title: "App/Components/Card container",

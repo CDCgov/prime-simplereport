@@ -1,12 +1,12 @@
 import { useState } from "react";
 
-import { Card } from "../commonComponents/Card";
-import { CardBackground } from "../commonComponents/CardBackground";
-import Dropdown from "../commonComponents/Dropdown";
-import TextInput from "../commonComponents/TextInput";
-import Button from "../commonComponents/Button";
-import StepIndicator from "../commonComponents/StepIndicator";
-import { stateCodes } from "../../config/constants";
+import { Card } from "../../commonComponents/Card/Card";
+import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import Dropdown from "../../commonComponents/Dropdown";
+import TextInput from "../../commonComponents/TextInput";
+import Button from "../../commonComponents/Button";
+import StepIndicator from "../../commonComponents/StepIndicator";
+import { stateCodes } from "../../../config/constants";
 
 export const SecurityQuestion = () => {
   const [password, setPassword] = useState("");

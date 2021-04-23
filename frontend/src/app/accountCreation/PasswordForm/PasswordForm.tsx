@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { CardContainer } from "../commonComponents/CardContainer";
-import TextInput from "../commonComponents/TextInput";
-import Button from "../commonComponents/Button";
-import StepIndicator from "../commonComponents/StepIndicator";
+import { CardContainer } from "../../commonComponents/CardContainer/CardContainer";
+import TextInput from "../../commonComponents/TextInput";
+import Button from "../../commonComponents/Button";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 export const PasswordForm = () => {
   const [password, setPassword] = useState("");

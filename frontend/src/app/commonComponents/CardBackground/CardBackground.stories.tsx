@@ -1,6 +1,6 @@
 import { Story, Meta } from "@storybook/react";
 
-import { CardBackground } from "../app/commonComponents/CardBackground";
+import { CardBackground } from "./CardBackground";
 
 export default {
   title: "App/Components/Card background",

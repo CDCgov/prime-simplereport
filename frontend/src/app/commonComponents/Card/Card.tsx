@@ -1,4 +1,4 @@
-import siteLogo from "../../img/simplereport-logo-color.svg";
+import siteLogo from "../../../img/simplereport-logo-color.svg";
 
 export type CardProps = {
   logo?: boolean;

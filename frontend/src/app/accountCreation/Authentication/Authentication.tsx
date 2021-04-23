@@ -1,9 +1,9 @@
 import { useState } from "react";
 
-import { Card } from "../commonComponents/Card";
-import { CardBackground } from "../commonComponents/CardBackground";
-import Button from "../commonComponents/Button";
-import StepIndicator from "../commonComponents/StepIndicator";
+import { Card } from "../../commonComponents/Card/Card";
+import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
+import Button from "../../commonComponents/Button";
+import StepIndicator from "../../commonComponents/StepIndicator";
 
 export const Authentication = () => {
   return (

@@ -1,6 +1,6 @@
 import { Story, Meta } from "@storybook/react";
 
-import { Card } from "../app/commonComponents/Card";
+import { Card } from "./Card";
 
 export default {
   title: "App/Components/Card",

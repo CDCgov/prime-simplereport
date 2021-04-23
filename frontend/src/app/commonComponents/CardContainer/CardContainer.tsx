@@ -1,5 +1,5 @@
-import CardBackground from "./CardBackground";
-import Card from "./Card";
+import CardBackground from "../CardBackground/CardBackground";
+import Card from "../Card/Card";
 
 export type CardContainerProps = {
   logo?: boolean;
