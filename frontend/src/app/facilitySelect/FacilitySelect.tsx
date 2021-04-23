@@ -6,12 +6,15 @@ import FacilityPopup from "./FacilityPopup";
 
 import "./FacilitySelect.scss";
 
-interface Props {
+export interface FacilitySelectProps {
   setActiveFacility: (facility: Facility) => void;
   facilities: Facility[];
 }
 
-const FacilitySelect: React.FC<Props> = ({ facilities, setActiveFacility }) => {
+const FacilitySelect: React.FC<FacilitySelectProps> = ({
+  facilities,
+  setActiveFacility,
+}) => {
   return (
     <FacilityPopup>
       <p className="select-text">
