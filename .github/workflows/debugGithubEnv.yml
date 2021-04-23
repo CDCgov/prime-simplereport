@@ -1,0 +1,17 @@
+name: Github Workflow Environement Testing
+
+on:
+  workflow_dispatch:
+  release:
+    types: [created, released, prereleased]
+
+jobs:
+  dump-env:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./ops
+    steps:
+      - uses: actions/checkout@v2
+      - name: Dump github env variables
+        run: ./github_env.sh
