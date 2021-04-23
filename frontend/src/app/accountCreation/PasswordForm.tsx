@@ -10,7 +10,8 @@ export const PasswordForm = () => {
 
   return (
     <CardContainer logo>
-      <p>step indicator</p>
+      <h1 className="font-ui-sm margin-top-3">Set up your account</h1>
+      <p>[ step indicator ]</p>
       <TextInput
         label={"Password"}
         name={"password"}
@@ -18,7 +19,7 @@ export const PasswordForm = () => {
         hintText="Your password must be at least 8 characters and include an uppercase and lowercase letter and a number."
         onChange={(evt) => setPassword(evt.currentTarget.value)}
       />
-      <p>password strength - todo: verify w/ team</p>
+      <p>[ password strength ] todo: verify w/ team</p>
       <TextInput
         label={"Confirm password"}
         name={"confirm-password"}

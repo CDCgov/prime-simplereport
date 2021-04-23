@@ -10,8 +10,8 @@ export const CardContainer: React.FC<CardContainerProps> = ({
 }) => {
   return (
     <div className="bg-base-lightest">
-      <div className="grid-container maxw-tablet usa-section">
-        <div className="card width-mobile-lg">
+      <div className="grid-container width-mobile-lg usa-section">
+        <div className="card">
           {logo && (
             <header className="display-flex flex-column">
               <img className="maxw-card-lg flex-align-self-center" src={siteLogo} alt="SimpleReport" />
