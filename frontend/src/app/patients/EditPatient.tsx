@@ -25,7 +25,7 @@ export const GET_PATIENT = gql`
       state
       zipCode
       telephone
-      phoneNumbers {
+      phoneNumberDetails {
         type
         number
       }
