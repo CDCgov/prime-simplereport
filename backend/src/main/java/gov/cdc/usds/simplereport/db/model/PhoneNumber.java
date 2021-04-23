@@ -1,5 +1,6 @@
 package gov.cdc.usds.simplereport.db.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
@@ -43,6 +44,7 @@ public class PhoneNumber extends AuditedEntity {
     this.person = person;
   }
 
+  @JsonIgnore
   public Person getPerson() {
     return person;
   }

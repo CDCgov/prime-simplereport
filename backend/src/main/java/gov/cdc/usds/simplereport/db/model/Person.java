@@ -9,12 +9,12 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.RaceArrayConverter;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -69,7 +69,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    * Note that for the purposes of all upserts, the <em>first</em> phone number in a
    * List<PhoneNumber> is considered to be the primary
    */
-  @OneToOne private PhoneNumber primaryPhone;
+  @OneToOne(fetch = FetchType.EAGER)
+  private PhoneNumber primaryPhone;
 
   @OneToMany(mappedBy = "person")
   private List<PhoneNumber> phoneNumbers;
@@ -177,6 +178,10 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     facility = f;
   }
 
+  public void setPrimaryPhone(PhoneNumber phoneNumber) {
+    this.primaryPhone = phoneNumber;
+  }
+
   public String getLookupId() {
     return lookupId;
   }
@@ -216,13 +221,8 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     return primaryPhone.getNumber();
   }
 
-  @JsonIgnore
-  public List<PhoneNumber> getPhoneNumberDetails() {
+  public List<PhoneNumber> getPhoneNumbers() {
     return phoneNumbers;
-  }
-
-  public List<String> getPhoneNumbers() {
-    return phoneNumbers.stream().map(PhoneNumber::getNumber).collect(Collectors.toList());
   }
 
   public String getEmail() {

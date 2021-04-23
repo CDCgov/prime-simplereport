@@ -225,8 +225,8 @@ public class PersonService {
             employedInHealthcare);
 
     updatePersonFacility(newPatient, facilityId);
-    Person savedPerson = _repo.save(newPatient);
     updatePhoneNumbers(newPatient, phoneNumbers);
+    Person savedPerson = _repo.save(newPatient);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     return savedPerson;
   }
@@ -267,13 +267,19 @@ public class PersonService {
     return _repo.save(toUpdate);
   }
 
+  /**
+   * This method updates the PhoneNumbers provided by adding/deleting them from the
+   * PhoneNumberRepository. It updates the PrimaryPhone on the Person, but does <em>not</em> save
+   * that object, expecting it to be saved upstream.
+   */
   private void updatePhoneNumbers(Person person, List<PhoneNumber> incoming) {
     if (incoming == null) {
       return;
     }
-    var existing = person.getPhoneNumberDetails();
+    incoming.forEach(phoneNumber -> phoneNumber.setPerson(person));
+    var existing = person.getPhoneNumbers();
 
-    var toSave = incoming.stream().collect(Collectors.toSet());
+    var toSave = incoming.stream().collect(Collectors.toList());
     toSave.removeAll(existing);
 
     var toDelete = existing.stream().collect(Collectors.toSet());
@@ -281,6 +287,10 @@ public class PersonService {
 
     _phoneRepo.deleteAll(toDelete);
     _phoneRepo.saveAll(toSave);
+
+    if (toSave.size() > 0) {
+      person.setPrimaryPhone(toSave.get(0));
+    }
   }
 
   public PatientPreferences getPatientPreferences(Person person) {
