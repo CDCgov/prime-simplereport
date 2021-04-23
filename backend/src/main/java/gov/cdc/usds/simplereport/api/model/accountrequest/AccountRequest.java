@@ -33,6 +33,11 @@ public class AccountRequest implements TemplateVariablesProvider {
   @JsonProperty private String facilityTypeOther;
   @JsonProperty private String organizationName;
   @JsonProperty @NotNull private String facilityName;
+
+  @JsonProperty @NotNull
+  private String facilityPhoneNumber =
+      ""; // remove default after prime-simplereport-site deployment
+
   @JsonProperty @NotNull private String cliaNumber;
   @JsonProperty @NotNull private String testingDevices;
   @JsonProperty private String testingDevicesOther;
@@ -86,6 +91,7 @@ public class AccountRequest implements TemplateVariablesProvider {
     variableMap.put("facilityTypeOther", facilityTypeOther);
     variableMap.put("organizationName", organizationName);
     variableMap.put("facilityName", facilityName);
+    variableMap.put("facilityPhoneNumber", facilityPhoneNumber);
     variableMap.put("cliaNumber", cliaNumber);
     variableMap.put("testingDevices", testingDevices);
     variableMap.put("testingDevicesOther", testingDevicesOther);
