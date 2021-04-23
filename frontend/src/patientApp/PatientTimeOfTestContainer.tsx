@@ -1,7 +1,7 @@
 import React from "react";
 
 import { getTimeOfTestSteps } from "./timeOfTest/constants";
-import StepIndicator from "./StepIndicator";
+import StepIndicator from "../app/commonComponents/StepIndicator";
 
 interface Props {
   children: React.ReactNode;
