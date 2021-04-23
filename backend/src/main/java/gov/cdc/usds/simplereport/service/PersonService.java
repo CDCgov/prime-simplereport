@@ -267,16 +267,20 @@ public class PersonService {
     return _repo.save(toUpdate);
   }
 
-  private void updatePhoneNumbers(Person person, List<PhoneNumber> phoneNumbers) {
-    if (phoneNumbers == null) {
+  private void updatePhoneNumbers(Person person, List<PhoneNumber> incoming) {
+    if (incoming == null) {
       return;
     }
-    phoneNumbers.forEach(
-        phoneNumber -> {
-          phoneNumber.setPerson(person);
-          _phoneRepo.save(phoneNumber);
-        });
-    _repo.save(person);
+    var existing = person.getPhoneNumberDetails();
+
+    var toSave = incoming.stream().collect(Collectors.toSet());
+    toSave.removeAll(existing);
+
+    var toDelete = existing.stream().collect(Collectors.toSet());
+    toDelete.removeAll(incoming);
+
+    _phoneRepo.deleteAll(toDelete);
+    _phoneRepo.saveAll(toSave);
   }
 
   public PatientPreferences getPatientPreferences(Person person) {
