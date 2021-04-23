@@ -22,7 +22,6 @@
 - [ ] Includes a summary of what a code reviewer should verify
 
 ### Breaking Changes
-- [ ] This PR does not introduce any breaking changes
 - [ ] Database changes are submitted as a separate PR
 - [ ] GraphQL schema changes are backward compatible with older version of the front-end
 
