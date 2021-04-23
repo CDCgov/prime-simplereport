@@ -10,7 +10,6 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -72,7 +71,7 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
    */
   @OneToOne private PhoneNumber primaryPhone;
 
-  @OneToMany(mappedBy = "person", cascade = CascadeType.PERSIST)
+  @OneToMany(mappedBy = "person")
   private List<PhoneNumber> phoneNumbers;
 
   @Column private String email;
@@ -107,7 +106,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -120,7 +118,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.lookupId = lookupId;
     this.nameInfo = new PersonName(firstName, middleName, lastName, suffix);
     this.birthDate = birthDate;
-    this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
     this.email = email;
@@ -147,7 +144,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
       String race,
@@ -162,7 +158,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
     this.nameInfo.setLastName(lastName);
     this.nameInfo.setSuffix(suffix);
     this.birthDate = birthDate;
-    this.addPhoneNumbers(phoneNumbers);
     this.address = address;
     this.role = role;
     this.email = email;
@@ -302,15 +297,6 @@ public class Person extends OrganizationScopedEternalEntity implements PersonEnt
 
   public PersonRole getRole() {
     return role;
-  }
-
-  public void addPhoneNumbers(List<PhoneNumber> phoneNumbers) {
-    if (phoneNumbers != null) {
-      phoneNumbers.forEach(pn -> pn.setPerson(this));
-      if (phoneNumbers.size() > 0) {
-        this.primaryPhone = phoneNumbers.get(0);
-      }
-    }
   }
 
   // these field names strings are used by Specification builders

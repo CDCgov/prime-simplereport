@@ -31,7 +31,12 @@ public class PhoneNumber extends AuditedEntity {
     this.number = number;
   }
 
-  protected void setPerson(Person person) {
+  public PhoneNumber(Person person, PhoneType type, String number) {
+    this(type, number);
+    this.person = person;
+  }
+
+  public void setPerson(Person person) {
     this.person = person;
   }
 

@@ -41,7 +41,6 @@ class PersonRepositoryTest extends BaseRepositoryTest {
             null,
             LocalDate.now(),
             _dataFactory.getAddress(),
-            TestDataFactory.getListOfOnePhoneNumber(),
             PersonRole.VISITOR,
             "",
             null,

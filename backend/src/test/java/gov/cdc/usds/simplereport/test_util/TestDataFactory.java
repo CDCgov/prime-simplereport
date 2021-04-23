@@ -1,6 +1,5 @@
 package gov.cdc.usds.simplereport.test_util;
 
-import gov.cdc.usds.simplereport.api.Translators;
 import gov.cdc.usds.simplereport.db.model.DeviceSpecimenType;
 import gov.cdc.usds.simplereport.db.model.DeviceType;
 import gov.cdc.usds.simplereport.db.model.Facility;
@@ -16,7 +15,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
-import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneNumberInput;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
@@ -26,6 +25,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -59,6 +59,7 @@ public class TestDataFactory {
   @Autowired private TestOrderRepository _testOrderRepo;
   @Autowired private TestEventRepository _testEventRepo;
   @Autowired private PatientAnswersRepository _patientAnswerRepo;
+  @Autowired private PhoneNumberRepository _phoneNumberRepo;
   @Autowired private PatientLinkRepository _patientLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
@@ -142,7 +143,6 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
-            getListOfOnePhoneNumber(),
             PersonRole.RESIDENT,
             null,
             "W",
@@ -151,6 +151,7 @@ public class TestDataFactory {
             "M",
             false,
             false);
+    _phoneNumberRepo.save(new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309"));
     return _personRepo.save(p);
   }
 
@@ -249,6 +250,6 @@ public class TestDataFactory {
   }
 
   public static List<PhoneNumber> getListOfOnePhoneNumber() {
-    return Translators.parsePhoneNumbers(List.of(new PhoneNumberInput("503-867-5309")));
+    return List.of(new PhoneNumber(PhoneType.MOBILE, "503-867-5309"));
   }
 }
