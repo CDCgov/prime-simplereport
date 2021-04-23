@@ -254,24 +254,6 @@ public class ApiUserService {
     return new UserInfo(currentUser, currentOrgRoles, isAdmin);
   }
 
-  private UserInfo convertOrganizationRoleClaimsToUserInfo(
-      final Set<Facility> facilitiesSet,
-      final Map<UUID, Facility> facilitiesByUUID,
-      final Organization org,
-      final ApiUser apiUser,
-      final OrganizationRoleClaims claims) {
-    boolean allFacilityAccess = claims.grantsAllFacilityAccess();
-    Set<Facility> accessibleFacilities =
-        allFacilityAccess
-            ? facilitiesSet
-            : claims.getFacilities().stream()
-                .map(facilitiesByUUID::get)
-                .collect(Collectors.toSet());
-    OrganizationRoles orgRoles =
-        new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
-    return new UserInfo(apiUser, Optional.of(orgRoles), isAdmin(apiUser));
-  }
-
   @AuthorizationConfiguration.RequirePermissionManageUsers
   public List<UserInfo> getUsersInCurrentOrg() {
     Organization org = _orgService.getCurrentOrganization();
@@ -286,8 +268,16 @@ public class ApiUserService {
         .map(
             u -> {
               OrganizationRoleClaims claims = userClaims.get(u.getLoginEmail());
-              return convertOrganizationRoleClaimsToUserInfo(
-                  facilitiesSet, facilitiesByUUID, org, u, claims);
+              boolean allFacilityAccess = claims.grantsAllFacilityAccess();
+              Set<Facility> accessibleFacilities =
+                  allFacilityAccess
+                      ? facilitiesSet
+                      : claims.getFacilities().stream()
+                          .map(facilitiesByUUID::get)
+                          .collect(Collectors.toSet());
+              OrganizationRoles orgRoles =
+                  new OrganizationRoles(org, accessibleFacilities, claims.getGrantedRoles());
+              return new UserInfo(u, Optional.of(orgRoles), isAdmin(u));
             })
         .collect(Collectors.toList());
   }
