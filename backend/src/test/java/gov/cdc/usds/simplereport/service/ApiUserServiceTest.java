@@ -56,13 +56,13 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getUserInCurrentOrg_adminUser_success() {
+  void getUser_adminUser_success() {
     initSampleData();
 
     final String email = "allfacilities@example.com"; // member of DIS_ORG
     ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
 
-    UserInfo userInfo = _service.getUserInCurrentOrg(apiUser.getInternalId());
+    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
 
     assertEquals(email, userInfo.getEmail());
     roleCheck(
@@ -73,31 +73,37 @@ class ApiUserServiceTest extends BaseServiceTest<ApiUserService> {
 
   @Test
   @WithSimpleReportOrgAdminUser
-  void getUserInCurrentOrg_adminUserWrongOrg_error() {
+  void getUser_adminUserWrongOrg_error() {
     initSampleData();
 
     // captain@pirate.com is a member of DAT_ORG, but requester is admin of DIS_ORG
     ApiUser apiUser = _apiUserRepo.findByLoginEmail("captain@pirate.com").get();
-    assertSecurityError(() -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
+    assertSecurityError(() -> _service.getUser(apiUser.getInternalId()));
   }
 
   @Test
   @WithSimpleReportSiteAdminUser
-  void getUserInCurrentOrg_superUser_error() {
+  void getUser_superUser_success() {
     initSampleData();
 
-    ApiUser apiUser = _apiUserRepo.findByLoginEmail("allfacilities@example.com").get();
-    assertThrows(
-        MisconfiguredUserException.class,
-        () -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
+    final String email = "allfacilities@example.com"; // member of DIS_ORG
+    ApiUser apiUser = _apiUserRepo.findByLoginEmail(email).get();
+
+    UserInfo userInfo = _service.getUser(apiUser.getInternalId());
+
+    assertEquals(email, userInfo.getEmail());
+    roleCheck(
+        userInfo,
+        EnumSet.of(
+            OrganizationRole.NO_ACCESS, OrganizationRole.USER, OrganizationRole.ALL_FACILITIES));
   }
 
   @Test
-  void getUserInCurrentOrg_standardUser_error() {
+  void getUser_standardUser_error() {
     initSampleData();
 
     ApiUser apiUser = _apiUserRepo.findByLoginEmail("allfacilities@example.com").get();
-    assertSecurityError(() -> _service.getUserInCurrentOrg(apiUser.getInternalId()));
+    assertSecurityError(() -> _service.getUser(apiUser.getInternalId()));
   }
 
   private void roleCheck(final UserInfo userInfo, final Set<OrganizationRole> expected) {

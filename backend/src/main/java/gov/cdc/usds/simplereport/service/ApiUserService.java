@@ -293,7 +293,7 @@ public class ApiUserService {
   }
 
   @AuthorizationConfiguration.RequirePermissionManageTargetUser
-  public UserInfo getUserInCurrentOrg(final UUID userId) {
+  public UserInfo getUser(final UUID userId) {
     final Optional<ApiUser> optApiUser = _apiUserRepo.findById(userId);
     if (optApiUser.isEmpty()) {
       throw new UnidentifiedUserException();
@@ -307,7 +307,8 @@ public class ApiUserService {
     }
     final OrganizationRoleClaims claims = optClaims.get();
 
-    Organization org = _orgService.getCurrentOrganization();
+    // use the target user's org so response is built correctly even if site admin is the requester
+    Organization org = _orgService.getOrganization(claims.getOrganizationExternalId());
 
     List<Facility> facilities = _orgService.getFacilities(org);
     Set<Facility> facilitiesSet = new HashSet<>(facilities);

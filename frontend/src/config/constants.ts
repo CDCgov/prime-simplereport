@@ -7,14 +7,19 @@ export const PATIENT_TERM_PLURAL_CAP = "People";
 // Otherwise, organizations will not be able to create facilities in the new state.
 export const liveJurisdictions = [
   "AZ",
+  "CA",
   "CO",
   "FL",
   "GU",
   "LA",
+  "MS",
+  "MT",
   "ND",
+  "NM",
   "OH",
   "PA",
   "TX",
+  "VT",
 ];
 
 export const states = {
