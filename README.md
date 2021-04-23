@@ -153,8 +153,9 @@ You can make the default user a site admin by adding the following to `applicati
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 Site admins can access the `/admin` paths and site admin APIs
@@ -217,8 +218,9 @@ Useful local settings
 
 ```
 simple-report:
-  site-admin-emails:
-    - bob@example.com
+  demo-users:
+    site-admin-emails:
+      - bob@example.com
 ```
 
 - make SQL pretty
@@ -230,6 +232,16 @@ spring:
       hibernate:
         format_sql: true
 ```
+
+- set CORS allowed-origins (this can be useful for testing the Okta integration)
+
+```
+simple-report:
+  cors:
+    allowed-origins:
+      - http://localhost:3000
+```
+
 
 ### SchemaSpy
 
@@ -311,8 +323,7 @@ Navigate to [New Release Form](https://github.com/CDCgov/prime-simplereport/rele
 2. Add a release title summarizing the changes
 3. If applicable describe some of the changes in detail in the description
 4. Click publish release
-5. Post a link to the release in [#shared-cdc-prime-simplereport-engineering](https://usds.slack.com/archives/C01LTSNKEPP). Example: `Deploying prod https://github.com/CDCgov/prime-simplereport/releases/tag/0.test`
-6. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
+5. Verify the changes are live by ensuring the deployed commit hash matches the commit hash on the release. This is done my going to `/app/static/commit.txt` and `/api/actuator/info`
 
 ### Deploy With Action
 

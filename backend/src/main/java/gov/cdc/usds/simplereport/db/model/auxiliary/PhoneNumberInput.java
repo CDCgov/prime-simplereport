@@ -6,6 +6,10 @@ public class PhoneNumberInput {
 
   public PhoneNumberInput() {}
 
+  public PhoneNumberInput(String number) {
+    this.number = number;
+  }
+
   public String getType() {
     return type;
   }

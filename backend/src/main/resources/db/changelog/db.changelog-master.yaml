@@ -1806,3 +1806,15 @@ databaseChangeLog:
                  - column: *created_by_column
                  - column: *updated_at_column
                  - column: *updated_by_column
+          - addColumn:
+              tableName: person
+              columns:
+                - column:
+                    name: primary_phone_internal_id
+                    afterColumn: telephone
+                    type: *idtype
+                    remarks: The identifier of the primary phone number for this patient
+                    constraints:
+                      nullable: true
+                      foreignKeyName: fk__primary__phone__number
+                      referencedTableName: phone_number

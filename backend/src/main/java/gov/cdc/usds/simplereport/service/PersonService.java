@@ -15,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResultDeliveryPreference;
 import gov.cdc.usds.simplereport.db.repository.PatientPreferencesRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +37,7 @@ public class PersonService {
   private final OrganizationService _os;
   private final PersonRepository _repo;
   private final PatientPreferencesRepository _prefRepo;
+  private final PhoneNumberRepository _phoneRepo;
 
   public static final int DEFAULT_PAGINATION_PAGEOFFSET = 0;
   public static final int DEFAULT_PAGINATION_PAGESIZE = 5000; // this is high because the searchBar
@@ -48,11 +50,13 @@ public class PersonService {
       OrganizationService os,
       PersonRepository repo,
       PatientPreferencesRepository prefRepo,
-      CurrentPatientContextHolder patientContext) {
+      CurrentPatientContextHolder patientContext,
+      PhoneNumberRepository phoneRepo) {
     _patientContext = patientContext;
     _os = os;
     _repo = repo;
     _prefRepo = prefRepo;
+    _phoneRepo = phoneRepo;
   }
 
   private void updatePersonFacility(Person person, UUID facilityId) {
@@ -191,7 +195,6 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
@@ -212,8 +215,6 @@ public class PersonService {
             suffix,
             birthDate,
             address,
-            telephone,
-            phoneNumbers,
             role,
             email,
             race,
@@ -225,6 +226,7 @@ public class PersonService {
 
     updatePersonFacility(newPatient, facilityId);
     Person savedPerson = _repo.save(newPatient);
+    updatePhoneNumbers(newPatient, phoneNumbers);
     upsertPreferredLanguage(savedPerson, preferredLanguage);
     return savedPerson;
   }
@@ -233,7 +235,6 @@ public class PersonService {
   // is verified, so there is no authorization check
   public Person updateMe(
       StreetAddress address,
-      String telephone,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
@@ -253,8 +254,6 @@ public class PersonService {
         toUpdate.getSuffix(),
         toUpdate.getBirthDate(),
         address,
-        telephone,
-        phoneNumbers,
         role,
         email,
         race,
@@ -264,7 +263,20 @@ public class PersonService {
         residentCongregateSetting,
         employedInHealthcare);
     upsertPreferredLanguage(toUpdate, preferredLanguage);
+    updatePhoneNumbers(toUpdate, phoneNumbers);
     return _repo.save(toUpdate);
+  }
+
+  private void updatePhoneNumbers(Person person, List<PhoneNumber> phoneNumbers) {
+    if (phoneNumbers == null) {
+      return;
+    }
+    phoneNumbers.forEach(
+        phoneNumber -> {
+          phoneNumber.setPerson(person);
+          _phoneRepo.save(phoneNumber);
+        });
+    _repo.save(person);
   }
 
   public PatientPreferences getPatientPreferences(Person person) {
@@ -312,7 +324,6 @@ public class PersonService {
       String suffix,
       LocalDate birthDate,
       StreetAddress address,
-      String telephone,
       List<PhoneNumber> phoneNumbers,
       PersonRole role,
       String email,
@@ -332,8 +343,6 @@ public class PersonService {
         suffix,
         birthDate,
         address,
-        telephone,
-        phoneNumbers,
         role,
         email,
         race,
@@ -342,6 +351,7 @@ public class PersonService {
         gender,
         residentCongregateSetting,
         employedInHealthcare);
+    updatePhoneNumbers(patientToUpdate, phoneNumbers);
     upsertPreferredLanguage(patientToUpdate, preferredLanguage);
     updatePersonFacility(patientToUpdate, facilityId);
     return _repo.save(patientToUpdate);

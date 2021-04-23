@@ -7,6 +7,7 @@ import gov.cdc.usds.simplereport.db.model.Organization;
 import gov.cdc.usds.simplereport.db.model.PatientAnswers;
 import gov.cdc.usds.simplereport.db.model.PatientLink;
 import gov.cdc.usds.simplereport.db.model.Person;
+import gov.cdc.usds.simplereport.db.model.PhoneNumber;
 import gov.cdc.usds.simplereport.db.model.Provider;
 import gov.cdc.usds.simplereport.db.model.SpecimenType;
 import gov.cdc.usds.simplereport.db.model.TestEvent;
@@ -14,6 +15,7 @@ import gov.cdc.usds.simplereport.db.model.TestOrder;
 import gov.cdc.usds.simplereport.db.model.auxiliary.AskOnEntrySurvey;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonName;
 import gov.cdc.usds.simplereport.db.model.auxiliary.PersonRole;
+import gov.cdc.usds.simplereport.db.model.auxiliary.PhoneType;
 import gov.cdc.usds.simplereport.db.model.auxiliary.StreetAddress;
 import gov.cdc.usds.simplereport.db.model.auxiliary.TestResult;
 import gov.cdc.usds.simplereport.db.repository.DeviceSpecimenTypeRepository;
@@ -23,6 +25,7 @@ import gov.cdc.usds.simplereport.db.repository.OrganizationRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientAnswersRepository;
 import gov.cdc.usds.simplereport.db.repository.PatientLinkRepository;
 import gov.cdc.usds.simplereport.db.repository.PersonRepository;
+import gov.cdc.usds.simplereport.db.repository.PhoneNumberRepository;
 import gov.cdc.usds.simplereport.db.repository.ProviderRepository;
 import gov.cdc.usds.simplereport.db.repository.SpecimenTypeRepository;
 import gov.cdc.usds.simplereport.db.repository.TestEventRepository;
@@ -56,6 +59,7 @@ public class TestDataFactory {
   @Autowired private TestOrderRepository _testOrderRepo;
   @Autowired private TestEventRepository _testEventRepo;
   @Autowired private PatientAnswersRepository _patientAnswerRepo;
+  @Autowired private PhoneNumberRepository _phoneNumberRepo;
   @Autowired private PatientLinkRepository _patientLinkRepository;
   @Autowired private SpecimenTypeRepository _specimenRepo;
   @Autowired private DeviceSpecimenTypeRepository _deviceSpecimenRepo;
@@ -139,8 +143,6 @@ public class TestDataFactory {
             null,
             DEFAULT_BDAY,
             getAddress(),
-            telephone,
-            null,
             PersonRole.RESIDENT,
             null,
             "W",
@@ -149,6 +151,7 @@ public class TestDataFactory {
             "M",
             false,
             false);
+    _phoneNumberRepo.save(new PhoneNumber(p, PhoneType.MOBILE, "503-867-5309"));
     return _personRepo.save(p);
   }
 
@@ -244,5 +247,9 @@ public class TestDataFactory {
 
   public StreetAddress getAddress() {
     return new StreetAddress("736 Jackson PI NW", null, "Washington", "DC", "20503", "Washington");
+  }
+
+  public static List<PhoneNumber> getListOfOnePhoneNumber() {
+    return List.of(new PhoneNumber(PhoneType.MOBILE, "503-867-5309"));
   }
 }
