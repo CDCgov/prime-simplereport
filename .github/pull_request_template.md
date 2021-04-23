@@ -16,8 +16,10 @@
 ## Screenshots / Demos
 
 ## Checklist for Author and Reviewer
+
 ### UI
 - [ ] Any changes to the UI/UX have been approved by design 
+- [ ] 
 ### Testing
 - [ ] Includes a summary of what a code reviewer should verify
 
