@@ -19,7 +19,6 @@
 
 ### Testing
 - [ ] Includes a summary of what a code reviewer should verify
-- [ ] Changes are well-tested and code coverage remains the same or increases
 
 ### Breaking Changes
 - [ ] This PR does not introduce any breaking changes
