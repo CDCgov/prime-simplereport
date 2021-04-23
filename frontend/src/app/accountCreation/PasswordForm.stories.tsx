@@ -1,9 +1,9 @@
 import { Story, Meta } from "@storybook/react";
 
-import { PasswordForm } from "../app/accountCreation/PasswordForm";
+import { PasswordForm } from "./PasswordForm";
 
 export default {
-  title: "App/AccountCreation/PasswordForm",
+  title: "App/Account set up/Step 1: Password form",
   component: PasswordForm,
   argTypes: {},
 } as Meta;

@@ -1,16 +1,16 @@
 import { Story, Meta } from "@storybook/react";
 
-import { CardContainer } from "../app/commonComponents/CardContainer";
+import { CardBackground } from "../app/commonComponents/CardBackground";
 
 export default {
-  title: "App/Components/Card container",
-  component: CardContainer,
+  title: "App/Components/Card background",
+  component: CardBackground,
   argTypes: {
     logo: { control: "boolean" },
   },
 } as Meta;
 
-const Template: Story = (args) => <CardContainer {...args} />;
+const Template: Story = (args) => <CardBackground {...args} />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {
