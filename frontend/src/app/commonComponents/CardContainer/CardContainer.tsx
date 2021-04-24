@@ -5,14 +5,10 @@ export type CardContainerProps = {
   logo?: boolean;
 };
 
-export const CardContainer: React.FC<CardContainerProps> = ({
-  children,
-}) => {
+export const CardContainer: React.FC<CardContainerProps> = ({ children }) => {
   return (
     <CardBackground>
-      <Card logo>
-        {children}
-      </Card>
+      <Card logo>{children}</Card>
     </CardBackground>
   );
 };

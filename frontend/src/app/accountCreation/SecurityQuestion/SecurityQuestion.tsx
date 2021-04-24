@@ -13,8 +13,7 @@ export const SecurityQuestion = () => {
 
   return (
     <CardBackground>
-      <Card logo>
-        <h1 className="font-ui-sm margin-top-3">Set up your account</h1>
+      <Card logo bodyHeading="Set up your account">
         <p>[ step indicator ]</p>
         <Dropdown
           label="Security question"
@@ -30,12 +29,7 @@ export const SecurityQuestion = () => {
           name={"answer"}
           onChange={(evt) => setPassword(evt.currentTarget.value)}
         />
-        <Button
-          className="margin-top-3"
-          id="dob-submit-button"
-          label={"Continue"}
-          type={"submit"}
-        />
+        <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
       <p className="margin-top-5">
         <a href="#0">Return to previous step</a>

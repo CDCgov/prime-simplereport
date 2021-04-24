@@ -7,6 +7,7 @@ export default {
   component: Card,
   argTypes: {
     logo: { control: "boolean" },
+    // bodyHeading: { control: "boolean" },
   },
 } as Meta;
 
@@ -14,6 +15,7 @@ const Template: Story = (args) => <Card {...args} />;
 
 export const WithChildren = Template.bind({});
 WithChildren.args = {
+  bodyHeading: "Heading",
   children: (
     <>
       <p>This is some test content</p>
