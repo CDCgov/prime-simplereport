@@ -13,7 +13,7 @@ const Template: Story = (args) => <PasswordForm {...args} />;
 export const Default = Template.bind({});
 Default.args = {};
 
-export const Error = Template.bind({});
-Error.args = {
+export const ErrorState = Template.bind({});
+ErrorState.args = {
   passwordError: "error",
 };
