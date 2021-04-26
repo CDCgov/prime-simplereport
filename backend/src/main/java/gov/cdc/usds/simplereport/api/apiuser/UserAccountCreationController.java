@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Controller used for user account creation. */
+// Note: this authorization logic hasn't yet been implemented and will currently allow all requests.
 @PreAuthorize("@apiUserService.verifyAccountCreationRequest()")
 @RestController
 @RequestMapping(USER_ACCOUNT_REQUEST)
@@ -26,7 +27,6 @@ public class UserAccountCreationController {
   /** Dummy controller that returns the given session id. */
   @PostMapping("")
   String uid(HttpSession session) {
-    System.out.println("BOOYAH" + session.getId());
     return session.getId();
   }
 }
