@@ -30,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.websocket.Session;
 import javax.websocket.server.HandshakeRequest;
+import org.dataloader.DataLoaderRegistry;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,6 +42,7 @@ class ApiUserAwareGraphQlContextBuilderTest {
     var apiUserService = mock(ApiUserService.class);
     var dataLoaders = mock(DataLoaders.class);
     when(apiUserService.getCurrentUserInfo()).thenReturn(user);
+    when(dataLoaders.buildRegistry()).thenReturn(new DataLoaderRegistry());
 
     var sut = new ApiUserAwareGraphQlContextBuilder(apiUserService, dataLoaders);
     validateSubject(
