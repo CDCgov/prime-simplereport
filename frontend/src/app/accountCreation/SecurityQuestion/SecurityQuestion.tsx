@@ -18,6 +18,7 @@ export const SecurityQuestion = () => {
         <Dropdown
           label="Security question"
           name="security-question"
+          hintText="If you forget your password, we’ll ask you this question to verify your identity."
           selectedValue={"string"}
           options={stateCodes.map((c) => ({ label: c, value: c }))}
           defaultSelect
