@@ -28,7 +28,7 @@ public class TestResultDataResolver
   }
 
   public Date getDateAdded(TestEvent testEvent) {
-    return testEvent.getTestOrder().getCreatedAt();
+    return testEvent.getDateTested();
   }
 
   public String getPregnancy(TestEvent testEvent) {
