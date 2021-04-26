@@ -3,17 +3,38 @@ import { useState } from "react";
 import { Card } from "../../commonComponents/Card/Card";
 import { CardBackground } from "../../commonComponents/CardBackground/CardBackground";
 import Button from "../../commonComponents/Button";
+import RadioGroup from "../../commonComponents/RadioGroup";
 import StepIndicator from "../../commonComponents/StepIndicator";
 
 export const Authentication = () => {
+  const [password, setPassword] = useState("");
+
   return (
     <CardBackground>
       <Card logo bodyHeading="Set up your account">
         <p>[ step indicator ]</p>
-        <p className="usa-hint">
-          Add a second layer of security to protect your account.
-        </p>
-        <p>[ radio buttons ]</p>
+        <RadioGroup
+          name="addressSelect"
+          hintText="Add a second layer of security to protect your account."
+          buttons={[
+            {
+              value: "value",
+              label: "Text message (SMS)",
+            },
+            {
+              value: "value2",
+              label: "Okta Verify",
+            },
+          ]}
+          // selectedRadio={selectedAddress}
+          onChange={setPassword}
+          // onBlur={validate}
+          // validationStatus={error ? "error" : undefined}
+          variant="tile"
+          // errorMessage={error ? ERROR_MESSAGE : undefined}
+          labelDescription="Get a single-use code sent via text message (SMS)."
+          labelTag="Less secure"
+        />
         <Button className="margin-top-3" label={"Continue"} type={"submit"} />
       </Card>
       <p className="margin-top-5">

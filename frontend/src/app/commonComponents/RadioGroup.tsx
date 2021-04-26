@@ -25,6 +25,8 @@ interface Props<T> {
   variant?: "default" | "tile" | "horizontal";
   hintText?: string;
   disabled?: boolean;
+  labelDescription?: string;
+  labelTag?: string;
   onChange: (value: T) => void;
   onClick?: (value: T) => void;
   onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
@@ -42,6 +44,8 @@ const RadioGroup = <T extends string>({
   required,
   variant,
   hintText,
+  labelDescription,
+  labelTag,
   onChange,
   onBlur,
   onClick,
@@ -65,7 +69,7 @@ const RadioGroup = <T extends string>({
           {required ? <Required label={legend} /> : <Optional label={legend} />}
         </legend>
       )}
-      {hintText && <span className="usa-hint text-ls-1">{hintText}</span>}
+      {hintText && <span className="usa-hint">{hintText}</span>}
       {validationStatus === "error" && (
         <div className="usa-error-message" role="alert">
           <span className="usa-sr-only">Error: </span>
@@ -104,6 +108,16 @@ const RadioGroup = <T extends string>({
                   />
                   <label className={labelClasses} htmlFor={uid(c.value)}>
                     {c.label}
+                    {labelDescription && (
+                      <span className="usa-checkbox__label-description">
+                        {labelDescription}
+                      </span>
+                    )}
+                    {labelTag && (
+                      <div className="display-block margin-left-4 margin-top-1">
+                        <span className="usa-tag">{labelTag}</span>
+                      </div>
+                    )}
                   </label>
                 </div>
               );
