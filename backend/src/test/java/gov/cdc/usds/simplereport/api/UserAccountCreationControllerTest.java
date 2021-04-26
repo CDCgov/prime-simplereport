@@ -1,6 +1,7 @@
 package gov.cdc.usds.simplereport.api;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
@@ -32,9 +34,21 @@ class UserAccountCreationControllerTest {
   @Autowired private MockMvc _mockMvc;
 
   @Test
-  void getSessionUidIsOk() throws Exception {
+  void setPasswordIsOk() throws Exception {
     MockHttpServletRequestBuilder builder =
-        post(ResourceLinks.USER_ACCOUNT_REQUEST)
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{}");
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+  }
+
+  @Test
+  void setPassword_worksAsExpectedWithMultipleSessions() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.USER_SET_PASSWORD)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .accept(MediaType.APPLICATION_JSON)
             .characterEncoding("UTF-8")
@@ -47,7 +61,6 @@ class UserAccountCreationControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(firstRequest).isEqualTo("1");
 
     String secondRequest =
         this._mockMvc
@@ -56,6 +69,58 @@ class UserAccountCreationControllerTest {
             .andReturn()
             .getResponse()
             .getContentAsString();
-    assertThat(secondRequest).isEqualTo("2");
+
+    assertThat(firstRequest).isNotEqualTo(secondRequest);
+  }
+
+  @Test
+  void setRecoveryQuestionsIsOk() throws Exception {
+    MockHttpServletRequestBuilder builder =
+        post(ResourceLinks.USER_SET_RECOVERY_QUESTION)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{}");
+
+    this._mockMvc.perform(builder).andExpect(status().isOk());
+  }
+
+  @Test
+  void setPasswordThenRecoveryQuestions() throws Exception {
+    MockHttpSession session = new MockHttpSession();
+
+    MockHttpServletRequestBuilder setPasswordBuilder =
+        post(ResourceLinks.USER_SET_PASSWORD)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{}")
+            .session(session);
+
+    MockHttpServletRequestBuilder setRecoveryQuestionBuilder =
+        post(ResourceLinks.USER_SET_RECOVERY_QUESTION)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .accept(MediaType.APPLICATION_JSON)
+            .characterEncoding("UTF-8")
+            .content("{}")
+            .session(session);
+
+    String setPasswordResponse =
+        this._mockMvc
+            .perform(setPasswordBuilder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    String setRecoveryQuestionResponse =
+        this._mockMvc
+            .perform(setRecoveryQuestionBuilder)
+            .andExpect(status().isOk())
+            .andReturn()
+            .getResponse()
+            .getContentAsString();
+
+    assertEquals(setPasswordResponse, setRecoveryQuestionResponse);
   }
 }
