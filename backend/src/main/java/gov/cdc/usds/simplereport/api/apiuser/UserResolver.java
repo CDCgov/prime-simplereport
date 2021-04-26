@@ -4,6 +4,7 @@ import gov.cdc.usds.simplereport.api.model.User;
 import gov.cdc.usds.simplereport.service.ApiUserService;
 import graphql.kickstart.tools.GraphQLQueryResolver;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
@@ -23,5 +24,9 @@ public class UserResolver implements GraphQLQueryResolver {
 
   public List<User> getUsers() {
     return _userService.getUsersInCurrentOrg().stream().map(User::new).collect(Collectors.toList());
+  }
+
+  public User getUser(UUID userId) {
+    return new User(_userService.getUser(userId));
   }
 }
