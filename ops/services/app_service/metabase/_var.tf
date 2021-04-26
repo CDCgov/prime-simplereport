@@ -28,7 +28,6 @@ variable "webapp_subnet_id" {
   description = "Webapp Subnet ID"
 }
 
-
 variable "postgres_server_name" {
   type        = string
   description = "PostgreSQL Server name"

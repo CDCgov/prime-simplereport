@@ -57,13 +57,13 @@ data "azurerm_key_vault_secret" "metabase_db_uri" {
 }
 
 data "azurerm_key_vault_secret" "postgres_nophi_user" {
-  name         = "simple-report-${local.env}-postgres_nophi_user"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+  name         = "simple-report-${local.env}-db-username-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
-data "azurerm_key_vault_secret" "postgres_nophi_pass" {
-  name         = "simple-report-${local.env}-postgres_nophi_pass"
-  key_vault_id = data.azurerm_key_vault.sr_global.id
+data "azurerm_key_vault_secret" "postgres_nophi_password" {
+  name         = "simple-report-${local.env}-db-password-no-phi"
+  key_vault_id = data.azurerm_key_vault.global.id
 }
 
 data "azurerm_key_vault_secret" "datahub_api_key" {
