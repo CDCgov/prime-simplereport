@@ -31,7 +31,7 @@ public class UserAccountCreationController {
    * @param session
    * @return the session id (temporary)
    */
-  @PostMapping("/set_password")
+  @PostMapping("/set-password")
   String setPassword(HttpSession session) {
     return session.getId();
   }
@@ -42,7 +42,7 @@ public class UserAccountCreationController {
    * @param session
    * @return the session id (temporary)
    */
-  @PostMapping("/set_recovery_question")
+  @PostMapping("/set-recovery-question")
   String setRecoveryQuestions(HttpSession session) {
     return session.getId();
   }
